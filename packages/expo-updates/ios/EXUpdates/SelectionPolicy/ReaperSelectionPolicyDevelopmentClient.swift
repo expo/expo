@@ -1,7 +1,5 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-import Foundation
-
 /**
  * A ReaperSelectionPolicy which keeps a predefined maximum number of updates across all scopes,
  * and, once that number is surpassed, selects the updates least recently accessed (and then least
@@ -45,6 +43,7 @@ public final class ReaperSelectionPolicyDevelopmentClient: NSObject, ReaperSelec
     var hasFoundLaunchedUpdate = false
 
     while updatesMutable.count > maxUpdatesToKeep {
+      // swiftlint:disable:next force_unwrapping
       let oldest = updatesMutable.first!
       updatesMutable.remove(at: 0)
 

@@ -1,14 +1,16 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
+import { MessageFramePacker } from './MessageFramePacker';
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import { WebSocketWithReconnect } from './WebSocketWithReconnect';
-import type { ConnectionInfo } from './devtools.types';
+import { blobToArrayBufferAsync } from './blobUtils';
+import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
 import * as logger from './logger';
 
-// This version should be synced with the one in the **createMessageSocketEndpoint.ts** in @react-native-community/cli-server-api
-export const MESSAGE_PROTOCOL_VERSION = 2;
-
-export const DevToolsPluginMethod = 'Expo:DevToolsPlugin';
+interface MessageFramePackerMessageKey {
+  pluginName: string;
+  method: string;
+}
 
 /**
  * This client is for the Expo DevTools Plugins to communicate between the app and the DevTools webpage hosted in a browser.
@@ -22,8 +24,13 @@ export abstract class DevToolsPluginClient {
 
   protected isClosed = false;
   protected retries = 0;
+  private readonly messageFramePacker: MessageFramePacker<MessageFramePackerMessageKey> =
+    new MessageFramePacker();
 
-  public constructor(public readonly connectionInfo: ConnectionInfo) {
+  public constructor(
+    public readonly connectionInfo: ConnectionInfo,
+    private readonly options?: DevToolsPluginClientOptions
+  ) {
     this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
   }
 
@@ -63,17 +70,16 @@ export abstract class DevToolsPluginClient {
       logger.warn('Unable to send message in a disconnected state.');
       return;
     }
+    this.sendMessageImpl(method, params);
+  }
 
-    const payload: Record<string, any> = {
-      version: MESSAGE_PROTOCOL_VERSION,
+  private async sendMessageImpl(method: string, params: any) {
+    const messageKey: MessageFramePackerMessageKey = {
       pluginName: this.connectionInfo.pluginName,
-      method: DevToolsPluginMethod,
-      params: {
-        method,
-        params,
-      },
+      method,
     };
-    this.wsStore.ws?.send(JSON.stringify(payload));
+    const packedData = await this.messageFramePacker.pack({ messageKey, payload: params });
+    this.wsStore.ws?.send(packedData);
   }
 
   /**
@@ -106,7 +112,9 @@ export abstract class DevToolsPluginClient {
    */
   protected connectAsync(): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`, {
+      const endpoint = 'expo-dev-plugins/broadcast';
+      const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/${endpoint}`, {
+        binaryType: this.options?.websocketBinaryType,
         onError: (e: unknown) => {
           if (e instanceof Error) {
             console.warn(`Error happened from the WebSocket connection: ${e.message}\n${e.stack}`);
@@ -127,23 +135,27 @@ export abstract class DevToolsPluginClient {
     });
   }
 
-  protected handleMessage = (event: WebSocketMessageEvent): void => {
-    let payload;
-    try {
-      payload = JSON.parse(event.data);
-    } catch (e) {
-      logger.info('Failed to parse JSON', e);
-      return;
-    }
+  protected handleMessage = (event: WebSocketMessageEvent) => {
+    this.handleMessageImpl(event);
+  };
 
-    if (payload.version !== MESSAGE_PROTOCOL_VERSION || payload.method !== DevToolsPluginMethod) {
+  private handleMessageImpl = async (event: WebSocketMessageEvent) => {
+    let buffer: ArrayBuffer;
+    if (event.data instanceof ArrayBuffer) {
+      buffer = event.data;
+    } else if (ArrayBuffer.isView(event.data)) {
+      buffer = event.data.buffer;
+    } else if (event.data instanceof Blob) {
+      buffer = await blobToArrayBufferAsync(event.data);
+    } else {
+      logger.warn('Unsupported received data type in handleMessageImpl');
       return;
     }
-    if (payload.pluginName && payload.pluginName !== this.connectionInfo.pluginName) {
+    const { messageKey, payload } = await this.messageFramePacker.unpack(buffer);
+    if (messageKey.pluginName && messageKey.pluginName !== this.connectionInfo.pluginName) {
       return;
     }
-
-    this.eventEmitter.emit(payload.params.method, payload.params.params);
+    this.eventEmitter.emit(messageKey.method, payload);
   };
 
   /**

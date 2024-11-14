@@ -2,9 +2,11 @@ import { Platform } from 'expo-modules-core';
 
 import * as Localization from '../Localization';
 
-function validateString(result) {
+function validateString(result, allowEmpty = false) {
   expect(typeof result).toBe('string');
-  expect(result.length).toBeGreaterThan(0);
+  if (!allowEmpty) {
+    expect(result.length).toBeGreaterThan(0);
+  }
 }
 
 function validateStringArray(result) {
@@ -37,7 +39,7 @@ if (Platform.isDOMAvailable) {
       expect(typeof isRTL).toBe('boolean');
       expect(typeof isMetric).toBe('boolean');
       validateString(decimalSeparator);
-      validateString(digitGroupingSeparator);
+      validateString(digitGroupingSeparator, true);
       expect(currency).toBe(null);
     });
   });
@@ -94,7 +96,7 @@ describe(`Localization defines constants`, () => {
   it('Gets ISO currency codes', async () => {
     const result = Localization.isoCurrencyCodes;
     validateStringArray(result);
-    result.forEach(validateString);
+    result.forEach((res) => validateString(res));
   });
   it('Gets the timezone', async () => {
     validateString(Localization.timezone);

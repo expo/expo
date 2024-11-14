@@ -1,11 +1,10 @@
-
-name: docs-pr-destroy
+name: Docs Website PR Destroy Preview
 
 on:
   pull_request:
     paths:
       - 'docs/**'
-      - '.github/workflows/docs-pr-deploy.yml'
+      - '.github/workflows/docs-pr.yml'
       - '.github/workflows/docs-pr-destroy.yml'
     types: [closed, unlabeled]
 

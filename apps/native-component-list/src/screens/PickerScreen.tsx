@@ -125,8 +125,8 @@ function FocusPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
     </>
   );
 }
-function GenericPickerIOS(props: any) {
-  const [value, setValue] = React.useState<any>('java');
+function GenericPickerIOS(props: PickerProps) {
+  const [value, setValue] = React.useState<string | number>('java');
 
   return (
     <>

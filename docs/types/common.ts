@@ -9,6 +9,7 @@ export type PageMetadata = {
   hideFromSearch?: boolean;
   hideTOC?: boolean;
   platforms?: string[];
+  modificationDate?: string;
 };
 
 /**
@@ -41,6 +42,8 @@ export type NavigationRoute = {
   expanded?: boolean;
   sidebarTitle?: string;
   weight?: number;
+  isNew?: boolean;
+  isDeprecated?: boolean;
   children?: NavigationRoute[];
 };
 

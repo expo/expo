@@ -5,7 +5,7 @@ import {
   CameraCapturedPicture,
   CameraOrientation,
   CameraPictureOptions,
-  CameraProps,
+  CameraViewProps,
   CameraRecordingOptions,
   CameraViewRef,
   ScanningOptions,
@@ -27,8 +27,14 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
     return {};
   }
 
-  if (!options.quality) {
+  if (options.quality === undefined) {
     options.quality = 1;
+  }
+
+  if (options.mirror) {
+    console.warn(
+      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
+    );
   }
 
   if (options.onPictureSaved) {
@@ -44,6 +50,12 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
 function ensureRecordingOptions(options: CameraRecordingOptions = {}): CameraRecordingOptions {
   if (!options || typeof options !== 'object') {
     return {};
+  }
+
+  if (options.mirror) {
+    console.warn(
+      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
+    );
   }
 
   return options;
@@ -62,7 +74,7 @@ function _onPictureSaved({
   }
 }
 
-export default class CameraView extends Component<CameraProps> {
+export default class CameraView extends Component<CameraViewProps> {
   /**
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
    */
@@ -104,10 +116,24 @@ export default class CameraView extends Component<CameraProps> {
     return (await this._cameraRef.current?.getAvailablePictureSizes()) ?? [];
   }
 
+  /**
+   * Resumes the camera preview.
+   */
+  async resumePreview(): Promise<void> {
+    return this._cameraRef.current?.resumePreview();
+  }
+
+  /**
+   * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
+   */
+  async pausePreview(): Promise<void> {
+    return this._cameraRef.current?.pausePreview();
+  }
+
   // Values under keys from this object will be transformed to native options
   static ConversionTables = ConversionTables;
 
-  static defaultProps: CameraProps = {
+  static defaultProps: CameraViewProps = {
     zoom: 0,
     facing: 'back',
     enableTorch: false,
@@ -123,19 +149,24 @@ export default class CameraView extends Component<CameraProps> {
   // @needsAudit
   /**
    * Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation
-   * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview. Anyway on Android it is essential
-   * to set ratio prop to get a picture with correct dimensions.
+   * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview.
    * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
    * @param options An object in form of `CameraPictureOptions` type.
-   * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on iOS,
-   * Android, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
-   * the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data
-   * of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source
-   * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
-   * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
+   * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on Android,
+   * iOS, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
+   * the dimensions of the image.
+   *
+   * `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data
+   * of the image in Base64. Prepend it with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source
+   * for an `Image` element for example.
+   *
+   * `exif` is included if the `exif` option was truthy, and is an object containing EXIF
+   * data for the image. The names of its properties are EXIF tags and their values are the values for those tags.
    *
    * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
    * > to make a permanent copy of the image.
+   *
+   * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
    */
   async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);

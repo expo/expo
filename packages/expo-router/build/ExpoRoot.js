@@ -23,20 +23,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = void 0;
-const expo_status_bar_1 = require("expo-status-bar");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const NavigationContainer_1 = __importDefault(require("./fork/NavigationContainer"));
+const NavigationContainer_1 = require("./fork/NavigationContainer");
 const router_store_1 = require("./global-state/router-store");
-const serverContext_1 = __importDefault(require("./global-state/serverContext"));
+const serverLocationContext_1 = require("./global-state/serverLocationContext");
+const useDomComponentNavigation_1 = require("./link/useDomComponentNavigation");
 const statusbar_1 = require("./utils/statusbar");
-const Splash_1 = require("./views/Splash");
+const SplashScreen = __importStar(require("./views/Splash"));
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
@@ -44,6 +41,9 @@ const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
     }
     : undefined;
+/**
+ * @hidden
+ */
 function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper
@@ -55,15 +55,18 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
         <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-          {children}
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {!statusbar_1.hasViewControllerBasedStatusBarAppearance && <expo_status_bar_1.StatusBar style="auto"/>}
+          {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
+          {children}
         </react_native_safe_area_context_1.SafeAreaProvider>
       </ParentWrapper>);
     };
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
 exports.ExpoRoot = ExpoRoot;
+function AutoStatusBar() {
+    return <react_native_1.StatusBar barStyle={(0, react_native_1.useColorScheme)() === 'light' ? 'dark-content' : 'light-content'}/>;
+}
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
@@ -76,7 +79,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         if (initialLocation instanceof URL) {
             contextType = {
                 location: {
-                    pathname: initialLocation.pathname,
+                    pathname: initialLocation.pathname + initialLocation.hash,
                     search: initialLocation.search,
                 },
             };
@@ -104,8 +107,9 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         ...linking,
         serverUrl,
     });
+    (0, useDomComponentNavigation_1.useDomComponentNavigation)(store);
     if (store.shouldShowTutorial()) {
-        Splash_1.SplashScreen.hideAsync();
+        SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
             const Tutorial = require('./onboard/Tutorial').Tutorial;
             return (<WrapperComponent>
@@ -118,15 +122,15 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
     }
     const Component = store.rootComponent;
-    return (<NavigationContainer_1.default ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
+    return (<NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
             enabled: false,
         }}>
-      <serverContext_1.default.Provider value={serverContext}>
+      <serverLocationContext_1.ServerContext.Provider value={serverContext}>
         <WrapperComponent>
           <Component />
         </WrapperComponent>
-      </serverContext_1.default.Provider>
-    </NavigationContainer_1.default>);
+      </serverLocationContext_1.ServerContext.Provider>
+    </NavigationContainer_1.NavigationContainer>);
 }
 let onUnhandledAction;
 if (process.env.NODE_ENV !== 'production') {

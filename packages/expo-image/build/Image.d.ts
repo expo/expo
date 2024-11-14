@@ -1,8 +1,14 @@
 import React from 'react';
-import { ImagePrefetchOptions, ImageProps } from './Image.types';
+import { ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
 export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: any;
+    containerViewRef: any;
     constructor(props: any);
+    getAnimatableRef: () => any;
+    /**
+     * @hidden
+     */
+    static Image: typeof ImageRef;
     /**
      * Preloads images at the given URLs that can be later used in the image view.
      * Preloaded images are cached to the memory and disk by default, so make sure
@@ -80,6 +86,14 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * @platform ios
      */
     stopAnimating(): Promise<void>;
-    render(): JSX.Element;
+    /**
+     * Loads an image from the given source to memory and resolves to
+     * an object that references the native image instance.
+     * @platform android
+     * @platform ios
+     * @platform web
+     */
+    static loadAsync(source: ImageSource | string, options?: ImageLoadOptions): Promise<ImageRef>;
+    render(): React.JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map

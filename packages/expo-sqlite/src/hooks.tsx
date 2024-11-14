@@ -1,9 +1,10 @@
 import { Asset } from 'expo-asset';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-import ExpoSQLite from './ExpoSQLiteNext';
+import ExpoSQLite from './ExpoSQLite';
 import type { SQLiteOpenOptions } from './NativeDatabase';
 import { openDatabaseAsync, type SQLiteDatabase } from './SQLiteDatabase';
+import { createDatabasePath } from './pathUtils';
 
 export interface SQLiteProviderAssetSource {
   /**
@@ -23,6 +24,12 @@ export interface SQLiteProviderProps {
    * The name of the database file to open.
    */
   databaseName: string;
+
+  /**
+   * The directory where the database file is located.
+   * @default defaultDatabaseDirectory
+   */
+  directory?: string;
 
   /**
    * Open options.
@@ -120,7 +127,7 @@ export function SQLiteProvider({
  *
  * export function Main() {
  *   const db = useSQLiteContext();
- *   console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *   console.log('sqlite version', db.getFirstSync('SELECT sqlite_version()'));
  *   return <View />
  * }
  * ```
@@ -135,7 +142,10 @@ export function useSQLiteContext(): SQLiteDatabase {
 
 //#region Internals
 
-type DatabaseInstanceType = Pick<SQLiteProviderProps, 'databaseName' | 'options' | 'onInit'> & {
+type DatabaseInstanceType = Pick<
+  SQLiteProviderProps,
+  'databaseName' | 'directory' | 'options' | 'onInit'
+> & {
   promise: Promise<SQLiteDatabase> | null;
 };
 
@@ -143,6 +153,7 @@ let databaseInstance: DatabaseInstanceType | null = null;
 
 function SQLiteProviderSuspense({
   databaseName,
+  directory,
   options,
   assetSource,
   children,
@@ -150,6 +161,7 @@ function SQLiteProviderSuspense({
 }: Omit<SQLiteProviderProps, 'onError' | 'useSuspense'>) {
   const databasePromise = getDatabaseAsync({
     databaseName,
+    directory,
     options,
     assetSource,
     onInit,
@@ -160,6 +172,7 @@ function SQLiteProviderSuspense({
 
 function SQLiteProviderNonSuspense({
   databaseName,
+  directory,
   options,
   assetSource,
   children,
@@ -173,7 +186,13 @@ function SQLiteProviderNonSuspense({
   useEffect(() => {
     async function setup() {
       try {
-        const db = await openDatabaseWithInitAsync({ databaseName, options, assetSource, onInit });
+        const db = await openDatabaseWithInitAsync({
+          databaseName,
+          directory,
+          options,
+          assetSource,
+          onInit,
+        });
         databaseRef.current = db;
         setLoading(false);
       } catch (e) {
@@ -197,7 +216,7 @@ function SQLiteProviderNonSuspense({
       databaseRef.current = null;
       setLoading(true);
     };
-  }, [databaseName, options, onInit]);
+  }, [databaseName, directory, options, onInit]);
 
   if (error != null) {
     const handler =
@@ -215,16 +234,18 @@ function SQLiteProviderNonSuspense({
 
 function getDatabaseAsync({
   databaseName,
+  directory,
   options,
   assetSource,
   onInit,
 }: Pick<
   SQLiteProviderProps,
-  'databaseName' | 'options' | 'assetSource' | 'onInit'
+  'databaseName' | 'directory' | 'options' | 'assetSource' | 'onInit'
 >): Promise<SQLiteDatabase> {
   if (
     databaseInstance?.promise != null &&
     databaseInstance?.databaseName === databaseName &&
+    databaseInstance?.directory === directory &&
     databaseInstance?.options === options &&
     databaseInstance?.onInit === onInit
   ) {
@@ -238,13 +259,20 @@ function getDatabaseAsync({
         db.closeAsync();
       })
       .then(() => {
-        return openDatabaseWithInitAsync({ databaseName, options, assetSource, onInit });
+        return openDatabaseWithInitAsync({
+          databaseName,
+          directory,
+          options,
+          assetSource,
+          onInit,
+        });
       });
   } else {
-    promise = openDatabaseWithInitAsync({ databaseName, options, assetSource, onInit });
+    promise = openDatabaseWithInitAsync({ databaseName, directory, options, assetSource, onInit });
   }
   databaseInstance = {
     databaseName,
+    directory,
     options,
     onInit,
     promise,
@@ -254,33 +282,42 @@ function getDatabaseAsync({
 
 async function openDatabaseWithInitAsync({
   databaseName,
+  directory,
   options,
   assetSource,
   onInit,
 }: Pick<
   SQLiteProviderProps,
-  'databaseName' | 'options' | 'assetSource' | 'onInit'
+  'databaseName' | 'directory' | 'options' | 'assetSource' | 'onInit'
 >): Promise<SQLiteDatabase> {
   if (assetSource != null) {
-    await importDatabaseFromAssetAsync(databaseName, assetSource);
+    await importDatabaseFromAssetAsync(databaseName, assetSource, directory);
   }
-  const database = await openDatabaseAsync(databaseName, options);
+  const database = await openDatabaseAsync(databaseName, options, directory);
   if (onInit != null) {
     await onInit(database);
   }
   return database;
 }
 
-async function importDatabaseFromAssetAsync(
+/**
+ * Imports an asset database into the SQLite database directory.
+ *
+ * Exposed only for testing purposes.
+ * @hidden
+ */
+export async function importDatabaseFromAssetAsync(
   databaseName: string,
-  assetSource: SQLiteProviderAssetSource
+  assetSource: SQLiteProviderAssetSource,
+  directory?: string
 ) {
   const asset = await Asset.fromModule(assetSource.assetId).downloadAsync();
   if (!asset.localUri) {
     throw new Error(`Unable to get the localUri from asset ${assetSource.assetId}`);
   }
+  const path = createDatabasePath(databaseName, directory);
   await ExpoSQLite.importAssetDatabaseAsync(
-    databaseName,
+    path,
     asset.localUri,
     assetSource.forceOverwrite ?? false
   );

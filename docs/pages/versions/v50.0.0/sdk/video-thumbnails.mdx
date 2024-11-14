@@ -10,7 +10,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-**`expo-video-thumbnails`** allows you to generate an image to serve as a thumbnail from a video file.
+`expo-video-thumbnails` allows you to generate an image to serve as a thumbnail from a video file.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -23,7 +23,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Video Thumbnails' dependencies={['expo-video-thumbnails']}>
 
 ```jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Button, View, Image, Text } from 'react-native';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 

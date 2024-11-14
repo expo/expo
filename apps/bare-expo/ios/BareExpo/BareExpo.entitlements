@@ -8,5 +8,9 @@
     <array>
       <string>Default</string>
     </array>
+    <key>com.apple.security.application-groups</key>
+    <array>
+      <string>group.dev.expo.Payments</string>
+    </array>
   </dict>
 </plist>

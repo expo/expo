@@ -2,6 +2,8 @@
 
 #import <EXDevMenu/DevMenuRCTBridge.h>
 
+#import <EXDevMenu/DevClientNoOpLoadingView.h>
+
 // The search path for the Swift generated headers are different
 // between use_frameworks and non_use_frameworks mode.
 #if __has_include(<EXDevMenuInterface/EXDevMenuInterface-Swift.h>)
@@ -76,15 +78,11 @@
     @"EXNativeModulesProxy",
     @"EXReactNativeEventEmitter",
     @"ExpoModulesCore",
-    @"ViewManagerAdapter_"
+    @"ViewManagerAdapter_",
+    @"EXDevLauncherDevMenu"
   ];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
-
-    if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
-      return true;
-    }
-
     for (NSString *allowedModule in allowedModules) {
       if ([clazzName hasPrefix:allowedModule]) {
         return true;
@@ -121,16 +119,30 @@
 
 @end
 
+@interface RCTAppDelegate ()
+
+- (Class)getModuleClassFromName:(const char *)name;
+
+@end
+
 @interface DevClientAppDelegate (DevMenuRCTAppDelegate)
 
 @end
 
 @implementation DevMenuRCTAppDelegate
 
-
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   return [[DevMenuRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
+}
+
+- (Class)getModuleClassFromName:(const char *)name
+{
+  // Overrides DevLoadingView as no-op when loading dev-menu bundle
+  if (strcmp(name, "DevLoadingView") == 0) {
+    return [DevClientNoOpLoadingView class];
+  }
+  return [super getModuleClassFromName:name];
 }
 
 @end

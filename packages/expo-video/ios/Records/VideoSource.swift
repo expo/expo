@@ -12,5 +12,8 @@ internal struct VideoSource: Record {
 
   @Field
   var metadata: VideoMetadata? = nil
+
+  @Field
+  var headers: [String: String]? = nil
 }
 // swiftlint:enable redundant_optional_initialization

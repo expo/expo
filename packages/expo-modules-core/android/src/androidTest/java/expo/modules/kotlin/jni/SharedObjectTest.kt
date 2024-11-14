@@ -3,6 +3,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectId
 import expo.modules.kotlin.sharedobjects.sharedObjectIdPropertyName
@@ -53,7 +54,7 @@ class SharedObjectTest {
     val sharedObject = callClass("SharedObjectExampleClass")
     val sharedObjectId = sharedObject.getObject().getProperty(sharedObjectIdPropertyName).getInt()
     val containSharedObject = jsiInterop
-      .appContextHolder
+      .runtimeContextHolder
       .get()
       ?.sharedObjectRegistry
       ?.pairs
@@ -94,13 +95,13 @@ class SharedObjectTest {
 
     // Get the native instance
     val nativeObject = jsiInterop
-      .appContextHolder
+      .runtimeContextHolder
       .get()
       ?.sharedObjectRegistry
-      ?.toNativeObject(jsObject)
+      ?.toNativeObjectOrNull(jsObject)
 
     // Send an event from the native object to JS
-    nativeObject?.sendEvent("test event", 1, 2, 3)
+    nativeObject?.emit("test event", 1, 2, 3)
 
     // Check the value that is set by the listener
     val total = evaluateScript("total")
@@ -109,7 +110,100 @@ class SharedObjectTest {
     Truth.assertThat(total.getInt()).isEqualTo(6)
   }
 
-  private class SharedObjectExampleClass : SharedObject()
+  @Test
+  fun should_be_able_to_throw_from_constructor() = withSingleModule({
+    Class("ThrowingSharedObject") {
+      Constructor {
+        throw CodedException("Code", "This is a test exception", null)
+      }
+    }
+  }) {
+    val exception = evaluateScript(
+      """
+      let exception = null;
+      try {
+        new $moduleRef.ThrowingSharedObject()
+      } catch (e) {
+        if (e instanceof global.ExpoModulesCore_CodedError) {
+          exception = e;
+        }
+      }
+      exception
+      """.trimIndent()
+    ).getObject()
+
+    Truth.assertThat(exception.getProperty("code").getString()).isEqualTo("Code")
+    Truth.assertThat(exception.getProperty("message").getString()).contains("This is a test exception")
+  }
+
+  @Test
+  fun should_be_able_to_return_new_instance_from_function() = withSingleModule({
+    Function("createSharedObject") {
+      SharedObjectExampleClass()
+    }
+    Class<SharedObjectExampleClass> {
+      Constructor { SharedObjectExampleClass() }
+    }
+  }) {
+    val hasCorrectPrototype = evaluateScript(
+      """
+      const sharedObjectFromFunction = $moduleRef.createSharedObject();
+      const sharedObjectFromConstructor = new $moduleRef.SharedObjectExampleClass();
+      sharedObjectFromFunction.prototype === sharedObjectFromConstructor.prototype;
+      """.trimIndent()
+    ).getBool()
+
+    Truth.assertThat(hasCorrectPrototype).isTrue()
+  }
+
+  @Test
+  fun should_call_start_observing_with_this() = withSingleModule({
+    Class<SharedObjectExampleClass> {
+      Constructor { SharedObjectExampleClass() }
+
+      Events("event")
+
+      Function("lastOnStartObserving") { self: SharedObjectExampleClass ->
+        self.lastOnStartObserving
+      }
+
+      Function("lastOnStopObserving") { self: SharedObjectExampleClass ->
+        self.lastOnStopObserving
+      }
+    }
+  }) {
+    val lastStartObserving = evaluateScript(
+      """
+      const sharedObject = new $moduleRef.SharedObjectExampleClass();
+      global.listener = sharedObject.addListener('event', () => {});
+      global.sharedObject = sharedObject;
+      sharedObject.lastOnStartObserving()
+      """.trimIndent()
+    ).getString()
+
+    val lastOnStopObserving = evaluateScript(
+      """
+      global.listener.remove();
+      global.sharedObject.lastOnStopObserving()
+      """.trimIndent()
+    ).getString()
+
+    Truth.assertThat(lastStartObserving).isEqualTo("event")
+    Truth.assertThat(lastOnStopObserving).isEqualTo("event")
+  }
+
+  private class SharedObjectExampleClass : SharedObject() {
+    var lastOnStartObserving = ""
+    var lastOnStopObserving = ""
+
+    override fun onStartListeningToEvent(eventName: String) {
+      lastOnStartObserving = eventName
+    }
+
+    override fun onStopListeningToEvent(eventName: String) {
+      lastOnStopObserving = eventName
+    }
+  }
 
   private fun withExampleSharedClass(
     block: SingleTestContext.() -> Unit
@@ -119,5 +213,5 @@ class SharedObjectTest {
         SharedObjectExampleClass()
       }
     }
-  }, block)
+  }, numberOfReloads = 1, block)
 }

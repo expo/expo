@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import path from 'path';
 
 import {
@@ -25,7 +25,6 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-application',
   // 'expo-av',
   // 'expo-background-fetch',
-  'expo-barcode-scanner',
   // 'expo-battery',
   // 'expo-blur',
   // 'expo-brightness',

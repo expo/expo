@@ -58,7 +58,7 @@ jobs:
         working-directory: packages/expo-dev-client
       - name: 💾 Store artifacts of build failures
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: expo-dev-client-latest-e2e-artifacts
           path: packages/expo-dev-client/artifacts

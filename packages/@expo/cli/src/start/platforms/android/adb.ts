@@ -37,6 +37,8 @@ export type Device = {
   isBooted: boolean;
   /** Is device authorized for developing. https://expo.fyi/authorize-android-device */
   isAuthorized: boolean;
+  /** The connection type to ADB, only available when `type: device` */
+  connectionType?: 'USB' | 'Network';
 };
 
 type DeviceContext = Pick<Device, 'pid'>;
@@ -101,29 +103,35 @@ export async function isPackageInstalledAsync(
 /**
  * @param device.pid Process ID of the Android device to launch.
  * @param props.launchActivity Activity to launch `[application identifier]/.[main activity name]`, ex: `com.bacon.app/.MainActivity`
+ * @param props.url Optional (dev client) URL to launch
  */
 export async function launchActivityAsync(
   device: DeviceContext,
   {
     launchActivity,
+    url,
   }: {
     launchActivity: string;
+    url?: string;
   }
 ) {
-  return openAsync(
-    adbArgs(
-      device.pid,
-      'shell',
-      'am',
-      'start',
-      // FLAG_ACTIVITY_SINGLE_TOP -- If set, the activity will not be launched if it is already running at the top of the history stack.
-      '-f',
-      '0x20000000',
-      // Activity to open first: com.bacon.app/.MainActivity
-      '-n',
-      launchActivity
-    )
-  );
+  const args: string[] = [
+    'shell',
+    'am',
+    'start',
+    // FLAG_ACTIVITY_SINGLE_TOP -- If set, the activity will not be launched if it is already running at the top of the history stack.
+    '-f',
+    '0x20000000',
+    // Activity to open first: com.bacon.app/.MainActivity
+    '-n',
+    launchActivity,
+  ];
+
+  if (url) {
+    args.push('-d', url);
+  }
+
+  return openAsync(adbArgs(device.pid, ...args));
 }
 
 /**
@@ -247,6 +255,8 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
     props: string[];
     type: Device['type'];
     isAuthorized: Device['isAuthorized'];
+    isBooted: Device['isBooted'];
+    connectionType?: Device['connectionType'];
   }[] = splitItems
     .slice(1, splitItems.length)
     .map((line) => {
@@ -254,10 +264,22 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       // authorized: ['FA8251A00719', 'device', 'usb:336592896X', 'product:walleye', 'model:Pixel_2', 'device:walleye', 'transport_id:4']
       // emulator: ['emulator-5554', 'offline', 'transport_id:1']
       const props = line.split(' ').filter(Boolean);
-
-      const isAuthorized = props[1] !== 'unauthorized';
       const type = line.includes('emulator') ? 'emulator' : 'device';
-      return { props, type, isAuthorized };
+
+      let connectionType;
+      if (type === 'device' && line.includes('usb:')) {
+        connectionType = 'USB';
+      } else if (type === 'device' && line.includes('_adb-tls-connect.')) {
+        connectionType = 'Network';
+      }
+
+      const isBooted = type === 'emulator' || props[1] !== 'offline';
+      const isAuthorized =
+        connectionType === 'Network'
+          ? line.includes('model:') // Network connected devices show `model:<name>` when authorized
+          : props[1] !== 'unauthorized';
+
+      return { props, type, isAuthorized, isBooted, connectionType };
     })
     .filter(({ props: [pid] }) => !!pid);
 
@@ -266,6 +288,7 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       type,
       props: [pid, ...deviceInfo],
       isAuthorized,
+      isBooted,
     } = props;
 
     let name: string | null = null;
@@ -289,13 +312,9 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       name = (await getAdbNameForDeviceIdAsync({ pid })) ?? '';
     }
 
-    return {
-      pid,
-      name,
-      type,
-      isAuthorized,
-      isBooted: true,
-    };
+    return props.connectionType
+      ? { pid, name, type, isAuthorized, isBooted, connectionType: props.connectionType }
+      : { pid, name, type, isAuthorized, isBooted };
   });
 
   return Promise.all(devicePromises);

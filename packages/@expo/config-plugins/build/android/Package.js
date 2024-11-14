@@ -74,7 +74,7 @@ function _warnings() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = (0, _debug().default)('expo:config-plugins:android:package');
 const withPackageGradle = config => {
   return (0, _androidPlugins().withAppBuildGradle)(config, config => {
@@ -107,7 +107,7 @@ function getCurrentPackageName(projectRoot, packageRoot) {
   return packagePathParts.join('.');
 }
 function getCurrentPackageForProjectFile(projectRoot, packageRoot, fileName, type) {
-  const filePath = (0, _glob().sync)(_path().default.join(projectRoot, `android/app/src/${type}/java/**/${fileName}.@(java|kt)`))[0];
+  const filePath = (0, _glob().globSync)(_path().default.join(projectRoot, `android/app/src/${type}/java/**/${fileName}.@(java|kt)`))[0];
   if (!filePath) {
     return null;
   }
@@ -158,7 +158,7 @@ async function renameJniOnDiskForType({
     return;
   }
   const jniRoot = _path().default.join(projectRoot, 'android', 'app', 'src', type, 'jni');
-  const filesToUpdate = [...(0, _glob().sync)('**/*', {
+  const filesToUpdate = [...(0, _glob().globSync)('**/*', {
     cwd: jniRoot,
     absolute: true
   })];
@@ -204,7 +204,7 @@ async function renamePackageOnDiskForType({
   });
 
   // Move everything from the old directory over
-  (0, _glob().sync)('**/*', {
+  (0, _glob().globSync)('**/*', {
     cwd: currentPackagePath
   }).forEach(relativePath => {
     const filepath = _path().default.join(currentPackagePath, relativePath);
@@ -231,7 +231,7 @@ async function renamePackageOnDiskForType({
       oldPathParts.pop();
     }
   }
-  const filesToUpdate = [...(0, _glob().sync)('**/*', {
+  const filesToUpdate = [...(0, _glob().globSync)('**/*', {
     cwd: newPackagePath,
     absolute: true
   })];

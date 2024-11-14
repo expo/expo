@@ -8,9 +8,63 @@
 
 ### 🐛 Bug fixes
 
-- Fixes jest spitting console error caused by ref stubbing. ([#29420](https://github.com/expo/expo/pull/29420) by [@aleqsio](https://github.com/aleqsio))
+### 💡 Others
+
+## 52.0.1 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0 — 2024-11-11
+
+### 🐛 Bug fixes
+
+- Update transform ignore patterns to replace deprecated Sentry SDK with current one. ([#32528](https://github.com/expo/expo/pull/32528) by [@KoenCa](https://github.com/KoenCa))
+
+## 52.0.0-preview.4 — 2024-11-05
 
 ### 💡 Others
+
+- Add mocks for internal native methods in splash screen ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+
+## 52.0.0-preview.3 — 2024-10-31
+
+### 💡 Others
+
+- Update SplashScreen api to add `hide` method. ([#32484](https://github.com/expo/expo/pull/32484) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 52.0.0-preview.2 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix mocking for requireOptionalNativeModule. ([#32412](https://github.com/expo/expo/pull/32412) by [@aleqsio](https://github.com/aleqsio))
+
+## 52.0.0-preview.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.0 — 2024-10-22
+
+### 🎉 New features
+
+- Add experimental `jest-expo/rsc` preset for testing React Server Components. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))
+- Load view mocks included in packages. ([#28157](https://github.com/expo/expo/pull/28157) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- Fix snapshot writing for RSC. ([#30589](https://github.com/expo/expo/pull/30589) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixes jest spitting console error caused by ref stubbing. ([#29420](https://github.com/expo/expo/pull/29420) by [@aleqsio](https://github.com/aleqsio))
+- Avoid adding typescript wildcard paths as jest module mapping. ([#29836](https://github.com/expo/expo/pull/29836) by [@byCedric](https://github.com/byCedric))
+- Add missing `fbemitter` dependency and `expo`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Mock files from the `src` folder instead of `build`. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
+- Rewrite experimental `jest-expo/rsc` matchers to Jest only matchers. ([#30710](https://github.com/expo/expo/pull/30710) by [@byCedric](https://github.com/byCedric))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 51.0.2 — 2024-05-16
 

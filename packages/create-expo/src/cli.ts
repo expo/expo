@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import { CLI_NAME } from './cmd';
 import { ExitError } from './error';
 import { Log } from './log';
+import { formatSelfCommand } from './resolvePackageManager';
 import { assertWithOptionsArgs, printHelp, resolveStringOrBooleanArgsAsync } from './utils/args';
 
 const debug = require('debug')('expo:init:cli') as typeof console.log;
@@ -32,13 +33,14 @@ async function run() {
   }
 
   if (args['--help']) {
+    const nameWithoutCreate = CLI_NAME.replace('create-', '');
     printHelp(
       `Creates a new Expo project`,
       chalk`npx ${CLI_NAME} {cyan <path>} [options]`,
       [
         `-y, --yes             Use the default options for creating a project`,
         `    --no-install      Skip installing npm packages or CocoaPods`,
-        chalk`-t, --template {gray [pkg]}  NPM template to use: blank, tabs, bare-minimum. Default: blank`,
+        chalk`-t, --template {gray [pkg]}  NPM template to use: default, blank, blank-typescript, tabs, bare-minimum. Default: default`,
         chalk`-e, --example {gray [name]}  Example name from {underline https://github.com/expo/examples}.`,
         `-v, --version         Version number`,
         `-h, --help            Usage info`,
@@ -46,20 +48,20 @@ async function run() {
       chalk`
     {gray To choose a template pass in the {bold --template} arg:}
 
-    {gray $} npm create expo-app {cyan --template}
+    {gray $} ${formatSelfCommand()} {cyan --template}
 
     {gray To choose an Expo example pass in the {bold --example} arg:}
 
-    {gray $} npm create expo-app {cyan --example}
-    {gray $} npm create expo-app {cyan --example with-router}
+    {gray $} ${formatSelfCommand()} {cyan --example}
+    {gray $} ${formatSelfCommand()} {cyan --example with-router}
 
     {gray The package manager used for installing}
     {gray node modules is based on how you invoke the CLI:}
 
-    {bold  npm:} {cyan npm create expo-app}
-    {bold yarn:} {cyan yarn create expo-app}
-    {bold pnpm:} {cyan pnpm create expo-app}
-    {bold  bun:} {cyan bunx create-expo-app}
+    {bold  npm:} {cyan npx ${CLI_NAME}}
+    {bold yarn:} {cyan yarn create ${nameWithoutCreate}}
+    {bold pnpm:} {cyan pnpm create ${nameWithoutCreate}}
+    {bold  bun:} {cyan bun create ${nameWithoutCreate}}
     `
     );
   }

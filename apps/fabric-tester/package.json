@@ -9,24 +9,24 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~51.0.0",
-    "expo-apple-authentication": "~6.4.0",
-    "expo-av": "~14.0.0",
-    "expo-blur": "~13.0.0",
-    "expo-camera": "~15.0.0",
-    "expo-dev-client": "~4.0.0",
-    "expo-image": "^1.0.0-alpha.4",
-    "expo-linear-gradient": "~13.0.0",
-    "expo-splash-screen": "~0.27.0",
-    "expo-status-bar": "~1.12.0",
-    "expo-updates": "~0.25.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native": "0.74.2",
-    "react-native-web": "~0.19.6"
+    "expo": "~52.0.0",
+    "expo-apple-authentication": "~7.0.0",
+    "expo-av": "~15.0.0",
+    "expo-blur": "~14.0.0",
+    "expo-camera": "~16.0.0",
+    "expo-dev-client": "~5.0.0",
+    "expo-image": "^2.0.0",
+    "expo-linear-gradient": "~14.0.0",
+    "expo-splash-screen": "~0.29.0",
+    "expo-status-bar": "~2.0.0",
+    "expo-updates": "~0.26.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.1",
+    "react-native-web": "~0.19.13"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.25.2"
   },
   "private": true,
   "expo": {

@@ -1,11 +1,9 @@
+'use client';
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ErrorBoundary = void 0;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
-const react_1 = __importDefault(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
@@ -14,8 +12,8 @@ let useMetroSymbolication;
 if (process.env.NODE_ENV === 'development') {
     const { LogBoxLog, parseErrorStack } = require('@expo/metro-runtime/symbolicate');
     useMetroSymbolication = function (error) {
-        const [logBoxLog, setLogBoxLog] = react_1.default.useState(null);
-        react_1.default.useEffect(() => {
+        const [logBoxLog, setLogBoxLog] = (0, react_1.useState)(null);
+        (0, react_1.useEffect)(() => {
             let isMounted = true;
             const stack = parseErrorStack(error.stack);
             const log = new LogBoxLog({
@@ -29,7 +27,7 @@ if (process.env.NODE_ENV === 'development') {
                 category: error.message,
                 componentStack: [],
             });
-            log.symbolicate('stack', (symbolicatedLog) => {
+            log.symbolicate('stack', () => {
                 if (isMounted) {
                     setLogBoxLog(log);
                 }
@@ -48,8 +46,8 @@ else {
 }
 let StackTrace;
 if (process.env.NODE_ENV === 'development') {
-    const { LogContext } = require('@expo/metro-runtime/build/error-overlay/Data/LogContext');
-    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/build/error-overlay/overlay/LogBoxInspectorStackFrames');
+    const { LogContext } = require('@expo/metro-runtime/src/error-overlay/Data/LogContext');
+    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/src/error-overlay/overlay/LogBoxInspectorStackFrames');
     StackTrace = function ({ logData }) {
         if (!logData?.symbolicated?.stack?.stack) {
             return null;
@@ -72,14 +70,14 @@ else {
 }
 function ErrorBoundary({ error, retry }) {
     const logBoxLog = useMetroSymbolication(error);
-    const inTabBar = react_1.default.useContext(bottom_tabs_1.BottomTabBarHeightContext);
+    const inTabBar = (0, react_1.useContext)(bottom_tabs_1.BottomTabBarHeightContext);
     const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
     return (<react_native_1.View style={styles.container}>
       <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
         <react_native_1.View style={{
             marginBottom: 12,
             gap: 4,
-            flexWrap: 'wrap',
+            flexWrap: process.env.EXPO_OS === 'web' ? 'wrap' : 'nowrap',
         }}>
           <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong
@@ -162,7 +160,6 @@ const styles = react_native_1.StyleSheet.create({
         color: 'white',
         fontSize: 14,
         marginBottom: 12,
-        // textAlign: "center",
     },
     link: {
         color: 'rgba(255,255,255,0.4)',

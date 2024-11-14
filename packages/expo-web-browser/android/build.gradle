@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '13.0.3'
+version = '14.0.1'
 
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -15,17 +15,17 @@ android {
   namespace "expo.modules.webbrowser"
   defaultConfig {
     versionCode 18
-    versionName '13.0.3'
+    versionName '14.0.1'
   }
 }
 
 dependencies {
   api "androidx.browser:browser:1.6.0"
 
-  implementation "androidx.core:core-ktx:1.7.0"
+  implementation "androidx.core:core-ktx:1.13.1"
 
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
   }
-  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation "org.robolectric:robolectric:4.11.1"
 }

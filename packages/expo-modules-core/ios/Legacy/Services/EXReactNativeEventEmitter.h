@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React/RCTEventEmitter.h>
+#import <React/React-Core-umbrella.h>
 
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXEventEmitterService.h>

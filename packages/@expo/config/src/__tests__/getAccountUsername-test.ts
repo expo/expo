@@ -1,4 +1,5 @@
-import { mkdirSync } from 'fs';
+import fs from 'fs';
+import { vol } from 'memfs';
 
 import { getAccountUsername } from '../getAccountUsername';
 import { getExpoHomeDirectory, getUserState } from '../getUserState';
@@ -6,11 +7,15 @@ import { getExpoHomeDirectory, getUserState } from '../getUserState';
 jest.mock('os');
 jest.mock('fs');
 
+// NOTE(cedric): this is a workaround to also mock `node:fs`
+jest.mock('node:fs', () => require('fs'));
+
 describe(getAccountUsername, () => {
   beforeEach(() => {
     delete process.env.EXPO_CLI_USERNAME;
     delete process.env.EAS_BUILD_USERNAME;
   });
+  afterEach(() => vol.reset());
 
   it(`gets the account name from EXPO_CLI_USERNAME`, () => {
     process.env.EXPO_CLI_USERNAME = 'expo-cli-username';
@@ -38,7 +43,7 @@ describe(getAccountUsername, () => {
     // Ensure the test doesn't interact with the developer's state.json
     expect(getExpoHomeDirectory()).toBe('/home/.expo');
     // Ensure the dir exists
-    await mkdirSync(getExpoHomeDirectory(), { recursive: true });
+    fs.mkdirSync(getExpoHomeDirectory(), { recursive: true });
     // Set a username...
     await getUserState().setAsync('auth', { username: 'bacon-boi' });
     // Check the username...

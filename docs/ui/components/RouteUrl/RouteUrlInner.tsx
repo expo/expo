@@ -1,4 +1,4 @@
-import { Link04Icon } from '@expo/styleguide-icons';
+import { Link04Icon } from '@expo/styleguide-icons/outline/Link04Icon';
 import { Children, type PropsWithChildren, useMemo } from 'react';
 
 import { type ProtocolType, getProtocol, TABS_MAPPING } from './utils';
@@ -47,7 +47,7 @@ export function RouteUrlInner({
       float
       title={
         <span className="select-all">
-          <span className="text-icon-secondary ">{parsedProtocol}</span>
+          <span className="text-icon-secondary">{parsedProtocol}</span>
           {inputUrl}
         </span>
       }

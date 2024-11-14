@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 
-import expo.modules.core.Promise;
+import expo.modules.kotlin.Promise;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.model.Notification;
@@ -34,7 +34,6 @@ public class SingleNotificationHandlerTask {
   private Handler mHandler;
   private EventEmitter mEventEmitter;
   private Notification mNotification;
-  private NotificationBehavior mBehavior;
   private Context mContext;
   private NotificationsHandler mDelegate;
 
@@ -88,17 +87,16 @@ public class SingleNotificationHandlerTask {
    * @param behavior Behavior requested by the app
    * @param promise  Promise to fulfill once the behavior is applied to the notification.
    */
-  /* package */ void handleResponse(NotificationBehavior behavior, final Promise promise) {
-    mBehavior = behavior;
+  /* package */ void processNotificationWithBehavior(final NotificationBehavior behavior, final Promise promise) {
     mHandler.post(new Runnable() {
       @Override
       public void run() {
-        NotificationsService.Companion.present(mContext, mNotification, mBehavior, new ResultReceiver(mHandler) {
+        NotificationsService.Companion.present(mContext, mNotification, behavior, new ResultReceiver(mHandler) {
           @Override
           protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
             if (resultCode == NotificationsService.SUCCESS_CODE) {
-              promise.resolve(null);
+              promise.resolve();
             } else {
               Exception e = (Exception) resultData.getSerializable(NotificationsService.EXCEPTION_KEY);
               promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed.", e);

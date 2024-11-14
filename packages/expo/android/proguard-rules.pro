@@ -1,5 +1,6 @@
 # For ReactActivityDelegateWrapper
 -keepclassmembers public class com.facebook.react.ReactActivityDelegate {
+  public *;
   protected *;
   private ReactDelegate mReactDelegate;
 }

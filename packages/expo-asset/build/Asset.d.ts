@@ -34,7 +34,7 @@ export declare class Asset {
      * asset. When running the app from Expo CLI during development, this URI points to Expo CLI's
      * server running on your computer and the asset is served directly from your computer. If you
      * are not using Classic Updates (legacy), this field should be ignored as we ensure your assets
-     * are on device before before running your application logic.
+     * are on device before running your application logic.
      */
     readonly uri: string;
     /**
@@ -76,7 +76,11 @@ export declare class Asset {
      * network URL
      * @return The [`Asset`](#asset) instance for the asset.
      */
-    static fromModule(virtualAssetModule: number | string): Asset;
+    static fromModule(virtualAssetModule: number | string | {
+        uri: string;
+        width: number;
+        height: number;
+    }): Asset;
     static fromMetadata(meta: AssetMetadata): Asset;
     static fromURI(uri: string): Asset;
     /**

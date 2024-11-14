@@ -7,7 +7,7 @@ public class VideoThumbnailsModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideoThumbnails")
 
-    AsyncFunction("getThumbnail", getVideoThumbnail).runOnQueue(.main)
+    AsyncFunction("getThumbnail", getVideoThumbnail)
   }
 
   internal func getVideoThumbnail(sourceFilename: URL, options: VideoThumbnailsOptions) throws -> [String: Any] {
@@ -17,8 +17,8 @@ public class VideoThumbnailsModule: Module {
       }
     }
 
-    let asset = AVURLAsset.init(url: sourceFilename, options: ["AVURLAssetHTTPHeaderFieldsKey": options.headers])
-    let generator = AVAssetImageGenerator.init(asset: asset)
+    let asset = AVURLAsset(url: sourceFilename, options: ["AVURLAssetHTTPHeaderFieldsKey": options.headers])
+    let generator = AVAssetImageGenerator(asset: asset)
 
     generator.appliesPreferredTrackTransform = true
     generator.requestedTimeToleranceAfter = CMTime.zero
@@ -32,7 +32,7 @@ public class VideoThumbnailsModule: Module {
     }
 
     let imgRef = try generator.copyCGImage(at: time, actualTime: nil)
-    let thumbnail = UIImage.init(cgImage: imgRef)
+    let thumbnail = UIImage(cgImage: imgRef)
     let savedImageUrl = try saveImage(image: thumbnail, quality: options.quality)
 
     return [
@@ -57,7 +57,7 @@ public class VideoThumbnailsModule: Module {
     }
 
     guard let fileUrl else {
-      throw ImageWriteFailedException("Unrecognized url \(fileUrl?.path)")
+      throw ImageWriteFailedException("Unrecognized url \(String(describing: fileUrl?.path))")
     }
 
     do {

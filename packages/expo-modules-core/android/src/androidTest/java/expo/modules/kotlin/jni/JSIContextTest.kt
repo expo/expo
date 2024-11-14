@@ -57,7 +57,7 @@ class JSIContextTest {
   }) {
     val promiseResult = callAsync("f")
     Truth.assertThat(promiseResult.isNumber()).isTrue()
-    Truth.assertThat(global().getProperty("promiseResult").getInt()).isEqualTo(20)
+    Truth.assertThat(getLastPromiseResult().getInt()).isEqualTo(20)
   }
 
   @Test

@@ -5,6 +5,5 @@ export class DevelopmentSession {
   ) {}
 
   startAsync = jest.fn(async () => ({}));
-  stopNotifying = jest.fn();
   closeAsync = jest.fn(async () => ({}));
 }

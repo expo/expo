@@ -1,5 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { ArrowCircleUpIcon, LayoutAlt03Icon } from '@expo/styleguide-icons';
+import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
+import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
 import * as React from 'react';
 
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
@@ -81,17 +82,17 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     );
 
     return (
-      <nav className="pt-14 pb-12 px-6 w-[280px]" data-sidebar>
+      <nav className="w-[280px] px-6 pb-12 pt-14" data-sidebar>
         <CALLOUT
           weight="medium"
-          className="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10">
+          className="absolute z-10 -mt-14 mb-2 flex min-h-[32px] w-[248px] select-none items-center gap-2 bg-default pb-2 pt-4">
           <LayoutAlt03Icon className="icon-sm" /> On this page
           <Button
             theme="quaternary"
             size="xs"
             className={mergeClasses(
               'ml-auto mr-2 px-2 transition-opacity duration-300',
-              !this.state.showScrollTop && 'opacity-0 pointer-events-none'
+              !this.state.showScrollTop && 'pointer-events-none opacity-0'
             )}
             onClick={e => this.handleTopClick(e)}>
             <ArrowCircleUpIcon className="icon-sm text-icon-secondary" />
@@ -138,16 +139,18 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
 
   private handleLinkClick = (
     event: React.MouseEvent<HTMLAnchorElement>,
-    { slug, ref }: Heading
+    { slug, ref, type }: Heading
   ) => {
     event.preventDefault();
 
     // disable sidebar scrolling until we reach that slug
     this.slugScrollingTo = slug;
 
+    const scrollOffset = type === 'inlineCode' ? 50 : 26;
+
     this.props.contentRef?.current?.getScrollRef().current?.scrollTo({
       behavior: isDynamicScrollAvailable() ? 'smooth' : 'instant',
-      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR - 28,
+      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR - scrollOffset,
     });
 
     if (history?.replaceState) {

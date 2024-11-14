@@ -3,7 +3,7 @@ title: Display a popup toast
 description: Learn how to create a toast popup in an Expo project.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 
 ## What is a toast
@@ -63,8 +63,8 @@ const styles = StyleSheet.create({
 
 The code above results in this on a Pixel 3a:
 
-<ImageSpotlight
-  style={{ maxWidth: 360 }}
+<ContentSpotlight
+  className="max-w-[360px]"
   alt="Pixel 3a showing toast message in an app"
   src="/static/images/ToastAndroid.png"
 />

@@ -4,13 +4,21 @@ sidebar_title: iOS production build
 description: Learn about the process of creating a production build for iOS and automating the release process.
 ---
 
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll create our example app's production version and submit it for testing using TestFlight. After that, we'll submit them for App Store review to get it on the App Store.
+
+<VideoBoxLink
+  videoId="-KZjr576tuE"
+  title="Watch: How to quickly publish to the App Store & Play Store with EAS Submit"
+/>
+
+---
 
 ## Prerequisites
 
@@ -82,26 +90,26 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 
 - In App Store Connect, under **Internal Testing**, and create a test group. This will allow us to invite test users.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Create a test user group in App Store Connect"
   src="/static/images/tutorial/eas/app-store-01.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 - Once the group is created, an email will be sent to all the test users.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Email sent to test users for internal testing"
   src="/static/images/tutorial/eas/app-store-02.jpg"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 - In the email, click **View in TestFlight,** accept the invite, and then tap **Install**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="TestFlight app showing the app to install"
   src="/static/images/tutorial/eas/app-store-03.jpg"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 After that, the app will download on our device so that we can test it.
@@ -118,28 +126,28 @@ To prepare our app for App Store submission, go to the **App Store** tab:
 
 - Provide metadata details, provide screenshots as per Apple's guidelines and also fill details under **General**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App Store Connect showing the app details and screenshots"
   src="/static/images/tutorial/eas/app-store-04.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 - Then, manually select the build.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App Store Connect showing the build selection for the app"
   src="/static/images/tutorial/eas/app-store-05.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 > **Complete App Store listing**: To prepare the app for store listing, see [Create app store assets](/guides/store-assets/) on how to create screenshots and previews.
 
 - Once our app is ready, click on **Submit to App Review**. After that, Apple will review our app, and if approved, the app will be available on the App Store.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App Store Connect showing the app submission for review"
   src="/static/images/tutorial/eas/app-store-06.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 </Step>

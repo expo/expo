@@ -1,6 +1,6 @@
 {
   "name": "expo-av",
-  "version": "14.0.5",
+  "version": "15.0.1",
   "description": "Expo universal module for Audio and Video playback",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,9 +32,17 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/av/",
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-web": {
+      "optional": true
+    }
   }
 }

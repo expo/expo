@@ -9,7 +9,7 @@ typealias DigestFunction = (
   _ md: UnsafeMutablePointer<UInt8>?
 ) -> UnsafeMutablePointer<UInt8>?
 
-internal enum DigestAlgorithm: String, EnumArgument {
+internal enum DigestAlgorithm: String, Enumerable {
   case md2 = "MD2"
   case md4 = "MD4"
   case md5 = "MD5"

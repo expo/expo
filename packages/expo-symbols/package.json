@@ -1,7 +1,7 @@
 {
   "name": "expo-symbols",
-  "version": "0.1.4",
-  "description": "Expo Symbols",
+  "version": "0.2.0",
+  "description": "Provides access to the SF Symbols library on iOS for React Native and Expo apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -17,7 +17,9 @@
     "react-native",
     "expo",
     "expo-symbols",
-    "symbols"
+    "symbols",
+    "sfsymbols",
+    "ios"
   ],
   "repository": {
     "type": "git",
@@ -34,7 +36,7 @@
     "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*"

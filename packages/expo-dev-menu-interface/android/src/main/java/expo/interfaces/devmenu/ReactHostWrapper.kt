@@ -11,28 +11,21 @@ import com.facebook.react.common.LifecycleState
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.runtime.ReactHostImpl
+import java.lang.reflect.Field
 
 /**
  * An abstract wrapper to host [ReactNativeHost] and [ReactHost],
  * so that call-sites do not have to handle the difference between legacy bridge and bridgeless mode.
  */
-class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHost: ReactHost?) {
+class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHostProvider: () -> ReactHost?) {
   lateinit var reactNativeHost: ReactNativeHost
   lateinit var reactHost: ReactHost
 
   init {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      this.reactHost = requireNotNull(reactHost)
+      this.reactHost = requireNotNull(reactHostProvider())
     } else {
       this.reactNativeHost = reactNativeHost
-    }
-  }
-
-  override fun hashCode(): Int {
-    return if (isBridgelessMode) {
-      reactHost.hashCode()
-    } else {
-      reactNativeHost.hashCode()
     }
   }
 
@@ -76,7 +69,12 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHost: ReactHost?) 
   val jsExecutorName: String
     get() {
       if (isBridgelessMode) {
-        return if (reactHost.jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
+        // Access private field using reflection
+        val jsEngineResolutionAlgorithmField: Field = reactHost::class.java.getDeclaredField("mJSEngineResolutionAlgorithm")
+        jsEngineResolutionAlgorithmField.isAccessible = true
+        val jsEngineResolutionAlgorithm = jsEngineResolutionAlgorithmField.get(reactHost) as? JSEngineResolutionAlgorithm
+
+        return if (jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
           "JSC"
         } else {
           "Hermes"
@@ -116,5 +114,25 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHost: ReactHost?) 
     } else {
       reactNativeHost.clear()
     }
+  }
+
+  override fun hashCode(): Int {
+    return if (isBridgelessMode) {
+      reactHost.hashCode()
+    } else {
+      reactNativeHost.hashCode()
+    }
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as ReactHostWrapper
+
+    if (reactNativeHost != other.reactNativeHost) return false
+    if (reactHost != other.reactHost) return false
+
+    return true
   }
 }

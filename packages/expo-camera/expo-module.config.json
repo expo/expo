@@ -2,12 +2,9 @@
   "name": "expo-camera",
   "platforms": ["ios", "android", "web"],
   "ios": {
-    "modules": ["CameraViewModule", "CameraViewLegacyModule"]
+    "modules": ["CameraViewModule"]
   },
   "android": {
-    "modules": [
-      "expo.modules.camera.CameraViewModule",
-      "expo.modules.camera.legacy.CameraViewLegacyModule"
-    ]
+    "modules": ["expo.modules.camera.CameraViewModule"]
   }
 }

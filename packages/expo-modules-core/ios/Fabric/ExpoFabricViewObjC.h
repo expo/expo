@@ -1,10 +1,15 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <UIKit/UIKit.h>
+#ifdef RCT_NEW_ARCH_ENABLED
 
-#ifdef RN_FABRIC_ENABLED
+#if !TARGET_OS_OSX
+#import <UIKit/UIKit.h>
+#endif // !TARGET_OS_OSX
+#import <React/React-Core-umbrella.h>
+
 #ifdef __cplusplus
-#import <React/RCTViewComponentView.h>
+
+#import <React/RCTViewComponentView.h> // Allows non-umbrella since it's coming from React-RCTFabric
 
 @interface ExpoFabricViewObjC : RCTViewComponentView
 @end
@@ -17,12 +22,11 @@
 
 #endif // __cplusplus
 #else // Paper
-#import <React/RCTView.h>
 
 @interface ExpoFabricViewObjC : RCTView
 @end
 
-#endif // RN_FABRIC_ENABLED
+#endif // !RCT_NEW_ARCH_ENABLED
 
 @class EXAppContext;
 

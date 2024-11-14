@@ -3,16 +3,24 @@ title: Splash screen and app icon
 description: Learn how to add a splash screen and app icon to your Expo project.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import Video from '~/components/plugins/Video';
-import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 A splash screen and an app icon are fundamental elements of a mobile app. They play an important role in the user experience and branding of the app. This guide provides steps on how to create and add them to your app.
 
+<VideoBoxLink
+  videoId="QSNkU7v0MPc"
+  title="Create an App Icon and Splash Screen"
+  description="See a detailed walkthrough on how to create an app icon and splash screen for an Expo project."
+/>
+
 ## Splash screen
+
+> **warning** This section uses the `splash` property from the app config. **Starting SDK 52**, using `expo-splash-screen` config plugin is recommended because using a full screen splash image on Android 12+ will not work so the following information for Android is outdated. See [`expo-splash-screen` reference](/versions/v52.0.0/sdk/splash-screen/#configuration) on how to use the config plugin and for up-to-date information.
 
 A splash screen, also known as a launch screen, is the first screen a user sees when they open your app. It stays visible while the app is loading. You can also control the behavior of when a splash screen disappears by using the native [SplashScreen API](/versions/latest/sdk/splash-screen).
 
@@ -23,10 +31,6 @@ The default splash screen in an Expo project is a blank white screen. It can be 
 ### Create a splash screen
 
 To create a splash image, you can use this [Figma template](https://www.figma.com/community/file/1155362909441341285). It provides a bare minimum design for an icon and splash images for Android and iOS.
-
-For an in-detail walkthrough, see the video below:
-
-<Video url="https://youtu.be/QSNkU7v0MPc" />
 
 <Collapsible summary="Dealing with various screen sizes for Android and iOS">
 
@@ -93,10 +97,10 @@ You can update this property's value to match your splash image's background col
 }
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Splash screen with background color"
   src="/static/images/splash-screen/backgroundColor-noodles.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 </Step>
@@ -109,10 +113,10 @@ Any splash image you provide gets resized to maintain its aspect ratio and fit t
 
 You can use two properties for resizing: `contain` (default) and `cover`. These properties work similar to the [`resizeMode`](https://reactnative.dev/docs/image/#resizemode) in React Native `<Image>`, as demonstrated below:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Splash screen resize mode"
   src="/static/images/splash-screen/resizeMode.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 Applying this to an example:
@@ -129,7 +133,7 @@ Applying this to an example:
 }
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Splash screen resize mode with logo"
   src="/static/images/splash-screen/resizeMode-noodles.png"
 />
@@ -149,7 +153,7 @@ You can configure any `splash` properties for a native platform using [`splash.a
 
 </Collapsible>
 
-<Collapsible summary="Using bare workflow?">
+<Collapsible summary="Not using prebuild?">
 
 If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _managed workflow_) to generate the native **android** and **iOS** directories, then changes in the app config will have no effect. For more information, see [how you can customize the configuration manually](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
@@ -187,10 +191,6 @@ An app's icon is what your app users see on their device's home screen and app s
 
 To create an app icon, you can use this [Figma template](https://www.figma.com/community/file/1155362909441341285). It provides a bare minimum design for an icon and splash images for Android and iOS.
 
-For an in-detail walkthrough, see the video below:
-
-<Video url="https://youtu.be/QSNkU7v0MPc" />
-
 </Step>
 
 <Step label="2">
@@ -198,8 +198,6 @@ For an in-detail walkthrough, see the video below:
 ### Export the icon image as a .png
 
 After creating an app icon, export it as **.png** and save it in the **assets/images** directory. By default, Expo uses **icon.png** as the file name. If you decide to use its file name, make sure to use that in the next step.
-
-After creating a splash screen, export it as a **.png** and save it in the **assets/images** directory. By default, Expo uses **splash.png** as the file name. If you decide to change the name of your splash screen file, make sure to use that in the next step.
 
 </Step>
 
@@ -239,7 +237,7 @@ You may also want to provide a separate icon for older Android devices that do n
 For iOS, your app's icon should follow the [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons/). You should also:
 
 - Use a **.png** file.
-- 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. If you are using a bare workflow, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
+- 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. In case of a bare React Native project, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
 - The icon must be exactly square. For example, a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
 

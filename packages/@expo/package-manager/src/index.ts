@@ -8,5 +8,4 @@ export * from './node/YarnPackageManager';
 export * from './node/BunPackageManager';
 
 export * from './utils/nodeManagers';
-export * from './utils/nodeWorkspaces';
 export { isYarnOfflineAsync } from './utils/yarn';

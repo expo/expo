@@ -4,14 +4,15 @@ sidebar_title: Configure with eas.json
 description: Learn how a project using EAS services is configured with eas.json.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BuildIcon } from '@expo/styleguide-icons';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-**eas.json** is the configuration file for EAS CLI and services. It is located at the root of your project next to the **package.json**. Configuration for EAS Build all belongs under the `build` key.
+**eas.json** is the configuration file for EAS CLI and services. It is generated when the [`eas build:configure` command](/build/setup/#configure-the-project) runs for the first time in your project and is located next to **package.json** at the root of your project. Configuration for EAS Build all belongs under the `build` key.
 
-The default configuration for **eas.json** in a new project is shown below:
+The default configuration for **eas.json** generated in a new project is shown below:
 
 ```json eas.json
 {
@@ -201,7 +202,7 @@ For more details on resources provided to each class, see [`android.resourceClas
 
 The base image for the build job controls the default versions for a variety of dependencies, such as Node.js, Yarn, and CocoaPods. You can override them using the specific named fields as described in the previous section using `resourceClass`. However, the image includes specific versions of tools that can't be explicitly set any other way, such as the operating system version and Xcode version.
 
-If you are using the Expo managed workflow, EAS Build will pick the appropriate image to use with a reasonable set of dependencies for the SDK version that you are building for. Otherwise, it is recommended to see the list of available images on [Build server infrastructure](/build-reference/infrastructure).
+If you are building an app with Expo, EAS Build will pick the appropriate image to use with a reasonable set of dependencies for the SDK version that you are building for. Otherwise, it is recommended to see the list of available images on [Build server infrastructure](/build-reference/infrastructure).
 
 ### Examples
 

@@ -142,7 +142,7 @@ describe('_getBundleStatusMessage', () => {
           'done'
         )
       )
-    ).toMatchInlineSnapshot(`"Android Bundled 100ms ./index.js (100 modules)"`);
+    ).toMatchInlineSnapshot(`"Android Bundled 0.0ms ./index.js (100 modules)"`);
   });
   it(`should format failed loading`, () => {
     expect(
@@ -161,7 +161,7 @@ describe('_getBundleStatusMessage', () => {
           'failed'
         )
       )
-    ).toMatchInlineSnapshot(`"Android Bundling failed 100ms ./index.js (100 modules)"`);
+    ).toMatchInlineSnapshot(`"Android Bundling failed 0.0ms ./index.js (100 modules)"`);
   });
 });
 

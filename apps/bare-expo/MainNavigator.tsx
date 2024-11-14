@@ -1,12 +1,12 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
 import React from 'react';
-import { Platform } from 'react-native';
+import { ToastAndroid, Platform } from 'react-native';
 import TestSuite from 'test-suite/AppNavigator';
-
-import Colors from './src/constants/Colors';
 
 type NavigationRouteConfigMap = React.ReactElement;
 
@@ -48,6 +48,8 @@ const Search = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 ) as any;
 
+const DevMenu = optionalRequire(() => require('expo-dev-menu')) as any;
+
 const nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
   routes.apis = NativeComponentList.apis.navigator;
@@ -87,16 +89,25 @@ const linking: LinkingOptions<object> = {
 };
 
 function TabNavigator() {
+  const { theme } = useTheme();
   return (
     <Tab.Navigator
+      id={undefined}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.activeTintColor,
-        tabBarInactiveTintColor: Colors.inactiveTintColor,
+        tabBarActiveTintColor: theme.text.info,
+        tabBarInactiveTintColor: theme.text.default,
+        tabBarStyle: {
+          backgroundColor: theme.background.default,
+          borderTopColor: theme.border.default,
+        },
       }}
-      safeAreaInsets={{
-        top: 5,
-      }}
+      safeAreaInsets={Platform.select({
+        android: {
+          bottom: 5,
+        },
+        default: undefined,
+      })}
       initialRouteName="test-suite">
       {Object.keys(routes).map((name) => (
         <Tab.Screen
@@ -109,13 +120,102 @@ function TabNavigator() {
     </Tab.Navigator>
   );
 }
+const PERSISTENCE_KEY = 'NAVIGATION_STATE_V1';
 
-export default () => (
-  <NavigationContainer linking={linking}>
-    <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
-      {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-      {Search && <Switch.Screen name="searchNavigator" component={Search} />}
-      <Switch.Screen name="main" component={TabNavigator} />
-    </Switch.Navigator>
-  </NavigationContainer>
-);
+export default () => {
+  const [isReady, setIsReady] = React.useState(Platform.OS === 'web');
+  const [initialState, setInitialState] = React.useState();
+
+  React.useEffect(() => {
+    if (isReady) {
+      return;
+    }
+    const setupDevMenuItems = async () => {
+      const key = 'PERSIST_NAV_STATE';
+      const persistenceEnabled = !!(await AsyncStorage.getItem(key));
+
+      // on Android, we need to keep the title of the item the same
+      // because updating dev menu items currently doesn't work
+      // TODO https://linear.app/expo/issue/ENG-12786
+      const label = Platform.select({
+        ios: persistenceEnabled
+          ? '✗  Disable navigation state persistence'
+          : '✓  Enable navigation state persistence',
+        default: 'Toggle navigation state persistence',
+      });
+      const devMenuItems = [
+        {
+          shouldCollapse: true,
+          name: label,
+          callback: async () => {
+            if (Platform.OS === 'android') {
+              // because the label is always the same, we show a toast to inform
+              // whether the persistence is going to be enabled or disabled
+              const message = persistenceEnabled
+                ? 'Navigation state persistence disabled'
+                : 'Navigation state persistence enabled';
+              ToastAndroid.show(message, ToastAndroid.LONG);
+            }
+            try {
+              if (persistenceEnabled) {
+                await AsyncStorage.removeItem(key);
+              } else {
+                await AsyncStorage.setItem(key, 'true');
+              }
+              // refresh the dev menu labels with latest preference
+              await setupDevMenuItems();
+            } catch (err) {
+              console.error(err);
+            }
+          },
+        },
+      ];
+
+      if (DevMenu) {
+        await DevMenu.registerDevMenuItems(devMenuItems);
+      }
+      return persistenceEnabled;
+    };
+    const restoreState = async () => {
+      const persistenceEnabled = await setupDevMenuItems();
+
+      if (persistenceEnabled) {
+        const initialUrl = await Linking.getInitialURL();
+
+        if (initialUrl == null) {
+          // Only restore state if there's no deep link
+          const savedStateString = await AsyncStorage.getItem(PERSISTENCE_KEY);
+          const state = savedStateString ? JSON.parse(savedStateString) : undefined;
+
+          if (state !== undefined) {
+            setInitialState(state);
+          }
+        }
+      }
+    };
+    restoreState()
+      .catch(console.error)
+      .finally(() => setIsReady(true));
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+  return (
+    <NavigationContainer
+      linking={linking}
+      initialState={initialState}
+      onStateChange={(state) => {
+        AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
+      }}>
+      <Switch.Navigator
+        screenOptions={{ headerShown: false }}
+        initialRouteName="main"
+        id={undefined}>
+        {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+        {Search && <Switch.Screen name="searchNavigator" component={Search} />}
+        <Switch.Screen name="main" component={TabNavigator} />
+      </Switch.Navigator>
+    </NavigationContainer>
+  );
+};

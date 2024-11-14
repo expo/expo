@@ -7,12 +7,13 @@ iconUrl: '/static/images/packages/expo-sqlite.png'
 platforms: ['android', 'ios']
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
 
 `expo-sqlite` gives your app access to a database that can be queried through a [WebSQL](https://www.w3.org/TR/webdatabase/)-like API. The database is persisted across restarts of your app.
 

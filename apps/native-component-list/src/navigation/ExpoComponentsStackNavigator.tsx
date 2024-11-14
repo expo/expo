@@ -1,13 +1,16 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useTheme } from 'ThemeProvider';
 import * as React from 'react';
 
-import getStackConfig from './StackConfig';
+import getStackNavWithConfig from './StackConfig';
 import { optionalRequire } from './routeBuilder';
+import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
+import { VideoScreens } from '../screens/Video/VideoScreen';
 import { ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
@@ -18,12 +21,6 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/DrawerLayoutAndroidScreen'));
     },
     name: 'DrawerLayoutAndroid',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/BarCodeScannerScreen'));
-    },
-    name: 'BarCodeScanner',
   },
   {
     getComponent() {
@@ -49,12 +46,6 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/BlurView/BlurViewScreen'));
     },
     name: 'BlurView',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenLegacy'));
-    },
-    name: 'Camera (legacy)',
   },
   {
     getComponent() {
@@ -139,13 +130,6 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/ActivityIndicatorScreen'));
     },
     name: 'ActivityIndicator',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/QRCodeScreen'));
-    },
-    name: 'QRCode',
-    options: { title: 'QR Code' },
   },
   {
     getComponent() {
@@ -345,12 +329,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GifScreen'));
-    },
-    name: 'Gif',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/SegmentedControlScreen'));
     },
     name: 'SegmentedControl',
@@ -399,7 +377,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AV/VideoScreen'));
+      return optionalRequire(() => require('../screens/Audio/AV/VideoScreen'));
     },
     name: 'Video (expo-av)',
   },
@@ -446,12 +424,20 @@ export const Screens: ScreenConfig[] = [
     },
     name: 'ClipboardPasteButton',
   },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/LivePhotoScreen'));
+    },
+    name: 'LivePhoto',
+  },
   ...ImageScreens,
+  ...VideoScreens,
 ];
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator {...props} {...getStackConfig(props)}>
+    <Stack.Navigator {...props} {...getStackNavWithConfig(props.navigation, theme)}>
       <Stack.Screen
         name="ExpoComponents"
         options={{ title: Layout.isSmallDevice ? 'Expo SDK Components' : 'Components in Expo SDK' }}
@@ -464,13 +450,13 @@ function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationPr
   );
 }
 
-const icon = ({ focused }: { focused: boolean }) => {
-  return <TabIcon name="react" focused={focused} />;
-};
 ExpoComponentsStackNavigator.navigationOptions = {
   title: 'Components',
   tabBarLabel: 'Components',
-  tabBarIcon: icon,
-  drawerIcon: icon,
+  tabBarIcon: ({ focused }: { focused: boolean }) => {
+    return <TabIcon name="react" focused={focused} />;
+  },
+  tabBarBackground: () => <TabBackground />,
 };
+
 export default ExpoComponentsStackNavigator;

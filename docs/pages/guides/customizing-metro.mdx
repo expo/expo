@@ -5,11 +5,12 @@ maxHeadingDepth: 4
 description: Learn about different Metro bundler configurations that can be customized.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-Expo CLI uses Metro during [`npx expo start`](/more/expo-cli/#develop) and [`npx expo export`](/more/expo-cli/#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native and used for large-scale applications such as Facebook and Instagram.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+
+Expo CLI uses [Metro](https://metrobundler.dev/) during [`npx expo start`](/more/expo-cli/#develop) and [`npx expo export`](/more/expo-cli/#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native and used for large-scale applications such as Facebook and Instagram.
 
 ## Customizing
 
@@ -57,11 +58,62 @@ config.resolver.assetExts.push(
 module.exports = config;
 ```
 
+## Aliases
+
+Sometimes you want an import to be redirected to another module or file. This is called an alias. Due to the way Metro bundles for multiple platforms simultaneously, we recommend using a custom resolver to handle aliases.
+
+In the following example, we'll add an alias for `old-module` to `new-module`:
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
+
+const ALIASES = {
+  'old-module': 'new-module',
+};
+
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  // Ensure you call the default resolver.
+  return context.resolveRequest(
+    context,
+    // Use an alias if one exists.
+    ALIASES[moduleName] ?? moduleName,
+    platform
+  );
+};
+
+module.exports = config;
+```
+
+If you want to only apply the alias on a certain platform, you can check the `platform` argument:
+
+```js metro.config.js
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (platform === 'web') {
+    // The alias will only be used when bundling for the web.
+    return context.resolveRequest(context, ALIASES[moduleName] ?? moduleName, platform);
+  }
+  // Ensure you call the default resolver.
+  return context.resolveRequest(context, moduleName, platform);
+};
+```
+
+You will see the changes the next time you restart the dev server. Resolutions are never cached and do not need the `--clear` flag to update. If you use a transform-based system like `babel-plugin-module-resolver`, you will need to clear the cache to see changes applied.
+
+<BoxLink
+  title="Customizing Metro resolution"
+  description="Learn more about advanced Metro resolving in your project."
+  href="/versions/latest/config/metro/#custom-resolving"
+  Icon={BookOpen02Icon}
+/>
+
 ## Bundle splitting
 
 From SDK 50, Expo CLI automatically splits bundles based on async imports (web-only).
 
-This technique can be used with Expo Router to automatically split the bundle based on route files in the **app** directory. It will only load the the code required for the current route, and defer loading additional JavaScript until the user navigates to different pages. See [Async Routes](/router/reference/async-routes) for more information.
+This technique can be used with Expo Router to automatically split the bundle based on route files in the **app** directory. It will only load the code required for the current route, and defer loading additional JavaScript until the user navigates to different pages. See [Async Routes](/router/reference/async-routes) for more information.
 
 ## Tree shaking
 
@@ -83,7 +135,7 @@ This technique can be used with Expo Router to automatically split the bundle ba
 
 ## Web support
 
-Since Expo SDK 46, Expo CLI has support for bundling websites using Metro. This is the same bundler used for native apps, and it is designed to be universal across platforms. It is the recommended bundler for web projects in Expo SDK 50 and greater.
+Expo CLI has support for bundling websites using Metro. This is the same bundler used for native apps, and it is designed to be universal across platforms. It is the recommended bundler for web projects in Expo SDK 50 and greater.
 
 ### Expo webpack versus Expo Metro
 
@@ -91,7 +143,7 @@ If you previously wrote your website using the deprecated `@expo/webpack-adapter
 
 ### Adding Web support to Metro
 
-To enable Metro web support, make sure your project is using Expo SDK 46 or newer. Then modify your [app config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
+Modify your [app config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
 
 ```json app.json
 {
@@ -122,8 +174,6 @@ You can overwrite the default **index.html** in Metro web by creating a **public
 In the future, this will work universally across platforms with EAS Update hosting. Currently, the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates do not support this feature.
 
 ## TypeScript
-
-> Available in SDK 49 and higher.
 
 Expo's Metro config supports the `compilerOptions.paths` and `compilerOptions.baseUrl` fields in the project's **tsconfig.json** (or **jsconfig.json**) file. This enables absolute imports and aliases in the project. See [TypeScript](/guides/typescript) guide for more information.
 

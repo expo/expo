@@ -31,15 +31,15 @@ body:
       required: false
   - type: dropdown
     attributes:
-      label: Did you reproduce this issue in a development build?
-      multiple: false
+      label: Where did you reproduce the issue?
+      multiple: true
       options:
-        - "Yes"
-        - No (tested in Expo Go)
-        - No (only happens in a standalone build)
-        - No (web-only issue)
+        - in a development build
+        - in Expo Go
+        - in a standalone app
+        - on web
       description: |
-        While we accept reports for possible bugs within Expo Go itself, if you are reporting an issue within your standalone app that is not reproducible in Expo Go, you should test your code in a [development build](https://docs.expo.dev/develop/development-builds/introduction/) before submitting an issue. A development build is a much more accurate representation of how your standalone app will work, and many such issues can be resolved by troubleshooting with a development build.
+        If you are reporting an issue within your standalone app that is not reproducible in Expo Go, you should test your code in a [development build](https://docs.expo.dev/develop/development-builds/introduction/) before submitting an issue. A development build is a much more accurate representation of how your standalone app will work, and many such issues can be resolved by troubleshooting with a development build.
     validations:
       required: true
   - type: markdown
@@ -59,11 +59,13 @@ body:
     attributes:
       label: Environment
       description: Run the `npx expo-env-info` command and paste its output in the field below.
+      render: text
     validations:
       required: true
   - type: textarea
     attributes:
       label: Expo Doctor Diagnostics
       description: Run the `npx expo-doctor@latest` command on your minimal reproduction and paste its output in the field below. If Doctor reports any errors, fix them before submitting the issue.
+      render: text
     validations:
       required: true

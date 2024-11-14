@@ -45,6 +45,7 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     strategy:
+      fail-fast: false
       matrix:
         shard: [1, 2, 3]
     steps:
@@ -135,7 +136,7 @@ jobs:
       - name: E2E (playwright) Test CLI
         run: yarn test:playwright
         working-directory: packages/@expo/cli
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report

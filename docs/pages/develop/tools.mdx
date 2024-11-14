@@ -3,12 +3,14 @@ title: Tools for development
 description: An overview of Expo tools and websites that will help you during various aspects of your project-building journey.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { CodeBrowserIcon } from '@expo/styleguide-icons/outline/CodeBrowserIcon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { CodeBrowserIcon, BookOpen02Icon } from '@expo/styleguide-icons';
-import Video from '~/components/plugins/Video';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 When you create a new project with Expo, learning about the following essential tools and websites can help you during your app development journey. This page provides an overview of a list of recommended tools.
 
@@ -47,9 +49,21 @@ To use EAS CLI, you need to install it globally on your local machine by running
 
 You can use `eas --help` in your terminal window to learn more about the available commands. For a complete reference, see [`eas-cli` npm page](https://www.npmjs.com/package/eas-cli).
 
+## Expo Doctor
+
+Expo Doctor is a command line tool used to diagnose issues in your Expo project. To use it, run the following command in your project's root directory:
+
+<Terminal cmd={['$ npx expo-doctor']} />
+
+This command performs checks and analyzes your project's codebase for common issues in [app config](/workflow/configuration/) and **package.json** files, dependency compatibility, configuration files, and the overall health of the project. Once the check is complete, Expo Doctor outputs the results.
+
+If Expo Doctor finds an issue, it provides a description of the problem along with advice on how to fix it or where to find help.
+
+You can also use `npx expo-doctor --help` to display usage information.
+
 ## Orbit
 
-Orbit is a macOS and Windows app that enables
+Orbit is a macOS and Windows app that enables:
 
 - Install and launch builds from EAS on physical devices and emulators.
 - Install and launch updates from EAS on Android Emulators or iOS Simulators.
@@ -57,7 +71,7 @@ Orbit is a macOS and Windows app that enables
 - Use local files to install and launch apps. Orbit supports any Android **.apk**, iOS Simulator compatible **.app**, or ad hoc signed apps.
 - See a list of pinned projects from your EAS dashboard.
 
-<Video file="orbit/basic-features.mp4" />
+<ContentSpotlight file="orbit/basic-features.mp4" />
 
 ### Installation
 

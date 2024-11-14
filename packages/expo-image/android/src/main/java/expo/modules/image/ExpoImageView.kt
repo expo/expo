@@ -161,8 +161,8 @@ class ExpoImageView(
     borderDrawable.setBorderWidth(position, width)
   }
 
-  internal fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
-    borderDrawable.setBorderColor(position, rgb, alpha)
+  internal fun setBorderColor(position: Int, rgb: Int) {
+    borderDrawable.setBorderColor(position, rgb)
   }
 
   internal fun setBorderStyle(style: String?) {
@@ -211,14 +211,14 @@ class ExpoImageView(
     super.onDraw(canvas)
     // Draw borders on top of the background and image
     if (borderDrawableLazyHolder.isInitialized()) {
-      val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) {
+      val newLayoutDirection = if (I18nUtil.instance.isRTL(context)) {
         LAYOUT_DIRECTION_RTL
       } else {
         LAYOUT_DIRECTION_LTR
       }
 
       borderDrawable.apply {
-        resolvedLayoutDirection = layoutDirection
+        layoutDirection = newLayoutDirection
         setBounds(0, 0, width, height)
         draw(canvas)
       }

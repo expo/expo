@@ -3,10 +3,9 @@ title: Use TypeScript
 description: An in-depth guide on configuring an Expo project with TypeScript.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Step } from '~/ui/components/Step';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
 Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). The JavaScript interface of Expo SDK is written in TypeScript.
@@ -90,7 +89,7 @@ The default configuration in **tsconfig.json** is user-friendly and encourages a
 
 <Step label="4">
 
-### (Optional) Path aliases
+### Path aliases (Optional)
 
 Expo CLI supports [path aliases](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping) in **tsconfig.json** automatically. It allows importing modules with custom aliases instead of relative paths.
 
@@ -106,22 +105,6 @@ For example, to import `Button` component from **src/components/Button.tsx** usi
   }
 }
 ```
-
-<Collapsible summary="Required configuration to enable path aliases for SDK 49">
-
-Set `tsconfigPaths` to `true` to enable path aliases in the project's [app config](/workflow/configuration/):
-
-```json app.json
-{
-  "expo": {
-    "experiments": {
-      "tsconfigPaths": true
-    }
-  }
-}
-```
-
-</Collapsible>
 
 <Collapsible summary="Disable path aliases for SDK 50 and above">
 
@@ -153,7 +136,7 @@ When using path aliases, consider the following:
 
 <Step label="5">
 
-### (Optional) Absolute imports
+### Absolute imports (Optional)
 
 To enable absolute imports from a project's root directory, define [`compilerOptions.baseUrl`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) the **tsconfig.json** file:
 
@@ -170,22 +153,6 @@ For example, setting the above configuration allows importing `Button` component
 ```tsx
 import Button from 'src/components/Button';
 ```
-
-<Collapsible summary="Required configuration to enable absolute imports for SDK 49">
-
-Set `tsconfigPaths` to `true` to enable absolute imports in the project's [app config](/workflow/configuration/):
-
-```json app.json
-{
-  "expo": {
-    "experiments": {
-      "tsconfigPaths": true
-    }
-  }
-}
-```
-
-</Collapsible>
 
 #### Considerations
 
@@ -277,7 +244,7 @@ export default config;
 
 ## Other TypeScript features
 
-Some language features may require additional configuration. For example, if want to use decorators you'll need to add the `experimentalDecorators` option. For more information on the available properties see the [TypeScript compiler options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) documentation.
+Some language features may require additional configuration. For example, if you want to use decorators you'll need to add the `experimentalDecorators` option. For more information on the available properties see the [TypeScript compiler options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) documentation.
 
 ## Learn how to use TypeScript
 

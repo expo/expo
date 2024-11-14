@@ -8,15 +8,17 @@ platforms: ['android', 'ios']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline } from '~/ui/components/Snippet';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
+
+Additionally, it provides methods to launch the [system-provided calendar UI](#launching-system-provided-calendar-dialogs) to allow user view or edit events. On Android, these methods start the system calendar app using an Intent. On iOS, they present either [`EKEventViewController`](https://developer.apple.com/documentation/eventkitui/ekeventviewcontroller) or [`EKEventEditViewController`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewcontroller) as a modal.
 
 ## Installation
 
@@ -73,7 +75,7 @@ Learn how to configure the native projects in the [installation instructions in 
 <SnackInline label='Basic Calendar usage' dependencies={['expo-calendar']}>
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, View, Text, Button, Platform } from 'react-native';
 import * as Calendar from 'expo-calendar';
 
@@ -138,13 +140,21 @@ const styles = StyleSheet.create({
 import * as Calendar from 'expo-calendar';
 ```
 
-<APISection packageName="expo-calendar" apiName="Calendar" />
+<APISection
+  packageName="expo-calendar"
+  apiName="Calendar"
+  headersMapping={{
+    systemProvidedUI: 'Launching system-provided calendar dialogs',
+  }}
+/>
 
 ## Permissions
 
 ### Android
 
-You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+If you only intend to use the [system-provided calendar UI](#launching-system-provided-calendar-dialogs), you don't need to request any permissions.
+
+Otherwise, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
 
 <AndroidPermissions permissions={['READ_CALENDAR', 'WRITE_CALENDAR']} />
 

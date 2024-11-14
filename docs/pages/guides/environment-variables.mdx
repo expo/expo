@@ -4,14 +4,12 @@ sidebar_title: Environment variables
 description: Learn how to use environment variables in an Expo project.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Terminal } from '~/ui/components/Snippet';
 
 Environment variables are key-value pairs configured outside your source code that allow your app to behave differently depending on the environment. For example, you can enable or disable certain features when building a test version of your app, or switch to a different API endpoint when building for production.
 
 The Expo CLI will automatically load environment variables with an `EXPO_PUBLIC_` prefix from **.env** files for use within your JavaScript code whenever you use the Expo CLI, such as when running `npx expo start` to start your app in local development mode.
-
-> Available in SDK 49 and higher.
 
 ## Reading environment variables from .env files
 
@@ -113,7 +111,7 @@ Then update your code to use `process.env.EXPO_PUBLIC_[VARNAME]`:
 
 ### From babel-plugin-transform-inline-environment-variables
 
-Using a Babel plugin to transform your environment variable references in your code is similar to how Expo environment variables work. Set your variables inside of an **.env** file and update your variable names to use the `EXPO_PUBLIC_` prefix:
+Using a Babel plugin to transform your environment variable references in your code is similar to how Expo environment variables work. Set your variables inside a **.env** file and update your variable names to use the `EXPO_PUBLIC_` prefix:
 
 ```diff
 - const apiUrl = process.env.API_URL;

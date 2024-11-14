@@ -3,8 +3,8 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import { persistMetroAssetsAsync } from './persistMetroAssets';
-import type { Asset, ExportAssetMap, BundleOutput } from './saveAssets';
+import { getAssetIdForLogGrouping, persistMetroAssetsAsync } from './persistMetroAssets';
+import type { Asset, BundleAssetWithFileHashes, BundleOutput, ExportAssetMap } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
@@ -18,9 +18,17 @@ function mapAssetHashToAssetString(asset: Asset, hash: string) {
 export function assetPatternsToBeBundled(
   exp: ExpoConfig & { extra?: { updates?: { assetPatternsToBeBundled?: string[] } } }
 ): string[] | undefined {
-  return exp?.extra?.updates?.assetPatternsToBeBundled?.length
-    ? exp?.extra?.updates?.assetPatternsToBeBundled
-    : undefined;
+  // new location for this key
+  if (exp.updates?.assetPatternsToBeBundled?.length) {
+    return exp.updates.assetPatternsToBeBundled;
+  }
+
+  // old, untyped location for this key. we may want to change this to throw in a few SDK versions (deprecated as of SDK 52).
+  if (exp.extra?.updates?.assetPatternsToBeBundled?.length) {
+    return exp.extra.updates.assetPatternsToBeBundled;
+  }
+
+  return undefined;
 }
 
 /**
@@ -90,12 +98,13 @@ export function resolveAssetPatternsToBeBundled<T extends ExpoConfig>(
   exp: T,
   assets: Asset[]
 ): Set<string> | undefined {
-  if (!assetPatternsToBeBundled(exp)) {
+  const assetPatternsToBeBundledForConfig = assetPatternsToBeBundled(exp);
+  if (!assetPatternsToBeBundledForConfig) {
     return undefined;
   }
   const bundledAssets = setOfAssetsToBeBundled(
     assets,
-    assetPatternsToBeBundled(exp) ?? ['**/*'],
+    assetPatternsToBeBundledForConfig,
     projectRoot
   );
   return bundledAssets;
@@ -137,7 +146,7 @@ export async function exportAssetsAsync(
   if (web) {
     // Save assets like a typical bundler, preserving the file paths on web.
     // TODO: Update React Native Web to support loading files from asset hashes.
-    await persistMetroAssetsAsync(web.assets, {
+    await persistMetroAssetsAsync(projectRoot, web.assets, {
       files,
       platform: 'web',
       outputDirectory: outputDir,
@@ -145,7 +154,7 @@ export async function exportAssetsAsync(
     });
   }
 
-  const assets: Asset[] = uniqBy(
+  const assets: BundleAssetWithFileHashes[] = uniqBy(
     Object.values(bundles).flatMap((bundle) => bundle!.assets),
     (asset) => asset.hash
   );
@@ -176,11 +185,7 @@ export async function exportAssetsAsync(
 
     // Add assets to copy.
     filteredAssets.forEach((asset) => {
-      const assetId =
-        'fileSystemLocation' in asset
-          ? path.relative(projectRoot, path.join(asset.fileSystemLocation, asset.name)) +
-            (asset.type ? '.' + asset.type : '')
-          : undefined;
+      const assetId = getAssetIdForLogGrouping(projectRoot, asset);
 
       asset.files.forEach((fp: string, index: number) => {
         const hash = asset.fileHashes[index];

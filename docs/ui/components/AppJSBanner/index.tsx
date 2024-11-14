@@ -1,6 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
-import isBefore from 'date-fns/isBefore';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { isBefore } from 'date-fns/isBefore';
 import { useRouter } from 'next/compat/router';
 
 import { AppJSIcon } from './AppJSIcon';
@@ -20,14 +20,14 @@ export function AppJSBanner() {
   return (
     <div
       className={mergeClasses(
-        'relative flex items-center justify-between gap-3 py-4 px-6 overflow-hidden rounded-lg mt-6 mb-4',
+        'relative mb-4 mt-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg px-6 py-4',
         'bg-appjs bg-cover bg-left bg-no-repeat',
         'border border-[#03c] dark:border-[#1e51e7]',
         'max-md-gutters:flex-wrap'
       )}>
       <div className="flex items-center gap-4">
         <div className="relative z-10 p-2 max-sm-gutters:hidden">
-          <div className="absolute inset-0 rounded-md bg-[#1e51e7] asset-sm-shadow" />
+          <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#1e51e7]" />
           <AppJSIcon className="icon-lg relative z-10 text-palette-white" />
         </div>
         <div className="relative grid grid-cols-1 gap-0.5">
@@ -44,7 +44,7 @@ export function AppJSBanner() {
           openInNewTab
           rightSlot={<ArrowUpRightIcon className="icon-xs text-palette-white opacity-75" />}
           className={mergeClasses(
-            'gap-1.5 border-[#5d82ff] bg-[#1e51e7] text-palette-white shadow-none asset-sm-shadow',
+            'asset-sm-shadow gap-1.5 border-[#5d82ff] bg-[#1e51e7] text-palette-white shadow-none',
             'hocus:bg-[#2b5ef3]'
           )}>
           Learn More

@@ -1,7 +1,6 @@
 import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
 import chalk from 'chalk';
-import { IOptions as GlobOptions } from 'glob';
-import glob from 'glob-promise';
+import { glob, GlobOptions } from 'glob';
 import ora from 'ora';
 
 import { EXPO_DIR } from './Constants';
@@ -13,7 +12,7 @@ export { SpawnResult, SpawnOptions };
  */
 export function spawnAsync(
   command: string,
-  args: Readonly<string[]> = [],
+  args: readonly string[] = [],
   options: SpawnOptions = {}
 ): SpawnPromise<SpawnResult> {
   return basicSpawnAsync(command, args, {
@@ -28,7 +27,7 @@ export function spawnAsync(
  */
 export async function spawnJSONCommandAsync<T = object>(
   command: string,
-  args: Readonly<string[]> = [],
+  args: readonly string[] = [],
   options: SpawnOptions = {}
 ): Promise<T> {
   const child = await spawnAsync(command, args, options);
@@ -118,7 +117,7 @@ export function execAll(rgx: RegExp, str: string, index: number = 0): string[] {
 export async function searchFilesAsync(
   rootPath: string,
   patterns: string | string[],
-  options?: GlobOptions
+  options?: Omit<GlobOptions, 'withFileTypes'>
 ): Promise<Set<string>> {
   const files = await Promise.all(
     arrayize(patterns).map((pattern) =>

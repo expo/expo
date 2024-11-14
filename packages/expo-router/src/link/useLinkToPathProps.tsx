@@ -1,12 +1,14 @@
-import * as React from 'react';
+import { MouseEvent } from 'react';
 import { GestureResponderEvent, Platform } from 'react-native';
 
-import { appendBaseUrl } from '../fork/getPathFromState';
+import * as expo from '../fork/getPathFromState-forks';
 import { useExpoRouter } from '../global-state/router-store';
+import { LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
+import { emitDomLinkEvent } from './useDomComponentNavigation';
 
 function eventShouldPreventDefault(
-  e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
+  e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent
 ): boolean {
   if (e?.defaultPrevented) {
     return false;
@@ -29,28 +31,41 @@ function eventShouldPreventDefault(
   return false;
 }
 
-export default function useLinkToPathProps(props: { href: string; event?: string }) {
+type UseLinkToPathPropsOptions = LinkToOptions & {
+  href: string;
+};
+
+export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPropsOptions) {
   const { linkTo } = useExpoRouter();
 
-  const onPress = (e?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
-    let shouldHandle = false;
-
-    if (Platform.OS !== 'web' || !e) {
-      shouldHandle = e ? !e.defaultPrevented : true;
-    } else if (eventShouldPreventDefault(e)) {
-      e.preventDefault();
-      shouldHandle = true;
-    }
-
-    if (shouldHandle) {
-      linkTo(props.href, props.event);
+  const onPress = (event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
+    if (shouldHandleMouseEvent(event)) {
+      if (emitDomLinkEvent(href, options)) {
+        return;
+      }
+      linkTo(href, options);
     }
   };
 
   return {
     // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
-    href: appendBaseUrl(stripGroupSegmentsFromPath(props.href) || '/'),
+    href: expo.appendBaseUrl(stripGroupSegmentsFromPath(href) || '/'),
     role: 'link' as const,
     onPress,
   };
+}
+
+export function shouldHandleMouseEvent(
+  event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent
+) {
+  if (Platform.OS !== 'web') {
+    return !event?.defaultPrevented;
+  }
+
+  if (event && eventShouldPreventDefault(event)) {
+    event.preventDefault();
+    return true;
+  }
+
+  return false;
 }

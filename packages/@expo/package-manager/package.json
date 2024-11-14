@@ -1,6 +1,6 @@
 {
   "name": "@expo/package-manager",
-  "version": "1.5.2",
+  "version": "1.6.1",
   "description": "A library for installing and finding packages in a project",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,16 +37,16 @@
     "build"
   ],
   "dependencies": {
-    "@expo/json-file": "^8.3.0",
+    "@expo/json-file": "^9.0.0",
     "@expo/spawn-async": "^1.7.2",
     "ansi-regex": "^5.0.0",
     "chalk": "^4.0.0",
     "find-up": "^5.0.0",
-    "find-yarn-workspace-root": "~2.0.0",
     "js-yaml": "^3.13.1",
-    "micromatch": "^4.0.2",
-    "npm-package-arg": "^7.0.0",
+    "micromatch": "^4.0.8",
+    "npm-package-arg": "^11.0.0",
     "ora": "^3.4.0",
+    "resolve-workspace-root": "^2.0.0",
     "split": "^1.0.1",
     "sudo-prompt": "9.1.1"
   },
@@ -54,9 +54,8 @@
     "@types/js-yaml": "^3.12.5",
     "@types/micromatch": "^4.0.2",
     "@types/npm-package-arg": "^6.1.0",
-    "@types/rimraf": "^3.0.0",
     "@types/split": "^1.0.0",
-    "expo-module-scripts": "^3.3.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"

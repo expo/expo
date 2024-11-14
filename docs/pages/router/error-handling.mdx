@@ -3,22 +3,21 @@ title: Error handling
 description: Learn how to handle unmatched routes and errors in your app when using Expo Router.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { APIBox } from '~/components/plugins/APIBox';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 This guide specifies how to handle unmatched routes and errors in your app when using Expo Router.
 
 ## Unmatched routes
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An example of unmatched routes displayed on all platforms."
   src="/static/images/expo-router/unmatched.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 Native apps don't have a server so there are technically no 404s. However, if you're implementing a router universally, then it makes sense to handle missing routes. This is done automatically for each app, but you can also customize it.
 
-```js app/+not-found.js
+```tsx app/+not-found.tsx
 import { Unmatched } from 'expo-router';
 export default Unmatched;
 ```
@@ -29,25 +28,26 @@ This will render the default `Unmatched`. You can export any component you want 
 
 Expo Router enables fine-tuned error handling to enable a more opinionated data-loading strategy in the future.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Using ErrorBoundary in Expo Router to catch errors in a route component."
   src="/static/images/expo-router/error-boundaries.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
-You can export a nested `ErrorBoundary` component from any route to intercept and format component-level errors using [React Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary):
+You can export a nested [`ErrorBoundary`](/versions/v52.0.0/sdk/router/#errorboundary) component from any route to intercept and format component-level errors using [React Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary):
 
 {/* prettier-ignore */}
-```jsx app/home.tsx
+```tsx app/home.tsx
 import { View, Text } from 'react-native';
+import { type ErrorBoundaryProps } from 'expo-router';
 
 /* @info */
-export function ErrorBoundary(props: ErrorBoundaryProps) {
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 /* @end */
   return (
     <View style={{ flex: 1, backgroundColor: "red" }}>
-      <Text>{props.error.message}</Text>
-      <Text onPress={props.retry}>Try Again?</Text>
+      <Text>{error.message}</Text>
+      <Text onPress={retry}>Try Again?</Text>
     </View>
   );
 }
@@ -57,7 +57,7 @@ export default function Page() { ... }
 
 When you export an `ErrorBoundary` the route will be wrapped with a React Error Boundary effectively:
 
-```jsx Virtual
+```tsx Virtual
 function Route({ ErrorBoundary, Component }) {
   return (
     <Try catch={ErrorBoundary}>
@@ -67,29 +67,7 @@ function Route({ ErrorBoundary, Component }) {
 }
 ```
 
-When `ErrorBoundary` is not present, the error will be thrown to the nearest parent's `ErrorBoundary`.
-
-## API
-
-<APIBox header="ErrorBoundaryProps">
-
-Each `ErrorBoundary` is passed the following props:
-
-- **error:** `Error` &mdash; The error that was thrown.
-- **retry:** `() => Promise<void>` &mdash; A function that will rerender the route component.
-
-</APIBox>
-
-<APIBox header="ErrorBoundary">
-
-You can also use the default `ErrorBoundary` component for a quick UI:
-
-```js app/home.tsx
-// Re-export the default UI
-export { ErrorBoundary } from 'expo-router';
-```
-
-</APIBox>
+When `ErrorBoundary` is not present, the error will be thrown to the nearest parent's `ErrorBoundary` and accepts [`error`](/versions/v52.0.0/sdk/router/#error) and [`retry`](/versions/v52.0.0/sdk/router/#retry) props.
 
 ### Work in progress
 

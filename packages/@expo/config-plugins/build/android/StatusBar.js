@@ -37,13 +37,13 @@ function _androidPlugins() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 // https://developer.android.com/reference/android/R.attr#colorPrimaryDark
 const COLOR_PRIMARY_DARK_KEY = 'colorPrimaryDark';
-// https://developer.android.com/reference/android/R.attr#windowTranslucentStatus
-const WINDOW_TRANSLUCENT_STATUS = 'android:windowTranslucentStatus';
 // https://developer.android.com/reference/android/R.attr#windowLightStatusBar
 const WINDOW_LIGHT_STATUS_BAR = 'android:windowLightStatusBar';
+// https://developer.android.com/reference/android/R.attr#statusBarColor
+const STATUS_BAR_COLOR = 'android:statusBarColor';
 const withStatusBar = config => {
   config = withStatusBarColors(config);
   config = withStatusBarStyles(config);
@@ -72,26 +72,18 @@ function setStatusBarStyles(config, styles) {
   const hexString = getStatusBarColor(config);
   const floatElement = getStatusBarTranslucent(config);
   styles = (0, _Styles().assignStylesValue)(styles, {
-    parent: (0, _Styles().getAppThemeLightNoActionBarGroup)(),
+    parent: (0, _Styles().getAppThemeGroup)(),
     name: WINDOW_LIGHT_STATUS_BAR,
-    targetApi: '23',
     value: 'true',
     // Default is light-content, don't need to do anything to set it
     add: getStatusBarStyle(config) === 'dark-content'
   });
   styles = (0, _Styles().assignStylesValue)(styles, {
-    parent: (0, _Styles().getAppThemeLightNoActionBarGroup)(),
-    name: WINDOW_TRANSLUCENT_STATUS,
-    value: 'true',
-    // translucent status bar set in theme
-    add: floatElement
-  });
-  styles = (0, _Styles().assignStylesValue)(styles, {
-    parent: (0, _Styles().getAppThemeLightNoActionBarGroup)(),
-    name: COLOR_PRIMARY_DARK_KEY,
-    value: `@color/${COLOR_PRIMARY_DARK_KEY}`,
+    parent: (0, _Styles().getAppThemeGroup)(),
+    name: STATUS_BAR_COLOR,
+    value: floatElement ? '@android:color/transparent' : hexString ?? '@color/colorPrimaryDark',
     // Remove the color if translucent is used
-    add: !!hexString
+    add: floatElement || !!hexString
   });
   return styles;
 }

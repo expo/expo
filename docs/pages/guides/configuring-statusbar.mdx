@@ -3,16 +3,16 @@ title: Configuring the status bar
 description: Learn how to configure the status bar using expo-status-bar library.
 ---
 
-import { CODE } from '~/ui/components/Text';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { APIBox } from '~/components/plugins/APIBox';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { CODE } from '~/ui/components/Text';
 
 The status bar is a small detail that can make a big difference in the overall feel and perceived level of polish of your app by users. When you have a white status bar on the white background, you know something isn't going quite right.
 
 This guide provides the tools to configure the status bar for your Android and iOS apps.
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/status-bar-style-comparison.jpg"
   alt="A comparison of good and bad status bar styling"
 />
@@ -95,7 +95,7 @@ export default function Playlists() {
 }
 ```
 
-<Collapsible summary={<span>How is <CODE>expo-status-bar</CODE> different from the StatusBar component included in React Native?</span>}>
+<Collapsible summary={<>How is <CODE>expo-status-bar</CODE> different from the StatusBar component included in React Native?</>}>
 
 `expo-status-bar` builds on top of the `StatusBar` component that React Native provides to give you better defaults when you're building an app with Expo tools. For example, the `translucent` property of `expo-status-bar` defaults to `true` or, if you have changed that property in `androidStatusBar`, it will use that value instead. The default in React Native for `translucent` is always `false`, which can be confusing because when a project is created using Expo tools, the default is `true` for consistency with iOS.
 

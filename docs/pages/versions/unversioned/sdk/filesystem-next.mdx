@@ -1,0 +1,117 @@
+---
+title: FileSystem (next)
+description: A library that provides access to the local file system on the device.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-file-system/next'
+packageName: 'expo-file-system'
+iconUrl: '/static/images/packages/expo-file-system.png'
+platforms: ['android', 'ios', 'tvos']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+> **info** The `next` version of the FileSystem API is included in the `expo-file-system` library. It can be used alongside the previous API, and offers a simplified, object oriented way of performing filesystem operations.
+
+`expo-file-system/next` provides access to the file system stored locally on the device. It can also download files from the network.
+
+> **info** To provide quicker updates, `expo-file-system/next` is currently unsupported in Expo Go and Snack. To use it, create a [development build](/develop/development-builds/create-a-build/).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Writing and reading text files
+
+```ts example.ts
+import { File, Paths } from 'expo-file-system/next';
+
+try {
+  const file = new File(Paths.cache, 'example.txt');
+  file.create(); // can throw an error if the file already exists or no permission to create it
+  file.write('Hello, world!');
+  console.log(file.text()); // Hello, world!
+} catch (error) {
+  console.error(error);
+}
+```
+
+### Downloading files
+
+```ts example.ts
+import { File, Paths } from 'expo-file-system/next';
+
+const url = 'https://pdfobject.com/pdf/sample.pdf';
+const destination = new Directory(Paths.cache, 'pdfs');
+try {
+  destination.create();
+  const output = await File.downloadFileAsync(url, destination);
+  console.log(output.exists); // true
+  console.log(output.uri); // path to the downloaded file, e.g. '${cacheDirectory}/pdfs/sample.pdf'
+} catch (error) {
+  console.error(error);
+}
+```
+
+### Moving and copying files
+
+```ts example.ts
+import { File, Paths } from 'expo-file-system/next';
+
+try {
+  const file = new File(Paths.document, 'example.txt');
+  file.create();
+  console.log(file.uri); // '${documentDirectory}/example.txt'
+  file.move(Paths.cache);
+  console.log(file.uri); // '${cacheDirectory}/example.txt'
+  file.move(new Directory(Paths.cache, 'newFolder'));
+  console.log(file.uri); // '${cacheDirectory}/newFolder/example.txt'
+} catch (error) {
+  console.error(error);
+}
+```
+
+### Using legacy FileSystem API
+
+```ts example.ts
+import { FileSystem } from 'expo-file-system';
+import { File, Paths } from 'expo-file-system/next';
+
+try {
+  const file = new File(Paths.cache, 'example.txt');
+  const content = await FileSystem.readAsStringAsync(file.uri);
+  console.log(content);
+} catch (error) {
+  console.error(error);
+}
+```
+
+### Listing directory contents recursively
+
+```ts example.ts
+import { Directory, Paths } from 'expo-file-system/next';
+
+function printDirectory(directory: Directory, indent: number = 0) {
+  console.log(`${' '.repeat(indent)} + ${directory.name}`);
+  const contents = directory.list();
+  for (const item of contents) {
+    if (item instanceof Directory) {
+      printDirectory(item, indent + 2);
+    } else {
+      console.log(`${' '.repeat(indent + 2)} - ${item.name} (${item.size} bytes)`);
+    }
+  }
+}
+
+try {
+  printDirectory(new Directory(Paths.cache));
+} catch (error) {
+  console.error(error);
+}
+```
+
+## API
+
+<APISection packageName="expo-file-system-next" apiName="FileSystem Next" />

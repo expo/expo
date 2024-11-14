@@ -9,12 +9,12 @@ iconUrl: '/static/images/packages/expo-local-authentication.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
 
 `expo-local-authentication` allows you to use the Biometric Prompt (Android) or FaceID and TouchID (iOS) to authenticate the user with a fingerprint or face scan.
 
@@ -77,7 +77,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 
 ### Android
 
-The following permissions are added automatically through this library's `AndroidManifest.xml`:
+The following permissions are added automatically through this library's **AndroidManifest.xml**:
 
 <AndroidPermissions permissions={['USE_BIOMETRIC', 'USE_FINGERPRINT']} />
 

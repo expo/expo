@@ -57,6 +57,21 @@ it(`asserts that use client and use server cannot be used together`, () => {
   expect(() => babel.transform(sourceCode, options)).toThrowErrorMatchingSnapshot();
 });
 
+function transformClient(sourceCode: string) {
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({ ...ENABLED_CALLER, isReactServer: false, platform: 'ios' }),
+  };
+
+  const results = babel.transform(sourceCode, options);
+  if (!results) throw new Error('Failed to transform code');
+
+  return {
+    code: results.code,
+    metadata: results.metadata as unknown as { proxyExports?: string[] },
+  };
+}
+
 function transformReactServer(sourceCode: string) {
   const options = {
     ...DEF_OPTIONS,
@@ -71,6 +86,32 @@ function transformReactServer(sourceCode: string) {
     metadata: results.metadata as unknown as { proxyExports?: string[] },
   };
 }
+
+describe('use server', () => {
+  it(`collects metadata with React Server Action references`, () => {
+    const sourceCode = `
+    "use server";
+    
+    export async function greet(name: string) {
+
+    }
+    
+    export default async function doThing() {
+      return '...'
+    }
+    `;
+
+    const res = transformClient(sourceCode);
+    expect(res.metadata.proxyExports).toEqual(['greet', 'default']);
+    expect(res.code).toMatchInlineSnapshot(`
+      "import { createServerReference } from 'react-server-dom-webpack/client';
+      import { callServerRSC } from 'expo-router/rsc/internal';
+      export var greet = createServerReference("file:///unknown#greet", callServerRSC);
+      export default createServerReference("file:///unknown#default", callServerRSC);"
+    `);
+  });
+  // TODO: Assert that server action functions must be async.
+});
 
 describe('use client', () => {
   it(`does nothing without use client directive`, () => {
@@ -223,8 +264,27 @@ export default Svg;
     `;
 
     const contents = babel.transform(sourceCode, options);
-    expect(contents?.metadata).toEqual({});
+    expect(contents?.metadata).toEqual({ hasCjsExports: false });
 
     expect(contents?.code).not.toMatch('react-server-dom-webpack');
+  });
+
+  it(`converts "use dom" to client proxies`, () => {
+    const res = transformReactServer(`
+    "use dom";
+    import { Text } from 'react-native';
+    
+    export const foo = 'bar';
+    
+    module.exports = function App() {
+      return <Text>Hello World</Text>
+    }
+    `);
+    expect(res.metadata.proxyExports).toEqual(['foo']);
+    expect(res.code).toMatchInlineSnapshot(`
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("file:///unknown");
+      module.exports = proxy;
+      export const foo = proxy["foo"];"
+    `);
   });
 });

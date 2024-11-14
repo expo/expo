@@ -6,13 +6,11 @@ import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.signature.ObjectKey
 
-import expo.modules.image.GlideThumbhashModel
+class ThumbhashModelLoader : ModelLoader<ThumbhashModel, Bitmap> {
 
-class ThumbhashModelLoader : ModelLoader<GlideThumbhashModel, Bitmap> {
+  override fun handles(model: ThumbhashModel): Boolean = true
 
-  override fun handles(model: GlideThumbhashModel): Boolean = true
-
-  override fun buildLoadData(model: GlideThumbhashModel, width: Int, height: Int, options: Options): ModelLoader.LoadData<Bitmap> {
+  override fun buildLoadData(model: ThumbhashModel, width: Int, height: Int, options: Options): ModelLoader.LoadData<Bitmap> {
     // The URI looks like this: thumbhash:/3OcRJYB4d3h\iIeHeEh3eIhw+j2w
     // ThumbHash may include slashes which could break the structure of the URL, so we replace them
     // with backslashes on the JS side and revert them back to slashes here, before generating the image.

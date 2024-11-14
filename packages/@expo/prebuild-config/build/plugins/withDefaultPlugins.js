@@ -22,6 +22,13 @@ function _debug() {
   };
   return data;
 }
+function _getAutolinkedPackages() {
+  const data = require("../getAutolinkedPackages");
+  _getAutolinkedPackages = function () {
+    return data;
+  };
+  return data;
+}
 function _withAndroidIcons() {
   const data = require("./icons/withAndroidIcons");
   _withAndroidIcons = function () {
@@ -106,14 +113,7 @@ function _reactNativeMaps() {
   };
   return data;
 }
-function _getAutolinkedPackages() {
-  const data = require("../getAutolinkedPackages");
-  _getAutolinkedPackages = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * These are the versioned first-party plugins with some of the future third-party plugins mixed in for legacy support.
  */
@@ -132,11 +132,11 @@ const withIosExpoPlugins = (config, {
   config.ios.bundleIdentifier = bundleIdentifier;
   return (0, _configPlugins().withPlugins)(config, [[_configPlugins().IOSConfig.BundleIdentifier.withBundleIdentifier, {
     bundleIdentifier
-  }], _configPlugins().IOSConfig.Swift.withSwiftBridgingHeader, _configPlugins().IOSConfig.Swift.withNoopSwiftFile, _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile, _configPlugins().IOSConfig.BuildProperties.withJsEnginePodfileProps,
+  }], _configPlugins().IOSConfig.Swift.withSwiftBridgingHeader, _configPlugins().IOSConfig.Swift.withNoopSwiftFile, _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile, _configPlugins().IOSConfig.BuildProperties.withJsEnginePodfileProps, _configPlugins().IOSConfig.BuildProperties.withNewArchEnabledPodfileProps,
   // Entitlements
   _configPlugins().IOSConfig.Entitlements.withAssociatedDomains,
   // XcodeProject
-  _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales,
+  _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales, _configPlugins().IOSConfig.DevelopmentTeam.withDevelopmentTeam,
   // Dangerous
   _withIosIcons().withIosIcons, _configPlugins().IOSConfig.PrivacyInfo.withPrivacyInfo]);
 };
@@ -152,7 +152,7 @@ const withAndroidExpoPlugins = (config, props) => {
   config.android.package = props.package;
   return (0, _configPlugins().withPlugins)(config, [
   // gradle.properties
-  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps,
+  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps, _configPlugins().AndroidConfig.BuildProperties.withNewArchEnabledGradleProps,
   // settings.gradle
   _configPlugins().AndroidConfig.Name.withNameSettingsGradle,
   // project build.gradle
@@ -194,7 +194,7 @@ function getLegacyExpoPlugins() {
 
 // Expo managed packages that require extra update.
 // These get applied automatically to create parity with expo build in eas build.
-const legacyExpoPlugins = ['expo-app-auth', 'expo-av', 'expo-background-fetch', 'expo-barcode-scanner', 'expo-brightness', 'expo-calendar', 'expo-camera', 'expo-cellular', 'expo-dev-menu', 'expo-dev-launcher', 'expo-dev-client', 'expo-image-picker', 'expo-file-system', 'expo-location', 'expo-media-library', 'expo-screen-orientation', 'expo-sensors', 'expo-task-manager', 'expo-local-authentication'];
+const legacyExpoPlugins = ['expo-app-auth', 'expo-av', 'expo-background-fetch', 'expo-brightness', 'expo-calendar', 'expo-camera', 'expo-cellular', 'expo-dev-menu', 'expo-dev-launcher', 'expo-dev-client', 'expo-image-picker', 'expo-file-system', 'expo-location', 'expo-media-library', 'expo-screen-orientation', 'expo-sensors', 'expo-task-manager', 'expo-local-authentication'];
 
 // Plugins that need to be automatically applied, but also get applied by expo-cli if the versioned plugin isn't available.
 // These are split up because the user doesn't need to be prompted to setup these packages.

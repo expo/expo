@@ -1,55 +1,56 @@
 ---
 title: Build a screen
-description: In this tutorial, learn how to use React Native components such as Image, Pressable, and Vector icons to build a screen.
+description: In this tutorial, learn how to use components such as React Native's Pressable and Expo Image to build a screen.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
-import { A } from '~/ui/components/Text';
-import Video from '~/components/plugins/Video';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we will create the first screen of the StickerSmash app.
+In this chapter, we'll create the first screen of the StickerSmash app.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Initial layout."
-  src="/static/images/tutorial/initial-layout.jpg"
-  style={{ maxWidth: 300 }}
+  src="/static/images/tutorial/initial-layout.png"
+  className="max-w-[300px]"
 />
 
 The screen above displays an image and two buttons. The app user can select an image using one of the two buttons. The first button allows the user to select an image from their device. The second button allows the user to continue with a default image provided by the app.
 
-Once the user selects an image, they'll be able to select and add a sticker to the image. So, let's get started creating this screen.
+Once the user selects an image, they can add a sticker to it. So, let's start creating this screen.
+
+<VideoBoxLink videoId="3rcOP8xDwTQ" title="Watch: Building a screen in your universal Expo app" />
+
+---
 
 <Step label="1">
 
 ## Break down the screen
 
-Before we build this screen by writing code, let's break it down into some essential elements. Most of these elements directly correspond to the built-in [Core Components](https://reactnative.dev/docs/components-and-apis) from React Native.
+Before we build this screen by writing code, let's break it down into some essential elements.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Break down of initial layout."
-  src="/static/images/tutorial/breakdown-of-layout.jpg"
-  style={{ maxWidth: 300 }}
+  src="/static/images/tutorial/breakdown-of-layout.png"
+  className="max-w-[300px]"
 />
 
-There are three essential elements:
+There are two essential elements:
 
-- The screen has a background color
 - There is a large image displayed at the center of the screen
 - There are two buttons in the bottom half of the screen
 
-The first button is composed of multiple components. The parent element provides a yellow border and contains an icon and text components inside a row.
+The first button contains multiple components. The parent element provides a yellow border, and contains an icon and text components inside a row.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Break down of the button component with row."
   src="/static/images/tutorial/breakdown-of-buttons.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
-
-In React Native, styling (such as the yellow border) is done using JavaScript as compared to the web, where CSS is used. Most of the React Native core components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see [Styling in React Native](https://reactnative.dev/docs/style).
 
 Now that we've broken down the UI into smaller chunks, we're ready to start coding.
 
@@ -57,135 +58,62 @@ Now that we've broken down the UI into smaller chunks, we're ready to start codi
 
 <Step label="2">
 
-## Style the background
-
-Let's change the background color. This value is defined in the `styles` object in the **App.js** file.
-
-Replace the default value of `#fff` with `#25292e` for the `styles.container.backgroundColor` property. It will change the background color of the screen.
-
-{/* prettier-ignore */}
-```jsx App.js
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    /* @info Replace the default value of backgroundColor property with '#25292e'. */
-    backgroundColor: '#25292e',
-    /* @end */
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-```
-
-> React Native uses the same color format as the web. It supports hex triplets (this is what `#fff` is), `rgba`, `hsl`, and a set of named colors like `red`, `green`, `blue`, `peru`, and `papayawhip`. For more information, see [Colors in React Native](https://reactnative.dev/docs/colors).
-
-</Step>
-
-<Step label="3">
-
-## Change the text color
-
-The background is dark, so the text is difficult to read. The `<Text>` component uses `#000` (black) as its default color. Let's add a style to the `<Text>` component to change the text color to `#fff` (white) in **App.js**.
-
-<SnackInline label="Change the text color" dependencies={['expo-status-bar']}>
-
-{/* prettier-ignore */}
-```jsx
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-
-export default function App() {
-  return (
-    <View style={styles.container}>
-      /* @info Replace the default value of color property to '#fff'. */
-      <Text style={{ color: '#fff' }}>
-        Open up App.js to start working on your app!
-      </Text>
-      /* @end */
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-```
-
-</SnackInline>
-
-</Step>
-
-<Step label="4">
-
 ## Display the image
 
-We can use React Native's `<Image>` component to display the image in the app. The `<Image>` component requires a source of an image. This source can be a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source can be required from the app's **./assets/images** directory, or the source can come from the [Network](https://reactnative.dev/docs/images#network-images) in the form of a `uri` property.
+We'll use `expo-image` library to display the image in the app. It provides a cross-platform `<Image>` component to load and render an image.
 
-<ImageSpotlight
+Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `expo-image` library:
+
+<Terminal cmd={['$ npx expo install expo-image']} />
+
+The [`npx expo install`](/more/expo-cli/#installation) command will install the library and add it to the project's dependencies in **package.json**.
+
+The Image component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source required from **assets/images** directory is static. It can also come from [Network](https://reactnative.dev/docs/images#network-images) as a `uri` property.
+
+<ContentSpotlight
   alt="Background image that we are going to use as a placeholder for the tutorial."
   src="/static/images/tutorial/background-image.png"
-  style={{ maxWidth: 250 }}
+  className="max-w-[250px]"
 />
 
-Next, import and use the `<Image>` component from React Native and `background-image.png` in the **App.js**. Let's also add styles to display the image.
+To use the Image component in **app/(tabs)/index.tsx** file:
 
-<SnackInline label="Display placeholder image" dependencies={['expo-status-bar']} files={{
-  'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910'
-}}>
+1. Import `Image` from the `expo-image` library.
+2. Create a `PlaceholderImage` variable to use **assets/images/background-image.png** file as the `source` prop on the `Image` component.
 
 {/* prettier-ignore */}
-```jsx
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, /* @info Import the image component. */Image/* @end */ } from 'react-native';
+```tsx app/(tabs)/index.tsx|collapseHeight=380
+import { View, StyleSheet } from 'react-native';
+/* @tutinfo Import the <CODE>Image</CODE> component. */ import { Image } from 'expo-image'; /* @end */
 
-/* @info Import the image from the "/assets/images" directory. Since this picture is a static resource, you have to reference it using "require". */
-const PlaceholderImage = require('./assets/images/background-image.png');
+/* @tutinfo Import the image from the "assets/images/" directory. Since this picture is a static resource, you have to reference it using <CODE>require</CODE>. */
+const PlaceholderImage = require('@/assets/images/background-image.png');
 /* @end */
 
-export default function App() {
+export default function Index() {
   return (
     <View style={styles.container}>
-      /* @info Wrap the Image component inside a container. Also, add the image component to display the placeholder image. */
+      /* @tutinfo Wrap the <CODE>Image</CODE> component inside a container. Also, add the image component to display the placeholder image. */
       <View style={styles.imageContainer}>
         <Image source={PlaceholderImage} style={styles.image} />
       </View>
       /* @end */
-      <StatusBar style="auto" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    /* @info Modify container styles to remove justifyContent property. */
     flex: 1,
     backgroundColor: '#25292e',
+    /* @tutinfo Modify container styles to remove <CODE>justifyContent</CODE> property. */
     alignItems: 'center',
     /* @end */
   },
-  /* @info Add styles for the image. */
   imageContainer: {
     flex: 1,
-    paddingTop: 58,
   },
+   /* @tutinfo Add styles for the image. */
   image: {
     width: 320,
     height: 440,
@@ -195,30 +123,28 @@ const styles = StyleSheet.create({
 });
 ```
 
-</SnackInline>
-
-The `PlaceholderImage` variable references the **./assets/images/background-image.png** and is used as the `source` prop on the `<Image>` component.
-
 </Step>
 
-<Step label="5">
+<Step label="3">
 
-## Dividing components into files
+## Divide components into files
 
-As we add more components to this screen, let's divide the code into multiple files:
+Let's divide the code into multiple files as we add more components to this screen. Throughout this tutorial, we'll use the components directory to create custom components.
 
-- Create a **components** directory at the root of the project. This will contain all the custom components created throughout this tutorial.
-- Then, create a new file called **ImageViewer.js**, inside the **components** folder.
-- Move the code to display the image in this file along with the `image` styles.
+1. Create a **components** directory, and inside it, create the **ImageViewer.tsx** file.
+2. Move the code to display the image in this file along with the `image` styles.
 
 {/* prettier-ignore */}
-```jsx ImageViewer.js
-import { StyleSheet, Image } from 'react-native';
+```tsx components/ImageViewer.tsx|collapseHeight=280
+import { StyleSheet } from "react-native";
+import { Image, type ImageSource } from "expo-image";
 
-export default function ImageViewer({ placeholderImageSource }) {
-  return (
-    <Image source={placeholderImageSource} style={styles.image} />
-  );
+type Props = {
+  imgSource: ImageSource;
+};
+
+export default function ImageViewer({ imgSource }: Props) {
+  return <Image source={imgSource} style={styles.image} />;
 }
 
 const styles = StyleSheet.create({
@@ -230,26 +156,26 @@ const styles = StyleSheet.create({
 });
 ```
 
-Next, let's import this component and use it in the **App.js**:
+> **info** Since **ImageViewer** is a custom component, we are placing it in a separate directory instead of the **app** directory. Every file inside **app** directory is either a layout file or a route file. For more information, see [Non-route files](/router/create-pages/#non-route-files).
+
+Import `ImageViewer` and use it in the **app/(tabs)/index.tsx**:
 
 {/* prettier-ignore */}
-```jsx App.js
-import { StatusBar } from 'expo-status-bar';
+```tsx app/(tabs)/index.tsx|collapseHeight=320
 import { StyleSheet, View } from 'react-native';
 
-/* @info */ import ImageViewer from './components/ImageViewer'; /* @end */
+/* @tutinfo */import ImageViewer from "@/components/ImageViewer"; /* @end */
 
-const PlaceholderImage = require('./assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
-export default function App() {
+export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @info Replace Image component with ImageViewer */
-        <ImageViewer placeholderImageSource={PlaceholderImage} />
+        /* @tutinfo Replace <CODE>Image</CODE> component with <CODE>ImageViewer</CODE>. */
+        <ImageViewer imgSource={PlaceholderImage} />
         /* @end */
       </View>
-      <StatusBar style="auto" />
     </View>
   );
 }
@@ -262,28 +188,166 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    paddingTop: 58,
   },
 });
 ```
 
+<Collapsible summary={<>What is the <CODE>@</CODE> in import statement?</>}>
+
+The `@` symbol is a custom [path alias](/guides/typescript/#path-aliases-optional) for importing custom components and other modules instead of relative paths. Expo CLI automatically configures it in **tsconfig.json**.
+
+</Collapsible>
+
 </Step>
 
-<Step label="6">
+<Step label="4">
 
-## Create buttons using `Pressable`
+## Create buttons using Pressable
 
-React Native provides various components to handle touch events on native platforms. For this tutorial, we'll use the [`<Pressable>`](https://reactnative.dev/docs/pressable) component. It is a core component wrapper that can detect various stages of interactions, from basic single-tap events to advanced events such as a long press.
+React Native includes a few different components for handling touch events, but [`<Pressable>`](https://reactnative.dev/docs/pressable) is recommended for its flexibility. It can detect single taps, long presses, trigger separate events when the button is pushed in and released, and more.
 
-In the design, there are two buttons we need to implement. Each has different styles and labels. Let's start by creating a component that can be reused to create the two buttons.
-
-Create a new file called **Button.js** inside the **components** directory with the following code:
+In the design, there are two buttons we need to create. Each has a different style and label. Let's start by creating a reusable component for these buttons. Create a **Button.tsx** file inside the **components** directory with the following code:
 
 {/* prettier-ignore */}
-```jsx Button.js
+```tsx components/Button.tsx|collapseHeight=280
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 
-export default function Button({ label }) {
+type Props = {
+  label: string;
+};
+
+export default function Button({ label }: Props) {
+  return (
+    <View style={styles.buttonContainer}>
+      <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
+        <Text style={styles.buttonLabel}>{label}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    width: 320,
+    height: 68,
+    marginHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 3,
+  },
+  button: {
+    borderRadius: 10,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  buttonLabel: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
+```
+
+The app displays an alert when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls `alert()` on its `onPress` prop. Let's import this component into **app/(tabs)/index.tsx** file and add styles for the `<View>` that encapsulates these buttons:
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet } from "react-native";
+
+/* @tutinfo */import Button from '@/components/Button'; /* @end */
+import ImageViewer from '@/components/ImageViewer';
+
+const PlaceholderImage = require("@/assets/images/background-image.png");
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} />
+      </View>
+      /* @tutinfo Use the reusable <CODE>Button</CODE> component to create two buttons and encapsulate them inside a <CODE>View</CODE> component. */
+      <View style={styles.footerContainer}>
+        <Button label="Choose a photo" />
+        <Button label="Use this photo" />
+      </View>
+      /* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+    paddingTop: 28,
+  },
+  /* @tutinfo Add the styles the following styles. */
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  /* @end */
+});
+```
+
+Let's take a look at our app on Android, iOS and the web:
+
+<ContentSpotlight
+  alt="Initial layout."
+  src="/static/images/tutorial/buttons-created.png"
+  className="max-w-[720px]"
+/>
+
+The second button with the label "Use this photo" resembles the actual button from the design. However, the first button needs more styling to match the design.
+
+</Step>
+
+<Step label="5">
+
+## Enhance the reusable button component
+
+The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme. This button also has an icon before the label. We will use an icon from the `@expo/vector-icons` library.
+
+To load and display the icon on the button, let's use `FontAwesome` from the library. Modify **components/Button.tsx** to add the following code snippet:
+
+{/* prettier-ignore */}
+```tsx components/Button.tsx
+import { StyleSheet, View, Pressable, Text } from 'react-native';
+/* @tutinfo Import FontAwesome. */import FontAwesome from '@expo/vector-icons/FontAwesome';/* @end */
+
+type Props = {
+  label: string;
+  theme?: 'primary';
+};
+
+export default function Button({ label, /* @tutinfo The prop <CODEtheme</CODE> to detect the button variant. */theme/* @end */ }: Props) {
+  /* @tutinfo Conditionally render the primary themed button. */
+  if (theme === 'primary') {
+  /* @end */
+    return (
+      <View
+        style={[
+          styles.buttonContainer,
+          { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 },
+        ]}>
+        <Pressable
+          style={[styles.button, { backgroundColor: '#fff' }]}
+          onPress={() => alert('You pressed a button.')}>
+          <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
+          <Text style={[styles.buttonLabel, { color: '#25292e' }]}>{label}</Text>
+        </Pressable>
+      </View>
+    );
+  /* @tutinfo */
+  }
+  /* @end */
+
   return (
     <View style={styles.buttonContainer}>
       <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
@@ -320,39 +384,40 @@ const styles = StyleSheet.create({
 });
 ```
 
-Now, in the app, an alert will be displayed when the user taps any of the buttons on the screen. It happens because the `<Pressable>` calls an `alert()` in its `onPress` prop.
+Let's learn what the above code does:
 
-Let's import this component into **App.js** file and add styles for `<View>` component that encapsulates these buttons:
+- The primary theme button uses **inline styles**, which overrides the styles defined in `StyleSheet.create()` with an object directly passed in the `style` prop.
+- The `<Pressable>` component in the primary theme uses a `backgroundColor` property with a value `#fff` to set the button's background to white. If we add this property to the `styles.button`, the background color value will be set for both the primary theme and the unstyled one.
+- Inline styles use JavaScript and override the default styles for a specific value.
+
+Now, modify the **app/(tabs)/index.tsx** file to use the `theme="primary"` prop on the first button.
 
 {/* prettier-ignore */}
-```jsx App.js
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View} from "react-native";
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet } from 'react-native';
 
-/* @info */import Button from './components/Button'; /* @end */
-import ImageViewer from './components/ImageViewer';
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
 
-const PlaceholderImage = require("./assets/images/background-image.png");
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
-export default function App() {
+export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <ImageViewer placeholderImageSource={PlaceholderImage} />
+        <ImageViewer imgSource={PlaceholderImage} />
       </View>
-      /* @info Use the reusable Button component to create two buttons and encapsulate them inside a View component. */
       <View style={styles.footerContainer}>
-        <Button label="Choose a photo" />
+        /* @tutinfo Add <CODE>"primary"</CODE> theme on the first button. */
+        <Button theme="primary" label="Choose a photo" />
+        /* @end */
         <Button label="Use this photo" />
       </View>
-      /* @end */
-      <StatusBar style="auto" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  /* @hide // Styles that are unchanged from previous step are hidden for brevity. */
   container: {
     flex: 1,
     backgroundColor: '#25292e',
@@ -360,139 +425,27 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    paddingTop: 58,
   },
-  /* @end */
-  /* @info Add the styles the following styles. */
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
   },
-  /* @end */
 });
 ```
 
 Let's take a look at our app on Android, iOS and the web:
 
-<ImageSpotlight
-  alt="Initial layout."
-  src="/static/images/tutorial/buttons-created.jpg"
-  style={{ maxWidth: 720 }}
-/>
-
-The second button with the label "Use this photo" resembles the actual button from the design. However, the first button needs more styling to match the design.
+<ContentSpotlight file="tutorial/04-complete-layout.mp4" />
 
 </Step>
 
-<Step label="7">
+## Summary
 
-## Enhance the reusable button component
-
-The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme.
-This button also has an icon before the label. We will use an icon from the <A href="/guides/icons/#expovector-icons">`@expo/vector-icons`</A> library that includes icons from popular icon sets.
-
-Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `@expo/vector-icons` library:
-
-<Terminal cmd={['$ npx expo install @expo/vector-icons']} />
-
-The <A href="/more/expo-cli/#installation">`npx expo install`</A> command will install the library and add it to the project's dependencies in **package.json**.
-
-After installing the library, restart the development server by running the `npx expo start` command.
-
-To load and display the icon on the button, let's use `FontAwesome` from the library. Modify **Button.js** to add the following code snippet:
-
-{/* prettier-ignore */}
-```jsx Button.js
-import { StyleSheet, View, Pressable, Text } from 'react-native';
-/* @info Import FontAwesome. */import FontAwesome from "@expo/vector-icons/FontAwesome";/* @end */
-
-export default function Button({ label, /* @info The prop theme to detect the button variant. */theme/* @end */ }) {
-  /* @info Conditionally render the primary themed button. */
-  if (theme === "primary") {
-  /* @end */
-    return (
-      <View style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}>
-        <Pressable
-          style={[styles.button, { backgroundColor: "#fff" }]}
-          onPress={() => alert('You pressed a button.')}
-        >
-          <FontAwesome
-            name="picture-o"
-            size={18}
-            color="#25292e"
-            style={styles.buttonIcon}
-          />
-          <Text style={[styles.buttonLabel, { color: "#25292e" }]}>{label}</Text>
-        </Pressable>
-      </View>
-    );
-  /* @info */
-  }
-  /* @end */
-
-  return (
-    <View style={styles.buttonContainer}>
-        <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
-          <Text style={styles.buttonLabel}>{label}</Text>
-        </Pressable>
-      </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  // Styles from previous step remain unchanged.
-});
-```
-
-Let's learn what the above code does:
-
-- The primary theme button uses **inline styles** which overrides the styles defined in the `StyleSheet.create()` with an object directly passed in the `style` prop. Inline styles use JavaScript.
-- The `<Pressable>` component in the primary theme uses a `backgroundColor` property of `#fff` to set the button's background color. If we add this property to the `styles.button`, then the background color value will be set for both the primary theme and the unstyled one.
-- Using inline styles allows overriding the default styles for a specific value.
-
-Now, modify the **App.js** file to use the `theme="primary"` prop on the first button.
-
-<SnackInline label="Screen layout" templateId="tutorial/01-layout/App" dependencies={['expo-status-bar', '@expo/vector-icons', '@expo/vector-icons/FontAwesome']} files={{
-    'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910',
-    'components/ImageViewer.js': 'tutorial/01-layout/ImageViewer.js',
-    'components/Button.js': 'tutorial/01-layout/Button.js'
-}}>
-
-{/* prettier-ignore */}
-```jsx
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <ImageViewer placeholderImageSource={PlaceholderImage} />
-      </View>
-      <View style={styles.footerContainer}>
-        /* @info Add primary theme on the first button */
-        <Button theme="primary" label="Choose a photo" />
-        /* @end */
-        <Button label="Use this photo" />
-      </View>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-```
-
-</SnackInline>
-
-Let's take a look at our app on Android, iOS and the web:
-
-<Video file="tutorial/02-complete-layout.mp4" />
-
-</Step>
-
-## Next step
-
-We implemented the initial design.
-
-<BoxLink
-  title="Use an image picker"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we'll add the functionality to pick an image from the device's media library."
-  href="/tutorial/image-picker"
+<ProgressTracker
+  currentChapterIndex={2}
+  name="GET_STARTED"
+  summary="We've successfully implemented the initial design to start building our app's first screen."
+  nextChapterDescription="In the next chapter, we'll add the functionality to pick an image from the device's media library."
+  nextChapterTitle="Use an image picker"
+  nextChapterLink="/tutorial/image-picker"
 />

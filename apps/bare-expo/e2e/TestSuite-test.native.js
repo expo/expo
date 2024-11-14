@@ -17,10 +17,11 @@ export const TESTS = [
   'Localization',
   // 'SecureStore',
   // 'Segment',
-  // 'SQLite',
+  'SQLite',
   'Random',
   'Permissions',
   'KeepAwake',
   // 'Audio',
   'HTML',
+  'FileSystem@next',
 ];

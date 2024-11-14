@@ -10,7 +10,44 @@
 
 ### 💡 Others
 
+## 17.0.2 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- [iOS] Fixes asset types not returned correctly. ([#32621](https://github.com/expo/expo/pull/32621) by [@aleqsio](https://github.com/aleqsio))
+
+## 17.0.1 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30863](https://github.com/expo/expo/pull/30863) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- [iOS] include more error information in native rejections ([#30504](https://github.com/expo/expo/pull/30504) by [@vonovak](https://github.com/vonovak))
+- On `Android 14+`, when user gave only partial asset access, `presentPermissionsPickerAsync()` presents the permissions dialog to allow the user to change the selected assets. ([#29882](https://github.com/expo/expo/pull/29882) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- On `iOS`, getAssets crashed when result was is empty ([#29969](https://github.com/expo/expo/pull/29969) by [@vonovak](https://github.com/vonovak))
+- On `Android`, throw an error when deleting an asset was unsuccessful. ([#29777](https://github.com/expo/expo/pull/29777) by [@mathieupost](https://github.com/mathieupost))
+- Add missing `react-native` peer dependencies for isolated modules. ([#30476](https://github.com/expo/expo/pull/30476) by [@byCedric](https://github.com/byCedric))
+- On `Android`, adding an asset to an album containing another album would throw an exception. ([#29777](https://github.com/expo/expo/pull/31027) by [@nafeij](https://github.com/Nafeij))
+- [Android] Fix exceptions when moving or deleting video assets. ([#31424](https://github.com/expo/expo/pull/31424) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 16.0.4 - 2024-06-20
+
+### 🐛 Bug fixes
+
+- On `iOS`, add back image loader to handle `ph://` and `assets-library://` schemes. ([#29747](https://github.com/expo/expo/pull/29747) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 16.0.3 — 2024-04-23
 

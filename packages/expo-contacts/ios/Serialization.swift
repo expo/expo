@@ -49,7 +49,7 @@ func decodePhoneLabel(_ label: String?) -> String? {
     return nil
   }
 
-  var decodedLabel = decodeLabel(label: label)
+  let decodedLabel = decodeLabel(label: label)
   switch decodedLabel {
   case CNLabeledValue<NSString>.localizedString(forLabel: CNLabelPhoneNumberMain):
     return CNLabelPhoneNumberMain
@@ -99,11 +99,12 @@ func decodeBirthday(_ input: ContactDate?, contact: CNContact) -> DateComponents
   }
   if let year = input.year {
     components.year = year
+    // To be able to display a birthday with year component the contact requires
+    // us to set the calendar as well.
+    components.calendar = Calendar.current
   }
   if let day = input.day {
     components.day = day
-  }
-  if let format = input.format {
   }
 
   return components
@@ -200,7 +201,7 @@ func getDescriptors(for fields: [String]?, isWriting: Bool = false) -> [CNKeyDes
 }
 
 func serializeContact(person: CNContact, keys: [String]?, directory: URL?) throws -> [String: Any] {
-  var keysToFetch = keys ?? contactKeysToFetch(from: nil)
+  let keysToFetch = keys ?? contactKeysToFetch(from: nil)
   var contact = [String: Any]()
 
   contact[ContactsKey.id] = person.identifier
@@ -409,7 +410,7 @@ private func socialProfilesFor(contact person: CNContact) -> [[String: Any]]? {
     profile["userId"] = val.userIdentifier
     profile["id"] = container.identifier
     if let label = container.label {
-      profile["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label) ?? label
+      profile["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
     }
     results.append(profile)
   }
@@ -566,7 +567,7 @@ private func calendarFormatToString(_ identifier: Calendar.Identifier) -> String
 
 func encodeContainer(_ container: CNContainer) -> [String: Any] {
   return [
-    "name": container.name ?? "",
+    "name": container.name,
     "id": container.identifier,
     "type": encodeContainerType(container.type)
   ]

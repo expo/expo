@@ -1,4 +1,4 @@
-import { type ModPlatform } from '@expo/config-plugins';
+import { type ModPlatform } from 'expo/config-plugins';
 /**
  * Entry point into the patch-project process.
  */

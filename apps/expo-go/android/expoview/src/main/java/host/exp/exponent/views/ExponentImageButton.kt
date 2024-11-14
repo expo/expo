@@ -31,7 +31,7 @@ class ExponentImageButton : AppCompatImageButton {
       } else if (event.action == MotionEvent.ACTION_DOWN) {
         setColorFilter(Color.GRAY)
       }
-      false
+      v.performClick()
     }
   }
 }

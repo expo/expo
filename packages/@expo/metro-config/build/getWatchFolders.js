@@ -4,11 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWatchFolders = exports.resolveAllWorkspacePackageJsonPaths = exports.globAllPackageJsonPaths = void 0;
-const assert_1 = __importDefault(require("assert"));
+const paths_1 = require("@expo/config/paths");
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
-const getModulesPaths_1 = require("./getModulesPaths");
 function readJsonFile(filePath) {
     // Read with fs
     const file = fs_1.default.readFileSync(filePath, 'utf8');
@@ -33,7 +32,8 @@ function isValidJsonFile(filePath) {
 function globAllPackageJsonPaths(workspaceProjectRoot, linkedPackages) {
     return linkedPackages
         .map((glob) => {
-        return (0, glob_1.sync)(path_1.default.join(glob, 'package.json').replace(/\\/g, '/'), {
+        // Globs should only contain `/` as separator, even on Windows.
+        return (0, glob_1.globSync)(path_1.default.posix.join(glob, 'package.json').replace(/\\/g, '/'), {
             cwd: workspaceProjectRoot,
             absolute: true,
             ignore: ['**/@(Carthage|Pods|node_modules)/**'],
@@ -46,26 +46,18 @@ function globAllPackageJsonPaths(workspaceProjectRoot, linkedPackages) {
         .map((p) => path_1.default.join(p));
 }
 exports.globAllPackageJsonPaths = globAllPackageJsonPaths;
-function getWorkspacePackagesArray({ workspaces }) {
-    if (Array.isArray(workspaces)) {
-        return workspaces;
-    }
-    (0, assert_1.default)(workspaces?.packages, 'Could not find a `workspaces` object in the root package.json');
-    return workspaces.packages;
-}
 /**
  * @param workspaceProjectRoot root file path for a yarn workspace.
  * @returns list of package.json file paths that are linked to the yarn workspace.
  */
 function resolveAllWorkspacePackageJsonPaths(workspaceProjectRoot) {
     try {
-        const rootPackageJsonFilePath = path_1.default.join(workspaceProjectRoot, 'package.json');
-        // Could throw if package.json is invalid.
-        const rootPackageJson = readJsonFile(rootPackageJsonFilePath);
         // Extract the "packages" array or use "workspaces" as packages array (yarn workspaces spec).
-        const packages = getWorkspacePackagesArray(rootPackageJson);
+        const workspaceGlobs = (0, paths_1.getMetroWorkspaceGlobs)(workspaceProjectRoot);
+        if (!workspaceGlobs?.length)
+            return [];
         // Glob all package.json files and return valid paths.
-        return globAllPackageJsonPaths(workspaceProjectRoot, packages);
+        return globAllPackageJsonPaths(workspaceProjectRoot, workspaceGlobs);
     }
     catch {
         return [];
@@ -77,13 +69,14 @@ exports.resolveAllWorkspacePackageJsonPaths = resolveAllWorkspacePackageJsonPath
  * @returns list of node module paths to watch in Metro bundler, ex: `['/Users/me/app/node_modules/', '/Users/me/app/apps/my-app/', '/Users/me/app/packages/my-package/']`
  */
 function getWatchFolders(projectRoot) {
-    const workspaceRoot = (0, getModulesPaths_1.getWorkspaceRoot)(path_1.default.resolve(projectRoot));
+    const resolvedProjectRoot = path_1.default.resolve(projectRoot);
+    const workspaceRoot = (0, paths_1.getMetroServerRoot)(resolvedProjectRoot);
     // Rely on default behavior in standard projects.
-    if (!workspaceRoot) {
+    if (workspaceRoot === resolvedProjectRoot) {
         return [];
     }
     const packages = resolveAllWorkspacePackageJsonPaths(workspaceRoot);
-    if (!packages.length) {
+    if (!packages?.length) {
         return [];
     }
     return uniqueItems([

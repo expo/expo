@@ -27,7 +27,11 @@ export const PermalinkedSnippetHeader = withHeadingManager(
     });
 
     return (
-      <LinkBase id={heading.slug} href={'#' + heading.slug} ref={heading.ref}>
+      <LinkBase
+        id={heading.slug}
+        href={'#' + heading.slug}
+        ref={heading.ref}
+        className="scroll-m-4">
         <SnippetHeader {...props} />
       </LinkBase>
     );

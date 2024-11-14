@@ -4,13 +4,12 @@ description: Make your first change to an Expo project and see it live on your d
 hideTOC: true
 ---
 
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Collapsible } from '~/ui/components/Collapsible';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { Step } from '~/ui/components/Step';
-
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
 import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
+import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal, DiffBlock } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 <Step label="1">
 ## Start a development server
@@ -73,10 +72,10 @@ Expo Go is configured by default to automatically reload the app whenever a file
 - Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS.
 - If you see **Enable Fast Refresh**, press it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
 
-  <ImageSpotlight
+  <ContentSpotlight
     alt="Developer menu in Expo Go app."
     src="/static/images/get-started/developer-menu.png"
-    style={{ maxWidth: 720 }}
+    className="max-w-[540px]"
   />
 
 </Collapsible>

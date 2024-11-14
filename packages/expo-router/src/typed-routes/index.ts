@@ -13,6 +13,12 @@ const defaultCtx = requireContext(process.env.EXPO_ROUTER_APP_ROOT, true, EXPO_R
 export type { RequireContextPonyFill } from '../testing-library/require-context-ponyfill';
 
 /**
+ * This file is imported via `@expo/cli`. While users should be using the same SDK version of `expo-router` as `@expo/cli`,
+ * this export allows us to ensure that the version of the `expo-router` package is compatible with the version of `@expo/cli`.
+ */
+export const version = 52;
+
+/**
  * Generate a Metro watch handler that regenerates the typed routes declaration file
  */
 export function getWatchHandler(
@@ -58,36 +64,44 @@ export function getWatchHandler(
 }
 
 /**
- * A throttled function that regenerates the typed routes declaration file
+ * Regenerate the declaration file.
+ *
+ * This function needs to be debounced due to Metro's handling of renaming folders.
+ * For example, if you have the file /(tabs)/route.tsx and you rename the folder to /(tabs,test)/route.tsx
+ *
+ * Metro will fire 2 filesystem events:
+ *  - ADD /(tabs,test)/router.tsx
+ *  - DELETE /(tabs)/router.tsx
+ *
+ * If you process the types after the ADD, then they will crash as you will have conflicting routes
  */
-export const regenerateDeclarations = throttle(
-  (outputDir: string, ctx: RequireContextPonyFill = defaultCtx) => {
-    const file = getTypedRoutesDeclarationFile(ctx);
-    if (!file) return;
-    fs.writeFileSync(path.resolve(outputDir, './router.d.ts'), file);
-  },
-  100
+export const regenerateDeclarations = debounce(
+  (
+    outputDir: string,
+    options: { partialTypedGroups?: boolean } = {},
+    ctx: RequireContextPonyFill = defaultCtx
+  ) => {
+    // Don't crash the process, just log the error. The user will most likely fix it and continue
+    try {
+      const file = getTypedRoutesDeclarationFile(ctx, options);
+      if (!file) return;
+      fs.writeFileSync(path.resolve(outputDir, './router.d.ts'), file);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 );
 
 /**
- * Throttles a function to only run once every `internal` milliseconds.
- * If called while waiting, it will run again after the timer has elapsed.
+ * Debounce a function to only run once after a period of inactivity
+ * If called while waiting, it will reset the timer
  */
-function throttle<T extends (...args: any[]) => any>(fn: T, interval: number) {
-  let timerId;
-  let shouldRunAgain = false;
-  return function run(...args: Parameters<T>) {
-    if (timerId) {
-      shouldRunAgain = true;
-    } else {
+function debounce<T extends (...args: any[]) => any>(fn: T, timeout: number = 1000) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
       fn(...args);
-      timerId = setTimeout(() => {
-        timerId = null; // reset the timer so next call will be executed
-        if (shouldRunAgain) {
-          shouldRunAgain = false;
-          run(...args); // call the function again
-        }
-      }, interval);
-    }
+    }, timeout);
   };
 }

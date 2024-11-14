@@ -15,11 +15,14 @@ import expo.modules.kotlin.functions.FunctionBuilder
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.functions.createAsyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
+import expo.modules.kotlin.modules.convertEnumToString
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.types.toArgsArray
+import expo.modules.kotlin.types.toReturnType
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
 
@@ -49,21 +52,20 @@ open class ObjectDefinitionBuilder {
   private val eventObservers = mutableListOf<EventObservingDefinition>()
 
   fun buildObject(): ObjectDefinitionData {
-    val asyncFunctions = (asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() })
-      .toMutableMap()
-
     EventObservingDefinition.Type.entries.forEach { type ->
       // If the user exports a function that is called `startObserving` or `stopObserving`, we don't add the observer
       // In the long run, we probably want to add a warning here or make it impossible to export such functions.
       if (!asyncFunctions.containsKey(type.value)) {
-        val observerFunction = AsyncFunction(type.value) { eventName: String ->
+        AsyncFunction(type.value) { eventName: String ->
           eventObservers.forEach {
             it.invokedIfNeed(type, eventName)
           }
         }
-        asyncFunctions[type.value] = observerFunction
       }
     }
+
+    val asyncFunctions = (asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() })
+      .toMutableMap()
 
     return ObjectDefinitionData(
       constantsProvider,
@@ -97,7 +99,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: () -> Any?
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, emptyArray()) { body() }.also {
+    return SyncFunctionComponent(name, emptyArray(), toReturnType<Any?>()) { body() }.also {
       syncFunctions[name] = it
     }
   }
@@ -106,7 +108,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: () -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, emptyArray()) { body() }.also {
+    return SyncFunctionComponent(name, emptyArray(), toReturnType<R>()) { body() }.also {
       syncFunctions[name] = it
     }
   }
@@ -115,7 +117,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: (p0: P0) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0>()) { (p0) ->
+    return SyncFunctionComponent(name, toArgsArray<P0>(), toReturnType<R>()) { (p0) ->
       enforceType<P0>(p0)
       body(p0)
     }.also {
@@ -127,7 +129,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: (p0: P0, p1: P1) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1>()) { (p0, p1) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1>(), toReturnType<R>()) { (p0, p1) ->
       enforceType<P0, P1>(p0, p1)
       body(p0, p1)
     }.also {
@@ -139,7 +141,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2>()) { (p0, p1, p2) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2>(), toReturnType<R>()) { (p0, p1, p2) ->
       enforceType<P0, P1, P2>(p0, p1, p2)
       body(p0, p1, p2)
     }.also {
@@ -151,7 +153,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>()) { (p0, p1, p2, p3) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>(), toReturnType<R>()) { (p0, p1, p2, p3) ->
       enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
       body(p0, p1, p2, p3)
     }.also {
@@ -163,7 +165,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>()) { (p0, p1, p2, p3, p4) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>(), toReturnType<R>()) { (p0, p1, p2, p3, p4) ->
       enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
       body(p0, p1, p2, p3, p4)
     }.also {
@@ -175,7 +177,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>()) { (p0, p1, p2, p3, p4, p5) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5) ->
       enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
       body(p0, p1, p2, p3, p4, p5)
     }.also {
@@ -187,7 +189,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>()) { (p0, p1, p2, p3, p4, p5, p6) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5, p6) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
       body(p0, p1, p2, p3, p4, p5, p6)
     }.also {
@@ -199,7 +201,7 @@ open class ObjectDefinitionBuilder {
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>()) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>(), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6, P7>(p0, p1, p2, p3, p4, p5, p6, p7)
       body(p0, p1, p2, p3, p4, p5, p6, p7)
     }.also {
@@ -473,6 +475,13 @@ open class ObjectDefinitionBuilder {
   }
 
   /**
+   * Creates module's lifecycle listener that is called right after the first event listener is added for given event.
+   */
+  fun <T> OnStartObserving(enum: T, body: () -> Unit) where T : Enumerable, T : Enum<T> {
+    OnStartObserving(convertEnumToString(enum), body)
+  }
+
+  /**
    * Creates module's lifecycle listener that is called right after the first event listener is added.
    */
   fun OnStartObserving(body: () -> Unit) {
@@ -496,6 +505,13 @@ open class ObjectDefinitionBuilder {
     ).also {
       eventObservers.add(it)
     }
+  }
+
+  /**
+   * Creates module's lifecycle listener that is called right after all event listeners are removed for given event.
+   */
+  fun <T> OnStopObserving(enum: T, body: () -> Unit) where T : Enumerable, T : Enum<T> {
+    OnStopObserving(convertEnumToString(enum), body)
   }
 
   /**
@@ -523,7 +539,7 @@ open class ObjectDefinitionBuilder {
   /**
    * Creates the read-only property whose getter doesn't take the caller as an argument.
    */
-  inline fun <T> Property(name: String, crossinline body: () -> T): PropertyComponentBuilder {
+  inline fun <reified T> Property(name: String, crossinline body: () -> T): PropertyComponentBuilder {
     return PropertyComponentBuilder(name).also {
       it.get(body)
       properties[name] = it
@@ -537,22 +553,26 @@ inline fun ModuleDefinitionBuilder.Object(block: ObjectDefinitionBuilder.() -> U
 
 inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
   val objectData = ObjectDefinitionBuilder().also(block).buildObject()
-  return JavaScriptModuleObject(appContext.jniDeallocator, "[Anonymous Object]")
-    .apply {
-      val constants = objectData.constantsProvider()
-      val convertedConstants = Arguments.makeNativeMap(constants)
-      exportConstants(convertedConstants)
+  val constants = objectData.constantsProvider()
+  val convertedConstants = Arguments.makeNativeMap(constants)
+  val moduleName = "[Anonymous Object]"
 
-      objectData
-        .functions
-        .forEach { function ->
-          function.attachToJSObject(appContext, this)
-        }
+  val decorator = JSDecoratorsBridgingObject(runtimeContext.jniDeallocator)
+  decorator.registerConstants(convertedConstants)
 
-      objectData
-        .properties
-        .forEach { (_, prop) ->
-          prop.attachToJSObject(appContext, this)
-        }
+  objectData
+    .functions
+    .forEach { function ->
+      function.attachToJSObject(appContext, decorator, moduleName)
     }
+
+  objectData
+    .properties
+    .forEach { (_, prop) ->
+      prop.attachToJSObject(appContext, decorator)
+    }
+
+  return JavaScriptModuleObject(runtimeContext.jniDeallocator, moduleName).apply {
+    decorate(decorator)
+  }
 }

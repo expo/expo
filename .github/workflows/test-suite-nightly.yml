@@ -20,14 +20,14 @@ concurrency:
 
 jobs:
   ios-build:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 15.2
-        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
+      - name: 🔨 Switch to Xcode 16.0
+        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -46,7 +46,7 @@ jobs:
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
-        run: yarn react-native config
+        run: yarn expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
       - name: 🌳 Display pod environment
         run: pod env
@@ -61,7 +61,7 @@ jobs:
           EXPO_DEBUG: 1
           NODE_ENV: production
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
@@ -80,18 +80,18 @@ jobs:
   ios-test:
     needs: ios-build
     runs-on: macos-12
-    # runs-on: macos-14
+    # runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
-      # - name: 🔨 Switch to Xcode 15.2
-      #   run: sudo xcode-select --switch /Applications/Xcode_15.2.app
+      # - name: 🔨 Switch to Xcode 16.0
+      #   run: sudo xcode-select --switch /Applications/Xcode_16.0.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
@@ -116,7 +116,7 @@ jobs:
         working-directory: apps/bare-expo
       - name: Store images of build failures
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-artifacts
           path: |
@@ -166,7 +166,7 @@ jobs:
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
-        run: yarn react-native config
+        run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
       - name: 🛠️ Generate dynamic macros
         run: expotools android-generate-dynamic-macros --configuration release --bare
@@ -174,7 +174,7 @@ jobs:
         run: ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest --no-daemon
         working-directory: apps/bare-expo/android
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
@@ -201,7 +201,7 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@v4
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
@@ -221,7 +221,7 @@ jobs:
           working-directory: ./apps/bare-expo
       - name: 📸 Store images of test failures
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-artifacts
           path: apps/bare-expo/artifacts

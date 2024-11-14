@@ -183,7 +183,7 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
 }));
 
 // Mock the `createSnapshotFriendlyRef` to return an ref that can be serialized in snapshots.
-jest.doMock('expo-modules-core/build/Refs', () => ({
+jest.doMock('expo-modules-core/src/Refs', () => ({
   createSnapshotFriendlyRef: () => {
     // We cannot use `createRef` since it is not extensible.
     const ref = { current: null };
@@ -214,7 +214,7 @@ function attemptLookup(moduleName) {
 try {
   jest.doMock('expo-modules-core', () => {
     const ExpoModulesCore = jest.requireActual('expo-modules-core');
-    const uuid = jest.requireActual('expo-modules-core/build/uuid/uuid.web');
+    const uuid = jest.requireActual('expo-modules-core/src/uuid/uuid.web');
 
     const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
 
@@ -241,6 +241,23 @@ try {
         }
       }
     }
+
+    function requireMockModule(name) {
+      // Support auto-mocking of expo-modules that:
+      // 1. have a mock in the `mocks` directory
+      // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
+      const nativeModuleMock = attemptLookup(name) ?? ExpoModulesCore.requireNativeModule(name);
+      if (!nativeModuleMock) {
+        return null;
+      }
+
+      const nativeModule = new NativeModule();
+      for (const [key, value] of Object.entries(nativeModuleMock)) {
+        nativeModule[key] = typeof value === 'function' ? jest.fn(value) : value;
+      }
+      return nativeModule;
+    }
+
     return {
       ...ExpoModulesCore,
 
@@ -249,17 +266,20 @@ try {
       NativeModule,
       SharedObject,
 
-      requireNativeModule(name) {
-        // Support auto-mocking of expo-modules that:
-        // 1. have a mock in the `mocks` directory
-        // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
-        const nativeModuleMock = attemptLookup(name) ?? ExpoModulesCore.requireNativeModule(name);
-        const nativeModule = new NativeModule();
-
-        for (const [key, value] of Object.entries(nativeModuleMock)) {
-          nativeModule[key] = typeof value === 'function' ? jest.fn(value) : value;
+      requireOptionalNativeModule: requireMockModule,
+      requireNativeModule(moduleName) {
+        const module = requireMockModule(moduleName);
+        if (!module) {
+          throw new Error(`Cannot find native module '${moduleName}'`);
         }
-        return nativeModule;
+        return module;
+      },
+      requireNativeViewManager: (name) => {
+        const nativeModuleMock = attemptLookup(name);
+        if (!nativeModuleMock || !nativeModuleMock.View) {
+          return ExpoModulesCore.requireNativeViewManager(name);
+        }
+        return nativeModuleMock.View;
       },
     };
   });
@@ -271,7 +291,7 @@ try {
 }
 
 // Installs web implementations of global things that are normally installed through JSI.
-require('expo-modules-core/build/web/index.web');
+require('expo-modules-core/src/web/index.web');
 
 // Ensure the environment globals are installed before the first test runs.
-require('expo/build/winter');
+require('expo/src/winter');

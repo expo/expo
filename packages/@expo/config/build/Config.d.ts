@@ -1,4 +1,4 @@
-import { AppJSONConfig, ConfigFilePaths, ExpoConfig, GetConfigOptions, PackageJSONConfig, ProjectConfig, ProjectTarget, WriteConfigOptions } from './Config.types';
+import { ConfigFilePaths, ExpoConfig, GetConfigOptions, PackageJSONConfig, ProjectConfig, ProjectTarget, WriteConfigOptions } from './Config.types';
 /**
  * Evaluate the config for an Expo project.
  * If a function is exported from the `app.config.js` then a partial config will be passed as an argument.
@@ -47,7 +47,7 @@ export declare function getConfigFilePaths(projectRoot: string): ConfigFilePaths
 export declare function modifyConfigAsync(projectRoot: string, modifications: Partial<ExpoConfig>, readOptions?: GetConfigOptions, writeOptions?: WriteConfigOptions): Promise<{
     type: 'success' | 'warn' | 'fail';
     message?: string;
-    config: AppJSONConfig | null;
+    config: ExpoConfig | null;
 }>;
 export declare function getWebOutputPath(config?: {
     [key: string]: any;

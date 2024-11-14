@@ -4,14 +4,14 @@ sidebar_title: Optimize assets
 description: Learn how EAS Update downloads assets and how to optimize them for download size.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 > **info** For SDK 50 and above, the new [asset selection feature](/eas-update/asset-selection) can greatly reduce the total number and size of downloaded assets.
 
 When an app finds a new update, it downloads a manifest and then downloads any new or updated assets so that it can run the update. The process is as follows:
 
-<ImageSpotlight alt="Update download timeline" src="/static/images/eas-update/process.png" />
+<ContentSpotlight alt="Update download timeline" src="/static/images/eas-update/process.png" />
 
 Many users running Android and iOS apps are using mobile connections that are not as consistent or fast as when they are using Wi-Fi, so it's important that the assets shipped as a part of an update are as small as possible.
 
@@ -43,7 +43,7 @@ To optimize images and videos manually, see [Assets](/develop/user-interface/ass
 
 ## Ensuring assets are included in updates
 
-When you publish an update, EAS will upload your assets to the CDN so that they may be fetched when users run your app. However, for assets to be uploaded to the CDN they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the bundler being unable to detect them and therefore they will not be uploaded when you publish your project.
+When you publish an update, EAS will upload your assets to the CDN so that they may be fetched when users run your app. However, for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the bundler being unable to detect them, and they will not be uploaded when you publish your project.
 
 ## Further considerations
 

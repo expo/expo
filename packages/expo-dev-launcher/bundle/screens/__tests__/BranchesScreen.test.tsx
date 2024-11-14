@@ -7,7 +7,7 @@ import { BranchesScreen, getIncompatibleBranchMessage } from '../BranchesScreen'
 
 jest.mock('graphql-request', () => {
   return {
-    GraphQLClient(apiUrl: string) {
+    GraphQLClient() {
       return {
         request: jest.fn(),
       };
@@ -200,12 +200,10 @@ describe.skip('<BranchesScreen />', () => {
       },
     });
 
-    const { getByText, queryByText } = renderBranchesScreen(mockNavigation);
+    const { findByText, queryByText } = renderBranchesScreen(mockNavigation);
 
-    await act(async () => {
-      expect(queryByText(getCompatibleBranchMessage(1))).toBe(null);
-      await waitFor(() => getByText(getCompatibleBranchMessage(1)));
-    });
+    expect(queryByText(getCompatibleBranchMessage(1))).toBe(null);
+    await findByText(getCompatibleBranchMessage(1));
   });
 
   test.todo('recent empty branches are visible in the footer');

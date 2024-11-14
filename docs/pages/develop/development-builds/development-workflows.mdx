@@ -4,7 +4,7 @@ sidebar_title: Tools, workflows and extensions
 description: Learn more about different tools, workflows and extensions available when working with development builds.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 Development builds allow you to iterate quickly. However, you can extend the capabilities of your development build to provide a better developer experience when working in teams or customize the build to suit your needs.
@@ -25,7 +25,7 @@ EAS CLI's `eas update` command bundles the current state of your JavaScript and 
 
 When a development build launches, it will expose UI to load a development server, or to "Enter URL manually". You can provide a URL manually that will launch a specific branch. The URL follows this pattern:
 
-```
+```text
 https://u.expo.dev/[your-project-id]?channel-name=[channel-name]
 
 # Example
@@ -47,7 +47,7 @@ You can load your app on a device that has a compatible build of your custom cli
 
 Example:
 
-```
+```text
 exp+app-slug://expo-development-client/?url=https%3A%2F%2Fu.expo.dev%2F767ADF57-B487-4D8F-9522-85549C39F43F%2F%3Fchannel-name%3Dmain
 ```
 
@@ -72,7 +72,7 @@ Requests send to `https://qr.expo.dev/development-client` when supplied the quer
 
 Example:
 
-```
+```text
 https://qr.expo.dev/development-client?appScheme=exp%2Bapps-slug&url=https%3A%2F%2Fu.expo.dev%2FF767ADF57-B487-4D8F-9522-85549C39F43F0%3Fchannel-name%3Dmain
 ```
 
@@ -111,20 +111,20 @@ registerDevMenuItems(devMenuItems);
 
 This will create a new section in the dev menu that includes the buttons you have registered:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An example of a custom menu button in expo-dev-menu"
   src="/static/images/dev-client/custom-menu-button.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 > Subsequent calls of `registerDevMenuItems` will override all previous entries.
 
 ### EAS Update
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An example list of EAS Update that can be loaded in the expo-dev-client."
   src="/static/images/dev-client/eas-updates-screen.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 The EAS Update extension provides the ability to view and load published updates in your development client.
@@ -143,4 +143,4 @@ You can now view and load EAS Updates in your development build via the `Extensi
 
 When you create a development build of your project, you'll get a stable environment to load any changes to your app that are defined in JavaScript or other asset-related changes. Other changes to your app, whether defined directly in **android** and **ios** directories or by packages or SDKs you choose to install, will require you to create a new build of your development build.
 
-To enforce an API contract between the JavaScript and native layers of your app, you should set the [`runtimeVersion`](/distribution/runtime-versions) value in the app config. Each build you make will have this value embedded and will only load bundles with the same `runtimeVersion`, in both development and production.
+To enforce an API contract between the JavaScript and native layers of your app, you should set the [`runtimeVersion`](/eas-update/runtime-versions) value in the app config. Each build you make will have this value embedded and will only load bundles with the same `runtimeVersion`, in both development and production.

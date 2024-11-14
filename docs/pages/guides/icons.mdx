@@ -17,7 +17,6 @@ The component loads the `Ionicons` font and renders a checkmark icon in the foll
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
 
 ```jsx collapseHeight=350
-import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -42,11 +41,11 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-> As with [any custom font](/develop/user-interface/fonts/#use-a-custom-font) in Expo, you can preload icon fonts before rendering your app. The font object is available as a static property on the font component. So, in the case above, it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`.
+> As with [any custom font](/develop/user-interface/fonts/#use-a-local-font-file) in Expo, you can preload icon fonts before rendering your app. The font object is available as a static property on the font component. So, in the case above, it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`.
 
 ## Custom icon fonts
 
-To use a custom icon font, first import it into your project. Only after the font has loaded, can you create an Icon set. [Learn more about loading custom fonts](/develop/user-interface/fonts/#use-a-custom-font).
+To use a custom icon font, first import it into your project. Only after the font has loaded, can you create an Icon set. [Learn more about loading custom fonts](/develop/user-interface/fonts/#handle-expovector-icons-initial-load).
 
 `@expo/vector-icons` exposes three methods to help you create an icon set:
 
@@ -56,10 +55,8 @@ The `createIconSet` method returns a custom font based on the `glyphMap` where t
 
 In the example below, the `glyphMap` object is defined and then passed as the first argument to the `createIconSet` method. The second argument `fontFamily` is the name of the font (not the filename). Optionally, you can pass the third argument for Android support, which is the custom font file name.
 
-```jsx
-import * as React from 'react';
-import * as Font from 'expo-font';
-import { createIconSet } from '@expo/vector-icons';
+```jsx createIconSet example
+import createIconSet from '@expo/vector-icons/createIconSet';
 
 const glyphMap = { 'icon-name': 1234, test: '∆' };
 const CustomIcon = createIconSet(glyphMap, 'fontFamily', 'custom-icon-font.ttf');
@@ -88,7 +85,7 @@ dependencies={['@expo/vector-icons', 'expo-font']}>
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-import { createIconSetFromIcoMoon } from '@expo/vector-icons';
+import createIconSetFromIcoMoon from '@expo/vector-icons/createIconSetFromIcoMoon';
 
 /* @info */
 const Icon = createIconSetFromIcoMoon(
@@ -136,9 +133,9 @@ The `createIconSetFromFontello` method is used to create a custom font based on 
 
 It follows a similar configuration as `createIconSetFromIcoMoon` as shown in the example:
 
-```js
+```js Fontello Icons
 // Import the createIconSetFromFontello method
-import { createIconSetFromFontello } from '@expo/vector-icons';
+import createIconSetFromFontello from '@expo/vector-icons/createIconSetFromFontello';
 
 // Import the config file
 import fontelloConfig from './config.json';
@@ -155,6 +152,13 @@ You can use the `Image` component from [Expo Image](/versions/latest/sdk/image/)
 <Tabs>
 
 <Tab label="Expo Image">
+
+<SnackInline
+  label='Usage with Expo Image'
+  dependencies={['expo-image']}
+  files={{
+    'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
+  }}>
 
 ```jsx collapseHeight=440
 import { Image } from 'expo-image';
@@ -177,12 +181,15 @@ const styles = StyleSheet.create({
 });
 ```
 
+</SnackInline>
+
 </Tab>
 
 <Tab label="React Native Image">
+
 <SnackInline
-label='Icon images'
-files={{
+  label='Usage with React Native Image'
+  files={{
     'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
   }}>
 
@@ -256,11 +263,11 @@ const styles = StyleSheet.create({
 
 Any [`Text`](http://reactnative.dev/docs/text), [`TouchableHighlight`](http://reactnative.dev/docs/touchablehighlight), or [`TouchableWithoutFeedback`](http://reactnative.dev/docs/touchablewithoutfeedback) property in addition to these:
 
-| Prop                  | Description                                                                                                                                       | Default             |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| **`color`**           | Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.                                                     | `white`             |
-| **`size`**            | Icon size.                                                                                                                                        | `20`                |
-| **`iconStyle`**       | Styles applied to the icon only, good for setting margins or a different color. _Note: use `iconStyle` for margins or expect unstable behaviour._ | `{marginRight: 10}` |
-| **`backgroundColor`** | Background color of the button.                                                                                                                   | `#007AFF`           |
-| **`borderRadius`**    | Border radius of the button, set to `0` to disable.                                                                                               | `5`                 |
-| **`onPress`**         | A function called when the button is pressed.                                                                                                     | _None_              |
+| Prop              | Description                                                                                                                                       | Default             |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `color`           | Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.                                                     | `white`             |
+| `size`            | Icon size.                                                                                                                                        | `20`                |
+| `iconStyle`       | Styles applied to the icon only, good for setting margins or a different color. _Note: use `iconStyle` for margins or expect unstable behaviour._ | `{marginRight: 10}` |
+| `backgroundColor` | Background color of the button.                                                                                                                   | `#007AFF`           |
+| `borderRadius`    | Border radius of the button, set to `0` to disable.                                                                                               | `5`                 |
+| `onPress`         | A function called when the button is pressed.                                                                                                     | _None_              |

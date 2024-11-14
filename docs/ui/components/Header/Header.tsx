@@ -1,5 +1,7 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { GithubIcon, Menu01Icon, Star01Icon } from '@expo/styleguide-icons';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { Menu01Icon } from '@expo/styleguide-icons/outline/Menu01Icon';
+import { Star01Icon } from '@expo/styleguide-icons/outline/Star01Icon';
 import { type ReactNode } from 'react';
 
 import { Logo } from './Logo';
@@ -24,7 +26,7 @@ export const Header = ({
   const isArchive = sidebarActiveGroup === 'archive';
   return (
     <>
-      <nav className="flex items-center justify-between relative bg-default z-10 mx-auto p-0 px-4 h-[60px] border-b border-default gap-2">
+      <nav className="relative z-10 mx-auto flex h-[60px] items-center justify-between gap-2 border-b border-default bg-default p-0 px-4">
         <div className="flex items-center gap-8">
           <Logo subgroup={isArchive ? 'Archive' : undefined} />
         </div>
@@ -56,7 +58,7 @@ export const Header = ({
             theme="quaternary"
             href="https://github.com/expo/expo"
             aria-label="GitHub"
-            className={mergeClasses('px-2 hidden', 'max-lg-gutters:flex')}>
+            className={mergeClasses('hidden px-2', 'max-lg-gutters:flex')}>
             <GithubIcon className="icon-lg" />
           </Button>
           <div className="max-lg-gutters:hidden">
@@ -81,7 +83,7 @@ export const Header = ({
       {isMobileMenuVisible && (
         <nav
           className={mergeClasses(
-            'items-center justify-between relative bg-default z-10 mx-auto p-0 px-4 h-[60px] border-b border-default hidden',
+            'relative z-10 mx-auto hidden h-[60px] items-center justify-between border-b border-default bg-default p-0 px-4',
             'max-lg-gutters:flex'
           )}>
           <div className="flex items-center">
@@ -93,7 +95,7 @@ export const Header = ({
         </nav>
       )}
       {isMobileMenuVisible && (
-        <div className="bg-subtle h-[calc(100dvh-(60px*2))] overflow-x-hidden overflow-y-auto">
+        <div className="h-[calc(100dvh-(60px*2))] overflow-y-auto overflow-x-hidden bg-subtle">
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
           <SidebarFooter isMobileMenuVisible={isMobileMenuVisible} />

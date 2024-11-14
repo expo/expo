@@ -148,15 +148,9 @@ export default {
                     watchId,
                     location: lastKnownPosition,
                 });
-            }, undefined, 
-            // @ts-ignore: the options object needs to be fixed
-            options);
+            }, undefined, options);
             resolve(watchId);
         });
-    },
-    getPermissionsAsync,
-    async requestPermissionsAsync() {
-        return getPermissionsAsync(true);
     },
     async requestForegroundPermissionsAsync() {
         return getPermissionsAsync(true);
@@ -170,8 +164,5 @@ export default {
     async getBackgroundPermissionsAsync() {
         return getPermissionsAsync();
     },
-    // no-op
-    startObserving() { },
-    stopObserving() { },
 };
 //# sourceMappingURL=ExpoLocation.web.js.map

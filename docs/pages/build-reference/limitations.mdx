@@ -16,7 +16,7 @@ See [Server infrastructure reference](/build-reference/infrastructure) for more 
 
 Build jobs for Android install npm and Maven dependencies from a local cache. Build jobs for iOS install npm dependencies from a local cache, but there is no caching for CocoaPods yet.
 
-Intermediate artifacts like `node_modules` directories are not cached and restored (eg: based on `yarn.lock` or `package-lock.json`), but if you commit them to your git repository then they will be uploaded to build servers.
+Intermediate artifacts like **node_modules** directories are not cached and restored (for example, based on **package-lock.json** or **yarn.lock**), but if you commit them to your Git repository then they will be uploaded to build servers.
 
 See [dependency caching](/build-reference/caching) for more information.
 
@@ -24,13 +24,11 @@ See [dependency caching](/build-reference/caching) for more information.
 
 If your build takes longer than 2 hours to run, it will be canceled. This limit is lower on the free plan, and the limit is subject to change in the future.
 
-## Yarn Workspaces is recommended for monorepos; official guidance for others is limited
+## Yarn workspaces is recommended for monorepos
+
+> **Note**: Official guidance for package managers other than Yarn is limited.
 
 While you likely can have success using other monorepo tools like Nx if you are willing to dig in and understand the tooling and get your hands dirty, the Expo team will be unable to provide support and guidance on those tools. We recommend using [Yarn Workspaces](https://yarnpkg.com/en/docs/workspaces) because it is the only monorepo tool that we provide first-class integration with at the moment.
-
-## Managed workflow projects on SDK 40 and below are not supported
-
-EAS Build supports building iOS/Android native projects, so it works with any React Native app. Support for [Managed Expo projects](/archive/managed-vs-bare/) is only available for SDK 41 and higher. **For best results, we recommend using the latest SDK version**, or at least SDK 43.
 
 ## Get notified about changes
 

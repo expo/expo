@@ -1,0 +1,119 @@
+---
+title: Testing React Server Components
+sidebar_title: Testing RSC
+description: Learn about writing unit tests for React Server Components in Expo.
+platforms: ['android', 'ios', 'web']
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **warning** This guide refers to the experimental feature React Server Components which is still in development.
+
+React Server Components (RSC) is a new feature in React that allows you to build components that render on the server and can be hydrated on the client. This guide provides details on how to write unit tests for RSC in your project.
+
+## Jest testing
+
+React Server Components run on Node.js. This means Jest on its own can closely emulate the server-side rendering environment, in contrast with client-based tests that require a Jest preset to communicate between Node.js and a web browser.
+
+### Setup
+
+While standard server rendering is web-only, Expo's universal RSC bundles custom server renderers for each platform. This means platform-specific file extensions are supported. For example, when writing Server Components for an iOS app, platform-specific extensions such as **\*.ios.js** and **\*.native.ts** will be resolved.
+
+`jest-expo` provides a couple different presets for testing Server Components:
+
+| Runner                  | Description                                                                                    |
+| ----------------------- | ---------------------------------------------------------------------------------------------- |
+| `jest-expo/rsc/android` | An Android-only runner for RSC. Uses **\*.android.js**, **\*.native.js**, and **\*.js** files. |
+| `jest-expo/rsc/ios`     | An iOS-only runner for RSC. Uses **\*.ios.js**, **\*.native.js**, and **\*.js** files.         |
+| `jest-expo/rsc/web`     | A web-only runner for RSC. Uses **\*.web.js** and **\*.js** files.                             |
+| `jest-expo/rsc`         | A multi-runner that combines the above runners.                                                |
+
+To configure Jest for RSC, create a **jest-rsc.config.js** file in your project's root:
+
+```js jest-rsc.config.js
+module.exports = require('jest-expo/rsc/jest-preset');
+```
+
+Then, you can add a script such as `test:rsc` to your **package.json**:
+
+```json package.json
+{
+  "scripts": {
+    "test:rsc": "jest --config jest-rsc.config.js"
+  }
+}
+```
+
+### Writing tests
+
+Tests should be written in a **\_\_rsc_tests\_\_** directory to prevent Jest from running your client tests on the server.
+
+```js __rsc_tests__/my-component.test.ts
+/// <reference types="jest-expo/rsc/expect" />
+
+import { LinearGradient } from 'expo-linear-gradient';
+
+it(`renders to RSC`, async () => {
+  const jsx = (
+    <LinearGradient
+      colors={['cyan', '#ff00ff', 'rgba(0,0,0,0)', 'rgba(0,255,255,0.5)']}
+      testID="gradient"
+    />
+  );
+
+  await expect(jsx).toMatchFlight(`1:I["src/LinearGradient.tsx",[],"LinearGradient"]
+0:["$","$L1",null,{"colors":["cyan","#ff00ff","rgba(0,0,0,0)","rgba(0,255,255,0.5)"],"testID":"gradient"},null]`);
+});
+```
+
+Any code you import in your test files will run in the server environment. You can import server-only modules like `react-server` and `server-only`. This is useful for determining if a library is compatible with RSC.
+
+### Custom expect matchers
+
+`jest-expo` for RSC adds a couple of custom matchers to Jest's `expect`:
+
+- `toMatchFlight`: Render a JSX element using a pseudo-implementation of the render in Expo CLI and compare to a flight string.
+- `toMatchFlightSnapshot`: Same as `toMatchFlight` but saves the flight string to a snapshot file.
+
+Behind the scenes, these methods handle a part of the framework operation needed to render RSC. The component's render stream is buffered to a string and compared all at once. You can alternatively stream it manually to observe the rendering progress.
+
+If a component fails to render, the matcher will throw an error to fail the test. In practice, the server renderer will generate an `E:` line, which will sent to the client to be thrown locally for the user.
+
+### Running tests
+
+You can run your tests with the `test:rsc` script:
+
+<Terminal cmd={['$ yarn test:rsc --watch']} />
+
+If you're using the multi-runner, you can select a specific project using the `--selectProjects` flag. The following example only runs the web platform:
+
+<Terminal cmd={['$ yarn test:rsc --watch --selectProjects rsc/web']} />
+
+### Environments
+
+In an RSC bundling environment, you can import files like
+
+## Tips
+
+Use the `server-only` and `client-only` modules to assert that a module should not be imported on the client or server:
+
+```js my-module.js
+import 'server-only';
+```
+
+RSC supports package exports by default. You can use the `react-server` condition to change what file is imported from a module:
+
+```json package.json
+{
+  "exports": {
+    ".": {
+      "react-server": "./index.react-server.js",
+      "default": "./index.js"
+    }
+  }
+}
+```
+
+When bundling for RSC, all modules are bundled in React Server mode and you can opt out with the `"use client"` directive. When `"use client"` is found, the module becomes an async reference to the client module.
+
+`"use server"` is not the opposite of `"use client"`. It is instead used to define a React Server Functions file.

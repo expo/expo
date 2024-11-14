@@ -117,3 +117,34 @@ struct Reminder: Record {
   @Field
   var completionDate: Either<String, Double>?
 }
+
+struct OpenInCalendarOptions: Record {
+  @Field
+  var id: String
+  @Field
+  var instanceStartDate: Either<String, Double>?
+  @Field
+  var allowsEditing: Bool = false
+  @Field
+  var allowsCalendarPreview: Bool = false
+}
+
+enum ResponseAction: String, Enumerable {
+  case done
+  case canceled
+  case deleted
+  case responded
+  case saved
+}
+
+struct DialogViewResponse: Record {
+  @Field
+  var action: ResponseAction = .done
+}
+
+struct DialogEditResponse: Record {
+  @Field
+  var action: ResponseAction = .canceled
+  @Field
+  var id: String? = nil
+}

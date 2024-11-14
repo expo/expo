@@ -65,14 +65,10 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     }
 
     AsyncFunction("presentPermissionsPickerAsync") {
-      if #available(iOS 15.0, *) {
-        guard let vc = appContext?.utilities?.currentViewController() else {
-          return
-        }
-        PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: vc)
-      } else {
-        throw MethodUnavailableException()
+      guard let vc = appContext?.utilities?.currentViewController() else {
+        return
       }
+      PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: vc)
     }.runOnQueue(.main)
 
     AsyncFunction("createAssetAsync") { (uri: URL, promise: Promise) in
@@ -81,7 +77,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
 
       if uri.pathExtension.isEmpty {
-        promise.reject(FileExtensionException())
+        promise.reject(EmptyFileExtensionException())
         return
       }
 
@@ -103,12 +99,12 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         : PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: uri)
 
         assetPlaceholder = changeRequest?.placeholderForCreatedAsset
-      } completionHandler: { success, _ in
+      } completionHandler: { success, error in
         if success {
           let asset = getAssetBy(id: assetPlaceholder?.localIdentifier)
           promise.resolve(exportAsset(asset: asset))
         } else {
-          promise.reject(SaveAssetException())
+          promise.reject(SaveAssetException(error))
         }
       }
     }
@@ -119,7 +115,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
 
       if localUrl.pathExtension.isEmpty {
-        promise.reject(FileExtensionException())
+        promise.reject(EmptyFileExtensionException())
         return
       }
 
@@ -133,7 +129,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         }
         self.delegates.remove(delegate)
         guard error == nil else {
-          promise.reject(SaveAssetException())
+          promise.reject(SaveAssetException(error))
           return
         }
         promise.resolve()
@@ -165,11 +161,11 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
     AsyncFunction("addAssetsToAlbumAsync") { (assetIds: [String], album: String, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
-        addAssets(ids: assetIds, to: album) { success, _ in
+        addAssets(ids: assetIds, to: album) { success, error in
           if success {
             promise.resolve(success)
           } else {
-            promise.reject(SaveAlbumException())
+            promise.reject(SaveAlbumException(error))
           }
         }
       }
@@ -183,14 +179,13 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           }
           let assets = getAssetsBy(assetIds: assetIds)
 
-          let collectionAssets = PHAsset.fetchAssets(in: collection, options: nil)
           let albumChangeRequest = PHAssetCollectionChangeRequest(for: collection, assets: assets)
           albumChangeRequest?.removeAssets(assets)
-        } completionHandler: { success, _ in
+        } completionHandler: { success, error in
           if success {
             promise.resolve(success)
           } else {
-            promise.reject(RemoveFromAlbumException())
+            promise.reject(RemoveFromAlbumException(error))
           }
         }
       }
@@ -204,11 +199,11 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       PHPhotoLibrary.shared().performChanges {
         let fetched = PHAsset.fetchAssets(withLocalIdentifiers: assetIds, options: nil)
         PHAssetChangeRequest.deleteAssets(fetched)
-      } completionHandler: { success, _ in
+      } completionHandler: { success, error in
         if success {
           promise.resolve(success)
         } else {
-          promise.reject(RemoveAssetsException())
+          promise.reject(RemoveAssetsException(error))
         }
       }
     }
@@ -258,21 +253,21 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
     AsyncFunction("createAlbumAsync") { (title: String, assetId: String?, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
-        createAlbum(with: title) { collection, _ in
+        createAlbum(with: title) { collection, createError in
           if let collection {
             if let assetId {
-              addAssets(ids: [assetId], to: collection.localIdentifier) { success, _ in
+              addAssets(ids: [assetId], to: collection.localIdentifier) { success, addError in
                 if success {
                   promise.resolve(exportCollection(collection))
                 } else {
-                  promise.reject(FailedToAddAssetException())
+                  promise.reject(FailedToAddAssetException(addError))
                 }
               }
             } else {
               promise.resolve(exportCollection(collection))
             }
           } else {
-            promise.reject(CreateAlbumFailedException())
+            promise.reject(CreateAlbumFailedException(createError))
           }
         }
       }
@@ -289,11 +284,11 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
             }
           }
           PHAssetCollectionChangeRequest.deleteAssetCollections(collections)
-        } completionHandler: { success, _ in
+        } completionHandler: { success, error in
           if success {
             promise.resolve(success)
           } else {
-            promise.reject(DeleteAlbumFailedException())
+            promise.reject(DeleteAlbumFailedException(error))
           }
         }
       }
@@ -419,7 +414,6 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       promise.reject(MediaLibraryPermissionsException())
       return false
     }
-    let permission = permissions.hasGrantedPermission(usingRequesterClass: requesterClass(self.writeOnly))
     if !permissions.hasGrantedPermission(usingRequesterClass: requesterClass(self.writeOnly)) {
       promise.reject(MediaLibraryPermissionsException())
       return false
@@ -436,12 +430,9 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
             reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
             return
           }
-
-          if #available(iOS 14.0, *) {
-            if permissions["accessPrivileges"] as? String != "all" {
-              reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
-              return
-            }
+          if permissions["accessPrivileges"] as? String != "all" {
+            reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
+            return
           }
           block()
         }
@@ -457,9 +448,9 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         self.allAssetsFetchResult = changeDetails.fetchResultAfterChanges
 
         if changeDetails.hasIncrementalChanges && !changeDetails.insertedObjects.isEmpty || !changeDetails.removedObjects.isEmpty {
-          var insertedAssets = [[String: Any]?]()
-          var deletedAssets = [[String: Any]?]()
-          var updatedAssets = [[String: Any]?]()
+          var insertedAssets = [[String: Any?]?]()
+          var deletedAssets = [[String: Any?]?]()
+          var updatedAssets = [[String: Any?]?]()
           let body: [String: Any] = [
             "hasIncrementalChanges": true,
             "insertedAssets": insertedAssets,

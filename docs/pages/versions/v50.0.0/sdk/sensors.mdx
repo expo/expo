@@ -6,12 +6,13 @@ packageName: 'expo-sensors'
 iconUrl: '/static/images/packages/expo-sensors.png'
 ---
 
+import { Speedometer04Icon } from '@expo/styleguide-icons/outline/Speedometer04Icon';
+
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
-import { Speedometer04Icon } from '@expo/styleguide-icons';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
 `expo-sensors` provide various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
 

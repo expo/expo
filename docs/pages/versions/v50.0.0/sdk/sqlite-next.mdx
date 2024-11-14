@@ -10,7 +10,7 @@ iconUrl: '/static/images/packages/expo-sqlite.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import PrereleaseNotice from '~/components/PrereleaseNotice';
+import PrereleaseNotice from '~/ui/components/PrereleaseNotice';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -363,7 +363,7 @@ The `expo-sqlite` library is designed to be a solid SQLite foundation. It enable
 
 ### Drizzle ORM
 
-[Drizzle](https://orm.drizzle.team/) is a ["headless TypeScript ORM with a head"](https://orm.drizzle.team/docs/overview). It runs on Node.js, Bun, Deno, and React Native. It also has a CLI compansion called [`drizzle-kit`](https://orm.drizzle.team/kit-docs/overview) for generating SQL migrations.
+[Drizzle](https://orm.drizzle.team/) is a ["headless TypeScript ORM with a head"](https://orm.drizzle.team/docs/overview). It runs on Node.js, Bun, Deno, and React Native. It also has a CLI companion called [`drizzle-kit`](https://orm.drizzle.team/kit-docs/overview) for generating SQL migrations.
 
 Check out the [Drizzle ORM documentation](https://orm.drizzle.team/) and the [`expo-sqlite` integration guide](https://orm.drizzle.team/docs/get-started-sqlite#expo-sqlite) for more details.
 
@@ -386,4 +386,4 @@ The following table summarizes the common API for [`SQLiteDatabase`](#sqlitedata
 | [`getAllAsync()`](#getallasyncsource-params)     | [`executeAsync()`](#executeasyncparams) + [`getFirstAsync()`](#getallasync)   | Fetches all query results at once.                                                                                                                                     | Best suited for scenarios with smaller result sets, such as queries with a LIMIT clause, like `SELECT * FROM Table LIMIT 100`, where you intend to retrieve all results in a single batch. |
 | [`getEachAsync()`](#geteachasyncsource-params)   | [`executeAsync()`](#executeasyncparams) + `for-await-of` async iterator       | Provides an iterator for result set traversal. This method fetches one row at a time from the database, potentially reducing memory usage compared to `getAllAsync()`. | Recommended for handling large result sets incrementally, such as with infinite scrolling implementations.                                                                                 |
 
-<APISection packageName="expo-sqlite-next" apiName="SQLite" exposeAllClassPropsInSidebar={true} />
+<APISection packageName="expo-sqlite-next" apiName="SQLite" exposeAllClassPropsInSidebar />

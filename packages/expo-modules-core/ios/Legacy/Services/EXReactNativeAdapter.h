@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridge.h>
+#import <React/React-Core-umbrella.h>
 
 #import <ExpoModulesCore/EXUIManager.h>
 #import <ExpoModulesCore/EXInternalModule.h>

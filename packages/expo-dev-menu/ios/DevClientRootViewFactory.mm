@@ -1,8 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import "DevClientRootViewFactory.h"
+#import <EXDevMenu/DevClientNoOpLoadingView.h>
 #import <EXDevMenu/DevMenuRCTBridge.h>
-#import <EXDevMenu/DevMenuLoadingView.h>
 #import <EXDevMenu/DevMenuRCTDevSettings.h>
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
@@ -39,7 +39,7 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
-  [modules addObject:[[DevMenuLoadingView alloc] init]];
+  [modules addObject:[[DevClientNoOpLoadingView alloc] init]];
   [modules addObject:[[DevMenuRCTDevSettings alloc] init]];
 
   return modules;

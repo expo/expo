@@ -1,3 +1,9 @@
+import type { NativeModule } from 'expo';
+import { SharedRef } from 'expo-modules-core/types';
+
+import type { ImageManipulatorContext } from './ImageManipulatorContext';
+import ImageRef from './ImageRef';
+
 // @needsAudit
 export type ImageResult = {
   /**
@@ -118,3 +124,20 @@ export type SaveOptions = {
    */
   format?: SaveFormat;
 };
+
+export declare class ImageManipulator extends NativeModule {
+  /**
+   * @hidden
+   */
+  Context: typeof ImageManipulatorContext;
+
+  /**
+   * @hidden
+   */
+  Image: typeof ImageRef;
+
+  /**
+   * Loads an image from the given URI and creates a new image manipulation context.
+   */
+  manipulate(source: string | SharedRef<'image'>): ImageManipulatorContext;
+}

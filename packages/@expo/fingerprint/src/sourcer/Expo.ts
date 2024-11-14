@@ -26,12 +26,13 @@ export async function getExpoConfigSourcesAsync(
   let config: ProjectConfig;
   let expoConfig: ExpoConfig;
   let loadedModules: string[] = [];
-  const ignoredFile = await createTempIgnoredFileAsync(options);
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'expo-fingerprint-'));
+  const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
   try {
     const { stdout } = await spawnAsync(
       'node',
       [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
-      { cwd: __dirname }
+      { cwd: projectRoot }
     );
     const stdoutJson = JSON.parse(stdout);
     config = stdoutJson.config;
@@ -48,6 +49,10 @@ export async function getExpoConfigSourcesAsync(
       console.warn(`Cannot get Expo config from an Expo project - ${e.message}: `, e.stack);
     }
     return [];
+  } finally {
+    try {
+      await fs.rm(tmpDir, { recursive: true });
+    } catch {}
   }
 
   // external files in config
@@ -178,10 +183,13 @@ function normalizeExpoConfig(config: ExpoConfig, options: NormalizedOptions): Ex
 /**
  * Create a temporary file with ignored paths from options that will be read by the ExpoConfigLoader.
  */
-async function createTempIgnoredFileAsync(options: NormalizedOptions): Promise<string> {
-  await fs.mkdtemp(path.join(os.tmpdir(), 'expo-fingerprint-'));
-  const ignoredFile = path.join(os.tmpdir(), '.fingerprintignore');
-  await fs.writeFile(ignoredFile, options.ignorePaths.join('\n'));
+async function createTempIgnoredFileAsync(
+  tmpDir: string,
+  options: NormalizedOptions
+): Promise<string> {
+  const ignoredFile = path.join(tmpDir, '.fingerprintignore');
+  const ignorePaths = options.ignorePathMatchObjects.map((match) => match.pattern);
+  await fs.writeFile(ignoredFile, ignorePaths.join('\n'));
   return ignoredFile;
 }
 
@@ -203,7 +211,8 @@ export async function getEasBuildSourcesAsync(projectRoot: string, options: Norm
 
 export async function getExpoAutolinkingAndroidSourcesAsync(
   projectRoot: string,
-  options: NormalizedOptions
+  options: NormalizedOptions,
+  expoAutolinkingVersion: string
 ): Promise<HashSource[]> {
   if (!options.platforms.includes('android')) {
     return [];
@@ -263,13 +272,15 @@ export async function getExpoCNGPatchSourcesAsync(
 
 export async function getExpoAutolinkingIosSourcesAsync(
   projectRoot: string,
-  options: NormalizedOptions
+  options: NormalizedOptions,
+  expoAutolinkingVersion: string
 ): Promise<HashSource[]> {
   if (!options.platforms.includes('ios')) {
     return [];
   }
 
-  const platform = getIosAutolinkingPlatformParam(projectRoot);
+  // expo-modules-autolinking 1.10.0 added support for apple platform
+  const platform = semver.lt(expoAutolinkingVersion, '1.10.0') ? 'ios' : 'apple';
   try {
     const reasons = ['expoAutolinkingIos'];
     const results: HashSource[] = [];
@@ -310,26 +321,4 @@ export function sortExpoAutolinkingAndroidConfig(config: Record<string, any>): R
     );
   }
   return config;
-}
-
-/**
- * Get the platform parameter for expo-modules-autolinking.
- *
- * Older autolinking uses `ios` and newer autolinking uses `apple`.
- */
-function getIosAutolinkingPlatformParam(projectRoot: string): string {
-  let platformParam = 'apple';
-  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
-  const autolinkingPackageJsonPath = resolveFrom.silent(
-    expoPackageRoot ?? projectRoot,
-    'expo-modules-autolinking/package.json'
-  );
-  if (autolinkingPackageJsonPath) {
-    const autolinkingPackageJson = require(autolinkingPackageJsonPath);
-    // expo-modules-autolinking 1.10.0 added support for apple platform
-    if (semver.lt(autolinkingPackageJson.version, '1.10.0')) {
-      platformParam = 'ios';
-    }
-  }
-  return platformParam;
 }

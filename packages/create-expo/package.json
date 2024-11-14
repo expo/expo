@@ -1,6 +1,6 @@
 {
   "name": "create-expo",
-  "version": "2.3.5",
+  "version": "3.1.2",
   "bin": "./build/index.js",
   "main": "build",
   "description": "Create universal Expo apps",
@@ -21,6 +21,9 @@
     "build",
     "template"
   ],
+  "engines": {
+    "node": ">=18.13.0"
+  },
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
@@ -34,29 +37,29 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/json-file": "8.3.3",
-    "@expo/config": "9.0.2",
+    "@expo/config": "~10.0.4",
+    "@expo/json-file": "^9.0.0",
     "@expo/package-manager": "^1.5.0",
     "@expo/spawn-async": "^1.7.2",
+    "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.0",
     "@types/node": "^18.19.34",
-    "@types/node-fetch": "^2.5.8",
     "@types/picomatch": "^2.3.3",
     "@types/prompts": "2.0.14",
     "@types/tar": "^6.1.2",
-    "@vercel/ncc": "^0.38.0",
+    "@vercel/ncc": "^0.38.1",
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-module-scripts": "^3.0.0",
+    "expo-module-scripts": "^4.0.0",
     "fast-glob": "^3.3.2",
     "getenv": "^1.0.0",
-    "node-fetch": "^2.6.7",
+    "nock": "^14.0.0-beta.7",
     "ora": "3.4.0",
     "picomatch": "^2.3.1",
     "prompts": "^2.4.2",
-    "tar": "6.1.13",
+    "tar": "^6.2.1",
     "update-check": "^1.5.4"
   }
 }

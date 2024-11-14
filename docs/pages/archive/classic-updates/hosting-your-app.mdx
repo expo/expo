@@ -2,8 +2,8 @@
 title: Hosting Updates on Your Servers
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
 
 > This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
 
@@ -84,7 +84,7 @@ Here's an example of **firebase.json** configuration, with a [deploy target](htt
 
 ## Building the standalone app
 
-To configure your standalone binary to pull updates from your server, you’ll need to define the URL where you will host your **index.json** file. When using EAS Build, just set the [`updates.url` property in app.json](/versions/latest/config/app/#url) to point to that url.
+To configure your standalone binary to pull updates from your server, you'll need to define the URL where you will host your **index.json** file. When using EAS Build, just set the [`updates.url` property in app.json](/versions/latest/config/app/#url) to point to that url.
 
 ## Loading QR Code/URL in Development
 
@@ -92,7 +92,7 @@ You can also load an update hosted on your own servers as a QR code/URL into the
 
 ### QR code:
 
-The URI you’ll use to convert to QR code will be deeplinked using the `exps`/`exp` protocol. Both `exps` and `exp` deeplink into the mobile app and perform a request using HTTPS and HTTP respectively. You can create your own QR code using an online QR code generator from the input URI.
+The URI you'll use to convert to QR code will be deeplinked using the `exps`/`exp` protocol. Both `exps` and `exp` deeplink into the mobile app and perform a request using HTTPS and HTTP respectively. You can create your own QR code using an online QR code generator from the input URI.
 
 #### Here's an example of how you'd do this with a remote server:
 

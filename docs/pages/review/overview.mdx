@@ -4,11 +4,15 @@ sidebar_title: Distributing apps for review
 description: Learn about how to distribute your app for review using app stores, internal distribution, and EAS Update.
 ---
 
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { CODE } from '~/ui/components/Text';
-import { BuildIcon, LayersTwo02Icon, GithubIcon, EasSubmitIcon } from '@expo/styleguide-icons';
-import Video from '~/components/plugins/Video';
 
 This page outlines three approaches to sharing a preview version of your app with your team for QA and review: app store testing tracks, internal distribution, and development builds with EAS Update.
 
@@ -20,7 +24,7 @@ Even though Expo Go is an open-source sandbox that can be good for previewing is
 
 ## App store testing tracks
 
-When distributing apps through app store testing tracks, you can only use release builds. You cannot use this method to distribute development builds. An alternative approach is to use ["Internal distribution"](#internal-distribution), which works with both release and development builds.
+When distributing apps through app store testing tracks, you can only use release builds. You cannot use this method to distribute development builds. An alternative approach is to use ["Internal distribution"](#internal-distribution-with-eas-build), which works with both release and development builds.
 
 **Android**: Google Play beta provides both closed and open tracks for Android apps. You can invite specific users to test your app in the closed beta. In the open beta, you can make your app available to anyone participating in the beta program.
 
@@ -52,19 +56,19 @@ You can use [development builds](/develop/development-builds/introduction/) to l
 
 <Collapsible summary="You can use the Expo dashboard to launch updates and share a link to a specific update.">
 
-<Video controls file="review/eas-update-01.mp4" />
+<ContentSpotlight controls file="review/eas-update-01.mp4" />
 
 </Collapsible>
 
 <Collapsible summary="You can explore and launch updates directly from a development build.">
 
-<Video controls file="review/eas-update-02.mp4" />
+<ContentSpotlight controls file="review/eas-update-02.mp4" />
 
 </Collapsible>
 
 <Collapsible summary="You can configure GitHub actions to automatically publish updates on PRs and commits.">
 
-<Video controls file="review/eas-update-03.mp4" />
+<ContentSpotlight controls file="review/eas-update-03.mp4" />
 
 </Collapsible>
 

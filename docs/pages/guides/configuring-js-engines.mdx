@@ -10,6 +10,8 @@ JavaScript engines execute your application code and provide various features su
 
 ## Configuring the `jsEngine` through app config
 
+> **warning** Changing the JS engine is unavailable in Expo Go from SDK 52 (only the Hermes engine is available). A [development build](/develop/development-builds/introduction/) is required to use this customization.
+
 We recommend Hermes because it is purpose built and optimized for React Native apps, and it has the best debugging experience. If you are familiar with the tradeoffs of different JavaScript engines and would like to change away from Hermes, the [`jsEngine`](/versions/latest/config/app/#jsengine) field inside [app config](/workflow/configuration/) allows you to specify the JavaScript engine for your app. The default value is `hermes`.
 
 If you want to use JSC instead, set the `jsEngine` field in the app config:
@@ -22,7 +24,7 @@ If you want to use JSC instead, set the `jsEngine` field in the app config:
 }
 ```
 
-<Collapsible summary="Are you using the bare workflow?">
+<Collapsible summary="Usage in bare React Native projects">
 
 To change the JavaScript engine in a bare React Native project, update the `expo.jsEngine` value in **android/gradle.properties** and **ios/Podfile.properties.json**.
 
@@ -38,9 +40,9 @@ To use the V8 engine, you need to install [`react-native-v8`](https://github.com
 
 Make sure to remove the `jsEngine` field from the app config.
 
-<Collapsible summary="Are you using the bare workflow?">
+<Collapsible summary="Usage with Expo Prebuild">
 
-You can run `npx expo prebuild -p android --clean` after the installation to prebuild again.
+Run `npx expo prebuild -p android --clean` after the installation to prebuild again.
 
 </Collapsible>
 

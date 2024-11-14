@@ -1,9 +1,17 @@
-import { extractExpoPathFromURL, parsePathFromExpoGoLink } from '../extractPathFromURL';
+import {
+  extractExpoPathFromURL,
+  parsePathAndParamsFromExpoGoLink,
+  parsePathFromExpoGoLink,
+} from '../extractPathFromURL';
+
+declare global {
+  // eslint-disable-next-line no-var
+  var expo: any;
+}
 
 describe(extractExpoPathFromURL, () => {
   beforeEach(() => {
     if (typeof expo === 'undefined') {
-      // @ts-expect-error
       globalThis.expo = {
         modules: {},
       };
@@ -58,10 +66,12 @@ describe(extractExpoPathFromURL, () => {
         'custom://',
         'custom://?hello=bar',
         'invalid',
+        'scheme_with|unusual%characters:///',
+        'scheme_with|unusual%characters://expo.host/?hello-bar',
       ])(`parses %p`, (url) => {
         expo.modules.ExpoGo = exenv;
 
-        const res = extractExpoPathFromURL(url);
+        const res = extractExpoPathFromURL([], url);
         expect(res).toMatchSnapshot();
 
         if (exenv) {
@@ -73,21 +83,21 @@ describe(extractExpoPathFromURL, () => {
   }
   it(`decodes query params in bare`, () => {
     delete expo.modules.ExpoGo;
-    expect(extractExpoPathFromURL(`custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
+    expect(extractExpoPathFromURL([], `custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
   });
   it(`decodes query params in Expo Go`, () => {
     expo.modules.ExpoGo = {};
-    expect(extractExpoPathFromURL(`custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
-    expect(extractExpoPathFromURL(`exp://127.0.0.1:19000/--/test/path?x=%20%2B%2F`)).toEqual(
+    expect(extractExpoPathFromURL([], `custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
+    expect(extractExpoPathFromURL([], `exp://127.0.0.1:19000/--/test/path?x=%20%2B%2F`)).toEqual(
       'test/path?x= +/'
     );
-    expect(extractExpoPathFromURL(`exp://x?y=%20%2B%2F`)).toEqual('?y= +/');
+    expect(extractExpoPathFromURL([], `exp://x?y=%20%2B%2F`)).toEqual('?y= +/');
   });
 
   it(`only handles Expo Go URLs in Expo Go`, () => {
     delete expo.modules.ExpoGo;
 
-    const res = extractExpoPathFromURL('exp://127.0.0.1:19000/--/test');
+    const res = extractExpoPathFromURL([], 'exp://127.0.0.1:19000/--/test');
     // This should look mostly broken, but it's the best we can do
     // when someone uses this format outside of Expo Go.
     expect(res).toEqual('127.0.0.1:19000/--/test');
@@ -141,5 +151,34 @@ describe(parsePathFromExpoGoLink, () => {
     'exp://exp.host/@test/test/--/test/path/--/foobar',
   ])(`parses %p`, (url) => {
     expect(parsePathFromExpoGoLink(url)).toMatchSnapshot();
+  });
+});
+
+describe(parsePathAndParamsFromExpoGoLink, () => {
+  it(`parses Expo Go link with no path or query params`, () => {
+    expect(parsePathAndParamsFromExpoGoLink('exp://192.168.1.174:8081/--/')).toEqual({
+      pathname: '',
+      queryString: '',
+    });
+  });
+  it(`parses Expo Go link with path`, () => {
+    expect(parsePathAndParamsFromExpoGoLink('exp://192.168.1.174:8081/--/explore')).toEqual({
+      pathname: 'explore',
+      queryString: '',
+    });
+  });
+  it(`parses Expo Go link with query params and no path`, () => {
+    expect(parsePathAndParamsFromExpoGoLink('exp://192.168.1.174:8081/--/?foo=bar')).toEqual({
+      pathname: '',
+      queryString: '?foo=bar',
+    });
+  });
+  it(`parses Expo Go link with path and query params`, () => {
+    expect(parsePathAndParamsFromExpoGoLink('exp://192.168.1.174:8081/--/explore?foo=bar')).toEqual(
+      {
+        pathname: 'explore',
+        queryString: '?foo=bar',
+      }
+    );
   });
 });

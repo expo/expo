@@ -16,21 +16,20 @@ func stringify(mediaType: PHAssetMediaType) -> String {
 }
 
 func stringifyMedia(mediaSubtypes: PHAssetMediaSubtype) -> [String] {
-  var subtypes = [String]()
-  var subtypesDict: [String: PHAssetMediaSubtype] = [
-    "hdr": PHAssetMediaSubtype.photoHDR,
-    "panorama": PHAssetMediaSubtype.photoPanorama,
-    "stream": PHAssetMediaSubtype.videoStreamed,
-    "timelapse": PHAssetMediaSubtype.videoTimelapse,
-    "screenshot": PHAssetMediaSubtype.photoScreenshot,
-    "highFrameRate": PHAssetMediaSubtype.videoHighFrameRate
+  let subtypesDict: [String: PHAssetMediaSubtype] = [
+    "hdr": .photoHDR,
+    "panorama": .photoPanorama,
+    "stream": .videoStreamed,
+    "timelapse": .videoTimelapse,
+    "screenshot": .photoScreenshot,
+    "highFrameRate": .videoHighFrameRate,
+    "livePhoto": .photoLive,
+    "depthEffect": .photoDepthEffect
   ]
 
-  subtypesDict["livePhoto"] = PHAssetMediaSubtype.photoLive
-  subtypesDict["depthEffect"] = PHAssetMediaSubtype.photoDepthEffect
-
+  var subtypes = [String]()
   for (subtype, value) in subtypesDict where mediaSubtypes.contains(value) {
-    subtypes.append(subtype as String)
+    subtypes.append(subtype)
   }
   return subtypes
 }
@@ -104,7 +103,6 @@ func assetIdFromLocalId(localId: String) -> String? {
 }
 
 func assetUriForLocalId(localId: String) -> String {
-  let assetId = assetIdFromLocalId(localId: localId)
   return String(format: "ph://\(localId)")
 }
 
@@ -263,37 +261,25 @@ func createAlbum(with title: String, completion: @escaping (PHAssetCollection?, 
 }
 
 func assetType(for localUri: URL) -> PHAssetMediaType {
-  let fileUTI: CFString?
-
-  if #available(iOS 14.0, *) {
-    if let type = UTType(filenameExtension: localUri.pathExtension)?.identifier as CFString? {
-      fileUTI = type
-    } else {
-      fileUTI = nil
-    }
-  } else {
-    fileUTI = UTTypeCreatePreferredIdentifierForTag(
-      kUTTagClassFilenameExtension,
-      localUri.pathExtension as CFString,
-      nil
-    )?.takeUnretainedValue()
-  }
-
-  guard let fileUTI else {
+  guard let type = UTType(filenameExtension: localUri.pathExtension) else {
     return assetTypeExtension(for: localUri.pathExtension)
   }
-
-  if UTTypeConformsTo(fileUTI, kUTTypeImage) {
+  switch type {
+  case .image:
     return .image
-  }
-  if UTTypeConformsTo(fileUTI, kUTTypeMovie) {
+  case .video:
     return .video
-  }
-  if UTTypeConformsTo(fileUTI, kUTTypeAudio) {
+  case .audio:
     return .audio
+  case _ where type.conforms(to: .image):
+    return .image
+  case _ where type.conforms(to: .video):
+    return .video
+  case _ where type.conforms(to: .audio):
+    return .audio
+  default:
+    return .unknown
   }
-
-  return .unknown
 }
 
 func assetTypeExtension(for fileExtension: String) -> PHAssetMediaType {
@@ -346,15 +332,13 @@ func assetTypeExtension(for fileExtension: String) -> PHAssetMediaType {
 func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection?, promise: Promise) {
   let fetchOptions = PHFetchOptions()
   var predicates: [NSPredicate] = []
-  var response = [String: Any?]()
-  var assets: [[String: Any]] = []
 
   var cursor: PHAsset?
   if let after = options.after {
     cursor = getAssetBy(id: after)
 
     if cursor == nil {
-      promise.reject(CusrorException())
+      promise.reject(CursorException())
       return
     }
   }
@@ -411,31 +395,63 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
     fetchResult = PHAsset.fetchAssets(with: fetchOptions)
   }
 
-  var cursorIndex: Int
-  if let cursor {
-    cursorIndex = fetchResult.index(of: cursor)
-  } else {
-    cursorIndex = NSNotFound
+  var cursorIndex: Int {
+    if let cursor {
+      return fetchResult.index(of: cursor)
+    }
+    return NSNotFound
   }
 
+  let resultingAssets = getAssets(
+    fetchResult: fetchResult,
+    cursorIndex: cursorIndex,
+    numOfRequestedItems: options.first,
+    sortDescriptors: fetchOptions.sortDescriptors
+  )
+
+  let lastAsset = resultingAssets.assets.last
+
+  let response: [String: Any?] = [
+    "assets": resultingAssets.assets,
+    "endCursor": lastAsset?["id"] ?? options.after,
+    "hasNextPage": resultingAssets.hasNextPage,
+    "totalCount": resultingAssets.totalCount
+  ]
+  promise.resolve(response)
+}
+
+func getAssets(
+  fetchResult: PHFetchResult<PHAsset>,
+  cursorIndex: Int,
+  numOfRequestedItems: Int,
+  sortDescriptors: [NSSortDescriptor]? = nil
+) -> GetAssetsResponse {
   let totalCount = fetchResult.count
+  if totalCount == 0 {
+    return GetAssetsResponse(assets: [], totalCount: totalCount, hasNextPage: false)
+  }
+
+  var assets: [[String: Any?]] = []
+  assets.reserveCapacity(numOfRequestedItems)
   var hasNextPage: Bool
 
-  if fetchOptions.sortDescriptors?.isEmpty == true {
-    let startIndex = max(cursorIndex == NSNotFound ? totalCount - 1 : cursorIndex - 1, -1)
-    let endIndex = max(startIndex - options.first + 1, 0)
+  // If we don't use any sort descriptors (nil, or empty array), the assets are sorted just like in Photos app.
+  // That means the most recent assets are at the start of the array.
+  if sortDescriptors?.isEmpty ?? true {
+    let upperIndex = max(cursorIndex == NSNotFound ? totalCount - 1 : cursorIndex - 1, -1)
+    let lowerIndex = max(upperIndex - numOfRequestedItems, -1)
 
-    for i in (endIndex...startIndex).reversed() {
+    for i in stride(from: upperIndex, to: lowerIndex, by: -1) {
       let asset = fetchResult.object(at: i)
       if let exportedAsset = exportAsset(asset: asset) {
         assets.append(exportedAsset)
       }
     }
 
-    hasNextPage = endIndex > 0
+    hasNextPage = lowerIndex >= 0
   } else {
     let startIndex = cursorIndex == NSNotFound ? 0 : cursorIndex + 1
-    let endIndex = min(startIndex + options.first, totalCount)
+    let endIndex = min(startIndex + numOfRequestedItems, totalCount)
 
     for index in startIndex..<endIndex {
       let asset = fetchResult.object(at: index)
@@ -446,15 +462,7 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
 
     hasNextPage = endIndex < totalCount
   }
-
-  let lastAsset = assets.last
-
-  response["assets"] = assets
-  response["endCursor"] = lastAsset != nil ? lastAsset?["id"] : options.after
-  response["hasNextPage"] = hasNextPage
-  response["totalCount"] = totalCount
-
-  promise.resolve(response)
+  return GetAssetsResponse(assets: assets, totalCount: totalCount, hasNextPage: hasNextPage)
 }
 
 func prepareSortDescriptors(sortBy: [String]) throws -> [NSSortDescriptor] {
@@ -475,10 +483,7 @@ private func sortDescriptor(from config: String) throws -> NSSortDescriptor? {
     return nil
   }
 
-  var ascending = false
-  if parts.count > 1 && parts[1] == "ASC" {
-    ascending = true
-  }
+  let ascending = parts.count > 1 && parts[1] == "ASC"
 
   return NSSortDescriptor(key: key, ascending: ascending)
 }

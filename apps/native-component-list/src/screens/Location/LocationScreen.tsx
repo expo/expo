@@ -46,14 +46,6 @@ export default function LocationScreen({
   return (
     <ScrollView style={styles.scrollView}>
       <SimpleActionDemo
-        title="requestPermissionsAsync (legacy)"
-        action={() => Location.requestPermissionsAsync()}
-      />
-      <SimpleActionDemo
-        title="getPermissionsAsync (legacy)"
-        action={() => Location.getPermissionsAsync()}
-      />
-      <SimpleActionDemo
         title="requestForegroundPermissionsAsync"
         action={() => Location.requestForegroundPermissionsAsync()}
       />

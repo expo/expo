@@ -26,6 +26,7 @@ describe('push', () => {
     expect(store.rootState).toStrictEqual({
       index: 5,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['page', '_sitemap', '+not-found'],
       routes: [
         {
@@ -84,6 +85,7 @@ describe('push', () => {
     expect(store.rootState).toEqual({
       index: 0,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['page', '_sitemap', '+not-found'],
       routes: [
         {
@@ -125,6 +127,7 @@ describe('navigate', () => {
     expect(store.rootState).toStrictEqual({
       index: 0,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['page', '_sitemap', '+not-found'],
       routes: [
         {
@@ -158,6 +161,7 @@ describe('navigate', () => {
     expect(store.rootState).toStrictEqual({
       index: 3,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['index', '_sitemap', '[page]', '+not-found'],
       routes: [
         {
@@ -200,6 +204,7 @@ describe('navigate', () => {
     expect(store.rootState).toStrictEqual({
       index: 0,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['index', '_sitemap', '[page]', '+not-found'],
       routes: [
         {
@@ -236,6 +241,7 @@ describe('replace', () => {
     expect(store.rootState).toStrictEqual({
       index: 3,
       key: expect.any(String),
+      preloadedRoutes: [],
       routeNames: ['page', '_sitemap', '+not-found'],
       routes: [
         {
@@ -289,4 +295,15 @@ it('can handle search params with special characters', async () => {
 
   expect(screen).toHavePathnameWithParams('/?a=%28param%29');
   expect(screen).toHaveSearchParams({ a: '(param)' });
+});
+
+it('can handle array search params', async () => {
+  renderRouter({
+    index: () => null,
+  });
+
+  act(() => router.push('/?array=1&array=2'));
+
+  expect(screen).toHavePathnameWithParams('/?array=1&array=2');
+  expect(screen).toHaveSearchParams({ array: ['1', '2'] });
 });

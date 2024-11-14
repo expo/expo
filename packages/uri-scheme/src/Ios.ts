@@ -4,7 +4,7 @@ import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
-import { sync as globSync } from 'glob';
+import { globSync } from 'glob';
 import * as path from 'path';
 
 import { CommandError, Options } from './Options';

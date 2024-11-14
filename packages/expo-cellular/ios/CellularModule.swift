@@ -92,23 +92,18 @@ public class CellularModule: Module {
 
   static func currentRadioAccessTechnology() -> String? {
     let netinfo = CTTelephonyNetworkInfo()
-
-    if #available(iOS 12.0, *) {
-      return netinfo.serviceCurrentRadioAccessTechnology?.values.first
-    } else {
-      return netinfo.currentRadioAccessTechnology
-    }
+    return netinfo.serviceCurrentRadioAccessTechnology?.values.first
   }
 
   static func currentCarrier() -> CTCarrier? {
     let netinfo = CTTelephonyNetworkInfo()
 
-    if #available(iOS 12.0, *), let providers = netinfo.serviceSubscriberCellularProviders {
+    if let providers = netinfo.serviceSubscriberCellularProviders {
       for carrier in providers.values where carrier.carrierName != nil {
         return carrier
       }
       return providers.values.first
     }
-    return netinfo.subscriberCellularProvider
+    return nil
   }
 }

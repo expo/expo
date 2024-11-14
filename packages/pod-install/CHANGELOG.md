@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 0.3.1 — 2024-11-14
+
+### 🐛 Bug fixes
+
+- Fix missing fallback to `process.cwd()` while no argument has been passed. ([#32848](https://github.com/expo/expo/pull/32848) by [@Simek](https://github.com/Simek))
+
+### 💡 Others
+
+- Improve console messages and errors. ([#32848](https://github.com/expo/expo/pull/32848) by [@Simek](https://github.com/Simek))
+
+## 0.3.0 — 2024-10-22
+
+### 💡 Others
+
+- Update `commander` dependency. ([#29603](https://github.com/expo/expo/pull/29603) by [@Simek](https://github.com/Simek))
+
 ## 0.2.2 — 2024-04-24
 
 _This version does not introduce any user-facing changes._

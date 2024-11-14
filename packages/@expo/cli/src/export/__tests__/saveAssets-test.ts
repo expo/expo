@@ -113,7 +113,6 @@ describe(persistMetroFilesAsync, () => {
         contents: '',
         assetId: '../../node_modules/@react-navigation/elements/src/assets/back-icon.png',
       },
-      'debug.html': { contents: '' },
       'metadata.json': { contents: '' },
       'index.html': { contents: '', routeId: '' },
       'other-2.html': { contents: '', routeId: 'other-2' },

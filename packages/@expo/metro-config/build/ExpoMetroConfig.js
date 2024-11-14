@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.getDefaultConfig = void 0;
+exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.getDefaultConfig = exports.createStableModuleIdFactory = void 0;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
@@ -44,6 +44,7 @@ const file_store_1 = require("./file-store");
 const getModulesPaths_1 = require("./getModulesPaths");
 const getWatchFolders_1 = require("./getWatchFolders");
 const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
+const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
@@ -53,7 +54,11 @@ function getAssetPlugins(projectRoot) {
     if (!hashAssetFilesPath) {
         throw new Error(`The required package \`expo-asset\` cannot be found`);
     }
-    return [hashAssetFilesPath];
+    return [
+        // Use relative path to ensure maximum cache hits.
+        // This is resolved here https://github.com/facebook/metro/blob/ec584b9cc2b8356356a4deacb7e1d5c83f243c3a/packages/metro/src/Assets.js#L271
+        'expo-asset/tools/hashAssetFiles',
+    ];
 }
 let hasWarnedAboutExotic = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
@@ -84,6 +89,69 @@ function patchMetroGraphToSupportUncachedModules() {
         Graph.prototype.traverseDependencies.__patched = true;
     }
 }
+function createNumericModuleIdFactory() {
+    const fileToIdMap = new Map();
+    let nextId = 0;
+    return (modulePath) => {
+        let id = fileToIdMap.get(modulePath);
+        if (typeof id !== 'number') {
+            id = nextId++;
+            fileToIdMap.set(modulePath, id);
+        }
+        return id;
+    };
+}
+function memoize(fn) {
+    const cache = new Map();
+    return ((...args) => {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+        const result = fn(...args);
+        cache.set(key, result);
+        return result;
+    });
+}
+function createStableModuleIdFactory(root) {
+    const getModulePath = (modulePath, scope) => {
+        // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+        if (modulePath == null) {
+            return 'MODULE_NOT_FOUND';
+        }
+        else if ((0, sideEffects_1.isVirtualModule)(modulePath)) {
+            // Virtual modules should be stable.
+            return modulePath;
+        }
+        else if (path_1.default.isAbsolute(modulePath)) {
+            return path_1.default.relative(root, modulePath) + scope;
+        }
+        else {
+            return modulePath + scope;
+        }
+    };
+    const memoizedGetModulePath = memoize(getModulePath);
+    // This is an absolute file path.
+    // TODO: We may want a hashed version for production builds in the future.
+    return (modulePath, context) => {
+        const env = context?.environment ?? 'client';
+        if (env === 'client') {
+            // Only need scope for server bundles where multiple dimensions could run simultaneously.
+            // @ts-expect-error: we patch this to support being a string.
+            return memoizedGetModulePath(modulePath, '');
+        }
+        // Helps find missing parts to the patch.
+        if (!context?.platform) {
+            // context = { platform: 'web' };
+            throw new Error('createStableModuleIdFactory: `context.platform` is required');
+        }
+        // Only need scope for server bundles where multiple dimensions could run simultaneously.
+        const scope = env !== 'client' ? `?platform=${context?.platform}&env=${env}` : '';
+        // @ts-expect-error: we patch this to support being a string.
+        return memoizedGetModulePath(modulePath, scope);
+    };
+}
+exports.createStableModuleIdFactory = createStableModuleIdFactory;
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
@@ -134,6 +202,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const cacheStore = new file_store_1.FileStore({
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
+    const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
     // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
     // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
     const metroConfig = mergeConfig(metroDefaultValues, {
@@ -164,12 +233,26 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             additionalExts: envFiles.map((file) => file.replace(/^\./, '')),
         },
         serializer: {
+            isThirdPartyModule(module) {
+                // Block virtual modules from appearing in the source maps.
+                if ((0, sideEffects_1.isVirtualModule)(module.path))
+                    return true;
+                // Generally block node modules
+                if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {
+                    // Allow the expo-router/entry and expo/AppEntry modules to be considered first party so the root of the app appears in the trace.
+                    return !module.path.match(/[/\\](expo-router[/\\]entry|expo[/\\]AppEntry)/);
+                }
+                return false;
+            },
+            createModuleIdFactory: env_1.env.EXPO_USE_METRO_REQUIRE
+                ? createStableModuleIdFactory.bind(null, serverRoot)
+                : createNumericModuleIdFactory,
             getModulesRunBeforeMainModule: () => {
                 const preModules = [
                     // MUST be first
                     require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),
                 ];
-                const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/build/winter');
+                const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/src/winter');
                 if (stdRuntime) {
                     preModules.push(stdRuntime);
                 }
@@ -181,21 +264,37 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 }
                 return preModules;
             },
-            getPolyfills: () => require('@react-native/js-polyfills')(),
+            getPolyfills: ({ platform }) => {
+                // Do nothing for nullish platforms.
+                if (!platform) {
+                    return [];
+                }
+                if (platform === 'web') {
+                    return [
+                        // Ensure that the error-guard polyfill is included in the web polyfills to
+                        // make metro-runtime work correctly.
+                        require.resolve('@react-native/js-polyfills/error-guard'),
+                    ];
+                }
+                // Native behavior.
+                return require('@react-native/js-polyfills')();
+            },
         },
         server: {
             rewriteRequestUrl: (0, rewriteRequestUrl_1.getRewriteRequestUrl)(projectRoot),
             port: Number(env_1.env.RCT_METRO_PORT) || 8081,
             // NOTE(EvanBacon): Moves the server root down to the monorepo root.
             // This enables proper monorepo support for web.
-            unstable_serverRoot: (0, getModulesPaths_1.getServerRoot)(projectRoot),
+            unstable_serverRoot: serverRoot,
         },
         symbolicator: {
             customizeFrame: (0, customizeFrame_1.getDefaultCustomizeFrame)(),
         },
         transformerPath: require.resolve('./transform-worker/transform-worker'),
+        // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
+            unstable_renameRequire: false,
             // @ts-expect-error: not on type.
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
             browserslistHash: pkg.browserslist
@@ -204,14 +303,18 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             sassVersion,
             // Ensure invalidation when the version changes due to the Babel plugin.
             reanimatedVersion,
+            // Ensure invalidation when using identical projects in monorepos
+            _expoRelativeProjectRoot: path_1.default.relative(serverRoot, projectRoot),
             // `require.context` support
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
             babelTransformerPath: require.resolve('./babel-transformer'),
             // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
+            // TODO: The absolute path breaks invalidates caching across devices.
             asyncRequireModulePath: (0, resolve_from_1.default)(reactNativePath, metroDefaultValues.transformer.asyncRequireModulePath),
             assetRegistryPath: '@react-native/assets-registry/registry',
             assetPlugins: getAssetPlugins(projectRoot),
+            // hermesParser: true,
             getTransformOptions: async () => ({
                 transform: {
                     experimentalImportSupport: false,

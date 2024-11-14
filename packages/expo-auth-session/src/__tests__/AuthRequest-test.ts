@@ -3,7 +3,7 @@ import { CodeChallengeMethod, Prompt } from '../AuthRequest.types';
 import { getQueryParams } from '../QueryParams';
 
 jest.mock('expo-crypto', () => ({
-  getRandomBytes: jest.fn(() => ''),
+  getRandomValues: jest.fn((x) => x),
   digestStringAsync: jest.fn(async () => ''),
   CryptoDigestAlgorithm: { SHA256: 'SHA256' },
   CryptoEncoding: { BASE64: 'BASE64' },

@@ -1,0 +1,16 @@
+{
+  "platforms": [
+    "apple",
+    "android"
+  ],
+  "apple": {
+    "modules": [
+      "BenchmarkingExpoModule"
+    ]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.benchmark.BenchmarkingExpoModule"
+    ]
+  }
+}

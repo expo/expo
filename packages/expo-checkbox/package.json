@@ -1,7 +1,7 @@
 {
   "name": "expo-checkbox",
-  "version": "3.0.0",
-  "description": "Basic checkbox for iOS, Android, and web",
+  "version": "4.0.0",
+  "description": "Basic boolean input for Android, iOS and web.",
   "main": "build/Checkbox.js",
   "types": "build/Checkbox.d.ts",
   "scripts": {
@@ -31,9 +31,19 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/checkbox",
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/react-native": "^11.3.0",
-    "expo-module-scripts": "^3.0.0"
+    "@testing-library/react": "^15.0.7",
+    "@testing-library/react-native": "^12.5.1",
+    "expo-module-scripts": "^4.0.0"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-web": {
+      "optional": true
+    }
   },
   "jest": {
     "preset": "expo-module-scripts"

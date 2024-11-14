@@ -13,7 +13,12 @@ const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.Bu
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
         propName: 'newArchEnabled',
-        propValueGetter: (config) => config.android?.newArchEnabled?.toString(),
+        propValueGetter: (config) => {
+            if (config.android?.newArchEnabled !== undefined) {
+                config_plugins_1.WarningAggregator.addWarningAndroid('withAndroidBuildProperties', 'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.', 'https://docs.expo.dev/versions/latest/config/app/#newarchenabled');
+            }
+            return config.android?.newArchEnabled?.toString();
+        },
     },
     {
         propName: 'android.minSdkVersion',
@@ -58,6 +63,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
         propName: 'android.enableShrinkResourcesInReleaseBuilds',
         propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
+    },
+    {
+        propName: 'android.enablePngCrunchInReleaseBuilds',
+        propValueGetter: (config) => config.android?.enablePngCrunchInReleaseBuilds?.toString(),
     },
     {
         propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',

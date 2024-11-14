@@ -54,6 +54,7 @@ public final class UpdateAsset: NSObject {
 
     guard let key = key else {
       // create a filename that's unlikely to collide with any other asset
+      // swiftlint:disable:next legacy_random
       return String(format: "asset-%d-%u%@", arguments: [Int(Date().timeIntervalSince1970), arc4random(), fileExtension])
     }
 

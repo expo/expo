@@ -3,14 +3,13 @@ import { forwardRef, useRef, useMemo, useImperativeHandle, } from 'react';
 import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 import CameraManager from './ExpoCameraManager.web';
-import { CameraType, } from './legacy/Camera.types';
 import { capture } from './web/WebCameraUtils';
 import { PictureSizes } from './web/WebConstants';
 import { useWebCameraStream } from './web/useWebCameraStream';
 import { useWebQRScanner } from './web/useWebQRScanner';
-const ExponentCamera = forwardRef(({ type, poster, ...props }, ref) => {
+const ExponentCamera = forwardRef(({ facing, poster, ...props }, ref) => {
     const video = useRef(null);
-    const native = useWebCameraStream(video, type, props, {
+    const native = useWebCameraStream(video, facing, props, {
         onCameraReady() {
             if (props.onCameraReady) {
                 props.onCameraReady();
@@ -19,15 +18,15 @@ const ExponentCamera = forwardRef(({ type, poster, ...props }, ref) => {
         onMountError: props.onMountError,
     });
     const isQRScannerEnabled = useMemo(() => {
-        return Boolean(props.barCodeScannerSettings?.barCodeTypes?.includes('qr') && !!props.onBarCodeScanned);
-    }, [props.barCodeScannerSettings?.barCodeTypes, props.onBarCodeScanned]);
+        return Boolean(props.barcodeScannerSettings?.barcodeTypes?.includes('qr') && !!props.onBarcodeScanned);
+    }, [props.barcodeScannerSettings?.barcodeTypes, props.onBarcodeScanned]);
     useWebQRScanner(video, {
-        interval: props.barCodeScannerSettings?.interval,
+        interval: 300,
         isEnabled: isQRScannerEnabled,
-        captureOptions: { scale: 1, isImageMirror: native.type === CameraType.front },
+        captureOptions: { scale: 1, isImageMirror: native.type === 'front' },
         onScanned(event) {
-            if (props.onBarCodeScanned) {
-                props.onBarCodeScanned(event);
+            if (props.onBarcodeScanned) {
+                props.onBarcodeScanned(event);
             }
         },
     });

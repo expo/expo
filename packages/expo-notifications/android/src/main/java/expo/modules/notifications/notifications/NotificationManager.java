@@ -30,6 +30,10 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   public NotificationManager() {
     mListenerReferenceMap = new WeakHashMap<>();
 
+    // TODO @vonovak there's a chain of listeners:
+    //  ExpoHandlingDelegate -> NotificationManager -> NotificationsEmitter
+    //                                              -> NotificationsHandler
+    // it seems it could be shorter?
     // Registers this singleton instance in static ExpoHandlingDelegate listeners collection.
     // Since it doesn't hold strong reference to the object this should be safe.
     ExpoHandlingDelegate.Companion.addListener(this);
@@ -81,6 +85,10 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
    * Calls {@link NotificationListener#onNotificationReceived(Notification)} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    *
+   * In practice, that means calling {@link NotificationsEmitter} (just emits an event to JS) and
+   * {@link NotificationsHandler} which calls `handleNotification` in JS to determine the behavior.
+   * Then `SingleNotificationHandlerTask.processNotificationWithBehavior` may present it.
+   *
    * @param notification Notification received
    */
   public void onNotificationReceived(Notification notification) {
@@ -126,15 +134,26 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
     }
   }
 
-  public void onNotificationResponseFromExtras(Bundle extras) {
-    if (mPendingNotificationResponsesFromExtras.isEmpty()) {
-      mPendingNotificationResponsesFromExtras.add(extras);
-    } else {
+ public void onNotificationResponseFromExtras(Bundle extras) {
+    // We're going to be passed in extras from either
+    // a killed state (ExpoNotificationLifecycleListener::onCreate)
+    // OR a background state (ExpoNotificationLifecycleListener::onNewIntent)
+
+    // If we've just come from a background state, we'll have listeners set up
+    // pass on the notification to them
+    if (!mListenerReferenceMap.isEmpty()) {
       for (WeakReference<NotificationListener> listenerReference : mListenerReferenceMap.values()) {
         NotificationListener listener = listenerReference.get();
         if (listener != null) {
           listener.onNotificationResponseIntentReceived(extras);
         }
+      }
+    } else {
+      // Otherwise, the app has been launched from a killed state, and our listeners
+      // haven't yet been setup. We'll add this to a list of pending notifications
+      // for them to process once they've been initialized.
+      if (mPendingNotificationResponsesFromExtras.isEmpty()) {
+        mPendingNotificationResponsesFromExtras.add(extras);
       }
     }
   }

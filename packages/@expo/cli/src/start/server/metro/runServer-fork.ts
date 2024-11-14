@@ -11,6 +11,7 @@ import MetroHmrServer from 'metro/src/HmrServer';
 import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
 import { ConfigT } from 'metro-config';
 import { parse } from 'url';
+import type { WebSocketServer } from 'ws';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
@@ -36,7 +37,11 @@ export const runServer = async (
     // Use a mock server object instead of creating a real server, this is used in export cases where we want to reuse codepaths but not actually start a server.
     mockServer: boolean;
   }
-): Promise<{ server: http.Server | https.Server; metro: Server }> => {
+): Promise<{
+  server: http.Server | https.Server;
+  hmrServer: MetroHmrServer | null;
+  metro: Server;
+}> => {
   // await earlyPortCheck(host, config.server.port);
 
   // if (secure != null || secureCert != null || secureKey != null) {
@@ -55,7 +60,9 @@ export const runServer = async (
     watch,
   });
 
-  assert(typeof (middleware as any).use === 'function');
+  if (!mockServer) {
+    assert(typeof (middleware as any).use === 'function');
+  }
   const serverApp = middleware as ConnectAppType;
 
   let httpServer: http.Server | https.Server;
@@ -93,11 +100,32 @@ export const runServer = async (
     end();
   });
 
+  // Extend the close method to ensure all websocket servers are closed, and connections are terminated
+  const originalClose = httpServer.close.bind(httpServer);
+
+  httpServer.close = function closeHttpServer(callback) {
+    originalClose(callback);
+
+    // Close all websocket servers, including possible client connections (see: https://github.com/websockets/ws/issues/2137#issuecomment-1507469375)
+    for (const endpoint of Object.values(websocketEndpoints) as WebSocketServer[]) {
+      endpoint.close();
+      endpoint.clients.forEach((client) => client.terminate());
+    }
+
+    // Forcibly close active connections
+    this.closeAllConnections();
+    return this;
+  };
+
   if (mockServer) {
-    return { server: httpServer, metro: metroServer };
+    return { server: httpServer, hmrServer: null, metro: metroServer };
   }
 
-  return new Promise<{ server: http.Server | https.Server; metro: Server }>((resolve, reject) => {
+  return new Promise<{
+    server: http.Server | https.Server;
+    hmrServer: MetroHmrServer;
+    metro: Server;
+  }>((resolve, reject) => {
     httpServer.on('error', (error) => {
       reject(error);
     });
@@ -107,14 +135,15 @@ export const runServer = async (
         onReady(httpServer);
       }
 
+      const hmrServer = new MetroHmrServer(
+        metroServer.getBundler(),
+        metroServer.getCreateModuleId(),
+        config
+      );
+
       Object.assign(websocketEndpoints, {
-        // @ts-expect-error: incorrect types
         '/hot': createWebsocketServer({
-          websocketServer: new MetroHmrServer(
-            metroServer.getBundler(),
-            metroServer.getCreateModuleId(),
-            config
-          ),
+          websocketServer: hmrServer,
         }),
       });
 
@@ -129,7 +158,7 @@ export const runServer = async (
         }
       });
 
-      resolve({ server: httpServer, metro: metroServer });
+      resolve({ server: httpServer, hmrServer, metro: metroServer });
     });
   });
 };

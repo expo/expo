@@ -40,7 +40,52 @@ const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
+const debug = require('debug')('expo:metro-config:transform-worker');
+function getStringArray(value) {
+    if (!value)
+        return undefined;
+    if (typeof value === 'string') {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+            return parsed;
+        }
+        throw new Error('Expected an array of strings for the `clientBoundaries` option.');
+    }
+    if (Array.isArray(value)) {
+        return value;
+    }
+    throw new Error('Expected an array of strings for the `clientBoundaries` option.');
+}
 async function transform(config, projectRoot, filename, data, options) {
+    const reactServer = options.customTransformOptions?.environment === 'react-server';
+    if (typeof options.customTransformOptions?.dom === 'string' &&
+        filename.match(/expo\/dom\/entry\.js/)) {
+        // TODO: Find some method to do this without invalidating the cache between different DOM components.
+        // Inject source for DOM component entry.
+        const relativeDomComponentEntry = JSON.stringify(decodeURI(options.customTransformOptions.dom));
+        const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
+        return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
+    }
+    if (filename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+        const environment = options.customTransformOptions?.environment;
+        const isServer = environment === 'node' || environment === 'react-server';
+        if (!isServer) {
+            const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
+            // Inject client boundaries into the root client bundle for production bundling.
+            if (clientBoundaries) {
+                debug('Parsed client boundaries:', clientBoundaries);
+                // Inject source
+                const src = 'module.exports = {\n' +
+                    clientBoundaries
+                        .map((boundary) => {
+                        return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+                    })
+                        .join('\n') +
+                    '\n};';
+                return worker.transform(config, projectRoot, filename, Buffer.from('/* RSC client boundaries */\n' + src), options);
+            }
+        }
+    }
     const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
     // If the file is not CSS, then use the default behavior.
     if (!isCss) {
@@ -96,6 +141,7 @@ async function transform(config, projectRoot, filename, data, options) {
             filename,
             src: code,
             options: {
+                reactServer,
                 projectRoot,
                 dev: options.dev,
                 minify: options.minify,
@@ -115,34 +161,54 @@ async function transform(config, projectRoot, filename, data, options) {
                         lineCount: (0, countLines_1.default)(cssCode),
                         map: [],
                         functionMap: null,
+                        // Disable caching for CSS files when postcss is enabled and has been run on the file.
+                        // This ensures that things like tailwind can update on every change.
+                        skipCache: postcssResults.hasPostcss,
+                        externalImports: results.externalImports,
                     },
                 },
             },
         ];
         return {
-            dependencies: jsModuleResults.dependencies,
+            dependencies: jsModuleResults.dependencies.concat(results.dependencies),
             output,
         };
     }
     // Global CSS:
     const { transform } = require('lightningcss');
-    // TODO: Add bundling to resolve imports
-    // https://lightningcss.dev/bundling.html#bundling-order
+    // Here we delegate bundling to lightningcss to resolve all CSS imports together.
+    // TODO: Add full CSS bundling support to Metro.
     const cssResults = transform({
         filename,
         code: Buffer.from(code),
+        errorRecovery: true,
         sourceMap: false,
         cssModules: false,
         projectRoot,
         minify: options.minify,
+        analyzeDependencies: true,
+        // @ts-expect-error: Added for testing against virtual file system.
+        resolver: options._test_resolveCss,
     });
-    // TODO: Warnings:
-    // cssResults.warnings.forEach((warning) => {
-    // });
+    (0, css_modules_1.printCssWarnings)(filename, code, cssResults.warnings);
+    const cssImports = (0, css_modules_1.collectCssImports)(filename, code, cssResults.code.toString(), cssResults);
+    const cssCode = cssImports.code;
+    // Append additional css metadata for static extraction.
+    const cssOutput = {
+        code: cssCode,
+        lineCount: (0, countLines_1.default)(cssCode),
+        map: [],
+        functionMap: null,
+        // Disable caching for CSS files when postcss is enabled and has been run on the file.
+        // This ensures that things like tailwind can update on every change.
+        skipCache: postcssResults.hasPostcss,
+        externalImports: cssImports.externalImports,
+    };
     // Create a mock JS module that exports an empty object,
     // this ensures Metro dependency graph is correct.
-    const jsModuleResults = await worker.transform(config, projectRoot, filename, options.dev ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: code, filename })) : Buffer.from(''), options);
-    const cssCode = cssResults.code.toString();
+    const jsModuleResults = await worker.transform(config, projectRoot, filename, options.dev
+        ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: cssCode, filename, reactServer }))
+        : Buffer.from(''), options);
     // In production, we export the CSS as a string and use a special type to prevent
     // it from being included in the JS bundle. We'll extract the CSS like an asset later
     // and append it to the HTML bundle.
@@ -151,21 +217,12 @@ async function transform(config, projectRoot, filename, data, options) {
             type: 'js/module',
             data: {
                 ...jsModuleResults.output[0].data,
-                // Append additional css metadata for static extraction.
-                css: {
-                    code: cssCode,
-                    lineCount: (0, countLines_1.default)(cssCode),
-                    map: [],
-                    functionMap: null,
-                    // Disable caching for CSS files when postcss is enabled and has been run on the file.
-                    // This ensures that things like tailwind can update on every change.
-                    skipCache: postcssResults.hasPostcss,
-                },
+                css: cssOutput,
             },
         },
     ];
     return {
-        dependencies: jsModuleResults.dependencies,
+        dependencies: jsModuleResults.dependencies.concat(cssImports.dependencies),
         output,
     };
 }

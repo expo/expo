@@ -9,14 +9,16 @@ platforms: ['android', 'ios', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline } from '~/ui/components/Snippet';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { Collapsible } from '~/ui/components/Collapsible';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+} from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline } from '~/ui/components/Snippet';
+import { PlatformTag } from '~/ui/components/Tag';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
@@ -98,15 +100,40 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigReactNative>
 
-### Background Location methods
+### Background location configuration&ensp;<PlatformTag platform="ios" />
+
+To be able to run background location on iOS, you need to add the `location` value to the `UIBackgroundModes` array in your app's **Info.plist** file.
+
+**If you're using [CNG](/workflow/continuous-native-generation/)**, the required `UIBackgroundModes` configuration will be applied automatically by prebuild.
+
+<Collapsible summary="Configure UIBackgroundModes manually on iOS">
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native iOS project, then you'll need to add the following to your **Expo.plist** file:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+  </array>
+</key>
+```
+
+</Collapsible>
+
+### Background location methods
 
 > **warning** **Warning:** Background location tracking support is provided as-is and is not guaranteed to work in all scenarios. We currently are not prioritizing resources to improve it, but we hope to in the future. You may want to use [`react-native-background-geolocation`](https://github.com/transistorsoft/react-native-background-geolocation) instead &mdash; it requires purchasing a license and is a well-maintained and supported library that includes a config plugin.
 
 To use Background Location methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
-- **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](/versions/latest/sdk/task-manager/#configuration-in-appjsonappconfigjs).
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
+- <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
+  specified in **Info.plist** file. See [Background location
+  configuration](#background-location-configuration).
+- <PlatformTag platform="ios" className="float-left" /> You must use a [development
+  build](/develop/development-builds/introduction/) to use background location since it is not
+  supported in the Expo Go app.
 
 ### Geofencing methods
 
@@ -120,10 +147,10 @@ To use Geofencing methods, the following requirements apply:
 
 If you're using the Android Emulator or iOS Simulator, ensure that [Location is enabled](#enable-emulator-location).
 
-<SnackInline label='Location' dependencies={['expo-location', 'expo-constants']}>
+<SnackInline label='Location' dependencies={['expo-location', 'expo-constants', 'expo-device']}>
 
-```jsx
-import React, { useState, useEffect } from 'react';
+```tsx
+import { useState, useEffect } from 'react';
 import { Platform, Text, View, StyleSheet } from 'react-native';
 /* @hide */
 import * as Device from 'expo-device';
@@ -131,11 +158,11 @@ import * as Device from 'expo-device';
 import * as Location from 'expo-location';
 
 export default function App() {
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
+    async function getCurrentLocation() {
       /* @hide */
       if (Platform.OS === 'android' && !Device.isDevice) {
         setErrorMsg(
@@ -152,10 +179,12 @@ export default function App() {
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-    })();
+    }
+
+    getCurrentLocation();
   }, []);
 
-  let text = 'Waiting..';
+  let text = 'Waiting...';
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
@@ -191,10 +220,10 @@ const styles = StyleSheet.create({
 
 Open Android Studio, and launch the Android Emulator. Inside it, go to **Settings** > **Location** and enable **Use location**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Location settings in Android Emulator for versions 12 and higher"
   src="/static/images/sdk/location/enable-android-emulator-location.png"
-  style={{ maxWidth: 360 }}
+  className="max-w-[360px]"
 />
 
 If you don't receive the locations in the emulator, you may have to turn off the **Improve Location Accuracy** setting. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator.
@@ -205,10 +234,10 @@ For Android 12 and higher, go to **Settings** > **Location** > **Location Servic
 
 With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Location settings in iOS simulator."
   src="/static/images/sdk/location/ios-simulator-location.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 ## API
@@ -223,7 +252,7 @@ import * as Location from 'expo-location';
 
 ### Android
 
-> **Note**: Foreground and background services are not available in Expo Go for Android.
+> **warning**: Foreground and background services are not available in Expo Go for Android. Instead, we recommend using a [development build](/develop/development-builds/introduction/) to avoid limitations.
 
 When you install the `expo-location` module, it automatically adds the following permissions:
 

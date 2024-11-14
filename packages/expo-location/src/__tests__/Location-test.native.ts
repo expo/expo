@@ -2,7 +2,7 @@ import { Platform } from 'expo-modules-core';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 import ExpoLocation from '../ExpoLocation';
-import * as Location from '../Location';
+import * as Location from '../index';
 
 const fakeReturnValue = {
   coords: {

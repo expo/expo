@@ -6,9 +6,9 @@ packageName: 'expo-apple-authentication'
 platforms: ['ios', 'tvos']
 ---
 
-import { ConfigReactNative, ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigReactNative, ConfigPluginExample } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-apple-authentication` provides Apple authentication for iOS. It does not yet support Android or web.
@@ -30,8 +30,10 @@ To enable the **Sign In with Apple** capability in your app, set the [`ios.usesA
 
 ```json app.json
 {
-  "ios": {
-    "usesAppleSignIn": true
+  "expo": {
+    "ios": {
+      "usesAppleSignIn": true
+    }
   }
 }
 ```

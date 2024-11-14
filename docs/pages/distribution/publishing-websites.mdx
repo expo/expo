@@ -3,10 +3,11 @@ title: Publish websites with Metro
 description: Different ways to publish the Expo web app with third-party services.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
-import { Terminal } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 > **warning** In SDK 50 and above, `metro` is the default bundler for web apps. The previous [guide for publishing with `webpack` is available here](/archive/publishing-websites-webpack/).
 
@@ -63,7 +64,7 @@ Open [`http://localhost:5000`](http://localhost:5000) to see your project in act
 
 <Tab label="server">
 
-You need to create a custom server to host the websites with API routes. Learn more about [serving locally with Express](https://docs.expo.dev/router/reference/api-routes/#express).
+You need to create a custom server to host the websites with API routes. Learn more about [serving locally with Express](/router/reference/api-routes/#express).
 
 </Tab>
 
@@ -305,41 +306,49 @@ In case you want to change the header for hosting add the following config for `
 
 [GitHub Pages](https://pages.github.com/) allows you to publish a website directly from a GitHub repository.
 
-> **warning** GitHub Pages deployment requires Expo SDK 50 or higher, and uses experimental baseUrl functionality that may not work as intended.
+> **warning** GitHub Pages deployment requires Expo SDK 50 or higher, and uses experimental `baseUrl` functionality that may not work as intended.
 
 <Step label="1">
 
-Start by initializing a new git repository in your project. If this is already done, skip this step.
+Start by initializing a new git repository in your project and configuring it to push to a GitHub repository. If you are already syncing your changes with a GitHub repository, skip this step.
 
-If not then you'll want to run the following command in your project's root directory:
+Create a repository on the GitHub website. Then, run the following commands in your project's root directory:
 
-<Terminal cmd={['$ git init']} />
+<Terminal
+  cmd={['$ git init', '', '$ git remote add origin https://github.com/username/expo-gh-pages.git']}
+/>
+
+The above commands initialize a new Git repository and configure it to push your source code to the specified GitHub repository.
 
 </Step>
 
 <Step label="2">
 
-Add the GitHub repository as a `remote` in your local git repository.
+Install the `gh-pages` package as a development dependency in your project:
 
-<Terminal cmd={['$ git remote add origin https://github.com/username/expo-gh-pages.git']} />
+<Tabs>
 
-Running the above command configures git know which repository you want to push your source code to.
+<Tab label="npm">
+
+<Terminal cmd={['$ npm install --save-dev gh-pages']} />
+
+</Tab>
+
+<Tab label="yarn">
+
+<Terminal cmd={['$ yarn add -D gh-pages']} />
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
 <Step label="3">
 
-Install the `gh-pages` package as a `dev-dependency` in your project:
+To deploy the project, configure it to a subdomain with the [`baseUrl`](/versions/latest/config/app/#baseurl) property in [app config](/workflow/configuration/). Set its value to the string `/repo-name`.
 
-<Terminal cmd={['$ yarn add -D gh-pages']} />
-
-</Step>
-
-<Step label="4">
-
-Configure your project to be deployed to a subdomain with the **baseUrl** feature in the **app.json** Set its value to the string `/{repo-name}`.
-
-For example, if the GitHub repository is `expo-gh-pages`, the following will be the value of the [experimental `baseUrl` property](https://docs.expo.dev/more/expo-cli/#hosting-with-sub-paths):
+For example, if the GitHub repository is `expo-gh-pages`, the following will be the value of the [experimental `baseUrl` property](/more/expo-cli/#hosting-with-sub-paths):
 
 {/* prettier-ignore */}
 ```json app.json
@@ -354,21 +363,19 @@ For example, if the GitHub repository is `expo-gh-pages`, the following will be 
 
 </Step>
 
-<Step label="5">
+<Step label="4">
 
 Because Expo uses underscores in generated files, you need to disable jekyll by creating a **.nojekyll** file in the **public** directory.
 
 <Terminal cmd={['$ mkdir public && touch public/.nojekyll']} />
 
-This file will be copied to the **dist** directory when you build your project.
-
-> You also need to run `gh-pages` with the `-t` flag to ensure files starting with `.` are included in the deployment.
+Files in the **public** directory are copied to the **dist** directory when you build your web app.
 
 </Step>
 
-<Step label="6">
+<Step label="5">
 
-In the **package.json** file, modify the `scripts` property by adding `predeploy` and `deploy` properties. Each has its own value as shown:
+Modify the `scripts` in the **package.json** file by adding `predeploy` and `deploy` scripts. Each has its own value:
 
 {/* prettier-ignore */}
 ```json package.json
@@ -379,16 +386,56 @@ In the **package.json** file, modify the `scripts` property by adding `predeploy
 }
 ```
 
+Running `gh-pages` with the `-t` flag is required. This flag ensures that the files starting with `.` are also included.
+
+</Step>
+
+<Step label="6">
+
+To generate a production build of the web app and deploy it to GitHub Pages, run the following command:
+
+<Tabs>
+
+<Tab label="npm">
+
+<Terminal cmd={['$ npm run deploy']} />
+
+</Tab>
+
+<Tab label="yarn">
+
+<Terminal cmd={['$ yarn deploy']} />
+
+</Tab>
+
+</Tabs>
+
+This publishes a build of the web app to the `gh-pages` branch of your GitHub repository. This branch only contains your build code in the root directory and does not include development source code.
+
 </Step>
 
 <Step label="7">
 
-To generate a production build of your app, and deploy it to GitHub Pages, run the following command:
+Now that the web app is published to the `gh-pages` branch, configure GitHub Pages to serve the app from that branch.
 
-<Terminal cmd={['$ yarn deploy']} />
+- Navigate to the **Settings** tab of the GitHub repository.
+- Scroll down to **Pages** section.
+- Ensure the **Source** is set to **Deploy from a branch**.
+- Under **Branch** section, select **gh-pages** and the **root** directory.
+- Click **Save**.
 
-Your web app is now available at the URL `http://{username on GitHub}.github.io/{repo-name}`.
+<ContentSpotlight
+  alt="GitHub Pages configuration in repository settings"
+  src="/static/images/distribution/publishing-websites-github-pages-config.png"
+  className="max-w-[480px]"
+/>
 
-> When you publish code to your repository, for example: `gh-pages`, it will create and push the code to a branch in your repo. This branch will have your build code, however, not your development source code.
+</Step>
+
+<Step label="8">
+
+Once the web app is published and the GitHub Pages configuration is set, a GitHub action will deploy your website. You can monitor its progress by navigating to your repository's **Actions** tab. Upon completion, your web app will be available at the URL `http://username-on-github.github.io/repo-name`.
+
+For subsequent deployments and updates, run the `deploy` command and the GitHub action will start automatically to update your web app.
 
 </Step>

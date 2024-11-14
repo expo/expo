@@ -9,15 +9,17 @@ export type ContentsJsonImageIdiom =
   | 'ios-marketing'
   | 'universal';
 
-export type ContentsJsonImageAppearance = {
+export type ContentsJsonImageAppearanceLuminosityType = 'dark' | 'tinted';
+
+export type ContentsJsonAppearance = {
   appearance: 'luminosity';
-  value: 'dark';
+  value: ContentsJsonImageAppearanceLuminosityType;
 };
 
 export type ContentsJsonImageScale = '1x' | '2x' | '3x';
 
 export interface ContentsJsonImage {
-  appearances?: ContentsJsonImageAppearance[];
+  appearances?: ContentsJsonAppearance[];
   idiom: ContentsJsonImageIdiom;
   size?: string;
   scale?: ContentsJsonImageScale;
@@ -25,8 +27,23 @@ export interface ContentsJsonImage {
   platform?: ContentsJsonImageIdiom;
 }
 
+export interface ContentsJsonColor {
+  appearances?: ContentsJsonAppearance[];
+  idiom: ContentsJsonImageIdiom;
+  color: {
+    'color-space': 'srgb';
+    components: {
+      alpha: string;
+      blue: string;
+      green: string;
+      red: string;
+    };
+  };
+}
+
 export interface ContentsJson {
   images: ContentsJsonImage[];
+  colors: ContentsJsonColor[];
   info: {
     version: number;
     author: string;

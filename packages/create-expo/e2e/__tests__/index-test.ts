@@ -58,6 +58,23 @@ it('creates a full basic project by default', async () => {
   expect(packageJson.name).toBe('defaults-to-basic');
 });
 
+it('throws when fetch is disabled', async () => {
+  const projectName = 'throws-when-fetch-disabled';
+  let result: Awaited<ReturnType<typeof execute>>;
+
+  try {
+    result = await execute([projectName, '--example', 'with-router'], {
+      env: { NODE_OPTIONS: '--no-experimental-fetch' },
+    });
+  } catch (error: any) {
+    result = error;
+  }
+
+  expect(result).toMatchObject({
+    stderr: expect.stringContaining('Node.js built-in fetch is required to continue'),
+  });
+});
+
 it('uses pnpm', async () => {
   const projectName = 'uses-pnpm';
   const results = await executePassing([projectName, '--no-install'], {

@@ -6,10 +6,10 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
   }
 
   public func getPermissions() -> [AnyHashable: Any] {
-    var systemStatus = AVAudioSession.sharedInstance().recordPermission
+    let systemStatus = AVAudioSession.sharedInstance().recordPermission
     var status: EXPermissionStatus
 
-    guard let usageDescription = Bundle.main.infoDictionary?["NSMicrophoneUsageDescription"] else {
+    guard (Bundle.main.infoDictionary?["NSMicrophoneUsageDescription"]) != nil else {
       EXFatal(EXErrorWithMessage("""
         This app is missing NSMicrophoneUsageDescription, so audio services will fail.
         Add one of these keys to your bundle's Info.plist.
@@ -23,6 +23,8 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     case .denied:
       status = EXPermissionStatusDenied
     case .undetermined:
+      status = EXPermissionStatusUndetermined
+    @unknown default:
       status = EXPermissionStatusUndetermined
     }
 

@@ -233,7 +233,9 @@ export default class FileSystemScreen extends React.Component<object, State> {
 
   _alertFreeSpace = async () => {
     const freeBytes = await FileSystem.getFreeDiskStorageAsync();
-    alert(`${Math.round(freeBytes / 1024 / 1024)} MB available`);
+    alert(
+      `${Math.round(freeBytes / 1024 / 1024)} MB (1MB = 1024^2B), or ${Math.round(freeBytes / 1000000)} MB (1MB = 1000^2B) available.`
+    );
   };
 
   _askForDirPermissions = async () => {

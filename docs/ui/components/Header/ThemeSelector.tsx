@@ -1,10 +1,8 @@
 import { useTheme, mergeClasses } from '@expo/styleguide';
-import {
-  ChevronDownIcon,
-  Moon01SolidIcon,
-  SunSolidIcon,
-  Contrast02SolidIcon,
-} from '@expo/styleguide-icons';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
+import { Contrast02SolidIcon } from '@expo/styleguide-icons/solid/Contrast02SolidIcon';
+import { Moon01SolidIcon } from '@expo/styleguide-icons/solid/Moon01SolidIcon';
+import { SunSolidIcon } from '@expo/styleguide-icons/solid/SunSolidIcon';
 import { useEffect, useState } from 'react';
 
 export const ThemeSelector = () => {
@@ -21,9 +19,9 @@ export const ThemeSelector = () => {
         aria-label="Theme selector"
         title="Select theme"
         className={mergeClasses(
-          'flex items-center justify-center h-9 text-default leading-[1.3] p-0 m-0 w-[50px] border border-default shadow-xs rounded-md indent-[-9999px] appearance-none bg-default text-sm',
+          'm-0 flex h-9 w-[50px] appearance-none items-center justify-center rounded-md border border-default bg-default p-0 indent-[-9999px] text-sm leading-[1.3] text-default shadow-xs',
           'hocus:bg-element',
-          'max-lg-gutters:w-auto max-lg-gutters:min-w-[100px] max-lg-gutters:px-2 max-lg-gutters:text-secondary max-lg-gutters:indent-0 max-lg-gutters:pl-8'
+          'max-lg-gutters:w-auto max-lg-gutters:min-w-[100px] max-lg-gutters:px-2 max-lg-gutters:pl-8 max-lg-gutters:indent-0 max-lg-gutters:text-secondary'
         )}
         value={themeName}
         onChange={e => {
@@ -43,7 +41,7 @@ export const ThemeSelector = () => {
           {themeName === 'light' && <SunSolidIcon className={ICON_CLASSES} />}
         </>
       )}
-      <ChevronDownIcon className="icon-xs text-icon-secondary absolute right-2 top-3 pointer-events-none" />
+      <ChevronDownIcon className="icon-xs pointer-events-none absolute right-2 top-3 text-icon-secondary" />
     </div>
   );
 };

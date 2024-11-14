@@ -1,0 +1,19 @@
+---
+title: Obtaining a device token for sending to FCMv1 or APNs
+hideFromSearch: true
+description: Learn how to obtain native device tokens.
+---
+
+Before communicating directly with FCMv1 or APNs, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExpoPushToken` with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
+
+```diff
+import * as Notifications from 'expo-notifications';
+...
+- const token = (await Notifications.getExpoPushTokenAsync()).data;
++ const token = (await Notifications.getDevicePushTokenAsync()).data;
+// send token to your server
+```
+
+After getting the native device token, you can start [implementing the servers](/push-notifications/sending-notifications-custom).
+
+{/* Below are some minimal examples of communicating with FCM and APNs: */}

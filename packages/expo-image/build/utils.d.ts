@@ -1,3 +1,4 @@
+import type { SharedRef as SharedRefType } from 'expo/types';
 import { ImageContentFit, ImageContentPosition, ImageContentPositionObject, ImageProps, ImageTransition } from './Image.types';
 /**
  * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
@@ -14,4 +15,8 @@ export declare function resolveContentPosition(contentPosition?: ImageContentPos
  * When `fadeDuration` is used, it logs an appropriate deprecation warning.
  */
 export declare function resolveTransition(transition?: ImageProps['transition'], fadeDuration?: ImageProps['fadeDuration']): ImageTransition | null;
+/**
+ * Checks whether the given value is an instance of the `SharedRef<'image'>` class.
+ */
+export declare function isImageRef(value: any): value is SharedRefType<'image'>;
 //# sourceMappingURL=utils.d.ts.map

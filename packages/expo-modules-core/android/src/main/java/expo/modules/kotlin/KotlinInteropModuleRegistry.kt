@@ -22,7 +22,7 @@ class KotlinInteropModuleRegistry(
   val appContext = AppContext(modulesProvider, legacyModuleRegistry, reactContext)
 
   private val registry: ModuleRegistry
-    get() = appContext.registry
+    get() = appContext.hostingRuntimeContext.registry
 
   fun hasModule(name: String): Boolean = registry.hasModule(name)
 
@@ -31,7 +31,7 @@ class KotlinInteropModuleRegistry(
       requireNotNull(
         registry.getModuleHolder(moduleName)
       ) { "Trying to call '$method' on the non-existing module '$moduleName'" }
-        .call(method, arguments, promise)
+        .call(method, arguments.toArrayList().toArray(), promise)
     } catch (e: CodedException) {
       promise.reject(e)
     } catch (e: Throwable) {

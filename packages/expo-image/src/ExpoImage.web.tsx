@@ -1,44 +1,13 @@
 import React from 'react';
 import { View } from 'react-native-web';
 
-import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
+import type { ImageNativeProps, ImageSource, ImageLoadEventData, ImageRef } from './Image.types';
 import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 
 loadStyle();
-
-export const ExpoImageModule = {
-  async prefetch(urls: string | string[], _, __): Promise<boolean> {
-    const urlsArray = Array.isArray(urls) ? urls : [urls];
-
-    return new Promise<boolean>((resolve) => {
-      let imagesLoaded = 0;
-
-      urlsArray.forEach((url) => {
-        const img = new Image();
-        img.src = url;
-        img.onload = () => {
-          imagesLoaded++;
-
-          if (imagesLoaded === urlsArray.length) {
-            resolve(true);
-          }
-        };
-        img.onerror = () => resolve(false);
-      });
-    });
-  },
-
-  async clearMemoryCache(): Promise<boolean> {
-    return false;
-  },
-
-  async clearDiskCache(): Promise<boolean> {
-    return false;
-  },
-};
 
 function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
   return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -78,6 +47,14 @@ function isFlipTransition(transition: ImageNativeProps['transition']) {
   );
 }
 
+function getAnimationKey(
+  source: ImageSource | ImageRef | undefined,
+  recyclingKey?: string | null
+): string {
+  const uri = (source && 'uri' in source && source.uri) || '';
+  return recyclingKey ? [recyclingKey, uri].join('-') : uri;
+}
+
 export default function ExpoImage({
   source,
   placeholder,
@@ -90,35 +67,35 @@ export default function ExpoImage({
   onError,
   responsivePolicy,
   onLoadEnd,
+  onDisplay,
   priority,
   blurRadius,
   recyclingKey,
   style,
   nativeViewRef,
+  accessibilityLabel,
+  tintColor,
+  containerViewRef,
   ...props
 }: ImageNativeProps) {
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
   const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
   const selectedSource = useSourceSelection(
     source,
     responsivePolicy,
-    containerRef,
+    containerViewRef as React.MutableRefObject<HTMLDivElement | null>,
     isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null
   );
 
-  const initialNodeAnimationKey =
-    (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
-
+  const initialNodeAnimationKey = getAnimationKey(placeholder?.[0], recyclingKey);
   const initialNode: AnimationManagerNode | null = placeholder?.[0]?.uri
     ? [
         initialNodeAnimationKey,
         ({ onAnimationFinished }) =>
           (className, style) => (
             <ImageWrapper
-              {...props}
               ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
               source={placeholder?.[0]}
               style={{
@@ -133,22 +110,21 @@ export default function ExpoImage({
               contentPosition={{ left: '50%', top: '50%' }}
               hashPlaceholderContentPosition={contentPosition}
               hashPlaceholderStyle={imageHashStyle}
+              accessibilityLabel={accessibilityLabel}
+              cachePolicy={cachePolicy}
+              priority={priority}
+              tintColor={tintColor}
             />
           ),
       ]
     : null;
 
-  const currentNodeAnimationKey =
-    (recyclingKey
-      ? `${recyclingKey}-${selectedSource?.uri ?? placeholder?.[0]?.uri}`
-      : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
-
+  const currentNodeAnimationKey = getAnimationKey(selectedSource ?? placeholder?.[0], recyclingKey);
   const currentNode: AnimationManagerNode = [
     currentNodeAnimationKey,
     ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
       (className, style) => (
         <ImageWrapper
-          {...props}
           ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
           source={selectedSource || placeholder?.[0]}
           events={{
@@ -156,6 +132,7 @@ export default function ExpoImage({
             onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
             onMount: [onMount],
             onTransitionEnd: [onAnimationFinished],
+            onDisplay: [onDisplay],
           }}
           style={{
             objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
@@ -168,12 +145,17 @@ export default function ExpoImage({
           contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
           hashPlaceholderContentPosition={contentPosition}
           hashPlaceholderStyle={imageHashStyle}
-          accessibilityLabel={props.accessibilityLabel}
+          accessibilityLabel={accessibilityLabel}
+          tintColor={tintColor}
         />
       ),
   ];
   return (
-    <View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
+    <View
+      ref={containerViewRef}
+      dataSet={{ expoimage: true }}
+      style={[{ overflow: 'hidden' }, style]}
+      {...props}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>

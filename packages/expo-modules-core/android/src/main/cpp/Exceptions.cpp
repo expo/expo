@@ -13,13 +13,13 @@ jni::local_ref<CodedException> CodedException::create(const std::string &message
   return CodedException::newInstance(jni::make_jstring(message));
 }
 
-std::string CodedException::getCode() {
+std::string CodedException::getCode() noexcept {
   const auto getCode = this->getClass()->getMethod<jni::JString()>("getCode");
   const auto code = getCode(this->self());
   return code->toStdString();
 }
 
-std::optional<std::string> CodedException::getLocalizedMessage() {
+std::optional<std::string> CodedException::getLocalizedMessage() noexcept {
   const auto getLocalizedMessage = this->getClass()
     ->getMethod<jni::JString()>("getLocalizedMessage");
   const auto message = getLocalizedMessage(this->self());

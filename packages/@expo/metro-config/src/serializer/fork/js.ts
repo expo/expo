@@ -22,7 +22,7 @@ export type Options = {
   includeAsyncPaths: boolean;
   projectRoot: string;
   serverRoot: string;
-  sourceUrl: string | undefined;
+  sourceUrl?: string | null;
   splitChunks: boolean;
   skipWrapping: boolean;
   computedAsyncModulePaths: Record<string, string> | null;
@@ -39,11 +39,7 @@ export function wrapModule(
   }
 
   const { params, paths } = getModuleParams(module, options);
-  let src = output.data.code;
-  if (!options.skipWrapping) {
-    src = addParamsToDefineCall(output.data.code, ...params);
-  }
-
+  const src = addParamsToDefineCall(output.data.code, ...params);
   return { src, paths };
 }
 
@@ -66,7 +62,21 @@ export function getModuleParams(
   const paths: { [moduleID: number | string]: any } = {};
   let hasPaths = false;
   const dependencyMapArray = Array.from(module.dependencies.values()).map((dependency) => {
-    const id = options.createModuleId(dependency.absolutePath);
+    let modulePath = dependency.absolutePath;
+
+    if (modulePath == null) {
+      if (dependency.data.data.isOptional) {
+        // For optional dependencies, that could not be resolved.
+        modulePath = dependency.data.name;
+      } else {
+        throw new Error(
+          `Module "${module.path}" has a dependency with missing absolutePath: ${
+            (JSON.stringify(dependency), null, 2)
+          }`
+        );
+      }
+    }
+    const id = options.createModuleId(modulePath);
     if (
       // NOTE(EvanBacon): Disabled this to ensure that paths are provided even when the entire bundle
       // is created. This is required for production bundle splitting.

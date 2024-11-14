@@ -14,6 +14,7 @@ import {
   getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
   getUpdatesTimeout,
+  getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
   FINGERPRINT_RUNTIME_VERSION_SENTINEL,
 } from '../Updates';
@@ -176,6 +177,20 @@ describe(getNativeVersion, () => {
   });
   it('uses the default versionCode if the platform is android and the versionCode is missing', () => {
     expect(getNativeVersion({ version }, 'android')).toBe(`${version}(1)`);
+  });
+});
+
+describe(getUpdatesUseEmbeddedUpdate, () => {
+  it('returns true if updates.useEmbeddedUpdate is true', () => {
+    expect(getUpdatesUseEmbeddedUpdate({ updates: { useEmbeddedUpdate: true } })).toBe(true);
+  });
+
+  it('returns false if updates.useEmbeddedUpdate is false', () => {
+    expect(getUpdatesUseEmbeddedUpdate({ updates: { useEmbeddedUpdate: false } })).toBe(false);
+  });
+
+  it('returns true if updates.useEmbeddedUpdate is undefined', () => {
+    expect(getUpdatesUseEmbeddedUpdate({ updates: {} })).toBe(true);
   });
 });
 

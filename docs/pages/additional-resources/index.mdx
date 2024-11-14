@@ -1,12 +1,11 @@
 ---
+modificationDate: November 01, 2024
 title: Additional resources
 description: A reference of resources that are useful to learn about Expo tooling and services.
 ---
 
-import { Row } from 'react-grid-system';
-import { chunkArray } from '~/common/utilities';
-import { TALKS, PODCASTS } from '~/public/static/talks';
-import { TalkGridCell, CellContainer } from '~/ui/components/Home';
+import { TALKS, PODCASTS, LIVE_STREAMS } from '~/public/static/talks';
+import { TalkGridWrapper, TalkGridCell } from '~/ui/components/Home/sections';
 
 The following resources are useful for learning about Expo tooling and services.
 
@@ -25,8 +24,9 @@ The following resources are useful for learning about Expo tooling and services.
 - [expo/config-plugins](https://github.com/expo/config-plugins) - Expo Config Plugins for working with third-party packages.
 - [expo/snack](https://github.com/expo/snack) - Build apps from the browser.
 - [expo/vscode-expo](https://github.com/expo/vscode-expo) - VS Code extension for working with Expo tools.
+- [expo/vscode-expo-theme](https://github.com/expo/vscode-expo-theme) - VS Code theme created by Expo team.
 - [expo/fyi](https://github.com/expo/fyi) - Troubleshooting guides for Expo tools and services.
-- [expo/orbit](https://github.com/expo/orbit) - Launch builds and start simulators from your macOS menu bar.
+- [expo/orbit](https://github.com/expo/orbit) - Launch builds and start simulators from your macOS menu bar and Windows task bar.
 
 ### Documentation
 
@@ -39,7 +39,6 @@ The following resources are useful for learning about Expo tooling and services.
 ### React Native
 
 - [React Native Directory](https://reactnative.directory/) - An interactive directory to find packages for your React Native apps.
-- [React Native Express](http://www.reactnativeexpress.com/) - The best way to get started with React Native! It's a walkthrough of the building blocks of React and React Native.
 - [Intermediate React Native](https://frontendmasters.com/courses/intermediate-react-native/) - Paid course by Frontend Masters.
 
 ### Animation and gestures
@@ -53,24 +52,24 @@ The following resources are useful for learning about Expo tooling and services.
 
 ## Talks
 
-<CellContainer>
-  {chunkArray(TALKS, 4).map(talks => (
-    <Row>
-      {talks.map(talk => (
-        <TalkGridCell {...talk} />
-      ))}
-    </Row>
+<TalkGridWrapper>
+  {TALKS.map(talk => (
+    <TalkGridCell key={talk.videoId} {...talk} />
   ))}
-</CellContainer>
+</TalkGridWrapper>
 
 ## Podcasts
 
-<CellContainer>
-  {chunkArray(PODCASTS, 4).map(podcasts => (
-    <Row>
-      {podcasts.map(talk => (
-        <TalkGridCell {...talk} />
-      ))}
-    </Row>
+<TalkGridWrapper>
+  {PODCASTS.map(podcast => (
+    <TalkGridCell key={podcast.videoId ?? podcast.event} {...podcast} />
   ))}
-</CellContainer>
+</TalkGridWrapper>
+
+## Live streams recordings
+
+<TalkGridWrapper>
+  {LIVE_STREAMS.map(stream => (
+    <TalkGridCell key={stream.videoId} {...stream} />
+  ))}
+</TalkGridWrapper>

@@ -4,11 +4,11 @@ sidebar_title: iOS development build for devices
 description: Learn how to configure a development build for iOS devices using EAS Build.
 ---
 
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 In this chapter, we'll create a development build that can run on an iOS device with EAS Build.
 
@@ -52,26 +52,26 @@ This command prompts us with the following questions
 
 On a device's web browser, open the link provided in the previous step and tap the **Download Profile button**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Download the provisioning profile"
   src="/static/images/tutorial/eas/ios-ad-hoc-01.jpg"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 Open the **Settings** app, which prompts us to register our device.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Install the provisioning profile"
   src="/static/images/tutorial/eas/ios-ad-hoc-02.jpg"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 Tap **Install** to register the iOS device.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Provisioning profile installed successfully"
   src="/static/images/tutorial/eas/ios-ad-hoc-03.jpg"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 After the provisioning profile is installed, our device redirects us back to the web browser, displaying a success message indicating the completion of the process.
@@ -101,10 +101,10 @@ This command prompts us with the following questions when we create the build fo
 
 After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the Expo dashboard:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="iOS preview build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/ios-build.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 <Collapsible summary="What does a build details page contain?">
@@ -131,7 +131,7 @@ This notation is defined as `host.owner.app-name`. For example, our example app 
 
 Once the build finishes, the Build artifact section gets updated, indicating that the build is complete:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Build artifact gives the option to download development build for iOS devices and emulators"
   src="/static/images/tutorial/eas/ios-build-artifact.png"
 />
@@ -144,10 +144,10 @@ This section provides the methods available for running the development build on
 - Open the Orbit menu bar app.
 - Select the **Device** in the Orbit app.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Open with Orbit button on Expo dashboard in Build artifact"
   src="/static/images/tutorial/eas/ios-orbit.png"
-  style={{ maxWidth: 300 }}
+  className="max-w-[300px]"
 />
 
 - On the Expo dashboard, under **Build artifact**, click the **Open with Orbit**.
@@ -160,10 +160,10 @@ The **Install** button in the **Build artifact** section generates a QR code for
 
 - Click **Install** to display a popup with the QR code.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Install button generates a QR code for easy installation on iOS devices and emulators"
   src="/static/images/tutorial/eas/ios-qr-code.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 - Scan the QR code with our iOS device's camera to open and tap the link to download the development build on the device.
@@ -182,26 +182,26 @@ Start the development server by running the `npx expo start` command from the pr
 
 - On the device, tap the app icon to open the development build.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Development build's launcher UI on iOS device"
   src="/static/images/tutorial/eas/ios-dev-build-01.jpg"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 - Use the account syncing feature by ensuring we're logged into both the EAS CLI and development build. As we're already logged into the EAS CLI, the next step is to log in through the UI of your development build.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Modal to login to Expo account on iOS device"
   src="/static/images/tutorial/eas/ios-dev-build-02.jpg"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 - Tap **Fetch development servers** and select the server running from the list under Development servers.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Fetching development servers to connect"
   src="/static/images/tutorial/eas/ios-dev-build-03.jpg"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 </Step>

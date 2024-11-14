@@ -1,0 +1,1075 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
+<div>
+  <div>
+    <div
+      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+    >
+      <p
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
+        data-text="true"
+      >
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+          href="#name"
+          id="name"
+        >
+          <span
+            class="inline"
+          >
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
+              data-text="true"
+            >
+              name
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </p>
+      <p
+        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        data-text="true"
+      >
+        Type: 
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          data-text="true"
+        >
+          string
+        </code>
+      </p>
+      <p
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        data-text="true"
+      >
+        Name of your app.
+      </p>
+      <details
+        class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        id="bare-workflow"
+      >
+        <summary
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+        >
+          <div
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
+          >
+            <svg
+              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g
+                id="triangle-down-custom-icon"
+              >
+                <path
+                  d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                  fill="currentColor"
+                  id="Vector 250"
+                />
+              </g>
+            </svg>
+          </div>
+          <span
+            class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
+          >
+            Bare Workflow
+          </span>
+          <a
+            class="ml-auto inline"
+            href="#bare-workflow"
+          >
+            <svg
+              aria-label="permalink"
+              class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+          <div />
+        </summary>
+        <div
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
+        >
+          <p
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            data-text="true"
+          >
+            Edit the 'Display Name' field in Xcode
+          </p>
+        </div>
+      </details>
+    </div>
+    <div
+      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+    >
+      <p
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
+        data-text="true"
+      >
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+          href="#androidnavigationbar"
+          id="androidnavigationbar"
+        >
+          <span
+            class="inline"
+          >
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
+              data-text="true"
+            >
+              androidNavigationBar
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </p>
+      <p
+        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        data-text="true"
+      >
+        Type: 
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          data-text="true"
+        >
+          object
+        </code>
+      </p>
+      <p
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        data-text="true"
+      >
+        Configuration for the bottom navigation bar on Android.
+      </p>
+      <details
+        class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        id="expokit"
+      >
+        <summary
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+        >
+          <div
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
+          >
+            <svg
+              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g
+                id="triangle-down-custom-icon"
+              >
+                <path
+                  d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                  fill="currentColor"
+                  id="Vector 250"
+                />
+              </g>
+            </svg>
+          </div>
+          <span
+            class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
+          >
+            ExpoKit
+          </span>
+          <a
+            class="ml-auto inline"
+            href="#expokit"
+          >
+            <svg
+              aria-label="permalink"
+              class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+          <div />
+        </summary>
+        <div
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
+        >
+          <p
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            data-text="true"
+          >
+            Set this property using AppConstants.java.
+          </p>
+        </div>
+      </details>
+      <details
+        class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        id="bare-workflow-1"
+      >
+        <summary
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+        >
+          <div
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
+          >
+            <svg
+              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g
+                id="triangle-down-custom-icon"
+              >
+                <path
+                  d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                  fill="currentColor"
+                  id="Vector 250"
+                />
+              </g>
+            </svg>
+          </div>
+          <span
+            class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
+          >
+            Bare Workflow
+          </span>
+          <a
+            class="ml-auto inline"
+            href="#bare-workflow-1"
+          >
+            <svg
+              aria-label="permalink"
+              class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+          <div />
+        </summary>
+        <div
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
+        >
+          <p
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            data-text="true"
+          >
+            Set this property using just Xcode
+          </p>
+        </div>
+      </details>
+      <div
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      >
+        <p
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
+          data-text="true"
+        >
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+            href="#visible"
+            id="visible"
+          >
+            <span
+              class="inline"
+            >
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
+                data-text="true"
+              >
+                visible
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </p>
+        <p
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+          data-text="true"
+        >
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            enum
+          </code>
+           • Path:
+           
+          <code
+            class="break-words px-1 text-secondary"
+          >
+            androidNavigationBar
+            .
+            visible
+          </code>
+        </p>
+        <p
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          data-text="true"
+        >
+          Determines how and when the navigation bar is shown.
+        </p>
+        <details
+          class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+          id="expokit-1"
+        >
+          <summary
+            class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          >
+            <div
+              class="ml-1.5 mr-2 mt-[5px] self-baseline"
+            >
+              <svg
+                class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+                fill="none"
+                role="img"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g
+                  id="triangle-down-custom-icon"
+                >
+                  <path
+                    d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                    fill="currentColor"
+                    id="Vector 250"
+                  />
+                </g>
+              </svg>
+            </div>
+            <span
+              class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+              data-text="true"
+            >
+              ExpoKit
+            </span>
+            <a
+              class="ml-auto inline"
+              href="#expokit-1"
+            >
+              <svg
+                aria-label="permalink"
+                class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </a>
+            <div />
+          </summary>
+          <div
+            class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
+          >
+            <p
+              class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+              data-text="true"
+            >
+              Set this property using Xcode.
+            </p>
+          </div>
+        </details>
+        <div
+          class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        >
+          <p
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
+            data-text="true"
+          >
+            <a
+              class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+              href="#always"
+              id="always"
+            >
+              <span
+                class="inline"
+              >
+                <code
+                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
+                  data-text="true"
+                >
+                  always
+                </code>
+              </span>
+              <svg
+                aria-label="permalink"
+                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </a>
+          </p>
+          <p
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+            data-text="true"
+          >
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              boolean
+            </code>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              androidNavigationBar.visible
+              .
+              always
+            </code>
+          </p>
+          <p
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            data-text="true"
+          >
+            Test sub-sub-property
+          </p>
+        </div>
+      </div>
+      <div
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      >
+        <p
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
+          data-text="true"
+        >
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+            href="#backgroundcolor"
+            id="backgroundcolor"
+          >
+            <span
+              class="inline"
+            >
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
+                data-text="true"
+              >
+                backgroundColor
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </p>
+        <p
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+          data-text="true"
+        >
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            string
+          </code>
+           • Path:
+           
+          <code
+            class="break-words px-1 text-secondary"
+          >
+            androidNavigationBar
+            .
+            backgroundColor
+          </code>
+        </p>
+        <p
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          data-text="true"
+        >
+          Specifies the background color of the navigation bar.
+        </p>
+        
+
+        <p
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          data-text="true"
+        >
+          6 character long hex color string, eg: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !inline"
+            data-text="true"
+          >
+            '#000000'
+          </code>
+        </p>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+    >
+      <p
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
+        data-text="true"
+      >
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+          href="#intentfilters"
+          id="intentfilters"
+        >
+          <span
+            class="inline"
+          >
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
+              data-text="true"
+            >
+              intentFilters
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </p>
+      <p
+        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        data-text="true"
+      >
+        Type: 
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          data-text="true"
+        >
+          array
+        </code>
+      </p>
+      <p
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        data-text="true"
+      >
+        Configuration for setting an array of custom intent filters in Android manifest.
+      </p>
+      <details
+        class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        id="bare-workflow-2"
+      >
+        <summary
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+        >
+          <div
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
+          >
+            <svg
+              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g
+                id="triangle-down-custom-icon"
+              >
+                <path
+                  d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                  fill="currentColor"
+                  id="Vector 250"
+                />
+              </g>
+            </svg>
+          </div>
+          <span
+            class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
+          >
+            Bare Workflow
+          </span>
+          <a
+            class="ml-auto inline"
+            href="#bare-workflow-2"
+          >
+            <svg
+              aria-label="permalink"
+              class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+          <div />
+        </summary>
+        <div
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
+        >
+          <p
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            data-text="true"
+          >
+            This is set in AndroidManifest.xml directly.
+          </p>
+        </div>
+      </details>
+      <span
+        class="mb-6 grid grid-cols-1 gap-2"
+      >
+        <p
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary font-bold"
+          data-text="true"
+        >
+          Example
+        </p>
+        <span
+          class="m-0 whitespace-pre px-1 py-1.5 inline-flex !p-0"
+          data-text="true"
+        >
+          <code
+            class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] rounded-md border border-secondary bg-subtle px-1 py-0.5 !text-3xs text-default block w-full !p-1.5"
+            data-text="true"
+          >
+            [
+  {
+    "autoVerify": true,
+    "data": {
+      "host": "*.example.com"
+    }
+  }
+]
+          </code>
+        </span>
+      </span>
+      <div
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      >
+        <p
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
+          data-text="true"
+        >
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+            href="#autoverify"
+            id="autoverify"
+          >
+            <span
+              class="inline"
+            >
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
+                data-text="true"
+              >
+                autoVerify
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </p>
+        <p
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+          data-text="true"
+        >
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            boolean
+          </code>
+           • Path:
+           
+          <code
+            class="break-words px-1 text-secondary"
+          >
+            intentFilters
+            .
+            autoVerify
+          </code>
+        </p>
+        <p
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          data-text="true"
+        >
+          You may also use an intent filter to set your app as the default handler for links
+        </p>
+      </div>
+      <div
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      >
+        <p
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
+          data-text="true"
+        >
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+            href="#data"
+            id="data"
+          >
+            <span
+              class="inline"
+            >
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
+                data-text="true"
+              >
+                data
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </p>
+        <p
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+          data-text="true"
+        >
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            array || object
+          </code>
+           • Path:
+           
+          <code
+            class="break-words px-1 text-secondary"
+          >
+            intentFilters
+            .
+            data
+          </code>
+        </p>
+        <div
+          class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        >
+          <p
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
+            data-text="true"
+          >
+            <a
+              class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+              href="#host"
+              id="host"
+            >
+              <span
+                class="inline"
+              >
+                <code
+                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
+                  data-text="true"
+                >
+                  host
+                </code>
+              </span>
+              <svg
+                aria-label="permalink"
+                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </a>
+          </p>
+          <p
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+            data-text="true"
+          >
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              string
+            </code>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              intentFilters.data
+              .
+              host
+            </code>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

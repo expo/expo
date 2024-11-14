@@ -3,12 +3,50 @@ title: Get started
 description: Learn how to get started with the setup required to configure and use EAS Update in your project.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { LayersTwo02Icon } from '@expo/styleguide-icons';
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 
-Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. This guide will walk you through the process of setting up EAS Update in your project.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. This guide will walk you through the process of setting up EAS Update in a new or existing project.
+
+> **info** If you plan to use EAS Update with EAS Build, we recommend following the [EAS Build setup guide](/build/setup/) before proceeding here. That said, [you can use EAS Update without any other EAS services](/eas-update/standalone-service/).
+
+## Prerequisites
+
+<Collapsible summary="An Expo user account">
+
+EAS Update is available to anyone with an Expo account, regardless of whether you pay for EAS or use the Free plan. You can sign up at [expo.dev/signup](https://expo.dev/signup).
+
+Paid subscribers can publish updates to more users and use more bandwidth and storage. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
+
+</Collapsible>
+
+<Collapsible summary="A React Native project">
+
+Don't have a project yet? No problem. It's quick and easy to create a "Hello world" app that you can use with this guide.
+
+Run the following command to create a new project:
+
+<Terminal cmd={['$ npx create-expo-app my-app']} />
+
+EAS Update also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
+
+</Collapsible>
+
+<Collapsible summary="Your project must use Expo CLI and extend the Expo Metro Config">
+
+If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`) then you're all set.
+
+If you don't have the `expo` package in your project yet, then install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
+
+<Terminal cmd={['$ npx install-expo-modules@latest']} />
+
+If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
+
+</Collapsible>
 
 <Step label="1">
 ## Install the latest EAS CLI
@@ -24,7 +62,7 @@ You can also use the above command to check if a new version of EAS CLI is avail
 </Step>
 
 <Step label="2">
-## Login to your Expo account
+## Log in to your Expo account
 
 If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
 
@@ -35,35 +73,60 @@ You can check whether you are logged in by running `eas whoami`.
 </Step>
 
 <Step label="3">
-## Create a project
+## Configure your project
+Navigate to your project directory in your terminal and run the following command:
 
-Create a project by running:
+<Terminal
+  cmd={['# Initialize your project with EAS Update', '$ eas update:configure']}
+  cmdCopy="eas update:configure"
+/>
 
-<Terminal cmd={['$ npx create-expo-app']} />
+<Collapsible summary="What does this command do?">
+
+The `eas update:configure` command will update your **app.json** file with the `runtimeVersion` and `updates.url` properties, and add the `extra.eas.projectId` field if your project wasn't using any EAS services previously.
+
+When you run `eas update:configure` in a project that doesn't use [CNG](/workflow/continuous-native-generation/), you'll see the following changes to your native projects:
+
+#### Android
+
+Inside the **android/app/src/main/AndroidManifest.xml** file, you'll see the following additions:
+
+```xml android/app/src/main/AndroidManifest.xml
+<meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/your-project-id"/>
+<meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="@string/expo_runtime_version"/>
+```
+
+The `EXPO_UPDATE_URL` value should contain your project's ID.
+
+Inside **android/app/src/main/res/values/strings.xml**, you'll see the `expo_runtime_version` string entry in the `resources` object:
+
+<DiffBlock source="/static/diffs/expo-update-strings-xml.diff" />
+
+#### iOS
+
+Inside **ios/project-name/Supporting/Expo.plist**, you'll see the following additions:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>EXUpdatesRuntimeVersion</key>
+<string>1.0.0</string>
+<key>EXUpdatesURL</key>
+<string>https://u.expo.dev/your-project-id</string>
+```
+
+The `EXUpdatesURL` value should contain your project's ID.
+
+</Collapsible>
+
 </Step>
 
 <Step label="4">
-## Configure your project
+## Configure the update channel
 
-To configure your project, run the following commands in the order they are specified:
+The channel property on a build allows you to point updates at specific types of builds. For example, it allows you to publish updates to a preview build without impacting your production deployment.
 
-<Terminal
-  cmd={[
-    '# Install the latest `expo-updates` library',
-    '$ npx expo install expo-updates',
-    '',
-    '# Initialize your project with EAS Update',
-    '$ eas update:configure',
-    '',
-    '# Set up the configuration file for builds',
-    '$ eas build:configure',
-  ]}
-  cmdCopy="expo install expo-updates && eas update:configure && eas build:configure"
-/>
+**If you are using EAS Build**, `eas update:configure` will set the update `channel` property on the `preview` and `production` profiles in **eas.json**. Set them manually if you use different profile names.
 
-After running these commands, **eas.json** file will be created in the root directory of your project.
-
-Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
+<Collapsible summary="Example channel configuration in eas.json">
 
 ```json eas.json
 {
@@ -80,9 +143,60 @@ Inside the `preview` and `production` build profiles in **eas.json**, add a `cha
 }
 ```
 
-The `channel` allows you to point updates at builds of that profile. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update which will be available to builds with the channel "production".
+</Collapsible>
 
-> **Optional**: If your project is a bare React Native project, see the [bare React Native updates guide](/bare/installing-updates/) for any additional configuration needed.
+<br />
+
+**If you are not using EAS Build**, then you will need to configure the channel in **app.json** or in your native projects, depending on whether you use [CNG](/workflow/continuous-native-generation/). When you create a build for a different environment, you will need to modify the channel to ensure your build pulls updates from the correct channel. Learn more using [EAS Update as a standalone service](/eas-update/standalone-service/).
+
+<Collapsible summary="Configure update channels in app.json">
+
+If you use Continuous Native Generation (CNG), then you can configure the channel with the `updates.requestHeaders` property in your **app.json**:
+
+{/* prettier-ignore */}
+```json app.json
+{
+  "expo": {
+    /* @hide ... */ /* @end */
+    "updates": {
+      /* @hide ... */ /* @end */
+      "requestHeaders": {
+        "expo-channel-name": "your-channel-name"
+      }
+      /* @hide ... */ /* @end */
+    }
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+The configuration will be applied the next time you run `npx expo prebuild`.
+
+</Collapsible>
+
+<Collapsible summary="Configure update channels in an Android native project">
+
+In **AndroidManifest.xml**, you will need to add replace `your-channel-name` with the channel that matches your project:
+
+```xml android/app/src/main/AndroidManifest.xml
+<meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;your-channel-name&quot;}"/>
+```
+
+</Collapsible>
+
+<Collapsible summary="Configure update channels in an iOS native project">
+
+In **Expo.plist**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>EXUpdatesRequestHeaders</key>
+<dict>
+  <key>expo-channel-name</key>
+  <string>your-channel-name</string>
+</dict>
+```
+
+</Collapsible>
 
 </Step>
 
@@ -106,11 +220,62 @@ Then, make any desired changes to your project's JavaScript, styling, or image a
 
 </Step>
 
-## Next step
+<Step label="7">
+## Publish an update
+
+Publishing an update allows:
+
+- Fixing bugs and quickly updating non-native parts of a project instead of creating a new build
+- [Sharing a preview version of an app](/review/overview/) using internal distribution
+
+To publish an update with changes from your project, use the `eas update` command, and specify a name for the channel and a `message` to describe the update:
+
+<Terminal cmd={['$ eas update --channel [channel-name] --message "[message]"']} />
+
+<Collapsible summary="How does publishing an update work?">
+
+When you publish an update with the `eas update` command, it generates a new update bundle and uploads it to the EAS servers. The channel name is used to locate the correct branch to publish a new update from other update branches. It is similar to how Git commit works, where every commit is on a Git branch.
+
+For example, when an app is set to pull updates from the `preview` channel, you can publish an update for that build with `eas update --channel preview`. This will create a branch (called `preview` by default) on the `preview` channel. Behind the scenes, this command runs `npx expo export` to generate a **dist** directory and create a local update bundle. This update bundle is uploaded to EAS Update servers.
 
 <BoxLink
-  title="Publish an update"
-  description="Learn how to publish an update to a specific branch with EAS Update."
-  href="/eas-update/publish/"
+  title="In-depth guide on how EAS Update works"
+  description="Dive deep and learn how EAS Update works."
+  href="/eas-update/how-it-works/"
+  Icon={LayersTwo02Icon}
+/>
+
+</Collapsible>
+
+</Step>
+
+<Step label="8">
+## Test the update
+
+After the update is uploaded to EAS Update, you can use one of the following methods to test the update:
+
+- Use the Extensions tab in a [development build](/eas-update/expo-dev-client/) to load the update.
+- Use [Expo Orbit](/review/with-orbit/) to install and launch the update in a development build.
+- Implement a custom strategy with [Updates API](/versions/latest/sdk/updates/) and [app config](/versions/latest/config/app/#updates) to load updates in the app programmatically.
+- Manually test the update by force closing and reopening a release build of your app up to two times to download and apply the update. Updates for non-development builds (preview or production) are automatically downloaded to the device in the background when the app starts up and makes a request for any new updates. The update will be applied after it is downloaded and the app is restarted.
+
+<Collapsible summary="Something not working?">
+If your app is not updating as expected, see the [debugging guide](/eas-update/debug/) for techniques to validate your configuration.
+</Collapsible>
+</Step>
+
+## Next steps
+
+<BoxLink
+  title="Previewing updates"
+  description="Learn how to iterate quickly by sharing updates for QA and testing."
+  href="/eas-update/develop-faster/"
+  Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="Deploying updates"
+  description="Learn about different deployment patterns for your project when using EAS Update."
+  href="/eas-update/deployment/"
   Icon={LayersTwo02Icon}
 />

@@ -1,11 +1,12 @@
 import { fs } from 'memfs';
 import path from 'path';
-import temporary from 'tempy';
 
+import { createTempDirectoryPath } from '../createTempPath';
 import * as GitIgnore from '../mergeGitIgnorePaths';
 import { removeFromGitIgnore, upsertGitIgnoreContents } from '../mergeGitIgnorePaths';
 
-const testRoot = temporary.directory();
+const testRoot = createTempDirectoryPath();
+
 beforeAll(async () => {
   await fs.promises.mkdir(testRoot, { recursive: true });
 });

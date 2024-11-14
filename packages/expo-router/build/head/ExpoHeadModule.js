@@ -6,7 +6,7 @@ exports.ExpoHead = void 0;
 let ExpoHead = null;
 exports.ExpoHead = ExpoHead;
 // If running in Expo Go.
-if (typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo) {
+if (typeof expo !== 'undefined' && !globalThis.expo?.modules?.ExpoGo) {
     exports.ExpoHead = ExpoHead = globalThis.expo?.modules?.ExpoHead;
 }
 //# sourceMappingURL=ExpoHeadModule.js.map

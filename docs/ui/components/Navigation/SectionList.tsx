@@ -1,13 +1,11 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide-base';
-import { ChevronDownIcon } from '@expo/styleguide-icons';
+import { mergeClasses } from '@expo/styleguide';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import type { PropsWithChildren } from 'react';
 
 import { NavigationRenderProps } from '.';
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { CALLOUT } from '~/ui/components/Text';
-import { durations } from '~/ui/foundations/durations';
 
 type SectionListProps = PropsWithChildren<NavigationRenderProps>;
 
@@ -18,12 +16,17 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
 
   return (
     <Collapsible
-      css={detailsStyle}
+      className="mb-3 pt-3"
       open={isActive || route.expanded}
       summary={
-        <div css={summaryStyle}>
-          <ChevronDownIcon className="icon-sm text-icon-default" css={iconStyle} />
-          <CALLOUT css={textStyle} tag="span">
+        <div className="mx-4 flex select-none items-center">
+          <ChevronDownIcon
+            className={mergeClasses(
+              'icon-sm shrink-0 -rotate-90 text-icon-default transition-transform duration-150',
+              '[details[open]>summary_&]:rotate-0'
+            )}
+          />
+          <CALLOUT className="p-1.5 font-medium" tag="span">
             {route.name}
           </CALLOUT>
         </div>
@@ -32,30 +35,3 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
     </Collapsible>
   );
 }
-
-const detailsStyle = css({
-  paddingTop: spacing[3],
-  marginBottom: spacing[3],
-});
-
-const summaryStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  listStyle: 'none',
-  userSelect: 'none',
-  margin: `0 ${spacing[4]}px`,
-});
-
-const iconStyle = css({
-  flexShrink: 0,
-  transform: 'rotate(-90deg)',
-  transition: `transform ${durations.hover}`,
-
-  'details[open] &': { transform: 'rotate(0)' },
-});
-
-const textStyle = css({
-  fontWeight: 500,
-  padding: spacing[1.5],
-});

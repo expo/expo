@@ -10,5 +10,6 @@ export declare enum SourceSkips {
     ExpoConfigIosBundleIdentifier = 16,
     ExpoConfigSchemes = 32,
     ExpoConfigEASProject = 64,
-    ExpoConfigAssets = 128
+    ExpoConfigAssets = 128,
+    PackageJsonAndroidAndIosScriptsIfNotContainRun = 256
 }

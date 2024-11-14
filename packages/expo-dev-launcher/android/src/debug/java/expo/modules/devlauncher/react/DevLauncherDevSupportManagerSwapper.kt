@@ -7,7 +7,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.common.ShakeDetector
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
-import com.facebook.react.devsupport.DisabledDevSupportManager
+import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.runtime.ReactHostImpl
@@ -40,7 +40,7 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
       // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
       return
     }
-    if (currentDevSupportManager is DisabledDevSupportManager) {
+    if (currentDevSupportManager is ReleaseDevSupportManager) {
       Log.i("DevLauncher", "DevSupportManager is disabled. So we don't want to override it.")
       return
     }
@@ -63,7 +63,7 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
       // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
       return
     }
-    if (currentDevSupportManager is DisabledDevSupportManager) {
+    if (currentDevSupportManager is ReleaseDevSupportManager) {
       Log.i("DevLauncher", "DevSupportManager is disabled. So we don't want to override it.")
       return
     }

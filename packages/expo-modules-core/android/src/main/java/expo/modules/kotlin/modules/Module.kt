@@ -2,27 +2,34 @@ package expo.modules.kotlin.modules
 
 import android.os.Bundle
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.providers.AppContextProvider
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.CoroutineScope
-import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.primaryConstructor
 
 abstract class Module : AppContextProvider {
 
+  @Suppress("PropertyName")
+  internal var _runtimeContext: RuntimeContext? = null
+
+  val runtimeContext: RuntimeContext
+    get() = requireNotNull(_runtimeContext) { "The module wasn't created! You can't access the runtime context." }
+
   // region AppContextProvider
 
-  @Suppress("PropertyName")
-  internal var _appContext: AppContext? = null
-
   override val appContext: AppContext
-    get() = requireNotNull(_appContext) { "The module wasn't created! You can't access the app context." }
+    get() = requireNotNull(_runtimeContext?.appContext) {
+      "You attempted to access the app context before the module was created. " +
+        "Defer accessing the context until after the module initializes."
+    }
 
   // endregion
 
   private val moduleEventEmitter by lazy { appContext.eventEmitter(this) }
+
+  val registry
+    get() = runtimeContext.registry
 
   @PublishedApi
   internal lateinit var coroutineScopeDelegate: Lazy<CoroutineScope>
@@ -44,25 +51,6 @@ abstract class Module : AppContextProvider {
   }
 
   abstract fun definition(): ModuleDefinitionData
-
-  private fun <T> convertEnumToString(enumValue: T): String where T : Enumerable, T : Enum<T> {
-    val enumClass = enumValue::class
-    val primaryConstructor = enumClass.primaryConstructor
-    if (primaryConstructor?.parameters?.size == 1) {
-      val parameterName = primaryConstructor.parameters.first().name
-      val parameterProperty = enumClass
-        .declaredMemberProperties
-        .find { it.name == parameterName }
-
-      requireNotNull(parameterProperty) { "Cannot find a property for $parameterName parameter" }
-      require(parameterProperty.returnType.classifier == String::class) { "The enum parameter has to be a string." }
-
-      @Suppress("UNCHECKED_CAST")
-      return (parameterProperty as KProperty1<T, String>).get(enumValue)
-    }
-
-    return enumValue.name
-  }
 }
 
 @Suppress("FunctionName")

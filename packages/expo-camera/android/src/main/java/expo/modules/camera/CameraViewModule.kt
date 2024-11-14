@@ -8,6 +8,7 @@ import expo.modules.camera.analyzers.MLKitBarCodeScanner
 import expo.modules.camera.records.BarcodeSettings
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraMode
+import expo.modules.camera.records.CameraRatio
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
@@ -114,8 +115,8 @@ class CameraViewModule : Module() {
 
       Prop("facing") { view, facing: CameraType? ->
         facing?.let {
-          if (view.lenFacing != facing) {
-            view.lenFacing = it
+          if (view.lensFacing != facing) {
+            view.lensFacing = it
           }
         }
       }
@@ -179,12 +180,29 @@ class CameraViewModule : Module() {
         pictureSize?.let {
           if (view.pictureSize != pictureSize) {
             view.pictureSize = it
+            return@Prop
           }
         }
+
+        view.pictureSize = ""
       }
 
       Prop("autoFocus") { view, autoFocus: FocusMode? ->
         view.autoFocus = autoFocus ?: FocusMode.OFF
+      }
+
+      Prop("ratio") { view, ratio: CameraRatio? ->
+        if (view.ratio != ratio) {
+          view.ratio = ratio
+        }
+      }
+
+      Prop("mirror") { view, mirror: Boolean? ->
+        mirror?.let {
+          view.mirror = it
+          return@Prop
+        }
+        view.mirror = false
       }
 
       OnViewDidUpdateProps { view ->
@@ -197,7 +215,7 @@ class CameraViewModule : Module() {
         } else {
           val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
           moduleScope.launch {
-            ResolveTakenPicture(image, promise, options, cacheDirectory) { response ->
+            ResolveTakenPicture(image, promise, options, false, cacheDirectory) { response ->
               view.onPictureSaved(response)
             }.resolve()
           }
@@ -219,6 +237,14 @@ class CameraViewModule : Module() {
       AsyncFunction("stopRecording") { view: ExpoCameraView ->
         view.activeRecording?.close()
       }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("resumePreview") { view: ExpoCameraView ->
+        view.resumePreview()
+      }
+
+      AsyncFunction("pausePreview") { view: ExpoCameraView ->
+        view.pausePreview()
+      }
 
       OnViewDestroys { view ->
         view.orientationEventListener.disable()

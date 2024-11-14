@@ -4,12 +4,12 @@ description: An API reference of Expo modules API.
 sidebar_title: Module API
 ---
 
-import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { APIBox } from '~/components/plugins/APIBox';
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { APIMethod } from '~/components/plugins/api/APIMethod';
+import { FileTree } from '~/ui/components/FileTree';
 import { PlatformTags, StatusTag } from '~/ui/components/Tag';
 import { A, CALLOUT } from '~/ui/components/Text';
-import { APIMethod } from '~/components/plugins/api/APISectionMethods';
-import { FileTree } from '~/ui/components/FileTree';
 
 The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy-to-use and convenient API that is consistent across platforms where possible.
 
@@ -79,13 +79,13 @@ See the [Argument types](#argument-types) section for more details on what types
 <CodeBlocksTable>
 
 ```swift
-Function("syncFunction") { (message: String) in
+Function("mySyncFunction") { (message: String) in
   return message
 }
 ```
 
 ```kotlin
-Function("syncFunction") { message: String ->
+Function("mySyncFunction") { message: String ->
   return@Function message
 }
 ```
@@ -99,7 +99,7 @@ import { requireNativeModule } from 'expo-modules-core';
 const MyModule = requireNativeModule('MyModule');
 
 function getMessage() {
-  return MyModule.syncFunction('bar');
+  return MyModule.mySyncFunction('bar');
 }
 ```
 
@@ -127,27 +127,27 @@ It is recommended to use `AsyncFunction` over `Function` when it:
 <CodeBlocksTable>
 
 ```swift
-AsyncFunction("asyncFunction") { (message: String) in
+AsyncFunction("myAsyncFunction") { (message: String) in
   return message
 }
 
 // or
 
-// Make sure to import `Promise` class from `expo.modules.kotlin` instead of `expo.modules.core`.
-AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
+AsyncFunction("myAsyncFunction") { (message: String, promise: Promise) in
   promise.resolve(message)
 }
 
 ```
 
 ```kotlin
-AsyncFunction("asyncFunction") { message: String ->
+AsyncFunction("myAsyncFunction") { message: String ->
   return@AsyncFunction message
 }
 
 // or
 
-AsyncFunction("asyncFunction") { message: String, promise: Promise ->
+// Make sure to import `Promise` class from `expo.modules.kotlin` instead of `expo.modules.core`.
+AsyncFunction("myAsyncFunction") { message: String, promise: Promise ->
   promise.resolve(message)
 }
 
@@ -162,7 +162,7 @@ import { requireNativeModule } from 'expo-modules-core';
 const MyModule = requireNativeModule('MyModule');
 
 async function getMessageAsync() {
-  return await MyModule.asyncFunction('bar');
+  return await MyModule.myAsyncFunction('bar');
 }
 ```
 
@@ -171,13 +171,13 @@ It is possible to change the native queue of `AsyncFunction` by calling the `.ru
 <CodeBlocksTable>
 
 ```swift
-AsyncFunction("asyncFunction") { (message: String) in
+AsyncFunction("myAsyncFunction") { (message: String) in
   return message
 }.runOnQueue(.main)
 ```
 
 ```kotlin
-AsyncFunction("asyncFunction") { message: String ->
+AsyncFunction("myAsyncFunction") { message: String ->
   return@AsyncFunction message
 }.runOnQueue(Queues.MAIN)
 ```
@@ -329,8 +329,6 @@ View(TextView::class) {
 </CodeBlocksTable>
 
 > **Info** Support for rendering SwiftUI views is planned. For now, you can use [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) and add its content view to your UIKit view.
-
-> **Info** View functions are available as of SDK 49.
 
 </APIBox>
 <APIBox header="Prop">
@@ -585,6 +583,7 @@ Similarly, some common Android types from packages like `java.io`, `java.net`, o
 | `android.graphics.Color`                                                      | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
 | `kotlin.Pair<A, B>`                                                           | Array with two values, where the first one is of type _A_ and the second is of type _B_                                                                                           |
 | `kotlin.ByteArray`                                                            | `Uint8Array` <StatusTag note="SDK 50+" />                                                                                                                                         |
+| `kotlin.time.Duration`                                                        | `number` represents a duration in seconds <StatusTag note="SDK 52+" />                                                                                                            |
 
 </APIBox>
 <APIBox header="Records">
@@ -704,8 +703,6 @@ The implementation for three Either types is currently provided out of the box, 
 - `EitherOfThree<FirstType, SecondType, ThirdType>` — A container for one of three types.
 - `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` — A container for one of four types.
 
-> **Info** Either types are available as of SDK 47.
-
 </APIBox>
 <APIBox header="JavaScript values">
 
@@ -750,8 +747,6 @@ Function("mutateMe") { jsObject: JavaScriptObject ->
 
 </CodeBlocksTable>
 
-> **Info** JavaScript types are available as of SDK 49.
-
 </APIBox>
 
 ## Native classes
@@ -766,8 +761,8 @@ A base class for a native module.
   name="appContext"
   comment="Provides access to the [`AppContext`](#appcontext)."
   returnTypeName="AppContext"
-  isProperty={true}
-  isReturnTypeReference={true}
+  isProperty
+  isReturnTypeReference
 />
 
 #### Methods
@@ -802,28 +797,28 @@ The app context is an interface to a single Expo app.
   name="constants"
   comment="Provides access to app's constants from legacy module registry."
   returnTypeName="Android: ConstantsInterface? iOS: EXConstantsInterface?"
-  isProperty={true}
+  isProperty
 />
 
 <APIMethod
   name="permissions"
   comment="Provides access to the permissions manager from legacy module registry."
   returnTypeName="Android: Permissions? iOS: EXPermissionsInterface?"
-  isProperty={true}
+  isProperty
 />
 
 <APIMethod
   name="imageLoader"
   comment="Provides access to the image loader from the legacy module registry."
   returnTypeName="Android: ImageLoaderInterface? iOS: EXImageLoaderInterface?"
-  isProperty={true}
+  isProperty
 />
 
 <APIMethod
   name="barcodeScanner"
   comment="Provides access to the bar code scanner manager from the legacy module registry."
   returnTypeName="ImageLoaderInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -831,7 +826,7 @@ The app context is an interface to a single Expo app.
   name="camera"
   comment="Provides access to the camera view manager from the legacy module registry."
   returnTypeName="CameraViewInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -839,7 +834,7 @@ The app context is an interface to a single Expo app.
   name="font"
   comment="Provides access to the font manager from the legacy module registry."
   returnTypeName="FontManagerInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -847,7 +842,7 @@ The app context is an interface to a single Expo app.
   name="sensor"
   comment="Provides access to the sensor manager from the legacy module registry."
   returnTypeName="SensorServiceInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -855,7 +850,7 @@ The app context is an interface to a single Expo app.
   name="taskManager"
   comment="Provides access to the task manager from the legacy module registry."
   returnTypeName="TaskManagerInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -863,7 +858,7 @@ The app context is an interface to a single Expo app.
   name="activityProvider"
   comment="Provides access to the activity provider from the legacy module registry."
   returnTypeName="ActivityProvider?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -871,7 +866,7 @@ The app context is an interface to a single Expo app.
   name="reactContext"
   comment="Provides access to the react application context."
   returnTypeName="Context?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -879,7 +874,7 @@ The app context is an interface to a single Expo app.
   name="hasActiveReactInstance"
   comment="Checks if there is an not-null, alive react native instance."
   returnTypeName="Boolean"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -887,7 +882,7 @@ The app context is an interface to a single Expo app.
   name="utilities"
   comment="Provides access to the utilities from legacy module registry."
   returnTypeName="EXUtilitiesInterface?"
-  isProperty={true}
+  isProperty
   platforms={['iOS']}
 />
 
@@ -905,8 +900,8 @@ On iOS, `ExpoView` extends the `RCTView` which handles some styles (for example,
   name="appContext"
   comment="Provides access to the [`AppContext`](#appcontext)."
   returnTypeName="AppContext"
-  isProperty={true}
-  isReturnTypeReference={true}
+  isProperty
+  isReturnTypeReference
 />
 
 #### Extending `ExpoView`

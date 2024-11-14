@@ -6,6 +6,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -19,7 +20,7 @@ public class RemoteMessageSerializer {
    * @param message {@link RemoteMessage} to serialize
    * @return Serialized message
    */
-  public static Bundle toBundle(RemoteMessage message) {
+  public static @NonNull Bundle toBundle(RemoteMessage message) {
     Bundle serializedMessage = new Bundle();
     serializedMessage.putString("collapseKey", message.getCollapseKey());
     serializedMessage.putBundle("data", toBundle(message.getData()));
@@ -93,12 +94,22 @@ public class RemoteMessageSerializer {
     serializedNotification.putString("title", notification.getTitle());
     serializedNotification.putStringArray("titleLocalizationArgs", notification.getTitleLocalizationArgs());
     serializedNotification.putString("titleLocalizationKey", notification.getTitleLocalizationKey());
-    serializedNotification.putLongArray("vibrateTimings", notification.getVibrateTimings());
+    if (notification.getVibrateTimings() != null) {
+      serializedNotification.putIntArray("vibrateTimings", intArrayFromLongArray(notification.getVibrateTimings()));
+    }
     if (notification.getVisibility() != null) {
       serializedNotification.putInt("visibility", notification.getVisibility());
     } else {
       serializedNotification.putString("visibility", null);
     }
     return serializedNotification;
+  }
+
+  public static int[] intArrayFromLongArray(long[] longArray) {
+    int[] intArray = new int[longArray.length];
+    for (int i = 0; i < longArray.length; i++) {
+      intArray[i] = (int)(longArray[i]);
+    }
+    return intArray;
   }
 }

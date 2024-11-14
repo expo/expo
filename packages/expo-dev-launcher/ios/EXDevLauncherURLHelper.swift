@@ -43,9 +43,9 @@ public class EXDevLauncherURLHelper: NSObject {
 
     let components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)
 
-    if ((components?.queryItems?.contains(where: {
+    if (components?.queryItems?.contains(where: {
       $0.name == "url" && $0.value != nil
-    })) ?? false) {
+    })) ?? false {
       hasUrlQueryParam = true
     }
 
@@ -56,9 +56,9 @@ public class EXDevLauncherURLHelper: NSObject {
   public static func disableOnboardingPopupIfNeeded(_ url: URL) {
     let components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)
 
-    if ((components?.queryItems?.contains(where: {
+    if (components?.queryItems?.contains(where: {
       $0.name == "disableOnboarding" && ($0.value ?? "") == "1"
-    })) ?? false) {
+    })) ?? false {
       DevMenuPreferences.isOnboardingFinished = true
     }
   }

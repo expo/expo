@@ -3,10 +3,10 @@ title: Stack
 description: Learn how to use the Stack navigator in Expo Router.
 ---
 
-import { FileTree } from '~/ui/components/FileTree';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
-import { A, CODE } from '~/ui/components/Text';
+import { FileTree } from '~/ui/components/FileTree';
 
 A stack navigator is the foundational way of navigating between routes in an app. On Android, a stacked route animates on top of the current screen. On iOS, a stacked route animates from the right. Expo Router provides a `Stack` navigation component that creates a navigation stack and allows you to add new routes in your app.
 
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
 
 To configure a route's option dynamically, you can always use the `<Stack.Screen>` component in that route's file.
 
-As an alternative, you can also use the [imperative API's `router.setParams()`](/router/navigating-pages/#imperative-navigation) function to configure the route dynamically.
+As an alternative, you can also use the [imperative API's `router.setParams()`](/versions/v52.0.0/sdk/router/#router) function to configure the route dynamically.
 
 ```tsx app/details.tsx
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -262,8 +262,9 @@ export default function Layout() {
       <Stack.Screen
         name="[profile]"
         getId={
-          /* @info Returning a new ID every time will cause every page to push. */ ({ params }) =>
-            String(Date.now()) /* @end */
+          /* @info Returning a new ID every time will cause every page to push. */
+          ({ params }) => String(Date.now())
+          /* @end */
         }
       />
     </Stack>
@@ -285,9 +286,9 @@ Dismiss is different from `back` as it targets the closest stack and not the cur
 
 {/* prettier-ignore */}
 ```tsx app/settings.tsx
-import { Button, View, Text } from "react-native";
+import { Button, View } from 'react-native';
 /* @info Import <CODE>useRouter</CODE> from Expo Router. */
-import { useRouter } from "expo-router";
+import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
@@ -295,14 +296,14 @@ export default function Settings() {
   const router = useRouter();
   /* @end */
 
-  const handleDismiss = (count) => {
+  const handleDismiss = (count: number) => {
     /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back. */
     router.dismiss(count)
     /* @end */
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       /* @info Trigger the handler method on a touchable or button component. */
       <Button title="Go to first screen" onPress={() => handleDismiss(3)} />
       /* @end */
@@ -319,9 +320,9 @@ For example, the `home` route is the first screen, and the `settings` is the las
 
 {/* prettier-ignore */}
 ```tsx app/settings.tsx
-import { Button, View, Text } from "react-native";
+import { Button, View, Text } from 'react-native';
 /* @info Import <CODE>useRouter</CODE> from Expo Router. */
-import { useRouter } from "expo-router";
+import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
@@ -336,7 +337,7 @@ export default function Settings() {
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       /* @info Trigger the handler method on a touchable or button component. */
       <Button title="Go to first screen" onPress={handleDismissAll} />
       /* @end */
@@ -350,10 +351,10 @@ export default function Settings() {
 To check if it is possible to dismiss the current screen. Returns `true` if the router is within a stack with more than one screen in the stack's history.
 
 {/* prettier-ignore */}
-```jsx app/settings.js|collapseHeight=410
-import { Button, View, Text } from "react-native";
+```tsx app/settings.tsx|collapseHeight=410
+import { Button, View } from 'react-native';
 /* @info Import <CODE>useRouter</CODE> from Expo Router. */
-import { useRouter } from "expo-router";
+import { useRouter } from 'expo-router';
 /* @end */
 
 export default function Settings() {
@@ -361,7 +362,7 @@ export default function Settings() {
   const router = useRouter();
   /* @end */
 
-  const handleDismiss = (count) => {
+  const handleDismiss = (count: number) => {
     /* @info Check if we can dismiss. */
     if (router.canDismiss()) {
       /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back to. */
@@ -372,7 +373,7 @@ export default function Settings() {
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       /* @info Trigger the handler method on a touchable or button component. */
       <Button title="Maybe dismiss" onPress={() => handleDismiss()} />
       /* @end */

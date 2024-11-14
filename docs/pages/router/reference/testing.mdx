@@ -10,9 +10,9 @@ Expo Router relies on your file system, which can present challenges when settin
 
 ## Configuration
 
-Before you proceed, ensure you have set up `jest-expo` according to the [Unit Testing](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/start/quick-start) in your project.
+Before you proceed, ensure you have set up `jest-expo` according to the [Unit testing with Jest](/develop/unit-testing/) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/start/quick-start) in your project.
 
-> **Note**: Since Expo router is a file-based router, do not put your test files inside the **app** directory. Instead, use the **\_\_tests\_\_** directory or a separate directory. This approach is explained in [Unit testing](/develop/unit-testing/#structure-your-tests).
+> **Note**: When using Expo Router, do not put your test files inside the **app** directory. All files inside your **app** folder must be either routes or layout files. Instead, use the **\_\_tests\_\_** directory or a separate directory. This approach is explained in [Unit testing with Jest](/develop/unit-testing/#structure-your-tests).
 
 ### Jest Native Matchers (optional)
 
@@ -20,7 +20,7 @@ Before you proceed, ensure you have set up `jest-expo` according to the [Unit Te
 
 ## `renderRouter`
 
-`renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. It returns the same query object as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render), and is compatible with [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen), allowing you to use the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api-queries) to locate components.
+`renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. It returns the same query object as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render), and is compatible with [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen), allowing you to use the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api/queries) to locate components.
 
 `renderRouter` accepts the same [options](https://callstack.github.io/react-native-testing-library/docs/api#render-options) as `render` and introduces an additional option `initialUrl`, which sets an initial route for simulating deep-linking.
 
@@ -110,7 +110,7 @@ it('my-test', async () => {
 
 ## Jest matchers
 
-The following matches have been added to `expect` and can be used to asset values on `screen`.
+The following matches have been added to `expect` and can be used to assert values on `screen`.
 
 <APIBox header="toHavePathname()">
 
@@ -143,7 +143,7 @@ expect(screen).toHaveSegments(['[id]']);
 </APIBox>
 <APIBox header="useLocalSearchParams()">
 
-Assert the current local search parameters against an object. The matcher uses the value of the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook on the current `screen`.
+Assert the current local URL parameters against an object. The matcher uses the value of the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook on the current `screen`.
 
 ```tsx app.test.ts
 expect(screen).useLocalSearchParams({ first: 'abc' });
@@ -154,7 +154,7 @@ expect(screen).useLocalSearchParams({ first: 'abc' });
 
 Assert the current screen's pathname that matches a value. Compares using the value of [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook.
 
-Assert the current global search parameters against an object. The matcher uses the value of the [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook on the current `screen`.
+Assert the current global URL parameters against an object. The matcher uses the value of the [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook on the current `screen`.
 
 ```tsx app.test.ts
 expect(screen).useGlobalSearchParams({ first: 'abc' });

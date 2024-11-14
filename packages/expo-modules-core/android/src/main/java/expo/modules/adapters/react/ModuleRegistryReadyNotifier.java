@@ -20,7 +20,7 @@ public class ModuleRegistryReadyNotifier extends BaseJavaModule {
 
   @Override
   public String getName() {
-    return null;
+    return "ModuleRegistryReadyNotifier";
   }
 
   @Override

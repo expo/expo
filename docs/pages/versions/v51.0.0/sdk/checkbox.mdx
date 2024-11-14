@@ -10,7 +10,7 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-**`expo-checkbox`** provides a basic `boolean` input element for all platforms. If you are looking for a more flexible checkbox component, please see the [guide to implementing your own checkbox](/ui-programming/implementing-a-checkbox.mdx).
+`expo-checkbox` provides a basic `boolean` input element for all platforms. If you are looking for a more flexible checkbox component, please see the [guide to implementing your own checkbox](/ui-programming/implementing-a-checkbox.mdx).
 
 ## Installation
 
@@ -20,9 +20,9 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <SnackInline label='Basic Checkbox usage' dependencies={['expo-checkbox']} platforms={['android', 'web']}>
 
-```js
+```tsx
 import Checkbox from 'expo-checkbox';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {

@@ -87,7 +87,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
       fatalError(Exceptions.AppContextLost().reason)
     }
     guard let view = wrappedModuleHolder.definition.view?.createView(appContext: appContext) else {
-      fatalError("Cannot create a view from module '\(self.name)'")
+      fatalError("Cannot create a view from module '\(String(describing: self.name))'")
     }
     return view
   }
@@ -98,9 +98,13 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    Creates a subclass of `ViewModuleWrapper` in runtime. The new class overrides `moduleName` stub.
    */
   @objc
-  public static func createViewModuleWrapperClass(module: ViewModuleWrapper) -> ViewModuleWrapper.Type? {
+  public static func createViewModuleWrapperClass(module: ViewModuleWrapper, appId: String?) -> ViewModuleWrapper.Type? {
     // We're namespacing the view name so we know it uses our architecture.
-    let prefixedViewName = "\(viewManagerAdapterPrefix)\(module.name())"
+    let prefixedViewName = if let appId = appId {
+      "\(viewManagerAdapterPrefix)\(module.name())_\((appId))"
+    } else {
+      "\(viewManagerAdapterPrefix)\(module.name())"
+    }
 
     return prefixedViewName.withCString { viewNamePtr in
       // Create a new class that inherits from `ViewModuleWrapper`. The class name passed here, doesn't work for Swift classes,
@@ -112,7 +116,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
       // so there is no other way to pass it to the instances.
       let wrappedModuleBlock: @convention(block) () -> ViewModuleWrapper = { module }
       let wrappedModuleImp: IMP = imp_implementationWithBlock(wrappedModuleBlock)
-      class_addMethod(wrapperClass, Selector("wrappedModule"), wrappedModuleImp, "@@:")
+      class_addMethod(wrapperClass, #selector(DynamicModuleWrapperProtocol.wrappedModule), wrappedModuleImp, "@@:")
 
       return wrapperClass as? ViewModuleWrapper.Type
     }

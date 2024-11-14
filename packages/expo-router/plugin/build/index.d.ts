@@ -13,5 +13,9 @@ declare const withRouter: ConfigPlugin<{
         web?: string;
         default?: string;
     };
+    /** Should the sitemap be generated. Defaults to `true` */
+    sitemap?: boolean;
+    /** Generate partial typed routes */
+    partialTypedGroups?: boolean;
 } | void>;
 export default withRouter;

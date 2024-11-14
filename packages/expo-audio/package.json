@@ -1,8 +1,8 @@
 {
   "name": "expo-audio",
   "title": "Expo Audio",
-  "version": "0.1.0",
-  "description": "A cross-platform, auido library for React Native and Expo",
+  "version": "0.2.3",
+  "description": "A cross-platform audio library for React Native and Expo apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
@@ -24,15 +24,20 @@
   "keywords": [
     "react-native",
     "expo",
-    "audio"
+    "expo-audio",
+    "audio",
+    "ios",
+    "android"
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

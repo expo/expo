@@ -18,31 +18,14 @@ public final class RNCSafeAreaProviderManager: Module {
         return [:]
       }
 
-      if #available(iOS 11.0, *) {
-        let safeAreaInsets = window.safeAreaInsets
-
-        return [
-          "insets": [
-            "top": safeAreaInsets.top,
-            "right": safeAreaInsets.right,
-            "bottom": safeAreaInsets.bottom,
-            "left": safeAreaInsets.left
-          ],
-          "frame": [
-            "x": window.frame.origin.x,
-            "y": window.frame.origin.y,
-            "width": window.frame.size.width,
-            "height": window.frame.size.height
-          ]
-        ]
-      }
+      let safeAreaInsets = window.safeAreaInsets
 
       return [
         "insets": [
-          "top": 20,
-          "right": 0,
-          "bottom": 0,
-          "left": 0
+          "top": safeAreaInsets.top,
+          "right": safeAreaInsets.right,
+          "bottom": safeAreaInsets.bottom,
+          "left": safeAreaInsets.left
         ],
         "frame": [
           "x": window.frame.origin.x,
@@ -51,7 +34,6 @@ public final class RNCSafeAreaProviderManager: Module {
           "height": window.frame.size.height
         ]
       ]
-    }
   }
 }
 

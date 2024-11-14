@@ -1,16 +1,18 @@
 package expo.modules.adapters.react.apploader
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.LifecycleState
+import expo.modules.BuildConfig
 import expo.modules.apploader.HeadlessAppLoader
 import expo.modules.core.interfaces.Consumer
 import expo.modules.core.interfaces.DoNotStrip
 
-private val appRecords: MutableMap<String, ReactInstanceManager> = mutableMapOf()
+private val appRecords: MutableMap<String, ReactContext> = mutableMapOf()
 
 class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) : HeadlessAppLoader {
 
@@ -22,19 +24,42 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
     }
 
     if (context.applicationContext is ReactApplication) {
-      val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
       if (!appRecords.containsKey(params.appScopeKey)) {
-        reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceEventListener {
-          override fun onReactContextInitialized(context: ReactContext) {
-            HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
-            callback?.apply(true)
+        // In old arch reactHost will be null
+        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+          // New architecture
+          val reactHost = (context.applicationContext as ReactApplication).reactHost ?: throw IllegalStateException("Your application does not have a valid reactHost")
+          reactHost.addReactInstanceEventListener(
+            object : ReactInstanceEventListener {
+              override fun onReactContextInitialized(context: ReactContext) {
+                reactHost.removeReactInstanceEventListener(this)
+                HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
+                appRecords[params.appScopeKey] = context
+                callback?.apply(true)
+              }
+            }
+          )
+          // Ensure that we're starting the react host on the main thread
+          android.os.Handler(context.mainLooper).post {
+            reactHost.start()
           }
-        })
-        appRecords[params.appScopeKey] = reactInstanceManager
-        if (reactInstanceManager.hasStartedCreatingInitialContext()) {
-          reactInstanceManager.recreateReactContextInBackground()
         } else {
-          reactInstanceManager.createReactContextInBackground()
+          // Old architecture
+          val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
+          reactInstanceManager.addReactInstanceEventListener(
+            object : ReactInstanceEventListener {
+              override fun onReactContextInitialized(context: ReactContext) {
+                HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
+                reactInstanceManager.removeReactInstanceEventListener(this)
+                appRecords[params.appScopeKey] = context
+                callback?.apply(true)
+              }
+            }
+          )
+          // Ensure that we're starting the react host on the main thread
+          android.os.Handler(context.mainLooper).post {
+            reactInstanceManager.createReactContextInBackground()
+          }
         }
       } else {
         alreadyRunning?.run()
@@ -44,18 +69,34 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
     }
   }
 
+  @SuppressLint("VisibleForTests")
   override fun invalidateApp(appScopeKey: String?): Boolean {
     return if (appRecords.containsKey(appScopeKey) && appRecords[appScopeKey] != null) {
-      val appRecord: ReactInstanceManager = appRecords[appScopeKey]!!
-      android.os.Handler(context.mainLooper).post {
-        // Only destroy the `ReactInstanceManager` if it does not bind with an Activity.
-        // And The Activity would take over the ownership of `ReactInstanceManager`.
-        // This case happens when a user clicks a background task triggered notification immediately.
-        if (appRecord.lifecycleState == LifecycleState.BEFORE_CREATE) {
-          appRecord.destroy()
+      val reactContext = appRecords[appScopeKey] ?: return false
+      if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+        // New architecture
+        val reactHost = (reactContext.applicationContext as ReactApplication).reactHost ?: throw IllegalStateException("Your application does not have a valid reactHost")
+        android.os.Handler(reactContext.mainLooper).post {
+          reactHost.destroy("Closing headless task app", null)
+          HeadlessAppLoaderNotifier.notifyAppDestroyed(appScopeKey)
+          appRecords.remove(appScopeKey)
         }
-        HeadlessAppLoaderNotifier.notifyAppDestroyed(appScopeKey)
-        appRecords.remove(appScopeKey)
+      } else {
+        // Old architecture
+        val reactNativeHost = (reactContext.applicationContext as ReactApplication).reactNativeHost
+        if (reactNativeHost.hasInstance()) {
+          val reactInstanceManager: ReactInstanceManager = reactNativeHost.reactInstanceManager
+          android.os.Handler(reactContext.mainLooper).post {
+            // Only destroy the `ReactInstanceManager` if it does not bind with an Activity.
+            // And The Activity would take over the ownership of `ReactInstanceManager`.
+            // This case happens when a user clicks a background task triggered notification immediately.
+            if (reactInstanceManager.lifecycleState == LifecycleState.BEFORE_CREATE) {
+              reactInstanceManager.destroy()
+            }
+            HeadlessAppLoaderNotifier.notifyAppDestroyed(appScopeKey)
+            appRecords.remove(appScopeKey)
+          }
+        }
       }
       true
     } else {
@@ -63,8 +104,18 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
     }
   }
 
-  override fun isRunning(appScopeKey: String?): Boolean =
-    appRecords.contains(appScopeKey) && appRecords[appScopeKey]!!.hasStartedCreatingInitialContext()
+  override fun isRunning(appScopeKey: String?): Boolean {
+    val reactContext = appRecords[appScopeKey] ?: return false
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      // New architecture - We can return true since the fact that we have a reactContext
+      // means that we've already called start on the reactHost
+      return true
+    } else {
+      // Old architecture
+      val reactNativeHost = (reactContext.applicationContext as ReactApplication).reactNativeHost
+      return reactNativeHost.reactInstanceManager.hasStartedCreatingInitialContext()
+    }
+  }
 
   //endregion HeadlessAppLoader
 }

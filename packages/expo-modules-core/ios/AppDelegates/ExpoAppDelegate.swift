@@ -70,6 +70,10 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     subscribers.forEach { $0.applicationWillTerminate?(application) }
   }
 
+  @objc public func customizeRootView(_ rootView: UIView) {
+    subscribers.forEach { $0.customizeRootView?(rootView) }
+  }
+
   // TODO: - Responding to Environment Changes
 
   // TODO: - Managing App State Restoration
@@ -279,8 +283,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Opening a URL-Specified Resource
 
   open func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-    return subscribers.contains { subscriber in
-      return subscriber.application?(app, open: url, options: options) ?? false
+    return subscribers.reduce(false) { result, subscriber in
+      return subscriber.application?(app, open: url, options: options) ?? false || result
     }
   }
 
@@ -297,7 +301,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
    * a different orientation.
    */
 #if !os(tvOS)
-  public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+  open func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
     let deviceOrientationMask = allowedOrientations(for: UIDevice.current.userInterfaceIdiom)
     let universalOrientationMask = allowedOrientations(for: .unspecified)
     let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask

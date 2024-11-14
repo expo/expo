@@ -4,7 +4,7 @@ import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 
 import { BasePackageManager } from './BasePackageManager';
-import { findYarnOrNpmWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeWorkspaces';
+import { resolveWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeManagers';
 import { createPendingSpawnAsync } from '../utils/spawn';
 
 export class NpmPackageManager extends BasePackageManager {
@@ -13,7 +13,7 @@ export class NpmPackageManager extends BasePackageManager {
   readonly lockFile = NPM_LOCK_FILE;
 
   workspaceRoot() {
-    const root = findYarnOrNpmWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
+    const root = resolveWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
     if (root) {
       return new NpmPackageManager({
         ...this.options,
@@ -111,7 +111,8 @@ export class NpmPackageManager extends BasePackageManager {
       .forEach((spec) => {
         // When using a dist-tag version of a library, we need to consider it as "unversioned".
         // Doing so will install that version with `npm install --save(-dev)`, and resolve the dist-tag properly.
-        if (spec && spec.rawSpec && spec.type !== 'tag') {
+        const hasExactSpec = !!spec && spec.rawSpec !== '' && spec.rawSpec !== '*';
+        if (spec && hasExactSpec && spec.type !== 'tag') {
           result.versioned.push(spec);
         } else if (spec) {
           result.unversioned.push(spec);

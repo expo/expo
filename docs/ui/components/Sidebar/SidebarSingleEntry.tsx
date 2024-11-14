@@ -1,5 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import type { ComponentType, HTMLAttributes } from 'react';
 
 import { A } from '../Text';
@@ -27,11 +27,11 @@ export const SidebarSingleEntry = ({
     <A
       href={href}
       className={mergeClasses(
-        'flex items-center gap-3 text-secondary rounded-md text-sm min-h-[32px] px-2 py-1 !leading-[100%] !opacity-100',
+        'flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm !leading-[100%] text-secondary !opacity-100',
         'hocus:bg-element',
         'focus-visible:relative focus-visible:z-10',
         secondary && 'text-xs',
-        isActive && 'bg-palette-blue3 text-link font-medium hocus:text-link hocus:bg-palette-blue4'
+        isActive && 'bg-palette-blue3 font-medium text-link hocus:bg-palette-blue4 hocus:text-link'
       )}
       shouldLeakReferrer={shouldLeakReferrer}
       isStyled>
@@ -42,7 +42,7 @@ export const SidebarSingleEntry = ({
         )}
       />
       {title}
-      {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
+      {isExternal && <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary" />}
     </A>
   );
 };

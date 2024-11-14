@@ -1,8 +1,5 @@
-import { css, Global } from '@emotion/react';
-import { SerializedStyles } from '@emotion/serialize';
-import { theme } from '@expo/styleguide';
-import { breakpoints, spacing } from '@expo/styleguide-base';
-import { PropsWithChildren, ReactNode } from 'react';
+import { mergeClasses } from '@expo/styleguide';
+import { type PropsWithChildren, type ReactNode } from 'react';
 
 import { Sidebar } from '../Sidebar';
 
@@ -23,16 +20,12 @@ type LayoutProps = PropsWithChildren<{
    */
   sidebar?: ReactNode;
   /**
-   * Custom CSS for the whole layout.
+   * Custom className for the main content wrapper.
    */
-  cssLayout?: SerializedStyles;
-  /**
-   * Custom CSS for the main content wrapper.
-   */
-  cssContent?: SerializedStyles;
+  className?: string;
 }>;
 
-export const Layout = ({
+export function Layout({
   // note(simek): stub props for now, until we don't use new Layout
   header = (
     <Header
@@ -45,71 +38,25 @@ export const Layout = ({
   navigation,
   sidebar,
   children,
-  cssLayout = undefined,
-  cssContent = undefined,
-}: LayoutProps) => (
-  <>
-    <Global
-      styles={css({
-        // Ensure correct background for Overscroll
-        'body.dark-theme': {
-          backgroundColor: theme.background.screen,
-        },
-      })}
-    />
-    <header css={headerStyle}>{header}</header>
-    <main css={[layoutStyle, cssLayout]}>
-      {navigation && <nav css={navigationStyle}>{navigation}</nav>}
-      <LayoutScroll>
-        <article css={[innerContentStyle, cssContent]}>{children}</article>
-      </LayoutScroll>
-      {sidebar && <aside css={asideStyle}>{sidebar}</aside>}
-    </main>
-  </>
-);
-
-const HEADER_HEIGHT = 60;
-
-const layoutStyle = css({
-  display: 'flex',
-  alignItems: 'stretch',
-  maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
-  marginTop: HEADER_HEIGHT,
-  backgroundColor: theme.background.default,
-  '.dark-theme &': {
-    backgroundColor: theme.background.screen,
-  },
-  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
-    // Ditch inner scroll on mobile, which results in weird bugs
-    maxHeight: 'none',
-  },
-});
-
-const headerStyle = css({
-  position: 'fixed',
-  top: 0,
-  width: '100%',
-  height: HEADER_HEIGHT,
-  zIndex: 100,
-});
-
-const navigationStyle = css({
-  flexBasis: 256,
-  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
-    display: 'none',
-  },
-});
-
-const innerContentStyle = css({
-  margin: '0 auto',
-  minHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
-  maxWidth: breakpoints.large,
-  padding: `${spacing[8]}px ${spacing[4]}px`,
-});
-
-const asideStyle = css({
-  flexBasis: 288,
-  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
-    display: 'none',
-  },
-});
+  className,
+}: LayoutProps) {
+  return (
+    <>
+      <header className="fixed top-0 z-[100] h-[60px] w-full">{header}</header>
+      <main
+        className={mergeClasses('mt-[60px] flex items-stretch', 'max-md-gutters:max-h-[unset]')}>
+        {navigation && <nav className="basis-[256px] max-md-gutters:hidden">{navigation}</nav>}
+        <LayoutScroll>
+          <article
+            className={mergeClasses(
+              'mx-auto min-h-[calc(100vh-60px)] max-w-screen-lg px-4 py-8',
+              className
+            )}>
+            {children}
+          </article>
+        </LayoutScroll>
+        {sidebar && <aside className="basis-[288px] max-md-gutters:hidden">{sidebar}</aside>}
+      </main>
+    </>
+  );
+}

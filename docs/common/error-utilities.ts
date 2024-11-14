@@ -139,11 +139,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issues/',
   '/guides/userinterface/': '/ui-programming/user-interface-libraries/',
-  '/introduction/expo/': '/core-concepts/',
   '/introduction/why-not-expo/': '/faq/#limitations',
-  '/introduction/faq/': '/faq/',
   '/next-steps/community/': '/',
-  '/introduction/managed-vs-bare/': '/archive/managed-vs-bare/',
   '/workflow/expo-go/': '/get-started/set-up-your-environment/',
   '/guides/splash-screens/': '/develop/user-interface/splash-screen/',
   '/guides/app-icons/': '/develop/user-interface/app-icons/',
@@ -157,34 +154,15 @@ const RENAMED_PAGES: Record<string, string> = {
   '/debugging/': '/debugging/runtime-issues/',
   '/debugging/runtime-issue/': '/debugging/runtime-issues/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
-  '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
-  '/get-started/errors/': '/debugging/errors-and-warnings/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
-  '/home/develop/user-interface/safe-areas': '/develop/user-interface/safe-areas/',
-  '/home/develop/development-builds/installation': '/develop/development-builds/create-a-build/',
-  '/home/debugging/tools/': '/debugging/tools/',
-  '/home/navigation/installation': '/routing/introduction/',
-  '/home/authentication': '/develop/authentication/',
-  '/home/get-started/create-a-project': '/get-started/create-a-project/',
-  '/home/core-concepts/': '/core-concepts/',
-  '/home/config-plugins/plugins-and-mods': '/config-plugins/plugins-and-mods/',
-  '/home/unit-testing/': '/develop/unit-testing/',
-  '/home/config-plugins/introduction/': '/config-plugins/introduction/',
-  '/home/develop/user-interface/app-icons': '/develop/user-interface/app-icons/',
-  '/home/develop/development-builds/introduction/': '/develop/development-builds/introduction/',
-
-  // EAS Build
-  '/build-reference/eas-json/': '/eas/json/#eas-build',
 
   // Old redirects
-  '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
-  '/guides/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
-  '/distribution/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
+  '/guides/building-standalone-apps/': '/build/setup/',
+  '/distribution/building-standalone-apps/': '/build/setup/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
-  '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
   '/build-reference/migrating/': '/archive/classic-builds/migrating/',
@@ -200,15 +178,11 @@ const RENAMED_PAGES: Record<string, string> = {
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
 
-  // Expo Accounts
-  '/accounts/working-together/': '/accounts/account-types/',
-
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
   '/guides/expokit/': '/archive/glossary/#expokit/',
   '/guides/publishing/': '/archive/classic-updates/publishing/',
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
-  '/guides/linking/': '/workflow/linking/',
   '/guides/up-and-running/': '/get-started/create-a-project/',
   '/guides/debugging/': '/debugging/runtime-issues/',
   '/guides/logging/': '/workflow/logging/',
@@ -219,7 +193,6 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Changes from redoing the getting started workflow, SDK35+
   '/workflow/up-and-running/': '/get-started/create-a-project/',
-  '/introduction/additional-resources/': '/next-steps/additional-resources/',
   '/introduction/already-used-react-native/':
     '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/introduction/community/': '/next-steps/community/',
@@ -253,7 +226,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/release-channels/': '/archive/classic-updates/release-channels/',
   '/guides/push-notifications/': '/push-notifications/overview/',
   '/push-notifications/': '/push-notifications/overview/',
-  '/distribution/hosting-your-app/': '/distribution/publishing-websites/',
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
   '/get-started/': '/get-started/create-a-project/',
   '/guides/detach/': '/archive/glossary/#detach',
@@ -261,39 +233,23 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas/submit/': '/submit/introduction/',
   '/development/tools/expo-dev-client/':
     '/develop/development-builds/introduction/#what-is-expo-dev-client',
-  '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#use-a-custom-font',
+  '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#add-a-custom-font',
   '/accounts/teams-and-accounts/': '/accounts/account-types/',
   '/push-notifications/fcm/': '/push-notifications/sending-notifications-custom/',
-  '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
   '/submit/submit-android': '/submit/android/',
 
   // Fundamentals had too many things
-  '/workflow/linking/': '/guides/linking/',
+  '/workflow/linking/': '/linking/overview/',
   '/workflow/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
 
   // Archive unused pages
-  '/guides/notification-channels/': '/archived/notification-channels/',
-
-  // Migrated FAQ pages
-  '/faq/image-background/': '/ui-programming/image-background/',
-  '/faq/react-native-styling-buttons/': '/ui-programming/react-native-styling-buttons/',
-  '/faq/react-native-version-mismatch/': '/troubleshooting/react-native-version-mismatch/',
-  '/faq/clear-cache-windows/': '/troubleshooting/clear-cache-windows/',
-  '/faq/clear-cache-macos-linux/': '/troubleshooting/clear-cache-macos-linux/',
-  '/faq/application-has-not-been-registered/':
-    '/troubleshooting/application-has-not-been-registered/',
+  '/guides/notification-channels/': '/archive/notification-channels/',
 
   // Permissions API is moved to guide
-  '/versions/v40.0.0/sdk/permissions/': '/guides/permissions/',
-  '/versions/v41.0.0/sdk/permissions/': '/guides/permissions/',
-  '/versions/v42.0.0/sdk/permissions/': '/guides/permissions/',
-  '/versions/v43.0.0/sdk/permissions/': '/guides/permissions/',
-  '/versions/v46.0.0/sdk/permissions/': '/guides/permissions/',
-  '/versions/v47.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
   // Random API replaced with Crypto
@@ -308,36 +264,22 @@ const RENAMED_PAGES: Record<string, string> = {
   '/bare/using-web/': '/workflow/web/',
   '/guides/running-in-the-browser/': '/workflow/web/',
   '/bare/unimodules-full-list/': '/bare/overview/',
-  '/bare/updating-your-app/': '/eas-update/updating-your-app/',
+  '/bare/updating-your-app/': '/eas-update/getting-started/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',
-  '/distribution/uploading-apps/': '/submit/introduction/',
-  '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
 
   // Redirects for removed/archived pages or guides
-  '/archived/': '/archive/',
-  '/guides/using-gatsby/': '/guides/overview',
   '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/expokit/': '/archive/glossary/#expokit',
   '/submit/classic-builds/': '/submit/introduction/',
-  '/archive/adhoc-builds/': '/develop/development-builds/introduction/',
   '/technical-specs/expo-updates-0/': '/technical-specs/expo-updates-1/',
   '/technical-specs/latest/': '/technical-specs/expo-updates-1/',
-  '/development/extending-the-dev-menu/': '/develop/development-builds/development-workflows/',
-  '/more/latest': '/versions/latest/',
   '/archive/expokit/overview/': '/archive/glossary/',
   '/expokit/overview/': '/archive/glossary/',
-  '/tutorial/planning/': '/tutorial/introduction/',
-  '/tutorial/sharing/': '/tutorial/introduction/',
-  '/tutorial/text/': '/tutorial/introduction/',
-  '/tutorial/button': '/tutorial/introduction/',
-  '/guides/using-clojurescript/': '/guides/overview',
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
-  '/guides/using-custom-fonts/': '/develop/user-interface/fonts/',
   '/workflow/already-used-react-native/': '/workflow/overview/',
-  '/guides/setup-native-firebase/': '/guides/using-firebase/',
   '/development/installation/': '/develop/development-builds/create-a-build/',
   '/guides/routing-and-navigation/': '/routing/introduction/',
   '/build-reference/custom-build-config/': '/custom-builds/get-started/',
@@ -351,12 +293,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/run-on-device/': '/build/internal-distribution/',
   '/guides/': '/guides/overview/',
   '/archive/workflow/customizing/': '/workflow/customizing/',
-  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
-  '/guides/education': '/additional-resources/',
   '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/guides/web-performance/': '/guides/analyzing-bundles/',
   '/guides/assets/': '/develop/user-interface/assets/',
+  '/router/reference/search-parameters/': '/router/reference/url-parameters/',
+  '/guides/using-flipper': '/archive/using-flipper/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -367,13 +309,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
-  '/eas-update/bare-react-native/': '/eas-update/updating-your-app/',
+  '/eas-update/bare-react-native/': '/eas-update/getting-started/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
-  '/classic/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
+  '/classic/building-standalone-apps/': '/build/setup/',
   '/classic/turtle-cli/': '/archive/classic-builds/turtle-cli/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
-  '/archive/classic-updates/building-standalone-apps/':
-    '/archive/classic-builds/building-standalone-apps/',
+  '/archive/classic-updates/building-standalone-apps/': '/build/setup/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
@@ -392,16 +333,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/firebase-recaptcha/': '/guides/using-firebase/',
   '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
   '/versions/latest/sdk/util/': '/versions/latest/',
-  '/versions/v45.0.0/sdk/google-sign-in': '/guides/google-authentication/',
-  '/versions/v44.0.0/sdk/google/': '/guides/google-authentication/',
-  '/versions/latest/sdk/error-recovery/': '/versions/latest/',
   '/guides/using-preact/': '/guides/overview/',
   '/versions/latest/sdk/shared-element/': '/versions/latest/',
   '/workflow/hermes/': '/guides/using-hermes/',
   '/config/app/': '/workflow/configuration/',
   '/versions/latest/sdk/settings/': '/versions/latest/',
   '/archive/expokit/eject/': '/archive/glossary/#eject',
-  '/versions/latest/sdk/admob/': '/versions/latest/',
   '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
   '/distribution/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
@@ -415,8 +352,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/known-issues/': '/eas-update/introduction/',
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
-  '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
+  '/eas-update/custom-updates-server/': '/versions/latest/sdk/updates/',
+  '/distribution/custom-updates-server/': '/versions/latest/sdk/updates/',
+  '/distribution/runtime-versions/': '/eas-update/runtime-versions/',
   '/bare/error-recovery/': '/eas-update/error-recovery/',
+  '/deploy/instant-updates/': '/deploy/send-over-the-air-updates/',
+  '/eas-update/build-locally/': '/eas-update/standalone-service/',
+  '/eas-update/updating-your-app/': '/eas-update/getting-started/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',
@@ -429,26 +371,18 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/reference/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
+  '/router/appearance/': '/router/introduction/',
 
   // Redirects as per Algolia 404 report
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
-  '/versions/v48.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
-  '/versions/v47.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
-  '/versions/v46.0.0/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
   '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
-  '/versions/v48.0.0/sdk/taskmanager': '/versions/latest/sdk/task-manager/',
-  '/versions/v47.0.0/sdk/taskmanager': '/versions/latest/sdk/task-manager/',
-  '/versions/v46.0.0/sdk/taskmanager': '/versions/latest/sdk/task-manager/',
+  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
-  'versions/v48.0.0/sdk': '/versions/latest',
-  'versions/v48.0.0/sdk/config/app': '/versions/latest/sdk/config/app/',
   '/versions/v50.0.0/sdk': '/versions/v50.0.0',
   '/versions/v49.0.0/sdk': '/versions/v49.0.0',
-  '/versions/v47.0.0/sdk': '/versions/latest',
-  '/versions/v46.0.0/sdk': '/versions/latest',
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
@@ -467,4 +401,28 @@ const RENAMED_PAGES: Record<string, string> = {
   // May 2024 home / develop section
   '/develop/user-interface/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/develop/user-interface/splash-screen/': '/develop/user-interface/splash-screen-and-app-icon/',
+
+  // Preview section
+  '/preview/support/': '/preview/introduction/',
+  '/preview/react-compiler/': '/guides/react-compiler/',
+
+  // Troubleshooting section
+  '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',
+
+  // Based on SEO tool reports
+  '/build-reference/eas-json/': '/eas/json/',
+  '/build-reference/custom-builds/schema/': '/custom-builds/schema/',
+
+  // After adding "Linking" (/linking/**) section
+  '/guides/linking/': '/linking/overview/',
+  '/guides/deep-linking/': '/linking/into-your-app/',
+
+  // After adding /sdk/router/ API reference
+  '/router/reference/hooks/': '/versions/latest/sdk/router/#hooks',
+
+  // After moving custom tabs under Expo Router > Navigation patterns
+  '/router/ui/tabs/': '/router/advanced/custom-tabs/',
+
+  // After deleting deprecated docs from archive section
+  '/guides/using-flipper/': '/debugging/devtools-plugins/',
 };

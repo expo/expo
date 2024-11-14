@@ -1,4 +1,4 @@
-import { StatusWaitingIcon } from '@expo/styleguide-icons';
+import { StatusWaitingIcon } from '@expo/styleguide-icons/custom/StatusWaitingIcon';
 
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
@@ -25,7 +25,7 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
   } else if (typeof isSupported === 'object') {
     return {
       children: (
-        <A className="grid gap-2 grid-cols-[20px_auto]" href={isSupported.pending}>
+        <A className="grid grid-cols-[20px_auto] gap-2" href={isSupported.pending}>
           <StatusWaitingIcon className="icon-md text-icon-info" /> Pending
         </A>
       ),

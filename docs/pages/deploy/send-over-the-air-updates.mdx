@@ -1,0 +1,32 @@
+---
+title: Send over-the-air updates
+description: Learn how to send over-the-air updates to push critical bug fixes and improvements to your users.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+You can send over-the-air updates containing critical bug fixes and improvements to your users.
+
+## Get started
+
+> If you've published [previews](/review/share-previews-with-your-team/) or created a [build](/deploy/build-project/) before, you may have already set up updates and can skip this section.
+
+To set up updates, run the following [EAS CLI](/develop/tools/#eas-cli) command:
+
+<Terminal cmd={['$ eas update:configure']} />
+
+After the command completes, you'll need to make new builds before continuing to the next section.
+
+## Send an update
+
+To send an update, run the following [EAS CLI](/develop/tools/#eas-cli) command:
+
+<Terminal cmd={['$ eas update --channel production']} />
+
+This command will create an update and make it available to builds of your app that are configured to receive updates on the `production` channel. This channel is defined in [**eas.json**](/eas/json/#channel).
+
+You can verify the update works by force closing the app and reopening it two times. The update should be applied on the second launch.
+
+## Learn more
+
+You can learn how to [rollout an update](/eas-update/rollouts/), [optimize assets](/eas-update/optimize-assets/), and more with our [update guides](/eas-update/introduction/).

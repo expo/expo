@@ -6,6 +6,8 @@
 
 #include <jsi/jsi.h>
 
+#include "JSIUtils.h"
+
 namespace jsi = facebook::jsi;
 
 namespace expo::NativeModule {

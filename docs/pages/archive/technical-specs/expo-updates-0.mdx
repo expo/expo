@@ -17,7 +17,7 @@ This is the specification for Expo Updates, a protocol for delivering updates to
 
 Conforming servers and client libraries must fulfill all normative requirements. Conformance requirements are described in this document by both descriptive assertions and key words with clearly defined meanings.
 
-The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in the normative portions of this document are to be interpreted as described in [IETF RFC 2119](https://tools.ietf.org/html/rfc2119). These key words may appear in lowercase and still retain their meaning unless explicitly declared as non-normative.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in the normative portions of this document are to be interpreted as described in [IETF RFC 2119](https://tools.ietf.org/html/rfc2119). These key words may appear in lowercase and still retain their meaning unless explicitly declared as non-normative.
 
 A conforming implementation of this protocol may provide additional functionality, but must not where explicitly disallowed or would otherwise result in non-conformance.
 
@@ -59,7 +59,7 @@ A conformant client library configured to perform [code signing](#code-signing) 
 
 Example:
 
-```
+```text
 accept: application/expo+json;q=0.9, application/json;q=0.8, multipart/mixed
 expo-platform: *
 expo-runtime-version: *
@@ -77,7 +77,7 @@ The choice of manifest and headers are dependent on the values of the request he
 
 ### Manifest response headers
 
-```
+```text
 expo-protocol-version: 0
 expo-sfv-version: 0
 expo-manifest-filters: &lt;expo-sfv&gt;
@@ -197,7 +197,7 @@ A conformant client library MUST make a GET request to the asset URLs specified 
 
 Example headers:
 
-```
+```text
 accept: image/jpeg, */*
 accept-encoding: br, gzip
 ```
@@ -213,14 +213,14 @@ An asset located at a particular URL MUST NOT be changed or removed since client
 The asset MUST be encoded using a compression format that the client supports according to the request's `accept-encoding` header. The server MAY serve uncompressed assets. The response MUST include a `content-type` header with the MIME type of the asset.
 For example:
 
-```
+```text
 content-encoding: br
 content-type: application/javascript
 ```
 
 An asset is RECOMMENDED to be served with a `cache-control` header set to a long duration as an asset located at a given URL must not change. For example:
 
-```
+```text
 cache-control: public, max-age=31536000, immutable
 ```
 

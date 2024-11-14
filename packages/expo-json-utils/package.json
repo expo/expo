@@ -1,12 +1,16 @@
 {
   "name": "expo-json-utils",
-  "version": "0.13.1",
-  "description": "Utilities for reading NSDictionaries (iOS) and JSONObjects (Android).",
+  "version": "0.14.0",
+  "description": "Utilities for reading JSONObjects (Android) and NSDictionaries (iOS).",
   "main": "index.js",
   "keywords": [
     "react-native",
     "expo",
-    "expo-json-utils"
+    "expo-json-utils",
+    "android",
+    "ios",
+    "jsonobjects",
+    "nsdictionaries"
   ],
   "repository": {
     "type": "git",

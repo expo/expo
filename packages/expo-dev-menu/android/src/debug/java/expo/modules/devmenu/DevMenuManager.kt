@@ -13,28 +13,17 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.*
+import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.views.text.ReactFontManager
 import expo.interfaces.devmenu.DevMenuDelegateInterface
-import expo.interfaces.devmenu.DevMenuExtensionInterface
-import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.interfaces.devmenu.ReactHostWrapper
-import expo.interfaces.devmenu.items.DevMenuCallableProvider
-import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
-import expo.interfaces.devmenu.items.DevMenuDataSourceItem
-import expo.interfaces.devmenu.items.DevMenuExportedAction
-import expo.interfaces.devmenu.items.DevMenuExportedCallable
-import expo.interfaces.devmenu.items.DevMenuExportedFunction
-import expo.interfaces.devmenu.items.DevMenuItemsContainerInterface
-import expo.interfaces.devmenu.items.DevMenuScreen
-import expo.interfaces.devmenu.items.DevMenuScreenItem
-import expo.interfaces.devmenu.items.KeyCommand
-import expo.interfaces.devmenu.items.getItemsOfType
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
+import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
@@ -48,6 +37,8 @@ import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
+  data class KeyCommand(val code: Int, val withShift: Boolean = false)
+
   data class Callback(val name: String, val shouldCollapse: Boolean)
 
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
@@ -60,21 +51,25 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var preferences: DevMenuPreferencesInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
-  private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: ReactHostWrapper
   private var currentReactInstance: WeakReference<ReactHostWrapper?> = WeakReference(null)
-  private var currentScreenName: String? = null
   private var canLaunchDevMenuOnStart = true
   var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
 
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
+  var launchUrl: String? = null
 
   //region helpers
 
   fun getReactHost(): ReactHostWrapper? {
     return delegate?.reactHost()
+  }
+
+  fun getDevToolsDelegate(): DevMenuDevToolsDelegate? {
+    val reactHost = getReactHost() ?: return null
+    return DevMenuDevToolsDelegate(this, reactHost)
   }
 
   private val delegateReactContext: ReactContext?
@@ -89,71 +84,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private val hostActivity: Activity?
     get() = hostReactContext?.currentActivity
 
-  /**
-   * Returns an collection of modules conforming to [DevMenuExtensionInterface].
-   */
-  @get:Synchronized
-  private val delegateExtensions = mutableListOf<DevMenuExtensionInterface>()
-
-  private val cachedDevMenuDataSources by KeyValueCachedProperty<ReactHostWrapper, List<DevMenuDataSourceInterface>> {
-    delegateExtensions
-      .map { it.devMenuDataSources(extensionSettings) ?: emptyList() }
-      .flatten()
-  }
-
-  private val dataSources: List<DevMenuDataSourceInterface>
-    get() {
-      val delegateReactHost = delegate?.reactHost() ?: return emptyList()
-      return cachedDevMenuDataSources[delegateReactHost]
-    }
-
-  private val cachedDevMenuScreens by KeyValueCachedProperty<ReactHostWrapper, List<DevMenuScreen>> {
-    delegateExtensions
-      .map { it.devMenuScreens(extensionSettings) ?: emptyList() }
-      .flatten()
-  }
-
-  private val delegateScreens: List<DevMenuScreen>
-    get() {
-      val delegateReactHost = delegate?.reactHost() ?: return emptyList()
-      return cachedDevMenuScreens[delegateReactHost]
-    }
-
-  private val cachedDevMenuItems by KeyValueCachedProperty<ReactHostWrapper, List<DevMenuItemsContainerInterface>> {
-    delegateExtensions
-      .mapNotNull { it.devMenuItems(extensionSettings) }
-  }
-
-  private val delegateMenuItemsContainers: List<DevMenuItemsContainerInterface>
-    get() {
-      val delegateReactHost = delegate?.reactHost() ?: return emptyList()
-      return cachedDevMenuItems[delegateReactHost]
-    }
-
-  private val delegateRootMenuItems: List<DevMenuScreenItem>
-    get() =
-      delegateMenuItemsContainers
-        .map { it.getRootItems() }
-        .flatten()
-        .sortedBy { -it.importance }
-
-  private fun getCallable(): List<DevMenuExportedCallable> {
-    if (currentScreenName == null) {
-      return delegateMenuItemsContainers
-        .map {
-          it
-            .getItemsOfType<DevMenuCallableProvider>()
-            .mapNotNull { provider -> provider.registerCallable() }
-        }
-        .flatten()
-    }
-
-    val screen = delegateScreens.find { it.screenName == currentScreenName } ?: return emptyList()
-    return screen
-      .getItemsOfType<DevMenuCallableProvider>()
-      .mapNotNull { it.registerCallable() }
-  }
-
   //endregion
 
   //region init
@@ -163,7 +93,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     if (!this::devMenuHost.isInitialized) {
       devMenuHost = ReactHostWrapper(
         reactNativeHost = DevMenuReactNativeHost(application, useDeveloperSupport),
-        reactHost = DevMenuReactHost.create(application, useDeveloperSupport)
+        reactHostProvider = { DevMenuReactHost.create(application, useDeveloperSupport) }
       )
       UiThreadUtil.runOnUiThread {
         devMenuHost.start()
@@ -223,7 +153,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       testInterceptor.overrideSettings()
         ?: DevMenuPreferencesHandle(reactContext)
       ).also {
-      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty())) {
+      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty()) || hasDisableOnboardingQueryParam(launchUrl.orEmpty())) {
         it.isOnboardingFinished = true
       }
     }.also {
@@ -348,8 +278,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   //region DevMenuManagerProtocol
 
   override fun openMenu(activity: Activity, screen: String?) {
-    setCurrentScreen(null)
-
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
   }
 
@@ -364,7 +292,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   override fun hideMenu() {
-    setCurrentScreen(null)
     hostActivity?.finish()
   }
 
@@ -390,7 +317,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       return false
     }
 
-    if (keyCode == KeyEvent.KEYCODE_MENU) {
+    val keyCommand = KeyCommand(
+      code = keyCode,
+      withShift = event.modifiers and KeyEvent.META_SHIFT_MASK > 0
+    )
+
+    if (keyCommand == KeyCommand(KeyEvent.KEYCODE_MENU)) {
       delegateActivity?.let { openMenu(it) }
       return true
     }
@@ -399,20 +331,69 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       return false
     }
 
-    val keyCommand = KeyCommand(
-      code = keyCode,
-      withShift = event.modifiers and KeyEvent.META_SHIFT_MASK > 0
-    )
-    return getCallable()
-      .filterIsInstance<DevMenuExportedAction>()
-      .find { it.keyCommand == keyCommand }
-      ?.run {
-        if (isAvailable()) {
-          action()
-          closeMenu()
-        }
-        true
-      } ?: false
+    val action = when (keyCommand) {
+      KeyCommand(KeyEvent.KEYCODE_R) -> ::reload
+      KeyCommand(KeyEvent.KEYCODE_P) -> ::togglePerformanceMonitor
+      KeyCommand(KeyEvent.KEYCODE_I) -> ::toggleInspector
+      else -> return false
+    }
+
+    action()
+    closeMenu()
+    return true
+  }
+
+  fun reload() {
+    val devToolsDelegate = getDevToolsDelegate()
+    devToolsDelegate?.reload()
+  }
+
+  fun togglePerformanceMonitor() {
+    val devToolsDelegate = getDevToolsDelegate()
+    delegateActivity?.let {
+      devToolsDelegate?.togglePerformanceMonitor(it)
+    }
+  }
+
+  fun toggleInspector() {
+    val devToolsDelegate = getDevToolsDelegate()
+    devToolsDelegate?.toggleElementInspector()
+  }
+
+  fun toggleRemoteDebug() {
+    val devToolsDelegate = getDevToolsDelegate()
+    devToolsDelegate?.toggleRemoteDebugging()
+  }
+
+  fun openJSInspector() {
+    val devToolsDelegate = getDevToolsDelegate()
+    // If internal setting aren't available we can't open inspector
+    if (devToolsDelegate?.devInternalSettings == null) {
+      return
+    }
+    devToolsDelegate.openJSInspector()
+  }
+
+  fun toggleFastRefresh() {
+    val devToolsDelegate = getDevToolsDelegate()
+    val internalSettings = devToolsDelegate?.devInternalSettings
+      ?: return
+
+    val nextEnabled = !internalSettings.isHotModuleReplacementEnabled
+    internalSettings.isHotModuleReplacementEnabled = nextEnabled
+
+    val reactApplicationContext = delegateReactContext?.applicationContext as? ReactApplicationContext
+    if (reactApplicationContext != null) {
+      if (nextEnabled) {
+        reactApplicationContext.getJSModule(HMRClient::class.java).enable()
+      } else {
+        reactApplicationContext.getJSModule(HMRClient::class.java).disable()
+      }
+    }
+    if (nextEnabled && !internalSettings.isJSDevModeEnabled) {
+      internalSettings.isJSDevModeEnabled = true
+      devToolsDelegate.reload()
+    }
   }
 
   override fun setDelegate(newDelegate: DevMenuDelegateInterface) {
@@ -429,27 +410,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     setDelegate(DevMenuDefaultDelegate(reactHost))
   }
 
-  override fun dispatchCallable(actionId: String, args: ReadableMap?) {
-    getCallable()
-      .find { it.id == actionId }
-      ?.run {
-        when (this) {
-          is DevMenuExportedAction -> {
-            if (args != null) {
-              Log.e("DevMenu", "Action $actionId was called with arguments.")
-            }
-
-            call()
-          }
-          is DevMenuExportedFunction -> call(args)
-        }
-      }
-  }
-
-  override fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface) {
-    delegateExtensions.add(extensionInterface)
-  }
-
   override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
     delegateReactContext
       ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
@@ -460,17 +420,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     return delegate !== null
   }
 
-  override suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem> {
-    return dataSources
-      .find { it.id == id }
-      ?.run { fetchData() } ?: emptyList()
-  }
-
   override val coroutineScope = CoroutineScope(Dispatchers.Default)
-
-  override fun serializedItems(): List<Bundle> = delegateRootMenuItems.map { it.serialize() }
-
-  override fun serializedScreens(): List<Bundle> = delegateScreens.map { it.serialize() }
 
   override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
@@ -485,10 +435,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     if (newReactInstance != currentReactInstance.get()) {
       setUpReactInstance(newReactInstance)
     }
-  }
-
-  override fun setCurrentScreen(screen: String?) {
-    currentScreenName = screen
   }
 
   fun getMenuPreferences(): Bundle {

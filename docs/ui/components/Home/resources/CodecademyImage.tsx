@@ -1,13 +1,8 @@
 import { theme } from '@expo/styleguide';
-import React from 'react';
 
 export const CodecademyImage = () => (
   <svg
-    style={{
-      position: 'absolute',
-      right: 20,
-      bottom: 20,
-    }}
+    className="absolute bottom-5 right-5"
     width="126"
     height="154"
     viewBox="0 0 126 154"

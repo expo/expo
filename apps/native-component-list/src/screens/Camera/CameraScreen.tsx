@@ -1,3 +1,4 @@
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
@@ -13,8 +14,9 @@ import {
   FocusMode,
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Svg from 'react-native-svg';
 
 import GalleryScreen from './GalleryScreen';
@@ -46,9 +48,11 @@ interface State {
   mute: boolean;
   torchEnabled: boolean;
   cornerPoints?: BarcodePoint[];
+  mirror?: boolean;
   autoFocus: FocusMode;
   barcodeData: string;
   newPhotos: boolean;
+  previewPaused: boolean;
   permissionsGranted: boolean;
   micPermissionsGranted: boolean;
   permission?: PermissionStatus;
@@ -62,6 +66,38 @@ interface State {
   recording: boolean;
 }
 
+function Gestures({ children }: { children: React.ReactNode }) {
+  const doubleTapGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .numberOfTaps(2)
+        .maxDuration(250)
+        .onStart(() => {
+          console.log('doubleTapGesture > onStart');
+        }),
+    []
+  );
+
+  const longPressGesture = useMemo(
+    () =>
+      Gesture.LongPress()
+        .minDuration(750)
+        .onStart(() => {
+          console.log('longPressGesture > onStart');
+        }),
+    []
+  );
+
+  if (Platform.OS === 'web') {
+    return children;
+  }
+
+  return (
+    <GestureDetector gesture={Gesture.Race(doubleTapGesture, longPressGesture)}>
+      {children}
+    </GestureDetector>
+  );
+}
 export default class CameraScreen extends React.Component<object, State> {
   camera? = React.createRef<CameraView>();
 
@@ -73,9 +109,11 @@ export default class CameraScreen extends React.Component<object, State> {
     torchEnabled: false,
     cornerPoints: undefined,
     mute: false,
+    mirror: false,
     barcodeData: '',
     autoFocus: 'off',
     newPhotos: false,
+    previewPaused: false,
     permissionsGranted: false,
     micPermissionsGranted: false,
     showGallery: false,
@@ -119,9 +157,13 @@ export default class CameraScreen extends React.Component<object, State> {
 
   toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
 
+  togglePreviewPaused = () => this.setState((state) => ({ previewPaused: !state.previewPaused }));
+
   toggleTorch = () => this.setState((state) => ({ torchEnabled: !state.torchEnabled }));
 
   toggleMute = () => this.setState((state) => ({ mute: !state.mute }));
+
+  toggleMirror = () => this.setState((state) => ({ mirror: !state.mirror }));
 
   zoomOut = () => this.setState((state) => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
 
@@ -136,10 +178,13 @@ export default class CameraScreen extends React.Component<object, State> {
     }));
 
   collectPictureSizes = async () => {
+    if (this.state.pictureSizes.length > 0) {
+      return;
+    }
     const pictureSizes = (await this.camera?.current?.getAvailablePictureSizesAsync()) || [];
     let pictureSizeId = 0;
     if (Platform.OS === 'ios') {
-      pictureSizeId = pictureSizes.indexOf('High');
+      pictureSizeId = pictureSizes.indexOf('Photo');
     } else {
       pictureSizeId = pictureSizes.length - 1;
     }
@@ -166,7 +211,10 @@ export default class CameraScreen extends React.Component<object, State> {
   };
 
   takePicture = async () => {
-    await this.camera?.current?.takePictureAsync({ onPictureSaved: this.onPictureSaved });
+    await this.camera?.current?.takePictureAsync({
+      onPictureSaved: this.onPictureSaved,
+      shutterSound: !this.state.mute,
+    });
   };
 
   recordVideo = async () => {
@@ -188,6 +236,15 @@ export default class CameraScreen extends React.Component<object, State> {
         to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
       });
     }
+  };
+
+  updatePreviewState = () => {
+    if (this.state.previewPaused) {
+      this.camera?.current?.resumePreview();
+    } else {
+      this.camera?.current?.pausePreview();
+    }
+    this.togglePreviewPaused();
   };
 
   changeMode = () => {
@@ -265,6 +322,20 @@ export default class CameraScreen extends React.Component<object, State> {
           ]}>
           AF
         </Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMirror}>
+        <MaterialCommunityIcons
+          name="mirror"
+          size={24}
+          color={this.state.mirror ? 'white' : '#858585'}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.updatePreviewState}>
+        {this.state.previewPaused ? (
+          <AntDesign name="playcircleo" size={24} color="white" />
+        ) : (
+          <AntDesign name="pausecircleo" size={24} color="white" />
+        )}
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMoreOptions}>
         <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />
@@ -358,29 +429,33 @@ export default class CameraScreen extends React.Component<object, State> {
 
   renderCamera = () => (
     <View style={{ flex: 1 }}>
-      <CameraView
-        ref={this.camera}
-        style={styles.camera}
-        onCameraReady={this.collectPictureSizes}
-        responsiveOrientationWhenOrientationLocked
-        enableTorch={this.state.torchEnabled}
-        autofocus={this.state.autoFocus}
-        facing={this.state.facing}
-        animateShutter
-        pictureSize={this.state.pictureSize}
-        flash={this.state.flash}
-        mode={this.state.mode}
-        mute={this.state.mute}
-        zoom={this.state.zoom}
-        videoQuality="2160p"
-        onMountError={this.handleMountError}
-        barcodeScannerSettings={{
-          barcodeTypes: ['qr', 'pdf417'],
-        }}
-        onBarcodeScanned={this.state.barcodeScanning ? this.onBarcodeScanned : undefined}>
-        {this.renderTopBar()}
-        {this.renderBottomBar()}
-      </CameraView>
+      <Gestures>
+        <CameraView
+          ref={this.camera}
+          style={styles.camera}
+          onCameraReady={this.collectPictureSizes}
+          responsiveOrientationWhenOrientationLocked
+          enableTorch={this.state.torchEnabled}
+          autofocus={this.state.autoFocus}
+          facing={this.state.facing}
+          animateShutter
+          mirror={this.state.mirror}
+          pictureSize={this.state.pictureSize}
+          flash={this.state.flash}
+          active
+          mode={this.state.mode}
+          mute={this.state.mute}
+          zoom={this.state.zoom}
+          videoQuality="1080p"
+          onMountError={this.handleMountError}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr', 'pdf417'],
+          }}
+          onBarcodeScanned={this.state.barcodeScanning ? this.onBarcodeScanned : undefined}>
+          {this.renderTopBar()}
+          {this.renderBottomBar()}
+        </CameraView>
+      </Gestures>
       {this.state.barcodeScanning && this.renderBarcode()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>

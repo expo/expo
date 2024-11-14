@@ -7,7 +7,7 @@ class DevLauncherPackagerConnectionSettings(
   context: Context,
   private var serverIp: String
 ) : PackagerConnectionSettings(context) {
-  override fun getDebugServerHost() = serverIp
-
-  override fun setDebugServerHost(host: String) = Unit
+  override var debugServerHost: String
+    get() = serverIp
+    set(value) {}
 }

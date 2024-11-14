@@ -59,7 +59,7 @@ describe(persistMetroAssetsAsync, () => {
     it(`adds files to persist without writing to disk`, async () => {
       const files = new Map();
 
-      await persistMetroAssetsAsync(assets, {
+      await persistMetroAssetsAsync('/', assets, {
         outputDirectory: '/output',
         platform: 'ios',
         files,
@@ -71,6 +71,12 @@ describe(persistMetroAssetsAsync, () => {
         'assets/input/asset@3x.png',
       ]);
 
+      expect(files.get('assets/input/asset.png')).toEqual({
+        assetId: expect.stringContaining('input/asset.png'),
+        contents: expect.any(Buffer),
+        targetDomain: undefined,
+      });
+
       expect(Object.keys(vol.toJSON())).toEqual([
         '/input/a.png',
         '/input/a@2x.png',
@@ -79,7 +85,7 @@ describe(persistMetroAssetsAsync, () => {
     });
 
     it(`writes files that match virtual output`, async () => {
-      await persistMetroAssetsAsync(assets, {
+      await persistMetroAssetsAsync('/', assets, {
         outputDirectory: '/output',
         platform: 'ios',
       });

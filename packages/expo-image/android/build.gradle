@@ -18,7 +18,7 @@ android {
   namespace "expo.modules.image"
   defaultConfig {
     versionCode 1
-    versionName "1.12.9"
+    versionName "2.0.0"
     consumerProguardFiles("proguard-rules.pro")
 
     buildConfigField("boolean", "ALLOW_GLIDE_LOGS", project.properties.get("EXPO_ALLOW_GLIDE_LOGS", "false"))
@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-  def GLIDE_VERSION = "4.13.2"
+  def GLIDE_VERSION = "4.16.0"
 
   implementation 'com.facebook.react:react-android'
 

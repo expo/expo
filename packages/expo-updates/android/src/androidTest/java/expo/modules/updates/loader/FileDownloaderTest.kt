@@ -4,10 +4,12 @@ import android.content.Context
 import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import io.mockk.every
 import io.mockk.mockk
@@ -28,10 +30,12 @@ import java.util.*
 @RunWith(AndroidJUnit4ClassRunner::class)
 class FileDownloaderTest {
   private lateinit var context: Context
+  private lateinit var logger: UpdatesLogger
 
   @Before
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
+    logger = UpdatesLogger(context)
   }
 
   @Test
@@ -41,7 +45,7 @@ class FileDownloaderTest {
       "runtimeVersion" to "1.0"
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForRemoteUpdate(null, config, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(null, config, logger, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -62,7 +66,7 @@ class FileDownloaderTest {
     }
 
     // manifest extraHeaders should have their values coerced to strings
-    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, logger, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -86,7 +90,7 @@ class FileDownloaderTest {
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
 
-    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, logger, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -232,10 +236,9 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, config, client).downloadAsset(
+    FileDownloader(context, config, logger, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
-      context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e
@@ -247,7 +250,7 @@ class FileDownloaderTest {
       }
     )
 
-    Assert.assertTrue(error!!.message!!.contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
+    Assert.assertTrue(error!!.localizedMessageWithCauseLocalizedMessage().contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
     Assert.assertFalse(didSucceed)
   }
 
@@ -282,10 +285,9 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, config, client).downloadAsset(
+    FileDownloader(context, config, logger, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
-      context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e

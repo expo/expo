@@ -12,7 +12,7 @@ internal class OSLogHandler(
     if (!isAndroid) {
       println("[${type.type}] $category\t$message")
       cause?.let {
-        println("${it.localizedMessage}\n${cause.stackTraceToString()}")
+        println("${it.localizedMessageWithCauseLocalizedMessage()}\n${cause.stackTraceToString()}")
       }
       return
     }

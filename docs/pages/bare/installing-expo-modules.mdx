@@ -5,9 +5,9 @@ description: Learn how to prepare your existing React Native project to install 
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
-import { DiffBlock } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { DiffBlock } from '~/ui/components/Snippet';
 
 To use Expo modules in your app, you will need to install and configure the `expo` package.
 
@@ -38,7 +38,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 ## Manual installation
 
-The following instructions apply to installing the latest version of Expo modules in React Native 0.73.
+The following instructions apply to installing the latest version of Expo modules in React Native 0.76.
 
 <InstallSection packageName="expo" cmd={['$ npm install expo']} hideBareInstructions />
 
@@ -54,7 +54,12 @@ Once installation is complete, apply the changes from the following diffs to con
 
 Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L28-L55).
 
-Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 13.4`. The last step is to install the project's CocoaPods again to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
+Save all of your changes and update your iOS Deployment Target in Xcode to `iOS 15.1`:
+
+- Open **your-project-name.xcworkspace** in Xcode, select your project in the left sidebar.
+- Select **Targets** > **your-project-name** > **Build Settings** > **iOS Deployment Target** and set it to `iOS 15.1`.
+
+The last step is to install the project's CocoaPods again to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the **Podfile**:
 
 <InstallSection
   packageName="expo"
@@ -68,9 +73,9 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
   hideBareInstructions
 />
 
-### Optional: use Expo CLI for bundling
+### Configure Expo CLI for bundling on Android and iOS
 
-We recommend using Expo CLI to bundle your app JavaScript code and assets. This adds support for using the `"main"` field in **package.json** supports [Expo Router](/router/introduction/). [Learn more about Expo CLI](/bare/using-expo-cli/).
+We recommend using Expo CLI to bundle your app JavaScript code and assets. This adds support for using the `"main"` field in **package.json** to use [Expo Router](/router/introduction/) library. Not using Expo CLI for bundling may result in unexpected behavior. [Learn more about Expo CLI](/bare/using-expo-cli/).
 
 <Collapsible summary="Extend expo/metro-config in your metro.config.js">
   <DiffBlock source="/static/diffs/metro-config.diff" />
@@ -82,9 +87,9 @@ We recommend using Expo CLI to bundle your app JavaScript code and assets. This 
 
 <Collapsible summary="Configure iOS project to bundle with Expo CLI">
 
-Replace the shell script in the "Bundle React Native code and images" phase under the "Build Phases" tab for your target in Xcode with the following:
+Replace the shell script under **Build Phases** > **Bundle React Native code and images** in Xcode with the following:
 
-```sh
+```sh /bin/sh
 if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then
   source "$PODS_ROOT/../.xcode.env"
 fi
@@ -117,7 +122,7 @@ fi
 
 And add support the `"main"` field in **package.json** by making the following change to **AppDelegate.mm**:
 
-```diff
+```diff AppDelegate.mm
  - (NSURL *)getBundleURL
  {
  #if DEBUG
@@ -163,7 +168,7 @@ To exclude any of these modules, refer to the following guide on [excluding modu
 
 ### Excluding specific modules from autolinking
 
-If you need to exclude Expo modules that you are not using but they got installed by other dependencies, you can use the `expo.autolinking` field in **package.json**:
+If you need to exclude Expo modules you are not using, which were installed by other dependencies, you can use the `expo.autolinking` field in **package.json**:
 
 ```json package.json
 {

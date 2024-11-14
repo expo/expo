@@ -39,3 +39,9 @@ struct AssetWithOptions: Record {
   @Field var createdAfter: Double?
   @Field var createdBefore: Double?
 }
+
+struct GetAssetsResponse {
+  let assets: [[String: Any?]]
+  let totalCount: Int
+  let hasNextPage: Bool
+}

@@ -3,11 +3,11 @@ title: API Routes
 description: Learn how to create server endpoints with Expo Router.
 ---
 
-> **warning** This feature is still experimental. Available from Expo SDK 50 and Expo Router v3.
+> **warning** API Routes is an experimental feature. Available from Expo Router v3.
 
 import { FileTree } from '~/ui/components/FileTree';
-import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Expo Router enables you to write server code for all platforms, right in your **app** directory.
@@ -29,9 +29,9 @@ Server features require a custom Node.js server. Most hosting providers support 
 
 API Routes are functions that are executed when a route is matched. They can be used to handle sensitive data, such as API keys securely, or implement custom server logic. API Routes should be executed in a [WinterCG](https://wintercg.org/)-compliant environment.
 
-API Routes are defined by creating files in the **app** directory with the `+api.js` extension. For example, the following route handler is executed when the route `/hello` is matched.
+API Routes are defined by creating files in the **app** directory with the `+api.ts` extension. For example, the following route handler is executed when the route `/hello` is matched.
 
-<FileTree files={['app/index.js', ['app/hello+api.ts', 'API Route']]} />
+<FileTree files={['app/index.tsx', ['app/hello+api.ts', 'API Route']]} />
 
 ## Create an API route
 
@@ -39,7 +39,7 @@ API Routes are defined by creating files in the **app** directory with the `+api
 
 An API route is created in the **app** directory. For example, add the following route handler. It is executed when the route `/hello` is matched.
 
-```js app/hello+api.ts
+```ts app/hello+api.ts
 export function GET(request: Request) {
   return Response.json({ hello: 'world' });
 }
@@ -65,7 +65,7 @@ You can make a network request to the route to access the data. Run the followin
 
 You can also make a request from the client code:
 
-```js app/index.js
+```tsx app/index.tsx
 import { Button } from 'react-native';
 
 async function fetchHello() {
@@ -104,13 +104,15 @@ Deploy the website and server to a [hosting provider](#deployment) to access the
 
 </Step>
 
+> **warning** API route filenames cannot have platform-specific extensions. For example, **hello+api.web.ts** will not work.
+
 ## Requests
 
 Requests use the global, standard [`Request`](https://fetch.spec.whatwg.org/#request) object.
 
 ```ts app/blog/[post]+api.ts
 export async function GET(request: Request, { post }: Record<string, string>) {
-  // const postId = request.expoUrl.searchParams.get('post')
+  // const postId = new URL(request.url).searchParams.get('post')
   // fetch data for 'post'
   return Response.json({ ... });
 }
@@ -124,6 +126,20 @@ Use the `request.json()` function to access the request body. It automatically p
 export async function POST(request: Request) {
   const body = await request.json();
 
+  return Response.json({ ... });
+}
+```
+
+### Request query parameters
+
+Query parameters can be accessed by parsing the request URL:
+
+```ts app/endpoint+api.ts
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const post = url.searchParams.get('post');
+
+  // fetch data for 'post'
   return Response.json({ ... });
 }
 ```
@@ -165,7 +181,7 @@ Making requests with an undefined method will automatically return `405: Method 
 
 API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-metro). They have access to all of the language features as your client code:
 
-- [TypeScript](/guides/typescript) &mdash; types and [**tsconfig.json** paths](/guides/typescript#path-aliases).
+- [TypeScript](/guides/typescript) &mdash; types and [**tsconfig.json** paths](/guides/typescript/#path-aliases-optional).
 - [Environment variables](/guides/environment-variables) &mdash; server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
 - Node.js standard library &mdash; ensure that you are using the correct version of Node.js locally for your server environment.
 - **babel.config.js** and **metro.config.js** support &mdash; settings work across both client and server code.
@@ -176,8 +192,8 @@ API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-met
 
 Route handlers are executed in a sandboxed environment that is isolated from the client code. It means you can safely store sensitive data in the route handlers without exposing it to the client.
 
-- Client code that imports code with a secret is included in the client bundle. It applies to **all files** in the **app directory** even though they are not a route handler file (such as suffixed with **+api.js**).
-- If the secret is in a **&lt;...&gt;+api.js** file, it is not included in the client bundle. It applies to all files that are imported in the route handler.
+- Client code that imports code with a secret is included in the client bundle. It applies to **all files** in the **app directory** even though they are not a route handler file (such as suffixed with **+api.ts**).
+- If the secret is in a **&lt;...&gt;+api.ts** file, it is not included in the client bundle. It applies to all files that are imported in the route handler.
 - The secret stripping takes place in `expo/metro-config` and requires it to be used in the **metro.config.js**.
 
 ## Deployment
@@ -188,11 +204,15 @@ Every cloud hosting provider needs a custom adapter to support the Expo server r
 
 Before deploying to these providers, it may be good to be familiar with the basics of [`npx expo export`](/more/expo-cli#exporting) command:
 
-- **/dist** is the default export directory for Expo CLI.
-- Files in **/public** are copied to **/dist** on export.
+- **dist** is the default export directory for Expo CLI.
+- Files in **public** directory are copied to **dist** on export.
 - The `@expo/server` package is included with `expo` and delegates requests to the server routes.
 - `@expo/server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
+
+### Testing Locally
+
+You can test the local production server in Expo SDK 52 by running `npx expo serve`. This will start the production server locally and serve the static files and API routes. Visit the URL in a web browser or create a native build with the origin set to the local server URL.
 
 ### Express
 
@@ -216,7 +236,7 @@ Export the website for production:
 
 Write a server entry file that serves the static files and delegates requests to the server routes:
 
-```js server.js
+```ts server.ts
 #!/usr/bin/env node
 
 const path = require('path');
@@ -266,7 +286,7 @@ app.listen(port, () => {
 
 Start the server with `node` command:
 
-<Terminal cmd={['$ node server.js']} />
+<Terminal cmd={['$ node server.ts']} />
 
 </Step>
 
@@ -278,14 +298,13 @@ Start the server with `node` command:
 
 Create a server entry file. All requests will be delegated through this middleware. The exact file location is important.
 
-```js netlify/functions/server.js
+```ts netlify/functions/server.ts
 const { createRequestHandler } = require('@expo/server/adapter/netlify');
 
 const handler = createRequestHandler({
   /* @info Points to the root `dist/` (output) folder */
   build: require('path').join(__dirname, '../../dist/server'),
   /* @end */
-  mode: process.env.NODE_ENV,
 });
 
 module.exports = { handler };
@@ -360,14 +379,13 @@ If you're using any environment variables or **.env** files, add them to Netlify
 
 Create a server entry file. All requests will be delegated through this middleware. The exact file location is important.
 
-```js api/index.js
+```ts api/index.ts
 const { createRequestHandler } = require('@expo/server/adapter/vercel');
 
 module.exports = createRequestHandler({
   /* @info Points to the root `dist/` (output) folder */
   build: require('path').join(__dirname, '../dist/server'),
   /* @end */
-  mode: process.env.NODE_ENV,
 });
 ```
 
@@ -378,6 +396,30 @@ module.exports = createRequestHandler({
 Create a Vercel configuration file (**vercel.json**) at the root of your project to redirect all requests to the server function.
 
 <Tabs>
+<Tab label="vercel.json v3">
+
+```json vercel.json
+{
+  "buildCommand": "expo export -p web",
+  "outputDirectory": "dist/client",
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node@3.0.11",
+      "includeFiles": "dist/server/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.ts"
+    }
+  ]
+}
+```
+
+The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist/client** output directory automatically.
+
+</Tab>
 <Tab label="vercel.json v2">
 
 ```json vercel.json
@@ -393,7 +435,7 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
       }
     },
     {
-      "src": "api/index.js",
+      "src": "api/index.ts",
       "use": "@vercel/node",
       "config": {
         "includeFiles": ["dist/server/**"]
@@ -406,7 +448,7 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/api/index.ts"
     }
   ]
 }
@@ -415,35 +457,13 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
 The **legacy** version of the **vercel.json** needs a `@vercel/static-build` runtime to serve your assets from the **dist/client** output directory.
 
 </Tab>
-<Tab label="vercel.json v3">
-
-```json vercel.json
-{
-  "buildCommand": "expo export -p web",
-  "outputDirectory": "dist/client",
-  "functions": {
-    "api/index.js": {
-      "runtime": "@vercel/node@3.0.11",
-      "includeFiles": "dist/server/**"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index.js"
-    }
-  ]
-}
-```
-
-The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist/client** output directory automatically.
-
-</Tab>
 </Tabs>
 
 </Step>
 
 <Step label="3">
+
+> **Note:** This step only applies to users of the **legacy** version of the **vercel.json**. If you're using v3, you can skip this step.
 
 After you have created the configuration files, add a `vercel-build` script to your **package.json** file and set it to `expo export -p web`.
 

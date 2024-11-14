@@ -6,6 +6,8 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.google.common.truth.Truth
+import expo.modules.kotlin.EnumWithInt
+import expo.modules.kotlin.EnumWithString
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import org.junit.Test
@@ -29,7 +31,7 @@ class JSTypeConverterTest {
       putStringArray("stringArray", arrayOf("s1", "s2"))
     }
 
-    val converted = JSTypeConverter.convertToJSValue(bundle, TestContainerProvider)
+    val converted = JSTypeConverter.legacyConvertToJSValue(bundle, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableMap::class.java)
     val map = converted as WritableMap
@@ -50,7 +52,7 @@ class JSTypeConverterTest {
     val collections = listOf(list, set, linkedList)
 
     for (collection in collections) {
-      val converted = JSTypeConverter.convertToJSValue(collection, TestContainerProvider)
+      val converted = JSTypeConverter.legacyConvertToJSValue(collection, TestContainerProvider)
       Truth.assertThat(converted).isInstanceOf(WritableArray::class.java)
       val array = converted as WritableArray
       Truth.assertThat(array.getInt(0)).isEqualTo(1)
@@ -63,7 +65,7 @@ class JSTypeConverterTest {
   fun `should convert Array`() {
     val array = arrayOf("s1", "s2", "s3")
 
-    val converted = JSTypeConverter.convertToJSValue(array, TestContainerProvider)
+    val converted = JSTypeConverter.legacyConvertToJSValue(array, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableArray::class.java)
     val convertedArray = converted as WritableArray
@@ -76,7 +78,7 @@ class JSTypeConverterTest {
   fun `should convert IntArray`() {
     val array = IntArray(3) { it }
 
-    val converted = JSTypeConverter.convertToJSValue(array, TestContainerProvider)
+    val converted = JSTypeConverter.legacyConvertToJSValue(array, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableArray::class.java)
     val convertedArray = converted as WritableArray
@@ -89,7 +91,7 @@ class JSTypeConverterTest {
   fun `should convert DoubleArray`() {
     val array = DoubleArray(3) { it.toDouble() }
 
-    val converted = JSTypeConverter.convertToJSValue(array, TestContainerProvider)
+    val converted = JSTypeConverter.legacyConvertToJSValue(array, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableArray::class.java)
     val convertedArray = converted as WritableArray
@@ -105,7 +107,7 @@ class JSTypeConverterTest {
       "k2" to "v2"
     )
 
-    val converted = JSTypeConverter.convertToJSValue(map, TestContainerProvider)
+    val converted = JSTypeConverter.legacyConvertToJSValue(map, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableMap::class.java)
     val convertedMap = converted as WritableMap
@@ -126,7 +128,7 @@ class JSTypeConverterTest {
 
     val record = MyRecord()
 
-    val converted = JSTypeConverter.convertToJSValue(record, TestContainerProvider)
+    val converted = JSTypeConverter.legacyConvertToJSValue(record, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableMap::class.java)
     val convertedRecord = converted as WritableMap
@@ -154,11 +156,17 @@ class JSTypeConverterTest {
 
       @Field
       val stringList = listOf("s1", "s2")
+
+      @Field
+      val intEnum = EnumWithInt.VALUE1
+
+      @Field
+      val stringEnum = EnumWithString.VALUE1
     }
 
     val record = MyRecord()
 
-    val converted = JSTypeConverter.convertToJSValue(record, TestContainerProvider)
+    val converted = JSTypeConverter.legacyConvertToJSValue(record, TestContainerProvider)
     Truth.assertThat(converted).isInstanceOf(WritableMap::class.java)
     val convertedRecord = converted as WritableMap
 
@@ -177,5 +185,11 @@ class JSTypeConverterTest {
     val stringList = convertedRecord.getArray("stringList")
     Truth.assertThat(stringList?.getString(0)).isEqualTo("s1")
     Truth.assertThat(stringList?.getString(1)).isEqualTo("s2")
+
+    val intEnum = convertedRecord.getInt("intEnum")
+    Truth.assertThat(intEnum).isEqualTo(1)
+
+    val stringEnum = convertedRecord.getString("stringEnum")
+    Truth.assertThat(stringEnum).isEqualTo("value1")
   }
 }

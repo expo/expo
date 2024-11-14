@@ -25,9 +25,9 @@ internal struct FontFamilyAliasManager {
    Sets the alias for the given family name.
    If the alias has already been set, its family name will be overriden.
    */
-  internal static func setAlias(_ familyNameAlias: String, forFamilyName familyName: String) {
+  internal static func setAlias(_ familyNameAlias: String, forFont font: String) {
     maybeSwizzleUIFont()
-    fontFamilyAliases[familyNameAlias] = familyName
+    fontFamilyAliases[familyNameAlias] = font
   }
 
   /**
@@ -47,6 +47,7 @@ private func maybeSwizzleUIFont() {
   if hasSwizzled {
     return
   }
+#if !os(macOS)
   let originalFontNamesMethod = class_getClassMethod(UIFont.self, #selector(UIFont.fontNames(forFamilyName:)))
   let newFontNamesMethod = class_getClassMethod(UIFont.self, #selector(UIFont._expo_fontNames(forFamilyName:)))
 
@@ -55,5 +56,6 @@ private func maybeSwizzleUIFont() {
   } else {
     log.error("expo-font is unable to swizzle `UIFont.fontNames(forFamilyName:)`")
   }
+#endif
   hasSwizzled = true
 }

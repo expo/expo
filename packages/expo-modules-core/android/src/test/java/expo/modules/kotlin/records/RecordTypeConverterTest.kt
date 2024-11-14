@@ -4,7 +4,9 @@ import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
-import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.EnumWithInt
+import expo.modules.kotlin.EnumWithString
+import expo.modules.kotlin.EnumWithoutParameter
 import expo.modules.kotlin.types.convert
 import org.junit.Test
 
@@ -196,6 +198,28 @@ class RecordTypeConverterTest {
   }
 
   @Test
+  fun `primary constructor default values shouldn't be ignored if using the 'shorthand' class syntax`() {
+    class MyRecord(
+      @Field
+      val int: Int = 42,
+      @Field
+      val string: String? = "string",
+      @Field
+      val boolean: Boolean = true
+    ) : Record
+
+    val map = DynamicFromObject(
+      JavaOnlyMap()
+    )
+
+    val myRecord = convert<MyRecord>(map)
+
+    Truth.assertThat(myRecord.int).isEqualTo(42)
+    Truth.assertThat(myRecord.string).isEqualTo("string")
+    Truth.assertThat(myRecord.boolean).isEqualTo(true)
+  }
+
+  @Test
   fun `should work with complex types`() {
     class InnerRecord : Record {
       @Field
@@ -246,24 +270,6 @@ class RecordTypeConverterTest {
 
     Truth.assertThat(myRecord.innerRecord).isEqualTo(InnerRecord().apply { name = "value" })
     Truth.assertThat(myRecord.points).isEqualTo(listOf(1.0, 2.0, 3.0))
-  }
-
-  enum class EnumWithoutParameter : Enumerable {
-    VALUE1,
-    VALUE2,
-    VALUE3
-  }
-
-  enum class EnumWithInt(val value: Int) : Enumerable {
-    VALUE1(1),
-    VALUE2(2),
-    VALUE3(3)
-  }
-
-  enum class EnumWithString(val value: String) : Enumerable {
-    VALUE1("value1"),
-    VALUE2("value2"),
-    VALUE3("value3")
   }
 
   @Test

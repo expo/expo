@@ -177,17 +177,12 @@ export default {
           });
         },
         undefined,
-        // @ts-ignore: the options object needs to be fixed
         options
       );
       resolve(watchId);
     });
   },
 
-  getPermissionsAsync,
-  async requestPermissionsAsync(): Promise<PermissionResponse> {
-    return getPermissionsAsync(true);
-  },
   async requestForegroundPermissionsAsync(): Promise<PermissionResponse> {
     return getPermissionsAsync(true);
   },
@@ -200,8 +195,4 @@ export default {
   async getBackgroundPermissionsAsync(): Promise<PermissionResponse> {
     return getPermissionsAsync();
   },
-
-  // no-op
-  startObserving() {},
-  stopObserving() {},
 };

@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
-import typedFetch from 'node-fetch';
-import typedPrompts from 'prompts';
+import nock from 'nock';
+import prompts from 'prompts';
 
 import {
   ensureExampleExists,
@@ -11,28 +11,39 @@ import {
 import { env } from '../utils/env';
 
 jest.mock('fs');
-jest.mock('node-fetch');
 jest.mock('prompts');
-
-const fetch = typedFetch as jest.MockedFunction<typeof typedFetch>;
-const prompts = typedPrompts as jest.MockedFunction<typeof typedPrompts>;
 
 describe(ensureExampleExists, () => {
   it('resolves when example exists', async () => {
-    fetch.mockResolvedValue({ ok: true, status: 200 } as any);
+    const scope = nock('https://api.github.com')
+      .get('/repos/expo/examples/contents/test/package.json')
+      .reply(200);
+
     await expect(ensureExampleExists('test')).resolves.not.toThrow();
+
+    scope.done();
   });
 
   it('rejects when example does note exists', async () => {
-    fetch.mockResolvedValue({ ok: false, status: 404 } as any);
+    const scope = nock('https://api.github.com')
+      .get('/repos/expo/examples/contents/test/package.json')
+      .reply(404);
+
     await expect(() => ensureExampleExists('test')).rejects.toThrow(/example.*does not exist/i);
+
+    scope.done();
   });
 
   it('throws when running into rate limits', async () => {
-    fetch.mockResolvedValue({ ok: false, status: 403 } as any);
+    const scope = nock('https://api.github.com')
+      .get('/repos/expo/examples/contents/test/package.json')
+      .reply(403);
+
     await expect(() => ensureExampleExists('test')).rejects.toThrow(
       /unexpected GitHub API response/i
     );
+
+    scope.done();
   });
 });
 
@@ -51,8 +62,11 @@ describe(promptExamplesAsync, () => {
       { name: 'test-2', path: 'test-2', type: 'dir' },
     ];
 
-    fetch.mockResolvedValue({ ok: true, json: () => Promise.resolve(examples) } as any);
-    prompts.mockResolvedValue({ answer: 'test-1' });
+    const scope = nock('https://api.github.com')
+      .get('/repos/expo/examples/contents')
+      .reply(200, examples);
+
+    jest.mocked(prompts).mockResolvedValue({ answer: 'test-1' });
 
     await expect(promptExamplesAsync()).resolves.toBe('test-1');
     expect(prompts).toHaveBeenCalledWith(
@@ -65,6 +79,7 @@ describe(promptExamplesAsync, () => {
     );
 
     spy.mockRestore();
+    scope.done();
   });
 });
 

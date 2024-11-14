@@ -6,13 +6,13 @@ packageName: 'expo-background-fetch'
 platforms: ['android', 'ios']
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
-import { AndroidPermissions } from '~/components/plugins/permissions';
 
 `expo-background-fetch` provides an API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks, allowing you to run specific code periodically in the background to update your app. This module uses [TaskManager](task-manager.mdx) Native API under the hood.
 
@@ -21,17 +21,31 @@ import { AndroidPermissions } from '~/components/plugins/permissions';
 `BackgroundFetch` only works when the app is backgrounded, not if the app was terminated or upon device reboot.
 You can check out [the relevant GitHub issue](https://github.com/expo/expo/issues/3582) for more details.
 
+On iOS the `BackgroundFetch` library requires you to use a [development build](/develop/development-builds/introduction/) since Background Fetch is not enabled in the iOS Expo Go app.
+
 ## Installation
 
 <APIInstallSection />
 
-## Configuration
+## Configuration&ensp;<PlatformTags platforms={['ios']} />
 
-<ConfigReactNative>
+To be able to run background fetch tasks on iOS, you need to add the `fetch` value to the `UIBackgroundModes` array in your app's **Info.plist** file. This is required for background fetch to work properly.
 
-Learn how to configure the native projects in the [installation instructions in the `expo-background-fetch` repository](https://github.com/expo/expo/tree/main/packages/expo-background-fetch#installation-in-bare-react-native-projects).
+**If you're using [CNG](/workflow/continuous-native-generation/)**, the required `UIBackgroundModes` configuration will be applied automatically by prebuild.
 
-</ConfigReactNative>
+<Collapsible summary="Configure UIBackgroundModes manually on iOS">
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native iOS project, then you'll need to add the following to your **Expo.plist** file:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>UIBackgroundModes</key>
+  <array>
+    <string>fetch</string>
+  </array>
+</key>
+```
+
+</Collapsible>
 
 ## Usage
 
@@ -40,7 +54,7 @@ Below is an example that demonstrates how to use `expo-background-fetch`.
 <SnackInline label="Background Fetch Usage" dependencies={['expo-background-fetch', 'expo-task-manager']}>
 
 ```tsx
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
@@ -77,10 +91,10 @@ async function unregisterBackgroundFetchAsync() {
 }
 
 export default function BackgroundFetchScreen() {
-  const [isRegistered, setIsRegistered] = React.useState(false);
-  const [status, setStatus] = React.useState(null);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [status, setStatus] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     checkStatusAsync();
   }, []);
 
@@ -155,7 +169,7 @@ For iOS, you can use the `Instruments` app on macOS to manually trigger backgrou
 4. Press the `Record` button in the top left corner
 5. Navigate to the `Document` Menu and select `Simulate Background Fetch - Expo Go`:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Xcode Menu with Simulate Background Fetch option"
   src="/static/images/simulate-background-fetch-instruments.png"
 />
@@ -185,7 +199,3 @@ import * as BackgroundFetch from 'expo-background-fetch';
 On Android, this module might listen when the device is starting up. It's necessary to continue working on tasks started with `startOnBoot`. It also keeps devices "awake" that are going idle and asleep fast, to improve reliability of the tasks. Because of this both the `RECEIVE_BOOT_COMPLETED` and `WAKE_LOCK` permissions are added automatically.
 
 <AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED', 'WAKE_LOCK']} />
-
-### iOS
-
-To use `BackgroundFetch` API in standalone apps on iOS, your app has to include background mode in the **Info.plist** file. See [background tasks configuration guide](task-manager.mdx#configuration-for-standalone-apps) for more details.

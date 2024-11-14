@@ -9,8 +9,8 @@ import useResettingState from '../../utilities/useResettingState';
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 export default memo((props: { tint: BlurTint; blurMethod: ExperimentalBlurMethod }) => {
-  const animatedIntensity = useSharedValue(0);
-  const manualIntensity = useSharedValue(0);
+  const animatedIntensity = useSharedValue<number | undefined>(0);
+  const manualIntensity = useSharedValue<number | undefined>(0);
   const [manualIntensityIsActive, setManualIntensityIsActive] = useResettingState(false, 3000);
 
   const handleSliderChange = useCallback((value: number) => {
@@ -37,7 +37,7 @@ export default memo((props: { tint: BlurTint; blurMethod: ExperimentalBlurMethod
             title="Manual intensity:"
             onChange={handleSliderChange}
             active={!!manualIntensityIsActive}
-            value={manualIntensity.value}
+            value={manualIntensity.value!}
             style={styles.slider}
           />
         </AnimatedBlurView>

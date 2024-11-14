@@ -19,7 +19,11 @@ export function fetchThenEvalAsync(
     crossOrigin,
   }: { scriptType?: string; nonce?: string; crossOrigin?: string } = {}
 ): Promise<void> {
-  if (typeof window === 'undefined') {
+  if (
+    typeof window === 'undefined' ||
+    // In development, use the fetch/eval method to detect the server error codes and parse bundler errors for the error overlay.
+    __DEV__
+  ) {
     return require('./fetchThenEvalJs').fetchThenEvalAsync(url);
   }
   return new Promise<void>((resolve, reject) => {
@@ -43,6 +47,7 @@ export function fetchThenEvalAsync(
     // Server error or network error.
     script.onerror = (ev) => {
       let event: Event;
+
       if (typeof ev === 'string') {
         event = {
           type: 'error',
@@ -58,6 +63,7 @@ export function fetchThenEvalAsync(
       const errorType = event && (event.type === 'load' ? 'missing' : event.type);
       // @ts-expect-error
       const realSrc = event?.target?.src;
+
       error.message = 'Loading module ' + url + ' failed.\n(' + errorType + ': ' + realSrc + ')';
       error.type = errorType;
       error.request = realSrc;

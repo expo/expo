@@ -1,4 +1,4 @@
-import { Event } from '@sentry/types';
+import { ErrorEvent } from '@sentry/react';
 /*
  * Error logging filtering - prevent users from submitting errors we do not care about,
  * eg: specific error messages that are caused by extensions or other scripts
@@ -22,7 +22,7 @@ const TIMESTAMP_KEY = 'sentry:errorReportingInit';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const HALF_HOUR_MS = 0.5 * 60 * 60 * 1000;
 
-export function preprocessSentryError(event: Event) {
+export function preprocessSentryError(event: ErrorEvent) {
   const message = getMessage(event);
 
   // Check if it's rate limited to avoid sending the same error over and over
@@ -91,7 +91,7 @@ function isRateLimited(message: string) {
 }
 
 // Extract a stable event error message out of the Sentry event object
-function getMessage(event: Event) {
+function getMessage(event: ErrorEvent) {
   if (event.message) {
     return event.message;
   }
@@ -120,11 +120,7 @@ function maybeResetReportedErrorsCache() {
 
 function userHasReportedErrorMessage(message: string) {
   const messages = getReportedErrorMessages();
-  if (messages.includes(message)) {
-    return true;
-  } else {
-    return false;
-  }
+  return messages.includes(message);
 }
 
 function saveReportedErrorMessage(message: string) {

@@ -76,14 +76,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                stack:(nullable NSArray *)stack
                          exceptionId:(NSNumber *)exceptionId
 {
-  [[self _bridgeForRecord].redBox updateErrorMessage:message withStack:stack];
+  RCTRedBox *redbox = (RCTRedBox *)[[[self _hostForRecord] moduleRegistry] moduleForName:"RedBox"];
+  [redbox updateErrorMessage:message withStack:stack];
 }
 
 #pragma mark - internal
 
-- (RCTBridge *)_bridgeForRecord
+- (id)_hostForRecord
 {
-  return _appRecord.appManager.reactBridge;
+  return _appRecord.appManager.reactHost;
 }
 
 - (BOOL)_isProdHome

@@ -21,6 +21,13 @@ function _Updates() {
   };
   return data;
 }
+function _warnings() {
+  const data = require("../utils/warnings");
+  _warnings = function () {
+    return data;
+  };
+  return data;
+}
 let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["ENABLED"] = "EXUpdatesEnabled";
   Config["CHECK_ON_LAUNCH"] = "EXUpdatesCheckOnLaunch";
@@ -28,6 +35,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["RUNTIME_VERSION"] = "EXUpdatesRuntimeVersion";
   Config["UPDATE_URL"] = "EXUpdatesURL";
   Config["UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY"] = "EXUpdatesRequestHeaders";
+  Config["UPDATES_HAS_EMBEDDED_UPDATE"] = "EXUpdatesHasEmbeddedUpdate";
   Config["CODE_SIGNING_CERTIFICATE"] = "EXUpdatesCodeSigningCertificate";
   Config["CODE_SIGNING_METADATA"] = "EXUpdatesCodeSigningMetadata";
   return Config;
@@ -43,12 +51,30 @@ const withUpdates = config => {
 };
 exports.withUpdates = withUpdates;
 async function setUpdatesConfigAsync(projectRoot, config, expoPlist, expoUpdatesPackageVersion) {
+  const checkOnLaunch = (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion);
+  const timeout = (0, _Updates().getUpdatesTimeout)(config);
+  const useEmbeddedUpdate = (0, _Updates().getUpdatesUseEmbeddedUpdate)(config);
+
+  // TODO: is there a better place for this validation?
+  if (!useEmbeddedUpdate && timeout === 0 && checkOnLaunch !== 'ALWAYS') {
+    (0, _warnings().addWarningIOS)('updates.useEmbeddedUpdate', `updates.checkOnLaunch should be set to "ON_LOAD" and updates.fallbackToCacheTimeout should be set to a non-zero value when updates.useEmbeddedUpdate is set to false. This is because an update must be fetched on the initial launch, when no embedded update is available.`);
+  }
   const newExpoPlist = {
     ...expoPlist,
     [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config),
-    [Config.CHECK_ON_LAUNCH]: (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion),
-    [Config.LAUNCH_WAIT_MS]: (0, _Updates().getUpdatesTimeout)(config)
+    [Config.CHECK_ON_LAUNCH]: checkOnLaunch,
+    [Config.LAUNCH_WAIT_MS]: timeout
   };
+
+  // The native config name is "has embedded update", but we want to expose
+  // this to the user as "use embedded update", since this is more accurate.
+  // The field does not disable actually building and embedding the update,
+  // only whether it is actually used.
+  if (useEmbeddedUpdate) {
+    delete newExpoPlist[Config.UPDATES_HAS_EMBEDDED_UPDATE];
+  } else {
+    newExpoPlist[Config.UPDATES_HAS_EMBEDDED_UPDATE] = false;
+  }
   const updateUrl = (0, _Updates().getUpdateUrl)(config);
   if (updateUrl) {
     newExpoPlist[Config.UPDATE_URL] = updateUrl;

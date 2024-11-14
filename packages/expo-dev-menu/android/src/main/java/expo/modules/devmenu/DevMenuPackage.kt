@@ -16,13 +16,10 @@ import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
-import expo.modules.devmenu.extensions.DevMenuExtension
 
 class DevMenuPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(
-      DevMenuExtension(reactContext)
-    )
+    return emptyList()
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> {
@@ -41,7 +38,7 @@ class DevMenuPackage : Package, ReactPackage {
             DevMenuManager.initializeWithReactHost(
               ReactHostWrapper(
                 reactNativeHost = (activity.application as ReactApplication).reactNativeHost,
-                reactHost = (activity.application as ReactApplication).reactHost
+                reactHostProvider = { (activity.application as ReactApplication).reactHost }
               )
             )
           } else {

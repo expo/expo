@@ -181,11 +181,11 @@ export async function openBrowserAsync(
 /**
  * Dismisses the presented web browser.
  *
- * @return The `void` on successful attempt, or throws error, if dismiss functionality is not available.
+ * @return The promise that resolves with `{ type: 'dismiss' }` on the successful attempt or throws an error if dismiss functionality is not available.
  * @platform ios
  */
-export function dismissBrowser(): void {
-  ExponentWebBrowser.dismissBrowser?.();
+export function dismissBrowser(): Promise<{ type: WebBrowserResultType.DISMISS }> {
+  return ExponentWebBrowser.dismissBrowser?.();
 }
 
 // @needsAudit
@@ -256,7 +256,14 @@ export async function openAuthSessionAsync(
   }
 }
 
-// @docsMissing
+/**
+ * Dismisses the current authentication session. On web, it will close the popup window associated with auth process.
+ *
+ * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
+ *
+ * @platform ios
+ * @platform web
+ */
 export function dismissAuthSession(): void {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.dismissAuthSession) {
@@ -265,7 +272,7 @@ export function dismissAuthSession(): void {
     ExponentWebBrowser.dismissAuthSession();
   } else {
     if (!ExponentWebBrowser.dismissBrowser) {
-      throw new UnavailabilityError('WebBrowser', 'dismissAuthSession');
+      throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
     }
     ExponentWebBrowser.dismissBrowser();
   }
@@ -281,7 +288,7 @@ export function dismissAuthSession(): void {
  * @return Returns an object with message about why the redirect failed or succeeded:
  *
  * If `type` is set to `failed`, the reason depends on the message:
- * - `Not supported on this platform`: If the platform doesn't support this method (iOS, Android).
+ * - `Not supported on this platform`: If the platform doesn't support this method (Android, iOS).
  * - `Cannot use expo-web-browser in a non-browser environment`: If the code was executed in an SSR
  *   or node environment.
  * - `No auth session is currently in progress`: (the cached state wasn't found in local storage).
@@ -318,17 +325,10 @@ function _processOptions(options: WebBrowserOpenOptions) {
   };
 }
 
-/* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
+/* Android polyfill for ASWebAuthenticationSession flow */
 
 function _authSessionIsNativelySupported(): boolean {
-  if (Platform.OS === 'android') {
-    return false;
-  } else if (Platform.OS === 'web') {
-    return true;
-  }
-
-  const versionNumber = parseInt(String(Platform.Version), 10);
-  return versionNumber >= 11;
+  return Platform.OS !== 'android';
 }
 
 let _redirectSubscription: EmitterSubscription | null = null;
@@ -390,7 +390,7 @@ async function _openBrowserAndWaitAndroidAsync(
 
 async function _openAuthSessionPolyfillAsync(
   startUrl: string,
-  returnUrl: string | null | undefined,
+  returnUrl?: string | null,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
   if (_redirectSubscription) {
@@ -437,9 +437,7 @@ function _stopWaitingForRedirect() {
   _redirectSubscription = null;
 }
 
-function _waitForRedirectAsync(
-  returnUrl: string | null | undefined
-): Promise<WebBrowserRedirectResult> {
+function _waitForRedirectAsync(returnUrl?: string | null): Promise<WebBrowserRedirectResult> {
   // Note that this Promise never resolves when `returnUrl` is nullish
   return new Promise((resolve) => {
     const redirectHandler = (event: RedirectEvent) => {

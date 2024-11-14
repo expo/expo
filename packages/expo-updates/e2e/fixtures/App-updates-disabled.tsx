@@ -69,6 +69,7 @@ export default function App() {
       <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
+      <TestValue testID="launchDuration" value={`${currentlyRunning.launchDuration}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
       <TestValue testID="isReloading" value={`${isReloading}`} />
       <TestValue testID="startTime" value={`${startTime}`} />

@@ -38,7 +38,7 @@ function _xml2js() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 async function writeXMLAsync(options) {
   const xml = format(options.xml);
   await _fs().default.promises.mkdir(_path().default.dirname(options.path), {

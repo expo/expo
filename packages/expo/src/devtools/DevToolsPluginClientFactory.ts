@@ -1,7 +1,7 @@
 import type { DevToolsPluginClient } from './DevToolsPluginClient';
 import { DevToolsPluginClientImplApp } from './DevToolsPluginClientImplApp';
 import { DevToolsPluginClientImplBrowser } from './DevToolsPluginClientImplBrowser';
-import type { ConnectionInfo } from './devtools.types';
+import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
 import { getConnectionInfo } from './getConnectionInfo';
 
 const instanceMap: Record<string, DevToolsPluginClient | Promise<DevToolsPluginClient>> = {};
@@ -11,13 +11,14 @@ const instanceMap: Record<string, DevToolsPluginClient | Promise<DevToolsPluginC
  * @hidden
  */
 export async function createDevToolsPluginClient(
-  connectionInfo: ConnectionInfo
+  connectionInfo: ConnectionInfo,
+  options?: DevToolsPluginClientOptions
 ): Promise<DevToolsPluginClient> {
   let client: DevToolsPluginClient;
   if (connectionInfo.sender === 'app') {
-    client = new DevToolsPluginClientImplApp(connectionInfo);
+    client = new DevToolsPluginClientImplApp(connectionInfo, options);
   } else {
-    client = new DevToolsPluginClientImplBrowser(connectionInfo);
+    client = new DevToolsPluginClientImplBrowser(connectionInfo, options);
   }
   await client.initAsync();
   return client;
@@ -27,7 +28,8 @@ export async function createDevToolsPluginClient(
  * Public API to get the DevToolsPluginClient instance.
  */
 export async function getDevToolsPluginClientAsync(
-  pluginName: string
+  pluginName: string,
+  options?: DevToolsPluginClientOptions
 ): Promise<DevToolsPluginClient> {
   const connectionInfo = getConnectionInfo();
 
@@ -47,7 +49,7 @@ export async function getDevToolsPluginClientAsync(
     }
   }
   if (instance == null) {
-    const instancePromise = createDevToolsPluginClient({ ...connectionInfo, pluginName });
+    const instancePromise = createDevToolsPluginClient({ ...connectionInfo, pluginName }, options);
     instanceMap[pluginName] = instancePromise;
     instance = await instancePromise;
     instanceMap[pluginName] = instance;

@@ -63,8 +63,8 @@ export function DevelopmentServersOpenURL() {
             <Text type="InterRegular">Enter URL manually</Text>
           </Row>
         </TouchableOpacity>
-        {showInput ? <Spacer.Vertical size="medium" /> : null}
-        {showInput ? (
+        {showInput && <Spacer.Vertical size="medium" />}
+        {showInput && (
           <View padding="medium" style={{ marginTop: -32 }}>
             <TextInput
               onChangeText={(newUrl) => setUrl(newUrl.trim())}
@@ -74,7 +74,7 @@ export function DevelopmentServersOpenURL() {
               autoCorrect={false}
               autoComplete="off"
               autoCapitalize="none"
-              returnKeyType="go"
+              returnKeyType="done"
               onSubmitEditing={openURL}
               style={{ backgroundColor: theme.background.default }}
               px="4"
@@ -101,7 +101,7 @@ export function DevelopmentServersOpenURL() {
               </Button.Text>
             </TouchableOpacity>
           </View>
-        ) : null}
+        )}
       </View>
     </>
   );

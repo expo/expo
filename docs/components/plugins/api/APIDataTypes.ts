@@ -1,4 +1,4 @@
-import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
+import { TypeDocKind } from './APISectionUtils';
 
 // Generic data type
 
@@ -36,6 +36,10 @@ export type TypeDefinitionData = {
   name?: string;
   type: string;
   types?: TypeDefinitionData[];
+  element?: {
+    name: string;
+    type: string;
+  };
   elements?: TypeDefinitionData[];
   elementType?: {
     name?: string;
@@ -71,6 +75,7 @@ export type TypeDefinitionData = {
   qualifiedName?: string;
   head?: string;
   tail?: (TypeDefinitionData | string)[][];
+  target?: TypeDefinitionData;
 };
 
 export type MethodParamData = {
@@ -86,6 +91,7 @@ export type TypePropertyDataFlags = {
   isOptional?: boolean;
   isStatic?: boolean;
   isRest?: boolean;
+  isReadonly?: boolean;
 };
 
 // Constants section
@@ -156,6 +162,8 @@ export type MethodSignatureData = {
   parameters: MethodParamData[];
   comment: CommentData;
   type: TypeDefinitionData;
+  kind?: TypeDocKind;
+  typeParameter?: TypeParameterData[];
 };
 
 // Properties section
@@ -177,9 +185,10 @@ export type PropData = {
   flags?: TypePropertyDataFlags;
   defaultValue?: string;
   signatures?: MethodSignatureData[];
+  getSignature?: MethodSignatureData;
   overwrites?: TypeDefinitionData;
   implementationOf?: TypeDefinitionData;
-  inheritedFrom?: TypeGeneralData;
+  inheritedFrom?: InheritedFromData;
 };
 
 export type DefaultPropsDefinitionData = {
@@ -209,10 +218,15 @@ export type TypeDeclarationContentData = {
   comment?: CommentData;
 };
 
-export type TypeSignaturesData = {
-  name?: string;
-  comment?: CommentData;
-  parameters?: MethodParamData[];
-  type: TypeDefinitionData;
-  kind?: TypeDocKind;
+export type TypeSignaturesData = Partial<MethodSignatureData>;
+
+export type TypeParameterData = {
+  name: string;
+  kind: TypeDocKind;
+  variant: string;
+};
+
+export type InheritedFromData = {
+  type: 'reference';
+  name: string;
 };

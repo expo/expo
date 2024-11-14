@@ -1,4 +1,3 @@
-/* eslint-disable */
 /* (The MIT License)
 
 Copyright (c) 2010-2017 Nathan Rajlich <nathan@tootallnate.net>
@@ -49,7 +48,7 @@ function shouldIgnoreNode(node: { [key: string]: any }): boolean {
 /**
  * Check if the node is empty. Some plist file has such node:
  * <key />
- * this node shoud be ignored.
+ * this node should be ignored.
  *
  * @see https://github.com/TooTallNate/plist.js/issues/66
  * @param {Element} node
@@ -69,7 +68,7 @@ function isEmptyNode(node: { [key: string]: any }): boolean {
  */
 
 export function parse(xml: string): any {
-  // prevent the parser from logging non-fatel errors
+  // prevent the parser from logging non-fatal errors
   const doc = new DOMParser({ errorHandler() {} }).parseFromString(xml);
   assert(
     doc.documentElement.nodeName === 'plist',
@@ -79,7 +78,7 @@ export function parse(xml: string): any {
 
   // the root <plist> node gets interpreted as an Array,
   // so pull out the inner data first
-  if (plist.length == 1) plist = plist[0];
+  if (plist.length === 1) plist = plist[0];
 
   return plist;
 }
@@ -92,7 +91,7 @@ export function parse(xml: string): any {
  * @api private
  */
 
-function parsePlistXML(node: { [key: string]: any }): any {
+function parsePlistXML(node: Record<string, any>): any {
   let i, new_obj: { [key: string]: any }, key, new_arr: any[], res, counter;
 
   if (!node) return null;

@@ -1,8 +1,8 @@
-const findProjectRoot = require('@react-native-community/cli-tools').findProjectRoot;
+const findProjectRootSync = require('expo-modules-autolinking/exports').findProjectRootSync;
 const fs = require('fs');
 const path = require('path');
 
-const projectRoot = findProjectRoot();
+const projectRoot = findProjectRootSync();
 
 function isMatchedInFile(filePath, regexp) {
   const contents = fs.readFileSync(filePath, 'utf8');

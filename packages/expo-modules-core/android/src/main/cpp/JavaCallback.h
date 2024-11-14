@@ -3,6 +3,7 @@
 #pragma once
 
 #include "JNIDeallocator.h"
+#include "JSharedObject.h"
 
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
@@ -20,10 +21,6 @@ namespace react = facebook::react;
 namespace jsi = facebook::jsi;
 
 namespace expo {
-
-struct SharedRef : public jni::JavaClass<SharedRef> {
-  static constexpr const char *kJavaDescriptor = "Lexpo/modules/kotlin/sharedobjects/SharedRef;";
-};
 
 class JSIContext;
 
@@ -76,22 +73,34 @@ private:
 
   void invokeString(jni::alias_ref<jstring> result);
 
-  void invokeArray(jni::alias_ref<react::WritableNativeArray::javaobject> result);
+  void invokeWritableArray(jni::alias_ref<react::WritableNativeArray::javaobject> result);
 
-  void invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result);
+  void invokeWritableMap(jni::alias_ref<react::WritableNativeMap::javaobject> result);
 
-  void invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result);
+  void invokeCollection(jni::alias_ref<jni::JCollection<jobject>> result);
+
+  void invokeMap(jni::alias_ref<jni::JMap<jstring, jobject>> result);
+
+  void invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result);
 
   void invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage);
+
+  void invokeIntArray(jni::alias_ref<jni::JArrayInt> result);
+  void invokeLongArray(jni::alias_ref<jni::JArrayLong> result);
+  void invokeDoubleArray(jni::alias_ref<jni::JArrayDouble> result);
+  void invokeFloatArray(jni::alias_ref<jni::JArrayFloat> result);
 
   template<class T>
   using ArgsConverter = std::function<void(jsi::Runtime &rt, jsi::Function &jsFunction, T arg)>;
 
   template<class T>
   inline void invokeJSFunction(
-    ArgsConverter<T> argsConverter,
+    ArgsConverter<typename std::remove_const<T>::type> argsConverter,
     T arg
   );
+
+  template<class T>
+  void invokeJSFunctionForArray(T &arg);
 
   template<class T>
   inline void invokeJSFunction(T arg);

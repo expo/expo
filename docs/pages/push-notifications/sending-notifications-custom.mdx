@@ -1,51 +1,97 @@
 ---
-title: Send notifications with FCM & APNs
+title: Send notifications with FCMv1 & APNs
 hideFromSearch: true
-description: Learn how to send notifications with FCM and APNs.
+description: Learn how to send notifications with FCMv1 and APNs.
 ---
 
 You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic.
 
-## How to write FCM and APNs servers
+> **info** Before sending a notification directly through FCMv1 or APNs, you will need to [obtain a device token](/push-notifications/obtaining-a-device-token-for-fcm-or-apns).
 
-Before communicating directly with FCM and APNs, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
+## FCMv1 server
 
-```diff
-import * as Notifications from 'expo-notifications';
-...
-- const token = (await Notifications.getExpoPushTokenAsync()).data;
-+ const token = (await Notifications.getDevicePushTokenAsync()).data;
-// send token to your server
+This guide is based on [Firebase official documentation](https://firebase.google.com/docs/cloud-messaging/migrate-v1).
+
+Communicating with FCM is done by sending a POST request. However, before sending or receiving any notifications, you'll need to follow the steps to [configure FCMv1](/push-notifications/fcm-credentials/) and get your `FCM-SERVER-KEY`.
+
+### Getting an authentication token
+
+FCMv1 requires an Oauth 2.0 access token, which must be obtained via one of the methods described in ["Update authorization of send requests"](https://firebase.google.com/docs/cloud-messaging/migrate-v1#update-authorization-of-send-requests).
+
+For testing purposes, you can use the Google Auth Library and your private key file obtained above, to obtain a short lived token for a single notification, as in this Node example adapted from Firebase documentation:
+
+```ts
+import { JWT } from 'google-auth-library';
+
+function getAccessTokenAsync(
+  key: string // Contents of your FCM private key file
+) {
+  return new Promise(function (resolve, reject) {
+    const jwtClient = new JWT(
+      key.client_email,
+      null,
+      key.private_key,
+      ['https://www.googleapis.com/auth/cloud-platform'],
+      null
+    );
+    jwtClient.authorize(function (err, tokens) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(tokens.access_token);
+    });
+  });
+}
 ```
 
-After getting the native device token, you can start implementing the servers. Below are some minimal examples of communicating with FCM and APNs:
+### Sending the notification
 
-## FCM server
+The example code below calls `getAccessTokenAsync()` above to get the Oauth 2.0 token, then constructs and sends the notification POST request. Note that unlike FCM legacy protocol, the endpoint for the request includes the name of your Firebase project.
 
-> This documentation is based on [Google's documentation](https://firebase.google.com/docs/cloud-messaging/http-server-ref), and this section covers the basics to get you started.
+```ts
+// FCM_SERVER_KEY: Environment variable with the path to your FCM private key file
+// FCM_PROJECT_NAME: Your Firebase project name
+// FCM_DEVICE_TOKEN: The client's device token (see above in this document)
 
-Communicating with FCM is done by sending a POST request. However, before sending or receiving any notifications, you'll need to follow the steps to [configure FCM](/push-notifications/push-notifications-setup/#android) to configure FCM and get your `FCM-SERVER-KEY`.
+async function sendFCMv1Notification() {
+  const key = require(process.env.FCM_SERVER_KEY);
+  const firebaseAccessToken = await getAccessTokenAsync(key);
+  const deviceToken = process.env.FCM_DEVICE_TOKEN;
 
-> The following example uses FCM's legacy HTTP API, since the credentials setup for that is the same as it is for the Expo notifications service, so there's no additional work needed on your part. If you'd rather use FCM's HTTP V1 API, see [Firebase official documentation](https://firebase.google.com/docs/cloud-messaging/migrate-v1).
-
-```js
-await fetch('https://fcm.googleapis.com/fcm/send', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `key=<FCM-SERVER-KEY>`,
-  },
-  body: JSON.stringify({
-    to: '<NATIVE-DEVICE-PUSH-TOKEN>',
-    priority: 'normal',
-    data: {
-      experienceId: '@yourExpoUsername/yourProjectSlug',
-      scopeKey: '@yourExpoUsername/yourProjectSlug',
-      title: "\uD83D\uDCE7 You've got mail",
-      message: 'Hello world! \uD83C\uDF10',
+  const messageBody = {
+    message: {
+      token: deviceToken,
+      data: {
+        channelId: 'default',
+        message: 'Testing',
+        title: `This is an FCM notification message`,
+        body: JSON.stringify({ title: 'bodyTitle', body: 'bodyBody' }),
+        scopeKey: '@yourExpoUsername/yourProjectSlug',
+        experienceId: '@yourExpoUsername/yourProjectSlug',
+      },
     },
-  }),
-});
+  };
+
+  const response = await fetch(
+    `https://fcm.googleapis.com/v1/projects/${process.env.FCM_PROJECT_NAME}/messages:send`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${firebaseAccessToken}`,
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(messageBody),
+    }
+  );
+
+  const readResponse = (response: Response) => response.json();
+  const json = await readResponse(response);
+
+  console.log(`Response JSON: ${JSON.stringify(json, null, 2)}`);
+}
 ```
 
 **The `experienceId` and `scopeKey` fields are required**. Otherwise, your notifications will not go through to your app. FCM has a list of supported fields in the [notification payload](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at the [FirebaseRemoteMessage](/versions/latest/sdk/notifications/#firebaseremotemessage).
@@ -56,9 +102,13 @@ FCM also provides some [server-side libraries in a few different languages](http
 
 Your FCM server key can be found by making sure you've followed the [configuration steps](/push-notifications/push-notifications-setup/#android), and instead of uploading your FCM key to Expo, you would use that key directly in your server (as the `FCM-SERVER-KEY` in the previous example).
 
+### FCM legacy service
+
+Firebase has discontinued the legacy FCM service. Our documentation page on this service is [archived here](/archive/push-notifications/sending-notifications-custom-fcm-legacy).
+
 ## APNs server
 
-> This documentation is based on [Apple's documentation](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html), and this section covers the basics to get you started.
+> **info** This documentation is based on [Apple's documentation](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html), and this section covers the basics to get you started.
 
 Communicating with APNs is a little more complicated than with FCM. Some libraries wrap all of this functionality into one or two function calls such as [`node-apn`](https://github.com/node-apn/node-apn). However, in the examples below, a minimum set of libraries are used.
 
@@ -124,7 +174,7 @@ request.write(
 request.end();
 ```
 
-> This example is minimal and includes no error handling and connection pooling. For testing purposes, you can refer to [`sentNotificationToAPNS`](https://github.com/expo/expo/blob/main/docs/public/static/code/sendNotificationToAPNS.js) code.
+> This example is minimal and includes no error handling and connection pooling. For testing purposes, you can refer to [`sentNotificationToAPNS`](https://github.com/expo/expo/blob/main/docs/public/static/examples/sendNotificationToAPNS.js) example code.
 
 APNs provide their full list of supported fields in the [notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html).
 
@@ -189,7 +239,7 @@ There are two types of Firebase Cloud Messaging messages: [notification and data
 
 If you send a message of type **notification** instead of **data** directly through Firebase, you won't know if a user interacted with the notification (no `onNotificationResponse` event available), and you won't be able to parse the notification payload for any data in your notification event-related listeners.
 
-> Using notification-type messages may have upsides when you need a configuration option that has not been exposed by `expo-notifications` yet. In general, it may lead to less predictable situations than using only data-type messages and it's not our responsibility that you'll have to go to Google to report issues.
+> Using notification-type messages can be beneficial when you need a configuration option that is not yet exposed by `expo-notifications`. Generally, it may lead to less predictable situations than using data-type messages. However, you may need to report any issue you encounter directly to Google.
 
 Below is an example of each type using Node.js Firebase Admin SDK to send data-type messages instead of notification-type:
 

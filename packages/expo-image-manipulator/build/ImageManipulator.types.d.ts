@@ -1,3 +1,7 @@
+import type { NativeModule } from 'expo';
+import { SharedRef } from 'expo-modules-core/types';
+import type { ImageManipulatorContext } from './ImageManipulatorContext';
+import ImageRef from './ImageRef';
 export type ImageResult = {
     /**
      * An URI to the modified image (usable as the source for an `Image` or `Video` element).
@@ -99,4 +103,18 @@ export type SaveOptions = {
      */
     format?: SaveFormat;
 };
+export declare class ImageManipulator extends NativeModule {
+    /**
+     * @hidden
+     */
+    Context: typeof ImageManipulatorContext;
+    /**
+     * @hidden
+     */
+    Image: typeof ImageRef;
+    /**
+     * Loads an image from the given URI and creates a new image manipulation context.
+     */
+    manipulate(source: string | SharedRef<'image'>): ImageManipulatorContext;
+}
 //# sourceMappingURL=ImageManipulator.types.d.ts.map

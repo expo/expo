@@ -1,4 +1,5 @@
-import { BookOpen02Icon, ArrowRightIcon } from '@expo/styleguide-icons';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import React from 'react';
 
 import { SuccessCheckmark } from './SuccessCheckmark';
@@ -19,13 +20,18 @@ type ProgressTrackerProps = {
 
 export function ProgressTracker({
   currentChapterIndex,
+  name,
   summary,
   nextChapterTitle,
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
-  const { chapters, setChapters } = useTutorialChapterCompletion();
-  const currentChapter = chapters[currentChapterIndex];
+  const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
+    useTutorialChapterCompletion();
+  const isGetStartedTutorial = name === 'GET_STARTED';
+  const currentChapter = isGetStartedTutorial
+    ? getStartedChapters[currentChapterIndex]
+    : chapters[currentChapterIndex];
 
   const handleChapterComplete = () => {
     const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
@@ -35,6 +41,16 @@ export function ProgressTracker({
       return chapter;
     });
     setChapters(updatedChapters);
+  };
+
+  const handleGetStartedChapterComplete = () => {
+    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: true };
+      }
+      return chapter;
+    });
+    setGetStartedChapters(updatedChapters);
   };
 
   const handleChapterIncomplete = () => {
@@ -47,6 +63,16 @@ export function ProgressTracker({
     setChapters(updatedChapters);
   };
 
+  const handleGetStartedChapterIncomplete = () => {
+    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: false };
+      }
+      return chapter;
+    });
+    setGetStartedChapters(updatedChapters);
+  };
+
   const handleCheckboxChange = () => {
     if (currentChapter.completed) {
       handleChapterIncomplete();
@@ -55,29 +81,38 @@ export function ProgressTracker({
     }
   };
 
+  const handleCheckboxChangeForGetStarted = () => {
+    if (currentChapter.completed) {
+      handleGetStartedChapterIncomplete();
+    } else {
+      handleGetStartedChapterComplete();
+    }
+  };
+
   return (
     <>
-      <div className="w-full border border-solid border-default rounded-md p-3 mx-auto mt-6 max-h-96 bg-subtle">
+      <div className="mx-auto mt-6 max-h-96 w-full rounded-md border border-solid border-default bg-subtle p-3">
         <div className="flex items-center justify-center pt-2">
           <SuccessCheckmark />
         </div>
-        <div className="flex items-center justify-center flex-col">
-          <p className="flex items-center mt-6  text-center text-default heading-lg font-semibold">
+        <div className="flex flex-col items-center justify-center">
+          <p className="mt-6 flex items-center text-center font-semibold text-default heading-lg">
             <BookOpen02Icon className="mr-2 size-6" /> {currentChapter.title}
           </p>
-          <div className="flex items-center justify-center mt-2 max-w-lg leading-7">
-            <p className="text-center text-default pb-2">{summary}</p>
+          <div className="mt-2 flex max-w-lg items-center justify-center leading-7">
+            <p className="pb-2 text-center text-default">{summary}</p>
           </div>
         </div>
-        <div className="flex items-center justify-center mt-4">
+        <div className="mt-4 flex items-center justify-center">
           <Checkbox
             id={`chapter-${currentChapterIndex}`}
             checked={currentChapter.completed}
             label={
               currentChapter.completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'
             }
-            // readOnly
-            onChange={handleCheckboxChange}
+            onChange={
+              isGetStartedTutorial ? handleCheckboxChangeForGetStarted : handleCheckboxChange
+            }
           />
         </div>
       </div>
@@ -85,17 +120,17 @@ export function ProgressTracker({
         <P className="my-4">{nextChapterDescription}</P>
         <A
           href={nextChapterLink}
-          className="flex flex-row justify-between border border-solid border-default rounded-md py-3 px-4 mb-3 hocus:shadow-xs"
+          className="mb-3 flex flex-row justify-between rounded-md border border-solid border-default px-4 py-3 hocus:shadow-xs"
           isStyled>
-          <div className="flex flex-row gap-4 items-center">
-            <div className="flex bg-element rounded-md self-center items-center justify-center min-w-[36px] h-9">
+          <div className="flex flex-row items-center gap-4">
+            <div className="flex h-9 min-w-[36px] items-center justify-center self-center rounded-md bg-element">
               <BookOpen02Icon className="icon-lg text-icon-default" />
             </div>
             <div>
               <DEMI>Next: {nextChapterTitle}</DEMI>
             </div>
           </div>
-          <ArrowRightIcon className="text-icon-secondary self-center content-end ml-3 min-w-[20px]" />
+          <ArrowRightIcon className="ml-3 min-w-[20px] content-end self-center text-icon-secondary" />
         </A>
       </>
     </>

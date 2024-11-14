@@ -1,19 +1,17 @@
 package versioned.host.exp.exponent
 
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
 import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
-import expo.modules.barcodescanner.BarCodeScannerModule
-import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
-import expo.modules.camera.legacy.CameraViewLegacyModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
@@ -26,6 +24,7 @@ import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.facedetector.FaceDetectorModule
 import expo.modules.facedetector.FaceDetectorPackage
+import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderModule
@@ -42,6 +41,8 @@ import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
+import expo.modules.linking.ExpoLinkingModule
+import expo.modules.linking.ExpoLinkingPackage
 import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationModule
@@ -72,10 +73,9 @@ import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechModule
-import expo.modules.splashscreen.SplashScreenModule
-import expo.modules.splashscreen.SplashScreenPackage
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
 import expo.modules.sqlite.SQLiteModule
-import expo.modules.sqlite.SQLiteModuleNext
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
@@ -83,16 +83,17 @@ import expo.modules.taskManager.TaskManagerModule
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.updates.UpdatesPackage
+import expo.modules.video.VideoModule
 import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
 
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
-    BarCodeScannerPackage(),
     ConstantsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
+    ExpoLinkingPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),
     NavigationBarPackage(),
@@ -118,6 +119,7 @@ object ExperiencePackagePicker : ModulesProvider {
     return EXPO_MODULES_PACKAGES
   }
 
+  @OptIn(UnstableReactNativeAPI::class)
   override fun getModulesList(): List<Class<out Module>> = listOf(
     AVModule::class.java,
     ApplicationModule::class.java,
@@ -142,11 +144,9 @@ object ExperiencePackagePicker : ModulesProvider {
     // End of Notifications
     BatteryModule::class.java,
     BackgroundFetchModule::class.java,
-    BarCodeScannerModule::class.java,
     BlurModule::class.java,
     CalendarModule::class.java,
     CameraViewModule::class.java,
-    CameraViewLegacyModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,
@@ -155,6 +155,8 @@ object ExperiencePackagePicker : ModulesProvider {
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
+    ExpoFetchModule::class.java,
+    ExpoLinkingModule::class.java,
     FileSystemModule::class.java,
     FaceDetectorModule::class.java,
     FontLoaderModule::class.java,
@@ -185,11 +187,11 @@ object ExperiencePackagePicker : ModulesProvider {
     SplashScreenModule::class.java,
     StoreReviewModule::class.java,
     SQLiteModule::class.java,
-    SQLiteModuleNext::class.java,
     SystemUIModule::class.java,
     TaskManagerModule::class.java,
     TrackingTransparencyModule::class.java,
     VideoThumbnailsModule::class.java,
+    VideoModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,
     BrightnessModule::class.java

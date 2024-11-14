@@ -5,7 +5,13 @@ import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
+import {
+  execute,
+  projectRoot,
+  getLoadedModulesAsync,
+  bin,
+  setupTestProjectWithOptionsAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -63,15 +69,13 @@ it('runs `npx expo customize --help`', async () => {
 it(
   'runs `npx expo customize`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('basic-customize', 'with-blank');
-    // `npx expo customize index.html serve.json babel.config.js`
-    await execa(
-      'node',
-      [bin, 'customize', 'public/index.html', 'public/serve.json', 'babel.config.js'],
-      {
-        cwd: projectRoot,
-      }
-    );
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-customize', 'with-blank', {
+      reuseExisting: false,
+    });
+    // `npx expo customize index.html babel.config.js`
+    await execa('node', [bin, 'customize', 'public/index.html', 'babel.config.js'], {
+      cwd: projectRoot,
+    });
 
     const files = klawSync(projectRoot)
       .map((entry) => {
@@ -87,9 +91,9 @@ it(
       'app.json',
       'babel.config.js',
       'bun.lockb',
+      'metro.config.js',
       'package.json',
       'public/index.html',
-      'public/serve.json',
     ]);
   },
   // Could take 45s depending on how fast npm installs
@@ -99,7 +103,14 @@ it(
 it(
   'runs `npx expo customize tsconfig.json`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '49.0.0');
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'expo-customize-typescript',
+      'with-router',
+      {
+        reuseExisting: false,
+        sdkVersion: '52.0.0',
+      }
+    );
 
     // `npx expo typescript
     await execa('node', [bin, 'customize', 'tsconfig.json'], {
@@ -121,7 +132,14 @@ it(
 it(
   'runs `npx expo customize tsconfig.json` on a partially setup project',
   async () => {
-    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '49.0.0');
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'expo-customize-typescript-partial',
+      'with-router',
+      {
+        reuseExisting: false,
+        sdkVersion: '52.0.0',
+      }
+    );
 
     const existingTsConfig = {
       extends: 'custom-package',
@@ -152,6 +170,30 @@ it(
       ...existingTsConfig,
       include: ['custom', '.expo/types/**/*.ts', 'expo-env.d.ts'],
     });
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo customize tsconfig.json` sets up typed routes',
+  async () => {
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'expo-customize-typed-routes',
+      'with-router-typed-routes',
+      { reuseExisting: false, linkExpoPackages: ['expo-router'] }
+    );
+
+    // `npx expo typescript`
+    await execa('node', [bin, 'customize', 'tsconfig.json'], {
+      cwd: projectRoot,
+    });
+
+    await expect(
+      execa('node', [require.resolve('typescript/bin/tsc')], {
+        cwd: projectRoot,
+      })
+    ).resolves.toBeTruthy();
   },
   // Could take 45s depending on how fast npm installs
   120 * 1000

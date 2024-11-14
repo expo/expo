@@ -1,12 +1,12 @@
 ---
-title: Stacking overlapping views with zIndex in Expo and React Native apps
+title: Stacking overlapping views with zIndex
 sidebar_title: Stack views with zIndex
-description: Learn how to stack overlapping views with zIndex.
+description: Learn how to stack overlapping views with zIndex in Expo and React Native apps.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 `zIndex` is the Expo and React Native analog of [CSS's `z-index` property](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index) which lets the developer control the order in which components are displayed over one another.
 
@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
 
 <Collapsible summary="Result">
 
-<ImageSpotlight
-  style={{ maxWidth: 360 }}
+<ContentSpotlight
+  className="max-w-[360px]"
   alt="Three square components in a square parent container"
   src="/static/images/z-index/default-layout.png"
 />
@@ -128,8 +128,8 @@ const styles = StyleSheet.create({
 
 <Collapsible summary="Result">
 
-<ImageSpotlight
-  style={{ maxWidth: 360 }}
+<ContentSpotlight
+  className="max-w-[360px]"
   alt="Three square components intersecting each other"
   src="/static/images/z-index/default-visually-stacked.png"
 />
@@ -189,8 +189,8 @@ const styles = StyleSheet.create({
 
 <Collapsible summary="Result">
 
-<ImageSpotlight
-  style={{ maxWidth: 360 }}
+<ContentSpotlight
+  className="max-w-[360px]"
   alt="Three components where the second is stacked above the first and third"
   src="/static/images/z-index/relative-z-index.png"
 />
@@ -249,8 +249,8 @@ const styles = StyleSheet.create({
 
 <Collapsible summary="Result">
 
-<ImageSpotlight
-  style={{ maxWidth: 360 }}
+<ContentSpotlight
+  className="max-w-[360px]"
   alt="Position absolute example"
   src="/static/images/z-index/absolute-position.png"
 />
@@ -307,8 +307,8 @@ const styles = StyleSheet.create({
 
 <Collapsible summary="Result">
 
-<ImageSpotlight
-  style={{ maxWidth: 360 }}
+<ContentSpotlight
+  className="max-w-[360px]"
   alt="Position absolute component out of visual bounds of parent"
   src="/static/images/z-index/absolute-z-index-bounds.png"
 />
@@ -366,8 +366,8 @@ const styles = StyleSheet.create({
 
 <Collapsible summary="Result">
 
-<ImageSpotlight
-  style={{ maxWidth: 360 }}
+<ContentSpotlight
+  className="max-w-[360px]"
   alt="Position absolute child must respect parent's zIndex"
   src="/static/images/z-index/z-index-parent.png"
 />

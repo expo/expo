@@ -4,7 +4,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTBridge.h>
 
-#import "EXVersionUtils.h"
 
 @class EXManifestsManifest;
 
@@ -16,30 +15,31 @@
                            logFunction:(nonnull RCTLogFunction)logFunction
                           logThreshold:(RCTLogLevel)logThreshold;
 
-- (void)bridgeWillStartLoading:(id)bridge;
-- (void)bridgeFinishedLoading:(id)bridge;
+- (void)hostDidStart:(id)instance;
+- (void)hostFinishedLoading:(id)host;
 - (void)invalidate;
 
-/**
- *  Dev tools (implementation varies by SDK)
- */
-- (void)showDevMenuForBridge:(id)bridge;
-- (void)disableRemoteDebuggingForBridge:(id)bridge;
-- (void)toggleRemoteDebuggingForBridge:(id)bridge;
-- (void)togglePerformanceMonitorForBridge:(id)bridge;
-- (void)toggleElementInspectorForBridge:(id)bridge;
+- (void)showDevMenuForHost:(id)host;
+- (void)disableRemoteDebuggingForHost:(id)host;
+- (void)toggleRemoteDebuggingForHost:(id)host;
+- (void)togglePerformanceMonitorForHost:(id)host;
+- (void)toggleElementInspectorForHost:(id)host;
 - (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
                          queue:(dispatch_queue_t)queue
                      forMethod:(NSString *)method;
 
-- (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge;
-- (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge;
+- (NSDictionary<NSString *, NSString *> *)devMenuItemsForHost:(id)host;
+- (void)selectDevMenuItemWithKey:(NSString *)key host:(id)host bundleURL:(NSURL *)bundleURL;
 
 /**
  *  Provides the extra native modules required to set up a bridge with this version.
  */
-- (NSArray *)extraModulesForBridge:(id)bridge;
+- (NSArray *)extraModules;
 
 - (void *)versionedJsExecutorFactoryForBridge:(id)bridge;
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass;
+
+- (Class)getModuleClassFromName:(const char *)name;
 
 @end

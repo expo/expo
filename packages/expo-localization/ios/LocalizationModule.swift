@@ -149,26 +149,32 @@ public class LocalizationModule: Module {
           return [
             "languageTag": languageTag,
             "languageCode": languageLocale.language.languageCode?.identifier,
-            "regionCode": languageLocale.region?.identifier,
+            "languageRegionCode": languageLocale.region?.identifier,
+            "regionCode": userSettingsLocale.region?.identifier,
             "textDirection": languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
             "decimalSeparator": userSettingsLocale.decimalSeparator,
             "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
             "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
-            "currencyCode": languageLocale.currencyCode,
-            "currencySymbol": languageLocale.currencySymbol,
+            "currencyCode": userSettingsLocale.currencyCode,
+            "currencySymbol": userSettingsLocale.currencySymbol,
+            "languageCurrencyCode": languageLocale.currencyCode,
+            "languageCurrencySymbol": languageLocale.currencySymbol,
             "temperatureUnit": getTemperatureUnit()
           ]
         }
         return [
           "languageTag": languageTag,
           "languageCode": languageLocale.languageCode,
-          "regionCode": languageLocale.regionCode,
+          "languageRegionCode": languageLocale.regionCode,
+          "regionCode": userSettingsLocale.regionCode,
           "textDirection": Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
           "decimalSeparator": userSettingsLocale.decimalSeparator,
           "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
           "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
-          "currencyCode": languageLocale.currencyCode,
-          "currencySymbol": languageLocale.currencySymbol,
+          "currencyCode": userSettingsLocale.currencyCode,
+          "currencySymbol": userSettingsLocale.currencySymbol,
+          "languageCurrencyCode": languageLocale.currencyCode,
+          "languageCurrencySymbol": languageLocale.currencySymbol,
           "temperatureUnit": getTemperatureUnit()
         ]
       }
@@ -203,7 +209,7 @@ public class LocalizationModule: Module {
   }
 
   static func getCalendars() -> [[String: Any?]] {
-    var calendar = Locale.current.calendar
+    let calendar = Locale.current.calendar
     return [
       [
         "calendar": getUnicodeCalendarIdentifier(calendar: calendar),

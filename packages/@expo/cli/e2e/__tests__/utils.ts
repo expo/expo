@@ -23,7 +23,12 @@ export function getTemporaryPath() {
 }
 
 export function execute(...args: string[]) {
-  return execa('node', [bin, ...args], { cwd: projectRoot });
+  return execaLog('node', [bin, ...args], { cwd: projectRoot });
+}
+
+export function execaLog(command: string, args: string[], options: execa.Options) {
+  //   console.log(`Running: ${command} ${args.join(' ')}`);
+  return execa(command, args, options);
 }
 
 export function getRoot(...args: string[]) {
@@ -88,12 +93,24 @@ export async function createFromFixtureAsync(
     fixtureName,
     config,
     pkg,
+    linkExpoPackages,
+    linkExpoPackagesDev,
   }: {
     dirName: string;
     reuseExisting?: boolean;
     fixtureName: string;
     config?: Partial<ExpoConfig>;
     pkg?: Partial<PackageJSONConfig>;
+    /**
+     * Note, this is linked by installing the workspace folder as dependency directly.
+     * This may cause other side-effects, like resolving monorepo dependencies instead of the test project.
+     */
+    linkExpoPackages?: string[];
+    /**
+     * Note, this is linked by installing the workspace folder as dependency directly.
+     * This may cause other side-effects, like resolving monorepo dependencies instead of the test project.
+     */
+    linkExpoPackagesDev?: string[];
   }
 ): Promise<string> {
   const projectRoot = path.join(parentDir, dirName);
@@ -124,25 +141,33 @@ export async function createFromFixtureAsync(
     await copySync(fixturePath, projectRoot);
 
     // Add additional modifications to the package.json
-    if (pkg) {
+    if (pkg || linkExpoPackages || linkExpoPackagesDev) {
+      pkg ??= {};
       const pkgPath = path.join(projectRoot, 'package.json');
+      const expoPackagesPath = path.join(__dirname, '../../../../');
       const fixturePkg = (await JsonFile.readAsync(pkgPath)) as PackageJSONConfig;
+
+      const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
+      const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
+
+      if (linkExpoPackages) {
+        for (const pkg of linkExpoPackages) {
+          dependencies[pkg] = `file:${path.join(expoPackagesPath, pkg)}`;
+        }
+      }
+
+      if (linkExpoPackagesDev) {
+        for (const pkg of linkExpoPackagesDev) {
+          devDependencies[pkg] = path.join(expoPackagesPath, pkg);
+        }
+      }
 
       await JsonFile.writeAsync(pkgPath, {
         ...pkg,
         ...fixturePkg,
-        dependencies: {
-          ...(fixturePkg.dependencies || {}),
-          ...(pkg.dependencies || {}),
-        },
-        devDependencies: {
-          ...(fixturePkg.devDependencies || {}),
-          ...(pkg.devDependencies || {}),
-        },
-        scripts: {
-          ...(fixturePkg.scripts || {}),
-          ...(pkg.scripts || {}),
-        },
+        dependencies,
+        devDependencies,
+        scripts: Object.assign({}, fixturePkg.scripts, pkg.scripts),
       });
     }
 
@@ -179,16 +204,28 @@ export async function createFromFixtureAsync(
 // Set this to true to enable caching and prevent rerunning yarn installs
 const testingLocally = !process.env.CI;
 
-export async function setupTestProjectAsync(
+export async function setupTestProjectWithOptionsAsync(
   name: string,
   fixtureName: string,
-  sdkVersion: string = '49.0.0'
+  {
+    reuseExisting = testingLocally,
+    sdkVersion = '52.0.0',
+    linkExpoPackages,
+    linkExpoPackagesDev,
+  }: {
+    sdkVersion?: string;
+    reuseExisting?: boolean;
+    linkExpoPackages?: string[];
+    linkExpoPackagesDev?: string[];
+  } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
   const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
     dirName: name,
-    reuseExisting: testingLocally,
+    reuseExisting,
     fixtureName,
+    linkExpoPackages,
+    linkExpoPackagesDev,
   });
 
   // Many of the factors in this test are based on the expected SDK version that we're testing against.
@@ -243,11 +280,15 @@ export function getRouterE2ERoot(): string {
 
 export function getHtmlHelpers(outputDir: string) {
   async function getScriptTagsAsync(name: string) {
-    const tags = (await getPageHtml(outputDir, name)).querySelectorAll('script').map((script) => {
-      expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+    const tags = (await getPageHtml(outputDir, name))
+      .querySelectorAll('script')
+      // Remove scripts without a src attribute
+      .filter((script) => !!script.attributes.src)
+      .map((script) => {
+        expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
 
-      return script.attributes.src;
-    });
+        return script.attributes.src;
+      });
 
     ensureEntryChunk(tags[0]);
 

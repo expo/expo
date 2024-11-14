@@ -14,7 +14,10 @@ const withExpoHeadIos = (config) => {
         // This ensures that stored `NSUserActivityType`s can be opened in-app.
         // This is important for moving between native devices or from opening a link that was saved
         // in a Quick Note or Siri Reminder.
-        config.modResults.NSUserActivityTypes.push('$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route');
+        const activityType = '$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route';
+        if (!config.modResults.NSUserActivityTypes.includes(activityType)) {
+            config.modResults.NSUserActivityTypes.push(activityType);
+        }
         return config;
     });
 };
@@ -27,7 +30,10 @@ const withRouter = (config, _props) => {
         extra: {
             ...config.extra,
             router: {
-                origin: false,
+                // RSC enables location origin by default because it's required for requests.
+                origin: config.experiments?.reactServerComponentRoutes || config.experiments?.reactServerFunctions
+                    ? undefined
+                    : false,
                 ...config.extra?.router,
                 ...props,
             },

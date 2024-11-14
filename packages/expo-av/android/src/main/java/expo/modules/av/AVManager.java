@@ -14,9 +14,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.facebook.jni.HybridData;
 
+import androidx.annotation.OptIn;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
@@ -44,6 +46,7 @@ import expo.modules.av.video.VideoView;
 import expo.modules.interfaces.permissions.Permissions;
 import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
+import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
@@ -146,6 +149,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @SuppressWarnings("JavaJniMissingFunction")
   private native HybridData initHybrid();
+
+  @OptIn(markerClass = FrameworkAPI.class)
   @SuppressWarnings("JavaJniMissingFunction")
   private native void installJSIBindings(long jsRuntimePointer, CallInvokerHolderImpl jsCallInvokerHolder);
 
@@ -179,13 +184,29 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       final UIManager uiManager = getUIManager();
 
       uiManager.registerLifecycleEventListener(this);
-      uiManager.runOnClientCodeQueueThread(() -> {
-        final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
-        final long jsContextRef = jsContextProvider.getJavaScriptContextRef();
-        if (jsContextRef != 0) {
-          installJSIBindings(jsContextRef, jsContextProvider.getJSCallInvokerHolder());
-        }
-      });
+      uiManager.runOnClientCodeQueueThread(this::installBindings);
+    }
+  }
+
+  @OptIn(markerClass = FrameworkAPI.class)
+  private void installBindings() {
+    final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
+    final long jsContextRef = jsContextProvider.getJavaScriptContextRef();
+    if (jsContextRef != 0) {
+      Log.e("AVManager", "Cannot install JSI bindings for AV module because JS context is not available");
+      return;
+    }
+
+    CallInvokerHolderImpl callInvokerHolder = jsContextProvider.getJSCallInvokerHolder();
+    if (callInvokerHolder == null) {
+      Log.e("AVManager", "Cannot install JSI bindings for AV module because JS call invoker holder is not available");
+      return;
+    }
+
+    try {
+      installJSIBindings(jsContextRef, callInvokerHolder);
+    } catch (Exception e) {
+      Log.e("AVManager", "Cannot install JSI bindings for AV module", e);
     }
   }
 
@@ -760,10 +781,10 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   @Override
   public void getCurrentInput(final Promise promise) {
     AudioDeviceInfo deviceInfo = null;
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P){
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P) {
       promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting current audio input is not supported on devices running Android version lower than Android 9.0");
       return;
-    } else  {
+    } else {
 
       try {
         // getRoutedDevice() is the most reliable way to return the actual mic input, however it

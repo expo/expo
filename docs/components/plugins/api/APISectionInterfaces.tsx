@@ -1,15 +1,15 @@
-import { renderMethod } from './APISectionMethods';
-import { ELEMENT_SPACING } from './styles';
+import { mergeClasses } from '@expo/styleguide';
 
-import { APIDataType } from '~/components/plugins/api/APIDataType';
+import { APIDataType } from './APIDataType';
 import {
   CommentData,
   InterfaceDefinitionData,
   MethodSignatureData,
   PropData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { renderMethod } from './APISectionMethods';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   CommentTextBlock,
   getTagData,
@@ -19,13 +19,13 @@ import {
   ParamsTableHeadRow,
   resolveTypeName,
   renderDefaultValue,
-  STYLES_APIBOX,
   getTagNamesList,
-  STYLES_APIBOX_NESTED,
   H3Code,
   getCommentContent,
   BoxSectionHeader,
-} from '~/components/plugins/api/APISectionUtils';
+} from './APISectionUtils';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
+
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, BOLD, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
 
@@ -115,8 +115,10 @@ const renderInterface = (
   const interfaceFields = interfaceChildren.filter(child => !child.signatures);
 
   return (
-    <div key={`interface-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
-      <APISectionDeprecationNote comment={comment} />
+    <div
+      key={`interface-definition-${name}`}
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
+      <APISectionDeprecationNote comment={comment} sticky />
       <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">

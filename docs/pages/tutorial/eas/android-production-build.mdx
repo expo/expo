@@ -4,14 +4,22 @@ sidebar_title: Android production build
 description: Learn about the process of creating a production build for Android and automating the release process.
 ---
 
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll create our example app's production version and submit it to the Google Play Store. We'll also explore how to automate the creation and release of new app versions.
+
+<VideoBoxLink
+  videoId="-KZjr576tuE"
+  title="Watch: How to quickly publish to the App Store & Play Store with EAS Submit"
+/>
+
+---
 
 ## Prerequisites
 
@@ -46,18 +54,18 @@ To upload the app to the Google Play Store for the first time, we need to:
 - Go to the Google Play dashboard.
 - On the **Home** page, click **Create app** to make a new app.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Create app on Google Play Console"
   src="/static/images/tutorial/eas/play-store-01.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 - Fill out our app details and click the **Create app** button.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Create app form on Google Play Console"
   src="/static/images/tutorial/eas/play-store-02.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 </Step>
@@ -70,35 +78,35 @@ After the app is created on Google Play Console, it redirects us to the app's Da
 
 - Click **Start testing now** on the **Dashboard**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Steps under start testing now on Google Play Console"
   src="/static/images/tutorial/eas/play-store-03.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 - Create an email list of users under **Internal Testing** > **Testers for the internal testing release**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Create an email list for internal testers"
   src="/static/images/tutorial/eas/play-store-04.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 - Google Play Console prompts us to create a **Release**.
 - To create a new release, go to **Releases** and click **Create new release**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Selecting the signing key for the app bundle"
   src="/static/images/tutorial/eas/play-store-05.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 - To store the signing key, go to **App integrity** > **App bundles** and click **Choose signing key** > **Use Google-generated key**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Creating a new internal release"
   src="/static/images/tutorial/eas/play-store-06.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 </Step>
@@ -111,7 +119,7 @@ After EAS has created a production build:
 
 - Open the EAS dashboard and click on **Download** to get the **.aab** file.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Downloading the aab file"
   src="/static/images/tutorial/eas/play-store-07.png"
 />
@@ -120,10 +128,10 @@ After EAS has created a production build:
 - Provide the release details for our app and click on **Next**.
 - On the following screen, click on **Save and publish**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Uploading aab file to Google Play Console"
   src="/static/images/tutorial/eas/play-store-08.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 </Step>
@@ -134,10 +142,10 @@ After EAS has created a production build:
 
 Under **Track Summary**, we see that the latest release shows a temporary app name. This is because our app is not reviewed yet.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App pending review on Google Play Console"
   src="/static/images/tutorial/eas/play-store-09.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 Under **Releases**, we see that the app is available to internal testers. To share the app with a team of testers:
@@ -145,32 +153,32 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 - Open the Internal testing dashboard, then click on **View release details**.
 - Click on **copy link** under **How testers join your test**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Sharing the internal release version"
   src="/static/images/tutorial/eas/play-store-14.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 - On the device, open the test email and follow the steps to download the app.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Downloading app on the device as an internal tester"
   src="/static/images/tutorial/eas/play-store-15.png"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 - The testing email holder needs to accept the invite, and once accepted, the app can be installed on the device.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="On accepting the invite, the app can be installed on the device"
   src="/static/images/tutorial/eas/play-store-16.png"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App installed on the device as an internal tester"
   src="/static/images/tutorial/eas/play-store-17.png"
-  style={{ maxWidth: 260 }}
+  className="max-w-[260px]"
 />
 
 > **info** **Tip**: To publish an app on the Play Store, in the Google Dashboard, finish the steps under **Set up your app**. These steps are required before releasing the app on the Play Store for the first time. You'll have to provide details like a link to a privacy policy, a target audience, data safety and so on.
@@ -234,10 +242,10 @@ In the above snippet, we're also adding [`track`](/eas/json/#track) property and
 
 - This command will automatically create a new internal release version in Google Play Console:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Automatic internal release version created in Google Play Console by EAS Submit"
   src="/static/images/tutorial/eas/play-store-18.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 </Step>
@@ -272,10 +280,10 @@ To release the app for production:
 
 - To create a track and submit our app to the Google Play Store's review process, we need to **Release** > **Production** and under **Releases**, select the build we want to send for review.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Submitting app for Google Play Store review process"
   src="/static/images/tutorial/eas/play-store-19.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 </Step>

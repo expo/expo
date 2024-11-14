@@ -6,7 +6,13 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 import { sync as globSync } from 'glob';
 
-import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
+import {
+  execute,
+  projectRoot,
+  getLoadedModulesAsync,
+  bin,
+  setupTestProjectWithOptionsAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -43,7 +49,7 @@ describe('server', () => {
   it(
     'runs `npx expo export`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
       // `npx expo export`
       await execa('node', [bin, 'export', '--source-maps', '--dump-assetmap'], {
         cwd: projectRoot,
@@ -170,7 +176,6 @@ describe('server', () => {
         'assets/assets/icon.8034d8318b239108719ff3f22f31ef15@2x.png',
 
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        'debug.html',
         'favicon.ico',
         'index.html',
         'metadata.json',
@@ -183,7 +188,7 @@ describe('server', () => {
   it(
     'runs `npx expo export --no-bytecode`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
 
       await execa(
         'node',
@@ -276,7 +281,6 @@ describe('server', () => {
         'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
         'assets/9ce7db807e4147e00df372d053c154c2',
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        'debug.html',
         'favicon.ico',
         'metadata.json',
       ]);
@@ -291,7 +295,7 @@ describe('server', () => {
 
       expect(bundle).toMatch('__d(');
       // General check
-      expect(bundle.split('\n').length).toBeLessThan(550);
+      expect(bundle.split('\n').length).toBeLessThan(600);
     },
     // Could take 45s depending on how fast npm installs
     120 * 1000

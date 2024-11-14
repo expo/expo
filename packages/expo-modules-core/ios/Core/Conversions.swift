@@ -1,4 +1,4 @@
-internal final class Conversions {
+public struct Conversions {
   /**
    Converts an array to tuple. Because of tuples nature, it's not possible to convert an array of any size, so we can support only up to some fixed size.
    */
@@ -50,7 +50,7 @@ internal final class Conversions {
    - The dictionary is missing some of the given keys (`MissingKeysException`)
    - Some of the values cannot be cast to specified type (`CastingValuesException`)
    */
-  static func pickValues<ValueType>(from dict: [String: Any], byKeys keys: [String], as type: ValueType.Type) throws -> [ValueType] {
+  public static func pickValues<ValueType>(from dict: [String: Any], byKeys keys: [String], as type: ValueType.Type) throws -> [ValueType] {
     var result = (
       values: [ValueType](),
       missingKeys: [String](),
@@ -156,26 +156,27 @@ internal final class Conversions {
     appContext: AppContext? = nil,
     dynamicType: AnyDynamicType? = nil
   ) -> Any {
+    if let appContext, let result = try? dynamicType?.convertResult(value as Any, appContext: appContext) {
+      return result
+    }
+    return convertFunctionResultInRuntime(value, appContext: appContext)
+  }
+
+  /**
+   Converts the function result to the type that can later be converted to a JS value.
+   As opposed to `convertFunctionResult`, it has no information about the dynamic type,
+   so it is quite limited, e.g. it does not handle shared objects.
+   Currently it is required to handle results of the promise.
+   */
+  static func convertFunctionResultInRuntime<ValueType>(_ value: ValueType?, appContext: AppContext? = nil) -> Any {
     if let value = value as? Record {
-      return value.toDictionary()
+      return value.toDictionary(appContext: appContext)
     }
     if let value = value as? [Record] {
-      return value.map { $0.toDictionary() }
+      return value.map { $0.toDictionary(appContext: appContext) }
     }
-    if let appContext {
-      if let value = value as? JavaScriptObjectBuilder {
-        return try? value.build(appContext: appContext)
-      }
-
-      // If the returned value is a native shared object, create its JS representation and add the pair to the registry of shared objects.
-      if let value = value as? SharedObject, let dynamicType = asDynamicSharedObjectType(dynamicType) {
-        guard let object = try? appContext.newObject(nativeClassId: dynamicType.typeIdentifier) else {
-          log.warn("Unable to create a JS object for \(dynamicType.description)")
-          return Optional<Any>.none
-        }
-        appContext.sharedObjectRegistry.add(native: value, javaScript: object)
-        return object
-      }
+    if let value = value as? any Enumerable {
+      return value.anyRawValue
     }
     return value as Any
   }
@@ -192,13 +193,37 @@ internal final class Conversions {
   }
 
   /**
-   An exception that can be thrown by convertible types, when given value cannot be converted.
+   An exception thrown when the native value cannot be converted to JavaScript value.
    */
-  internal class ConvertingException<TargetType>: GenericException<Any?> {
+  internal final class ConversionToJSFailedException: GenericException<(kind: JavaScriptValueKind, nativeType: Any.Type)> {
     override var code: String {
-      "ERR_CONVERTING_FAILED"
+      "ERR_CONVERTING_TO_JS_FAILED"
     }
     override var reason: String {
+      "Conversion from native '\(param.nativeType)' to JavaScript value of type '\(param.kind.rawValue)' failed"
+    }
+  }
+
+  /**
+   An exception thrown when the JavaScript value cannot be converted to native value.
+   */
+  internal final class ConversionToNativeFailedException: GenericException<(kind: JavaScriptValueKind, nativeType: Any.Type)> {
+    override var code: String {
+      "ERR_CONVERTING_TO_NATIVE_FAILED"
+    }
+    override var reason: String {
+      "Conversion from JavaScript value of type '\(param.kind.rawValue)' to native '\(param.nativeType)' failed"
+    }
+  }
+
+  /**
+   An exception that can be thrown by convertible types, when given value cannot be converted.
+   */
+  public class ConvertingException<TargetType>: GenericException<Any?> {
+    public override var code: String {
+      "ERR_CONVERTING_FAILED"
+    }
+    public override var reason: String {
       "Cannot convert '\(String(describing: param))' to \(TargetType.self)"
     }
   }
@@ -264,14 +289,4 @@ internal final class Conversions {
       "Provided hex color '\(param)' would result in an overflow"
     }
   }
-}
-
-/**
- Unwraps the dynamic optional type and returns as a dynamic shared object type if possible.
- */
-private func asDynamicSharedObjectType(_ dynamicType: AnyDynamicType?) -> DynamicSharedObjectType? {
-  if let dynamicType = dynamicType as? DynamicOptionalType {
-    return dynamicType.wrappedType as? DynamicSharedObjectType
-  }
-  return dynamicType as? DynamicSharedObjectType
 }

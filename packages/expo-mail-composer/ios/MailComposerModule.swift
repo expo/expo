@@ -20,7 +20,7 @@ public class MailComposerModule: Module {
         throw OperationInProgressException()
       }
       guard let appContext = self.appContext else {
-        throw AppContextLostException()
+        throw Exceptions.AppContextLost()
       }
 
       let session = MailComposingSession(appContext)

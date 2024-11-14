@@ -3,12 +3,11 @@ title: Use libraries
 description: Learn how to use libraries based on React Native, Expo SDK and third-party in your project.
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import InstallSection from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Terminal } from '~/ui/components/Snippet';
-import { SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal, SnackInline } from '~/ui/components/Snippet';
 
 Every app is inevitably going to use a third-party library, so it's important to understand how to determine whether a library is compatible with your project.
 
@@ -42,16 +41,16 @@ To use a library from the Expo SDK, find the one you are looking for in the [API
 
 <ConfigReactNative>
 
-If you initialized your app using `npx react-native init` and you don't have the `expo` package installed in it yet, see the [installing Expo modules guide](/bare/installing-expo-modules) for more information.
+If you initialized your app using `npx @react-native-community/cli@latest init` and you don't have the `expo` package installed in it yet, see the [installing Expo modules guide](/bare/installing-expo-modules) for more information.
 
 </ConfigReactNative>
 
 You will see the platform compatibility tags at the top of each API reference. It tells you which platforms and environments the library is compatible with. For example, the platform tags for the [`expo-device`](/versions/latest/sdk/device/) library look like the following:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Platform compatibility tags for expo-device library on its API reference."
   src="/static/images/guides/platform-tags.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 After the platform compatibility table, there is a library's description and a section with instructions on installing the library. For example:

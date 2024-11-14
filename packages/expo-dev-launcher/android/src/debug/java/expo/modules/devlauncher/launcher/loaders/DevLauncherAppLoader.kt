@@ -2,14 +2,15 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -60,18 +61,17 @@ abstract class DevLauncherAppLoader(
         }
       })
 
-      activity.lifecycle.addObserver(object : LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-        fun onCreate() {
-          onCreate(activity)
+      activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+        override fun onCreate(owner: LifecycleOwner) {
+          super.onCreate(owner)
           activity.lifecycle.removeObserver(this)
         }
       })
     }
   }
 
-  open suspend fun launch(intent: Intent): Boolean {
-    return suspendCoroutine { callback ->
+  open suspend fun launch(intent: Intent): Boolean = withContext(Dispatchers.Main) {
+    suspendCoroutine { callback ->
       if (injectBundleLoader()) {
         continuation = callback
         launchIntent(intent)

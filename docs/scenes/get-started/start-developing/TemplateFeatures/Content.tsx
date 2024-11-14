@@ -1,5 +1,5 @@
 import { Button, useTheme } from '@expo/styleguide';
-import { ArrowRightIcon } from '@expo/styleguide-icons';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { ReactNode, useEffect, useState } from 'react';
 
 type Props = {
@@ -32,7 +32,7 @@ export function Content({ imgSrc, darkImgSrc, alt, href, content }: Props) {
           <img src={imgSrc} alt={alt} className="size-[300px]" />
         </picture>
       </div>
-      <div className="flex flex-col gap-3 items-start px-6 pb-6 border-t border-default bg-default">
+      <div className="flex flex-col items-start gap-3 border-t border-default bg-default px-6 pb-6">
         <div>
           {content}
           {href && (

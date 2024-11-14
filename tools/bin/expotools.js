@@ -5,7 +5,7 @@
 // and TypeScript files are compiled. To make it work even when node_modules are empty,
 // we shouldn't eagerly require any dependency - we have to run yarn first.
 
-const child_process = require('child_process');
+const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs');
 const path = require('path');
 
@@ -17,7 +17,7 @@ function createLogModifier(modifier) {
   return (text) => {
     try {
       return modifier(require('chalk'))(text);
-    } catch (e) {
+    } catch {
       return text;
     }
   };
@@ -49,7 +49,12 @@ async function maybeRebuildAndRun() {
   // If `yarn.lock` checksum changed, reinstall expotools dependencies.
   if (!state.dependenciesChecksum || state.dependenciesChecksum !== dependenciesChecksum) {
     console.log(' 🧶 Yarning...');
-    await spawnAsync('yarn', ['install']);
+    try {
+      await spawnAsync('yarn', ['install'], { cwd: ROOT_PATH });
+    } catch (error) {
+      console.error(LogModifiers.error(` 💥 Yarning failed: ${error.stack}`));
+      process.exit(1);
+    }
   }
 
   // If checksum of source files changed, rebuild TypeScript files.
@@ -58,7 +63,7 @@ async function maybeRebuildAndRun() {
 
     try {
       // Compile TypeScript files into build folder.
-      await spawnAsync('yarn', ['run', 'build']);
+      await spawnAsync('yarn', ['run', 'build'], { cwd: ROOT_PATH });
       state.schema = await getCommandsSchemaAsync();
     } catch (error) {
       console.error(LogModifiers.error(` 💥 Rebuilding failed: ${error.stack}`));
@@ -78,7 +83,7 @@ function buildFolderExists() {
   try {
     fs.accessSync(BUILD_PATH, fs.constants.R_OK);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -138,7 +143,7 @@ function loadCommand(program, commandFile) {
 
 async function loadAllCommandsAsync(callback) {
   const program = require('@expo/commander');
-  const glob = require('glob-promise');
+  const { glob } = require('glob');
 
   const commandFiles = await glob('build/commands/*.js', {
     cwd: ROOT_PATH,
@@ -188,29 +193,6 @@ function readState() {
 function saveState(state) {
   fs.mkdirSync(path.dirname(STATE_PATH), { recursive: true });
   fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
-}
-
-function spawnAsync(command, args, options) {
-  return new Promise((resolve, reject) => {
-    const child = child_process.spawn(
-      command,
-      args,
-      options || {
-        stdio: ['pipe', 'ignore', 'pipe'],
-        ignoreStdio: true,
-        cwd: ROOT_PATH,
-      }
-    );
-
-    child.on('exit', (code) => {
-      child.removeAllListeners();
-      resolve({ code });
-    });
-    child.on('error', (error) => {
-      child.removeAllListeners();
-      reject(error);
-    });
-  });
 }
 
 function canRequire(packageName) {

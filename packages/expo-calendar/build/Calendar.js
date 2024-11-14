@@ -1,6 +1,11 @@
-import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
+export { PermissionStatus, } from 'expo-modules-core';
+// @docsMissing
+/**
+ * @platform ios
+ */
 export var DayOfTheWeek;
 (function (DayOfTheWeek) {
     DayOfTheWeek[DayOfTheWeek["Sunday"] = 1] = "Sunday";
@@ -11,6 +16,10 @@ export var DayOfTheWeek;
     DayOfTheWeek[DayOfTheWeek["Friday"] = 6] = "Friday";
     DayOfTheWeek[DayOfTheWeek["Saturday"] = 7] = "Saturday";
 })(DayOfTheWeek || (DayOfTheWeek = {}));
+// @docsMissing
+/**
+ * @platform ios
+ */
 export var MonthOfTheYear;
 (function (MonthOfTheYear) {
     MonthOfTheYear[MonthOfTheYear["January"] = 1] = "January";
@@ -26,7 +35,88 @@ export var MonthOfTheYear;
     MonthOfTheYear[MonthOfTheYear["November"] = 11] = "November";
     MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
 })(MonthOfTheYear || (MonthOfTheYear = {}));
-export { PermissionStatus };
+/**
+ * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
+ * */
+export var CalendarDialogResultActions;
+(function (CalendarDialogResultActions) {
+    /**
+     * On Android, this is the only possible result because the OS doesn't provide enough information to determine the user's action -
+     * the user may have canceled the dialog, modified the event, or deleted it.
+     *
+     * On iOS, this means the user simply closed the dialog.
+     * */
+    CalendarDialogResultActions["done"] = "done";
+    /**
+     * The user canceled or dismissed the dialog.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["canceled"] = "canceled";
+    /**
+     * The user deleted the event.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["deleted"] = "deleted";
+    /**
+     * The user responded to and saved a pending event invitation.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["responded"] = "responded";
+    /**
+     * The user saved a new event or modified an existing one.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["saved"] = "saved";
+})(CalendarDialogResultActions || (CalendarDialogResultActions = {}));
+/**
+ * Launches the calendar UI provided by the OS to create a new event.
+ * @param eventData A map of details for the event to be created.
+ * @param presentationOptions Configuration that influences how the calendar UI is presented.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export async function createEventInCalendarAsync(eventData = {}, presentationOptions) {
+    if (!ExpoCalendar.createEventInCalendarAsync) {
+        throw new UnavailabilityError('Calendar', 'createEventInCalendarAsync');
+    }
+    // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object literal
+    if (eventData.id) {
+        console.warn('You attempted to create an event with an id. Event ids are assigned by the system.');
+    }
+    const params = stringifyDateValues(eventData);
+    Object.assign(params, presentationOptions);
+    return ExpoCalendar.createEventInCalendarAsync(params);
+}
+/**
+ * Launches the calendar UI provided by the OS to preview an event.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export async function openEventInCalendarAsync(params, presentationOptions) {
+    if (!ExpoCalendar.openEventInCalendarAsync) {
+        throw new UnavailabilityError('Calendar', 'openEventInCalendarAsync');
+    }
+    if (!params.id) {
+        throw new Error('openEventInCalendarAsync must be called with an id (string) of the target event');
+    }
+    const newParams = { ...params, ...presentationOptions };
+    return ExpoCalendar.openEventInCalendarAsync(newParams);
+}
+/**
+ * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export async function editEventInCalendarAsync(params, presentationOptions) {
+    if (!ExpoCalendar.editEventInCalendarAsync) {
+        throw new UnavailabilityError('Calendar', 'editEventInCalendarAsync');
+    }
+    if (!params.id) {
+        throw new Error('editEventInCalendarAsync must be called with an id (string) of the target event');
+    }
+    const newParams = { ...params, ...presentationOptions };
+    return ExpoCalendar.editEventInCalendarAsync(newParams);
+}
 // @needsAudit
 /**
  * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
@@ -187,7 +277,7 @@ export async function createEventAsync(calendarId, eventData = {}) {
     if (!calendarId) {
         throw new Error('createEventAsync must be called with an id (string) of the target calendar');
     }
-    // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object litteral
+    // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object literal
     const { id, ...details } = eventData;
     if (id) {
         console.warn('You attempted to create an event with an id. Event ids are assigned by the system.');
@@ -479,6 +569,8 @@ export async function getSourceAsync(id) {
  * Sends an intent to open the specified event in the OS Calendar app.
  * @param id ID of the event to open.
  * @platform android
+ * @deprecated Use [`openEventInCalendarAsync`](#openeventincalendarasyncparams-presentationoptions) instead.
+ * @header systemProvidedUI
  */
 export function openEventInCalendar(id) {
     if (!ExpoCalendar.openEventInCalendar) {
@@ -488,7 +580,7 @@ export function openEventInCalendar(id) {
     if (!id) {
         throw new Error('openEventInCalendar must be called with an id (string) of the target event');
     }
-    return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
+    return ExpoCalendar.openEventInCalendar(id);
 } // Android
 // @needsAudit
 /**
@@ -574,11 +666,16 @@ export const useRemindersPermissions = createPermissionHook({
     getMethod: getRemindersPermissionsAsync,
     requestMethod: requestRemindersPermissionsAsync,
 });
+// @docsMissing
+/**
+ * platform ios
+ */
 export var EntityTypes;
 (function (EntityTypes) {
     EntityTypes["EVENT"] = "event";
     EntityTypes["REMINDER"] = "reminder";
 })(EntityTypes || (EntityTypes = {}));
+// @docsMissing
 export var Frequency;
 (function (Frequency) {
     Frequency["DAILY"] = "daily";
@@ -586,14 +683,24 @@ export var Frequency;
     Frequency["MONTHLY"] = "monthly";
     Frequency["YEARLY"] = "yearly";
 })(Frequency || (Frequency = {}));
+// @docsMissing
 export var Availability;
 (function (Availability) {
+    /**
+     * @platform ios
+     */
     Availability["NOT_SUPPORTED"] = "notSupported";
     Availability["BUSY"] = "busy";
     Availability["FREE"] = "free";
     Availability["TENTATIVE"] = "tentative";
+    /**
+     * @platform ios
+     */
     Availability["UNAVAILABLE"] = "unavailable";
 })(Availability || (Availability = {}));
+/**
+ * @platform ios
+ */
 export var CalendarType;
 (function (CalendarType) {
     CalendarType["LOCAL"] = "local";
@@ -602,7 +709,8 @@ export var CalendarType;
     CalendarType["SUBSCRIBED"] = "subscribed";
     CalendarType["BIRTHDAYS"] = "birthdays";
     CalendarType["UNKNOWN"] = "unknown";
-})(CalendarType || (CalendarType = {})); // iOS
+})(CalendarType || (CalendarType = {}));
+// @docsMissing
 export var EventStatus;
 (function (EventStatus) {
     EventStatus["NONE"] = "none";
@@ -610,6 +718,10 @@ export var EventStatus;
     EventStatus["TENTATIVE"] = "tentative";
     EventStatus["CANCELED"] = "canceled";
 })(EventStatus || (EventStatus = {}));
+// @docsMissing
+/**
+ * @platform ios
+ */
 export var SourceType;
 (function (SourceType) {
     SourceType["LOCAL"] = "local";
@@ -619,43 +731,122 @@ export var SourceType;
     SourceType["SUBSCRIBED"] = "subscribed";
     SourceType["BIRTHDAYS"] = "birthdays";
 })(SourceType || (SourceType = {}));
+// @docsMissing
 export var AttendeeRole;
 (function (AttendeeRole) {
+    /**
+     * @platform ios
+     */
     AttendeeRole["UNKNOWN"] = "unknown";
+    /**
+     * @platform ios
+     */
     AttendeeRole["REQUIRED"] = "required";
+    /**
+     * @platform ios
+     */
     AttendeeRole["OPTIONAL"] = "optional";
+    /**
+     * @platform ios
+     */
     AttendeeRole["CHAIR"] = "chair";
+    /**
+     * @platform ios
+     */
     AttendeeRole["NON_PARTICIPANT"] = "nonParticipant";
+    /**
+     * @platform android
+     */
     AttendeeRole["ATTENDEE"] = "attendee";
+    /**
+     * @platform android
+     */
     AttendeeRole["ORGANIZER"] = "organizer";
+    /**
+     * @platform android
+     */
     AttendeeRole["PERFORMER"] = "performer";
+    /**
+     * @platform android
+     */
     AttendeeRole["SPEAKER"] = "speaker";
+    /**
+     * @platform android
+     */
     AttendeeRole["NONE"] = "none";
 })(AttendeeRole || (AttendeeRole = {}));
+// @docsMissing
 export var AttendeeStatus;
 (function (AttendeeStatus) {
+    /**
+     * @platform ios
+     */
     AttendeeStatus["UNKNOWN"] = "unknown";
+    /**
+     * @platform ios
+     */
     AttendeeStatus["PENDING"] = "pending";
     AttendeeStatus["ACCEPTED"] = "accepted";
     AttendeeStatus["DECLINED"] = "declined";
     AttendeeStatus["TENTATIVE"] = "tentative";
+    /**
+     * @platform ios
+     */
     AttendeeStatus["DELEGATED"] = "delegated";
+    /**
+     * @platform ios
+     */
     AttendeeStatus["COMPLETED"] = "completed";
+    /**
+     * @platform ios
+     */
     AttendeeStatus["IN_PROCESS"] = "inProcess";
+    /**
+     * @platform android
+     */
     AttendeeStatus["INVITED"] = "invited";
+    /**
+     * @platform android
+     */
     AttendeeStatus["NONE"] = "none";
 })(AttendeeStatus || (AttendeeStatus = {}));
+// @docsMissing
 export var AttendeeType;
 (function (AttendeeType) {
+    /**
+     * @platform ios
+     */
     AttendeeType["UNKNOWN"] = "unknown";
+    /**
+     * @platform ios
+     */
     AttendeeType["PERSON"] = "person";
+    /**
+     * @platform ios
+     */
     AttendeeType["ROOM"] = "room";
+    /**
+     * @platform ios
+     */
     AttendeeType["GROUP"] = "group";
     AttendeeType["RESOURCE"] = "resource";
+    /**
+     * @platform android
+     */
     AttendeeType["OPTIONAL"] = "optional";
+    /**
+     * @platform android
+     */
     AttendeeType["REQUIRED"] = "required";
+    /**
+     * @platform android
+     */
     AttendeeType["NONE"] = "none";
 })(AttendeeType || (AttendeeType = {}));
+// @docsMissing
+/**
+ * @platform android
+ */
 export var AlarmMethod;
 (function (AlarmMethod) {
     AlarmMethod["ALARM"] = "alarm";
@@ -664,6 +855,10 @@ export var AlarmMethod;
     AlarmMethod["SMS"] = "sms";
     AlarmMethod["DEFAULT"] = "default";
 })(AlarmMethod || (AlarmMethod = {}));
+// @docsMissing
+/**
+ * @platform android
+ */
 export var EventAccessLevel;
 (function (EventAccessLevel) {
     EventAccessLevel["CONFIDENTIAL"] = "confidential";
@@ -671,6 +866,10 @@ export var EventAccessLevel;
     EventAccessLevel["PUBLIC"] = "public";
     EventAccessLevel["DEFAULT"] = "default";
 })(EventAccessLevel || (EventAccessLevel = {}));
+// @docsMissing
+/**
+ * @platform android
+ */
 export var CalendarAccessLevel;
 (function (CalendarAccessLevel) {
     CalendarAccessLevel["CONTRIBUTOR"] = "contributor";
@@ -683,6 +882,10 @@ export var CalendarAccessLevel;
     CalendarAccessLevel["ROOT"] = "root";
     CalendarAccessLevel["NONE"] = "none";
 })(CalendarAccessLevel || (CalendarAccessLevel = {}));
+// @docsMissing
+/**
+ * @platform ios
+ */
 export var ReminderStatus;
 (function (ReminderStatus) {
     ReminderStatus["COMPLETED"] = "completed";

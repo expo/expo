@@ -6,10 +6,10 @@ export { SQLiteOpenOptions };
  * A SQLite database.
  */
 export declare class SQLiteDatabase {
-    readonly databaseName: string;
+    readonly databasePath: string;
     readonly options: SQLiteOpenOptions;
     private readonly nativeDatabase;
-    constructor(databaseName: string, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
+    constructor(databasePath: string, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
     /**
      * Asynchronous call to return whether the database is currently in a transaction.
      */
@@ -51,7 +51,7 @@ export declare class SQLiteDatabase {
      *   // The following UPDATE query out of transaction may be executed here and break the expectation.
      *   //
      *
-     *   const result = await db.getAsync<{ name: string }>('SELECT name FROM Users');
+     *   const result = await db.getFirstAsync<{ name: string }>('SELECT name FROM Users');
      *   expect(result?.name).toBe('aaa');
      * });
      * db.execAsync('UPDATE test SET name = "bbb"');
@@ -220,12 +220,17 @@ export declare class SQLiteDatabase {
     getAllSync<T>(source: string, ...params: SQLiteVariadicBindParams): T[];
 }
 /**
+ * The default directory for SQLite databases.
+ */
+export declare const defaultDatabaseDirectory: any;
+/**
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export declare function openDatabaseAsync(databaseName: string, options?: SQLiteOpenOptions): Promise<SQLiteDatabase>;
+export declare function openDatabaseAsync(databaseName: string, options?: SQLiteOpenOptions, directory?: string): Promise<SQLiteDatabase>;
 /**
  * Open a database.
  *
@@ -233,8 +238,9 @@ export declare function openDatabaseAsync(databaseName: string, options?: SQLite
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export declare function openDatabaseSync(databaseName: string, options?: SQLiteOpenOptions): SQLiteDatabase;
+export declare function openDatabaseSync(databaseName: string, options?: SQLiteOpenOptions, directory?: string): SQLiteDatabase;
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
  *
@@ -255,16 +261,18 @@ export declare function deserializeDatabaseSync(serializedData: Uint8Array, opti
  * Delete a database file.
  *
  * @param databaseName The name of the database file to delete.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export declare function deleteDatabaseAsync(databaseName: string): Promise<void>;
+export declare function deleteDatabaseAsync(databaseName: string, directory?: string): Promise<void>;
 /**
  * Delete a database file.
  *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to delete.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export declare function deleteDatabaseSync(databaseName: string): void;
+export declare function deleteDatabaseSync(databaseName: string, directory?: string): void;
 /**
  * The event payload for the listener of [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener)
  */

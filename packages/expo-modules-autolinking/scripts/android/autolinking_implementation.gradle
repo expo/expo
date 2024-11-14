@@ -34,6 +34,24 @@ class ExpoModuleGradlePlugin {
   }
 }
 
+// Object representing an gradle project containing AAR file
+class ExpoModuleGradleAarProject {
+  // Name of the project
+  String name
+
+  // Path to the AAR file
+  String aarFilePath
+
+  // Project directory
+  String projectDir
+
+  ExpoModuleGradleAarProject(Object data) {
+    this.name = data.name
+    this.aarFilePath = data.aarFilePath
+    this.projectDir = data.projectDir
+  }
+}
+
 // Object representing a module.
 class ExpoModule {
   // Name of the JavaScript package
@@ -48,11 +66,15 @@ class ExpoModule {
   // Gradle plugins
   ExpoModuleGradlePlugin[] plugins
 
+  // Gradle projects containing AAR files
+  ExpoModuleGradleAarProject[] aarProjects
+
   ExpoModule(Object data) {
     this.name = data.packageName
     this.version = data.packageVersion
     this.projects = data.projects.collect { new ExpoModuleGradleProject(it) }
     this.plugins = data.plugins.collect { new ExpoModuleGradlePlugin(it) }
+    this.aarProjects = data.aarProjects.collect { new ExpoModuleGradleAarProject(it) }
   }
 }
 
@@ -221,9 +243,28 @@ if (rootProject instanceof ProjectDescriptor) {
       for (modulePlugin in module.plugins) {
         includeBuild(new File(modulePlugin.sourceDir))
       }
+      for (moduleAarProject in module.aarProjects) {
+        include(":${moduleAarProject.name}")
+        def projectDir = new File(moduleAarProject.projectDir)
+        if (!projectDir.exists()) {
+          projectDir.mkdirs()
+        }
+        project(":${moduleAarProject.name}").projectDir = projectDir
+      }
     }
 
     gradle.beforeProject { project ->
+      // Setup AAR projects
+      for (module in modules) {
+        for (moduleAarProject in module.aarProjects) {
+          if (project.name == moduleAarProject.name) {
+            project.configurations.maybeCreate('default')
+            project.artifacts.add('default', file(moduleAarProject.aarFilePath))
+          }
+        }
+      }
+
+      // Setup autolinking from the root project
       if (project !== project.rootProject) {
         return
       }
@@ -246,14 +287,18 @@ if (rootProject instanceof ProjectDescriptor) {
             maven {
               url "${mavenRepo.url}"
               if (mavenRepo.credentials != null) {
-                credentials {
-                  if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
+                if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
+                  credentials {
                     username mavenRepo.credentials.username
                     password mavenRepo.credentials.password
-                  } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
+                  }
+                } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
+                  credentials(HttpHeaderCredentials) {
                     name mavenRepo.credentials.name
                     value mavenRepo.credentials.value
-                  } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
+                  }
+                } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
+                  credentials(AwsCredentials) {
                     accessKey mavenRepo.credentials.accessKey
                     secretKey mavenRepo.credentials.secretKey
                     sessionToken mavenRepo.credentials.sessionToken

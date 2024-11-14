@@ -1,0 +1,438 @@
+---
+title: Using React DOM in Expo native apps
+sidebar_title: DOM components
+description: Learn about rendering React DOM components in Expo native apps using the 'use dom' directive.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **info** Available in **SDK 52 and above**.
+
+Expo offers a novel approach to work with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app by moving on a per-component basis.
+
+While the Expo native runtime generally does not support elements like `<div>` or `<img>`, there may be instances where you need to quickly incorporate web components. In such cases, DOM components provide a useful solution.
+
+## Prerequisites
+
+<Collapsible summary="Your project must use Expo CLI and extend the Expo Metro Config">
+
+If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`), then you're all set, and you can skip this step.
+
+If you don't have the `expo` package in your project yet, then install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
+
+<Terminal cmd={['$ npx install-expo-modules@latest']} />
+
+If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
+
+</Collapsible>
+
+<Collapsible summary="Expo Metro Runtime, React DOM, and React Native Web">
+
+If you are using Expo Router and Expo Web, you can skip this step. Otherwise, install the following packages:
+
+<Terminal cmd={['$ npx expo install @expo/metro-runtime react-dom react-native-web']} />
+
+</Collapsible>
+
+## Usage
+
+Install `react-native-webview` in your project:
+
+<Terminal cmd={['$ npx expo install react-native-webview']} />
+
+To render a React component to the DOM, add the `'use dom'` directive to the top of the web component file:
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent({ name }: { name: string }) {
+  return (
+    <div>
+      <h1>Hello, {name}</h1>
+    </div>
+  );
+}
+```
+
+Inside the native component file, import the web component to use it:
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component.tsx';
+
+export default function App() {
+  return (
+    // This is a DOM component. It re-exports a wrapped `react-native-webview` behind the scenes.
+    <DOMComponent name="Europa" />
+  );
+}
+```
+
+## Features
+
+- Shared bundler config across web, native, and DOM components.
+- React, TypeScript, CSS, and all other Metro features are enabled in DOM components.
+- Logging in the terminal and Safari/Chrome debugging.
+- Fast Refresh and HMR.
+- Embedded exports for offline support.
+- Assets are unified across web and native.
+- DOM component bundles can be introspected in [Expo Atlas](/guides/analyzing-bundles/#analyzing-bundle-size-with-atlas) for debugging.
+- Access to all web functionality without needing a native rebuild.
+- Runtime error overlay in development.
+- Supports Expo Go.
+
+## WebView props
+
+To pass props to the underlying native **WebView**, add a `dom` object to the component:
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent({}: { dom: import('expo/dom').DOMProps }) {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+    </div>
+  );
+}
+```
+
+Now you can pass [`WebView` props](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md) to the DOM component:
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function App() {
+  return (
+    <DOMComponent
+      dom={{
+        scrollEnabled: false,
+      }}
+    />
+  );
+}
+```
+
+## Marshalled props
+
+You can send data to the DOM component through serializable props (`number`, `string`, `boolean`, `null`, `undefined`, `Array`, `Object`). For example, inside a native component file, you can pass a prop to the DOM component:
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function App() {
+  return <DOMComponent hello={'world'} />;
+}
+```
+
+Inside the web component file, you can receive the prop as shown in the example below:
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent({ hello }: { hello: string }) {
+  return <p>Hello, {hello}</p>;
+}
+```
+
+Props are sent over an asynchronous bridge so they are not updated synchronously. They are passed as props to the React root component, which means they re-render the entire React tree.
+
+## Native actions
+
+You can send type-safe native functions to DOM components by passing asynchronous functions as top-level props to the DOM component:
+
+```tsx App.tsx (native)
+import DomComponent from './my-component';
+
+export default function App() {
+  return (
+    <DomComponent
+      hello={(data: string) => {
+        console.log('Hello', data);
+      }}
+    />
+  );
+}
+```
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function MyComponent({ hello }: { hello: (data: string) => Promise<void> }) {
+  return <p onClick={() => hello('world')}>Click me</p>;
+}
+```
+
+> You cannot pass functions as nested props to DOM components. They must be top-level props.
+
+Native actions are always asynchronous and accept only serializable arguments (meaning no functions) because the data is sent over a bridge to the DOM component's JavaScript engine.
+
+Native actions can return serializable data to the DOM component, which is useful for getting data back from the native side.
+
+```tsx
+getDeviceName(): Promise<string> {
+  return DeviceInfo.getDeviceName();
+}
+```
+
+Think of these functions like React Server Functions, but instead of residing on the server, they live locally in the native app and communicate with the DOM component. This approach provides a powerful way to add truly native functionality to your DOM components.
+
+## Passing refs
+
+> **warning** **Warning:** This is experimental and may change in the future.
+
+You can use the `useDOMImperativeHandle` hook inside a DOM component to accept ref calls from the native side. This hook is similar to React's [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle) hook, but it does not need a ref object to be passed to it.
+
+```tsx App.tsx (native)
+import { useRef } from 'react';
+import { Button, View } from 'react-native';
+
+import MyComponent, { type MyRef } from './my-component';
+
+export default function App() {
+  const ref = useRef<MyRef>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <MyComponent ref={ref} />
+      <Button
+        title="focus"
+        onPress={() => {
+          ref.current?.focus();
+        }}
+      />
+    </View>
+  );
+}
+```
+
+```tsx my-component.tsx (web)
+'use dom';
+
+import { useDOMImperativeHandle, type DOMImperativeFactory } from 'expo/dom';
+import { forwardRef, useRef } from 'react';
+
+export interface MyRef extends DOMImperativeFactory {
+  focus: () => void;
+}
+
+export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useDOMImperativeHandle(
+    ref,
+    () => ({
+      focus: () => {
+        inputRef.current?.focus();
+      },
+    }),
+    []
+  );
+
+  return <input ref={inputRef} />;
+});
+```
+
+React is meant to have a unilateral data flow, so the concept of using callbacks to go back up the tree is not idiomatic. Expect the behavior to be flakey and possibly phased out in the future with newer versions of React. The preferred way to send data back up the tree is to use native actions, which update the state and then pass it back to the DOM component.
+
+## Feature detection
+
+Since DOM components are used to run websites, you might need extra qualifiers to better support certain libraries. You can detect if a component is running in a DOM component with the following code:
+
+```ts
+const IS_DOM = typeof ReactNativeWebView !== 'undefined';
+```
+
+## Public assets
+
+> **warning** **Warning:** This is experimental and may change in the future. Public assets are not supported in EAS Update. Use `require()` to load local assets instead.
+
+The contents of the root **public** directory are copied to the native app's binary to support the use of public assets in DOM components. Since these public assets will be served from the local filesystem, use the `process.env.EXPO_BASE_URL` prefix to reference the correct path. For example:
+
+```tsx
+<img src={`${process.env.EXPO_BASE_URL}img.png`} />
+```
+
+## Debugging
+
+By default, all `console.log` methods are extended in WebViews to forward logs to the terminal. This makes it fast and easy to see what's happening in your DOM components.
+
+Expo also enables WebView inspection and debugging when bundling in development mode. You can open **Safari** > **Develop** > **Simulator** > **MyComponent.tsx** to see the WebView's console and inspect elements.
+
+## Manual WebViews
+
+You can create a manual WebView using the `WebView` component from `react-native-webview`. This can be useful for rendering websites from a remote server.
+
+```tsx App.tsx (native)
+import { WebView } from 'react-native-webview';
+
+export default function App() {
+  return <WebView source={{ html: '<h1>Hello, world!</h1>' }} />;
+}
+```
+
+## Routing
+
+Expo Router APIs such as `<Link />`, and `useRouter` can be used in DOM components to navigate between routes.
+
+```tsx my-component.tsx (web)
+'use dom';
+import Link from 'expo-router/link';
+
+export default function DOMComponent() {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+      <Link href="/about">About</Link>
+    </div>
+  );
+}
+```
+
+APIs that synchronously return routing info such as `useLocalSearchParams()`, `useGlobalSearchParams()`, `usePathname()`, `useSegments()`, `useRootNavigation()`, and `useRootNavigationState()` are not automatically supported. Instead, read these values outside of DOM components and supply them as props.
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+import { usePathname } from 'expo-router';
+
+export default function App() {
+  const pathname = usePathname();
+  return <DOMComponent pathname={pathname} />;
+}
+```
+
+The `router.canGoBack()` and `router.canDismiss()` functions are also unsupported and require manual marshalling, this ensures no extraneous render cycles are triggered.
+
+Avoid using standard web `<a />` anchor elements for navigation as these will change the DOM component origin in a way that users may not be able to navigate back from. Prefer launching `WebBrowser`s if you want to present external websites.
+
+Since DOM components cannot render native children, layout routes (`_layout`) can never be DOM components. You can render DOM components from layout routes to create headers, backgrounds, and more, but the layout route itself should always be native.
+
+## Measuring DOM components
+
+You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a `matchContents` prop or a manual native action:
+
+### Automatically with `matchContents` prop
+
+You need to use the `dom={{ matchContents: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function Route() {
+  return <DOMComponent dom={{ matchContents: true }} />;
+}
+```
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent(_: { dom?: import('expo/dom').DOMProps }) {
+  return <div style={{ width: 500, height: 500, backgroundColor: 'blue' }} />;
+}
+```
+
+### Manually by resizing native action
+
+You can also manually measure the size of a DOM component and report it back to the native side using a native action:
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+import { useState } from 'react';
+
+export default function Route() {
+  const [height, setHeight] = useState(270);
+  return (
+    <DOMComponent
+      updateSize={async size => {
+        if (size[1] !== height) {
+          setHeight(size[1]);
+        }
+      }}
+      dom={{
+        style: { height },
+      }}
+    />
+  );
+}
+```
+
+```tsx my-component.tsx (web)
+'use dom';
+
+import { useEffect } from 'react';
+
+function useSize(callback: (size: [number, number]) => void) {
+  useEffect(() => {
+    // Observe window size changes
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        callback([width, height]);
+      }
+    });
+
+    observer.observe(document.body);
+
+    callback([document.body.clientWidth, document.body.clientHeight]);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [callback]);
+}
+
+export default function DOMComponent({
+  onLayout,
+}: {
+  dom?: import('expo/dom').DOMProps;
+  onLayout(size: [number, number]);
+}) {
+  useSize(onLayout);
+
+  return <div />;
+}
+```
+
+## Architecture
+
+Built-in DOM support only renders websites as single-page applications (no SSR or SSG). This is because search engine optimization and indexing are unnecessary for embedded JS code.
+
+When a module is marked with `'use dom'`, it is replaced with a proxy reference imported at runtime. This feature is primarily achieved through a series of bundler and CLI techniques.
+
+If desired, you can still use a WebView with the standard approach by passing raw HTML to a `WebView` component.
+
+DOM components rendered within websites or other DOM components will behave as regular components, and the `dom` prop will be ignored. This is because web content is passed directly through and not wrapped in an `iframe`.
+
+Overall, this system shares many similarities with Expo's React Server Components implementation.
+
+## Considerations
+
+We recommend building truly native apps using universal primitives such as `View`, `Image`, and `Text`. DOM components only support standard JavaScript, which is slower to parse and start up than optimized Hermes bytecode.
+
+Data can be sent between DOM components and native components only through an asynchronous JSON transport system. Avoid relying on data across JS engines and deep linking to nested URLs in DOM components, as they do not currently support full reconciliation with Expo Router.
+
+While DOM components are not exclusive to Expo Router, they are developed and tested against Expo Router apps to provide the best experience when used with Expo Router.
+
+If you have a global state for sharing data, it will not be accessible across JS engines.
+
+While native modules in the Expo SDK can be optimized to support DOM components, this optimization has not been implemented yet. Use native actions and props to share native functionality with DOM components.
+
+DOM components and websites in general are less optimal than native views but there are some reasonable uses for them. For example, the web is conceptually the best way to render rich-text and markdown. The web also has very good WebGL support, with the caveat that devices in low-power mode will often throttle web frame rates to preserve battery.
+
+Many large apps also use some web content for auxiliary routes such as blog posts, rich-text (for example, long-form posts on X), settings pages, help pages, and other less frequently visited parts of the app.
+
+## Server Components
+
+DOM components currently only render as single-page applications and don't support static rendering or React Server Components (RSC). When the project uses React Server Components, `'use dom'` will work the same as `'use client'` regardless of the platform. RSC Payloads can be passed as properties to DOM components. However, they cannot be hydrated correctly on native platforms as they'll be rendered for a native runtime.
+
+## Limitations
+
+- Unlike server components, you cannot pass `children` to DOM components.
+- DOM components are standalone and do not automatically share data between different instances.
+- You cannot add native views to DOM components. While you can attempt to float native views over DOM components, this approach results in a suboptimal user experience.
+- Function props cannot return values synchronously. They must be asynchronous.
+- DOM components can currently only be embedded and do not support OTA updates. This functionality may be added in the future as part of React Server Components.
+
+Ultimately, universal architecture is the most exciting kind. Expo CLI's extensive universal tooling is the only reason we can even offer a feature as intricate and valuable as this one.
+
+While DOM components help with migration and moving quickly, we recommend using truly native views whenever possible.

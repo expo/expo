@@ -4,20 +4,22 @@ description: A library that provides an API to fetch push notification tokens an
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-51/packages/expo-notifications'
 packageName: 'expo-notifications'
 iconUrl: '/static/images/packages/expo-notifications.png'
-platforms: ['android*', 'ios*', 'web']
+platforms: ['android*', 'ios*']
 ---
 
-import { ConfigReactNative, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
-import { AndroidPermissions } from '~/components/plugins/permissions';
-import { SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Collapsible } from '~/ui/components/Collapsible';
 import APISection from '~/components/plugins/APISection';
-import { PlatformTags } from '~/ui/components/Tag';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ConfigReactNative, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
+
+> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` will be unavailable in Expo Go from SDK 53. Instead, use a [development build](/develop/development-builds/introduction/). Scheduled notifications (local notifications) will remain available in Expo Go.
 
 ## Features
 
@@ -366,6 +368,11 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
         'Tint color for the push notification image when it appears in the notification tray.',
     },
     {
+      name: 'defaultChannel',
+      platform: 'android',
+      description: 'Default channel for FCMv1 notifications.',
+    },
+    {
       name: 'sounds',
       description:
         'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.',
@@ -384,6 +391,7 @@ Here is an example of using the config plugin in the app config file:
         {
           "icon": "./local/assets/notification-icon.png",
           "color": "#ffffff",
+          "defaultChannel": "default",
           "sounds": [
             "./local/assets/notification-sound.wav",
             "./local/assets/notification-sound-other.wav"
@@ -440,9 +448,11 @@ A few different listeners are exposed, so we've provided a chart below which wil
 | false                              |          Killed          | none                                                                    |
 | true                               |        Foreground        | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
 | true                               |        Background        | `NotificationResponseReceivedListener`                                  |
-| true                               |          Killed          | `NotificationResponseReceivedListener`                                  |
+| true                               |          Killed          | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
+
+> **info** When the app is not running or killed and is restarted by tapping on a notification, the `NotificationResponseReceivedListener` may or may not be triggered. To reliably capture the response, we recommend using `useLastNotificationResponse` or `getLastNotificationResponseAsync`.
 
 ### Background notifications
 
@@ -450,10 +460,19 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 A background notification (iOS) or a data-only notification (Android) is a remote notification that does not display an alert, play a sound, or add a badge to your app's icon. The purpose of a background notification is to provide a way to wake up your app to trigger an app data refresh in the background.
 
-To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](/versions/latest/config/app/), and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
-and wasn't killed by the user. However, this is ultimately decided by the OS, so it might not always happen.
+To handle notifications while the app is in the background or not running, you need to do the following:
 
-On Android, data-only notifications are sent using the `data` key of the push notification request payload.
+- Add `expo-task-manager` package to your project.
+- In your application code, set up a [background task](#registertaskasynctaskname) to run when the notification is received.
+
+For Android:
+
+- Send a push notification payload containing only the `data` key.
+
+For iOS:
+
+- In the array under the `ios.infoPlist.UIBackgroundModes` key in your [app config](/workflow/configuration/), add the values `remote-notification` and `processing`.
+- Add `_contentAvailable: true` to your push notification payload for the Expo push notification service. Under normal circumstances, the "content-available" flag should launch your app in the background.
 
 ## Additional information
 
@@ -481,9 +500,10 @@ To add custom push notification sounds to your app, add the `expo-notifications`
 After building your app, the array of files will be available for use in both [`NotificationContentInput`](#notificationcontentinput) and [`NotificationChannelInput`](#notificationchannelinput).
 You only need to provide the base filename. Here's an example using the config above:
 
-```js
+```ts
 await Notifications.setNotificationChannelAsync('new-emails', {
   name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
   sound: 'mySoundFile.wav', // Provide ONLY the base filename
 });
 
@@ -506,7 +526,7 @@ You can also manually add notification files to your Android and iOS projects if
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`.
 You will also need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
 
-For the example below to work, you would place your `email-sound.wav` file in `android/app/src/main/res/raw/`.
+For the example below to work, you would place your **email-sound.wav** file in **android/app/src/main/res/raw/**.
 
 ```ts
 // Prepare the notification channel
@@ -550,10 +570,10 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="notification.wav inside of app resources in Xcode project organizer"
   src="/static/images/notification-sound-ios.jpeg"
-  style={{ maxWidth: 305 }}
+  className="max-w-[305px]"
 />
 
 </Collapsible>
@@ -569,7 +589,6 @@ export interface FirebaseData {
   subtitle?: string;
   sound?: boolean | string;
   vibrate?: boolean | number[];
-  priority?: AndroidNotificationPriority;
   badge?: number;
 }
 ```
@@ -592,15 +611,13 @@ Notification categories allow you to create interactive push notifications, so t
 either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification
 by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/sdk/notifications/categories.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
   alt="Image of notification categories on Android and iOS"
 />
 
 On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take, but you can also configure things like the placeholder text to display when the user disables notification previews for your app.
-
-> Notification categories are not supported on the web and all related methods will result in noop.
 
 ## Platform specific guides
 
@@ -614,7 +631,7 @@ as [Android developer docs](https://developer.android.com/training/notify-user/c
 If you do not specify a notification channel, `expo-notifications` will create a fallback channel for you, named **Miscellaneous**.
 We encourage you to always ensure appropriate channels with informative names are set up for the application and to always send notifications to these channels.
 
-> Calling these methods is a no-op for platforms that do not support this feature (Android below version 8.0 (26), iOS and web).
+> Calling these methods is a no-op for platforms that do not support this feature (Android below version 8.0 (26) and iOS).
 
 ### Custom notification icon and colors&ensp;<PlatformTags platforms={['android']} />
 

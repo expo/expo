@@ -1,7 +1,7 @@
 // Prevent pulling in all of expo-modules-core on web
-import { LegacyEventEmitter } from 'expo-modules-core/build/LegacyEventEmitter';
+import { LegacyEventEmitter } from 'expo-modules-core/src/LegacyEventEmitter';
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { Animated, StyleSheet, Text, Platform, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import DevLoadingViewNativeModule from './DevLoadingViewNativeModule';
 import { getInitialSafeArea } from './getInitialSafeArea';
@@ -45,7 +45,7 @@ export default function DevLoadingView() {
         toValue: 150,
         delay: 1000,
         duration: 350,
-        useNativeDriver: Platform.OS !== 'web',
+        useNativeDriver: true,
       }).start(({ finished }) => {
         if (finished) {
           setIsAnimating(false);
@@ -91,11 +91,7 @@ export default function DevLoadingView() {
 
 const styles = StyleSheet.create({
   animatedContainer: {
-    // @ts-expect-error: fixed is not a valid value for position in Yoga but it is on web.
-    position: Platform.select({
-      web: 'fixed',
-      default: 'absolute',
-    }),
+    position: 'absolute',
     pointerEvents: 'none',
     bottom: 0,
     left: 0,

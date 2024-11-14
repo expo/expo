@@ -8,8 +8,8 @@ iconUrl: '/static/images/packages/expo-dev-client.png'
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
 `expo-dev-client` adds various useful development tools to your debug builds:
 
@@ -23,7 +23,9 @@ Expo documentation refers to debug builds that include `expo-dev-client` as [dev
 
 ## Installation
 
-<APIInstallSection />
+<APIInstallSection hideBareInstructions />
+
+If you are installing this in an [existing React Native app](/bare/overview/), start by installing [`expo`](/bare/installing-expo-modules/) in your project. Then, follow the instructions from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
 
 ## Configuration in app.json/app.config.js
 

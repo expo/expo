@@ -98,16 +98,26 @@ struct ExpoCameraUtils {
     }
   }
 
-  static func export(orientation: UIImage.Orientation) -> Int {
+  static func toExifOrientation(orientation: UIImage.Orientation) -> Int {
     switch orientation {
-    case .left:
-      return 90
-    case .right:
-      return -90
+    case .up:
+      return 1
     case .down:
-      return 180
-    default:
-      return 0
+      return 3
+    case .left:
+      return 8
+    case .right:
+      return 6
+    case .upMirrored:
+      return 2
+    case .downMirrored:
+      return 4
+    case .leftMirrored:
+      return 5
+    case .rightMirrored:
+      return 7
+    @unknown default:
+      return 1
     }
   }
 

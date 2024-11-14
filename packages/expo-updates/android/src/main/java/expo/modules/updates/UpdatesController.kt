@@ -2,7 +2,7 @@ package expo.modules.updates
 
 import android.content.Context
 import com.facebook.react.ReactApplication
-import expo.modules.kotlin.AppContext
+import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
@@ -50,7 +50,8 @@ class UpdatesController {
         UpdatesUtils.getOrCreateUpdatesDirectory(context)
       } catch (e: Exception) {
         logger.error(
-          "The expo-updates system is disabled due to a storage access error: ${e.message}",
+          "The expo-updates system is disabled due to a storage access error",
+          e,
           UpdatesErrorCode.InitializationError
         )
         singletonInstance = DisabledUpdatesController(context, e)
@@ -150,22 +151,13 @@ class UpdatesController {
       }
     }
 
-    /**
-     * For [UpdatesModule] to set the [shouldEmitJsEvents] property.
-     */
-    internal var shouldEmitJsEvents: Boolean
-      get() = singletonInstance?.shouldEmitJsEvents ?: false
-      set(value) {
-        singletonInstance?.let { it.shouldEmitJsEvents = value }
-      }
+    internal fun setUpdatesEventManagerObserver(observer: WeakReference<IUpdatesEventManagerObserver>) {
+      singletonInstance?.eventManager?.observer = observer
+      singletonInstance?.onEventListenerStartObserving()
+    }
 
-    /**
-     * Binds the [AppContext] instance from [UpdatesModule].
-     */
-    internal fun bindAppContext(appContext: WeakReference<AppContext>) {
-      singletonInstance?.let {
-        it.appContext = appContext
-      }
+    internal fun removeUpdatesEventManagerObserver() {
+      singletonInstance?.eventManager?.observer = null
     }
   }
 }

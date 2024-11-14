@@ -16,7 +16,6 @@ import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.ReactNativeConfig
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.JSRuntimeFactory
@@ -92,7 +91,6 @@ object ExpoReactHostFactory {
     if (reactHost == null) {
       val useDeveloperSupport = reactNativeHost.useDeveloperSupport
       val reactHostDelegate = ExpoReactHostDelegate(WeakReference(context), reactNativeHost)
-      val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
 
@@ -106,12 +104,8 @@ object ExpoReactHostFactory {
           reactHostDelegate,
           componentFactory,
           true,
-          reactJsExceptionHandler,
           useDeveloperSupport
         )
-          .apply {
-            jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
-          }
 
       reactNativeHost.reactNativeHostHandlers.forEach { handler ->
         handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)

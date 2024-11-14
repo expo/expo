@@ -1,24 +1,33 @@
 ---
 title: Wrap third-party native libraries
-description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules.
+description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules API.
 ---
 
-import { CODE } from '~/ui/components/Text';
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon, Grid01Icon } from '@expo/styleguide-icons';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-Expo modules make it possible to easily use native, external libraries built for Android and iOS in React Native projects.
-This tutorial focuses on utilizing the Expo Modules API to create radial charts using two similar libraries accessible on both native platforms.
+Expo modules make it possible to easily use native, external libraries built for Android and iOS in React Native projects. This tutorial focuses on utilizing the Expo Modules API to create radial charts using two similar libraries accessible on both native platforms.
 
 - [MPAndroidChart by PhilJay](https://github.com/PhilJay/MPAndroidChart)
 - [Charts by Daniel Cohen Gindi](https://github.com/danielgindi/Charts)
 
-The iOS library is inspired by the Android library, so they both have a very similar API and functionality.
-This makes them a good example for this tutorial.
+The iOS library is inspired by the Android library, so they both have a very similar API and functionality. This makes them a good example for this tutorial.
+
+<VideoBoxLink
+  videoId="M8eNfH1o0eE"
+  title="How to wrap native libraries"
+  description="In this video you will learn how to wrap native libraries using Expo Modules API."
+/>
+
+---
 
 <Step label="1">
 
@@ -32,7 +41,7 @@ To create an empty Expo module that can be published on npm and utilized in any 
 
 <Terminal cmd={['$ npx create-expo-module expo-radial-chart']} />
 
-> **Tip**: If you aren't going to ship this library, press <kbd>return</kbd> for all of the prompts to accept the default values in the terminal window.
+> **info** **Tip**: If you aren't going to ship this library, press <kbd>return</kbd> for all the prompts to accept the default values in the terminal window.
 
 Now, open the newly created `expo-radial-chart` directory to start editing the native code.
 
@@ -92,7 +101,7 @@ dependencies {
     s.static_framework = true
 
     s.dependency 'ExpoModulesCore'
-+   s.dependency 'Charts', '~> 4.1.0'
++   s.dependency 'DGCharts', '~> 5.1.0'
 
     # Swift/Objective-C compatibility
 ```
@@ -112,7 +121,34 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 
 <Collapsible summary={<>Are you trying to use a <CODE>.aar</CODE> dependency?</>}>
 
-Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the folder as a repository:
+<Tabs>
+  <Tab label="SDK 52 and above">
+    Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the file as a Gradle project from autolinking:
+
+```diff expo-module.config.json
+    "android": {
++     "gradleAarProjects": [
++       {
++         "name": "test-aar",
++         "aarFilePath": "android/libs/test.aar"
++       }
++     ],
+    "modules": [
+```
+
+    Finally, add the dependency to the `dependencies` list in the **android/build.gradle** file, using the dependency's specified name with `${project.name}$` prefix:
+
+```diff android/build.gradle
+dependencies {
+  implementation project(':expo-modules-core')
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
++ implementation project(":${project.name}\$test-aar")
+}
+```
+
+  </Tab>
+  <Tab label="SDK 51 and below">
+    Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the folder as a repository:
 
 ```diff android/build.gradle
   repositories {
@@ -132,6 +168,9 @@ dependencies {
 + implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0@aar'
 }
 ```
+
+  </Tab>
+</Tabs>
 
 </Collapsible>
 
@@ -261,7 +300,7 @@ Now you can implement the native functionality by editing the placeholder files 
 
 ```swift ios/ExpoRadialChartView.swift
 import ExpoModulesCore
-import Charts
+import DGCharts
 
 struct Series: Record {
   @Field
@@ -356,7 +395,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-> **Tip**: If you created the module inside an existing application, make sure to import it directly from your **modules** directory by using a relative import: `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
+> **info** **Tip**: If you created the module inside an existing application, make sure to import it directly from your **modules** directory by using a relative import: `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
 
 </Step>
 
@@ -365,13 +404,20 @@ const styles = StyleSheet.create({
 
 To make sure your app builds successfully on both platforms, rerun the build commands from step 2. After the app is successfully built on any of the platform you'll see a pie chart with three slices:
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/modules/third-party-library/result.webp"
   alt="A PieChart module on Android and iOS"
 />
 
 </Step>
 
+Congratulations! You have created your first simple wrapper around two separate third-party native libraries using Expo Modules.
+
 ## Next step
 
-Congratulations! You have created your first simple wrapper around two separate third-party native libraries using Expo Modules. Learn more about the API in the [Expo Module API reference](/modules/module-api/).
+<BoxLink
+  title="Expo Modules API Reference"
+  description="A reference to create native modules using Swift and Kotlin."
+  href="/modules/module-api/"
+  Icon={Grid01Icon}
+/>

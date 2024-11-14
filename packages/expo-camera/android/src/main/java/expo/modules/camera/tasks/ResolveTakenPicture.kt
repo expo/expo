@@ -9,10 +9,10 @@ import android.os.Bundle
 import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.camera.PictureOptions
-import expo.modules.camera.legacy.CameraViewHelper.addExifData
-import expo.modules.camera.legacy.CameraViewHelper.getExifData
-import expo.modules.camera.legacy.CameraViewHelper.setExifData
-import expo.modules.camera.legacy.utils.FileSystemUtils
+import expo.modules.camera.utils.CameraViewHelper.addExifData
+import expo.modules.camera.utils.CameraViewHelper.getExifData
+import expo.modules.camera.utils.CameraViewHelper.setExifData
+import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.kotlin.Promise
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,14 +39,28 @@ private const val DATA_KEY = "data"
 private const val URI_KEY = "uri"
 private const val ID_KEY = "id"
 
+fun getMirroredOrientation(orientation: Int): Int {
+  return when (orientation) {
+    ExifInterface.ORIENTATION_NORMAL -> ExifInterface.ORIENTATION_FLIP_HORIZONTAL
+    ExifInterface.ORIENTATION_ROTATE_90 -> ExifInterface.ORIENTATION_TRANSPOSE
+    ExifInterface.ORIENTATION_ROTATE_180 -> ExifInterface.ORIENTATION_FLIP_VERTICAL
+    ExifInterface.ORIENTATION_ROTATE_270 -> ExifInterface.ORIENTATION_TRANSVERSE
+    ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> ExifInterface.ORIENTATION_NORMAL
+    ExifInterface.ORIENTATION_TRANSPOSE -> ExifInterface.ORIENTATION_ROTATE_90
+    ExifInterface.ORIENTATION_FLIP_VERTICAL -> ExifInterface.ORIENTATION_ROTATE_180
+    ExifInterface.ORIENTATION_TRANSVERSE -> ExifInterface.ORIENTATION_ROTATE_270
+    else -> ExifInterface.ORIENTATION_UNDEFINED
+  }
+}
+
 class ResolveTakenPicture(
   private var imageData: ByteArray,
   private var promise: Promise,
   private var options: PictureOptions,
+  private var mirror: Boolean,
   private val directory: File,
   private var pictureSavedDelegate: PictureSavedDelegate
 ) {
-
   private val quality: Int
     get() = (options.quality * 100).toInt()
 
@@ -76,8 +90,11 @@ class ResolveTakenPicture(
         // Get orientation of the image from mImageData via inputStream
         val orientation = exifInterface.getAttributeInt(
           ExifInterface.TAG_ORIENTATION,
-          ExifInterface.ORIENTATION_UNDEFINED
+          ExifInterface.ORIENTATION_NORMAL
         )
+        if (mirror) {
+          exifInterface.setAttribute(ExifInterface.TAG_ORIENTATION, getMirroredOrientation(orientation).toString())
+        }
 
         val bitmapOptions = BitmapFactory
           .Options()
@@ -90,7 +107,7 @@ class ResolveTakenPicture(
         // If OOM exception was thrown, we try to use downsampling to recover.
         while (bitmapOptions.inSampleSize <= options.maxDownsampling) {
           try {
-            bitmap = decodeBitmap(imageData, orientation, bitmapOptions)
+            bitmap = decodeBitmap(imageData, orientation, options, bitmapOptions)
             break
           } catch (exception: OutOfMemoryError) {
             bitmapOptions.inSampleSize *= 2
@@ -222,9 +239,9 @@ class ResolveTakenPicture(
     return null
   }
 
-  private fun decodeBitmap(imageData: ByteArray, orientation: Int, bitmapOptions: BitmapFactory.Options): Bitmap {
+  private fun decodeBitmap(imageData: ByteArray, orientation: Int, options: PictureOptions, bitmapOptions: BitmapFactory.Options): Bitmap {
     // Rotate the bitmap to the proper orientation if needed
-    return if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
+    return if (!options.exif) {
       decodeAndRotateBitmap(imageData, getImageRotation(orientation), bitmapOptions)
     } else {
       BitmapFactory.decodeByteArray(imageData, 0, imageData.size, bitmapOptions)
@@ -234,15 +251,23 @@ class ResolveTakenPicture(
   private fun decodeAndRotateBitmap(imageData: ByteArray, angle: Int, options: BitmapFactory.Options): Bitmap {
     val source = BitmapFactory.decodeByteArray(imageData, 0, imageData.size, options)
     val matrix = Matrix()
-    matrix.postRotate(angle.toFloat())
+    matrix.apply {
+      postRotate(angle.toFloat())
+      if (mirror) {
+        postScale(-1f, 1f)
+      }
+    }
     return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
   }
 
   // Get rotation degrees from Exif orientation enum
   private fun getImageRotation(orientation: Int) = when (orientation) {
     ExifInterface.ORIENTATION_ROTATE_90 -> 90
+    ExifInterface.ORIENTATION_TRANSPOSE -> 90
     ExifInterface.ORIENTATION_ROTATE_180 -> 180
+    ExifInterface.ORIENTATION_FLIP_VERTICAL -> 180
     ExifInterface.ORIENTATION_ROTATE_270 -> 270
+    ExifInterface.ORIENTATION_TRANSVERSE -> 270
     else -> 0
   }
 }

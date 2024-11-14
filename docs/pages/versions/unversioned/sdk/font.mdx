@@ -7,13 +7,13 @@ iconUrl: '/static/images/packages/expo-font.png'
 platforms: ['android', 'ios', 'tvos', 'web']
 ---
 
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-font` allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Fonts](/develop/user-interface/fonts/) guide.
@@ -24,7 +24,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ## Configuration in app.json/app.config.js
 
-You can configure `expo-font` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+The recommended way to add fonts to your app is through `expo-font` built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run: [android|ios]`). The plugin allows you to embed font files at build time which is more efficient than using [`loadAsync`](#loadasyncfontfamilyorfontmap-source). See the [Fonts](/develop/user-interface/fonts/#with-expo-font-config-plugin) guide on how to use it.
 
 <ConfigPluginExample>
 
@@ -50,7 +50,7 @@ You can configure `expo-font` using its built-in [config plugin](/config-plugins
     {
       name: 'fonts',
       description:
-        'An array of font files to link to the native project. The paths should be relative to the project root, and the file names will become the font family names.',
+        'An array of font files to link to the native project. The paths should be relative to the project root. The file names will become the font family names on Android. On iOS, the font family name may not be the same as the file name &mdash; use [`getLoadedFonts`](#getloadedfonts) to see what fonts are available.',
       default: '[]',
     },
   ]}
@@ -67,35 +67,35 @@ You can configure `expo-font` using its built-in [config plugin](/config-plugins
 
 <SnackInline label="Minimal example of using a custom font" dependencies={['expo-font', 'expo-splash-screen']} files={{ 'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67' }}>
 
-```jsx
-import { useCallback } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+```tsx
 /* @info Import useFonts hook from 'expo-font'. */ import { useFonts } from 'expo-font'; /* @end */
 /* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
+import { useEffect } from 'react';
+import { Text, View, StyleSheet } from 'react-native';
 
 /* @info This prevents SplashScreen from auto hiding while the fonts are loaded. */
 SplashScreen.preventAutoHideAsync();
 /* @end */
 
 export default function App() {
-  const [fontsLoaded, fontError] = useFonts({
+  const [loaded, error] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });
 
-  /* @info After the custom fonts have loaded, we can hide the splash screen and display the app screen. */
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded || fontError) {
-      await SplashScreen.hideAsync();
+  useEffect(() => {
+    if (loaded || error) {
+      /* @info After the custom fonts have loaded, we can hide the splash screen and display the app screen. */
+      SplashScreen.hideAsync();
+      /* @end */
     }
-  }, [fontsLoaded, fontError]);
-  /* @end */
+  }, [loaded, error]);
 
-  if (!fontsLoaded && !fontError) {
+  if (!loaded && !error) {
     return null;
   }
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
+    <View style={styles.container}>
       <Text style={{ fontFamily: 'Inter-Black', fontSize: 30 }}>Inter Black</Text>
       <Text style={{ fontSize: 30 }}>Platform Default</Text>
     </View>

@@ -33,7 +33,9 @@ export default function MainNavigator() {
       <ExamplesStackNavigator.Screen
         name="ExamplesListScreen"
         component={ExamplesListScreen}
-        options={{ title: 'ExpoMaps 🗺️' }}
+        options={{
+          headerShown: false,
+        }}
       />
       {CONCRETE_EXAMPLE_SCREENS.map(({ name, screen }) => (
         <ExamplesStackNavigator.Screen

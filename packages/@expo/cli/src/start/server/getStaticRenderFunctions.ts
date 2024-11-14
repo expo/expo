@@ -4,12 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getMetroServerRoot } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 import requireString from 'require-from-string';
 
-import { logMetroError, logMetroErrorAsync } from './metro/metroErrorInterface';
-import { getMetroServerRoot } from './middleware/ManifestMiddleware';
+import { logMetroError } from './metro/metroErrorInterface';
 import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
@@ -18,8 +18,6 @@ import { profile } from '../../utils/profile';
 
 /** The list of input keys will become optional, everything else will remain the same. */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
-const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
 
 export const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
 
@@ -89,9 +87,19 @@ export async function createMetroEndpointAsync(
 export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
-  filename: string
-): Promise<T> {
-  const contents = evalMetro(projectRoot, script, filename);
+  filename: string,
+  isExporting: boolean
+): T {
+  // TODO: Add back stack trace logic that hides traces from metro-runtime and other internal modules.
+  const contents = evalMetroNoHandling(projectRoot, script, filename);
+
+  if (!contents) {
+    // This can happen if ErrorUtils isn't working correctly on web and failing to throw an error when a module throws.
+    // This is unexpected behavior and should not be pretty formatted, therefore we're avoiding CommandError.
+    throw new Error(
+      '[Expo SSR] Module returned undefined, this could be due to a misconfiguration in Metro error handling'
+    );
+  }
   // wrap each function with a try/catch that uses Metro's error formatter
   return Object.keys(contents).reduce((acc, key) => {
     const fn = contents[key];
@@ -104,27 +112,15 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
         return await fn.apply(this, props);
       } catch (error: any) {
         await logMetroError(projectRoot, { error });
-        throw new SilentError(error);
+        if (isExporting) {
+          throw error;
+        } else {
+          throw new SilentError(error);
+        }
       }
     };
     return acc;
   }, {} as any);
-}
-
-function evalMetro(projectRoot: string, src: string, filename: string) {
-  try {
-    return evalMetroNoHandling(projectRoot, src, filename);
-  } catch (error: any) {
-    // Format any errors that were thrown in the global scope of the evaluation.
-    if (error instanceof Error) {
-      logMetroErrorAsync({ projectRoot, error }).catch((internalError) => {
-        debug('Failed to log metro error:', internalError);
-        throw error;
-      });
-    } else {
-      throw error;
-    }
-  }
 }
 
 export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {

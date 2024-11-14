@@ -4,7 +4,7 @@ test('redirects old building-standalone-apps paths versioned path', () => {
   const redirectPath = '/versions/latest/distribution/building-standalone-apps/';
   const newPath = getRedirectPath(redirectPath);
 
-  expect(newPath).toEqual('/archive/classic-builds/building-standalone-apps/');
+  expect(newPath).toEqual('/build/setup/');
 
   // The path with guides instead of distribution is very old
   expect(getRedirectPath('/versions/latest/guides/building-standalone-apps/')).toEqual(newPath);
@@ -59,13 +59,6 @@ test('redirects old versions to latest', () => {
   expect(newPath).toEqual('/versions/latest/sdk/camera/');
 });
 
-test('redirects versionless SDK paths to new version', () => {
-  const redirectPath = '/sdk/admob/';
-  const newPath = getRedirectPath(redirectPath);
-
-  expect(newPath).toEqual('/versions/latest/sdk/admob/');
-});
-
 test('removes null from end of paths', () => {
   const redirectPath = '/debugging/errors-and-warnings/null';
   const newPath = getRedirectPath(redirectPath);
@@ -74,9 +67,5 @@ test('removes null from end of paths', () => {
 });
 
 test('redirect SDK permissions to the permission guide', () => {
-  expect(getRedirectPath('/versions/v40.0.0/sdk/permissions/')).toEqual('/guides/permissions/');
-  expect(getRedirectPath('/versions/v41.0.0/sdk/permissions/')).toEqual('/guides/permissions/');
-  expect(getRedirectPath('/versions/v42.0.0/sdk/permissions/')).toEqual('/guides/permissions/');
-  expect(getRedirectPath('/versions/v43.0.0/sdk/permissions/')).toEqual('/guides/permissions/');
   expect(getRedirectPath('/versions/latest/sdk/permissions/')).toEqual('/guides/permissions/');
 });

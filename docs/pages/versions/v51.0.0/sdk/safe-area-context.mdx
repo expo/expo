@@ -6,15 +6,16 @@ packageName: 'react-native-safe-area-context'
 platforms: ['android', 'ios', 'web', 'tvos']
 ---
 
-import { CornerDownRightIcon } from '@expo/styleguide-icons';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
+
 import { APIBox } from '~/components/plugins/APIBox';
-import { CALLOUT } from '~/ui/components/Text';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxSectionHeader } from '~/components/plugins/api/APISectionUtils';
+import { CALLOUT } from '~/ui/components/Text';
 
 > **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
 
-**`react-native-safe-area-context`** provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements. It also provides a `SafeAreaView` component that you can use in place of `View` to automatically inset your views to account for safe areas.
+`react-native-safe-area-context` provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements. It also provides a `SafeAreaView` component that you can use in place of `View` to automatically inset your views to account for safe areas.
 
 ## Installation
 
@@ -96,7 +97,7 @@ function HookComponent() {
 
 <BoxSectionHeader text="Returns" />
 
-<CornerDownRightIcon className="inline-block icon-sm text-icon-secondary align-middle mr-2" /> [`EdgeInsets`](#edgeinsets)
+<CornerDownRightIcon className="icon-sm mr-2 inline-block align-middle text-icon-secondary" /> [`EdgeInsets`](#edgeinsets)
 
 </APIBox>
 

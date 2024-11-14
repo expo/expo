@@ -1,5 +1,5 @@
-import { type ModPlatform } from '@expo/config-plugins';
 import assert from 'assert';
+import { type ModPlatform } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 

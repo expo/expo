@@ -2,45 +2,60 @@
 
 package expo.modules.video
 
-import android.app.Activity
+import android.net.Uri
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.apifeatures.EitherType
-import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
+import expo.modules.video.enums.AudioMixingMode
+import expo.modules.video.enums.ContentFit
+import expo.modules.video.player.VideoPlayer
+import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
+import expo.modules.video.utils.ifYogaDefinedUse
+import expo.modules.video.utils.makeYogaUndefinedIfNegative
+import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlin.time.Duration
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
+@UnstableReactNativeAPI
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VideoModule : Module() {
-  private val activity: Activity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
-
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
+    OnCreate {
+      VideoManager.onModuleCreated(appContext)
+    }
+
     Function("isPictureInPictureSupported") {
-      return@Function VideoView.isPictureInPictureSupported(activity)
+      return@Function VideoView.isPictureInPictureSupported(appContext.throwingActivity)
     }
 
     View(VideoView::class) {
       Events(
         "onPictureInPictureStart",
-        "onPictureInPictureStop"
+        "onPictureInPictureStop",
+        "onFullscreenEnter",
+        "onFullscreenExit"
       )
 
       Prop("player") { view: VideoView, player: VideoPlayer ->
         view.videoPlayer = player
-        player.prepare()
       }
 
       Prop("nativeControls") { view: VideoView, useNativeControls: Boolean ->
@@ -102,10 +117,8 @@ class VideoModule : Module() {
         ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
         ViewProps.BORDER_START_COLOR to Spacing.START,
         ViewProps.BORDER_END_COLOR to Spacing.END
-      ) { view: VideoView, index: Int, color: Int? ->
-        val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
-        val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.setBorderColor(index, rgbComponent, alphaComponent)
+      ) { view: VideoView, index: Int, color: Int ->
+        view.setBorderColor(index, color)
       }
 
       Prop("borderStyle") { view: VideoView, borderStyle: String? ->
@@ -125,7 +138,9 @@ class VideoModule : Module() {
       }
 
       AsyncFunction("startPictureInPicture") { view: VideoView ->
-        view.enterPictureInPicture()
+        runWithPiPMisconfigurationSoftHandling(true) {
+          view.enterPictureInPicture()
+        }
       }
 
       AsyncFunction("stopPictureInPicture") {
@@ -138,8 +153,12 @@ class VideoModule : Module() {
     }
 
     Class(VideoPlayer::class) {
-      Constructor { source: VideoSource ->
-        VideoPlayer(activity.applicationContext, appContext, source)
+      Constructor { source: VideoSource? ->
+        val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source)
+        appContext.mainQueue.launch {
+          player.prepare()
+        }
+        return@Constructor player
       }
 
       Property("playing")
@@ -180,6 +199,35 @@ class VideoModule : Module() {
         .set { ref: VideoPlayer, currentTime: Double ->
           appContext.mainQueue.launch {
             ref.player.seekTo((currentTime * 1000).toLong())
+          }
+        }
+
+      Property("currentLiveTimestamp")
+        .get { ref: VideoPlayer ->
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.currentLiveTimestamp
+          }
+        }
+
+      Property("availableSubtitleTracks")
+        .get { ref: VideoPlayer ->
+          ref.subtitles.availableSubtitleTracks
+        }
+
+      Property("subtitleTrack")
+        .get { ref: VideoPlayer ->
+          ref.subtitles.currentSubtitleTrack
+        }
+        .set { ref: VideoPlayer, subtitleTrack: SubtitleTrack? ->
+          appContext.mainQueue.launch {
+            ref.subtitles.currentSubtitleTrack = subtitleTrack
+          }
+        }
+
+      Property("currentOffsetFromLive")
+        .get { ref: VideoPlayer ->
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.currentOffsetFromLive
           }
         }
 
@@ -251,6 +299,22 @@ class VideoModule : Module() {
           }
         }
 
+      Property("bufferedPosition")
+        .get { ref: VideoPlayer ->
+          // Same as currentTime
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.bufferedPosition
+          }
+        }
+
+      Property("bufferOptions")
+        .get { ref: VideoPlayer ->
+          ref.bufferOptions
+        }
+        .set { ref: VideoPlayer, bufferOptions: BufferOptions ->
+          ref.bufferOptions = bufferOptions
+        }
+
       Function("play") { ref: VideoPlayer ->
         appContext.mainQueue.launch {
           ref.player.play()
@@ -263,18 +327,36 @@ class VideoModule : Module() {
         }
       }
 
-      Function("replace") { ref: VideoPlayer, source: Either<String, VideoSource> ->
-        val videoSource = if (source.`is`(VideoSource::class)) {
-          source.get(VideoSource::class)
-        } else {
-          VideoSource(source.get(String::class))
+      Property("timeUpdateEventInterval")
+        .get { ref: VideoPlayer ->
+          ref.intervalUpdateClock.interval / 1000.0
         }
-        val mediaItem = videoSource.toMediaItem()
-        VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
+        .set { ref: VideoPlayer, intervalSeconds: Float ->
+          ref.intervalUpdateClock.interval = (intervalSeconds * 1000).toLong()
+        }
+
+      Property("audioMixingMode")
+        .get { ref: VideoPlayer ->
+          ref.audioMixingMode
+        }
+        .set { ref: VideoPlayer, audioMixingMode: AudioMixingMode ->
+          appContext.mainQueue.launch {
+            ref.audioMixingMode = audioMixingMode
+          }
+        }
+
+      Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->
+        val videoSource = source?.let {
+          if (it.`is`(VideoSource::class)) {
+            it.get(VideoSource::class)
+          } else {
+            VideoSource(it.get(Uri::class))
+          }
+        }
 
         appContext.mainQueue.launch {
-          ref.videoSource = videoSource
-          ref.player.setMediaItem(mediaItem)
+          ref.uncommittedSource = videoSource
+          ref.prepare()
         }
       }
 
@@ -290,6 +372,25 @@ class VideoModule : Module() {
           ref.player.seekTo(0)
           ref.player.play()
         }
+      }
+
+      AsyncFunction("generateThumbnailsAsync") Coroutine { ref: VideoPlayer, times: List<Duration> ->
+        return@Coroutine ref.toMetadataRetriever().safeUse {
+          val bitmaps = times.map { time ->
+            appContext.backgroundCoroutineScope.async {
+              generateThumbnailAtTime(time)
+            }
+          }
+
+          bitmaps.awaitAll()
+        }
+      }
+
+      Class<VideoThumbnail> {
+        Property("width") { ref -> ref.width }
+        Property("height") { ref -> ref.height }
+        Property("requestedTime") { ref -> ref.requestedTime }
+        Property("actualTime") { ref -> ref.actualTime }
       }
     }
 

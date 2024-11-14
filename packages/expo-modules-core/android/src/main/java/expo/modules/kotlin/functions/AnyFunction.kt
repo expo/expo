@@ -8,8 +8,8 @@ import expo.modules.kotlin.exception.InvalidArgsNumberException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.iterator
 import expo.modules.kotlin.jni.ExpectedType
-import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
 import kotlin.reflect.KClass
@@ -22,13 +22,13 @@ abstract class AnyFunction(
   protected val name: String,
   protected val desiredArgsTypes: Array<AnyType>
 ) {
-  internal val argsCount get() = desiredArgsTypes.size
-
   @PublishedApi
   internal var canTakeOwner: Boolean = false
 
   @PublishedApi
   internal var ownerType: KType? = null
+
+  internal var isEnumerable: Boolean = true
 
   internal val takesOwner: Boolean
     get() {
@@ -117,9 +117,13 @@ abstract class AnyFunction(
   /**
    * Attaches current function to the provided js object.
    */
-  abstract fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject)
+  abstract fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String)
 
-  fun getCppRequiredTypes(): List<ExpectedType> {
+  internal fun getCppRequiredTypes(): List<ExpectedType> {
     return desiredArgsTypes.map { it.getCppRequiredTypes() }
+  }
+
+  fun enumerable(isEnumerable: Boolean = true) = apply {
+    this.isEnumerable = isEnumerable
   }
 }

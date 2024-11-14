@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withAssetsIos = void 0;
 const image_utils_1 = require("@expo/image-utils");
-const AssetContents_1 = require("@expo/prebuild-config/build/plugins/icons/AssetContents");
 const config_plugins_1 = require("expo/config-plugins");
-const fs_extra_1 = require("fs-extra");
+const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const AssetContents_1 = require("./AssetContents");
 const utils_1 = require("./utils");
 const IMAGE_DIR = 'Images.xcassets';
 const withAssetsIos = (config, assets) => {
@@ -48,11 +48,11 @@ async function addImageAssets(assets, root) {
         const name = path_1.default.basename(asset, path_1.default.extname(asset));
         const image = path_1.default.basename(asset);
         const assetPath = path_1.default.resolve(iosNamedProjectRoot, `${IMAGE_DIR}/${name}.imageset`);
-        await (0, fs_extra_1.ensureDir)(assetPath);
+        await promises_1.default.mkdir(assetPath, { recursive: true });
         const buffer = await (0, image_utils_1.generateImageAsync)({ projectRoot: root }, {
             src: asset,
         });
-        await (0, fs_extra_1.writeFile)(path_1.default.resolve(assetPath, image), buffer.source);
+        await promises_1.default.writeFile(path_1.default.resolve(assetPath, image), buffer.source);
         await writeContentsJsonFileAsync({
             assetPath,
             image,
@@ -65,18 +65,8 @@ async function writeContentsJsonFileAsync({ assetPath, image, }) {
 }
 function buildContentsJsonImages({ image }) {
     return [
-        (0, AssetContents_1.createContentsJsonItem)({
-            idiom: 'universal',
-            filename: image,
-            scale: '1x',
-        }),
-        (0, AssetContents_1.createContentsJsonItem)({
-            idiom: 'universal',
-            scale: '2x',
-        }),
-        (0, AssetContents_1.createContentsJsonItem)({
-            idiom: 'universal',
-            scale: '3x',
-        }),
+        { idiom: 'universal', filename: image, scale: '1x' },
+        { idiom: 'universal', scale: '2x' },
+        { idiom: 'universal', scale: '3x' },
     ];
 }

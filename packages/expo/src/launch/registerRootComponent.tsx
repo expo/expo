@@ -22,7 +22,6 @@ type InitialProps = {
  * - Invokes React Native's `AppRegistry.registerComponent`.
  * - Invokes React Native web's `AppRegistry.runApplication` on web to render to the root `index.html` file.
  * - Polyfills the `process.nextTick` function globally.
- * - Adds support for using the `fontFamily` React Native style with the `expo-font` package.
  *
  * This method also adds the following dev-only features that are removed in production bundles.
  * - Adds the Fast Refresh and bundle splitting indicator to the app.
@@ -49,9 +48,11 @@ export default function registerRootComponent<P extends InitialProps>(
         throw new Error('Required HTML element with id "root" was not found in the document HTML.');
       }
     }
+
     AppRegistry.runApplication('main', {
       rootTag,
-      hydrate: process.env.EXPO_PUBLIC_USE_STATIC === '1',
+      // Injected by SSR HTML tags.
+      hydrate: globalThis.__EXPO_ROUTER_HYDRATE__,
     });
   }
 }

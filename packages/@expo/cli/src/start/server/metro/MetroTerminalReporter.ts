@@ -29,8 +29,8 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   // Used for testing
-  _getElapsedTime(startTime: number): number {
-    return Date.now() - startTime;
+  _getElapsedTime(startTime: bigint): bigint {
+    return process.hrtime.bigint() - startTime;
   }
   /**
    * Extends the bundle progress to include the current platform that we're bundling.
@@ -42,9 +42,22 @@ export class MetroTerminalReporter extends TerminalReporter {
     const platform = env || getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
 
-    const localPath = progress.bundleDetails.entryFile.startsWith(path.sep)
-      ? path.relative(this.projectRoot, progress.bundleDetails.entryFile)
-      : progress.bundleDetails.entryFile;
+    let localPath: string;
+
+    if (
+      typeof progress.bundleDetails?.customTransformOptions?.dom === 'string' &&
+      progress.bundleDetails.customTransformOptions.dom.includes('/')
+    ) {
+      // Because we use a generated entry file for DOM components, we need to adjust the logging path so it
+      // shows a unique path for each component.
+      // Here, we take the relative import path and remove all the starting slashes.
+      localPath = progress.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.\/)+/, '');
+    } else {
+      const inputFile = progress.bundleDetails.entryFile;
+      localPath = inputFile.startsWith(path.sep)
+        ? path.relative(this.projectRoot, inputFile)
+        : inputFile;
+    }
 
     if (!inProgress) {
       const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
@@ -52,7 +65,22 @@ export class MetroTerminalReporter extends TerminalReporter {
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
 
-      const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
+      let time: string = '';
+
+      if (startTime != null) {
+        const elapsed: bigint = this._getElapsedTime(startTime);
+        const micro = Number(elapsed) / 1000;
+        const converted = Number(elapsed) / 1e6;
+        // If the milliseconds are < 0.5 then it will display as 0, so we display in microseconds.
+        if (converted <= 0.5) {
+          const tenthFractionOfMicro = ((micro * 10) / 1000).toFixed(0);
+          // Format as microseconds to nearest tenth
+          time = chalk.cyan.bold(`0.${tenthFractionOfMicro}ms`);
+        } else {
+          time = chalk.dim(converted.toFixed(0) + 'ms');
+        }
+      }
+
       // iOS Bundled 150ms
       const plural = progress.totalFileCount === 1 ? '' : 's';
       return (
@@ -86,7 +114,7 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logInitializing(port: number, hasReducedPerformance: boolean): void {
     // Don't print a giant logo...
-    this.terminal.log('Starting Metro Bundler');
+    this.terminal.log(chalk.dim('Starting Metro Bundler'));
   }
 
   shouldFilterClientLog(event: {
@@ -247,6 +275,13 @@ function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): st
     return chalk.bold('λ') + ' ';
   } else if (env === 'react-server') {
     return chalk.bold(`RSC(${getPlatformTagForBuildDetails(bundleDetails).trim()})`) + ' ';
+  }
+
+  if (
+    bundleDetails?.customTransformOptions?.dom &&
+    typeof bundleDetails?.customTransformOptions?.dom === 'string'
+  ) {
+    return chalk.bold(`DOM`) + ' ';
   }
 
   return '';

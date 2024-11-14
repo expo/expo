@@ -1,6 +1,6 @@
 {
   "name": "pod-install",
-  "version": "0.2.2",
+  "version": "0.3.1",
   "description": "Ensure CocoaPods are installed in your project",
   "main": "./build/index.js",
   "scripts": {
@@ -36,9 +36,9 @@
   "devDependencies": {
     "@expo/package-manager": "^1.5.0",
     "chalk": "^4.0.0",
-    "commander": "2.20.0",
-    "expo-module-scripts": "^3.3.0",
+    "commander": "^12.1.0",
+    "expo-module-scripts": "^4.0.0",
     "terminal-link": "^2.1.1",
-    "update-check": "1.5.4"
+    "update-check": "^1.5.4"
   }
 }

@@ -1,13 +1,12 @@
 ---
-title: Install expo-dev-client in a bare React Native project
+title: Install expo-dev-client in an existing React Native project
 sidebar_title: Install expo-dev-client
-description: Learn how to install and configure expo-dev-client in bare React Native projects.
+description: Learn how to install and configure expo-dev-client in your existing React Native project.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { Collapsible } from '~/ui/components/Collapsible';
 
 The following guide explains how to install and configure `expo-dev-client` in an existing React Native project.
 
@@ -27,7 +26,7 @@ To use `expo-dev-client` in a project that uses [CNG](/workflow/continuous-nativ
 
 ## Prerequisites
 
-**The `expo` package must be installed and configured.** If you created your project with `npx react-native init` and do not have any other Expo libraries installed, you will need to [install Expo modules](/bare/installing-expo-modules) before proceeding.
+**The `expo` package must be installed and configured.** If you created your project with `npx @react-native-community/cli@latest init` and do not have any other Expo libraries installed, you will need to [install Expo modules](/bare/installing-expo-modules) before proceeding.
 
 <Step label="1">
 
@@ -71,7 +70,7 @@ For more information, see the [`uri-scheme` library](https://www.npmjs.com/packa
 
 ## Add additional optional configuration
 
-For certain types of errors, you can provide more helpful error messages. To turn this on, import `expo-dev-client` in the project's **index** file (in the managed workflow, you need to add this import on top of the **App.&lbrace;js|tsx&rbrace;**). Make sure that the import statement is above `import App from './App'`.
+For certain types of errors, you can obtain more helpful error messages when using `expo-dev-client`. To turn this on, import `expo-dev-client` in the project's **index** file. Make sure that the import statement is executed early, before your application's JS code is imported (place the import above `import App from './App'`).
 
 ```js
 import 'expo-dev-client';

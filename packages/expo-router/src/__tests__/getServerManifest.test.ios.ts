@@ -63,6 +63,50 @@ it(`converts a server manifest`, () => {
   });
 });
 
+// https://github.com/expo/expo/issues/29883
+it(`converts a server manifest with nested root group and layout`, () => {
+  expect(getServerManifest(getRoutesFor(['./(root)/index.js', './(root)/_layout.js']))).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './(root)/index.js',
+        page: '/(root)/index',
+        namedRegex: '^(?:/\\(root\\))?(?:/)?$',
+        routeKeys: {},
+      },
+    ],
+    notFoundRoutes: [],
+  });
+});
+it(`converts a server manifest with nested root group without layout`, () => {
+  expect(getServerManifest(getRoutesFor(['./(root)/index.js']))).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './(root)/index.js',
+        page: '/(root)/index',
+        namedRegex: '^(?:/\\(root\\))?(?:/)?$',
+        routeKeys: {},
+      },
+    ],
+    notFoundRoutes: [],
+  });
+});
+it(`converts a server manifest with nested root group and root layout`, () => {
+  expect(getServerManifest(getRoutesFor(['./_layout.js', './(root)/index.js']))).toEqual({
+    apiRoutes: [],
+    htmlRoutes: [
+      {
+        file: './(root)/index.js',
+        page: '/(root)/index',
+        namedRegex: '^(?:/\\(root\\))?(?:/)?$',
+        routeKeys: {},
+      },
+    ],
+    notFoundRoutes: [],
+  });
+});
+
 describe(parseParameter, () => {
   it(`matches optionals using non-standard from router v1`, () => {
     expect(parseParameter('[...all]')).toEqual({
@@ -259,9 +303,9 @@ it(`converts dynamic routes on same level with specificity`, () => {
     ['/a', './a.tsx'],
     ['/b', './(a)/[a].tsx'],
   ]) {
-    expect(routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher)).file).toBe(
-      page
-    );
+    expect(
+      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher))?.file
+    ).toBe(page);
   }
 });
 

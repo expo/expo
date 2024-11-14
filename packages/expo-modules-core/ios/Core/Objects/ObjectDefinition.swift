@@ -68,8 +68,6 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   }
 
   public func decorate(object: JavaScriptObject, appContext: AppContext) throws {
-    let runtime = try appContext.runtime
-
     decorateWithConstants(object: object)
     try decorateWithFunctions(object: object, appContext: appContext)
     try decorateWithProperties(object: object, appContext: appContext)

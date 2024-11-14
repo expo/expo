@@ -16,14 +16,23 @@ const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString")
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
+const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
+const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const env_1 = require("../env");
+const sourceMapString = typeof sourceMapString_1.default !== 'function'
+    ? sourceMapString_1.default.sourceMapString
+    : sourceMapString_1.default;
 function withExpoSerializers(config, options = {}) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);
     if (!env_1.env.EXPO_NO_CLIENT_ENV_VARS) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
+    // Then tree-shake the modules.
+    processors.push(treeShakeSerializerPlugin_1.treeShakeSerializer);
+    // Then finish transforming the modules from AST to JS.
+    processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
     return withSerializerPlugins(config, processors, options);
 }
 exports.withExpoSerializers = withExpoSerializers;
@@ -41,10 +50,25 @@ function withSerializerPlugins(config, processors, options = {}) {
 }
 exports.withSerializerPlugins = withSerializerPlugins;
 function createDefaultExportCustomSerializer(config, configOptions = {}) {
-    return async (entryPoint, preModules, graph, options) => {
+    return async (entryPoint, preModules, graph, inputOptions) => {
         const isPossiblyDev = graph.transformOptions.hot;
         // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
-        const enableDebugId = options.inlineSourceMap !== true && !isPossiblyDev;
+        const enableDebugId = inputOptions.inlineSourceMap !== true && !isPossiblyDev;
+        const context = {
+            platform: graph.transformOptions?.platform,
+            environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
+        };
+        const options = {
+            ...inputOptions,
+            createModuleId: (moduleId, ...props) => {
+                if (props.length > 0) {
+                    return inputOptions.createModuleId(moduleId, ...props);
+                }
+                return inputOptions.createModuleId(moduleId, 
+                // @ts-expect-error: context is added by Expo and not part of the upstream Metro implementation.
+                context);
+            },
+        };
         let debugId;
         const loadDebugId = () => {
             if (!enableDebugId || debugId) {
@@ -85,7 +109,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
             })).code;
         }
         const getEnsuredMaps = () => {
-            bundleMap ??= (0, sourceMapString_1.default)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
+            bundleMap ??= sourceMapString([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
                 // TODO: Surface this somehow.
                 excludeSource: false,
                 // excludeSource: options.serializerOptions?.excludeSource,
@@ -142,9 +166,23 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
 exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
 function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
     const defaultSerializer = fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
-    return async (...props) => {
-        const [, , , options] = props;
-        const customSerializerOptions = options.serializerOptions;
+    return async (entryPoint, preModules, graph, inputOptions) => {
+        const context = {
+            platform: graph.transformOptions?.platform,
+            environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
+        };
+        const options = {
+            ...inputOptions,
+            createModuleId: (moduleId, ...props) => {
+                if (props.length > 0) {
+                    return inputOptions.createModuleId(moduleId, ...props);
+                }
+                return inputOptions.createModuleId(moduleId, 
+                // @ts-expect-error: context is added by Expo and not part of the upstream Metro implementation.
+                context);
+            },
+        };
+        const customSerializerOptions = inputOptions.serializerOptions;
         // Custom options can only be passed outside of the dev server, meaning
         // we don't need to stringify the results at the end, i.e. this is `npx expo export` or `npx expo export:embed`.
         const supportsNonSerialReturn = !!customSerializerOptions?.output;
@@ -153,6 +191,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
                 return {
                     outputMode: customSerializerOptions.output,
                     splitChunks: customSerializerOptions.splitChunks,
+                    usedExports: customSerializerOptions.usedExports,
                     includeSourceMaps: customSerializerOptions.includeSourceMaps,
                 };
             }
@@ -163,6 +202,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
                 const url = new URL(sourceUrl, 'https://expo.dev');
                 return {
                     outputMode: url.searchParams.get('serializer.output'),
+                    usedExports: url.searchParams.get('serializer.usedExports') === 'true',
                     splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
                     includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
                 };
@@ -170,7 +210,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
             return null;
         })();
         if (serializerOptions?.outputMode !== 'static') {
-            return defaultSerializer(...props);
+            return defaultSerializer(entryPoint, preModules, graph, options);
         }
         // Mutate the serializer options with the parsed options.
         options.serializerOptions = {
@@ -181,7 +221,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
             includeSourceMaps: !!serializerOptions.includeSourceMaps,
             splitChunks: !!serializerOptions.splitChunks,
             ...configOptions,
-        }, ...props);
+        }, entryPoint, preModules, graph, options);
         if (supportsNonSerialReturn) {
             // @ts-expect-error: this is future proofing for adding assets to the output as well.
             return assets;
@@ -191,10 +231,10 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
 }
 function createSerializerFromSerialProcessors(config, processors, originalSerializer, options = {}) {
     const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-    return (...props) => {
+    return async (...props) => {
         for (const processor of processors) {
             if (processor) {
-                props = processor(...props);
+                props = await processor(...props);
             }
         }
         return finalSerializer(...props);

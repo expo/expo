@@ -10,10 +10,10 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.DevLauncherUrl
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
 import expo.modules.devlauncher.helpers.hasUrlQueryParam
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
@@ -85,7 +85,7 @@ class DevLauncherController private constructor() :
   override val devClientHost by lazy {
     ReactHostWrapper(
       reactNativeHost = DevLauncherReactNativeHost(context as Application, DEV_LAUNCHER_HOST),
-      reactHost = DevLauncherReactHost.create(context as Application, DEV_LAUNCHER_HOST)
+      reactHostProvider = { DevLauncherReactHost.create(context as Application, DEV_LAUNCHER_HOST) }
     )
   }
 
@@ -107,8 +107,7 @@ class DevLauncherController private constructor() :
 
   private var appIsLoading = false
 
-  @Suppress("unused")
-  private val networkInterceptor = DevLauncherNetworkInterceptor(this)
+  private var networkInterceptor: DevLauncherNetworkInterceptor? = null
 
   private fun isEASUpdateURL(url: Uri): Boolean {
     return url.host.equals("u.expo.dev") || url.host.equals("staging-u.expo.dev")
@@ -157,7 +156,7 @@ class DevLauncherController private constructor() :
       manifest = appLoaderFactory.getManifest()
       manifestURL = parsedUrl
 
-      setupDevMenu()
+      setupDevMenu(url.toString())
 
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
@@ -191,6 +190,11 @@ class DevLauncherController private constructor() :
   override fun onAppLoaded(context: ReactContext) {
     synchronized(this) {
       appIsLoading = false
+    }
+    manifestURL?.let {
+      runBlockingOnMainThread {
+        networkInterceptor = DevLauncherNetworkInterceptor(it)
+      }
     }
   }
 
@@ -287,19 +291,23 @@ class DevLauncherController private constructor() :
   private fun ensureHostWasCleared(host: ReactHostWrapper, activityToBeInvalidated: ReactActivity? = null) {
     if (host.hasInstance) {
       runBlockingOnMainThread {
+        networkInterceptor?.close()
+        networkInterceptor = null
         clearHost(host, activityToBeInvalidated)
       }
     }
   }
 
-  private fun setupDevMenu() {
+  private fun setupDevMenu(launchUrl: String) {
     devMenuManager.currentManifest = manifest
     devMenuManager.currentManifestURL = manifestURL.toString()
+    devMenuManager.launchUrl = launchUrl
   }
 
   private fun invalidateDevMenu() {
     devMenuManager.currentManifest = null
     devMenuManager.currentManifestURL = null
+    devMenuManager.launchUrl = null
   }
 
   @UiThread
@@ -427,7 +435,7 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
-      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, reactApplication.reactHost))
+      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, { reactApplication.reactHost }))
       sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }

@@ -26,8 +26,7 @@ const mock_config_1 = require("./mock-config");
 Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
 Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
 const ExpoRoot_1 = require("../ExpoRoot");
-const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
-const getLinkingConfig_1 = require("../getLinkingConfig");
+const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 // re-export everything
@@ -40,8 +39,13 @@ function renderRouter(context = './app', { initialUrl = '/', linking, ...options
     const mockContext = (0, mock_config_1.getMockContext)(context);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-    getLinkingConfig_1.stateCache.clear();
     const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={mockContext} location={initialUrl} linking={linking}/>, options);
+    /**
+     * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
+     * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
+     * (that the app will briefly be in the right state, but then update to an invalid state)
+     */
+    router_store_1.store.subscribeToRootState(() => jest.runOnlyPendingTimers());
     return Object.assign(result, {
         getPathname() {
             return router_store_1.store.routeInfoSnapshot().pathname;
@@ -53,7 +57,7 @@ function renderRouter(context = './app', { initialUrl = '/', linking, ...options
             return router_store_1.store.routeInfoSnapshot().params;
         },
         getPathnameWithParams() {
-            return (0, getPathFromState_1.default)(router_store_1.store.rootState, router_store_1.store.linking.config);
+            return (0, getPathFromState_1.getPathFromState)(router_store_1.store.rootState, router_store_1.store.linking.config);
         },
         getRouterState() {
             return router_store_1.store.rootStateSnapshot();

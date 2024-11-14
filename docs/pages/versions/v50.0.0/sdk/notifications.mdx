@@ -6,16 +6,16 @@ packageName: 'expo-notifications'
 iconUrl: '/static/images/packages/expo-notifications.png'
 ---
 
-import { ConfigReactNative, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
-import { AndroidPermissions } from '~/components/plugins/permissions';
-import { SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
 import { Collapsible } from '~/ui/components/Collapsible';
-import APISection from '~/components/plugins/APISection';
-import { PlatformTags } from '~/ui/components/Tag';
+import { ConfigReactNative, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -463,9 +463,10 @@ To add custom push notification sounds to your app, add the `expo-notifications`
 After building your app, the array of files will be available for use in both [`NotificationContentInput`](#notificationcontentinput) and [`NotificationChannelInput`](#notificationchannelinput).
 You only need to provide the base filename. Here's an example using the config above:
 
-```js
+```ts
 await Notifications.setNotificationChannelAsync('new-emails', {
   name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
   sound: 'mySoundFile.wav', // Provide ONLY the base filename
 });
 
@@ -488,7 +489,7 @@ You can also manually add notification files to your Android and iOS projects if
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`.
 You will also need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
 
-For the example below to work, you would place your `email-sound.wav` file in `android/app/src/main/res/raw/`.
+For the example below to work, you would place your **email-sound.wav** file in **android/app/src/main/res/raw/**.
 
 ```ts
 // Prepare the notification channel
@@ -532,10 +533,10 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="notification.wav inside of app resources in Xcode project organizer"
   src="/static/images/notification-sound-ios.jpeg"
-  style={{ maxWidth: 305 }}
+  className="max-w-[305px]"
 />
 
 </Collapsible>
@@ -574,9 +575,9 @@ Notification categories allow you to create interactive push notifications, so t
 either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification
 by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/sdk/notifications/categories.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
   alt="Image of notification categories on Android and iOS"
 />
 

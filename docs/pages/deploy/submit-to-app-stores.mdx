@@ -3,15 +3,20 @@ title: Submit to app stores
 description: Learn how to submit your app to Google Play Store and Apple App Store from the command line with EAS Submit.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { Collapsible } from '~/ui/components/Collapsible';
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { EasSubmitIcon } from '@expo/styleguide-icons';
-import Video from '~/components/plugins/Video';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 **EAS Submit** is a hosted service that allows uploading and submitting app binaries to the app stores using EAS CLI. This guide describes how to submit your app to the Google Play Store and Apple App Store using EAS Submit.
 
-<Video url="https://www.youtube.com/embed/-KZjr576tuE" />
+<VideoBoxLink
+  videoId="-KZjr576tuE"
+  title="How to quickly publish to the App Store & Play Store with EAS Submit"
+  description="EAS Submit makes it easy to publish your apps to the App Store and Play Store with a simple command."
+/>
 
 ## Google Play Store
 
@@ -22,7 +27,7 @@ import Video from '~/components/plugins/Video';
 - Create an app on [Google Play Console](https://play.google.com/apps/publish/) and upload your app manually at least once.
 - Native app binary signed for Google Play Store submission using EAS Build. If you haven't followed the previous guide, see [Build your project for app stores](/deploy/build-project/) for more information.
 
-> Although it's possible to upload any binary to the store, each submission is associated with an Expo project. That's why it's important to start a submission from inside your project's directory - that's where your [app configuration](/workflow/configuration) is defined.
+> Although it's possible to upload any binary to the store, each submission is associated with an Expo project. That's why it's important to start a submission from inside your project's directory because [app config](/workflow/configuration) is defined inside that directory.
 
 ### Submit binary to Google Play Store
 

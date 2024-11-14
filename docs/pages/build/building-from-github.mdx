@@ -4,7 +4,7 @@ sidebar_title: Trigger builds from GitHub App
 description: Learn how to trigger builds on EAS for your app using the Expo GitHub App.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 This guide explains how to trigger builds directly from your GitHub repository using the Expo GitHub App.
 
@@ -47,10 +47,9 @@ The following must also be true:
 
 ### Link your GitHub repository to your Expo project
 
-Visit your project's [GitHub settings
-page](https://expo.dev/accounts/[account]/projects/[projectName]/github).
+Visit your project's [GitHub settings](https://expo.dev/accounts/[account]/projects/[projectName]/github).
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The project GitHub settings page"
   src="/static/images/eas-build/build-from-github/project-github-page.png"
 />
@@ -59,27 +58,28 @@ Install the Expo GitHub App on your GitHub account.
 
 > **Note:** You must have [Owner or Admin access](/accounts/account-types/#manage-access) of the Expo account to install the app.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The GitHub app installation UI"
   src="/static/images/eas-build/build-from-github/install-github-app.png"
+  className="max-w-[480px]"
 />
 
 Then, link the GitHub repository to your Expo project.
 
 > **Note:** You can only link [GitHub organization repositories](https://docs.github.com/en/organizations) to Expo organizations.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The repository selector on the Expo project GitHub settings page"
   src="/static/images/eas-build/build-from-github/connect-a-repository.png"
-  style={{ maxWidth: 600 }}
+  className="max-w-[600px]"
 />
 
 To add a repository from a different GitHub account, click the **Add new account** option in the account selector dropdown.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The account selector on the Expo project GitHub settings page"
   src="/static/images/eas-build/build-from-github/add-new-account.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[320px]"
 />
 
 ### Configure your repository settings
@@ -90,7 +90,7 @@ Expo project source code is in a subdirectory, then you'll need to configure "Ba
 settings for your repository on your project's [GitHub settings
 page](https://expo.dev/accounts/[account]/projects/[projectName]/github).
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The base directory input on the Expo project GitHub settings page"
   src="/static/images/eas-build/build-from-github/specify-base-directory.png"
 />
@@ -109,9 +109,10 @@ for, and the build profile to apply to it.
 You can also specify a base directory for this specific build. That will not change the global
 settings for this project.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The build from GitHub UI on the Expo project builds list page"
   src="/static/images/eas-build/build-from-github/github-build-ui.png"
+  className="max-w-[480px]"
 />
 
 ### Build using GitHub PR labels
@@ -125,7 +126,7 @@ a build profile, it will default to `production`.
 For example, if
 you want to trigger a production build for Android, add the label `eas-build-android` to the PR.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="A PR with the eas-build label and live status checks"
   src="/static/images/eas-build/build-from-github/eas-build-label.png"
 />
@@ -133,7 +134,7 @@ you want to trigger a production build for Android, add the label `eas-build-and
 The build will be triggered for the latest commit on the PR's base branch. You can view the status
 of the build in the PR's checks. A link to the build will be available in the check's details.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="EAS Build check details on a GitHub PR"
   src="/static/images/eas-build/build-from-github/gh-check-details.png"
 />
@@ -149,7 +150,7 @@ You can set up build triggers to configure when EAS builds your app from GitHub.
 Open your Expo project in the dashboard. To create a build trigger, scroll down to the **Build
 triggers** section of the project GitHub settings page and click **New Build Trigger**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The build triggers section on the Expo project GitHub settings page"
   src="/static/images/eas-build/build-from-github/empty-build-triggers-table.png"
 />
@@ -158,47 +159,51 @@ When you click **New Build Trigger**, you will be presented with a form to confi
 
 These patterns can include wildcards represented by asterisks (`*`), which can match any character and number of characters inside the pattern. For example, `releases/*` can match `releases/`, `release/1234`, `release/genesis`, and so on. If you specify the pattern as a sole asterisk (`*`), all branches/tags will be matched.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The default state of the new build trigger form"
   src="/static/images/eas-build/build-from-github/empty-build-trigger-form.png"
+  className="max-w-[480px]"
 />
 
 You can also configure triggers for specific platforms and build profiles. If you select multiple
 platforms, a separate trigger will be made for each.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="A filled-out version of the new build trigger form"
   src="/static/images/eas-build/build-from-github/filled-build-trigger-form.png"
+  className="max-w-[480px]"
 />
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The build triggers section on the Expo project GitHub settings page filled with build triggers"
   src="/static/images/eas-build/build-from-github/filled-build-triggers-table.png"
 />
 
 When you push to a branch or tag, you can find the builds by looking at a commit's **Checks** section.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The GitHub checks section on a branch commit"
   src="/static/images/eas-build/build-from-github/builds-executed-automatically-on-branch.png"
+  className="max-w-[600px]"
 />
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The GitHub checks section on a tag commit"
   src="/static/images/eas-build/build-from-github/tag-triggered-build.png"
 />
 
 For pull requests, you can configure a **target branch pattern**. This is the destination branch of the pull request you want to build. The same rules apply for wildcards here as well.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The build trigger form for pull request"
   src="/static/images/eas-build/build-from-github/pull-request-trigger-form.png"
+  className="max-w-[480px]"
 />
 
 When you push to a pull request with a source and target branch matching this trigger, you'll find
 these builds in the checks section of the pull request:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The GitHub checks section on a pull request"
   src="/static/images/eas-build/build-from-github/pull-request-triggered-build.png"
 />
@@ -211,10 +216,10 @@ these builds in the checks section of the pull request:
 On your project's GitHub settings page in the Expo dashboard, you can click the options button to the right of
 a build trigger row to disable, edit, or delete the trigger.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The options button on the build trigger row"
   src="/static/images/eas-build/build-from-github/edit-trigger-option.png"
-  style={{ maxWidth: 320 }}
+  className="max-w-[320px]"
 />
 
 You can also run a GitHub build with the parameters from the trigger manually. This will not count towards your automatic build trigger record.
@@ -229,18 +234,18 @@ To enable automatic submission, you need to configure your build triggers to inc
 - Find the build trigger you want to modify, and click the options button.
 - Select **Edit trigger** and in the dialog that appears, check the option **Submit to store after build**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The EAS Submit form fields on the trigger edit form"
   src="/static/images/eas-build/build-from-github/eas-submit-form-fields.png"
-  style={{ maxWidth: 640 }}
+  className="max-w-[640px]"
 />
 
 - Save your changes.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An enabled build trigger with automatic submission enabled"
   src="/static/images/eas-build/build-from-github/auto-submit-trigger-column.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 Once enabled, every time a build is triggered from this configuration, it will automatically be submitted to the app stores you have configured in your **eas.json** under the `submit` field.
@@ -251,10 +256,10 @@ Once enabled, every time a build is triggered from this configuration, it will a
 
 - When things go wrong, we will comment on the commit we attempted to build with some error information. We also show the latest result in the build triggers UI, which includes error information when you hover the **Error** tag.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Status UI on the build trigger UI"
   src="/static/images/eas-build/build-from-github/trigger-troubleshooting-status.png"
-  style={{ maxWidth: 200 }}
+  className="max-w-[200px]"
 />
 
 - Double check everything in the [Prerequisites](#prerequisites) section is true when trying to build.

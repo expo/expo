@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.assertInternalProjectRoot = assertInternalProjectRoot;
 exports.moduleNameIsDirectFileReference = moduleNameIsDirectFileReference;
+exports.moduleNameIsPackageReference = moduleNameIsPackageReference;
 exports.normalizeStaticPlugin = normalizeStaticPlugin;
 exports.pluginFileName = void 0;
 exports.resolveConfigPluginExport = resolveConfigPluginExport;
@@ -14,13 +15,6 @@ exports.resolvePluginForModule = resolvePluginForModule;
 function _assert() {
   const data = _interopRequireDefault(require("assert"));
   _assert = function () {
-    return data;
-  };
-  return data;
-}
-function _findUp() {
-  const data = _interopRequireDefault(require("find-up"));
-  _findUp = function () {
     return data;
   };
   return data;
@@ -54,31 +48,51 @@ function _modules() {
   return data;
 }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 // Default plugin entry file name.
 const pluginFileName = exports.pluginFileName = 'app.plugin.js';
-function findUpPackageJson(root) {
-  const packageJson = _findUp().default.sync('package.json', {
-    cwd: root
-  });
-  (0, _assert().default)(packageJson, `No package.json found for module "${root}"`);
-  return packageJson;
-}
-function resolvePluginForModule(projectRoot, modulePath) {
-  const resolved = _resolveFrom().default.silent(projectRoot, modulePath);
-  if (!resolved) {
-    throw new (_errors().PluginError)(`Failed to resolve plugin for module "${modulePath}" relative to "${projectRoot}"`, 'PLUGIN_NOT_FOUND');
+
+/**
+ * Resolve the config plugin from a node module or package.
+ * If the module or package does not include a config plugin, this function throws a `PluginError`.
+ * The resolution is done in following order:
+ *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
+ *     - Resolve the config plugin as-is
+ *   2. If the reference a module? e.g. `expo-font`
+ *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
+ *   3. Does the module have a valid config plugin in the `main` field?
+ *     - Resolve the `main` entry point as config plugin
+ */
+function resolvePluginForModule(projectRoot, pluginReference) {
+  if (moduleNameIsDirectFileReference(pluginReference)) {
+    // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
+    const pluginScriptFile = _resolveFrom().default.silent(projectRoot, pluginReference);
+    if (pluginScriptFile) {
+      return {
+        isPluginFile: pluginScriptFile.endsWith(path().sep + pluginFileName),
+        filePath: pluginScriptFile
+      };
+    }
+  } else if (moduleNameIsPackageReference(pluginReference)) {
+    // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
+    const pluginPackageFile = _resolveFrom().default.silent(projectRoot, `${pluginReference}/${pluginFileName}`);
+    if (pluginPackageFile && (0, _modules().fileExists)(pluginPackageFile)) {
+      return {
+        isPluginFile: true,
+        filePath: pluginPackageFile
+      };
+    }
+    // Try to resole the `main` entry as config plugin
+    const packageMainEntry = _resolveFrom().default.silent(projectRoot, pluginReference);
+    if (packageMainEntry) {
+      return {
+        isPluginFile: false,
+        filePath: packageMainEntry
+      };
+    }
   }
-  // If the modulePath is something like `@bacon/package/index.js` or `expo-foo/build/app`
-  // then skip resolving the module `app.plugin.js`
-  if (moduleNameIsDirectFileReference(modulePath)) {
-    return {
-      isPluginFile: false,
-      filePath: resolved
-    };
-  }
-  return findUpPlugin(resolved);
+  throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`, 'PLUGIN_NOT_FOUND');
 }
 
 // TODO: Test windows
@@ -99,29 +113,9 @@ function moduleNameIsDirectFileReference(name) {
   // Regular packages should be considered direct reference if they have more than one slash.
   return slashCount > 1;
 }
-function resolveExpoPluginFile(root) {
-  // Find the expo plugin root file
-  const pluginModuleFile = _resolveFrom().default.silent(root,
-  // use ./ so it isn't resolved as a node module
-  `./${pluginFileName}`);
-
-  // If the default expo plugin file exists use it.
-  if (pluginModuleFile && (0, _modules().fileExists)(pluginModuleFile)) {
-    return pluginModuleFile;
-  }
-  return null;
-}
-function findUpPlugin(root) {
-  // Get the closest package.json to the node module
-  const packageJson = findUpPackageJson(root);
-  // resolve the root folder for the node module
-  const moduleRoot = path().dirname(packageJson);
-  // use whatever the initial resolved file was ex: `node_modules/my-package/index.js` or `./something.js`
-  const pluginFile = resolveExpoPluginFile(moduleRoot);
-  return {
-    filePath: pluginFile ?? root,
-    isPluginFile: !!pluginFile
-  };
+function moduleNameIsPackageReference(name) {
+  const slashCount = name.split('/')?.length;
+  return name.startsWith('@') ? slashCount === 2 : slashCount === 1;
 }
 function normalizeStaticPlugin(plugin) {
   if (Array.isArray(plugin)) {

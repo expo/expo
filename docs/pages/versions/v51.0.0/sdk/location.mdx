@@ -9,14 +9,15 @@ platforms: ['android', 'ios', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline } from '~/ui/components/Snippet';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+} from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline } from '~/ui/components/Snippet';
+import { PlatformTag } from '~/ui/components/Tag';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
@@ -105,8 +106,10 @@ Learn how to configure the native projects in the [installation instructions in 
 To use Background Location methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
-- **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](/versions/latest/sdk/task-manager/#configuration-in-appjsonappconfigjs).
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
+- <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
+  specified in **Info.plist** file. See [background tasks configuration
+  guide](/versions/latest/sdk/task-manager/#configuration-in-appjsonappconfigjs).
 
 ### Geofencing methods
 
@@ -123,7 +126,7 @@ If you're using the Android Emulator or iOS Simulator, ensure that [Location is 
 <SnackInline label='Location' dependencies={['expo-location', 'expo-constants']}>
 
 ```jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Platform, Text, View, StyleSheet } from 'react-native';
 /* @hide */
 import * as Device from 'expo-device';
@@ -191,10 +194,10 @@ const styles = StyleSheet.create({
 
 Open Android Studio, and launch the Android Emulator. Inside it, go to **Settings** > **Location** and enable **Use location**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Location settings in Android Emulator for versions 12 and higher"
   src="/static/images/sdk/location/enable-android-emulator-location.png"
-  style={{ maxWidth: 360 }}
+  className="max-w-[360px]"
 />
 
 If you don't receive the locations in the emulator, you may have to turn off the **Improve Location Accuracy** setting. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator.
@@ -205,10 +208,10 @@ For Android 12 and higher, go to **Settings** > **Location** > **Location Servic
 
 With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Location settings in iOS simulator."
   src="/static/images/sdk/location/ios-simulator-location.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 ## API

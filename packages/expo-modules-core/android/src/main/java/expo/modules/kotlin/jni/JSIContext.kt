@@ -6,7 +6,7 @@ import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectId
@@ -20,8 +20,8 @@ import java.lang.ref.WeakReference
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JSIContext : Destructible {
-  internal lateinit var appContextHolder: WeakReference<AppContext> // = WeakReference(appContext)
+class JSIContext : Destructible, AutoCloseable {
+  lateinit var runtimeContextHolder: WeakReference<RuntimeContext>
 
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
@@ -31,29 +31,27 @@ class JSIContext : Destructible {
 
   @OptIn(FrameworkAPI::class)
   fun installJSI(
-    appContext: AppContext,
+    runtimeContext: RuntimeContext,
     jsRuntimePointer: Long,
-    jniDeallocator: JNIDeallocator,
     jsInvokerHolder: CallInvokerHolderImpl
   ) {
-    appContextHolder = appContext.weak()
+    runtimeContextHolder = runtimeContext.weak()
     installJSI(
       jsRuntimePointer,
-      jniDeallocator,
+      runtimeContext.jniDeallocator,
       jsInvokerHolder
     )
   }
 
   fun installJSIForBridgeless(
-    appContext: AppContext,
+    runtimeContext: RuntimeContext,
     jsRuntimePointer: Long,
-    jniDeallocator: JNIDeallocator,
     runtimeExecutor: RuntimeExecutor
   ) {
-    appContextHolder = appContext.weak()
+    runtimeContextHolder = runtimeContext.weak()
     installJSIForBridgeless(
       jsRuntimePointer,
-      jniDeallocator,
+      runtimeContext.jniDeallocator,
       runtimeExecutor
     )
   }
@@ -72,30 +70,6 @@ class JSIContext : Destructible {
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
     runtimeExecutor: RuntimeExecutor
-  )
-
-  @OptIn(FrameworkAPI::class)
-  fun installJSIForTests(
-    appContext: AppContext,
-    jniDeallocator: JNIDeallocator
-  ) {
-    appContextHolder = appContext.weak()
-    installJSIForTests(jniDeallocator)
-  }
-
-  @OptIn(FrameworkAPI::class)
-  fun installJSIForTests(
-    appContext: AppContext
-  ) {
-    appContextHolder = appContext.weak()
-    installJSIForTests(appContext.jniDeallocator)
-  }
-
-  /**
-   * Initializes the test runtime. Shouldn't be used in the production.
-   */
-  private external fun installJSIForTests(
-    jniDeallocator: JNIDeallocator
   )
 
   /**
@@ -132,13 +106,13 @@ class JSIContext : Destructible {
   @Suppress("unused")
   @DoNotStrip
   fun getJavaScriptModuleObject(name: String): JavaScriptModuleObject? {
-    return appContextHolder.get()?.registry?.getModuleHolder(name)?.jsObject
+    return runtimeContextHolder.get()?.registry?.getModuleHolder(name)?.jsObject
   }
 
   @Suppress("unused")
   @DoNotStrip
   fun hasModule(name: String): Boolean {
-    return appContextHolder.get()?.registry?.hasModule(name) ?: false
+    return runtimeContextHolder.get()?.registry?.hasModule(name) ?: false
   }
 
   /**
@@ -147,13 +121,13 @@ class JSIContext : Destructible {
   @Suppress("unused")
   @DoNotStrip
   fun getJavaScriptModulesName(): Array<String> {
-    return appContextHolder.get()?.registry?.registry?.keys?.toTypedArray() ?: emptyArray()
+    return runtimeContextHolder.get()?.registry?.registry?.keys?.toTypedArray() ?: emptyArray()
   }
 
   @Suppress("unused")
   @DoNotStrip
   fun registerSharedObject(native: Any, js: JavaScriptObject) {
-    appContextHolder
+    runtimeContextHolder
       .get()
       ?.sharedObjectRegistry
       ?.add(native as SharedObject, js)
@@ -161,8 +135,15 @@ class JSIContext : Destructible {
 
   @Suppress("unused")
   @DoNotStrip
+  fun getSharedObject(id: Int): JavaScriptObject? {
+    val runtimeContext = runtimeContextHolder.get() ?: return null
+    return SharedObjectId(id).toJavaScriptObjectNull(runtimeContext)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
   fun deleteSharedObject(id: Int) {
-    appContextHolder
+    runtimeContextHolder
       .get()
       ?.sharedObjectRegistry
       ?.delete(SharedObjectId(id))
@@ -171,7 +152,7 @@ class JSIContext : Destructible {
   @Suppress("unused")
   @DoNotStrip
   fun registerClass(native: Class<*>, js: JavaScriptObject) {
-    appContextHolder
+    runtimeContextHolder
       .get()
       ?.classRegistry
       ?.add(native, js)
@@ -179,8 +160,8 @@ class JSIContext : Destructible {
 
   @Suppress("unused")
   @DoNotStrip
-  fun getJavascriptClass(native: java.lang.Class<*>): JavaScriptObject? {
-    return appContextHolder
+  fun getJavascriptClass(native: Class<*>): JavaScriptObject? {
+    return runtimeContextHolder
       .get()
       ?.classRegistry
       ?.toJavaScriptObject(native)
@@ -189,7 +170,7 @@ class JSIContext : Destructible {
   @Suppress("unused")
   @DoNotStrip
   fun getCoreModuleObject(): JavaScriptModuleObject? {
-    return appContextHolder.get()?.coreModule?.jsObject
+    return runtimeContextHolder.get()?.coreModule?.jsObject
   }
 
   @Throws(Throwable::class)
@@ -205,5 +186,9 @@ class JSIContext : Destructible {
     init {
       SoLoader.loadLibrary("expo-modules-core")
     }
+  }
+
+  override fun close() {
+    deallocate()
   }
 }

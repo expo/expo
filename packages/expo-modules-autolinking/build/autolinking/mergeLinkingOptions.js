@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveSearchPathsAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathAsync = void 0;
+exports.resolveSearchPathsAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathSync = exports.getProjectPackageJsonPathAsync = void 0;
 const find_up_1 = __importDefault(require("find-up"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
@@ -18,6 +18,17 @@ async function getProjectPackageJsonPathAsync(projectRoot) {
     return result;
 }
 exports.getProjectPackageJsonPathAsync = getProjectPackageJsonPathAsync;
+/**
+ * Synchronous version of {@link getProjectPackageJsonPathAsync}.
+ */
+function getProjectPackageJsonPathSync(projectRoot) {
+    const result = find_up_1.default.sync('package.json', { cwd: projectRoot });
+    if (!result) {
+        throw new Error(`Couldn't find "package.json" up from path "${projectRoot}"`);
+    }
+    return result;
+}
+exports.getProjectPackageJsonPathSync = getProjectPackageJsonPathSync;
 /**
  * Merges autolinking options from different sources (the later the higher priority)
  * - options defined in package.json's `expo.autolinking` field

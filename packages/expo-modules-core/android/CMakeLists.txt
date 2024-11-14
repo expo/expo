@@ -19,6 +19,7 @@ set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
 file(GLOB sources_android_types "${SRC_DIR}/main/cpp/types/*.cpp")
 file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/javaclasses/*.cpp")
+file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/decorators/*.cpp")
 file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
@@ -88,18 +89,25 @@ find_package(fbjni REQUIRED CONFIG)
 
 # includes
 
-get_target_property(INCLUDE_reactnativejni
+if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+  get_target_property(INCLUDE_reactnativejni
+       ReactAndroid::reactnative
+       INTERFACE_INCLUDE_DIRECTORIES)
+else()
+  get_target_property(INCLUDE_reactnativejni
         ReactAndroid::reactnativejni
         INTERFACE_INCLUDE_DIRECTORIES)
+endif()
+
 target_include_directories(
-        ${PACKAGE_NAME}
-        PRIVATE
-        ${INCLUDE_reactnativejni}/react
+       ${PACKAGE_NAME}
+       PRIVATE
+       ${INCLUDE_reactnativejni}/react
 
         # header only imports from turbomodule, e.g. CallInvokerHolder.h
-        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
-        "${COMMON_DIR}"
-        "${SRC_DIR}/fabric"
+       "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
+       "${COMMON_DIR}"
+       "${SRC_DIR}/fabric"
 )
 
 # linking
@@ -113,15 +121,26 @@ target_compile_options(
 )
 
 target_link_libraries(
-        ${PACKAGE_NAME}
-        CommonSettings
-        ${LOG_LIB}
-        fbjni::fbjni
-        ReactAndroid::jsi
-        ReactAndroid::reactnativejni
-        ReactAndroid::folly_runtime
-        ReactAndroid::react_nativemodule_core
-        android
-        ${JSEXECUTOR_LIB}
-        ${NEW_ARCHITECTURE_DEPENDENCIES}
+  ${PACKAGE_NAME}
+  CommonSettings
+  ${LOG_LIB}
+  fbjni::fbjni
+  ReactAndroid::jsi
+  android
+  ${JSEXECUTOR_LIB}
+  ${NEW_ARCHITECTURE_DEPENDENCIES}
 )
+
+if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+   target_link_libraries(
+    ${PACKAGE_NAME}
+    ReactAndroid::reactnative
+   )
+else()
+  target_link_libraries(
+    ${PACKAGE_NAME}
+    ReactAndroid::reactnativejni
+    ReactAndroid::folly_runtime
+    ReactAndroid::react_nativemodule_core
+  )
+endif()

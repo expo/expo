@@ -10,6 +10,16 @@ internal class DatabaseException: Exception {
   }
 }
 
+internal class DatabaseInvalidPathException: GenericException<String> {
+  override var code: String {
+    "E_SQLITE_INVALID_PATH"
+  }
+
+  override var reason: String {
+    "Invalid database path: \(param)"
+  }
+}
+
 internal class DeleteDatabaseException: GenericException<String> {
   override var code: String {
     "E_SQLITE_DELETE_DATABASE"

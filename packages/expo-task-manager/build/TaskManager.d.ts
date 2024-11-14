@@ -11,7 +11,7 @@ export interface TaskManagerError {
  */
 export interface TaskManagerTaskBody<T = unknown> {
     /**
-     * An object of data passed to the task executor. Its properties depends on the type of the task.
+     * An object of data passed to the task executor. Its properties depend on the type of the task.
      */
     data: T;
     /**
@@ -67,7 +67,7 @@ export interface RegisteredTask extends TaskManagerTask {
 /**
  * Type of task executor – a function that handles the task.
  */
-export type TaskManagerTaskExecutor<T = unknown> = (body: TaskManagerTaskBody<T>) => void;
+export type TaskManagerTaskExecutor<T = any> = (body: TaskManagerTaskBody<T>) => Promise<any>;
 /**
  * Defines task function. It must be called in the global scope of your JavaScript bundle.
  * In particular, it cannot be called in any of React lifecycle methods like `componentDidMount`.
@@ -90,13 +90,12 @@ export declare function isTaskDefined(taskName: string): boolean;
  * preserved between sessions.
  *
  * @param taskName Name of the task.
- * @returns A promise which fulfills with a `boolean` value whether or not the task with given name
- * is already registered.
+ * @returns A promise which resolves to `true` if a task with the given name is registered, otherwise `false`.
  */
 export declare function isTaskRegisteredAsync(taskName: string): Promise<boolean>;
 /**
  * Retrieves `options` associated with the task, that were passed to the function registering the task
- * (eg. `Location.startLocationUpdatesAsync`).
+ * (e.g. `Location.startLocationUpdatesAsync`).
  *
  * @param taskName Name of the task.
  * @return A promise which fulfills with the `options` object that was passed while registering task
@@ -106,8 +105,9 @@ export declare function getTaskOptionsAsync<TaskOptions>(taskName: string): Prom
 /**
  * Provides information about tasks registered in the app.
  *
- * @returns A promise which fulfills with an array of tasks registered in the app. Example:
- * ```json
+ * @returns A promise which fulfills with an array of tasks registered in the app.
+ * @example
+ * ```js
  * [
  *   {
  *     taskName: 'location-updates-task-name',
@@ -145,8 +145,10 @@ export declare function unregisterTaskAsync(taskName: string): Promise<void>;
 export declare function unregisterAllTasksAsync(): Promise<void>;
 /**
  * Determine if the `TaskManager` API can be used in this app.
- * @return A promise fulfills with `true` if the API can be used, and `false` otherwise.
- * On the web it always returns `false`.
+ * @return A promise which fulfills with `true` if the API can be used, and `false` otherwise.
+ * With Expo Go, `TaskManager` is not available on Android, and does not support background execution on iOS.
+ * Use a development build to avoid limitations: https://expo.fyi/dev-client.
+ * On the web, it always returns `false`.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 //# sourceMappingURL=TaskManager.d.ts.map

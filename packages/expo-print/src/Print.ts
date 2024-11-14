@@ -6,11 +6,12 @@ import {
   FilePrintOptions,
   FilePrintResult,
   OrientationType,
+  PageMargins,
   PrintOptions,
   Printer,
 } from './Print.types';
 
-export { FilePrintOptions, FilePrintResult, OrientationType, PrintOptions, Printer };
+export { FilePrintOptions, FilePrintResult, OrientationType, PageMargins, PrintOptions, Printer };
 
 let isPrinting = false;
 // @needsAudit @docsMissing

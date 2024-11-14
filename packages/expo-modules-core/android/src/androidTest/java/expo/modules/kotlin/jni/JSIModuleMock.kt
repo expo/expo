@@ -5,57 +5,53 @@ package expo.modules.kotlin.jni
 import android.view.View
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.UIManagerModule
 import com.google.common.truth.Truth
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.ModuleRegistry
+import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.jni.tests.RuntimeHolder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
+import expo.modules.kotlin.weak
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
-import java.lang.ref.WeakReference
 
-private fun defaultAppContextMock(
-  jniDeallocator: JNIDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
-): AppContext {
+private fun defaultAppContextMock(): Pair<AppContext, RuntimeContext> {
   val appContextMock = mockk<AppContext>()
-  val coreModule = run {
-    val module = CoreModule()
-    module._appContext = appContextMock
-    ModuleHolder(module)
-  }
-  every { appContextMock.coreModule } answers { coreModule }
-  every { appContextMock.classRegistry } answers { ClassRegistry() }
-  every { appContextMock.jniDeallocator } answers { jniDeallocator }
-  every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
+  val runtimeContext = mockk<RuntimeContext>()
+  val classRegistry = ClassRegistry()
 
-  return appContextMock
+  every { runtimeContext.classRegistry } answers { classRegistry }
+  every { runtimeContext.appContext } answers { appContextMock }
+  every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
+  every { appContextMock.hostingRuntimeContext } answers { runtimeContext }
+
+  return appContextMock to runtimeContext
 }
 
 /**
  * Sets up a test jsi environment with provided modules.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FrameworkAPI::class)
 internal inline fun withJSIInterop(
   vararg modules: Module,
-  block: JSIContext.(methodQueue: TestScope) -> Unit,
-  afterCleanup: (deallocator: JNIDeallocator) -> Unit
+  numberOfReloads: Int = 1,
+  block: JSIContext.(methodQueue: TestScope) -> Unit
 ) {
-  val jniDeallocator = JNIDeallocator(
-    shouldCreateDestructorThread = false
-  )
-  val appContextMock = defaultAppContextMock(jniDeallocator)
+  val (appContextMock, runtimeContext) = defaultAppContextMock()
   val methodQueue = TestScope()
 
   val uiManagerModuleMock = mockk<UIManagerModule>()
@@ -73,7 +69,6 @@ internal inline fun withJSIInterop(
   every { reactContextMock.isBridgeless } answers { false }
   every { reactContextMock.hasCatalystInstance() } answers { true }
   every { reactContextMock.hasActiveReactInstance() } answers { true }
-
   every { reactContextMock.catalystInstance } answers { catalystInstanceMock }
 
   every { appContextMock.modulesQueue } answers { methodQueue }
@@ -87,25 +82,44 @@ internal inline fun withJSIInterop(
     functionSlot.captured.invoke()
   }
 
-  val registry = ModuleRegistry(WeakReference(appContextMock)).apply {
-    modules.forEach {
-      register(it)
+  val jniDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
+  repeat(numberOfReloads) {
+    val coreModule = run {
+      val module = CoreModule()
+      module._runtimeContext = runtimeContext
+      ModuleHolder(module)
+    }
+    every { runtimeContext.coreModule } answers { coreModule }
+
+    val registry = ModuleRegistry(appContextMock.hostingRuntimeContext.weak()).apply {
+      modules.forEach {
+        register(it)
+      }
+    }
+    val sharedObjectRegistry = SharedObjectRegistry(appContextMock.hostingRuntimeContext)
+    every { appContextMock.registry } answers { registry }
+    every { runtimeContext.registry } answers { registry }
+    every { runtimeContext.sharedObjectRegistry } answers { sharedObjectRegistry }
+
+    // We aim to closely replicate the lifecycle of each part as it functions in the real app.
+    // That’s why the JSIContext outlives the JS runtime.
+    JSIContext().use { jsiContext ->
+      every { runtimeContext.jniDeallocator } answers { jniDeallocator }
+      every { runtimeContext.jsiContext } answers { jsiContext }
+
+      RuntimeHolder().use { runtimeHolder ->
+        val runtimePtr = runtimeHolder.createRuntime()
+        val callInvokerHolder = runtimeHolder.createCallInvoker()
+
+        jsiContext.installJSI(runtimeContext, runtimePtr, callInvokerHolder)
+
+        jniDeallocator.use {
+          block(jsiContext, methodQueue)
+        }
+      }
     }
   }
-  val sharedObjectRegistry = SharedObjectRegistry(appContextMock)
-  every { appContextMock.registry } answers { registry }
-  every { appContextMock.sharedObjectRegistry } answers { sharedObjectRegistry }
-
-  val jsiIterop = JSIContext()
-  every { appContextMock.jsiInterop } answers { jsiIterop }
-  jsiIterop.installJSIForTests(appContextMock, jniDeallocator)
-
-  block(jsiIterop, methodQueue)
-
-  jniDeallocator.deallocate()
-  jsiIterop.deallocate()
-
-  afterCleanup(jniDeallocator)
+  Truth.assertWithMessage("Memory leak detected").that(jniDeallocator.inspectMemory()).isEmpty()
 }
 
 open class TestContext(
@@ -114,7 +128,9 @@ open class TestContext(
 ) {
   fun global() = jsiInterop.global()
   fun evaluateScript(script: String) = jsiInterop.evaluateScript(script)
-  fun evaluateScript(vararg script: String) = jsiInterop.evaluateScript(script.joinToString(separator = "\n"))
+  fun evaluateScript(vararg script: String) =
+    jsiInterop.evaluateScript(script.joinToString(separator = "\n"))
+
   fun waitForAsyncFunction(jsCode: String) = jsiInterop.waitForAsyncFunction(methodQueue, jsCode)
 }
 
@@ -152,6 +168,8 @@ class SingleTestContext(
     "$moduleRef.$functionName($args)"
   )
 
+  fun getLastPromiseResult() = global().getProperty("promiseResult")
+
   fun callClassAsync(className: String, functionName: String? = null, args: String = ""): JavaScriptValue {
     if (functionName == null) {
       return jsiInterop.evaluateScript("new $moduleRef.$className()")
@@ -165,13 +183,9 @@ class SingleTestContext(
   }
 }
 
-internal inline fun withJSIInterop(
-  vararg modules: Module,
-  block: JSIContext.(methodQueue: TestScope) -> Unit
-) = withJSIInterop(*modules, block = block, afterCleanup = {})
-
 internal inline fun withSingleModule(
   crossinline definition: ModuleDefinitionBuilder.() -> Unit = {},
+  numberOfReloads: Int = 1,
   block: SingleTestContext.() -> Unit
 ) {
   var moduleName = "TestModule"
@@ -186,6 +200,7 @@ internal inline fun withSingleModule(
         }
       }
     },
+    numberOfReloads = numberOfReloads,
     block = { methodQueue ->
       val testContext = SingleTestContext(moduleName, this, methodQueue)
       block.invoke(testContext)

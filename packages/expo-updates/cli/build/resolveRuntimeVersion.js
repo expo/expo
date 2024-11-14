@@ -32,6 +32,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const args_1 = require("./utils/args");
 const errors_1 = require("./utils/errors");
 const Log = __importStar(require("./utils/log"));
+const withConsoleDisabledAsync_1 = require("./utils/withConsoleDisabledAsync");
 const resolveRuntimeVersion = async (argv) => {
     const args = (0, args_1.assertArgs)({
         // Types
@@ -67,18 +68,19 @@ Resolve expo-updates runtime version
         throw new errors_1.CommandError(`Invalid workflow argument: ${workflow}. Must be either 'managed' or 'generic'`);
     }
     const debug = args['--debug'];
-    let runtimeVersionInfo;
-    try {
-        runtimeVersionInfo = await resolveRuntimeVersionAsync((0, args_1.getProjectRoot)(args), platform, {
-            silent: true,
-            debug,
-        }, {
-            workflowOverride: workflow,
-        });
-    }
-    catch (e) {
-        throw new errors_1.CommandError(e.message);
-    }
+    const runtimeVersionInfo = await (0, withConsoleDisabledAsync_1.withConsoleDisabledAsync)(async () => {
+        try {
+            return await resolveRuntimeVersionAsync((0, args_1.getProjectRoot)(args), platform, {
+                silent: true,
+                debug,
+            }, {
+                workflowOverride: workflow,
+            });
+        }
+        catch (e) {
+            throw new errors_1.CommandError(e.message);
+        }
+    });
     console.log(JSON.stringify(runtimeVersionInfo));
 };
 exports.resolveRuntimeVersion = resolveRuntimeVersion;

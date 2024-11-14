@@ -20,6 +20,11 @@ export type NotificationsPluginProps = {
    */
   color?: string;
   /**
+   * Default channel for FCMv1 notifications.
+   * @platform android
+   */
+  defaultChannel?: string;
+  /**
    * Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
    */
   sounds?: string[];
@@ -29,6 +34,15 @@ export type NotificationsPluginProps = {
    * @platform ios
    */
   mode?: 'development' | 'production';
+
+  /**
+   * Whether to enable background remote notifications, as described in [Apple documentation](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app).
+   *
+   * This sets the `UIBackgroundModes` key in the `Info.plist` to include `remote-notification`.
+   * @default false
+   * @platform ios
+   */
+  enableBackgroundRemoteNotifications?: boolean;
 };
 
 const withNotifications: ConfigPlugin<NotificationsPluginProps | void> = (config, props) => {

@@ -1,11 +1,9 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { ExpoConfig, getConfig } from '@expo/config';
-import { resolveEntryPoint } from '@expo/config/paths';
+import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-
-import { getServerRoot } from './getModulesPaths';
 
 const debug = require('debug')('expo:metro:config:rewriteRequestUrl');
 
@@ -39,9 +37,9 @@ function getRouterDirectoryModuleIdWithManifest(projectRoot: string, exp: ExpoCo
 
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
-  if (directoryExistsSync(path.join(projectRoot, 'src/app'))) {
+  if (directoryExistsSync(path.join(projectRoot, 'src', 'app'))) {
     debug('Using src/app as the root directory for Expo Router.');
-    return 'src/app';
+    return path.join('src', 'app');
   }
 
   debug('Using app as the root directory for Expo Router.');
@@ -81,17 +79,24 @@ export function getRewriteRequestUrl(projectRoot: string) {
           getRouterDirectoryModuleIdWithManifest(projectRoot, exp)
         );
       }
+      if (!ensured.searchParams.has('transform.reactCompiler') && exp.experiments?.reactCompiler) {
+        ensured.searchParams.set(
+          'transform.reactCompiler',
+          String(!!exp.experiments?.reactCompiler)
+        );
+      }
 
       if (!ensured.searchParams.has('transform.engine')) {
         const isHermesEnabled = isEnableHermesManaged(exp, platform);
         if (isHermesEnabled) {
           debug('Enabling Hermes for managed project');
           ensured.searchParams.set('transform.engine', 'hermes');
-          ensured.searchParams.set('transform.bytecode', 'true');
+          ensured.searchParams.set('transform.bytecode', '1');
+          ensured.searchParams.set('unstable_transformProfile', 'hermes-stable');
         }
       }
 
-      const serverRoot = getServerRoot(projectRoot);
+      const serverRoot = getMetroServerRoot(projectRoot);
       const relativeEntry = path.relative(serverRoot, entry).replace(/\.[tj]sx?$/, '');
       debug('Resolved entry point', { entry, relativeEntry, serverRoot });
 

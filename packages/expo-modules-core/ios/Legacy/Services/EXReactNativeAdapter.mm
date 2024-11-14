@@ -2,21 +2,9 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import <React/RCTUIManager.h>
-#import <React/RCTBridge+Private.h>
-#import <React/RCTAppState.h>
-#import <React/RCTImageLoader.h>
-#import <React/RCTUIManagerUtils.h>
-
+#import <React/React-Core-umbrella.h>
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
-
-#if RN_FABRIC_ENABLED
-#import <React/RCTComponentViewRegistry.h>
-#import <React/RCTSurfacePresenter.h>
-#import <React/RCTMountingManager.h>
-
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
-#endif
 
 @interface EXReactNativeAdapter ()
 
@@ -292,12 +280,7 @@ EX_REGISTER_MODULE();
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-#if RCT_NEW_ARCH_ENABLED
-      UIView<RCTComponentViewProtocol> *componentView = [uiManager viewForReactTag:(NSNumber *)viewId];
-      UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
-#else
       UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
-#endif
       block(view);
     }];
   });
@@ -309,12 +292,7 @@ EX_REGISTER_MODULE();
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-#if RCT_NEW_ARCH_ENABLED
-      UIView<RCTComponentViewProtocol> *componentView = [uiManager viewForReactTag:(NSNumber *)viewId];
-      UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
-#else
       UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
-#endif
       block(view);
     }];
     [uiManager setNeedsLayout];

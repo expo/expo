@@ -4,10 +4,7 @@ sidebar_title: Install Expo modules
 description: Learn how to prepare your existing native project to install and use Expo modules and the module API.
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
 import { DiffBlock, Terminal } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 
 > **info** If your project is a **greenfield React Native app** &mdash; primarily built with React Native from the start, then see [Install Expo modules in an existing React Native project](/bare/installing-expo-modules/) instead of this guide.
@@ -24,7 +21,7 @@ You should have a brownfield native project with React Native installed and conf
 
 Add the `expo` package to your project. Ensure you are using a version of [the `expo` package that is compatible with the React Native version in your project](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version).
 
-<Terminal cmd={['npm install expo']} />
+<Terminal cmd={['$ npm install expo']} />
 
 ## Configuring native apps
 
@@ -40,7 +37,7 @@ index 20e2a01..e98ad88 100644
 --- a/android/gradle.properties
 +++ b/android/gradle.properties
 @@ -20,4 +20,8 @@ kotlin.code.style=official
-+newArchEnabled=false
++newArchEnabled=true
 +
 +hermesEnabled=true`}
 />
@@ -70,11 +67,11 @@ index a26c7c6..dd8802a 100644
 
 Inside the **android** directory, run the following command:
 
-<Terminal cmd={['./gradlew clean']} />
+<Terminal cmd={['$ ./gradlew clean']} />
 
 Once the above command completes, run:
 
-<Terminal cmd={['./gradlew assembleDebug']} />
+<Terminal cmd={['$./gradlew assembleDebug']} />
 
 </Step>
 
@@ -184,10 +181,10 @@ index 2d3a979..825a9d4 100644
 
 target '<YourAppTarget>' do
 
-- use_expo_modules!
-  config = use_native_modules!
-  `}
-  />
++use_expo_modules!
+config = use_native_modules!
+`}
+/>
 
 </Step>
 
@@ -201,7 +198,7 @@ Open your **ios** directory in Xcode. From the project navigator, select your pr
 
 Run `pod install` in the **ios** directory.
 
-<Terminal cmd={['cd ios && pod install']} />
+<Terminal cmd={['$ cd ios && pod install']} />
 
 You will need to do this every time you add a dependency that uses native code.
 
@@ -225,13 +222,13 @@ index ff83531..bd8651d 100644
 
 - func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-* override func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
++override func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
 - return true
 
-* super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-  `}
-  />
++super.application(application, didFinishLaunchingWithOptions: launchOptions)
+}
+`}
+/>
 
 </Step>

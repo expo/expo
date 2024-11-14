@@ -4,11 +4,10 @@ sidebar_title: Multiple app variants
 description: Learn how to configure app config to install multiple app variants on a single device.
 ---
 
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
-import { CODE } from '~/ui/components/Text';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 In this chapter, we'll configure our project to run multiple build types (development, preview, production) on a single device simultaneously. This setup will allow us to test various stages of our app development without the need to uninstall and reinstall different versions.
 
@@ -163,10 +162,10 @@ This script will evaluate **app.config.js** locally and load the environment var
 
 Now, our development build will run on both Android and iOS, displaying the modified app name from **app.config.js**. For example, the below development build is running on an iOS Simulator. See that the app name is **StickerSmash (Dev)**:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Development variant running on Android device."
   src="/static/images/tutorial/eas/ios-dev-variant.png"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 </Step>

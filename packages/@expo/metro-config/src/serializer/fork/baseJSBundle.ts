@@ -23,12 +23,19 @@ export type Bundle = {
   modules: ModuleMap;
   post: string;
   pre: string;
+  paths: Record<
+    // Module ID
+    string,
+    // Split paths { moduleId: URL }
+    Record<string, string>
+  >;
 };
 
 export type ExpoSerializerOptions = SerializerOptions & {
   serializerOptions?: {
     baseUrl?: string;
     skipWrapping?: boolean;
+    usedExports?: boolean;
     splitChunks?: boolean;
     output?: string;
     includeSourceMaps?: boolean;
@@ -153,9 +160,10 @@ export function baseJSBundleWithDependencies(
     sourceMapUrl,
     // This directive doesn't make a lot of sense in the context of a large single bundle that represent
     // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
-    // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web.
-    sourceUrl: options.platform === 'web' ? undefined : options.sourceUrl,
-  });
+    // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web and native in production.
+    sourceUrl:
+      options.platform === 'web' ? undefined : !options.dev ? undefined : options.sourceUrl,
+  }) as Module[];
 
   // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
   // NOTE: We may want to move this assertion up further.
@@ -195,5 +203,13 @@ export function baseJSBundleWithDependencies(
       id,
       typeof code === 'number' ? code : code.src,
     ]) as ModuleMap,
+    paths: Object.fromEntries(
+      (
+        mods.filter(([id, code]) => typeof code !== 'number' && Object.keys(code.paths).length) as [
+          string,
+          { src: string; paths: Record<string, string> },
+        ][]
+      ).map(([id, code]) => [id, code.paths])
+    ),
   };
 }

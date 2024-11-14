@@ -2,11 +2,11 @@
 
 buildscript {
   ext {
-    buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-    minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
-    compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
+    buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
+    minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
+    compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
     targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-    kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
+    kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
     ndkVersion = "26.1.10909125"
   }
   repositories {
@@ -52,10 +52,6 @@ allprojects {
       )
     }
     maven {
-      // expo-camera bundles a custom com.google.android:cameraview
-      url "$rootDir/../node_modules/expo-camera/android/maven"
-    }
-    maven {
       url(
           new File(
               providers.exec {
@@ -76,6 +72,7 @@ allprojects {
 subprojects {
   plugins.apply("com.diffplug.spotless")
   spotless {
+    // note that spotless config is currently duplicated in expo-go too
     kotlin {
       target '**/*.kt'
       ktlint("1.0.1")
@@ -109,7 +106,3 @@ subprojects {
 }
 
 apply plugin: "com.facebook.react.rootproject"
-// @generated begin expo-camera-import - expo prebuild (DO NOT MODIFY) sync-f244f4f3d8bf7229102e8f992b525b8602c74770
-def expoCameraMavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")
-allprojects { repositories { maven { url(expoCameraMavenPath) } } }
-// @generated end expo-camera-import

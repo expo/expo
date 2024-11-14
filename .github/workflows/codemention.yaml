@@ -1,0 +1,14 @@
+name: codemention
+on:
+  pull_request_target:
+    types: [opened, synchronize, ready_for_review]
+jobs:
+  codemention:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: tobyhs/codemention@v1.4.0
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}

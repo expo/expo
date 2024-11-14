@@ -1,14 +1,15 @@
-import { ExpoConfig } from '@expo/config-types';
-import { ImageOptions, generateImageAsync } from '@expo/image-utils';
+import { type ImageOptions, generateImageAsync } from '@expo/image-utils';
+import type { ExpoConfig } from 'expo/config';
 import {
-  ContentsJsonImage,
-  createContentsJsonItem,
-  writeContentsJsonAsync,
-} from '@expo/prebuild-config/build/plugins/icons/AssetContents';
-import { ConfigPlugin, IOSConfig, XcodeProject, withXcodeProject } from 'expo/config-plugins';
-import { ensureDir, writeFile } from 'fs-extra';
+  type ConfigPlugin,
+  IOSConfig,
+  type XcodeProject,
+  withXcodeProject,
+} from 'expo/config-plugins';
+import fs from 'fs/promises';
 import path from 'path';
 
+import { type ContentsJsonImage, writeContentsJsonAsync } from './AssetContents';
 import { IMAGE_TYPES, resolveAssetPaths, validateAssets } from './utils';
 
 const IMAGE_DIR = 'Images.xcassets';
@@ -58,12 +59,12 @@ async function addImageAssets(assets: string[], root: string) {
     const image = path.basename(asset);
 
     const assetPath = path.resolve(iosNamedProjectRoot, `${IMAGE_DIR}/${name}.imageset`);
-    await ensureDir(assetPath);
+    await fs.mkdir(assetPath, { recursive: true });
 
     const buffer = await generateImageAsync({ projectRoot: root }, {
       src: asset,
     } as unknown as ImageOptions);
-    await writeFile(path.resolve(assetPath, image), buffer.source);
+    await fs.writeFile(path.resolve(assetPath, image), buffer.source);
 
     await writeContentsJsonFileAsync({
       assetPath,
@@ -85,18 +86,8 @@ async function writeContentsJsonFileAsync({
 
 function buildContentsJsonImages({ image }: { image: string }): ContentsJsonImage[] {
   return [
-    createContentsJsonItem({
-      idiom: 'universal',
-      filename: image,
-      scale: '1x',
-    }),
-    createContentsJsonItem({
-      idiom: 'universal',
-      scale: '2x',
-    }),
-    createContentsJsonItem({
-      idiom: 'universal',
-      scale: '3x',
-    }),
-  ] as ContentsJsonImage[];
+    { idiom: 'universal', filename: image, scale: '1x' },
+    { idiom: 'universal', scale: '2x' },
+    { idiom: 'universal', scale: '3x' },
+  ];
 }

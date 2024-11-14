@@ -10,8 +10,19 @@
 
 ### 💡 Others
 
+## 6.0.0 — 2024-10-22
+
+### 🐛 Bug fixes
+
+- Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Add basic support for using in API routes. ([#31480](https://github.com/expo/expo/pull/31480) by [@EvanBacon](https://github.com/EvanBacon))
+- Use getRandomValues from expo-crypto ([#22608](https://github.com/expo/expo/pull/22608) by [@LinusU](https://github.com/LinusU))
 - Add a standard main package entry point (`index.ts`). ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
 - Prefer using `type` for describing the shape of objects. ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
 
 ## 5.5.2 — 2024-05-02
 

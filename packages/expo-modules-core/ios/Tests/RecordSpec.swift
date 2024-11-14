@@ -22,6 +22,29 @@ class RecordSpec: ExpoSpec {
       expect(record.toDictionary()["a"] as? String).to(equal(dict["a"]!))
     }
 
+    it("works back and forth with an enum") {
+      enum StringEnum: String, Enumerable {
+        case deleted
+        case created
+      }
+      enum IntEnum: Int, Enumerable {
+        case one = 1
+        case two
+      }
+      struct TestRecord: Record {
+        @Field var a: StringEnum = .created
+        @Field var b: IntEnum?
+      }
+      let dict = ["a": "deleted", "b": 1]
+      let record = try TestRecord(from: dict, appContext: appContext)
+
+      expect(record.a).to(equal(StringEnum.deleted))
+      expect(record.b).to(equal(IntEnum.one))
+
+      expect(record.toDictionary()["a"] as? String).to(equal(dict["a"]! as! String))
+      expect(record.toDictionary()["b"] as? Int).to(equal(dict["b"]! as! Int))
+    }
+
     it("works back and forth with a keyed field") {
       struct TestRecord: Record {
         @Field("key") var a: String?

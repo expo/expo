@@ -3,13 +3,12 @@ import { generateImageAsync } from '@expo/image-utils';
 import Debug from 'debug';
 import fs from 'fs-extra';
 // @ts-ignore
-import Jimp from 'jimp-compact';
-import * as path from 'path';
+import path from 'path';
 
 import { IOSSplashConfig } from './getIosSplashConfig';
 import {
   ContentsJsonImage,
-  ContentsJsonImageAppearance,
+  ContentsJsonAppearance,
   createContentsJsonItem,
   writeContentsJsonAsync,
 } from '../../icons/AssetContents';
@@ -17,12 +16,11 @@ import {
 const debug = Debug('expo:prebuild-config:expo-splash-screen:ios:assets');
 
 const IMAGE_CACHE_NAME = 'splash-ios';
-const IMAGESET_PATH = 'Images.xcassets/SplashScreen.imageset';
-const BACKGROUND_IMAGESET_PATH = 'Images.xcassets/SplashScreenBackground.imageset';
-const PNG_FILENAME = 'image.png';
-const DARK_PNG_FILENAME = 'dark_image.png';
-const TABLET_PNG_FILENAME = 'tablet_image.png';
-const DARK_TABLET_PNG_FILENAME = 'dark_tablet_image.png';
+const IMAGESET_PATH = 'Images.xcassets/SplashScreenLogo.imageset';
+const PNG_FILENAME = 'image';
+const DARK_PNG_FILENAME = 'dark_image';
+const TABLET_PNG_FILENAME = 'tablet_image';
+const DARK_TABLET_PNG_FILENAME = 'dark_tablet_image';
 
 export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
   if (!splash) {
@@ -33,11 +31,6 @@ export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splas
     async (config) => {
       const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
 
-      await createSplashScreenBackgroundImageAsync({
-        iosNamedProjectRoot,
-        splash,
-      });
-
       await configureImageAssets({
         projectRoot: config.modRequest.projectRoot,
         iosNamedProjectRoot,
@@ -45,6 +38,8 @@ export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splas
         darkImage: splash.dark?.image,
         tabletImage: splash.tabletImage,
         darkTabletImage: splash.dark?.tabletImage,
+        imageWidth: splash.imageWidth ?? 100,
+        enableFullScreenImage: splash.enableFullScreenImage_legacy,
       });
 
       return config;
@@ -62,16 +57,19 @@ async function configureImageAssets({
   darkImage,
   tabletImage,
   darkTabletImage,
+  imageWidth,
+  enableFullScreenImage,
 }: {
   projectRoot: string;
   iosNamedProjectRoot: string;
   image?: string | null;
   darkImage?: string | null;
-  tabletImage: string | null;
+  tabletImage?: string;
   darkTabletImage?: string | null;
+  imageWidth: number;
+  enableFullScreenImage?: boolean;
 }) {
   const imageSetPath = path.resolve(iosNamedProjectRoot, IMAGESET_PATH);
-
   // ensure old SplashScreen imageSet is removed
   await fs.remove(imageSetPath);
 
@@ -94,38 +92,8 @@ async function configureImageAssets({
     darkImage,
     tabletImage,
     darkTabletImage,
-  });
-}
-
-async function createPngFileAsync(color: string, filePath: string) {
-  const png = new Jimp(1, 1, color);
-  return png.writeAsync(filePath);
-}
-
-async function createBackgroundImagesAsync({
-  iosNamedProjectRoot,
-  color,
-  darkColor,
-  tabletColor,
-  darkTabletColor,
-}: {
-  iosNamedProjectRoot: string;
-  color: string;
-  darkColor: string | null;
-  tabletColor: string | null;
-  darkTabletColor: string | null;
-}) {
-  await generateImagesAssetsAsync({
-    async generateImageAsset(item, fileName) {
-      await createPngFileAsync(
-        item,
-        path.resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH, fileName)
-      );
-    },
-    anyItem: color,
-    darkItem: darkColor,
-    tabletItem: tabletColor,
-    darkTabletItem: darkTabletColor,
+    imageWidth,
+    enableFullScreenImage,
   });
 }
 
@@ -136,6 +104,8 @@ async function copyImageFiles({
   darkImage,
   tabletImage,
   darkTabletImage,
+  imageWidth,
+  enableFullScreenImage,
 }: {
   projectRoot: string;
   iosNamedProjectRoot: string;
@@ -143,17 +113,31 @@ async function copyImageFiles({
   darkImage?: string | null;
   tabletImage?: string | null;
   darkTabletImage?: string | null;
+  imageWidth: number;
+  enableFullScreenImage?: boolean;
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
-      // Using this method will cache the images in `.expo` based on the properties used to generate them.
-      // this method also supports remote URLs and using the global sharp instance.
-      const { source } = await generateImageAsync({ projectRoot, cacheType: IMAGE_CACHE_NAME }, {
-        src: item,
-      } as any);
-      // Write image buffer to the file system.
-      // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
-      await fs.writeFile(path.resolve(iosNamedProjectRoot, IMAGESET_PATH, fileName), source);
+      [
+        { ratio: 1, suffix: '' },
+        { ratio: 2, suffix: '@2x' },
+        { ratio: 3, suffix: '@3x' },
+      ].map(async ({ ratio, suffix }) => {
+        const size = imageWidth * ratio;
+        // Using this method will cache the images in `.expo` based on the properties used to generate them.
+        // this method also supports remote URLs and using the global sharp instance.
+        const { source } = await generateImageAsync({ projectRoot, cacheType: IMAGE_CACHE_NAME }, {
+          src: item,
+          width: enableFullScreenImage ? undefined : size,
+          height: enableFullScreenImage ? undefined : size,
+        } as any);
+        // Write image buffer to the file system.
+        // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
+        await fs.writeFile(
+          path.resolve(iosNamedProjectRoot, IMAGESET_PATH, `${fileName}${suffix}.png`),
+          source
+        );
+      });
     },
     anyItem: image,
     darkItem: darkImage,
@@ -185,46 +169,11 @@ async function generateImagesAssetsAsync({
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }
 
-async function createSplashScreenBackgroundImageAsync({
-  iosNamedProjectRoot,
-  splash,
-}: {
-  // Something like projectRoot/ios/MyApp/
-  iosNamedProjectRoot: string;
-  splash: IOSSplashConfig;
-}) {
-  const color = splash.backgroundColor;
-  const darkColor = splash.dark?.backgroundColor;
-  const tabletColor = splash.tabletBackgroundColor;
-  const darkTabletColor = splash.dark?.tabletBackgroundColor;
-
-  const imagesetPath = path.join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
-  // Ensure the Images.xcassets/... path exists
-  await fs.remove(imagesetPath);
-  await fs.ensureDir(imagesetPath);
-
-  await createBackgroundImagesAsync({
-    iosNamedProjectRoot,
-    color,
-    darkColor: darkColor ? darkColor : null,
-    tabletColor: tabletColor ? tabletColor : null,
-    darkTabletColor: darkTabletColor ? darkTabletColor : null,
-  });
-
-  await writeContentsJsonFileAsync({
-    assetPath: path.resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH),
-    image: PNG_FILENAME,
-    darkImage: darkColor ? DARK_PNG_FILENAME : null,
-    tabletImage: tabletColor ? TABLET_PNG_FILENAME : null,
-    darkTabletImage: darkTabletColor ? DARK_TABLET_PNG_FILENAME : null,
-  });
-}
-
-const darkAppearances: ContentsJsonImageAppearance[] = [
+const darkAppearances: ContentsJsonAppearance[] = [
   {
     appearance: 'luminosity',
     value: 'dark',
-  } as ContentsJsonImageAppearance,
+  } as ContentsJsonAppearance,
 ];
 
 export function buildContentsJsonImages({
@@ -242,15 +191,17 @@ export function buildContentsJsonImages({
     // Phone light
     createContentsJsonItem({
       idiom: 'universal',
-      filename: image,
+      filename: `${image}.png`,
       scale: '1x',
     }),
     createContentsJsonItem({
       idiom: 'universal',
+      filename: `${image}@2x.png`,
       scale: '2x',
     }),
     createContentsJsonItem({
       idiom: 'universal',
+      filename: `${image}@3x.png`,
       scale: '3x',
     }),
     // Phone dark
@@ -258,45 +209,49 @@ export function buildContentsJsonImages({
       createContentsJsonItem({
         idiom: 'universal',
         appearances: darkAppearances,
-        filename: darkImage,
         scale: '1x',
+        filename: `${darkImage}.png`,
       }),
     darkImage &&
       createContentsJsonItem({
         idiom: 'universal',
         appearances: darkAppearances,
         scale: '2x',
+        filename: `${darkImage}@2x.png`,
       }),
     darkImage &&
       createContentsJsonItem({
         idiom: 'universal',
         appearances: darkAppearances,
         scale: '3x',
+        filename: `${darkImage}@3x.png`,
       }),
     // Tablet light
     tabletImage &&
       createContentsJsonItem({
         idiom: 'ipad',
-        filename: tabletImage,
+        filename: `${tabletImage}.png`,
         scale: '1x',
       }),
     tabletImage &&
       createContentsJsonItem({
         idiom: 'ipad',
         scale: '2x',
+        filename: `${tabletImage}@2x.png`,
       }),
     // Phone dark
     darkTabletImage &&
       createContentsJsonItem({
         idiom: 'ipad',
         appearances: darkAppearances,
-        filename: darkTabletImage ?? undefined,
+        filename: `${darkTabletImage}.png`,
         scale: '1x',
       }),
     darkTabletImage &&
       createContentsJsonItem({
         idiom: 'ipad',
         appearances: darkAppearances,
+        filename: `${darkTabletImage}@2x.png`,
         scale: '2x',
       }),
   ].filter(Boolean) as ContentsJsonImage[];

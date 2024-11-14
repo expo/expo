@@ -58,7 +58,6 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     init.body = createReadableStreamFromReadable(req);
-    // @ts-expect-error
     init.duplex = 'half';
   }
 
@@ -67,7 +66,7 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 
 export async function respond(res: http.ServerResponse, expoRes: Response): Promise<void> {
   res.statusMessage = expoRes.statusText;
-  res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()]);
+  res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()].flat());
 
   if (expoRes.body) {
     await writeReadableStreamToWritable(expoRes.body, res);

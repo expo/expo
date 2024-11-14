@@ -1,31 +1,17 @@
-import { css } from '@emotion/react';
-import { theme, typography, shadows } from '@expo/styleguide';
-import { spacing, borderRadius } from '@expo/styleguide-base';
-import { ChevronDownIcon } from '@expo/styleguide-icons';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 
-const STYLES_SELECT = css({
-  ...typography.fontSizes[14],
-  color: theme.text.default,
-  margin: 0,
-  marginTop: spacing[1],
-  padding: `${spacing[2]}px ${spacing[3]}px`,
-  minHeight: 40,
-  borderRadius: borderRadius.md,
-  marginBottom: spacing[4],
-  width: '100%',
-  backgroundColor: theme.background.default,
-  border: `1px solid ${theme.border.default}`,
-  boxShadow: shadows.xs,
-  appearance: 'none',
-  outline: 'none',
-  cursor: 'pointer',
-});
+import packageJson from '~/package.json';
 
 export type VersionSelectorProps = {
   version?: string | undefined;
   setVersion: (version: string) => void;
   availableVersions: string[];
 };
+
+export const BETA_MAJOR_VERSION =
+  'betaVersion' in packageJson && typeof packageJson.betaVersion === 'string'
+    ? packageJson.betaVersion.split('.')[0]
+    : undefined;
 
 export const VersionSelector = ({
   version,
@@ -36,16 +22,18 @@ export const VersionSelector = ({
     <div className="relative">
       <select
         id="version-menu"
-        css={STYLES_SELECT}
+        className="m-0 mt-1 min-h-[40px] w-full cursor-pointer appearance-none rounded-md border border-default bg-default px-3 py-2 text-xs text-default shadow-xs"
         value={version}
         onChange={e => setVersion(e.target.value)}>
         {availableVersions.map(version => (
           <option key={version} value={version}>
-            {version === 'unversioned' ? 'unversioned' : `SDK ${version}`}
+            {version === 'unversioned'
+              ? 'unversioned'
+              : `SDK ${version}${version === BETA_MAJOR_VERSION ? '  (beta)' : ''}`}
           </option>
         ))}
       </select>
-      <ChevronDownIcon className="icon-sm text-icon-secondary absolute right-3 top-4 pointer-events-none" />
+      <ChevronDownIcon className="icon-sm pointer-events-none absolute right-3 top-4 text-icon-secondary" />
     </div>
   );
 };

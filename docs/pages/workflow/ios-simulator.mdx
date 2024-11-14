@@ -3,13 +3,13 @@ title: iOS Simulator
 description: Learn how you can install the iOS Simulator on your Mac and use it to develop your app.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import Video from '~/components/plugins/Video';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import XcodeInstructions from 'scenes/get-started/set-up-your-environment/instructions/_xcodeInstructions.mdx';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
-import XcodeInstructions from 'scenes/get-started/set-up-your-environment/instructions/_xcodeInstructions.mdx';
 
 Developing your app directly on a computer can be more convenient than constantly interacting with an iPhone or iPad, especially when network conditions are slow or when a [tunnel connection](/more/expo-cli/#tunneling) is required due to LAN limitations.
 
@@ -27,14 +27,14 @@ Run your app with `npx expo start` and press <kbd>i</kbd> from the command line.
 
 You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again to see if it was successful. If not, check the [troubleshooting](#troubleshooting) tips below.
 
-<Video file="open-in-ios-simulator.mp4" />
+<ContentSpotlight file="open-in-ios-simulator.mp4" />
 
 You can also press <kbd>shift</kbd> + <kbd>i</kbd> in the Expo CLI to interactively select a simulator to open.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="List of iOS Simulators in the Expo CLI UI."
   src="/static/images/ios-simulator/simulators-list.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 </Step>
@@ -69,7 +69,7 @@ The Simulator also suspends background apps and processes on iOS 11 and later.
 
 Sometimes the iOS Simulator doesn't respond to the open command. If it seems stuck on this prompt, you can open the iOS Simulator manually (`open -a Simulator`) and then in the macOS toolbar, choose **File** &gt; **Open Simulator**, and select an iOS version and device that you'd like to open.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Opening a simulator manually from the macOS toolbar."
   src="/static/images/ios-simulator/open-simulator-manually.png"
 />

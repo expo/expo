@@ -21,6 +21,10 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?)
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool)
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status)
+  func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate)
+  func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode)
+  func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?)
+  func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?)
 }
 
 // Default implementations for the delegate
@@ -33,6 +37,10 @@ extension VideoPlayerObserverDelegate {
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {}
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool) {}
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status) {}
+  func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {}
+  func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode) {}
+  func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?) {}
+  func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {}
 }
 
 // Wrapper used to store WeakReferences to the observer delegate
@@ -58,14 +66,18 @@ final class WeakPlayerObserverDelegate: Hashable {
 }
 
 class VideoPlayerObserver {
-  let player: AVPlayer
+  private weak var owner: VideoPlayer?
+  var player: AVPlayer? {
+    owner?.pointer
+  }
   var delegates = Set<WeakPlayerObserverDelegate>()
-  weak var delegate: VideoPlayerObserverDelegate?
   private var currentItem: VideoPlayerItem?
+  private var loadedCurrentItem = false
+  private var periodicTimeObserver: Any?
 
   private var isPlaying: Bool = false {
     didSet {
-      if oldValue != isPlaying {
+      if let player, oldValue != isPlaying {
         delegates.forEach { delegate in
           delegate.value?.onIsPlayingChanged(player: player, oldIsPlaying: oldValue, newIsPlaying: isPlaying)
         }
@@ -75,7 +87,7 @@ class VideoPlayerObserver {
   private var error: Exception?
   private var status: PlayerStatus = .idle {
     didSet {
-      if oldValue != status {
+      if let player, oldValue != status {
         delegates.forEach { delegate in
           delegate.value?.onStatusChanged(player: player, oldStatus: oldValue, newStatus: status, error: error)
         }
@@ -92,20 +104,21 @@ class VideoPlayerObserver {
   private var playerVolumeObserver: NSKeyValueObservation?
   private var playerCurrentItemObserver: NSKeyValueObservation?
   private var playerIsMutedObserver: NSKeyValueObservation?
+  private var playerAudioMixingModeObserver: NSKeyValueObservation?
 
   // Current player item observers
   private var playbackBufferEmptyObserver: NSKeyValueObservation?
   private var playerItemStatusObserver: NSKeyValueObservation?
   private var playbackLikelyToKeepUpObserver: NSKeyValueObservation?
+  private var currentSubtitlesObserver: NSObjectProtocol?
 
-  init(player: AVPlayer) {
-    self.player = player
+  init(owner: VideoPlayer) {
+    self.owner = owner
     initializePlayerObservers()
   }
 
   deinit {
-    invalidatePlayerObservers()
-    invalidateCurrentPlayerItemObservers()
+    cleanup()
   }
 
   func registerDelegate(delegate: VideoPlayerObserverDelegate) {
@@ -117,13 +130,34 @@ class VideoPlayerObserver {
     delegates.remove(WeakPlayerObserverDelegate(value: delegate))
   }
 
+  func cleanup() {
+    delegates.removeAll()
+    invalidatePlayerObservers()
+    invalidateCurrentPlayerItemObservers()
+  }
+
   private func initializePlayerObservers() {
-    playerRateObserver = player.observe(\.rate, options: [.initial, .new, .old], changeHandler: onPlayerRateChanged)
-    playerStatusObserver = player.observe(\.status, options: [.initial, .new, .old], changeHandler: onPlayerStatusChanged)
-    playerTimeControlStatusObserver = player.observe(\.timeControlStatus, options: [.new, .old], changeHandler: onTimeControlStatusChanged)
-    playerVolumeObserver = player.observe(\.volume, options: [.initial, .new, .old], changeHandler: onPlayerVolumeChanged)
-    playerIsMutedObserver = player.observe(\.isMuted, options: [.initial, .new, .old], changeHandler: onPlayerIsMutedChanged)
-    playerCurrentItemObserver = player.observe(\.currentItem, options: [.initial, .new], changeHandler: onPlayerCurrentItemChanged)
+    guard let player else {
+      return
+    }
+    playerRateObserver = player.observe(\.rate, options: [.initial, .new, .old]) { [weak self] player, change in
+      self?.onPlayerRateChanged(player, change)
+    }
+    playerStatusObserver = player.observe(\.status, options: [.initial, .new, .old]) { [weak self] player, change in
+      self?.onPlayerStatusChanged(player, change)
+    }
+    playerTimeControlStatusObserver = player.observe(\.timeControlStatus, options: [.new, .old]) { [weak self] player, change in
+      self?.onTimeControlStatusChanged(player, change)
+    }
+    playerVolumeObserver = player.observe(\.volume, options: [.initial, .new, .old]) { [weak self] player, change in
+      self?.onPlayerVolumeChanged(player, change)
+    }
+    playerIsMutedObserver = player.observe(\.isMuted, options: [.initial, .new, .old]) { [weak self] player, change in
+      self?.onPlayerIsMutedChanged(player, change)
+    }
+    playerCurrentItemObserver = player.observe(\.currentItem, options: [.initial, .new]) { [weak self] player, change in
+      self?.onPlayerCurrentItemChanged(player, change)
+    }
   }
 
   private func invalidatePlayerObservers() {
@@ -136,9 +170,17 @@ class VideoPlayerObserver {
   }
 
   private func initializeCurrentPlayerItemObservers(player: AVPlayer, playerItem: AVPlayerItem) {
-    playbackBufferEmptyObserver = playerItem.observe(\.isPlaybackBufferEmpty, changeHandler: onIsBufferEmptyChanged)
-    playbackLikelyToKeepUpObserver = playerItem.observe(\.isPlaybackLikelyToKeepUp, changeHandler: onPlayerLikelyToKeepUpChanged)
-    playerItemStatusObserver = playerItem.observe(\.status, options: [.initial, .new], changeHandler: onItemStatusChanged)
+    playbackBufferEmptyObserver = playerItem.observe(\.isPlaybackBufferEmpty) { [weak self] item, change in
+      self?.onIsBufferEmptyChanged(item, change)
+    }
+
+    playbackLikelyToKeepUpObserver = playerItem.observe(\.isPlaybackLikelyToKeepUp) { [weak self] item, change in
+      self?.onPlayerLikelyToKeepUpChanged(item, change)
+    }
+
+    playerItemStatusObserver = playerItem.observe(\.status, options: [.initial, .new]) { [weak self] item, change in
+      self?.onItemStatusChanged(item, change)
+    }
 
     playerItemObserver = NotificationCenter.default.addObserver(
       forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
@@ -149,13 +191,52 @@ class VideoPlayerObserver {
         delegate.value?.onPlayedToEnd(player: player)
       }
     }
+
+    currentSubtitlesObserver = NotificationCenter.default.addObserver(
+      forName: AVPlayerItem.mediaSelectionDidChangeNotification,
+      object: playerItem,
+      queue: nil
+    ) { [weak self] _ in
+      self?.delegates.forEach { delegate in
+        let subtitleTrack = VideoPlayerSubtitles.findCurrentSubtitleTrack(for: playerItem)
+        delegate.value?.onSubtitleSelectionChanged(player: player, playerItem: playerItem, subtitleTrack: subtitleTrack)
+      }
+    }
   }
 
   private func invalidateCurrentPlayerItemObservers() {
     playbackLikelyToKeepUpObserver?.invalidate()
     playbackBufferEmptyObserver?.invalidate()
     playerItemStatusObserver?.invalidate()
-    NotificationCenter.default.removeObserver(playerItemObserver)
+    NotificationCenter.default.removeObserver(playerItemObserver as Any)
+  }
+
+  func startOrUpdateTimeUpdates(forInterval interval: Double) {
+    let interval = CMTimeMake(value: Int64(interval * 1000), timescale: CMTimeScale(1000))
+
+    stopTimeUpdates()
+    self.periodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] _ in
+      guard let self, let player, let owner else {
+        return
+      }
+      let update = TimeUpdate(
+        currentTime: player.currentTime().seconds,
+        currentLiveTimestamp: owner.currentLiveTimestamp,
+        currentOffsetFromLive: owner.currentOffsetFromLive,
+        bufferedPosition: owner.bufferedPosition
+      )
+
+      delegates.forEach { delegate in
+        delegate.value?.onTimeUpdate(player: player, timeUpdate: update)
+      }
+    }
+  }
+
+  func stopTimeUpdates() {
+    if let periodicTimeObserver {
+      player?.removeTimeObserver(periodicTimeObserver)
+      self.periodicTimeObserver = nil
+    }
   }
 
   // MARK: - VideoPlayerObserverDelegate
@@ -173,6 +254,7 @@ class VideoPlayerObserver {
       delegates.forEach { delegate in
         delegate.value?.onItemChanged(player: player, oldVideoPlayerItem: currentItem, newVideoPlayerItem: videoPlayerItem)
       }
+      loadedCurrentItem = false
       return
     }
 
@@ -188,10 +270,23 @@ class VideoPlayerObserver {
       )
     }
     currentItem = nil
+    // Nil player item will be loaded instantly
+    onLoadedPlayerItem(player: player, playerItem: nil)
   }
 
+  private func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {
+    loadedCurrentItem = true
+    delegates.forEach { delegate in
+      delegate.value?.onLoadedPlayerItem(player: player, playerItem: playerItem)
+    }
+
+    // Changing the player item will disable the subtitles
+    delegates.forEach { delegate in
+      delegate.value?.onSubtitleSelectionChanged(player: player, playerItem: playerItem, subtitleTrack: nil)
+    }
+  }
   private func onItemStatusChanged(_ playerItem: AVPlayerItem, _ change: NSKeyValueObservedChange<AVPlayerItem.Status>) {
-    if player.status != .failed {
+    if player?.status != .failed {
       error = nil
     }
 
@@ -209,8 +304,14 @@ class VideoPlayerObserver {
       }
     }
 
+    if let player, !loadedCurrentItem && (status == .readyToPlay || status == .error) {
+      onLoadedPlayerItem(player: player, playerItem: playerItem)
+    }
+
     delegates.forEach { delegate in
-      delegate.value?.onPlayerItemStatusChanged(player: player, oldStatus: change.oldValue, newStatus: playerItem.status)
+      if let player {
+        delegate.value?.onPlayerItemStatusChanged(player: player, oldStatus: change.oldValue, newStatus: playerItem.status)
+      }
     }
   }
 

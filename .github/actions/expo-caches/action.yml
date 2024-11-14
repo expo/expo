@@ -138,7 +138,7 @@ runs:
 
     - name: ♻️ Restore Gradle cache
       if: inputs.ndk == 'true' || inputs.gradle == 'true'
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/actions/setup-gradle@v3
 
     - name: ♻️ Restore Android NDK from cache
       if: inputs.ndk == 'true'

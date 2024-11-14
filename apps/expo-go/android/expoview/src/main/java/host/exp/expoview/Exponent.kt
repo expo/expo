@@ -15,19 +15,22 @@ import com.facebook.common.internal.ByteStreams
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory
 import com.facebook.imagepipeline.producers.HttpUrlConnectionNetworkFetcher
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
+import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor
+import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpNetworkInterceptor
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
+import host.exp.exponent.experience.ExpoNativeHost
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.ExponentUrls.addHeadersFromJSONObject
 import host.exp.exponent.kernel.KernelConstants
-import host.exp.exponent.kernel.KernelNetworkInterceptor
 import host.exp.exponent.network.ExpoResponse
 import host.exp.exponent.network.ExponentHttpClient.SafeCallback
 import host.exp.exponent.network.ExponentNetwork
@@ -226,7 +229,9 @@ class Exponent private constructor(val context: Context, val application: Applic
               printSourceFile(sourceFile.absolutePath)
             }
 
-            expoHandler.post { bundleListener.onBundleLoaded(sourceFile.absolutePath) }
+            expoHandler.post {
+              bundleListener.onBundleLoaded(sourceFile.absolutePath)
+            }
           } catch (e: Exception) {
             bundleListener.onError(e)
           }
@@ -337,7 +342,7 @@ class Exponent private constructor(val context: Context, val application: Applic
       return URLEncoder.encode("experience-$manifestId", "UTF-8")
     }
 
-    fun getPort(urlArg: String): Int {
+    private fun getPort(urlArg: String): Int {
       var url = urlArg
       if (!url.contains("://")) {
         url = "http://$url"
@@ -351,7 +356,7 @@ class Exponent private constructor(val context: Context, val application: Applic
       }
     }
 
-    fun getHostname(urlArg: String): String? {
+    private fun getHostname(urlArg: String): String? {
       var url = urlArg
       if (!url.contains("://")) {
         url = "http://$url"
@@ -363,36 +368,24 @@ class Exponent private constructor(val context: Context, val application: Applic
     @JvmStatic fun enableDeveloperSupport(
       debuggerHost: String,
       mainModuleName: String,
-      builder: RNObject
+      host: ExpoNativeHost
     ) {
       if (debuggerHost.isEmpty() || mainModuleName.isEmpty()) {
         return
       }
 
       try {
-        val fieldObject = RNObject("com.facebook.react.modules.systeminfo.AndroidInfoHelpers")
-        fieldObject.loadVersion(builder.version())
-
         val debuggerHostHostname = getHostname(debuggerHost)
         val debuggerHostPort = getPort(debuggerHost)
 
-        val deviceField = fieldObject.rnClass()!!.getDeclaredField("DEVICE_LOCALHOST")
-        deviceField.isAccessible = true
-        deviceField[null] = debuggerHostHostname
+        AndroidInfoHelpers.DEVICE_LOCALHOST = debuggerHostHostname
+        AndroidInfoHelpers.GENYMOTION_LOCALHOST = debuggerHostHostname
+        AndroidInfoHelpers.EMULATOR_LOCALHOST = debuggerHostHostname
+        AndroidInfoHelpers.setDevServerPort(debuggerHostPort)
+        AndroidInfoHelpers.setInspectorProxyPort(debuggerHostPort)
 
-        val genymotionField = fieldObject.rnClass()!!.getDeclaredField("GENYMOTION_LOCALHOST")
-        genymotionField.isAccessible = true
-        genymotionField[null] = debuggerHostHostname
-
-        val emulatorField = fieldObject.rnClass()!!.getDeclaredField("EMULATOR_LOCALHOST")
-        emulatorField.isAccessible = true
-        emulatorField[null] = debuggerHostHostname
-
-        fieldObject.callStatic("setDevServerPort", debuggerHostPort)
-        fieldObject.callStatic("setInspectorProxyPort", debuggerHostPort)
-
-        builder.callRecursive("setUseDeveloperSupport", true)
-        builder.callRecursive("setJSMainModulePath", mainModuleName)
+        host.devSupportEnabled = true
+        host.mainModuleName = mainModuleName
       } catch (e: IllegalAccessException) {
         e.printStackTrace()
       } catch (e: NoSuchFieldException) {
@@ -418,8 +411,8 @@ class Exponent private constructor(val context: Context, val application: Applic
         .connectTimeout(HttpUrlConnectionNetworkFetcher.HTTP_DEFAULT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
         .readTimeout(0, TimeUnit.MILLISECONDS)
         .writeTimeout(0, TimeUnit.MILLISECONDS)
-        .addInterceptor(KernelNetworkInterceptor.okhttpAppInterceptorProxy)
-        .addNetworkInterceptor(KernelNetworkInterceptor.okhttpNetworkInterceptorProxy)
+        .addInterceptor(ExpoNetworkInspectOkHttpAppInterceptor())
+        .addNetworkInterceptor(ExpoNetworkInspectOkHttpNetworkInterceptor())
         .build()
       val imagePipelineConfig = OkHttpImagePipelineConfigFactory.newBuilder(context, okHttpClient).build()
       Fresco.initialize(context, imagePipelineConfig)

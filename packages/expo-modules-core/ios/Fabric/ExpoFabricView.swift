@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#if RCT_NEW_ARCH_ENABLED
+
 @objc(ExpoFabricView)
 open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
@@ -7,7 +9,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    The app context is injected into the class after the context is initialized.
    see the `makeClass` static function.
    */
-  public weak var appContext: AppContext? { ExpoFabricView.appContextFromClass() }
+  public weak var appContext: AppContext?
 
   /**
    The view definition that setup from `ExpoFabricView.create()`.
@@ -35,6 +37,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
 
   required public init(appContext: AppContext? = nil) {
+    self.appContext = appContext
     super.init(frame: .zero)
   }
 
@@ -116,6 +119,16 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
 
   // MARK: - Statics
 
+  /**
+   Called by React Native to check if the view supports recycling.
+   */
+  @objc
+  public static func shouldBeRecycled() -> Bool {
+    // Turn off recycling for Expo views. We don't think there is any benefit of recycling – it may lead to more bugs than gains.
+    // TODO: Make it possible to override this behavior for particular views
+    return false
+  }
+
   internal static var viewClassesRegistry = [String: AnyClass]()
 
   /**
@@ -125,8 +138,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    but we can't do that as there might be more than one class with the same name (Expo Go) and allocating another one would return `nil`.
    */
   @objc
-  public static func makeViewClass(forAppContext appContext: AppContext, className: String) -> AnyClass? {
-    let moduleName = String(className.dropFirst(ViewModuleWrapper.viewManagerAdapterPrefix.count))
+  public static func makeViewClass(forAppContext appContext: AppContext, moduleName: String, className: String) -> AnyClass? {
     if let viewClass = viewClassesRegistry[className] {
       inject(appContext: appContext)
       injectInitializer(appContext: appContext, moduleName: moduleName, toViewClass: viewClass)
@@ -175,3 +187,5 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
   // swiftlint:enable unavailable_function
 }
+
+#endif // RCT_NEW_ARCH_ENABLED

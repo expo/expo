@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Head = void 0;
-const core_1 = require("@react-navigation/core");
+const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const ExpoHeadModule_1 = require("./ExpoHeadModule");
 const url_1 = require("./url");
@@ -142,7 +142,7 @@ function isTruthy(value) {
     return [true, 'true'].includes(value);
 }
 function HeadNative(props) {
-    const isFocused = (0, core_1.useIsFocused)();
+    const isFocused = (0, native_1.useIsFocused)();
     if (!isFocused) {
         return <UnfocusedHead />;
     }

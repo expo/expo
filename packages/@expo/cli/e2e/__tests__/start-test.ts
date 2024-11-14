@@ -5,7 +5,6 @@ import {
 } from '@expo/multipart-body-parser';
 import execa from 'execa';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -13,9 +12,9 @@ import {
   execute,
   projectRoot,
   getLoadedModulesAsync,
-  setupTestProjectAsync,
   bin,
   ensurePortFreeAsync,
+  setupTestProjectWithOptionsAsync,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -112,7 +111,8 @@ describe('server', () => {
   it(
     'runs `npx expo start`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-start', 'with-blank');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
+
       await fs.remove(path.join(projectRoot, '.expo'));
 
       const promise = execa('node', [bin, 'start'], {
@@ -153,7 +153,7 @@ describe('server', () => {
 
       const multipartParts = await parseMultipartMixedResponseAsync(
         response.headers.get('content-type') as string,
-        await response.buffer()
+        Buffer.from(await response.arrayBuffer())
       );
       const manifestPart = nullthrows(
         multipartParts.find((part) => isMultipartPartWithName(part, 'manifest'))
@@ -172,7 +172,7 @@ describe('server', () => {
 
       // URLs
       expect(manifest.launchAsset.url).toBe(
-        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=true&transform.routerRoot=app'
+        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable'
       );
       expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:8081');
       expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
@@ -180,7 +180,7 @@ describe('server', () => {
 
       // Manifest
       expect(manifest.runtimeVersion).toBe('1.0');
-      expect(manifest.extra.expoClient.sdkVersion).toBe('49.0.0');
+      expect(manifest.extra.expoClient.sdkVersion).toBe('52.0.0');
       expect(manifest.extra.expoClient.slug).toBe('basic-start');
       expect(manifest.extra.expoClient.name).toBe('basic-start');
 
@@ -188,7 +188,12 @@ describe('server', () => {
       expect(manifest.extra.expoGo.__flipperHack).toBe('React Native packager is running');
 
       console.log('Fetching bundle');
-      const bundle = await fetch(manifest.launchAsset.url).then((res) => res.text());
+      const bundleRequest = await fetch(manifest.launchAsset.url);
+      if (!bundleRequest.ok) {
+        console.error(await bundleRequest.text());
+        throw new Error('Failed to fetch bundle');
+      }
+      const bundle = await bundleRequest.text();
       console.log('Fetched bundle: ', bundle.length);
       expect(bundle.length).toBeGreaterThan(1000);
       console.log('Finished');

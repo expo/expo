@@ -1,26 +1,63 @@
-import * as React from 'react';
-import { resolveHref } from './href';
-import { ExpoRouter } from '../../types/expo-router';
-/** Redirects to the href as soon as the component is mounted. */
-export declare function Redirect({ href }: {
-    href: ExpoRouter.Href;
-}): null;
-export type LinkProps = ExpoRouter.LinkProps;
+import { PropsWithChildren } from 'react';
+import { Href } from '../types';
+import { LinkProps, WebAnchorProps } from './useLinkHooks';
 export interface LinkComponent {
-    (props: React.PropsWithChildren<ExpoRouter.LinkProps>): JSX.Element;
-    /** Helper method to resolve an Href object into a string. */
-    resolveHref: typeof resolveHref;
+    (props: PropsWithChildren<LinkProps>): JSX.Element;
+    /** Helper method to resolve a Href object into a string. */
+    resolveHref: (href: Href) => string;
 }
 /**
- * Component to render link to another route using a path.
- * Uses an anchor tag on the web.
+ * Redirects to the `href` as soon as the component is mounted.
  *
- * @param props.href Absolute path to route (e.g. `/feeds/hot`).
- * @param props.replace Should replace the current route without adding to the history.
- * @param props.push Should push the current route, always adding to the history.
- * @param props.asChild Forward props to child component. Useful for custom buttons.
- * @param props.children Child elements to render the content.
- * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
+ * @example
+ * ```tsx
+ * import { View, Text } from 'react-native';
+ * import { Redirect } from 'expo-router';
+ *
+ * export default function Page() {
+ *  const { user } = useAuth();
+ *
+ *  if (!user) {
+ *    return <Redirect href="/login" />;
+ *  }
+ *
+ *  return (
+ *    <View>
+ *      <Text>Welcome Back!</Text>
+ *    </View>
+ *  );
+ * }
+ * ```
+ */
+export declare function Redirect({ href }: {
+    href: Href;
+}): null;
+/**
+ * Component that renders a link using [`href`](#href) to another route.
+ * By default, it accepts children and wraps them in a `<Text>` component.
+ *
+ * Uses an anchor tag (`<a>`) on web and performs a client-side navigation to preserve
+ * the state of the website and navigate faster. The web-only attributes such as `target`,
+ * `rel`, and `download` are supported and passed to the anchor tag on web. See
+ * [`WebAnchorProps`](#webanchorprops) for more details.
+ *
+ * > **Note**: Client-side navigation works with both single-page apps,
+ * and [static-rendering](/router/reference/static-rendering/).
+ *
+ * @example
+ * ```tsx
+ * import { Link } from 'expo-router';
+ * import { View } from 'react-native';
+ *
+ * export default function Route() {
+ *  return (
+ *   <View>
+ *    <Link href="/about">About</Link>
+ *   </View>
+ *  );
+ *}
+ * ```
  */
 export declare const Link: LinkComponent;
+export { LinkProps, WebAnchorProps };
 //# sourceMappingURL=Link.d.ts.map

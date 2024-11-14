@@ -2,7 +2,7 @@
 
 import React
 
-#if RN_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 public typealias ExpoView = ExpoFabricView
 #else
 /**
@@ -28,6 +28,15 @@ open class ExpoClassicView: RCTView, AnyExpoView {
   @available(*, unavailable)
   required public init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  public func updateProps(_ rawProps: [String: Any]) {
+    // Stub function – it's not used on the old architecture and non-SwiftUI views
+  }
+
+  public func supportsProp(withName name: String) -> Bool {
+    // Stub function – it's not used on the old architecture and non-SwiftUI views
+    return false
   }
 }
 

@@ -59,17 +59,36 @@ function getDirectoryTree(contextModule, options) {
         let node = {
             type: meta.isApi ? 'api' : meta.isLayout ? 'layout' : 'route',
             loadRoute() {
+                let routeModule;
                 if (options.ignoreRequireErrors) {
                     try {
-                        return contextModule(filePath);
+                        routeModule = contextModule(filePath);
                     }
                     catch {
-                        return {};
+                        routeModule = {};
                     }
                 }
                 else {
-                    return contextModule(filePath);
+                    routeModule = contextModule(filePath);
                 }
+                if (process.env.NODE_ENV === 'development' && importMode === 'sync') {
+                    // In development mode, when async routes are disabled, add some extra error handling to improve the developer experience.
+                    // This can be useful when you accidentally use an async function in a route file for the default export.
+                    if (routeModule instanceof Promise) {
+                        throw new Error(`Route "${filePath}" cannot be a promise when async routes is disabled.`);
+                    }
+                    const defaultExport = routeModule?.default;
+                    if (defaultExport instanceof Promise) {
+                        throw new Error(`The default export from route "${filePath}" is a promise. Ensure the React Component does not use async or promises.`);
+                    }
+                    // check if default is an async function without invoking it
+                    if (defaultExport instanceof Function &&
+                        // This only works on web because Hermes support async functions so we have to transform them out.
+                        defaultExport.constructor.name === 'AsyncFunction') {
+                        throw new Error(`The default export from route "${filePath}" is an async function. Ensure the React Component does not use async or promises.`);
+                    }
+                }
+                return routeModule;
             },
             contextKey: filePath,
             route: '',
@@ -80,8 +99,16 @@ function getDirectoryTree(contextModule, options) {
             // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
             // filter the missing routes.
             if (node.type !== 'api' && importMode === 'sync') {
-                if (!node.loadRoute()?.default) {
+                const routeItem = node.loadRoute();
+                // Have a warning for nullish ex
+                const route = routeItem?.default;
+                if (route == null) {
+                    // Do not throw an error since a user may just be creating a new route.
+                    console.warn(`Route "${filePath}" is missing the required default export. Ensure a React component is exported as default.`);
                     continue;
+                }
+                if (['boolean', 'number', 'string'].includes(typeof route)) {
+                    throw new Error(`The default export from route "${filePath}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`);
                 }
             }
         }
@@ -185,10 +212,12 @@ function getDirectoryTree(contextModule, options) {
     }
     // Only include the sitemap if there are routes.
     if (!options.skipGenerated) {
-        if (hasRoutes) {
+        if (hasRoutes && options.sitemap !== false) {
             appendSitemapRoute(rootDirectory, options);
         }
-        appendNotFoundRoute(rootDirectory, options);
+        if (options.notFound !== false) {
+            appendNotFoundRoute(rootDirectory, options);
+        }
     }
     return rootDirectory;
 }
@@ -218,7 +247,7 @@ pathToRemove = '') {
         pathToRemove = layout.route ? `${layout.route}/` : '';
         // Now update this layout with the new relative route and dynamic conventions
         layout.route = newRoute;
-        layout.dynamic = generateDynamic(layout.route);
+        layout.dynamic = generateDynamic(layout.contextKey.slice(0));
     }
     // This should never occur as there will always be a root layout, but it makes the type system happy
     if (!layout)
@@ -373,19 +402,26 @@ function getLayoutNode(node, options) {
     /**
      * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
      * Each of these layouts will have a different initialRouteName based upon the first group name.
-     *
-     * So
      */
     // We may strip loadRoute during testing
-    const groupName = (0, matchers_1.matchGroupName)(node.route);
+    const groupName = (0, matchers_1.matchLastGroupName)(node.route);
     const childMatchingGroup = node.children.find((child) => {
         return child.route.replace(/\/index$/, '') === groupName;
     });
     let initialRouteName = childMatchingGroup?.route;
     const loaded = node.loadRoute();
     if (loaded?.unstable_settings) {
-        // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-        initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+        try {
+            // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+            initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                if (!error.message.match(/You cannot dot into a client module/)) {
+                    throw error;
+                }
+            }
+        }
         if (groupName) {
             // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
             const groupSpecificInitialRouteName = loaded.unstable_settings?.[groupName]?.initialRouteName;
@@ -424,8 +460,17 @@ function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = [
         if (!options.internal_stripLoadRoute) {
             const loaded = node.loadRoute();
             if (loaded?.unstable_settings) {
-                // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-                initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+                try {
+                    // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+                    initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+                }
+                catch (error) {
+                    if (error instanceof Error) {
+                        if (!error.message.match(/You cannot dot into a client module/)) {
+                            throw error;
+                        }
+                    }
+                }
                 if (groupName) {
                     // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
                     const groupSpecificInitialRouteName = loaded.unstable_settings?.[groupName]?.initialRouteName;

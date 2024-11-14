@@ -22,12 +22,12 @@ jobs:
       fail-fast: true
       matrix:
         build-type: [debug, release]
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
-      - name: 🔨 Switch to Xcode 15.2
-        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
+      - name: 🔨 Switch to Xcode 16.0
+        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -73,7 +73,7 @@ jobs:
           NODE_ENV: production
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: ios-builds-oldArch-${{ matrix.build-type }}
@@ -92,7 +92,7 @@ jobs:
           NODE_ENV: production
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: ios-builds-newArch-${{ matrix.build-type }}
@@ -158,7 +158,7 @@ jobs:
           NODE_ENV: production
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: android-builds-oldArch-${{ matrix.build-type }}
@@ -176,7 +176,7 @@ jobs:
           NODE_ENV: production
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: android-builds-newArch-${{ matrix.build-type }}

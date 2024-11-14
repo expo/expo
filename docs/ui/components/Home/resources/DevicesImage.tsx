@@ -1,24 +1,13 @@
-import { css } from '@emotion/react';
-import { breakpoints, darkTheme, palette } from '@expo/styleguide-base';
+import { mergeClasses } from '@expo/styleguide';
+import { palette } from '@expo/styleguide-base';
 
 export const DevicesImage = () => (
   <svg
-    css={css(`
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      max-width: 60%;
-      z-index: 1;
-
-      @media screen and (max-width: ${breakpoints.medium}px) {
-        bottom: -16px;
-      }
-
-      @media screen and (max-width: ${breakpoints.small}px) {
-        bottom: -32px;
-      }
-    `)}
-    className="asset-shadow"
+    className={mergeClasses(
+      'asset-shadow absolute bottom-0 right-0 z-[1] max-w-[60%]',
+      'max-lg-gutters:-bottom-4',
+      'max-sm-gutters:-bottom-8'
+    )}
     width="354"
     height="164"
     viewBox="0 0 354 164"
@@ -32,7 +21,7 @@ export const DevicesImage = () => (
         height="188"
         rx="4"
         transform="rotate(13 214.901 22.3787)"
-        fill={darkTheme.background.element}
+        className="fill-palette-gray12 dark:fill-palette-gray1"
       />
       <rect
         x="211.247"
@@ -111,12 +100,12 @@ export const DevicesImage = () => (
         <path
           id="cbaa9d8985081c60ff5a0f147092262f"
           d="M279.283 82.7974L250.612 102.681L310.276 116.455L315.191 95.1648L309.285 82.5886L288.311 99.6618L279.283 82.7974Z"
-          fill={palette.light.blue11}
+          className="fill-palette-blue11"
         />
         <path
           id="6c507023d7a3817ecba32a2b54239a92"
           d="M266.579 86.2656L245.155 101.381L289.59 111.639L302.673 114.66L288.942 86.0274L273.263 98.9966L266.579 86.2656Z"
-          fill={palette.light.blue10}
+          className="fill-palette-blue10"
         />
       </g>
       <circle
@@ -178,7 +167,7 @@ export const DevicesImage = () => (
       height="179.702"
       rx="6.39994"
       transform="rotate(-13 18.0653 47.8184)"
-      stroke={darkTheme.background.element}
+      className="stroke-palette-gray12 dark:stroke-palette-gray1"
       strokeWidth="7.11105"
     />
     <rect
@@ -240,11 +229,11 @@ export const DevicesImage = () => (
     <g mask="url(#c91e2833bce82b5f6ccc942f780f85d1)">
       <path
         d="M62.6906 61.9562L45.6377 92.3956L105.302 78.6211L100.386 57.3308L89.5646 48.6166L78.1975 73.1563L62.6906 61.9562Z"
-        fill={palette.light.blue11}
+        className="fill-palette-blue11"
       />
       <path
         d="M52.7926 70.6425L40.1633 93.6194L84.598 83.3609L97.6809 80.3404L72.7879 60.6251L64.3809 79.1551L52.7926 70.6425Z"
-        fill={palette.light.blue10}
+        className="fill-palette-blue10"
       />
     </g>
     <circle
@@ -282,7 +271,7 @@ export const DevicesImage = () => (
       width="81.8428"
       height="179.702"
       rx="6.39994"
-      stroke={darkTheme.background.element}
+      className="stroke-palette-gray12 dark:stroke-palette-gray1"
       strokeWidth="7.11105"
     />
     <rect x="125.523" y="33.6431" width="65.4637" height="41.3883" rx="3.31849" fill="white" />
@@ -318,11 +307,11 @@ export const DevicesImage = () => (
     <g mask="url(#cac8353d923d12b52a34815740143c7d)">
       <path
         d="M157.588 49.2446L134.125 75.0678H195.358V53.2174L186.774 42.2922L170.178 63.646L157.588 49.2446Z"
-        fill={palette.light.blue11}
+        className="fill-palette-blue11"
       />
       <path
         d="M145.99 55.4817L128.516 75.0287H174.119H187.546L167.726 50.219L155.366 66.3829L145.99 55.4817Z"
-        fill={palette.light.blue10}
+        className="fill-palette-blue10"
       />
     </g>
     <circle cx="137.916" cy="45.894" r="7.01414" fill="#FFE1A7" />
@@ -342,7 +331,7 @@ export const DevicesImage = () => (
     </g>
     <path
       d="M134.302 13.9601C134.856 13.6266 135.491 13.4504 136.139 13.4504H180.206C180.899 13.4504 181.576 13.6521 182.156 14.0309L185.142 15.9811C187.227 17.343 186.263 20.5831 183.773 20.5831C182.389 20.5831 181.268 21.7046 181.268 23.088V24.1495C181.268 26.1191 179.671 27.7158 177.701 27.7158H138.716C136.746 27.7158 135.149 26.1191 135.149 24.1495V23.1602C135.149 21.7369 133.996 20.5831 132.572 20.5831C129.96 20.5831 129.005 17.1432 131.245 15.7973L134.302 13.9601Z"
-      fill={darkTheme.background.element}
+      className="fill-palette-gray12 dark:fill-palette-gray1"
     />
   </svg>
 );
@@ -377,7 +366,7 @@ export const DevicesImageMasks = () => (
       x2="261.629"
       y2="225.302"
       gradientUnits="userSpaceOnUse">
-      <stop stopColor={palette.light.blue9} />
+      <stop stopColor={palette.light.blue6} />
       <stop offset="1" stopColor={palette.light.blue10} />
     </linearGradient>
     <linearGradient
@@ -387,7 +376,7 @@ export const DevicesImageMasks = () => (
       x2="94.9801"
       y2="223.711"
       gradientUnits="userSpaceOnUse">
-      <stop stopColor={palette.light.blue9} />
+      <stop stopColor={palette.light.blue6} />
       <stop offset="1" stopColor={palette.light.blue10} />
     </linearGradient>
     <linearGradient
@@ -397,7 +386,7 @@ export const DevicesImageMasks = () => (
       x2="194.91"
       y2="192.008"
       gradientUnits="userSpaceOnUse">
-      <stop stopColor={palette.light.blue9} />
+      <stop stopColor={palette.light.blue6} />
       <stop offset="1" stopColor={palette.light.blue10} />
     </linearGradient>
     <clipPath id="clip0_39:1396">

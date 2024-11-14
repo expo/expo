@@ -4,9 +4,10 @@ sidebar_title: Setup
 description: Learn how to setup push notifications, get credentials for development and production, and test sending push notifications.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
 To utilize Expo's push notification service, you must configure your app by installing a set of libraries, implementing functions to handle notifications, and setting up credentials for Android and iOS. Once you have completed the steps mentioned in this guide, you'll be able to test sending and receiving notifications on a device.
@@ -15,6 +16,13 @@ To get the client-side ready for push notifications, the following things are re
 
 - The user's permission to send them push notifications.
 - The user's [`ExpoPushToken`](/versions/latest/sdk/notifications/#expopushtoken).
+
+<br />
+<Collapsible summary="Do you want to use FCMv1/APNs directly, instead of through the Expo push notification service?">
+
+You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic. Learn how to ["Send notifications with FCMv1 and APNs"](/push-notifications/sending-notifications-custom/).
+
+</Collapsible>
 
 ## Prerequisites
 
@@ -184,10 +192,9 @@ Using the previous example, when you are registering for push notifications, you
 
 `projectId` is automatically set when you create a development build. However, **we recommend setting it manually in your project's code**. To do so, you can use [`expo-constants`](/versions/latest/sdk/constants/) to get the `projectId` value from the app config.
 
-```js
-token = await Notifications.getExpoPushTokenAsync({
-  projectId: Constants.expoConfig.extra.eas.projectId,
-});
+```ts
+const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+const pushTokenString = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
 ```
 
 One advantage of attributing the Expo push token to your project's ID is that it doesn't change when a project is transferred between different accounts or the existing account gets renamed.
@@ -241,17 +248,17 @@ After creating and installing the development build, you can use [Expo's push no
 
 4. Click on the **Send a Notification** button.
 
-   <ImageSpotlight
+   <ContentSpotlight
      alt="Expo push notifications tool overview."
      src="/static/images/notifications/push-notifications-tool-overview.png"
-     style={{ maxWidth: 1200 }}
+     className="max-w-screen-xl"
    />
 
 After sending the notification from the tool, you should see the notification on your device. Below is an example of an Android device receiving a push notification.
 
-  <ImageSpotlight
+  <ContentSpotlight
     alt="An Android device receiving a push notification."
     src="/static/images/notifications/notification-on-android.png"
-    style={{ maxWidth: 280 }}
+    className="max-w-[280px]"
   />
 </Step>

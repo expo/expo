@@ -1,4 +1,4 @@
-import { mockConnection } from './testUtilts';
+import { mockConnection } from '../../__tests__/mockConnection';
 import { getDebuggerType } from '../../getDebuggerType';
 import type { DebuggerRequest } from '../../types';
 import {

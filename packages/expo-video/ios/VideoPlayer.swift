@@ -6,17 +6,26 @@ import ExpoModulesCore
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObserverDelegate {
   lazy var contentKeyManager = ContentKeyManager()
-  let observer: VideoPlayerObserver
+  var observer: VideoPlayerObserver?
+  lazy var subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(owner: self)
 
   var loop = false
+  var audioMixingMode: AudioMixingMode = .doNotMix {
+    didSet {
+      if oldValue != audioMixingMode {
+        VideoManager.shared.setAppropriateAudioSessionOrWarn()
+      }
+    }
+  }
   private(set) var isPlaying = false
   private(set) var status: PlayerStatus = .idle
   var playbackRate: Float = 1.0 {
     didSet {
       if oldValue != playbackRate {
-        safeEmit(event: "playbackRateChange", arguments: playbackRate, oldValue)
+        let payload = PlaybackRateChangedEventPayload(playbackRate: playbackRate, oldPlaybackRate: oldValue)
+        safeEmit(event: "playbackRateChange", payload: payload)
       }
-      if #available(iOS 16.0, *) {
+      if #available(iOS 16.0, tvOS 16.0, *) {
         pointer.defaultRate = playbackRate
       }
       pointer.rate = playbackRate
@@ -40,10 +49,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var volume: Float = 1.0 {
     didSet {
       if oldValue != volume {
-        let oldVolumeEvent = VolumeEvent(volume: oldValue, isMuted: isMuted)
-        let newVolumeEvent = VolumeEvent(volume: volume, isMuted: isMuted)
-
-        safeEmit(event: "volumeChange", arguments: newVolumeEvent, oldVolumeEvent)
+        let payload = VolumeChangedEventPayload(volume: volume, oldVolume: oldValue)
+        safeEmit(event: "volumeChange", payload: payload)
       }
       pointer.volume = volume
     }
@@ -52,10 +59,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var isMuted: Bool = false {
     didSet {
       if oldValue != isMuted {
-        let oldVolumeEvent = VolumeEvent(volume: volume, isMuted: oldValue)
-        let newVolumeEvent = VolumeEvent(volume: volume, isMuted: isMuted)
-
-        safeEmit(event: "volumeChange", arguments: newVolumeEvent, oldVolumeEvent)
+        let payload = MutedChangedEventPayload(muted: isMuted, oldMuted: oldValue)
+        safeEmit(event: "mutedChange", payload: payload)
       }
       pointer.isMuted = isMuted
       VideoManager.shared.setAppropriateAudioSessionOrWarn()
@@ -75,18 +80,67 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
+  // TODO: @behenate - Once the Player instance is available in OnStartObserving we can automatically start/stop the interval.
+  var timeUpdateEventInterval: Double = 0 {
+    didSet {
+      if timeUpdateEventInterval <= 0 {
+        observer?.stopTimeUpdates()
+        return
+      }
+      observer?.startOrUpdateTimeUpdates(forInterval: timeUpdateEventInterval)
+    }
+  }
+
+  var currentLiveTimestamp: Double? {
+    guard let currentDate = pointer.currentItem?.currentDate() else {
+      return nil
+    }
+    let timeIntervalSince = currentDate.timeIntervalSince1970
+    return Double(timeIntervalSince * 1000)
+  }
+
+  var currentOffsetFromLive: Double? {
+    guard let currentDate = pointer.currentItem?.currentDate() else {
+      return nil
+    }
+    let timeIntervalSince = currentDate.timeIntervalSince1970
+    let unixTime = Date().timeIntervalSince1970
+    return unixTime - timeIntervalSince
+  }
+
+  var bufferOptions = BufferOptions() {
+    didSet {
+      pointer.currentItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+      pointer.automaticallyWaitsToMinimizeStalling = bufferOptions.waitsToMinimizeStalling
+    }
+  }
+
+  var bufferedPosition: Double {
+    return getBufferedPosition()
+  }
+
   override init(_ pointer: AVPlayer) {
-    observer = VideoPlayerObserver(player: pointer)
     super.init(pointer)
-    observer.registerDelegate(delegate: self)
+    observer = VideoPlayerObserver(owner: self)
+    observer?.registerDelegate(delegate: self)
     VideoManager.shared.register(videoPlayer: self)
+
+    // Disable automatic subtitle selection
+    let selectionCriteria = AVPlayerMediaSelectionCriteria(preferredLanguages: [], preferredMediaCharacteristics: [.legible])
+    pointer.setMediaSelectionCriteria(selectionCriteria, forMediaCharacteristic: .legible)
   }
 
   deinit {
+    observer?.cleanup()
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
-    observer.unregisterDelegate(delegate: self)
-    pointer.replaceCurrentItem(with: nil)
+
+    // The current item has to be replaced with nil from the main thread. When replacing from the SharedObjectRegistry queue
+    // sometimes the KVOs used by AVPlayerViewController would try to deliver updates about the item being changed to nil after the
+    // player was deallocated, which caused crashes.
+    DispatchQueue.main.async { [pointer] in
+      pointer.replaceCurrentItem(with: nil)
+    }
   }
 
   func replaceCurrentItem(with videoSource: VideoSource?) throws {
@@ -98,7 +152,11 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
-    let asset = AVURLAsset(url: url)
+    let asset = if let headers = videoSource.headers {
+      AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
+    } else {
+      AVURLAsset(url: url)
+    }
     let playerItem = VideoPlayerItem(asset: asset, videoSource: videoSource)
 
     if let drm = videoSource.drm {
@@ -107,6 +165,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
 
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
+    playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
     pointer.replaceCurrentItem(with: playerItem)
   }
 
@@ -127,23 +186,41 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     })
   }
 
+  private func getBufferedPosition() -> Double {
+    guard let currentItem = pointer.currentItem else {
+      return -1
+    }
+    let currentTime = pointer.currentTime().seconds
+
+    for timeRange in currentItem.loadedTimeRanges {
+      let start = CMTimeGetSeconds(timeRange.timeRangeValue.start)
+      let end = CMTimeGetSeconds(timeRange.timeRangeValue.end)
+      if start <= currentTime && end >= currentTime {
+        return end
+      }
+    }
+    return 0
+  }
+
   // MARK: - VideoPlayerObserverDelegate
 
   func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?) {
     let errorRecord = error != nil ? PlaybackError(message: error?.localizedDescription) : nil
-    safeEmit(event: "statusChange", arguments: newStatus.rawValue, oldStatus?.rawValue, errorRecord)
+    let payload = StatusChangedEventPayload(status: newStatus, oldStatus: oldStatus, error: errorRecord)
+    safeEmit(event: "statusChange", payload: payload)
     status = newStatus
   }
 
   func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool) {
-    safeEmit(event: "playingChange", arguments: newIsPlaying, oldIsPlaying)
+    let payload = IsPlayingEventPayload(isPlaying: newIsPlaying, oldIsPlaying: oldIsPlaying)
+    safeEmit(event: "playingChange", payload: payload)
     isPlaying = newIsPlaying
 
     VideoManager.shared.setAppropriateAudioSessionOrWarn()
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       if player.defaultRate != playbackRate {
         // User changed the playback speed in the native controls. Update the desiredRate variable
         playbackRate = player.defaultRate
@@ -172,12 +249,39 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
-    safeEmit(event: "sourceChange", arguments: newVideoPlayerItem?.videoSource, oldVideoPlayerItem?.videoSource)
+    let payload = SourceChangedEventPayload(
+      source: newVideoPlayerItem?.videoSource,
+      oldSource: oldVideoPlayerItem?.videoSource
+    )
+    safeEmit(event: "sourceChange", payload: payload)
+    newVideoPlayerItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
   }
 
-  func safeEmit<each A: AnyArgument>(event: String, arguments: repeat each A) {
+  func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {
+    safeEmit(event: "timeUpdate", payload: timeUpdate)
+  }
+
+  func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {
+    // This event means that a new player item has been loaded so the subtitle tracks should change
+    let oldTracks = subtitles.availableSubtitleTracks
+    self.subtitles.onNewPlayerItemLoaded(playerItem: playerItem)
+    let payload = SubtitleTracksChangedEventPayload(
+      availableSubtitleTracks: subtitles.availableSubtitleTracks,
+      oldAvailableSubtitleTracks: oldTracks
+    )
+    safeEmit(event: "availableSubtitleTracksChange", payload: payload)
+  }
+
+  func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?) {
+    let oldTrack = subtitles.currentSubtitleTrack
+    subtitles.onNewSubtitleTrackSelected(subtitleTrack: subtitleTrack)
+    let payload = SubtitleTrackChangedEventPayload(subtitleTrack: subtitles.currentSubtitleTrack, oldSubtitleTrack: oldTrack)
+    safeEmit(event: "subtitleTrackChange", payload: payload)
+  }
+
+  func safeEmit(event: String, payload: Record? = nil) {
     if self.appContext != nil {
-      self.emit(event: event, arguments: repeat each arguments)
+      self.emit(event: event, arguments: payload?.toDictionary(appContext: appContext))
     }
   }
 

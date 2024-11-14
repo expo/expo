@@ -154,7 +154,7 @@ export function LoggedOutAccountView({ refetch }: Props) {
   };
 
   return (
-    <View bg="default" padding="medium">
+    <View padding="medium">
       <Text color="secondary" type="InterRegular" style={{ lineHeight: 20 }}>
         Log in or create an account to access your projects, view local development servers, and
         more.

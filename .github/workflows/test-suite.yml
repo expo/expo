@@ -26,14 +26,14 @@ concurrency:
 
 jobs:
   ios-build:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 15.2
-        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
+      - name: 🔨 Switch to Xcode 16.0
+        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -59,7 +59,7 @@ jobs:
         working-directory: apps/bare-expo/ios
         continue-on-error: true
       - name: ⚛️ Display React Native config
-        run: yarn react-native config
+        run: yarn expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
       - name: 🌳 Display pod environment
         run: pod env
@@ -71,12 +71,12 @@ jobs:
       - name: 🏗️ Build iOS project
         run: ./scripts/start-ios-e2e-test.ts --build
         working-directory: apps/bare-expo
-        timeout-minutes: 45
+        timeout-minutes: 55
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
@@ -95,18 +95,18 @@ jobs:
   ios-test:
     needs: ios-build
     runs-on: macos-12
-    # runs-on: macos-14
+    # runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
-      # - name: 🔨 Switch to Xcode 15.2
-      #   run: sudo xcode-select --switch /Applications/Xcode_15.2.app
+      # - name: 🔨 Switch to Xcode 16.0
+      #   run: sudo xcode-select --switch /Applications/Xcode_16.0.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
@@ -132,12 +132,13 @@ jobs:
         timeout-minutes: 30
       - name: Store testing artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: bare-expo-artifacts
+          name: bare-expo-artifacts-ios
           path: |
-            ~/.maestro/tests
-            ~/Library/Logs/maestro
+            ~/.maestro/tests/**/*
+            ~/Library/Logs/maestro/**/*
+          overwrite: true
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -185,7 +186,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: ⚛️ Display React Native config
-        run: yarn react-native config
+        run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
       - name: 🛠️ Generate dynamic macros
         run: expotools android-generate-dynamic-macros --configuration release --bare
@@ -197,7 +198,7 @@ jobs:
           EXPO_DEBUG: 1
           NODE_ENV: production
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
@@ -224,7 +225,7 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@v4
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
@@ -233,20 +234,13 @@ jobs:
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: |
-            mkdir artifacts || true
-            adb logcat -d > artifacts/emulator.log
-            adb logcat -c || true
-            adb shell screencap -p /data/local/tmp/bareexpo.png && adb pull /data/local/tmp/bareexpo.png artifacts/beforeTests.png
-            ./scripts/start-android-e2e-test.sh
-            adb shell screencap -p /data/local/tmp/bareexpo.png && adb pull /data/local/tmp/bareexpo.png artifacts/afterTests.png
-            adb logcat -d > artifacts/adb.log
+          script: ./scripts/start-android-e2e-test.sh
           working-directory: ./apps/bare-expo
       - name: 📸 Store images of test failures
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: bare-expo-artifacts
+          name: bare-expo-artifacts-android
           path: apps/bare-expo/artifacts
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3

@@ -24,10 +24,7 @@ function wrapModule(module, options) {
         return { src: output.data.code, paths: {} };
     }
     const { params, paths } = getModuleParams(module, options);
-    let src = output.data.code;
-    if (!options.skipWrapping) {
-        src = (0, metro_transform_plugins_1.addParamsToDefineCall)(output.data.code, ...params);
-    }
+    const src = (0, metro_transform_plugins_1.addParamsToDefineCall)(output.data.code, ...params);
     return { src, paths };
 }
 exports.wrapModule = wrapModule;
@@ -36,7 +33,17 @@ function getModuleParams(module, options) {
     const paths = {};
     let hasPaths = false;
     const dependencyMapArray = Array.from(module.dependencies.values()).map((dependency) => {
-        const id = options.createModuleId(dependency.absolutePath);
+        let modulePath = dependency.absolutePath;
+        if (modulePath == null) {
+            if (dependency.data.data.isOptional) {
+                // For optional dependencies, that could not be resolved.
+                modulePath = dependency.data.name;
+            }
+            else {
+                throw new Error(`Module "${module.path}" has a dependency with missing absolutePath: ${(JSON.stringify(dependency), null, 2)}`);
+            }
+        }
+        const id = options.createModuleId(modulePath);
         if (
         // NOTE(EvanBacon): Disabled this to ensure that paths are provided even when the entire bundle
         // is created. This is required for production bundle splitting.

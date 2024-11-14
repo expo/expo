@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
 import ExpoAppleAuthenticationButton from './ExpoAppleAuthenticationButton';
 

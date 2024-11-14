@@ -22,6 +22,7 @@ import {
 import { sdkVersionAsync } from '../../ProjectVersions';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
+import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan, green } = chalk;
@@ -48,10 +49,11 @@ export const prepareCanaries = new Task<TaskArgs>(
     const canarySuffix = await getCurrentCanaryVersionSuffix();
     const nextSdkVersion = await getNextSdkVersion();
 
-    for (const { pkg, state, pkgView } of parcels) {
+    for (const parcel of parcels) {
+      const { pkg, state, pkgView } = parcel;
       const baseVersion = SDK_CONSTRAINED_PACKAGES.includes(pkg.packageName)
         ? nextSdkVersion
-        : '0.0.1';
+        : resolveReleaseTypeAndVersion(parcel, options);
 
       state.releaseVersion = findNextAvailableCanaryVersion(
         `${baseVersion}-${canarySuffix}`,
@@ -78,7 +80,7 @@ const publishCanaryProjectTemplates = new Task<TaskArgs>(
         const expoVersion = await sdkVersionAsync();
         const dependenciesToUpdate = {
           ...bundledNativeModules,
-          expo: `~${expoVersion}`,
+          expo: options.canary ? expoVersion : `~${expoVersion}`,
         };
 
         for (const template of templates) {

@@ -17,6 +17,7 @@ import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.LazyKType
+import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import kotlin.reflect.KClass
@@ -104,6 +105,13 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   /**
+   * Creates module's lifecycle listener that is called right before user leaves the activity.
+   */
+  inline fun OnUserLeavesActivity(crossinline body: () -> Unit) {
+    eventListeners[EventName.ON_USER_LEAVES_ACTIVITY] = BasicEventListener(EventName.ON_USER_LEAVES_ACTIVITY) { body() }
+  }
+
+  /**
    * Creates module's lifecycle listener that is called right after the activity is destroyed.
    */
   inline fun OnActivityDestroys(crossinline body: () -> Unit) {
@@ -126,16 +134,26 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   inline fun Class(name: String, body: ClassComponentBuilder<Unit>.() -> Unit = {}) {
-    val clazzBuilder = ClassComponentBuilder(name, Unit::class, typeOf<Unit>())
+    val clazzBuilder = ClassComponentBuilder(name, Unit::class, toAnyType<Unit>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
 
   inline fun <reified SharedObjectType : SharedObject> Class(
-    sharedObjectClass: KClass<SharedObjectType>,
+    name: String,
+    sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, typeOf<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(name, sharedObjectClass, toAnyType<SharedObjectType>())
+    body.invoke(clazzBuilder)
+    classData.add(clazzBuilder.buildClass())
+  }
+
+  inline fun <reified SharedObjectType : SharedObject> Class(
+    sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
+    body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
+  ) {
+    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, toAnyType<SharedObjectType>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }

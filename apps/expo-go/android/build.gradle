@@ -3,13 +3,13 @@ import com.android.build.api.variant.AndroidComponentsExtension
 
 buildscript {
   ext {
-    minSdkVersion = 23
+    minSdkVersion = 24
     targetSdkVersion = 34
-    compileSdkVersion = 34
+    compileSdkVersion = 35
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '34.0.0'
-    kotlinVersion = '1.9.23'
+    buildToolsVersion = '35.0.0'
+    kotlinVersion = '1.9.24'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
@@ -22,7 +22,7 @@ buildscript {
   dependencies {
     classpath expoLibs.android.gradle.plugin
     classpath 'com.google.gms:google-services:4.3.5'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.6'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
@@ -99,15 +99,11 @@ subprojects { project ->
   if (project.name == "ReactAndroid") { return; }
   if (project.name.startsWith("vendored_")) { return; }
   if (project.projectDir.toString().contains("/node_modules/")) { return; }
+  if (project.projectDir.toString().contains("/modules/")) { return; }
 
   plugins.apply("com.diffplug.spotless")
   spotless {
-    format 'gradle', {
-      target '*.gradle'
-      trimTrailingWhitespace()
-      indentWithSpaces()
-      endWithNewline()
-    }
+    // note that spotless config is currently duplicated in bare-expo too
     kotlin {
       target(ktlintTarget)
       // TODO: (barthap) Replace this with raw string when dropped shell app macros

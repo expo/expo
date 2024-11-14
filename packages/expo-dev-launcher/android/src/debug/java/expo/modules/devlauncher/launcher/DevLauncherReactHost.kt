@@ -10,7 +10,6 @@ import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
@@ -22,7 +21,6 @@ import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherPackage
 import expo.modules.devlauncher.helpers.findDevMenuPackage
-import expo.modules.devlauncher.helpers.findPackagesWithDevMenuExtension
 import expo.modules.devlauncher.helpers.injectDebugServerHost
 import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.kotlin.ModulesProvider
@@ -45,11 +43,10 @@ object DevLauncherReactHost {
       DefaultReactHostDelegate(
         jsMainModulePath = jsMainModuleName,
         jsBundleLoader = jsBundleLoader,
-        reactPackages = getPackages(application),
+        reactPackages = getPackages(),
         jsRuntimeFactory = jsRuntimeFactory,
         turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       )
-    val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
     val componentFactory = ComponentFactory()
     DefaultComponentsRegistry.register(componentFactory)
     val useDeveloperSupport = launcherIp != null
@@ -58,27 +55,18 @@ object DevLauncherReactHost {
       defaultReactHostDelegate,
       componentFactory,
       useDeveloperSupport,
-      reactJsExceptionHandler,
       useDeveloperSupport
     )
-      .apply {
-        jsEngineResolutionAlgorithm = jsResolutionAlgorithm
-      }
+
     if (useDeveloperSupport) {
       injectDebugServerHost(application.applicationContext, reactHost, launcherIp!!, jsMainModuleName)
     }
     return reactHost
   }
 
-  private fun getPackages(application: Application): List<ReactPackage> {
-    val devMenuPackage = findDevMenuPackage()
+  private fun getPackages(): List<ReactPackage> {
     val devMenuRelatedPackages: List<ReactPackage> =
-      if (devMenuPackage != null) {
-        findPackagesWithDevMenuExtension(application) + devMenuPackage
-      } else {
-        emptyList()
-      }
-
+      findDevMenuPackage()?.let { listOf(it) } ?: emptyList()
     val additionalPackages = (DevLauncherController.sAdditionalPackages ?: emptyList())
 
     return listOf(

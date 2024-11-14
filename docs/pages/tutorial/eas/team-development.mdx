@@ -4,12 +4,11 @@ sidebar_title: Share previews
 description: Learn how to use the EAS Update to send OTA updates and share previews with a team.
 ---
 
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
-import Video from '~/components/plugins/Video';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our example app, such as JavaScript code, styling, and images.
 
@@ -125,17 +124,17 @@ By default, EAS will map branches and channels with the same name, if no other m
 
 After the update is published, the CLI will prompt us with information about it.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="EAS Update published successfully with CLI prompt"
   src="/static/images/tutorial/eas/update-01.png"
 />
 
 Click on the **Website link** to see the Update on the Expo dashboard under **Updates**:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Expo dashboard shows the latest published update for the development build"
   src="/static/images/tutorial/eas/update-02.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 </Step>
@@ -167,7 +166,7 @@ For example, for a `preview` build, we can run:
 
 Here is an example where we've published an update for the `preview` build. To test the update, force close and reopen the app twice to download and view the changes:
 
-<Video file="tutorial/eas/running-update-on-dev.mp4" />
+<ContentSpotlight file="tutorial/eas/running-update-on-dev.mp4" />
 
 </Step>
 

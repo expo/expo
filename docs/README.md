@@ -180,17 +180,17 @@ This section walks through the process of updating documentation for an Expo pac
 
 Before proceeding, make sure you:
 
-- have [**expo/**](https://github.com/expo/expo) repo cloned on your machine
-  - make sure to [install `direnv`](https://direnv.net/docs/installation.html) and run `direnv allow` at the root of the **expo/** repo.
-- have gone through the steps mentioned in [**"Download and Setup" in the contribution guideline**](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-download-and-setup).
-- can run **expo/docs** app **[locally](https://github.com/expo/expo/tree/main/docs#to-run-locally-in-development-mode)**.
-- can run [`et` (Expotools)](https://github.com/expo/expo/blob/main/tools/README.md) command locally.
+- Have [**expo/**](https://github.com/expo/expo) repo cloned on your machine
+- Make sure to [install `direnv`](https://direnv.net/docs/installation.html) and run `direnv allow` at the root of the **expo/** repo.
+- Have gone through the steps mentioned in [**"Download and Setup" in the contribution guideline**](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-download-and-setup).
+- Can run **expo/docs** app **[locally](https://github.com/expo/expo/tree/main/docs#to-run-locally-in-development-mode)**.
+- Can run [`et` (Expotools)](https://github.com/expo/expo/blob/main/tools/README.md) command locally.
 
 Once you have made sure the development setup is ready, proceed to the next section:
 
-#### Step 1: Update the package’s TypeDoc
+#### Step 1: Update the package's TypeDoc
 
-- After you have identified which package docs you want to update, open a terminal window and navigate to that package’s directory. For example:
+- After you have identified which package docs you want to update, open a terminal window and navigate to that packages directory. For example:
 
 ```shell
 # Navigate to expo-constants package directory inside expo/ repo
@@ -212,7 +212,7 @@ cd expo/packages/expo-constants
   expoConfig: ExpoConfig | null;
   ```
 
-- In the above example, let’s fix the typo by changing `confg` to `config`:
+- In the above example, let's fix the typo by changing `confg` to `config`:
 
 ```ts
 /**
@@ -226,16 +226,20 @@ expoConfig: ExpoConfig | null;
 
 #### Step 2: Apply TypeDoc updates to expo/docs repo
 
+> [!IMPORTANT]
+>
+> If you are fixing issues in package's reference or after an SDK version is released, make sure to only update the `unversioned` reference of that package. This way the changes will be reflected in the next SDK version from the `main` branch. Updating the reference for a specific SDK version requires updating that SDK's branch.
+
 In the terminal window and run the following command with to generate the JSON data file for the package (which is stored at the location `expo/docs/public/static/data/[SDK-VERSION]`)
 
 - Read the **NOTE** in the below snippet for updating the docs for `unversioned`:
 
 ```shell
-et generate-docs-api-data --packageName expo-constants --sdk 50
+et generate-docs-api-data --packageName expo-constants
 
 #### NOTE ####
-# To update unversioned docs, run the command without mentioning the SDK version
-et gdad -p expo-constants
+# To update a specific SDK reference, run the command by mentioning the SDK version
+et gdad -p expo-constants --sdk 51
 
 # For more information about et command, run: et gdad --help
 ```
@@ -254,7 +258,7 @@ Now, in the terminal window, navigate to **expo/docs** repo and run the command 
 
 After making changes, when you are opening the PR, consider adding `<!-- disable:changelog-checks -->` in the PR description if the changes you are making are docs-related changes (such as updating the field description or fixing a typo, and so on).
 
-This will make sure that the ExpoBot on GitHub will not complain about updating the package’s changelog (some of these changes, as described above, are not worth mentioning in the changelog).
+This will make sure that the ExpoBot on GitHub will not complain about updating the package's changelog (some of these changes, as described above, are not worth mentioning in the changelog).
 
 ##### Use the correct package name
 
@@ -279,10 +283,10 @@ You can add images and assets to the **public/static** directory. They'll be ser
 - Put the video in the appropriate location in `public/static/videos` and use it in your docs page MDX like this:
 
 ```js
-import Video from '~/components/plugins/Video';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 // Change the path to point to the relative path to your video from within the `static/videos` directory
-<Video file="guides/color-schemes.mp4" />;
+<ContentSpotlight file="guides/color-schemes.mp4" />;
 ```
 
 ### Add code block
@@ -426,6 +430,23 @@ Four different types of callouts can be used with markdown syntax for `> ...` bl
 
 > **error** Callout that is used for errors and breaking changes or deprecated changes in the archive.
 ```
+
+### Add last update date manually
+
+All docs pages are automatically updated with the last update date of the file based on their Git commit history. This information is reflected in the footer of a docs page with **Last updated on ...**.
+
+If you need to add the date manually, add `modificationDate` to the frontmatter of the **.mdx** file. For example:
+
+```mdx
+---
+modificationDate: April 8th, 2024
+{/* Other frontmatter fields */}
+---
+```
+
+This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](https://github.com/expo/expo/edit/main/docs/pages/build-reference/infrastructure.mdx).
+
+> Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
 
 ### Prettier
 

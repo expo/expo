@@ -1,5 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
-import { CheckIcon } from '@expo/styleguide-icons';
+import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 
 type Props = {
   className?: string;

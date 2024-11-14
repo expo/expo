@@ -7,13 +7,15 @@ import Foundation
  */
 @objc(EXRequestInterceptorProtocol)
 public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDelegate {
-  private static let REQUEST_ID = "ExpoRequestInterceptorProtocol.requestId"
   private static var requestIdProvider = RequestIdProvider()
-  private lazy var urlSession = URLSession(
+  private static let sessionDelegate
+    = URLSessionSessionDelegateProxy(dispatchQueue: ExpoRequestCdpInterceptor.shared.dispatchQueue)
+  private static let urlSession = URLSession(
     configuration: URLSessionConfiguration.default,
-    delegate: self,
+    delegate: sessionDelegate,
     delegateQueue: nil
   )
+  private var requestId: String?
   private var dataTask_: URLSessionDataTask?
   private let responseBody = NSMutableData()
   private var responseBodyExceedsLimit = false
@@ -32,11 +34,10 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     if !["http", "https"].contains(scheme) {
       return false
     }
-    let isNewRequest = URLProtocol.property(
-      forKey: Self.REQUEST_ID,
+    return URLProtocol.property(
+      forKey: REQUEST_ID,
       in: request
     ) == nil
-    return isNewRequest
   }
 
   override init(
@@ -48,13 +49,17 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     // swiftlint:disable force_cast
     let mutableRequest = request as! NSMutableURLRequest
     // swiftlint:enable force_cast
-    let requestId = Self.requestIdProvider.create()
+    self.requestId = Self.requestIdProvider.create()
+    guard let requestId else {
+      fatalError("requestId should not be nil.")
+    }
     URLProtocol.setProperty(
       requestId,
-      forKey: Self.REQUEST_ID,
+      forKey: REQUEST_ID,
       in: mutableRequest
     )
-    let dataTask = urlSession.dataTask(with: mutableRequest as URLRequest)
+    let dataTask = Self.urlSession.dataTask(with: mutableRequest as URLRequest)
+    Self.sessionDelegate.addDelegate(task: dataTask, delegate: self)
     Self.delegate.willSendRequest(
       requestId: requestId,
       task: dataTask,
@@ -73,7 +78,10 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
   }
 
   public override func stopLoading() {
-    dataTask_?.cancel()
+    if let task = dataTask_ {
+      task.cancel()
+      Self.sessionDelegate.removeDelegate(task: task)
+    }
   }
 
   // MARK: URLSessionDataDelegate implementations
@@ -91,12 +99,8 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     if let error = error {
       client?.urlProtocol(self, didFailWithError: error)
     } else {
-      if let currentRequest = task.currentRequest,
-        let response = task.response as? HTTPURLResponse,
-        let requestId = URLProtocol.property(
-          forKey: Self.REQUEST_ID,
-          in: currentRequest
-        ) as? String {
+      if let response = task.response as? HTTPURLResponse,
+        let requestId {
         let contentType = response.value(forHTTPHeaderField: "Content-Type")
         let isText = (contentType?.starts(with: "text/") ?? false) || contentType == "application/json"
         Self.delegate.didReceiveResponse(
@@ -123,7 +127,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     newRequest request: URLRequest,
     completionHandler: @escaping (URLRequest?) -> Void
   ) {
-    if let requestId = URLProtocol.property(forKey: Self.REQUEST_ID, in: request) as? String {
+    if let requestId {
       Self.delegate.willSendRequest(
         requestId: requestId,
         task: task,
@@ -134,26 +138,23 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     completionHandler(request)
   }
 
+  public func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    didReceive challenge: URLAuthenticationChallenge,
+    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+  ) {
+    let sender = URLAuthenticationChallengeForwardSender(completionHandler: completionHandler)
+    let challengeWithSender = URLAuthenticationChallenge(authenticationChallenge: challenge, sender: sender)
+    client?.urlProtocol(self, didReceive: challengeWithSender)
+  }
+
   /**
    Data structure to save the response for redirection
    */
   private struct RedirectResponse {
     let requestId: String
     let redirectResponse: HTTPURLResponse
-  }
-
-  /**
-   A helper class to create a unique request ID
-   */
-  private struct RequestIdProvider {
-    private var value: UInt64 = 0
-
-    mutating func create() -> String {
-      // We could ensure the increment thread safety,
-      // because we access this function from the same thread (com.apple.CFNetwork.CustomProtocols).
-      value += 1
-      return String(value)
-    }
   }
 }
 
@@ -168,3 +169,19 @@ protocol ExpoRequestInterceptorProtocolDelegate {
   @objc
   func didReceiveResponse(requestId: String, task: URLSessionTask, responseBody: Data, isText: Bool, responseBodyExceedsLimit: Bool)
 }
+
+/**
+ A helper class to create a unique request ID
+ */
+private struct RequestIdProvider {
+  private var value: UInt64 = 0
+
+  mutating func create() -> String {
+    // We can ensure it is thread-safe to increment this value,
+    // because we always access this function from the same thread (com.apple.CFNetwork.CustomProtocols).
+    value += 1
+    return String(value)
+  }
+}
+
+private let REQUEST_ID = "ExpoRequestInterceptorProtocol.requestId"

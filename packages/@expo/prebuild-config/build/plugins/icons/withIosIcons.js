@@ -43,7 +43,7 @@ function _AssetContents() {
   return data;
 }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 const {
   getProjectName
 } = _configPlugins().IOSConfig.XcodeUtils;
@@ -57,29 +57,70 @@ const withIosIcons = config => {
 };
 exports.withIosIcons = withIosIcons;
 function getIcons(config) {
-  // No support for empty strings.
-  return config.ios?.icon || config.icon || null;
+  const iosSpecificIcons = config.ios?.icon;
+  if (iosSpecificIcons) {
+    // For backwards compatibility, the icon can be a string
+    if (typeof iosSpecificIcons === 'string') {
+      return iosSpecificIcons || config.icon || null;
+    }
+
+    // in iOS 18 introduced the ability to specify dark and tinted icons, which users can specify as an object
+    if (!iosSpecificIcons.light && !iosSpecificIcons.dark && !iosSpecificIcons.tinted) {
+      return config.icon || null;
+    }
+    return iosSpecificIcons;
+  }
+  if (config.icon) {
+    return config.icon;
+  }
+  return null;
 }
 async function setIconsAsync(config, projectRoot) {
   const icon = getIcons(config);
-  if (!icon) {
+  if (!icon || typeof icon === 'string' && !icon || typeof icon === 'object' && !icon?.light && !icon?.dark && !icon?.tinted) {
     _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
   }
+
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
   await fs().ensureDir((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH));
+  const imagesJson = [];
+  const baseIconPath = typeof icon === 'object' ? icon?.light || icon?.dark || icon?.tinted : icon;
 
   // Store the image JSON data for assigning via the Contents.json
-  const imagesJson = await generateUniversalIconAsync(projectRoot, {
-    icon,
+  const baseIcon = await generateUniversalIconAsync(projectRoot, {
+    icon: baseIconPath,
     cacheKey: 'universal-icon',
     iosNamedProjectRoot,
     platform: 'ios'
   });
+  imagesJson.push(baseIcon);
+  if (typeof icon === 'object') {
+    if (icon?.dark) {
+      const darkIcon = await generateUniversalIconAsync(projectRoot, {
+        icon: icon.dark,
+        cacheKey: 'universal-icon-dark',
+        iosNamedProjectRoot,
+        platform: 'ios',
+        appearance: 'dark'
+      });
+      imagesJson.push(darkIcon);
+    }
+    if (icon?.tinted) {
+      const tintedIcon = await generateUniversalIconAsync(projectRoot, {
+        icon: icon.tinted,
+        cacheKey: 'universal-icon-tinted',
+        iosNamedProjectRoot,
+        platform: 'ios',
+        appearance: 'tinted'
+      });
+      imagesJson.push(tintedIcon);
+    }
+  }
 
-  // Finally, write the Config.json
+  // Finally, write the Contents.json
   await (0, _AssetContents().writeContentsJsonAsync)((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH), {
     images: imagesJson
   });
@@ -94,17 +135,23 @@ function getIosNamedProjectPath(projectRoot) {
   const projectName = getProjectName(projectRoot);
   return (0, _path().join)(projectRoot, 'ios', projectName);
 }
-function getAppleIconName(size, scale) {
-  return `App-Icon-${size}x${size}@${scale}x.png`;
+function getAppleIconName(size, scale, appearance) {
+  let name = 'App-Icon';
+  if (appearance) {
+    name = `${name}-${appearance}`;
+  }
+  name = `${name}-${size}x${size}@${scale}x.png`;
+  return name;
 }
 async function generateUniversalIconAsync(projectRoot, {
   icon,
   cacheKey,
   iosNamedProjectRoot,
-  platform
+  platform,
+  appearance
 }) {
   const size = 1024;
-  const filename = getAppleIconName(size, 1);
+  const filename = getAppleIconName(size, 1, appearance);
   let source;
   if (icon) {
     // Using this method will cache the images in `.expo` based on the properties used to generate them.
@@ -117,12 +164,13 @@ async function generateUniversalIconAsync(projectRoot, {
       name: filename,
       width: size,
       height: size,
-      removeTransparency: true,
+      // Transparency needs to be preserved in dark variant, but can safely be removed in "light" and "tinted" variants.
+      removeTransparency: appearance !== 'dark',
       // The icon should be square, but if it's not then it will be cropped.
       resizeMode: 'cover',
-      // Force the background color to solid white to prevent any transparency.
+      // Force the background color to solid white to prevent any transparency. (for "any" and "tinted" variants)
       // TODO: Maybe use a more adaptive option based on the icon color?
-      backgroundColor: '#ffffff'
+      backgroundColor: appearance !== 'dark' ? '#ffffff' : undefined
     })).source;
   } else {
     // Create a white square image if no icon exists to mitigate the chance of a submission failure to the app store.
@@ -133,11 +181,17 @@ async function generateUniversalIconAsync(projectRoot, {
   // Write image buffer to the file system.
   const assetPath = (0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH, filename);
   await fs().writeFile(assetPath, source);
-  return [{
-    filename: getAppleIconName(size, 1),
+  return {
+    filename,
     idiom: 'universal',
     platform,
-    size: `${size}x${size}`
-  }];
+    size: `${size}x${size}`,
+    ...(appearance ? {
+      appearances: [{
+        appearance: 'luminosity',
+        value: appearance
+      }]
+    } : {})
+  };
 }
 //# sourceMappingURL=withIosIcons.js.map

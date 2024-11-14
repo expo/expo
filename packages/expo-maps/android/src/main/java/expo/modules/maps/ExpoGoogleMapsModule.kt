@@ -16,7 +16,7 @@ class ExpoGoogleMapsModule : Module() {
     AsyncFunction("getSearchCompletions") { viewHandle: Int, searchQueryFragment: String, promise: Promise ->
       val rnContext = appContext.reactContext as? ReactApplicationContext ?: return@AsyncFunction
       val uiManager = rnContext.getNativeModule(UIManagerModule::class.java) ?: return@AsyncFunction
-      appContext.activityProvider?.currentActivity?.runOnUiThread {
+      appContext.throwingActivity.runOnUiThread {
         val view = uiManager.resolveView(viewHandle) as GoogleMapsView
         view.fetchPlacesSearchCompletions(searchQueryFragment, promise)
       }
@@ -24,7 +24,7 @@ class ExpoGoogleMapsModule : Module() {
     AsyncFunction("moveCamera") { viewHandle: Int, cameraPosition: CameraMoveRecord, promise: Promise ->
       val rnContext = appContext.reactContext as? ReactApplicationContext ?: return@AsyncFunction
       val uiManager = rnContext.getNativeModule(UIManagerModule::class.java) ?: return@AsyncFunction
-      appContext.activityProvider?.currentActivity?.runOnUiThread {
+      appContext.throwingActivity.runOnUiThread {
         val view = uiManager.resolveView(viewHandle) as GoogleMapsView
         view.moveCamera(cameraPosition, promise)
       }

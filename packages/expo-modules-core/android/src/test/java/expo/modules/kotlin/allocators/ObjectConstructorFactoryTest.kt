@@ -32,29 +32,29 @@ class ObjectConstructorFactoryTest {
   private val ctorFactory = ObjectConstructorFactory()
 
   @Before
-  fun before() = synchronized(ctorCalls) {
+  fun before() = synchronized(this) {
     ctorCalls = 0
   }
 
   @Test
-  fun `should invoke default constructor if possible`() = synchronized(ctorCalls) {
-    val instance = ctorFactory.get(Clazz::class.java).construct()
+  fun `should invoke default constructor if possible`() = synchronized(this) {
+    val instance = ctorFactory.get(Clazz::class).construct()
 
     Truth.assertThat(ctorCalls).isEqualTo(1)
     Truth.assertThat(instance).isInstanceOf(Clazz::class.java)
   }
 
   @Test
-  fun `should invoke private default constructor`() = synchronized(ctorCalls) {
-    val instance = ctorFactory.get(ClazzPrivate::class.java).construct()
+  fun `should invoke private default constructor`() = synchronized(this) {
+    val instance = ctorFactory.get(ClazzPrivate::class).construct()
 
     Truth.assertThat(ctorCalls).isEqualTo(1)
     Truth.assertThat(instance).isInstanceOf(ClazzPrivate::class.java)
   }
 
   @Test
-  fun `should be able construct object without default constructor`() = synchronized(ctorCalls) {
-    val instance = ctorFactory.get(ClazzWithoutDefaultCtor::class.java).construct()
+  fun `should be able construct object without default constructor`() = synchronized(this) {
+    val instance = ctorFactory.get(ClazzWithoutDefaultCtor::class).construct()
 
     Truth.assertThat(ctorCalls).isEqualTo(0)
     Truth.assertThat(instance).isInstanceOf(ClazzWithoutDefaultCtor::class.java)

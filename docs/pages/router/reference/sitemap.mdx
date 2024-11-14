@@ -4,7 +4,7 @@ description: Learn how to use the sitemap to debug your app with Expo Router.
 hideTOC: true
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 On native, you can use the [`uri-scheme`](https://www.npmjs.com/package/uri-scheme) CLI to test opening native links on a device.
@@ -19,17 +19,34 @@ You can also search for links directly in a browser like Safari or Chrome to tes
 
 ## Sitemap
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Directory structure"
   src="/static/images/expo-router/directory.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 Expo Router currently injects a **/\_sitemap** automatically that provides a list of all routes in the app. This is useful for debugging.
 
-To remove it, add a **app/\_sitemap.js** and return a null component:
+In SDK 52 and above, the sitemap can be removed by adding `sitemap: false` to the `expo-router` config plugin in the app config:
 
-```jsx app/_sitemap.js
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        /* @info Disable the sitemap generation. */
+        "sitemap": false
+        /* @end */
+      }
+    ]
+  ]
+}
+```
+
+In SDK 51 and below, the sitemap can be removed by creating an empty **\_sitemap** file insdide the **app** directory:
+
+```tsx app/_sitemap.tsx
 export default function Sitemap() {
   return null;
 }

@@ -7,8 +7,9 @@ platforms: ['android', 'ios', 'tvos']
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample } from '~/ui/components/ConfigSection';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 `expo-build-properties` is a [config plugin](/config-plugins/introduction/) configuring the native build properties
 of your **android/gradle.properties** and **ios/Podfile.properties.json** directories during [Prebuild](/workflow/prebuild).
@@ -18,11 +19,15 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
 
 ## Installation
 
-<APIInstallSection hideBareInstructions={true} />
+<APIInstallSection hideBareInstructions />
 
 ## Usage
 
 <ConfigPluginExample>
+
+<Tabs>
+
+<Tab label="app.json">
 
 ```json app.json|collapseHeight=450
 {
@@ -32,12 +37,12 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 31,
-            "targetSdkVersion": 31,
-            "buildToolsVersion": "31.0.0"
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
           },
           "ios": {
-            "deploymentTarget": "13.0"
+            "deploymentTarget": "13.4"
           }
         }
       ]
@@ -46,9 +51,9 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
 }
 ```
 
-</ConfigPluginExample>
+</Tab>
 
-### Example app.config.js usage
+<Tab label="app.config.js">
 
 ```js app.config.js|collapseHeight=450
 export default {
@@ -58,12 +63,12 @@ export default {
         'expo-build-properties',
         {
           android: {
-            compileSdkVersion: 31,
-            targetSdkVersion: 31,
-            buildToolsVersion: '31.0.0',
+            compileSdkVersion: 34,
+            targetSdkVersion: 34,
+            buildToolsVersion: '34.0.0',
           },
           ios: {
-            deploymentTarget: '13.0',
+            deploymentTarget: '13.4',
           },
         },
       ],
@@ -71,6 +76,12 @@ export default {
   },
 };
 ```
+
+</Tab>
+
+</Tabs>
+
+</ConfigPluginExample>
 
 ### All configurable properties
 

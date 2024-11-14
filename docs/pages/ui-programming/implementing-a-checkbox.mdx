@@ -9,7 +9,7 @@ The [`expo-checkbox`](/versions/latest/sdk/checkbox/) package provides a quick i
 
 ## Understanding the checkbox
 
-A checkbox is a button that exists in one of two states — it is checked or it isn't. This makes it a perfect candidate for the `useState()` hook. Our first iteration will render a button that toggles between checked and unchecked states. When the checkbox is checked, we'll render a checkmark icon in the center of the button.
+A checkbox is a button that exists in one of two states — it is checked, or it isn't. This makes it a perfect candidate for the `useState()` hook. Our first iteration will render a button that toggles between checked and unchecked states. When the checkbox is checked, we'll render a checkmark icon in the center of the button.
 
 > You can find more information about using icons in your Expo project in our [Icons guide](/guides/icons).
 
@@ -25,6 +25,8 @@ function MyCheckbox() {
   const [checked, setChecked] = useState(false);
   return (
     <Pressable
+      /* @info Specifying a role of checkbox or switch lets screen readers understand the state set with aria-checked */role="checkbox"/* @end */
+      aria-checked={checked}
       style={[styles.checkboxBase, checked && styles.checkboxChecked]}
       onPress={() => setChecked(!checked)}>
       {checked && <Ionicons name="checkmark" size={24} color="white" />}
@@ -82,7 +84,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-> [icons.expo.fyi](https://icons.expo.fyi) is a great resource for finding all of the icons available in the `@expo/vector-icons` package.
+> [icons.expo.fyi](https://icons.expo.fyi) is a great resource for finding all the icons available in the `@expo/vector-icons` package.
 
 ## Controlling the checkbox
 
@@ -99,6 +101,8 @@ import { Ionicons } from '@expo/vector-icons';
 function MyCheckbox({ /* @info Define checked and onChange as props instead of state */onChange, checked/* @end */ }) {
   return (
     <Pressable
+      role="checkbox"
+      aria-checked={checked}
       style={[styles.checkboxBase, checked && styles.checkboxChecked]}
       onPress={onChange}>
       {checked && <Ionicons name="checkmark" size={24} color="white" />}
@@ -107,7 +111,7 @@ function MyCheckbox({ /* @info Define checked and onChange as props instead of s
 }
 
 export default function App() {
-  /* @info Move the checked and setChecked values outside of the checkbox component */
+  /* @info Move the checked and setChecked values outside the checkbox component */
   const [checked, setChecked] = useState(false);
   /* @end */
   return (
@@ -153,7 +157,7 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     marginLeft: 8,
-    fontWeight: 500,
+    fontWeight: '500',
     fontSize: 18,
   },
 });
@@ -191,6 +195,8 @@ function MyCheckbox({
   /* @end */
   return (
     <Pressable
+      role="checkbox"
+      aria-checked={checked}
       style={[
         buttonStyle,
         /* @info Pass the active / inactive style props to the button based on the current checked value */ checked
@@ -261,7 +267,7 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     marginLeft: 8,
-    fontWeight: 500,
+    fontWeight: '500',
     fontSize: 18,
   },
 });
@@ -269,4 +275,4 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-This checkbox ticks all of the boxes of what it should be. It toggles between `checked` states, can be controlled, and the styles are fully customizable.
+This checkbox ticks all the boxes of what it should be. It toggles between `checked` states, can be controlled, and the styles are fully customizable.

@@ -1,17 +1,20 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 
 // @docsMissing
-export interface ManifestAsset {
+export type ManifestAsset = {
   url: string;
-}
+};
+
+export type ExpoClientConfig = ExpoConfig & {
+  /**
+   * Only present during development using `@expo/cli`.
+   */
+  hostUri?: string;
+};
+
 // @docsMissing
 export type ManifestExtra = ClientScopingConfig & {
-  expoClient?: ExpoConfig & {
-    /**
-     * Only present during development using @expo/cli.
-     */
-    hostUri?: string;
-  };
+  expoClient?: ExpoClientConfig;
   expoGo?: ExpoGoConfig;
   eas?: EASConfig;
 };
@@ -38,15 +41,14 @@ export type ClientScopingConfig = {
 export type ExpoGoConfig = {
   mainModuleName?: string;
   debuggerHost?: string;
-  developer?: {
+  developer?: Record<string, any> & {
     tool?: string;
-    [key: string]: any;
   };
   packagerOpts?: ExpoGoPackagerOpts;
 };
 
 // @docsMissing
-export type ExpoGoPackagerOpts = {
+export type ExpoGoPackagerOpts = Record<string, any> & {
   hostType?: string;
   dev?: boolean;
   strict?: boolean;
@@ -54,11 +56,10 @@ export type ExpoGoPackagerOpts = {
   urlType?: string;
   urlRandomness?: string;
   lanType?: string;
-  [key: string]: any;
 };
 
 /**
- * A expo-updates manifest.
+ * A `expo-updates` manifest.
  */
 export type ExpoUpdatesManifest = {
   id: string;
@@ -71,15 +72,14 @@ export type ExpoUpdatesManifest = {
 };
 
 /**
- * @deprecated renamed to ExpoUpdatesManifest, will be removed in a few versions
- * @see ExpoUpdatesManifest
+ * @deprecated renamed to `ExpoUpdatesManifest`, will be removed in a few versions.
  */
 export type NewManifest = ExpoUpdatesManifest;
 
 /**
  * An embedded manifest.
  *
- * Generated during build in createManifest.js build step script.
+ * Generated during build in **createManifest.js** build step script.
  */
 export type EmbeddedManifest = {
   id: string;
@@ -88,7 +88,6 @@ export type EmbeddedManifest = {
 };
 
 /**
- * @deprecated renamed to EmbeddedManifest, will be removed in a few versions
- * @see EmbeddedManifest
+ * @deprecated Renamed to `EmbeddedManifest`, will be removed in a few versions.
  */
 export type BareManifest = EmbeddedManifest;

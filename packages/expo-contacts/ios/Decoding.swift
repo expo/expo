@@ -98,7 +98,7 @@ func decodeDates(_ input: [ContactDate]?) -> [CNLabeledValue<NSDateComponents>]?
       continue
     }
 
-    var val = NSDateComponents()
+    let val = NSDateComponents()
     if let day = item.day {
       val.day = day
     }
@@ -108,6 +108,8 @@ func decodeDates(_ input: [ContactDate]?) -> [CNLabeledValue<NSDateComponents>]?
     if let year = item.year {
       val.year = year
     }
+
+    val.calendar = Calendar.current
 
     let labeledValue = CNLabeledValue(label: label, value: val)
     output.append(labeledValue)

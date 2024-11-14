@@ -6,6 +6,7 @@ import { ProxyNativeModule } from './NativeModulesProxy.types';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
 import SharedObject from './SharedObject';
+import SharedRef from './SharedRef';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
@@ -17,13 +18,13 @@ export type * from './ts-declarations/global';
 export { default as uuid } from './uuid';
 
 export {
-  NativeModulesProxy,
   ProxyNativeModule,
   Platform,
   requireNativeViewManager,
   // Globals
   EventEmitter,
   SharedObject,
+  SharedRef,
   NativeModule,
   // Errors
   CodedError,
@@ -31,11 +32,12 @@ export {
   // Types
   EventSubscription,
   // Deprecated
+  NativeModulesProxy,
   LegacyEventEmitter,
 };
 
 export * from './requireNativeModule';
-export * from './createWebModule';
+export * from './registerWebModule';
 export * from './TypedArrays.types';
 
 export * from './PermissionsInterface';
