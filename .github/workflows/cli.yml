@@ -43,10 +43,11 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-22.04, windows-2022]
         shard: [1, 2, 3]
     steps:
       - name: 👀 Checkout
@@ -57,36 +58,41 @@ jobs:
         with:
           node-version: 18
       - name: ⬇️ Fetch commits from base branch
+        shell: bash
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
       - name: ♻️ Restore Yarn Cache
         uses: actions/cache@v4
         with:
-          path: ~/.cache/yarn
+          path: |
+            ~/.cache/yarn
+            %LocalAppData%\Yarn\Cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
         run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
+        shell: bash
       
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
+        shell: bash
 
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
 
       - name: 🔎 Type Check CLI
         run: yarn typecheck
         working-directory: packages/@expo/cli
+        shell: bash
       - name: E2E Test CLI
         run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
         working-directory: packages/@expo/cli
+        shell: bash
 
   web:
     runs-on: ubuntu-22.04
@@ -108,25 +114,31 @@ jobs:
       - name: ♻️ Restore Yarn Cache
         uses: actions/cache@v4
         with:
-          path: ~/.cache/yarn
+          path: |
+            ~/.cache/yarn
+            %LocalAppData%\Yarn\Cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
         run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
+        shell: bash
       
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
+        shell: bash
         
       - name: 🎭 Get installed Playwright version for cache key
         run: echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
+        shell: bash
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
         with:
           path: |
             ~/.cache/ms-playwright
+            %LocalAppData%\ms-playwright
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - name: 🎭 Install Playwright Browsers
         run: bun playwright install --with-deps chromium
