@@ -38,6 +38,23 @@ it('basic single static route', () => {
   });
 });
 
+it('basic single static group route', () => {
+  const generated = getGeneratedRoutes(
+    inMemoryContext({
+      '(group)/index': () => null,
+      '(group)/(group2)/(group3)/index': () => null,
+    })
+  );
+
+  expect(generated).toEqual({
+    href: "Router.RelativePathString | Router.ExternalPathString | `/_sitemap` | `${'/(group)'}` | `/` | `${'/(group)'}${'/(group2)'}${'/(group3)'}` | `/` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `${'/(group)'}` | `/`; params?: Router.UnknownInputParams; } | { pathname: `${'/(group)'}${'/(group2)'}${'/(group3)'}` | `/`; params?: Router.UnknownInputParams; }",
+    hrefInputParams:
+      "{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `${'/(group)'}` | `/`; params?: Router.UnknownInputParams; } | { pathname: `${'/(group)'}${'/(group2)'}${'/(group3)'}` | `/`; params?: Router.UnknownInputParams; }",
+    hrefOutputParams:
+      "{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams } | { pathname: `/_sitemap`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(group)'}` | `/`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(group)'}${'/(group2)'}${'/(group3)'}` | `/`; params?: Router.UnknownOutputParams; }",
+  });
+});
+
 it('hoisting with layouts and groups', () => {
   const generated = getGeneratedRoutes(
     inMemoryContext({

@@ -20,7 +20,7 @@ const fixtures = {
         },
     },
     partialGroups: {
-        options: { partialTypedGroups: true },
+        options: { explicitGroups: true },
         context: {
             '/(group)/static': () => null,
             '/(group)/(a,b)/folder/index': () => null,

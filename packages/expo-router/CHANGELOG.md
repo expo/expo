@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Typed Routes incorrectly collapsing group index routes
+
 ### 💡 Others
 
 ## 4.0.5 — 2024-11-13
