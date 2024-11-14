@@ -178,7 +178,7 @@ import { isRunningInExpoGo } from 'expo';
 // Construct a new integration instance. This is needed to communicate between the integration and React
 const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: !isRunningInExpoGo(),
-})
+});
 
 Sentry.init({
   dsn: 'YOUR DSN HERE',
@@ -186,18 +186,18 @@ Sentry.init({
   tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
   integrations: [
     // Pass integration
-    navigationIntegration
+    navigationIntegration,
   ],
   enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
 });
 
 function RootLayout() {
   // Capture the NavigationContainer ref and register it with the integration.
-  const ref = useNavigationContainerRef()
+  const ref = useNavigationContainerRef();
 
   useEffect(() => {
     if (ref?.current) {
-      navigationIntegration.registerNavigationContainer(ref)
+      navigationIntegration.registerNavigationContainer(ref);
     }
   }, [ref]);
 
