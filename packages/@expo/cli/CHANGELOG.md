@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix windows SSR. ([#32923](https://github.com/expo/expo/pull/32923) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.21.3 — 2024-11-14
