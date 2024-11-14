@@ -31,7 +31,9 @@ const program = new Command(packageJSON.name)
       if (reason.command) {
         console.log(`  ${chalk.magenta(reason.command)} has failed.`);
       } else {
-        console.log(chalk.red`An unexpected error was encountered. Report it on GitHub: https://github.com/expo/expo/issues`);
+        console.log(
+          chalk.red`An unexpected error was encountered. Report it on GitHub: https://github.com/expo/expo/issues`
+        );
         console.log(reason);
       }
       console.log();
