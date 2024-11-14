@@ -47,7 +47,7 @@
     "@babel/plugin-transform-parameters": "^7.22.15",
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.23.0",
-    "@react-native/babel-preset": "0.76.1",
+    "@react-native/babel-preset": "0.76.2",
     "babel-plugin-react-native-web": "~0.19.13",
     "react-refresh": "^0.14.2"
   },
