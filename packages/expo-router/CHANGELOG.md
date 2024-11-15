@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix Typed Routes incorrectly collapsing group index routes ([#32890](https://github.com/expo/expo/pull/32890) by [@marklawlor](https://github.com/marklawlor))
+- Fix relative Hrefs not including search params
 
 ### 💡 Others
 
