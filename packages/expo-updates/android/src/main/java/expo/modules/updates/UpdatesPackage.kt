@@ -97,7 +97,7 @@ class UpdatesPackage : Package {
     val handler = object : ApplicationLifecycleListener {
       override fun onCreate(application: Application) {
         super.onCreate(application)
-        if (isRunningAndroidTest()) {
+        if (!BuildConfig.USE_DEV_CLIENT && isRunningAndroidTest()) {
           // Preload updates to prevent Detox ANR
           UpdatesController.initialize(context)
           UpdatesController.instance.launchAssetFile
