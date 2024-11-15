@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `formatFullName` method to format tokenized full name object into a local-aware string representation ([#32567](https://github.com/expo/expo/pull/32567) by [@Armster15](https://github.com/Armster15))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 7.1.0 — 2024-11-14
+
+### 🎉 New features
+
+- Add `formatFullName` method to format tokenized full name object into a local-aware string representation ([#32567](https://github.com/expo/expo/pull/32567) by [@Armster15](https://github.com/Armster15))
 
 ## 7.0.1 — 2024-10-22
 

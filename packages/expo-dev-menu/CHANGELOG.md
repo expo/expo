@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed issue where `UIWindow` was called on off the main thread. ([#29559](https://github.com/expo/expo/pull/29559) by [@hakonk](https://github.com/hakonk))
+
 ### 💡 Others
+
+## 6.0.9 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.8 — 2024-11-11
 

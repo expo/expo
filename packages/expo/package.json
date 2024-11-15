@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "52.0.6",
+  "version": "52.0.7",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -68,20 +68,20 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.21.3",
+    "@expo/cli": "0.21.5",
     "@expo/config": "~10.0.4",
     "@expo/config-plugins": "9.0.9",
     "@expo/fingerprint": "0.11.2",
     "@expo/metro-config": "0.19.4",
     "@expo/vector-icons": "^14.0.0",
-    "babel-preset-expo": "~12.0.0",
+    "babel-preset-expo": "~12.0.1",
     "expo-asset": "~11.0.1",
     "expo-constants": "~17.0.3",
     "expo-file-system": "~18.0.3",
     "expo-font": "~13.0.1",
     "expo-keep-awake": "~14.0.1",
     "expo-modules-autolinking": "2.0.2",
-    "expo-modules-core": "2.0.2",
+    "expo-modules-core": "2.0.3",
     "fbemitter": "^3.0.0",
     "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"
@@ -92,7 +92,7 @@
     "expo-module-scripts": "^4.0.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.1"
+    "react-native": "0.76.2"
   },
   "peerDependencies": {
     "@expo/dom-webview": "*",

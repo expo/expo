@@ -6,7 +6,12 @@
 
 ### 🎉 New features
 
+- Add `withAnchor` and `relativeToDirectory` options to `<Redirect />`. ([#32847](https://github.com/expo/expo/pull/32847) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🐛 Bug fixes
+
+- Fix Typed Routes incorrectly collapsing group index routes ([#32890](https://github.com/expo/expo/pull/32890) by [@marklawlor](https://github.com/marklawlor))
+- Fix relative Hrefs not including search params ([#32931](https://github.com/expo/expo/pull/32931) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
