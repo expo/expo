@@ -19,6 +19,7 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  *     body: 'Change sides!',
  *   },
  *   trigger: {
+ *     type: SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60,
  *   },
  * });
@@ -33,6 +34,7 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  *     title: 'Remember to drink water!',
  *   },
  *   trigger: {
+ *     type: SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60 * 20,
  *     repeats: true,
  *   },

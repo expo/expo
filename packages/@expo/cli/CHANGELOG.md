@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.21.5 — 2024-11-14
+
+### 💡 Others
+
+- Bump minimum @expo/prebuild-config version.
+
+## 0.21.4 — 2024-11-14
+
+### 🐛 Bug fixes
+
+- fix windows SSR. ([#32923](https://github.com/expo/expo/pull/32923) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.21.3 — 2024-11-14
 
 _This version does not introduce any user-facing changes._

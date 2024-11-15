@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 8.0.17 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.16 — 2024-11-14
+
+### 🐛 Bug fixes
+
+- [Android] Fix app icon generation. ([#32908](https://github.com/expo/expo/pull/32908) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 8.0.15 — 2024-11-14
 
 _This version does not introduce any user-facing changes._
