@@ -28,7 +28,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.29.8):
     - ExpoModulesCore
-  - Expo (52.0.6):
+  - Expo (52.0.7):
     - ExpoModulesCore
   - ExpoAppleAuthentication (7.1.0):
     - ExpoModulesCore
@@ -219,7 +219,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSymbols (0.2.0):
     - ExpoModulesCore
-  - ExpoSystemUI (4.0.2):
+  - ExpoSystemUI (4.0.3):
     - ExpoModulesCore
   - ExpoTrackingTransparency (5.0.0):
     - ExpoModulesCore
@@ -2973,7 +2973,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: a883468e03b0234d4787e2c0ae4a65726f13cb05
   EXNotifications: c5b96ad5fffef5515c9cfc7887ae10f8720c70a5
-  Expo: 8a3384b1e45f23d9bed1225d76ebaa637f3b420c
+  Expo: 46cbe74ce0d0f4a4d7b726e90693eb8dfcec6de0
   ExpoAppleAuthentication: 4317ef22bf15fe7a70d7a1a1c6006db048d81b45
   ExpoAsset: 8138f2a9ec55ae1ad7c3871448379f7d97692d15
   ExpoAudio: 1312651a35d00c1b728be169d5a1e5d1e8f10f9a
@@ -3021,7 +3021,7 @@ SPEC CHECKSUMS:
   ExpoSQLite: 56051549ddac62c16460d4391b84994faf494f00
   ExpoStoreReview: f3439c43f13fa497cfe07d16b095f39101ed5548
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
-  ExpoSystemUI: 7a9e9895c2621980ae57277c9d1903ad3fd41bb1
+  ExpoSystemUI: d8fb1abd91c7283d8ead3df77ed0575b85f1bb42
   ExpoTrackingTransparency: 206d9790744f329a21e53cba0ee411d8db43ce16
   ExpoVideo: d419a84e8841e05443f3351cb937f55375b60650
   ExpoVideoThumbnails: 8b6bbe3cb76dd2225910667b896b27855bbda694
@@ -3038,7 +3038,7 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 1000f452eb58ce5e0877c6fa25efded0234b0534
+  hermes-engine: 498ef3eda73d170bfe9ca83effe8eee82a695ec2
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3138,7 +3138,7 @@ SPEC CHECKSUMS:
   StripePaymentsUI: c24f990b03a68a7f6fe704b15dd487e7bb6b603e
   StripeUICore: f2d514e900c37436dc5427fdf2c29d68ab1c2935
   UMAppLoader: bda51f73f8599e336a778b23e0956130d1e244d5
-  Yoga: c5b0e913b5b3b4cde588227c1402e747797061f3
+  Yoga: 96872ee462cfc43866ad013c8160d4ff6b85709b
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 0203a21856355bd5b026299b1a6306354278cfe3
