@@ -5,13 +5,11 @@ class GoogleMapsViewDelegate: NSObject, GMSMapViewDelegate {
   public var expoMapView: GoogleMapsView?
   private var zoom: Float = 0.0
   public let infoMarker = GMSMarker()
-  private let sendEvent: (String, [String: Any?]) -> Void
   private let googleMapsMarkersManager: GoogleMapsMarkersManager
   private var mapInitialized: Bool = false
   private var mapInitialLoadComplete: Bool = false
 
-  init(sendEvent: @escaping (String, [String: Any?]) -> Void, googleMapsMarkersManager: GoogleMapsMarkersManager) {
-    self.sendEvent = sendEvent
+  init(googleMapsMarkersManager: GoogleMapsMarkersManager) {
     self.googleMapsMarkersManager = googleMapsMarkersManager
     infoMarker.opacity = 0
     super.init()

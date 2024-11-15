@@ -2,7 +2,7 @@ import GoogleMaps
 import GooglePlaces
 import ExpoModulesCore
 
-public final class GoogleMapsView: UIView, ExpoMapView {
+public final class GoogleMapsView: ExpoView, ExpoMapView {
   private let mapView: GMSMapView
   private let googleMapsViewDelegate: GoogleMapsViewDelegate
   private let controls: GoogleMapsControls
@@ -46,7 +46,7 @@ public final class GoogleMapsView: UIView, ExpoMapView {
   var onLocationDotPress = EventDispatcher()
   var onLocationChange = EventDispatcher()
 
-  init(sendEvent: @escaping (String, [String: Any?]) -> Void) {
+  public required init(appContext: AppContext? = nil) {
     // just for now we do authentication here
     // should be moved to module's function
     GoogleMapsView.initializeGoogleMapsServices()
@@ -55,7 +55,7 @@ public final class GoogleMapsView: UIView, ExpoMapView {
     // TODO: use prop as a source for initial camera position
     let camera = GMSCameraPosition.camera(withLatitude: 51.5, longitude: 0, zoom: 4.0)
     mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
-    googleMapsViewDelegate = GoogleMapsViewDelegate(sendEvent: sendEvent, googleMapsMarkersManager: googleMapsMarkersManager)
+    googleMapsViewDelegate = GoogleMapsViewDelegate(googleMapsMarkersManager: googleMapsMarkersManager)
     mapView.delegate = googleMapsViewDelegate
     mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     controls = GoogleMapsControls(mapView: mapView)
@@ -83,14 +83,10 @@ public final class GoogleMapsView: UIView, ExpoMapView {
 
     places = GoogleMapsPlaces(mapView: mapView, markers: markers)
     cameraAnimations = GoogleMapsCameraAnimations(mapView: mapView)
-    super.init(frame: CGRect.zero)
+    super.init(appContext: appContext)
     googleMapsViewDelegate.expoMapView = self
     mapView.addObserver(googleMapsViewDelegate, forKeyPath: "myLocation", context: nil)
     addSubview(mapView)
-  }
-
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
   }
 
   // Allows the double tap to work

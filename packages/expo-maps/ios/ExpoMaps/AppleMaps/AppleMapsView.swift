@@ -2,21 +2,21 @@ import MapKit
 import ExpoModulesCore
 import UIKit
 
-public final class AppleMapsView: UIView, ExpoMapView, UIGestureRecognizerDelegate {
-  private let mapView: MKMapView
-  private let controls: AppleMapsControls
+public final class AppleMapsView: ExpoView, ExpoMapView, UIGestureRecognizerDelegate {
+  private var mapView: MKMapView
+  private var controls: AppleMapsControls
   private var delegate: AppleMapsDelegate?
-  private let markers: AppleMapsMarkers
-  private let clusters: AppleMapsClusters
-  private let gestures: AppleMapsGestures
-  private let polygons: AppleMapsPolygons
-  private let polylines: AppleMapsPolylines
-  private let circles: AppleMapsCircles
-  private let geoJsons: AppleMapsGeoJsons
-  private let kmls: AppleMapsKMLs
-  private let pointsOfInterest: AppleMapsPOI
-  private let markersManager: AppleMapsMarkersManager = AppleMapsMarkersManager()
-  private let cameraAnimator: AppleMapsCameraAnimations
+  private var markers: AppleMapsMarkers
+  private var clusters: AppleMapsClusters
+  private var gestures: AppleMapsGestures
+  private var polygons: AppleMapsPolygons
+  private var polylines: AppleMapsPolylines
+  private var circles: AppleMapsCircles
+  private var geoJsons: AppleMapsGeoJsons
+  private var kmls: AppleMapsKMLs
+  private var pointsOfInterest: AppleMapsPOI
+  private var markersManager: AppleMapsMarkersManager = AppleMapsMarkersManager()
+  private var cameraAnimator: AppleMapsCameraAnimations
   private var wasInitialCameraPositionSet = false
 
   var onMapLoaded = EventDispatcher()
@@ -35,7 +35,7 @@ public final class AppleMapsView: UIView, ExpoMapView, UIGestureRecognizerDelega
   var onLocationDotPress = EventDispatcher()
   var onLocationChange = EventDispatcher()
 
-  init(sendEvent: @escaping (String, [String: Any?]) -> Void) {
+  public required init(appContext: AppContext? = nil) {
     mapView = MKMapView()
     mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     controls = AppleMapsControls(mapView: mapView)
@@ -49,8 +49,8 @@ public final class AppleMapsView: UIView, ExpoMapView, UIGestureRecognizerDelega
     kmls = AppleMapsKMLs(mapView: mapView, markers: markers, polylines: polylines, polygons: polygons)
     pointsOfInterest = AppleMapsPOI(mapView: mapView, markers: markers)
     cameraAnimator = AppleMapsCameraAnimations(mapView: mapView)
-    super.init(frame: CGRect.zero)
-    delegate = AppleMapsDelegate(sendEvent: sendEvent, markersManager: markersManager, appleMapsView: self)
+    super.init(appContext: appContext)
+    delegate = AppleMapsDelegate(markersManager: markersManager, appleMapsView: self)
     mapView.delegate = delegate
 
     let singleTap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
@@ -102,10 +102,6 @@ public final class AppleMapsView: UIView, ExpoMapView, UIGestureRecognizerDelega
       let pressCoordinates = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
       onLongPress(LatLngRecord(coordinate: pressCoordinates).toDictionary())
     }
-  }
-
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
   }
 
   func setShowCompass(enable: Bool) {

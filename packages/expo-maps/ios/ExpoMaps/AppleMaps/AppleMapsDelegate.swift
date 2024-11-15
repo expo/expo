@@ -2,14 +2,14 @@ import MapKit
 
 class AppleMapsDelegate: NSObject, MKMapViewDelegate {
   private let markersManager: AppleMapsMarkersManager
-  private let sendEvent: (String, [String: Any?]) -> Void
+  //private let sendEvent: (String, [String: Any?]) -> Void
   // Dictionary which holds cluster names connected with clusters appearance data
   private var clusterObjects: [String: ClusterObject] = [:]
   private var finishedInitialLoad: Bool = false
   weak var appleMapsView: AppleMapsView?
 
-  init(sendEvent: @escaping (String, [String: Any?]) -> Void, markersManager: AppleMapsMarkersManager, appleMapsView: AppleMapsView?) {
-    self.sendEvent = sendEvent
+  init(markersManager: AppleMapsMarkersManager, appleMapsView: AppleMapsView?) {
+  //  self.sendEvent = sendEvent
     self.markersManager = markersManager
     self.appleMapsView = appleMapsView
     super.init()
