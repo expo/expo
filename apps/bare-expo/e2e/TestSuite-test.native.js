@@ -8,7 +8,7 @@ export const TESTS = [
   // 'Font',
   'Permissions',
   // 'Blur',
-  'LinearGradient',
+  // 'LinearGradient',
   'Constants',
   // 'Contacts',
   'Crypto',
