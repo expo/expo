@@ -34,6 +34,7 @@ public final class RNCSafeAreaProviderManager: Module {
           "height": window.frame.size.height
         ]
       ]
+    }
   }
 }
 
