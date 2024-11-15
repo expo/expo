@@ -1,6 +1,21 @@
 import AuthenticationServices
 import ExpoModulesCore
 
+struct FullName: Record {
+  @Field
+  var namePrefix: String?
+  @Field
+  var nameSuffix: String?
+  @Field
+  var givenName: String?
+  @Field
+  var middleName: String?
+  @Field
+  var familyName: String?
+  @Field
+  var nickname: String?
+}
+
 enum FullNameFormatStyle: String, Enumerable {
   case `default`
   case short
