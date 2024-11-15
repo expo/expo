@@ -41,6 +41,14 @@ static const NSString *kImageResizeModeCover = @"cover";
 
 + (NSString * _Nullable)parseImageUrl:(EXManifestsManifest *)manifest
 {
+  NSDictionary *plugin = [manifest getPluginPropertiesWithPackageName:@"expo-splash-screen"];
+  NSString *image = [plugin valueForKey:@"image"];
+  if (image) {
+    NSURL *url = [NSURL URLWithString:manifest.bundleUrl];
+    NSString *schemeAndHost = [NSString stringWithFormat:@"%@://%@:%@", url.scheme, url.host, url.port];
+    NSString *result = [NSString stringWithFormat:@"%@/assets/%@", schemeAndHost, image];
+    return result;
+  }
   return manifest.iosSplashImageUrl;
 }
 

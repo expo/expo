@@ -66,6 +66,16 @@ class ManagedAppSplashScreenConfiguration private constructor() {
      * - generic splash imageUrl
      */
     private fun parseImageUrl(manifest: Manifest): String? {
+      val pluginInfo = manifest.getPluginProperties("expo-splash-screen")
+      pluginInfo?.let { info ->
+        val url = manifest.getIconUrl()?.split("./")?.get(0)
+        val pluginUrl = info["image"] as String?
+        url?.let {
+          return "$it$pluginUrl"
+        }
+        return info["image"] as String?
+      }
+
       val androidSplash = manifest.getAndroidSplashInfo()
       if (androidSplash != null) {
         val dpiRelatedImageUrl = getStringFromJSONObject(
