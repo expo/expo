@@ -5,6 +5,7 @@ export declare function navigate(this: RouterStore, url: Href, options?: Navigat
 export declare function reload(this: RouterStore): void;
 export declare function push(this: RouterStore, url: Href, options?: NavigationOptions): any;
 export declare function dismiss(this: RouterStore, count?: number): void;
+export declare function dismissTo(this: RouterStore, href: Href, options?: NavigationOptions): any;
 export declare function replace(this: RouterStore, url: Href, options?: NavigationOptions): any;
 export declare function dismissAll(this: RouterStore): void;
 export declare function goBack(this: RouterStore): void;

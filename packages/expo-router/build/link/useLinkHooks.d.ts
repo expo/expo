@@ -159,6 +159,25 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      */
     push?: boolean;
     /**
+     * While in a stack, this will dismiss screens until the provided href is reached. If the href is not found,
+     * it will instead replace the current screen with the provided href.
+     *
+     * @example
+     *```tsx
+     * import { Link } from 'expo-router';
+     * import { View } from 'react-native';
+     *
+     * export default function Route() {
+     *  return (
+     *   <View>
+     *     <Link dismissTo href="/feed">Close modal</Link>
+     *   </View>
+     *  );
+     *}
+     * ```
+     */
+    dismissTo?: boolean;
+    /**
      * On native, this can be used with CSS interop tools like Nativewind.
      * On web, this sets the HTML `class` directly.
      */

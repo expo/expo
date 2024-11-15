@@ -79,7 +79,7 @@ exports.Redirect = Redirect;
  */
 exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
-function ExpoRouterLink({ href, replace, push, 
+function ExpoRouterLink({ href, replace, push, dismissTo, 
 // TODO: This does not prevent default on the anchor tag.
 relativeToDirectory, asChild, rel, target, download, withAnchor, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
@@ -97,6 +97,8 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, ...rest }, ref)
         event = 'PUSH';
     if (replace)
         event = 'REPLACE';
+    if (dismissTo)
+        event = 'POP_TO';
     const props = (0, useLinkToPathProps_1.default)({
         href: resolvedHref,
         event,
