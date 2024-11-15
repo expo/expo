@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed type errors when using `ts-jest`. ([#32954](https://github.com/expo/expo/pull/32954) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 52.0.7 — 2024-11-14
