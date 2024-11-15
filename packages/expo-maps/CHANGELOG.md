@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed hard crash when mounting Apple and Google map views. ([#32962](https://github.com/expo/expo/pull/32962) by [@fobos531](https://github.com/fobos531))
+
 ### 💡 Others
 
 ## 0.6.1 — 2024-10-29
