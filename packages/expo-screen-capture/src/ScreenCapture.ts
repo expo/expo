@@ -13,7 +13,7 @@ import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags: Set<string> = new Set();
 
 const onScreenshotEventName = 'onScreenshot';
-
+const onRecordingEventName = 'onRecording';
 // @needsAudit
 /**
  * Returns whether the Screen Capture API is available on the current device.
@@ -109,6 +109,22 @@ export function addScreenshotListener(listener: () => void): EventSubscription {
 
 // @needsAudit
 /**
+ * Adds a listener that will fire whenever the user takes a screen recording while the app is foregrounded.
+ * On Android, this method requires the `READ_EXTERNAL_STORAGE` permission. You can request this
+ * with [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
+ *
+ * @param listener The function that will be executed when the user takes a screen recording.
+ * This function accepts no arguments.
+ *
+ * @return A `Subscription` object that you can use to unregister the listener, either by calling
+ * `remove()` or passing it to `removeRecordingListener`.
+ */
+export function addRecordingListener(listener: () => void): EventSubscription {
+  return ExpoScreenCapture.addListener(onRecordingEventName, listener);
+}
+
+// @needsAudit
+/**
  * Removes the subscription you provide, so that you are no longer listening for screenshots.
  * You can also call `remove()` on that `Subscription` object.
  *
@@ -126,6 +142,28 @@ export function addScreenshotListener(listener: () => void): EventSubscription {
  * ```
  */
 export function removeScreenshotListener(subscription: EventSubscription) {
+  subscription.remove();
+}
+
+// @needsAudit
+/**
+ * Removes the subscription you provide, so that you are no longer listening for screen recordings.
+ * You can also call `remove()` on that `Subscription` object.
+ *
+ * @param subscription Subscription returned by `addRecordingListener`.
+ *
+ * @example
+ * ```ts
+ * let mySubscription = addRecordingListener(() => {
+ *   console.log("You took a screen recording!");
+ * });
+ * ...
+ * mySubscription.remove();
+ * // OR
+ * removeRecordingListener(mySubscription);
+ * ```
+ */
+export function removeRecordingListener(subscription: EventSubscription) {
   subscription.remove();
 }
 

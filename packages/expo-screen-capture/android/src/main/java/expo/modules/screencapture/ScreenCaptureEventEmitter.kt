@@ -14,7 +14,7 @@ import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import expo.modules.core.interfaces.LifecycleEventListener
 
-class ScreenshotEventEmitter(val context: Context, onCapture: () -> Unit) : LifecycleEventListener {
+class ScreenCaptureEventEmitter(val context: Context, onScreenshot: () -> Unit, onRecording: () -> Unit) : LifecycleEventListener {
   private var isListening: Boolean = true
   private var previousPath: String = ""
 
@@ -29,7 +29,10 @@ class ScreenshotEventEmitter(val context: Context, onCapture: () -> Unit) : Life
         val path = getFilePathFromContentResolver(context, uri)
         if (path != null && isPathOfNewScreenshot(path)) {
           previousPath = path
-          onCapture()
+          onScreenshot()
+        } else if (path != null && isPathOfNewRecording(path)) {
+          previousPath = path
+          onRecording()
         }
       }
     }
@@ -90,6 +93,22 @@ class ScreenshotEventEmitter(val context: Context, onCapture: () -> Unit) : Life
     if (previousPath.isEmpty()) {
       return true
     }
+    return path.compareTo(previousPath) != 0
+  }
+
+  private fun isPathOfNewRecording(path: String): Boolean {
+    // Ignore paths that are not recordings and pending recordings
+    if (!path.lowercase().contains("recording") || path.lowercase().contains(".pending")) {
+      return false
+    }
+
+    // Cannot check that the onChange event is for an insert operation until API level 30
+    // Instead, we save the last path and check if this is a duplicate, since each subsequent
+    // recording will have a new path
+    if (previousPath.isEmpty()) {
+      return true
+    }
+
     return path.compareTo(previousPath) != 0
   }
 }

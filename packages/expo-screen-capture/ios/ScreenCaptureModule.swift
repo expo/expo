@@ -1,6 +1,7 @@
 import ExpoModulesCore
 
 let onScreenshotEventName = "onScreenshot"
+let onRecordingEventName = "onRecording"
 
 public final class ScreenCaptureModule: Module {
   private var isBeingObserved = false
@@ -11,6 +12,7 @@ public final class ScreenCaptureModule: Module {
     Name("ExpoScreenCapture")
 
     Events(onScreenshotEventName)
+    Events(onRecordingEventName)
 
     OnCreate {
       let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
@@ -66,6 +68,13 @@ public final class ScreenCaptureModule: Module {
   @objc
   func listenForScreenCapture() {
     sendEvent(onScreenshotEventName, [
+      "body": nil
+    ])
+  }
+
+  @objc
+  func listenForScreenRecording() {
+    sendEvent(onRecordingEventName, [
       "body": nil
     ])
   }

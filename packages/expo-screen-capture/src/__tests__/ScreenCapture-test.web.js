@@ -24,6 +24,14 @@ describe('ScreenCapture methods are defined', () => {
   it('removeScreenshotListener is defined', async () => {
     expect(ScreenCapture.removeScreenshotListener).toBeDefined();
   });
+
+  it('addRecordingListener is defined', async () => {
+    expect(ScreenCapture.addRecordingListener).toBeDefined();
+  });
+
+  it('removeRecordingListener is defined', async () => {
+    expect(ScreenCapture.removeRecordingListener).toBeDefined();
+  });
 });
 
 describe('Test key functionality', () => {
@@ -37,5 +45,13 @@ describe('Test key functionality', () => {
 
   it('throws for allowScreenCapture on web platform', async () => {
     await expect(ScreenCapture.allowScreenCaptureAsync).rejects.toThrowError('not available');
+  });
+
+  it('throws for addRecordingListener on web platform', async () => {
+    await expect(ScreenCapture.addRecordingListener).rejects.toThrowError('not available');
+  });
+
+  it('throws for removeRecordingListener on web platform', async () => {
+    await expect(ScreenCapture.removeRecordingListener).rejects.toThrowError('not available');
   });
 });
