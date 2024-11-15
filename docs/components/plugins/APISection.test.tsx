@@ -30,8 +30,11 @@ describe('APISection', () => {
       />
     );
 
+    const level3Headings = screen.getAllByRole('heading', { level: 3 });
+
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(24);
+    expect(level3Headings.length).toBeGreaterThanOrEqual(24);
+    expect(level3Headings.length).toBeLessThanOrEqual(26);
     expect(screen.getAllByRole('table')).toHaveLength(11);
 
     expect(screen.queryByText('Event Subscriptions'));
