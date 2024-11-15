@@ -893,6 +893,234 @@ properties.
     >
       <a
         class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+        href="#formatfullnamefullname-formatstyle"
+        id="formatfullnamefullname-formatstyle"
+      >
+        <span
+          class="inline"
+        >
+          <code
+            class="leading-[1.6154] text-default font-medium wrap-anywhere"
+            data-text="true"
+          >
+            formatFullName(fullName, formatStyle)
+          </code>
+        </span>
+        <svg
+          aria-label="permalink"
+          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+          fill="none"
+          height="24"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+          <path
+            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </a>
+    </h3>
+    <div
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
+    >
+      <table
+        class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      >
+        <thead
+          class="border-b border-b-default bg-subtle"
+        >
+          <tr
+            class="even:bg-subtle even:[&_summary]:bg-element"
+          >
+            <th
+              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+            >
+              Parameter
+            </th>
+            <th
+              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+            >
+              Type
+            </th>
+            <th
+              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="even:bg-subtle even:[&_summary]:bg-element"
+          >
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
+            >
+              <span
+                class="leading-[1.6154] text-default font-semibold"
+                data-text="true"
+              >
+                fullName
+              </span>
+            </td>
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
+            >
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+                data-text="true"
+              >
+                <a
+                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                  href="#appleauthenticationfullname"
+                >
+                  AppleAuthenticationFullName
+                </a>
+              </code>
+            </td>
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
+            >
+              <p
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                data-text="true"
+              >
+                The full name object with the tokenized portions
+              </p>
+            </td>
+          </tr>
+          <tr
+            class="even:bg-subtle even:[&_summary]:bg-element"
+          >
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
+            >
+              <span
+                class="leading-[1.6154] text-default font-semibold"
+                data-text="true"
+              >
+                formatStyle
+              </span>
+              <br />
+              <span
+                class="pt-5 !text-[13px] text-secondary"
+              >
+                (optional)
+              </span>
+            </td>
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
+            >
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+                data-text="true"
+              >
+                <a
+                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                  href="#appleauthenticationfullnameformatstyle"
+                >
+                  AppleAuthenticationFullNameFormatStyle
+                </a>
+              </code>
+            </td>
+            <td
+              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
+            >
+              <p
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                data-text="true"
+              >
+                The style in which the name should be formatted
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br />
+    <p
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      data-text="true"
+    >
+      Creates a locale-aware string representation of a person's name from an object representing the tokenized portions of a user's full name
+    </p>
+    <div
+      class="flex flex-row items-start gap-2"
+    >
+      <div
+        class="flex flex-row items-center gap-2"
+      >
+        <svg
+          class="icon-sm inline-block text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g
+            id="corner-down-right-outline-icon"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
+        <span
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem]"
+        data-text="true"
+      >
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          string
+        </code>
+      </p>
+    </div>
+    <div
+      class="mb-1 mt-1.5 flex flex-col pl-6"
+    >
+      <p
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        data-text="true"
+      >
+        A locale-aware string representation of a person's name
+      </p>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+  >
+    <h3
+      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+      data-heading="true"
+    >
+      <a
+        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
         href="#getcredentialstateasyncuser"
         id="getcredentialstateasyncuser"
       >
@@ -1988,7 +2216,7 @@ Instead of using this method it is recommended to simply clear all the user's da
 from using 
       <a
         class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-        href="./#signinasync"
+        href="#appleauthenticationsigninasyncoptions"
       >
         <code
           class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !inline"
@@ -2000,7 +2228,7 @@ from using
        or 
       <a
         class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-        href="./#refreshasync"
+        href="#appleauthenticationrefreshasyncoptions"
       >
         <code
           class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !inline"
@@ -3245,6 +3473,174 @@ may be
         </tbody>
       </table>
     </div>
+  </div>
+  <div
+    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+  >
+    <h3
+      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+      data-heading="true"
+    >
+      <a
+        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
+        href="#appleauthenticationfullnameformatstyle"
+        id="appleauthenticationfullnameformatstyle"
+      >
+        <span
+          class="inline"
+        >
+          <code
+            class="leading-[1.6154] text-default font-medium wrap-anywhere"
+            data-text="true"
+          >
+            AppleAuthenticationFullNameFormatStyle
+          </code>
+        </span>
+        <svg
+          aria-label="permalink"
+          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+          fill="none"
+          height="24"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+          <path
+            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+            stroke="#9B9B9B"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </a>
+    </h3>
+    <p
+      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
+      data-text="true"
+    >
+      <span
+        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
+        data-text="true"
+      >
+        Literal Type:
+         
+      </span>
+      <code
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        data-text="true"
+      >
+        string
+      </code>
+    </p>
+    <p
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      data-text="true"
+    >
+      A value to specify the style for formatting a name.
+    </p>
+    <blockquote
+      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      data-testid="callout-container"
+    >
+      <div
+        class="mt-1 select-none [table_&]:mt-0.5"
+      >
+        <svg
+          class="icon-sm text-icon-default"
+          fill="currentColor"
+          role="img"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g
+            id="info-circle-solid-icon"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
+        </svg>
+      </div>
+      <div
+        class="w-full leading-normal text-default last:mb-0"
+      >
+        <p
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          data-text="true"
+        >
+          <span
+            class="leading-[1.6154] text-default font-semibold"
+            data-text="true"
+          >
+            See:
+          </span>
+           
+          <a
+            class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+            href="https://developer.apple.com/documentation/foundation/personnamecomponentsformatter"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </p>
+      </div>
+    </blockquote>
+    <p
+      class="tracking-[-0.006rem] text-[14px] font-medium text-secondary"
+      data-text="true"
+    >
+      Acceptable values are:
+       
+      <code
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        data-text="true"
+      >
+        'default'
+      </code>
+       | 
+      <code
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        data-text="true"
+      >
+        'short'
+      </code>
+       | 
+      <code
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        data-text="true"
+      >
+        'medium'
+      </code>
+       | 
+      <code
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        data-text="true"
+      >
+        'long'
+      </code>
+       | 
+      <code
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        data-text="true"
+      >
+        'abbreviated'
+      </code>
+    </p>
   </div>
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
