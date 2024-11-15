@@ -45,9 +45,8 @@ static const NSString *kImageResizeModeCover = @"cover";
   NSString *image = [plugin valueForKey:@"image"];
   if (image) {
     NSURL *url = [NSURL URLWithString:manifest.bundleUrl];
-    NSString *schemeAndHost = [NSString stringWithFormat:@"%@://%@:%@", url.scheme, url.host, url.port];
-    NSString *result = [NSString stringWithFormat:@"%@/assets/%@", schemeAndHost, image];
-    return result;
+    NSString *origin = [NSString stringWithFormat:@"%@://%@:%@", url.scheme, url.host, url.port];
+    return [NSString stringWithFormat:@"%@/assets/%@", origin, image];
   }
   return manifest.iosSplashImageUrl;
 }
