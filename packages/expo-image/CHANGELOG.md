@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed Gifs animation never stops even when loop count is set to 1.
+
 ### 💡 Others
 
 ## 2.0.0 — 2024-11-11
