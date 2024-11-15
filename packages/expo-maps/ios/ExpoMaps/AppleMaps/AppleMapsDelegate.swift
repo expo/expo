@@ -2,14 +2,12 @@ import MapKit
 
 class AppleMapsDelegate: NSObject, MKMapViewDelegate {
   private let markersManager: AppleMapsMarkersManager
-  //private let sendEvent: (String, [String: Any?]) -> Void
   // Dictionary which holds cluster names connected with clusters appearance data
   private var clusterObjects: [String: ClusterObject] = [:]
   private var finishedInitialLoad: Bool = false
   weak var appleMapsView: AppleMapsView?
 
   init(markersManager: AppleMapsMarkersManager, appleMapsView: AppleMapsView?) {
-  //  self.sendEvent = sendEvent
     self.markersManager = markersManager
     self.appleMapsView = appleMapsView
     super.init()
@@ -66,7 +64,8 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
       if let markerAnnotationView = view as? ExpoMKImageAnnotationView {
         markerAnnotationView.image = UIImage(contentsOfFile: annotation.icon)
         markerAnnotationView.isDraggable = annotation.isDraggable
-        markerAnnotationView.centerOffset = CGPoint(x: annotation.centerOffsetX, y: annotation.centerOffsetY)
+        markerAnnotationView.centerOffset = CGPoint(
+          x: annotation.centerOffsetX, y: annotation.centerOffsetY)
         markerAnnotationView.alpha = annotation.alpha
         markerAnnotationView.clusteringIdentifier = annotation.clusterName
 
@@ -78,9 +77,11 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
       let view = mapView.dequeueReusableAnnotationView(withIdentifier: "color_marker")
 
       if let markerAnnotationView = view as? ExpoMKColorAnnotationView {
-        markerAnnotationView.markerTintColor = UIColor(hue: annotation.color, saturation: 1, brightness: 1, alpha: 1)
+        markerAnnotationView.markerTintColor = UIColor(
+          hue: annotation.color, saturation: 1, brightness: 1, alpha: 1)
         markerAnnotationView.isDraggable = annotation.isDraggable
-        markerAnnotationView.centerOffset = CGPoint(x: annotation.centerOffsetX, y: annotation.centerOffsetY)
+        markerAnnotationView.centerOffset = CGPoint(
+          x: annotation.centerOffsetX, y: annotation.centerOffsetY)
         markerAnnotationView.alpha = annotation.alpha
         markerAnnotationView.clusteringIdentifier = annotation.clusterName
 
@@ -97,18 +98,21 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
 
         return clusterAnnotationView
       } else {
-        return ExpoMKClusterImageAnnotationView(annotation: annotation, reuseIdentifier: "image_cluster")
+        return ExpoMKClusterImageAnnotationView(
+          annotation: annotation, reuseIdentifier: "image_cluster")
       }
     } else if let annotation = annotation as? ExpoMKClusterColorAnnotation {
       let view = mapView.dequeueReusableAnnotationView(withIdentifier: "color_cluster")
 
       if let clusterAnnotationView = view as? ExpoMKClusterColorAnnotationView {
-        clusterAnnotationView.markerTintColor = UIColor(hue: annotation.color, saturation: 1, brightness: 1, alpha: 1)
+        clusterAnnotationView.markerTintColor = UIColor(
+          hue: annotation.color, saturation: 1, brightness: 1, alpha: 1)
         clusterAnnotationView.alpha = annotation.alpha
 
         return clusterAnnotationView
       } else {
-        return ExpoMKClusterColorAnnotationView(annotation: annotation, reuseIdentifier: "color_cluster")
+        return ExpoMKClusterColorAnnotationView(
+          annotation: annotation, reuseIdentifier: "color_cluster")
       }
     } else {
       return nil
@@ -119,7 +123,9 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
    Depending on memberAnnotation's clusterName and data paired with the name in clusterObjects dictionary
    ExpoMKClusterImageAnnotation or ExpoMKClusterColorAnnotation is created.
    */
-  func mapView(_ mapView: MKMapView, clusterAnnotationForMemberAnnotations memberAnnotations: [MKAnnotation]) -> MKClusterAnnotation {
+  func mapView(
+    _ mapView: MKMapView, clusterAnnotationForMemberAnnotations memberAnnotations: [MKAnnotation]
+  ) -> MKClusterAnnotation {
     if let expoAnnotation = memberAnnotations.first as? ExpoMKAnnotation {
       let clusterObject = clusterObjects[expoAnnotation.clusterName!]!
 
@@ -155,19 +161,22 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
 
   func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
     appleMapsView?.onRegionChange(
-      CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span).toDictionary()
+      CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span)
+        .toDictionary()
     )
   }
 
   func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
     appleMapsView?.onRegionChangeStarted(
-      CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span).toDictionary()
+      CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span)
+        .toDictionary()
     )
   }
 
   func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
     appleMapsView?.onRegionChangeComplete(
-      CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span).toDictionary()
+      CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span)
+        .toDictionary()
     )
   }
 
@@ -183,11 +192,11 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
     if let annotation = view.annotation as? ExpoMKAnnotation {
       appleMapsView?.onMarkerPress(MarkerRecord(marker: annotation).toDictionary())
     }
-#if HAS_GOOGLE_UTILS
-    if let annotation = view.annotation as? ExpoMKClusterAnnotation {
-      appleMapsView?.onClusterPress(ClusterRecord(cluster: annotation).toDictionary())
-    }
-#endif
+    #if HAS_GOOGLE_UTILS
+      if let annotation = view.annotation as? ExpoMKClusterAnnotation {
+        appleMapsView?.onClusterPress(ClusterRecord(cluster: annotation).toDictionary())
+      }
+    #endif
   }
 
   func mapView(
@@ -200,7 +209,8 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
       switch newState {
       case .starting:
         appleMapsView?.onMarkerDragStarted(MarkerRecord(marker: annotation).toDictionary())
-        view.addObserver(self, forKeyPath: "center", options: NSKeyValueObservingOptions.new, context: nil)
+        view.addObserver(
+          self, forKeyPath: "center", options: NSKeyValueObservingOptions.new, context: nil)
       case .dragging:
         appleMapsView?.onMarkerDrag(MarkerRecord(marker: annotation).toDictionary())
       case .ending:
@@ -216,15 +226,21 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
   }
 
   // swiftlint:disable block_based_kvo
-  override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
+  override func observeValue(
+    forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?,
+    context: UnsafeMutableRawPointer?
+  ) {
     if keyPath == "center" {
       if let view = object as? MKAnnotationView {
-        let newPosition = CGPoint(x: view.center.x - view.centerOffset.x, y: view.center.y - view.centerOffset.y)
+        let newPosition = CGPoint(
+          x: view.center.x - view.centerOffset.x, y: view.center.y - view.centerOffset.y)
         let coordinate = appleMapsView?.convertToMapViewCoordinate(newPosition)
         if let annotation = view.annotation as? ExpoMKColorAnnotation {
-          appleMapsView?.onMarkerDrag(MarkerRecord(id: annotation.id!, position: coordinate!).toDictionary())
+          appleMapsView?.onMarkerDrag(
+            MarkerRecord(id: annotation.id!, position: coordinate!).toDictionary())
         } else if let annotation = view.annotation as? ExpoMKAnnotation {
-          appleMapsView?.onMarkerDrag(MarkerRecord(id: annotation.id!, position: coordinate!).toDictionary())
+          appleMapsView?.onMarkerDrag(
+            MarkerRecord(id: annotation.id!, position: coordinate!).toDictionary())
         }
       }
     } else {

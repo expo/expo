@@ -39,13 +39,13 @@ class AppleMapsCameraAnimations {
     }
 
     if cameraMove.animate {
-      UIView.animate(withDuration: Double(cameraMove.duration) / 1000, animations: { () -> Void in
+      UIView.animate(withDuration: Double(cameraMove.duration) / 1000, animations: { () in
         if let mapRect = mapRect {
           self.mapView.setVisibleMapRect(mapRect, animated: true)
         } else {
           self.mapView.setCamera(newCamera, animated: true)
         }
-      }, completion: { [self] _ -> Void in
+      }, completion: { [self] _ in
         promise?.resolve(CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span).toDictionary())
       })
     } else {

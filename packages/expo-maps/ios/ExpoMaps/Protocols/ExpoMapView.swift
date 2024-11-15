@@ -1,8 +1,6 @@
 import ExpoModulesCore
 
 protocol ExpoMapView: UIView {
- // init(sendEvent: @escaping (String, [String: Any?]) -> Void)
- // init?(coder: NSCoder)
 
   func setMapType(mapType: MapType)
   func setMarkers(markerObjects: [MarkerObject])
