@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Typed Routes incorrectly collapsing group index routes ([#32890](https://github.com/expo/expo/pull/32890) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 4.0.5 — 2024-11-13
