@@ -103,6 +103,10 @@ This is likely due to the `priority` level of the notifications you're sending. 
 
 And setting the priority to `high` gives your notification the greatest likelihood that the Android will display the notification.
 
+### Notifications sent whilst an iOS device is offline are not recevied when the device comes back online 
+
+This indicates that you have not set the [Time to Live / TTL](https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format) as part of the message format. This defaults to zero for iOS/APNs, so redelivery is never attempted. Adjust this setting to account for devices being offline / out of network reception.
+
 ### Handle expired push notification credentials
 
 When your push notification credentials have expired, run `eas credentials`, choose iOS and a build profile, then remove your push notification key and generate a new one.
