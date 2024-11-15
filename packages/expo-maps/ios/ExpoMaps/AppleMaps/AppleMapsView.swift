@@ -3,20 +3,20 @@ import ExpoModulesCore
 import UIKit
 
 public final class AppleMapsView: ExpoView, ExpoMapView, UIGestureRecognizerDelegate {
-  private var mapView: MKMapView
-  private var controls: AppleMapsControls
+  private let mapView: MKMapView
+  private let controls: AppleMapsControls
   private var delegate: AppleMapsDelegate?
-  private var markers: AppleMapsMarkers
-  private var clusters: AppleMapsClusters
-  private var gestures: AppleMapsGestures
-  private var polygons: AppleMapsPolygons
-  private var polylines: AppleMapsPolylines
-  private var circles: AppleMapsCircles
-  private var geoJsons: AppleMapsGeoJsons
-  private var kmls: AppleMapsKMLs
-  private var pointsOfInterest: AppleMapsPOI
-  private var markersManager: AppleMapsMarkersManager = AppleMapsMarkersManager()
-  private var cameraAnimator: AppleMapsCameraAnimations
+  private let markers: AppleMapsMarkers
+  private let clusters: AppleMapsClusters
+  private let gestures: AppleMapsGestures
+  private let polygons: AppleMapsPolygons
+  private let polylines: AppleMapsPolylines
+  private let circles: AppleMapsCircles
+  private let geoJsons: AppleMapsGeoJsons
+  private let kmls: AppleMapsKMLs
+  private let pointsOfInterest: AppleMapsPOI
+  private let markersManager: AppleMapsMarkersManager = AppleMapsMarkersManager()
+  private let cameraAnimator: AppleMapsCameraAnimations
   private var wasInitialCameraPositionSet = false
 
   var onMapLoaded = EventDispatcher()
