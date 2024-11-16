@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
-export const NativeExpoAppleMapsModule = requireNativeModule('ExpoAppleMaps');
+import { requireNativeModule, requireOptionalNativeModule } from 'expo-modules-core';
+export const NativeExpoAppleMapsModule = requireOptionalNativeModule('ExpoAppleMaps');
 export const NativeExpoGoogleMapsModule = requireNativeModule('ExpoGoogleMaps');
 //# sourceMappingURL=ExpoMaps.js.map
