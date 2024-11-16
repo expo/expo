@@ -143,7 +143,7 @@
     "react-native-paper": "^5.12.5",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
-    "react-native-screens": "~4.0.0",
+    "react-native-screens": "~4.1.0",
     "react-native-svg": "15.8.0",
     "react-native-view-shot": "~4.0.0",
     "react-native-web": "~0.19.13",
