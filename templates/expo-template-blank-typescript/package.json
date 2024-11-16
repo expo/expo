@@ -2,7 +2,7 @@
   "name": "expo-template-blank-typescript",
   "description": "The Blank project template includes the minimum dependencies to run and an empty root component.",
   "license": "0BSD",
-  "version": "52.0.34",
+  "version": "52.0.35",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
