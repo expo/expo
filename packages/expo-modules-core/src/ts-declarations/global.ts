@@ -93,7 +93,7 @@ declare global {
   var process: ExpoProcess;
 
   /**
-   * ExpoDomWebView is alived in `@expo/dom-webview` runtime.
+   * ExpoDomWebView is defined in `@expo/dom-webview` runtime.
    */
   var ExpoDomWebView: Record<string, any> | undefined;
 }
