@@ -227,7 +227,9 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
 
   // swiftlint:disable block_based_kvo
   override func observeValue(
-    forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?,
+    forKeyPath keyPath: String?,
+    of object: Any?,
+    change: [NSKeyValueChangeKey: Any]?,
     context: UnsafeMutableRawPointer?
   ) {
     if keyPath == "center" {
@@ -243,12 +245,12 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
               MarkerRecord(id: annotationId, position: coordinate).toDictionary()
             )
           } else if let annotation = view.annotation as? ExpoMKAnnotation, let annotationId = annotation.id {
-              appleMapsView?.onMarkerDrag(
+            appleMapsView?.onMarkerDrag(
                 MarkerRecord(id: annotationId, position: coordinate).toDictionary()
               )
             }
-          }
         }
+      }
     } else {
       super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
     }
