@@ -91,4 +91,9 @@ declare global {
   var expo: ExpoGlobal;
 
   var process: ExpoProcess;
+
+  /**
+   * ExpoDomWebView is defined in `@expo/dom-webview` runtime.
+   */
+  var ExpoDomWebView: Record<string, any> | undefined;
 }
