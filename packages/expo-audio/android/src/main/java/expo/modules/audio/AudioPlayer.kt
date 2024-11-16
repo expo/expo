@@ -46,7 +46,28 @@ class AudioPlayer(
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
 
-  private var visualizer: Visualizer? = null
+  private var visualizer = Visualizer(player.audioSessionId).apply {
+    captureSize = Visualizer.getCaptureSizeRange()[1]
+    setDataCaptureListener(
+      object : Visualizer.OnDataCaptureListener {
+        override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
+          waveform?.let {
+            if (samplingEnabled) {
+              val data = extractAmplitudes(it)
+              sendAudioSampleUpdate(data)
+            }
+          }
+        }
+
+        override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
+        }
+      },
+      Visualizer.getMaxCaptureRate() / 2,
+      true,
+      false
+    )
+    enabled = true
+  }
 
   init {
     addPlayerListeners()
@@ -138,29 +159,6 @@ class AudioPlayer(
       Player.STATE_ENDED -> "ended"
       else -> "unknown"
     }
-  }
-
-  private fun createVisualizer() = Visualizer(player.audioSessionId).apply {
-    captureSize = Visualizer.getCaptureSizeRange()[1]
-    setDataCaptureListener(
-      object : Visualizer.OnDataCaptureListener {
-        override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
-          waveform?.let {
-            if (samplingEnabled) {
-              val data = extractAmplitudes(it)
-              sendAudioSampleUpdate(data)
-            }
-          }
-        }
-
-        override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
-        }
-      },
-      Visualizer.getMaxCaptureRate() / 2,
-      true,
-      false
-    )
-    enabled = true
   }
 
   override fun sharedObjectDidRelease() {
