@@ -23,7 +23,8 @@ data class MarkerObject(
   @Field val draggable: Boolean = false,
   @Field val anchorU: Double? = null,
   @Field val anchorV: Double? = null,
-  @Field val opacity: Double = 1.0
+  @Field val opacity: Double = 1.0,
+  @Field val zIndex: Float = 0.0f
 ) : Record, ClusterItem {
 
   override fun getPosition(): LatLng {
@@ -36,6 +37,10 @@ data class MarkerObject(
 
   override fun getSnippet(): String? {
     return markerSnippet
+  }
+
+  override fun getZIndex(): Float {
+    return zIndex
   }
 }
 

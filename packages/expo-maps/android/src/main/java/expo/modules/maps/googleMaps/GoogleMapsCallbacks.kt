@@ -14,7 +14,7 @@ import expo.modules.maps.records.PointOfInterestRecord
 import expo.modules.maps.records.UserLocationRecord
 
 class GoogleMapsCallbacks(private val map: GoogleMap, private val context: Context) {
-  private lateinit var locationProvider: FusedLocationProviderClient
+  private lateinit var locationProvider: FusedLocationProviderClient 
   private lateinit var locationChangeCallback: LocationCallback
   private lateinit var locationRequest: LocationRequest
   private var locationCallbackPriority: Int = LocationRequest.PRIORITY_NO_POWER
@@ -110,13 +110,13 @@ class GoogleMapsCallbacks(private val map: GoogleMap, private val context: Conte
 
   fun setupOnLocationChange(onLocationChange: ViewEventCallback<UserLocationRecord>) {
     locationProvider = LocationServices.getFusedLocationProviderClient(context)
+
     locationChangeCallback = object : LocationCallback() {
-      override fun onLocationResult(loactionResult: LocationResult?) {
-        loactionResult ?: return
-        for (location in loactionResult.locations) {
+      override fun onLocationResult(locationResult: LocationResult) {
+        for (location in locationResult.locations) {
           onLocationChange(UserLocationRecord(location))
         }
-        super.onLocationResult(loactionResult)
+        super.onLocationResult(locationResult)
       }
     }
     setupOnLocationChangeRequests()
