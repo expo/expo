@@ -245,7 +245,7 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
               MarkerRecord(id: annotationId, position: coordinate).toDictionary()
             )
           } else if let annotation = view.annotation as? ExpoMKAnnotation, let annotationId = annotation.id {
-            appleMapsView?.onMarkerDrag(
+              appleMapsView?.onMarkerDrag(
                 MarkerRecord(id: annotationId, position: coordinate).toDictionary()
               )
             }

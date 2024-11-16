@@ -58,11 +58,11 @@ class AppleMapsCameraAnimations {
           }
       )
     } else {
-      if let mapRect = mapRect {
-        mapView.setVisibleMapRect(mapRect, animated: false)
-      } else {
-        mapView.setCamera(newCamera, animated: false)
-      }
+        if let mapRect = mapRect {
+          mapView.setVisibleMapRect(mapRect, animated: false)
+        } else {
+          mapView.setCamera(newCamera, animated: false)
+        }
       promise?.resolve(CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span).toDictionary())
     }
   }
