@@ -52,6 +52,7 @@ export default function Index() {
   const pickImageAsync = async () => {
     /* @tutinfo Pass image picker options to <CODE>launchImageLibraryAsync()</CODE> */
     let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -165,7 +166,7 @@ const PlaceholderImage = require('@/assets/images/background-image.png');
 export default function Index() {
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
