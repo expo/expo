@@ -139,7 +139,7 @@ public class AudioModule: Module {
           player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
         }
       }
-      
+
       Function("replace") { (player, source: AudioSource) in
         player.ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
       }
