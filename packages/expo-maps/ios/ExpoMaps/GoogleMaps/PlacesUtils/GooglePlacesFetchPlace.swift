@@ -25,8 +25,8 @@ class GooglePlacesFetchPlace {
       return
     }
 
-    let fields = GMSPlaceField(rawValue: UInt(GMSPlaceField.name.rawValue)
-                               | UInt(GMSPlaceField.coordinate.rawValue))
+    let fields = GMSPlaceField(rawValue: UInt64(GMSPlaceField.name.rawValue)
+                               | UInt64(GMSPlaceField.coordinate.rawValue))
 
     placesClient.fetchPlace(fromPlaceID: placeId, placeFields: fields, sessionToken: token, callback: { place, error in
       if let error = error {
