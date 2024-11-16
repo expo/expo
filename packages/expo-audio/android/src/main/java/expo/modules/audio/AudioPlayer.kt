@@ -1,7 +1,6 @@
 package expo.modules.audio
 
 import android.content.Context
-import android.media.AudioManager
 import android.media.audiofx.Visualizer
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.Player
@@ -47,28 +46,7 @@ class AudioPlayer(
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
 
-  private val visualizer = Visualizer(player.audioSessionId).apply {
-    captureSize = Visualizer.getCaptureSizeRange()[1]
-    setDataCaptureListener(
-      object : Visualizer.OnDataCaptureListener {
-        override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
-          waveform?.let {
-            if (samplingEnabled) {
-              val data = extractAmplitudes(it)
-              sendAudioSampleUpdate(data)
-            }
-          }
-        }
-
-        override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
-        }
-      },
-      Visualizer.getMaxCaptureRate() / 2,
-      true,
-      false
-    )
-    enabled = true
-  }
+  private var visualizer: Visualizer? = null
 
   init {
     addPlayerListeners()
@@ -161,11 +139,34 @@ class AudioPlayer(
       else -> "unknown"
     }
   }
-  
+
+  private fun createVisualizer() = Visualizer(player.audioSessionId).apply {
+    captureSize = Visualizer.getCaptureSizeRange()[1]
+    setDataCaptureListener(
+      object : Visualizer.OnDataCaptureListener {
+        override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
+          waveform?.let {
+            if (samplingEnabled) {
+              val data = extractAmplitudes(it)
+              sendAudioSampleUpdate(data)
+            }
+          }
+        }
+
+        override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
+        }
+      },
+      Visualizer.getMaxCaptureRate() / 2,
+      true,
+      false
+    )
+    enabled = true
+  }
+
   override fun sharedObjectDidRelease() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()
-      visualizer.release()
+      visualizer?.release()
       player.release()
     }
   }
