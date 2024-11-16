@@ -231,27 +231,26 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
     context: UnsafeMutableRawPointer?
   ) {
     if keyPath == "center" {
-        if let view = object as? MKAnnotationView {
-            let newPosition = CGPoint(
-                x: view.center.x - view.centerOffset.x,
-                y: view.center.y - view.centerOffset.y
-            )
+      if let view = object as? MKAnnotationView {
+        let newPosition = CGPoint(
+          x: view.center.x - view.centerOffset.x,
+          y: view.center.y - view.centerOffset.y
+        )
 
-            if let coordinate = appleMapsView?.convertToMapViewCoordinate(newPosition) {
-                if let annotation = view.annotation as? ExpoMKColorAnnotation, let annotationId = annotation.id {
-                    appleMapsView?.onMarkerDrag(
-                        MarkerRecord(id: annotationId, position: coordinate).toDictionary()
-                    )
-                } else if let annotation = view.annotation as? ExpoMKAnnotation, let annotationId = annotation.id {
-                    appleMapsView?.onMarkerDrag(
-                        MarkerRecord(id: annotationId, position: coordinate).toDictionary()
-                    )
-                }
+        if let coordinate = appleMapsView?.convertToMapViewCoordinate(newPosition) {
+          if let annotation = view.annotation as? ExpoMKColorAnnotation, let annotationId = annotation.id {
+            appleMapsView?.onMarkerDrag(
+              MarkerRecord(id: annotationId, position: coordinate).toDictionary()
+            )
+          } else if let annotation = view.annotation as? ExpoMKAnnotation, let annotationId = annotation.id {
+              appleMapsView?.onMarkerDrag(
+                MarkerRecord(id: annotationId, position: coordinate).toDictionary()
+              )
             }
+          }
         }
     } else {
-        super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+      super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
     }
-
   }
 }
