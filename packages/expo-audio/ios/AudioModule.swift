@@ -46,7 +46,7 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
-        let avPlayer = AudioUtils.createAVPlayer(source: source)
+        let avPlayer = AudioUtils.createAVPlayer(from: source)
         let player = AudioPlayer(avPlayer, interval: updateInterval)
         AudioComponentRegistry.shared.add(player)
         return player
@@ -107,7 +107,7 @@ public class AudioModule: Module {
       }
 
       Property("paused") { player in
-        return player.ref.rate == 0.0
+        player.isPaused
       }
 
       Property("volume") { player in
@@ -138,6 +138,10 @@ public class AudioModule: Module {
           player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
           player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
         }
+      }
+      
+      Function("replace") { (player, source: AudioSource) in
+        player.ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
       }
 
       Function("pause") { player in

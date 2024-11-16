@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for replacing the auido source without recreating the player.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -81,13 +81,21 @@ struct AudioUtils {
     return AVAudioRecorder()
   }
 
-  static func createAVPlayer(source: AudioSource?) -> AVPlayer {
+  static func createAVPlayer(from source: AudioSource?) -> AVPlayer {
     if let source, let url = source.uri {
       let asset = AVURLAsset(url: url, options: source.headers)
       let item = AVPlayerItem(asset: asset)
       return AVPlayer(playerItem: item)
     }
     return AVPlayer()
+  }
+  
+  static func createAVPlayerItem(from source: AudioSource?) -> AVPlayerItem? {
+    guard let source, let url = source.uri else  {
+      return nil
+    }
+    let asset = AVURLAsset(url: url, options: source.headers)
+    return AVPlayerItem(asset: asset)
   }
 
   static func createRecordingOptions(_ options: RecordingOptions) -> [String: Any] {

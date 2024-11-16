@@ -1,6 +1,7 @@
 package expo.modules.audio
 
 import android.content.Context
+import android.media.AudioManager
 import android.media.audiofx.Visualizer
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.Player
@@ -160,8 +161,8 @@ class AudioPlayer(
       else -> "unknown"
     }
   }
-
-  override fun deallocate() {
+  
+  override fun sharedObjectDidRelease() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()
       visualizer.release()
