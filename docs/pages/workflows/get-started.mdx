@@ -15,11 +15,11 @@ import { Terminal } from '~/ui/components/Snippet';
   feedback? Send us an email at workflows@expo.dev.
 </Callout>
 
-Builds, submissions, updates and more are all a part of delivering your app to users. Workflows consist of a sequence of jobs, which help you and your team get things done. You can do things like building your project, run end-to-end tests, submit that build to the app stores, then run custom scripts after the submission is complete. Since each job can have prerequisites and conditionals, you can automate you and your team's release process.
+Builds, submissions, updates, and more are all a part of delivering your app to users. Workflows consist of a sequence of jobs, which help you and your team get things done. With workflows, you can build your project, run end-to-end tests, submit that build to the app stores, and then run custom scripts after the submission is complete. Since each job can have prerequisites and conditionals, you can automate your and your team's release process.
 
 <Collapsible summary="How do workflows compare to other CI services?">
 
-Workflows on EAS are designed to help you and your team release your app. It comes preconfigured with pre-packaged job types that help you build, submit, update, run Maestro tests, and more. It all runs on EAS, so you'll only have to manage one set of YAML files, and all of the artifacts from your job runs will appear on expo.dev.
+Workflows on EAS are designed to help you and your team release your app. It comes preconfigured with pre-packaged job types that can build, submit, update, run Maestro tests, and more. All job types run on EAS, so you'll only have to manage one set of YAML files, and all the artifacts from your job runs will appear on [expo.dev](https://expo.dev/).
 
 Other CI services, like CircleCI and GitHub Actions, are more generalized and have the ability to do more than workflows. However, those services also require you to understand more about the implementation of each job. While that is necessary in some cases, workflows help you get common tasks done quickly by pre-packaging the most essential types of jobs for app developers. In addition, workflows are designed to provide you with the fastest possible cloud machine for the task at hand, and we're constantly updating those for you.
 
@@ -55,11 +55,11 @@ Then, create a directory named **.eas/workflows** at the root of your project wi
 
 Each workflow consists of three top-level elements:
 
-- `name`: defines the name of the workflow. For example: "Hello World!"
-- `on`: defines when this workflow should be triggered. For example: when pushing a new commit to a GitHub branch.
+- `name`: defines the name of the workflow. For example: "Hello World"
+- `on`: defines when this workflow should be triggered. For example, when pushing a new commit to a GitHub branch.
 - `jobs`: a sequence of jobs which can depend on and pass data between each other. For example: a job that runs a unit test followed by a job that builds your project into an app.
 
-Here's an example of a workflow that prints "Hello world!":
+Here's an example of a workflow that prints "Hello, world":
 
 ```yaml .eas/workflows/hello-world.yaml
 name: Hello World
@@ -98,7 +98,7 @@ jobs:
 
 ## Configure your project
 
-To enable workflows to run on events from GitHub, you'll need to install Expo's GitHub app and connect it to your project. Here's how:
+To enable workflows to run on events from GitHub, you'll need to install Expo's GitHub app and connect it to your project:
 
 - Navigate to your project's [GitHub settings](https://expo.dev/accounts/%5Baccount%5D/projects/%5BprojectName%5D/github)
 - Follow the UI to install the GitHub app. Then search for the GitHub repository that matches the Expo project and connect it.
@@ -113,7 +113,7 @@ Alternatively, you can trigger a workflow manually by running the following comm
 
 Once you do, you can see your workflow running on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows).
 
-## Next steps
+## Building blocks
 
 Learn more about the building blocks of workflows:
 

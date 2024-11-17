@@ -1,9 +1,9 @@
 ---
 title: Variables
-description: Learn how to use variables in Workflows.
+description: Learn how to pass data between jobs or steps or set conditionals using variables in Workflows.
 ---
 
-You can use variables in your workflows to pass data between jobs or steps. Variables are useful for conditionals on subsequent jobs or afftecting the output of a workflow.
+Variables can be used in workflows to pass data between jobs or steps. They are useful for conditionals on subsequent jobs or affecting the output of a workflow.
 
 You can set variables in the workflow file with the `set-output` function:
 
@@ -11,28 +11,28 @@ You can set variables in the workflow file with the `set-output` function:
 jobs:
   fingerprint:
     outputs:
-      # @info Sets the `fingerprint_hash_for_workflow` as a variable #
+      # @info Sets the <CODE>fingerprint_hash_for_workflow</CODE> as a variable #
       fingerprint_hash_for_workflow: ${{ steps.fingerprint_step_id.outputs.fingerprint_hash }}
       # @end #
     steps:
       - name: Set fingerprint hash
         id: fingerprint_step_id
-        # @info Exposes the `fingerprint_hash` variable to other steps in this job #
+        # @info Exposes the <CODE>fingerprint_hash</CODE> variable to other steps in this job #
         outputs: [fingerprint_hash]
         # @end #
+        # @info Sets the <CODE>fingerprint_hash</CODE> as a variable #
         run: |
           FINGERPRINT_HASH=$(npx expo-updates fingerprint:generate --platform ios | jq '.hash')
-          # @info Sets the `fingerprint_hash` as a variable #
           set-output fingerprint_hash $FINGERPRINT_HASH
-          # @end #
+        # @end #
       - name: Do something with the fingerprint hash
+        # @info Accesses the <CODE>fingerprint_hash</CODE variable #
         run: |
-          # @info Accesses the `fingerprint_hash` variable #
           echo ${{ steps.fingerprint_step_id.outputs.fingerprint_hash }}
-          # @end #
+        # @end #
     maybe_build:
       needs: [fingerprint]
-      # @info Accesses the `fingerprint_hash_for_workflow` variable #
+      # @info Accesses the <CODE>fingerprint_hash_for_workflow</CODE> variable #
       if: ${{ needs.fingerprint.outputs.fingerprint_hash_for_workflow != '1234' }}
       # @end #
       type: build

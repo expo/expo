@@ -7,7 +7,7 @@ You can control the flow of your workflows with conditions that run certain jobs
 
 ## `needs`
 
-You can add an list of job names to the `needs` keyword on a job. If a job in the list fails, the job will be skipped.
+You can add a list of previous job names using the `needs` keyword on a job. If any job from that list fails, the current job will be skipped.
 
 ```yaml .eas/workflows/prerequisite.yaml
 jobs:
@@ -28,7 +28,7 @@ jobs:
 
 ## `after`
 
-You can add a list of job names to the `after` keyword on a job. The jobs in the list will run after the job completes no matter if it succeeded or failed.
+You can add a list of previous job names using the `after` keyword on a job. Any job in the list will run after the current job completes, no matter if it succeeded or failed.
 
 ```yaml .eas/workflows/after.yaml
 jobs:
