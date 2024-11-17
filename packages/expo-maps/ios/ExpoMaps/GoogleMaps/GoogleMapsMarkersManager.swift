@@ -26,7 +26,6 @@ class GoogleMapsMarkersManager {
     return markersMap[marker]
   }
 
-
   func clearClusters() {
     for clusterItem in clustersItemsMap.keys {
       clusterItem.map = nil

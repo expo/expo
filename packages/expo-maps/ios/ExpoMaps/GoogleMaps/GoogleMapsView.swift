@@ -64,7 +64,6 @@ public final class GoogleMapsView: ExpoView, ExpoMapView {
     polylines = GoogleMapsPolylines(mapView: mapView)
     circles = GoogleMapsCircles(mapView: mapView)
 
-
     googleMapsClusterManagerDelegate = GoogleMapsClusterManagerDelegate(googleMapsMarkersManager: googleMapsMarkersManager)
     clusters = GoogleMapsClusters(
       mapView: mapView,
@@ -77,7 +76,6 @@ public final class GoogleMapsView: ExpoView, ExpoMapView {
     overlays = GoogleMapsOverlays(mapView: mapView)
     heatmaps = GoogleMapsHeatmaps(mapView: mapView)
     googleMapsClusterManagerDelegate.setOnClusterPress(onClusterPress: onClusterPress)
-
 
     places = GoogleMapsPlaces(mapView: mapView, markers: markers)
     cameraAnimations = GoogleMapsCameraAnimations(mapView: mapView)
