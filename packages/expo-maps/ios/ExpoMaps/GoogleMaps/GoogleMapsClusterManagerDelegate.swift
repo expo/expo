@@ -3,7 +3,6 @@ import GoogleMapsUtils
 import ExpoModulesCore
 
 class GoogleMapsClusterManagerDelegate: NSObject, GMUClusterManagerDelegate {
-  //private var onClusterPress: Callback<[String: Any?]>?
   private var onClusterPress: EventDispatcher?
   private let googleMapsMarkersManager: GoogleMapsMarkersManager
 

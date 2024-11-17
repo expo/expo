@@ -192,11 +192,10 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
     if let annotation = view.annotation as? ExpoMKAnnotation {
       appleMapsView?.onMarkerPress(MarkerRecord(marker: annotation).toDictionary())
     }
-  
+
     if let annotation = view.annotation as? ExpoMKClusterAnnotation {
       appleMapsView?.onClusterPress(ClusterRecord(cluster: annotation).toDictionary())
     }
-
   }
 
   func mapView(

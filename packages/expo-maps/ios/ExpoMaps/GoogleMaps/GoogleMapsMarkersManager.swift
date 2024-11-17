@@ -1,7 +1,6 @@
 import GoogleMaps
 import GoogleMapsUtils
 
-
 class GoogleMapsMarkersManager {
   private var markersMap: [GMSMarker: String] = [:]
   private var clustersMap: [GMUClusterManager: String] = [:]
