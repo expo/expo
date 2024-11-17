@@ -472,8 +472,9 @@ export default function Index() {
 
   /* @tutinfo Update functions to control the modal's visibility.*/
   const onAddSticker = () => {
-    setIsModalVisible(true);
-  };
+  setPickedEmoji(undefined);  // Add this line
+  setIsModalVisible(true);
+};
 
   const onModalClose = () => {
     setIsModalVisible(false);
