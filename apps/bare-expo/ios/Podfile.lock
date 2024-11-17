@@ -638,7 +638,7 @@ PODS:
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
   - lottie-ios (4.5.0)
-  - lottie-react-native (7.0.0):
+  - lottie-react-native (7.1.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2570,7 +2570,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (4.0.0):
+  - RNScreens (4.1.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2591,9 +2591,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.0.0)
+    - RNScreens/common (= 4.1.0)
     - Yoga
-  - RNScreens/common (4.0.0):
+  - RNScreens/common (4.1.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3334,7 +3334,7 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   lottie-ios: a881093fab623c467d3bce374367755c272bdd59
-  lottie-react-native: 1fdff72253c5699ea2fe3b998999285daff77500
+  lottie-react-native: 11758dbe03b5749b8139852912353559239b43c2
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
@@ -3409,7 +3409,7 @@ SPEC CHECKSUMS:
   RNFlashList: 6f169ad83e52579b7754cbbcec1b004c27d82c93
   RNGestureHandler: fc5ce5bf284640d3af6431c3a5c3bc121e98d045
   RNReanimated: 95e2f00605658327d2563d097495c0f4a347f337
-  RNScreens: 2fe13c8d610ef2d9d5ace2e7d85b716ec0f5217c
+  RNScreens: 27587018b2e6082f5172b1ecf158c14a0e8842d6
   RNSVG: 536cd3c866c878faf72beaba166c8b02fe2b762b
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
