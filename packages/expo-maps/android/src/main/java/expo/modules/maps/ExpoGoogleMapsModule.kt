@@ -2,6 +2,7 @@ package expo.modules.maps
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.UIManagerModule
+import expo.modules.core.interfaces.services.UIManager
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -9,21 +10,22 @@ import expo.modules.maps.googleMaps.GoogleMapsView
 import expo.modules.maps.records.CameraMoveRecord
 
 class ExpoGoogleMapsModule : Module() {
+  private lateinit var uiManager: UIManager
 
   override fun definition() = ModuleDefinition {
     Name("ExpoGoogleMaps")
 
+    OnCreate {
+      uiManager = appContext.legacyModule<UIManager>() ?: throw MissingUIManagerException()
+    }
+
     AsyncFunction("getSearchCompletions") { viewHandle: Int, searchQueryFragment: String, promise: Promise ->
-      val rnContext = appContext.reactContext as? ReactApplicationContext ?: return@AsyncFunction
-      val uiManager = rnContext.getNativeModule(UIManagerModule::class.java) ?: return@AsyncFunction
       appContext.throwingActivity.runOnUiThread {
         val view = uiManager.resolveView(viewHandle) as GoogleMapsView
         view.fetchPlacesSearchCompletions(searchQueryFragment, promise)
       }
     }
     AsyncFunction("moveCamera") { viewHandle: Int, cameraPosition: CameraMoveRecord, promise: Promise ->
-      val rnContext = appContext.reactContext as? ReactApplicationContext ?: return@AsyncFunction
-      val uiManager = rnContext.getNativeModule(UIManagerModule::class.java) ?: return@AsyncFunction
       appContext.throwingActivity.runOnUiThread {
         val view = uiManager.resolveView(viewHandle) as GoogleMapsView
         view.moveCamera(cameraPosition, promise)
