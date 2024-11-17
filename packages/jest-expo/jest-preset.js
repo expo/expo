@@ -6,6 +6,7 @@ const isEqual = require('lodash/isEqual');
 const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
+const { resolveBabelConfig } = require('./src/resolveBabelConfig');
 
 // Emulate the alias behavior of Expo's Metro resolver.
 jestPreset.moduleNameMapper = {
@@ -22,10 +23,14 @@ if (upstreamBabelJest) {
 }
 
 // transform
-jestPreset.transform['\\.[jt]sx?$'] = [
-  'babel-jest',
-  { caller: { name: 'metro', bundler: 'metro', platform: 'ios' } },
-];
+const babelOpts = {
+  caller: { name: 'metro', bundler: 'metro', platform: 'ios' },
+};
+const babelConfigFile = resolveBabelConfig(process.cwd());
+if (babelConfigFile) {
+  babelOpts.configFile = babelConfigFile;
+}
+jestPreset.transform['\\.[jt]sx?$'] = ['babel-jest', babelOpts];
 
 /* Update this when metro changes their default extensions */
 const defaultMetroAssetExts = [
