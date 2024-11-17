@@ -1,10 +1,10 @@
-#if HAS_GOOGLE_UTILS
 import GoogleMaps
 import GoogleMapsUtils
 import ExpoModulesCore
 
 class GoogleMapsClusterManagerDelegate: NSObject, GMUClusterManagerDelegate {
-  private var onClusterPress: Callback<[String: Any?]>?
+  //private var onClusterPress: Callback<[String: Any?]>?
+  private var onClusterPress: EventDispatcher?
   private let googleMapsMarkersManager: GoogleMapsMarkersManager
 
   init(googleMapsMarkersManager: GoogleMapsMarkersManager) {
@@ -23,4 +23,3 @@ class GoogleMapsClusterManagerDelegate: NSObject, GMUClusterManagerDelegate {
     self.onClusterPress = onClusterPress
   }
 }
-#endif

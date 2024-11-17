@@ -426,6 +426,7 @@ PODS:
     - ExpoModulesCore
   - ExpoMaps (0.6.1):
     - ExpoModulesCore
+    - Google-Maps-iOS-Utils (= 6.1.0)
     - GoogleMaps (= 9.1.1)
     - GooglePlaces (= 9.2.0)
   - ExpoMediaLibrary (17.0.2):
@@ -608,6 +609,8 @@ PODS:
   - FBLazyVector (0.76.2)
   - fmt (9.1.0)
   - glog (0.3.5)
+  - Google-Maps-iOS-Utils (6.1.0):
+    - GoogleMaps (~> 9.0)
   - GoogleMaps (9.1.1):
     - GoogleMaps/Maps (= 9.1.1)
   - GoogleMaps/Base (9.1.1)
@@ -2847,6 +2850,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Google-Maps-iOS-Utils
     - GoogleMaps
     - GooglePlaces
     - libavif
@@ -3293,7 +3297,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: ac6a2c6605acfb9b70f765ea32d561dab51d481b
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
-  ExpoMaps: e59680bfd5399829177e2857908760785d5d2e2f
+  ExpoMaps: 5703aef266ede6f7bac9de3c7f2f48b98969302c
   ExpoMediaLibrary: 83f47430d5193186029bc57bae16e2130941bc83
   ExpoModulesCore: f12deb734bfa4efc1f1783eafc324c933a985a48
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
@@ -3322,6 +3326,7 @@ SPEC CHECKSUMS:
   FBLazyVector: bc70dcb22ad30ce734a7cce7210791dc737e230f
   fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  Google-Maps-iOS-Utils: 0a484b05ed21d88c9f9ebbacb007956edd508a96
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GooglePlaces: f997a80fb7b88233ad53aa8c9d5f092c86ceae54
   hermes-engine: 3852e37f6158a2fcfad23e31215ed495da3a6a40

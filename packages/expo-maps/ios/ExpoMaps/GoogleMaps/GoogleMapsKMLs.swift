@@ -1,4 +1,3 @@
-#if HAS_GOOGLE_UTILS
 import GoogleMaps
 import GoogleMapsUtils
 
@@ -36,4 +35,3 @@ class GoogleMapsKMLs: KMLs {
     renderers = []
   }
 }
-#endif

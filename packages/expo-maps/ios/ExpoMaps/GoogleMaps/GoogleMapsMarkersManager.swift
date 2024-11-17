@@ -1,15 +1,10 @@
 import GoogleMaps
-
-#if HAS_GOOGLE_UTILS
 import GoogleMapsUtils
-#endif
+
 
 class GoogleMapsMarkersManager {
   private var markersMap: [GMSMarker: String] = [:]
-#if HAS_GOOGLE_UTILS
   private var clustersMap: [GMUClusterManager: String] = [:]
-#endif
-
   private var clustersItemsMap: [GMSMarker: String] = [:]
 
   func clearMarkers() {
@@ -31,7 +26,7 @@ class GoogleMapsMarkersManager {
     return markersMap[marker]
   }
 
-#if HAS_GOOGLE_UTILS
+
   func clearClusters() {
     for clusterItem in clustersItemsMap.keys {
       clusterItem.map = nil
@@ -68,5 +63,4 @@ class GoogleMapsMarkersManager {
   func getClusterItemId(clusterItem: GMSMarker) -> String? {
     return clustersItemsMap[clusterItem]
   }
-#endif
 }

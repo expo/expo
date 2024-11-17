@@ -1,4 +1,3 @@
-#if HAS_GOOGLE_UTILS
 import GoogleMaps
 import GoogleMapsUtils
 import CoreLocation
@@ -41,4 +40,3 @@ class GoogleMapsHeatmaps: Heatmaps {
     heatmaps = []
   }
 }
-#endif

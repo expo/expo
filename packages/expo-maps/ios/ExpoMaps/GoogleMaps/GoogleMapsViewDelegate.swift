@@ -60,11 +60,9 @@ class GoogleMapsViewDelegate: NSObject, GMSMapViewDelegate {
     if let id = googleMapsMarkersManager.getMarkerId(marker: marker) {
       expoMapView?.onMarkerPress(MarkerRecord(id: id, marker: marker).toDictionary())
     }
-#if HAS_GOOGLE_UTILS
     if let id = googleMapsMarkersManager.getClusterItemId(clusterItem: marker) {
       expoMapView?.onMarkerPress(MarkerRecord(id: id, marker: marker).toDictionary())
     }
-#endif
     return false
   }
 

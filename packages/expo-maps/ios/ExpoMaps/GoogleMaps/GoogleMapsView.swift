@@ -13,14 +13,12 @@ public final class GoogleMapsView: ExpoView, ExpoMapView {
   private let polylines: GoogleMapsPolylines
   private let circles: GoogleMapsCircles
 
-#if HAS_GOOGLE_UTILS
   private let clusters: GoogleMapsClusters
   private let googleMapsClusterManagerDelegate: GoogleMapsClusterManagerDelegate
   private let kmls: GoogleMapsKMLs
   private let geojsons: GoogleMapsGeoJsons
   private let overlays: GoogleMapsOverlays
   private let heatmaps: GoogleMapsHeatmaps
-#endif
 
   private let places: GoogleMapsPlaces
   private var wasInitialCameraPositionSet = false
@@ -66,7 +64,7 @@ public final class GoogleMapsView: ExpoView, ExpoMapView {
     polylines = GoogleMapsPolylines(mapView: mapView)
     circles = GoogleMapsCircles(mapView: mapView)
 
-#if HAS_GOOGLE_UTILS
+
     googleMapsClusterManagerDelegate = GoogleMapsClusterManagerDelegate(googleMapsMarkersManager: googleMapsMarkersManager)
     clusters = GoogleMapsClusters(
       mapView: mapView,
@@ -79,7 +77,7 @@ public final class GoogleMapsView: ExpoView, ExpoMapView {
     overlays = GoogleMapsOverlays(mapView: mapView)
     heatmaps = GoogleMapsHeatmaps(mapView: mapView)
     googleMapsClusterManagerDelegate.setOnClusterPress(onClusterPress: onClusterPress)
-#endif
+
 
     places = GoogleMapsPlaces(mapView: mapView, markers: markers)
     cameraAnimations = GoogleMapsCameraAnimations(mapView: mapView)
@@ -209,9 +207,7 @@ public final class GoogleMapsView: ExpoView, ExpoMapView {
   }
 
   func setClusters(clusterObjects: [ClusterObject]) {
-#if HAS_GOOGLE_UTILS
     clusters.setClusters(clusterObjects: clusterObjects)
-#endif
   }
 
   func setEnabledTraffic(enableTraffic: Bool) {
@@ -219,27 +215,19 @@ public final class GoogleMapsView: ExpoView, ExpoMapView {
   }
 
   func setKMLs(kmlObjects: [KMLObject]) {
-#if HAS_GOOGLE_UTILS
     kmls.setKMLs(kmlObjects: kmlObjects)
-#endif
   }
 
   func setGeoJsons(geoJsonObjects: [GeoJsonObject]) {
-#if HAS_GOOGLE_UTILS
     geojsons.setGeoJsons(geoJsonObjects: geoJsonObjects)
-#endif
   }
 
   func setOverlays(overlayObjects: [OverlayObject]) {
-#if HAS_GOOGLE_UTILS
     overlays.setOverlays(overlayObjects: overlayObjects)
-#endif
   }
 
   func setHeatmaps(heatmapObjects: [HeatmapObject]) {
-#if HAS_GOOGLE_UTILS
     heatmaps.setHeatmaps(heatmapObjects: heatmapObjects)
-#endif
   }
 
   func setClickablePOIs(clickablePOIs: Bool) {

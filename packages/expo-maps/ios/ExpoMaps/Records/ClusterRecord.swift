@@ -1,4 +1,3 @@
-#if HAS_GOOGLE_UTILS
 import ExpoModulesCore
 import GoogleMaps
 import GoogleMapsUtils
@@ -19,4 +18,3 @@ struct ClusterRecord: Record {
     position = LatLngRecord(coordinate: cluster.coordinate).toDictionary()
   }
 }
-#endif

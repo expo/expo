@@ -192,11 +192,11 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
     if let annotation = view.annotation as? ExpoMKAnnotation {
       appleMapsView?.onMarkerPress(MarkerRecord(marker: annotation).toDictionary())
     }
-    #if HAS_GOOGLE_UTILS
-      if let annotation = view.annotation as? ExpoMKClusterAnnotation {
-        appleMapsView?.onClusterPress(ClusterRecord(cluster: annotation).toDictionary())
-      }
-    #endif
+  
+    if let annotation = view.annotation as? ExpoMKClusterAnnotation {
+      appleMapsView?.onClusterPress(ClusterRecord(cluster: annotation).toDictionary())
+    }
+
   }
 
   func mapView(
