@@ -29,6 +29,7 @@ export const SettingsAction = ({ ...rest }: SnippetActionProps) => {
         <div>
           <SnippetAction
             className="min-w-[44px] px-3"
+            aria-label="Show settings"
             leftSlot={<DotsVerticalIcon className="icon-md shrink-0 text-icon-secondary" />}
             {...rest}
           />

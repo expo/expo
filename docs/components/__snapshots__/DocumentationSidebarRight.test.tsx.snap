@@ -39,6 +39,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
           class="flex self-center text-inherit leading-none"
         >
           <svg
+            aria-label="Scroll to top"
             class="icon-sm text-icon-secondary"
             fill="none"
             role="img"
