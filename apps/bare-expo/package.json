@@ -69,7 +69,7 @@
     "react-native-screens": "~4.1.0",
     "react-native-svg": "15.8.0",
     "react-native-view-shot": "~4.0.0",
-    "react-native-webview": "13.12.2",
+    "react-native-webview": "13.12.4",
     "test-suite": "*"
   },
   "devDependencies": {
