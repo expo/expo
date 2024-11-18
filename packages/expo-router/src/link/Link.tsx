@@ -123,6 +123,7 @@ function ExpoRouterLink(
     href,
     replace,
     push,
+    dismissTo,
     // TODO: This does not prevent default on the anchor tag.
     relativeToDirectory,
     asChild,
@@ -150,6 +151,7 @@ function ExpoRouterLink(
   let event;
   if (push) event = 'PUSH';
   if (replace) event = 'REPLACE';
+  if (dismissTo) event = 'POP_TO';
 
   const props = useLinkToPathProps({
     href: resolvedHref,
