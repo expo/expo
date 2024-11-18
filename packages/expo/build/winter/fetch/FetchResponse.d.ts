@@ -5,6 +5,7 @@ declare const ConcreteNativeResponse: typeof NativeResponse;
  * A response implementation for the `fetch.Response` API.
  */
 export declare class FetchResponse extends ConcreteNativeResponse implements Response {
+    private streamingStarted;
     get body(): ReadableStream<Uint8Array> | null;
     get headers(): Headers;
     get ok(): boolean;
@@ -15,6 +16,7 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     toString(): string;
     toJSON(): object;
     clone(): FetchResponse;
+    private removeAllRegisteredListeners;
 }
 export {};
 //# sourceMappingURL=FetchResponse.d.ts.map
