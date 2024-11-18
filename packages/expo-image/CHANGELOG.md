@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] migrate ImageView to CSSBackgroundDrawable ([#33024](https://github.com/expo/expo/pull/33024) by [@vonovak](https://github.com/vonovak))
+
 ## 2.0.0 — 2024-11-11
 
 _This version does not introduce any user-facing changes._
