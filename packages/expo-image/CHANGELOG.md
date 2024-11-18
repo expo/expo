@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixes Gif animations never stopping even when loop count is set to 1. ([#32944](https://github.com/expo/expo/pull/32944) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 2.0.0 — 2024-11-11
