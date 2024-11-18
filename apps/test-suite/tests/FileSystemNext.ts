@@ -108,12 +108,19 @@ export async function test({ describe, expect, it, ...t }) {
       });
 
       it('Writes a string to a file reference', () => {
-        // Not doing concating path segments in constructor, to make sure the second argument can be an options dict.
-        // Instead, we want to provide utilties for it in a path object.
         const outputFile = new File(testDirectory + 'file.txt');
         expect(outputFile.exists).toBe(false);
         outputFile.write('Hello world');
         expect(outputFile.exists).toBe(true);
+      });
+
+      it('Writes a string to a file reference', () => {
+        const outputFile = new File(testDirectory, 'file.txt');
+        outputFile.create();
+        outputFile.write(new Uint8Array([97, 98, 99]));
+        expect(outputFile.exists).toBe(true);
+        expect(outputFile.bytes()).toEqual(new Uint8Array([97, 98, 99]));
+        expect(outputFile.text()).toBe('abc');
       });
 
       it('Reads a string from a file reference', () => {
@@ -405,6 +412,16 @@ export async function test({ describe, expect, it, ...t }) {
           const src = new File(testDirectory + 'file.txt');
           src.write('Hello world');
           expect(src.base64()).toBe('SGVsbG8gd29ybGQ=');
+        });
+      });
+
+      describe('Returns bytes', () => {
+        it('gets file as a Uint8Array', async () => {
+          const src = new File(testDirectory + 'file.txt');
+          src.write('Hello world');
+          expect(src.bytes()).toEqual(
+            new Uint8Array([72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100])
+          );
         });
       });
 

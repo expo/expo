@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [expo-file-system][next] Added `.bytes()` and writing a `Uint8Array`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
