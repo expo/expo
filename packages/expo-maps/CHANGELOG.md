@@ -8,9 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- Fixed hard crash when mounting Apple and Google map views. ([#32962](https://github.com/expo/expo/pull/32962) by [@fobos531](https://github.com/fobos531))
+- Fixed hard crash on Android and iOS when mounting map view. ([#32962](https://github.com/expo/expo/pull/32962) by [@fobos531](https://github.com/fobos531))
+- Fixed map move functionality not working on Android in bridgeless mode. ([#32962](https://github.com/expo/expo/pull/32962) by [@fobos531](https://github.com/fobos531))
+- Fixed map view mounting on Android due to trying to initialize Apple Maps module ([#32962](https://github.com/expo/expo/pull/32962) by [@fobos531](https://github.com/fobos531))
+- On iOS, fixed ARM Simulator builds Google Maps Utils pod is enabled.([#32962](https://github.com/expo/expo/pull/32962) by [@fobos531](https://github.com/fobos531))
 
 ### 💡 Others
+
+- Upgrade Google Maps and Places API dependencies on Android and iOS. ([#32962](https://github.com/expo/expo/pull/32962) by [@fobos531](https://github.com/fobos531))
+- On iOS, re-enabled advanced Google Maps functionality (markers, overlays, KMLs) ([#32962](https://github.com/expo/expo/pull/32962) by [@fobos531](https://github.com/fobos531))
 
 ## 0.6.1 — 2024-10-29
 
