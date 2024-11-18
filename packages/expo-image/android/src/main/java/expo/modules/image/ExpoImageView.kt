@@ -161,8 +161,8 @@ class ExpoImageView(
     borderDrawable.setBorderWidth(position, width)
   }
 
-  internal fun setBorderColor(position: Int, rgb: Int) {
-    borderDrawable.setBorderColor(position, rgb)
+  internal fun setBorderColor(position: Int, color: Int) {
+    borderDrawable.setBorderColor(position, color)
   }
 
   internal fun setBorderStyle(style: String?) {

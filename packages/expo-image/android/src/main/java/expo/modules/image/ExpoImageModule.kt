@@ -267,11 +267,12 @@ class ExpoImageModule : Module() {
         ViewProps.BORDER_TOP_COLOR to Spacing.TOP,
         ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
         ViewProps.BORDER_START_COLOR to Spacing.START,
-        ViewProps.BORDER_END_COLOR to Spacing.END
+        ViewProps.BORDER_END_COLOR to Spacing.END,
+        ViewProps.BORDER_BLOCK_COLOR to Spacing.BLOCK,
+        ViewProps.BORDER_BLOCK_END_COLOR to Spacing.BLOCK_END,
+        ViewProps.BORDER_BLOCK_START_COLOR to Spacing.BLOCK_START
       ) { view: ExpoImageViewWrapper, index: Int, color: Int? ->
-        val rgbComponent = if (color == null) YogaConstants.UNDEFINED.toInt() else (color and 0x00FFFFFF)
-        val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.setBorderColor(index, rgbComponent, alphaComponent)
+        view.setBorderColor(index, color)
       }
 
       Prop("borderStyle") { view: ExpoImageViewWrapper, borderStyle: String? ->
