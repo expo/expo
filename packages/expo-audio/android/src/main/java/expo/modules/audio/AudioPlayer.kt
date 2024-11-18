@@ -157,6 +157,7 @@ class AudioPlayer(
       }
     }
 
+    // It must only be created once, otherwise the app will crash
     if (visualizer == null) {
       visualizer = Visualizer(player.audioSessionId).apply {
         captureSize = Visualizer.getCaptureSizeRange()[1]
