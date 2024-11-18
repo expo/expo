@@ -3,7 +3,7 @@ import ExpoModulesCore
 import CoreMotion
 
 public class CameraView: ExpoView, EXAppLifecycleListener,
-  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, CameraEvent {
+  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, EXCameraInterface, CameraEvent {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
 
