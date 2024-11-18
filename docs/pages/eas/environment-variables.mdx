@@ -69,26 +69,44 @@ export default {
 };
 ```
 
-## Managing environment variables and recommended workflow
+## Recommended workflow
 
-You can learn how to create and manage environment variables with our [Managing environment variables in EAS](/tutorial/eas/environment-variables) tutorial.
+One possible way to efficiently work with environment variables in your EAS projects is to:
+
+### Use correct visibility settings
+
+Make sure to set the visibility of your environment variables to the appropriate level.
+Avoid setting excessive secret visibility to `EXPO_PUBLIC_` variables that are used in your app's JavaScript code or are used to resolve your app's configuration.
+Be aware that environment variables with secret visibility are not readable outside of EAS servers, and can't be pulled locally for development or to bundle your app's JavaScript code for updates.
+
+### Add **.env** files to `.gitignore`
+
+To avoid confusing overrides during cloud jobs and leaking sensitive information, add **.env** files to your `.gitignore` file.
+
+### Use the `--environment` flag with `eas update`
+
+When publishing updates, use the `--environment` flag with the `eas update` command to ensure that the same environment variables are used for your updates as your build jobs.
+When the `--environment` flag is provided, `eas update` will use the environment variables on EAS' servers for the update job and won't use the **.env** files present in your project often used for local development.
+
+### Sync the environment variables for local development using `eas env:pull`
+
+You can use the `eas env:pull` command to pull environment variables from EAS servers to your local `.env` file for development.
+The ideal environment that can be used for this purpose is the `development` environment, as it's the default environment used for development builds.
+
+### Explicitly specify the environment for your builds
+
+Explicitly set the [`environment`](/eas/json#environment) value in **eas.json** for your build profiles to ensure that the correct environment variables are always used for your build jobs and you have full control over this process.
 
 ## Differences between handling environment variables in EAS CLI and Expo CLI
 
 One of the differences between using environment variables with the Expo framework and EAS is that EAS CLI itself does not support loading **.env** files to set environment variables when resolving the expo config.
-Instead, it's recommended to use the [EAS environment variables management system with EAS CLI commands](/tutorial/eas/environment-variables) to set environment variables for your build jobs and updates to avoid confusion, and ensure that exactly the same environment variables are used both for:
+Instead, it's recommended to use the EAS environment variables management system with EAS CLI commands to set environment variables for your build jobs and updates to avoid confusion, and ensure that exactly the same environment variables are used both for:
 
 - Local app config resolution, done by EAS CLI when preparing the expo config
 - Remote jobs happening on EAS servers, which often don't have access to your local **.env** files that are git ignored
 
 Using `eas update` is the one exception to this rule. By default, for backward compatibility reasons, it uses **.env** files present in your project directory to set environment variables for the update job, the same way [Expo CLI](/guides/environment-variables) does (it executes the `npx expo export` command under the hood).
 To ensure that you can use the same environment variables in your updates as your build jobs, you can use the `--environment` flag with the `eas update` command to force it to use **only** the environment variables set on the EAS' servers instead of the **.env** files present in your project directory. It will ignore environment variables from **.env**.
-
-## Limitations
-
-Environment variable value size is limited to 32 KiB for both string and file environment variables.
-
-You can create up to 100 account-wide environment variables for each Expo account and 100 project-specific environment variables for each app
 
 ## EAS Build and Workflows job runs
 
@@ -187,3 +205,24 @@ Expo CLI will substitute prefixed variables in your code (for example,`process.e
 Any `EXPO_PUBLIC_` variables in your application code will be replaced inline with the corresponding values from your EAS environment whether that is your local machine or your CI/CD server.
 
 We recommend using the `--environment` flag to ensure the same environment variables are used both for your update and build jobs.
+
+## Managing environment variables
+
+### Using Expo website
+
+The easiest way to create, read, update, export and delete environment variables is to use the Expo website.
+Navigate to the [Environment Variables page on your project](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) or [Environment Variables page on your account](https://expo.dev/accounts/[account]/settings/environment-variables) to manage your environment variables.
+
+### Using EAS CLI
+
+To manage environment variables using EAS CLI, you can use the `eas env:create`, `eas env:update`, `eas env:list`, and `eas env:delete` commands.
+
+You can additionally use `eas env:pull` command to pull environment variables from EAS servers to your local `.env` file for development.
+
+See the [EAS CLI command reference](https://github.com/expo/eas-cli/blob/main/packages/eas-cli/README.md) for more detailed information about these commands.
+
+## Limitations
+
+Environment variable value size is limited to 32 KiB for both string and file environment variables.
+
+You can create up to 100 account-wide environment variables for each Expo account and 100 project-specific environment variables for each app

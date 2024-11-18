@@ -537,7 +537,6 @@ const learn = [
       makePage('tutorial/eas/team-development.mdx'),
       makePage('tutorial/eas/using-github.mdx'),
       makePage('tutorial/eas/next-steps.mdx'),
-      makePage('tutorial/eas/environment-variables.mdx'),
     ],
     { expanded: true }
   ),
