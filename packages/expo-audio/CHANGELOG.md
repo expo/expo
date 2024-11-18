@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- [Android] Imporve handling of `Visulaizer`.
+- [Android] Imporve handling of `Visulaizer`. ([#33018](https://github.com/expo/expo/pull/33018) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.2.3 — 2024-10-28
 
