@@ -13,6 +13,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
   var currentRate: Float = 0.0
   let interval: Double
+  var isPaused: Bool {
+    ref.rate != 0.0
+  }
 
   // MARK: Observers
   private var timeToken: Any?

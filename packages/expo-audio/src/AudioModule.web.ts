@@ -181,6 +181,11 @@ export class AudioPlayerWeb
     this.isPlaying = false;
   }
 
+  replace(source: AudioSource): void {
+    this.src = source;
+    this.media = this._createMediaElement();
+  }
+
   async seekTo(seconds: number): Promise<void> {
     this.media.currentTime = seconds / 1000;
   }
