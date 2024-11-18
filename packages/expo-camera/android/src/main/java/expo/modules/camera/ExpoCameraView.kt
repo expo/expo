@@ -125,6 +125,7 @@ class ExpoCameraView(
   private var imageAnalysisUseCase: ImageAnalysis? = null
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
+  private var glSurface: SurfaceTexture? = null
 
   private var previewView = PreviewView(context).apply {
     elevation = 0f
@@ -366,6 +367,15 @@ class ExpoCameraView(
           .also {
             it.surfaceProvider = previewView.surfaceProvider
           }
+
+        glSurface?.let {
+          preview.setSurfaceProvider { request ->
+            val surface = Surface(it)
+            request.provideSurface(surface, ContextCompat.getMainExecutor(context)) {
+              surface.release()
+            }
+          }
+        }
 
         val cameraSelector = CameraSelector.Builder()
           .requireLensFacing(lensFacing.mapToCharacteristic())
@@ -619,7 +629,11 @@ class ExpoCameraView(
     }
   }
 
-  override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) = Unit
+  override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) {
+    glSurface = surfaceTexture
+    shouldCreateCamera = true
+    createCamera()
+  }
 
   override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
 

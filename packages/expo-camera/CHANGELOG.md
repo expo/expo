@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bring back `expo-gl' integration.
+
 ## 16.0.5 — 2024-11-13
 
 ### 💡 Others
