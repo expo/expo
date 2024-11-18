@@ -40,11 +40,11 @@ The environment variables defined on EAS servers can be assigned to mutiple envi
 
 We distinguish between three visibility settings for environment variables:
 
-| Visibility | Description                                                                                                                  |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Plain text | Visible on the website, in EAS CLI and in logs.                                                                              |
-| Sensitive  | Obfuscated in build and workflow jobs logs. You can use the toggle to make them visible on the website. Readable in EAS CLI. |
-| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. Obfuscated in build and workflow jobs logs.|
+| Visibility | Description                                                                                                                   |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Plain text | Visible on the website, in EAS CLI and in logs.                                                                               |
+| Sensitive  | Obfuscated in build and workflow jobs logs. You can use the toggle to make them visible on the website. Readable in EAS CLI.  |
+| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. Obfuscated in build and workflow jobs logs. |
 
 > **warning** Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**.
 > Secret type environment variables are intended to be used to provide values to an EAS Build or EAS Workflow job so that they may be used during the execution.
