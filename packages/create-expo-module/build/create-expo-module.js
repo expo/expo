@@ -72,7 +72,7 @@ async function main(target, options) {
     const data = await askForSubstitutionDataAsync(slug, options.local);
     // Make one line break between prompts and progress logs
     console.log();
-    const packageManager = await (0, resolvePackageManager_1.resolvePackageManager)();
+    const packageManager = (0, resolvePackageManager_1.resolvePackageManager)();
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir, options.local);

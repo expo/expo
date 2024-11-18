@@ -105,7 +105,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   // Make one line break between prompts and progress logs
   console.log();
 
-  const packageManager = await resolvePackageManager();
+  const packageManager = resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
