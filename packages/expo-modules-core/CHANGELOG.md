@@ -17,6 +17,7 @@
 ### 🐛 Bug fixes
 
 - Fixed requests from `expo/fetch` being stuck on iOS. ([#32894](https://github.com/expo/expo/pull/32894) by [@kudo](https://github.com/kudo))
+- [Android] Fixed sending event containing `ByteArray` from the Kotlin module results in string ID instead of `Uint8Array`. ([#32945](https://github.com/expo/expo/pull/32945) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.0.2 — 2024-11-13
 
