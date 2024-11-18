@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Bring back `expo-gl' integration. ([#33027](https://github.com/expo/expo/pull/33027) by [@alanjhughes](https://github.com/alanjhughes))
+- Bring back `expo-gl` integration. ([#33027](https://github.com/expo/expo/pull/33027) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 16.0.5 — 2024-11-13
 
