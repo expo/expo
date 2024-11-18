@@ -14,7 +14,7 @@ Monorepos, or _"monolithic repositories"_, are single repositories containing mu
 
 Starting from **SDK 48**, Expo automatically detects and configures monorepos using [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), or [yarn](https://yarnpkg.com/features/workspaces). From **SDK 52**, Expo also automatically sets up monorepos using [pnpm](https://pnpm.io/workspaces). The detection is based on the workspaces configuration in your project.
 
-> **info** Expo's automatic monorepo setup adds all workspaces in your monorepo as `watchFolders` to Metro. This might slow Metro down for larger monorepos. You can also manually configure which folders Metro should watch by changing the `watchFolders` in your **metro.config.js**, see [Modify the Metro config](#modify-the-metro-config).
+> **info** Expo's automatic monorepo setup adds all workspaces in your monorepo as `watchFolders` to Metro. This might slow Metro down for larger monorepos. You can also manually configure which folders Metro should watch by changing the `watchFolders` in your **metro.config.js**, see [Configure Metro](#configure-metro).
 
 ## Manual configuration
 
@@ -62,16 +62,20 @@ Before we create our app, we have to create the **apps** directory. This directo
 
 After copying or creating the first app, run `yarn` to check for common warnings.
 
-#### Modify the Metro config
+#### Configure Metro
 
-Expo's Metro config has monorepo support for bun, npm, yarn, and pnpm. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/). If that's the case, you can skip this step.
+Expo's Metro config has monorepo support for bun, npm, yarn, and pnpm. By default, if you use Expo CLI and do not have a **metro.config.js** file, you be will using the config from `expo/metro-config`, and you can proceed to the next step. 
 
-To configure a monorepo with Metro manually, there are two main changes:
+[If you customize your **metro.config.js**](/guides/customizing-metro), we strongly recommend that you extend `expo/metro-config` to get the best experience with monorepos and Expo tools in general.
+
+If for some reason this is not possible, or if you extend `expo/metro-config` and want to ensure that you are not overwriting configuration that is relevant to monorepos, there are two main configuration changes to be aware of:
 
 1. Make sure Metro is watching all relevant code within the monorepo, not just **apps/cool-app**.
 2. Tell Metro where it can resolve packages. They might be installed in **apps/cool-app/node_modules** or **node_modules**.
 
-We can configure this by [creating a **metro.config.js**](/guides/customizing-metro/#customizing) with the following content:
+<Collapsible summary="Example metro.config.js">
+
+The following **metro.config.js** demonstrates configuration changes `expo/metro-config` applies automatically relevant to monorepos, to demonstrate what is happening under the hood. You do not need to copy this code into your project, but use it as a reference when you are customizing your **metro.config.js** if you change any of the config properties referenced below.
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -95,7 +99,7 @@ config.resolver.nodeModulesPaths = [
 module.exports = config;
 ```
 
-> Learn more about [customizing Metro](/guides/customizing-metro).
+</Collapsible>
 
 <Collapsible summary="1. Why do we need to watch all files with the monorepo?">
 
@@ -301,7 +305,7 @@ Whenever multiple workspaces use the same version of a single dependency, they c
 
 <Collapsible summary="3. Different versions of dependencies must be installed in the app node_modules directory">
 
-In the [Modify the Metro config](#modify-the-metro-config) step, we instructed Metro to do a couple of this, specifically:
+In the [Configure Metro](#configure-metro) step, we instructed Metro to do a couple of this, specifically:
 
 - #2 - Resolve dependencies in the order of the local **apps/&lt;name&gt;/node_modules** and root **node_modules** directories.
 - #3 - Disable resolving dependencies using the hierarchical lookup strategy.
