@@ -39,7 +39,7 @@
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.2",
     "commander": "^8.3.0",
-    "cross-spawn": "^7.0.3",
+    "cross-spawn": "^7.0.5",
     "debug": "^4.3.4",
     "download-tarball": "^2.0.0",
     "ejs": "^3.1.10",
