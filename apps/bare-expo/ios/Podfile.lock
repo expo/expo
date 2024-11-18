@@ -2085,7 +2085,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-webview (13.12.2):
+  - react-native-webview (13.12.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3369,7 +3369,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-slider: 124ce99f9cd2d04c79f020da6dee9f8d38a6b8c7
   react-native-view-shot: 6bafd491eb295b5834e05c469a37ecbd796d5b22
-  react-native-webview: 06f91954784dde28e1210f381c791f0c5f9bd9a2
+  react-native-webview: 0bd56be54d01756f20eb942dad37a2cd22a6def2
   React-nativeconfig: 470fce6d871c02dc5eff250a362d56391b7f52d6
   React-NativeModulesApple: 6297fc3136c1fd42884795c51d7207de6312b606
   React-perflogger: f2c94413cfad44817c96cab33753831e73f0d0dd
@@ -3412,7 +3412,7 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   UMAppLoader: bda51f73f8599e336a778b23e0956130d1e244d5
-  Yoga: c5b0e913b5b3b4cde588227c1402e747797061f3
+  Yoga: 96872ee462cfc43866ad013c8160d4ff6b85709b
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 567bb58fe91a07874d34e36dc2ed989b409d33cd
