@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Use `findNodeHandle` with a native ref instead of a class component instance to avoid expensive calls to `findCurrentFiberUsingSlowPath`.
+
 ## 2.0.3 — 2024-11-14
 
 ### 🐛 Bug fixes
