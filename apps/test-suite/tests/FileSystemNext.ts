@@ -108,7 +108,7 @@ export async function test({ describe, expect, it, ...t }) {
       });
 
       it('Writes a string to a file reference', () => {
-        const outputFile = new File(testDirectory + 'file.txt');
+        const outputFile = new File(testDirectory, 'file.txt');
         expect(outputFile.exists).toBe(false);
         outputFile.write('Hello world');
         expect(outputFile.exists).toBe(true);
@@ -417,7 +417,7 @@ export async function test({ describe, expect, it, ...t }) {
 
       describe('Returns bytes', () => {
         it('gets file as a Uint8Array', async () => {
-          const src = new File(testDirectory + 'file.txt');
+          const src = new File(testDirectory, 'file.txt');
           src.write('Hello world');
           expect(src.bytes()).toEqual(
             new Uint8Array([72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100])
