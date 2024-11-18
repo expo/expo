@@ -1,20 +1,32 @@
 ---
 title: Managing environment variables in EAS
 sidebar_title: Managing environment variables in EAS
-description: Learn how to use environment variables and secrets in EAS from practical examples.
+description: Learn how to use environment variables in EAS from practical examples.
 ---
 
-In [Environment variables in EAS](/pages/eas/environment-variables) doc, we described concepts related to using environment variables in EAS and differences in handling them by Expo CLI and EAS CLI.
-In this tutorial, we will show you how to use them in practice.
+import { Step } from '~/ui/components/Step';
 
-##
+In [Environment variables in EAS](/pages/eas/environment-variables) we described concepts related to using environment variables in EAS and differences in handling them by Expo CLI and EAS CLI.
+This guide will show you how to use environment variables in EAS with practical examples.
 
-## Example workflow
+In this example we will consider a sample app that fetches data from an API server and uses these common environment variables during the build process and for configuration purposes:
 
-This is an example workflow for using environment variables in EAS, that can ensure smooth development and deployment experience and can be used as a starting point for your project.
-Let's assume you have a project with the following environment variables:
-
-- `EXPO_PUBLIC_ENABLE_MY_NEW_FEATURE` - [`EXPO_PUBLIC_`](/guides/environment-variables/) variable that enables a new feature in your app
-- `AUTH_TOKEN` - a variable that holds a build-time secret token for your app, like [`SENTRY_AUTH_TOKEN`](/guides/using-sentry/#app-configuration)
+- `EXPO_PUBLIC_API_URL` - [`EXPO_PUBLIC_`](/guides/environment-variables/) variable that holds the URL of the API server
+- `NPM_TOKEN` - a variable that holds a build-time secret token for your app, like [`SENTRY_AUTH_TOKEN`](/guides/using-sentry/#app-configuration) or `NPM_TOKEN`
 - `APP_VARINT` - a variable to select an [app variant](/tutorial/eas/multiple-app-variants/)
 - `GOOGLE_SERVICES_JSON` - a file variable to supply your gitignored `google-services.json` file to the build job
+
+Let's see how we can set up EAS environemnt variables for this example.
+
+<Step label="1">
+## Create environemnt variables
+
+To create environment variables on EAS servers you can use [Environment Variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page on the Expo website.
+
+If you prefer using the command line, you can use the `eas env:create` command.
+
+For this example let's create the following environment variables:
+
+- `EXPO_PUBLIC_API_URL` with the value `https://staging.my-ap
+
+</Step>

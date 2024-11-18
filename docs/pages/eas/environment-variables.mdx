@@ -6,23 +6,24 @@ description: Learn basic concepts about using environment variables in EAS and h
 
 import { Terminal } from '~/ui/components/Snippet';
 
-[Environment variables in Expo](/guides/environment-variables) describes how to use environment variables with the Expo framework. **.env** files to set environment variables that can be inlined in your JavaScript code. The Expo CLI will substitute properly prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
+[Environment variables in Expo](/guides/environment-variables) describes how to use environment variables with the Expo framework and **.env** files to set environment variables that can be inlined in your JavaScript code.
+The Expo CLI will substitute properly prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
 
 Because your EAS Build and EAS Workflow jobs run on a remote server, these **.env** files might not be available. For instance, **.env** files are excluded from your uploaded project if they are listed in **.gitignore** or not committed to your local version control system.
 Additionally, you may want to use environment variables outside of your JavaScript code to customize your app binary at build time, such as setting a bundle identifier or a private key for an error reporting service.
 To accomodate for those needs we have a separate and different (but compatible) mechanism for managing environment variables in EAS, which is focused on storing and managing environment variables on the EAS servers and synchronizing them for local development.
 
-## Project-scoped environment variables
+## Project-wide environment variables
 
-Project-scoped environment variables are environment variables that are specific to a single EAS project.
-You can view and manage them by navigating to [**Environment Variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) section of the project configuration menu.
+Project-wide environment variables are environment variables that are specific to a single EAS project.
+You can view and manage them by navigating to [Environment Variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) section of the project configuration menu.
 These environment variables are available to your build jobs, workflow jobs and updates for this project. They can also be pulled locally for development if their visibility setting allows it.
 
-## Account-scoped environment variables
+## Account-wide environment variables
 
-Account-scoped environment variables are environment variables that are available across all of your projects in your EAS account.
-You can view and manage them by navigating to [**Environment Variables**](https://expo.dev/accounts/[account]/settings/environment-variables) section of the account settings menu.
-They are available to your build jobs, workflow jobs and updates, together with project-scoped variables for this project.
+Account-wide environment variables are environment variables that are available across all of your projects in your EAS account.
+You can view and manage them by navigating to [Environment Variables](https://expo.dev/accounts/[account]/settings/environment-variables) section of the account settings menu.
+They are available to your build jobs, workflow jobs and updates, together with project-wide variables for this project.
 You can pull them locally or read outside of EAS servers if their visibility setting allows it.
 
 ## Environments
@@ -30,10 +31,10 @@ You can pull them locally or read outside of EAS servers if their visibility set
 Currently EAS supports three environments for environment variables: `development`, `preview` and `production`.
 Environments are independent sets of environment variables that can be used to customize your app in different contexts.
 For example, you might want to use different API keys for development and production, or different bundle identifiers for different App Store releases.
-Environments allows you to do so. Every EAS Build and EAS Workflow job runs in a specific environment, and the environment variables for that environment are used for that job.
+Environments allows you to do so. Every EAS Build and EAS Workflow job runs using environment variables from one of the available environments.
 Environments can also be used for updates, allowing you to easily use the same set of environment variables as for your build jobs, when creating an update using `eas update` command with `--environment` flag.
 
-The environment variables defined on EAS servers can be assigned to mutiple environments and have the same value across all of them, or be created for a single environemnt, so they can have different values for each environment.
+The environment variables defined on EAS servers can be assigned to mutiple environments and have the same value across all of them, or be created for a single environment, so they can have different values for each environment.
 
 ## Visibility
 
@@ -43,7 +44,7 @@ We distinguish between three visibility settings for environment variables:
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Plain text | Visible on the website, in EAS CLI and in logs.                                                                              |
 | Sensitive  | Obfuscated in build and workflow jobs logs. You can use the toggle to make them visible on the website. Readable in EAS CLI. |
-| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI, obfuscated in logs.                        |
+| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. Obfuscated in build and workflow jobs logs.|
 
 > **warning** Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**.
 > Secret type environment variables are intended to be used to provide values to an EAS Build or EAS Workflow job so that they may be used during the execution.
@@ -57,7 +58,7 @@ File type environment variables are useful when you need to pass a file to your 
 
 One common use case of using file environment variable is passing a gitignored **google-services.json** configuration file to your build job.
 When you create the file type environment variable `GOOGLE_SERVICES_JSON` with the value of the path to the **google-services.json** file in your project, EAS will upload the file to the EAS servers and make it available to your build job and workflow jobs running on EAS servers.
-Durung the job run, the file will be recreated in a random location on the filesystem and the path to the file will be assigned to the `GOOGLE_SERVICES_JSON` environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`).
+During the job run, the file will be recreated in a random location on the filesystem and the path to the file will be assigned to the `GOOGLE_SERVICES_JSON` environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`).
 You can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or workflow job.
 
 ```js app.config.ts
@@ -76,14 +77,14 @@ To learn how to create and manage environment variables in more details and set 
 
 ## Differences between handling environment variables in EAS CLI and Expo CLI
 
-One of the differences between using environment variables in Expo framework and EAS is that, in oposition to Expo CLI, EAS CLI itself does not support loading **.env** files to set environment variables when resolving the expo config used to create your build jobs or updates.
+One of the differences between using environment variables in Expo framework and EAS is that, in opposition to Expo CLI, EAS CLI itself does not support loading **.env** files to set environment variables when resolving the expo config used to create your build jobs or updates.
 Instead, it's recommended to use the [EAS environment variables management system with EAS CLI commands](/tutorial/eas/environment-variables) to set environment variables for your build jobs and updates to avoid confusion, and ensure that exactly the same environment variables are used both for:
 
 - Local app config resolution - done by EAS CLI when preparing expo config needed for creating an update or triggering a build
 - Remote jobs - happening on EAS servers, which often don't have access to your local **.env** files that are gitignored.
 
-Using `eas update` can be the one exception to this rule, as by default for backward compatibility reasons it will use the **.env** files present in your project directory to set environment variables for the update job, the same way [Expo CLI](/guides/environment-variables) does, because it executes the `npx expo export` command under the hood.
-To ensure that you can use the same environment variables in yout updates as in your build jobs, you can use the `--environment` flag with `eas update` command to force it to use **only** the environment variables set on the EAS servers instead of the **.env** files present in your project directory (it will ignore environment variables from **.env**).
+Using `eas update` can be the one exception to this rule, as by default, for backward compatibility reasons, it will use the **.env** files present in your project directory to set environment variables for the update job, the same way [Expo CLI](/guides/environment-variables) does (it executes the `npx expo export` command under the hood).
+To ensure that you can use the same environment variables in your updates as in your build jobs, you can use the `--environment` flag with `eas update` command to force it to use **only** the environment variables set on the EAS servers instead of the **.env** files present in your project directory (it will ignore environment variables from **.env**).
 
 ## Limitations
 
