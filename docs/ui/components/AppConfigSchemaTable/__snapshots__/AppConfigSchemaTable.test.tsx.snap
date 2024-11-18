@@ -104,6 +104,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             Bare Workflow
           </span>
           <a
+            aria-label="Permalink"
             class="ml-auto inline"
             href="#bare-workflow"
           >
@@ -247,6 +248,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             ExpoKit
           </span>
           <a
+            aria-label="Permalink"
             class="ml-auto inline"
             href="#expokit"
           >
@@ -323,6 +325,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             Bare Workflow
           </span>
           <a
+            aria-label="Permalink"
             class="ml-auto inline"
             href="#bare-workflow-1"
           >
@@ -474,6 +477,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               ExpoKit
             </span>
             <a
+              aria-label="Permalink"
               class="ml-auto inline"
               href="#expokit-1"
             >
@@ -784,6 +788,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             Bare Workflow
           </span>
           <a
+            aria-label="Permalink"
             class="ml-auto inline"
             href="#bare-workflow-2"
           >
