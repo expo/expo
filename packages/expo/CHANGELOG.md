@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Started `expo/fetch` streaming lazily. ([#33021](https://github.com/expo/expo/pull/33021) by [@kudo](https://github.com/kudo))
+
 ## 52.0.7 — 2024-11-14
 
 _This version does not introduce any user-facing changes._
