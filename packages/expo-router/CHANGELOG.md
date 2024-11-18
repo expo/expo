@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix useLocalSearchParms() hook from returning [object object] string when params are nested in nested navigators. ([#32386](https://github.com/expo/expo/pull/32386) by [@KennethStarkRL](https://github.com/KennethStarkRL))
+
 ### 💡 Others
 
 ## 4.0.6 — 2024-11-15
