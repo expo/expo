@@ -17,13 +17,13 @@ To accommodate for those needs we have a separate (but compatible) mechanism for
 
 Project-wide environment variables are specific to a single EAS project.
 You can view and manage them by navigating to the [Environment Variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page on your project.
-These environment variables are available to your build jobs, workflow jobs and updates for this project. They can also be pulled locally for development if their visibility setting allows it.
+These environment variables are available to any jobs run on EAS' servers and updates for this project. They can also be pulled locally for development if their visibility setting allows it.
 
 ## Account-wide environment variables
 
 Account-wide environment variables are available across all of your projects in your EAS account.
 You can view and manage them by navigating to [Environment Variables](https://expo.dev/accounts/[account]/settings/environment-variables) page on your account.
-They are available to your build jobs, workflow jobs and updates, together with project-wide variables for this project.
+They are available to jobs run on EAS' servers and updates, together with project-wide variables for a project.
 You can pull them locally or read outside of EAS servers if their visibility setting allows it.
 
 ## Environments
@@ -40,10 +40,10 @@ Environment variables can be assigned to multiple environments and have the same
 
 There are three different visibility settings:
 
-| Visibility | Description                                                                                                                   |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Plain text | Visible on the website, in EAS CLI, and in logs.                                                                               |
-| Sensitive  | Obfuscated in build and Workflows jobs logs. You can use a toggle to make them visible on the website. They're also readable in EAS CLI.  |
+| Visibility | Description                                                                                                                              |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Plain text | Visible on the website, in EAS CLI, and in logs.                                                                                         |
+| Sensitive  | Obfuscated in build and Workflows jobs logs. You can use a toggle to make them visible on the website. They're also readable in EAS CLI. |
 | Secret     | Not readable outside of the EAS' servers, including on the website and in EAS CLI. They are obfuscated in build and Workflows jobs logs. |
 
 > **warning** Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**.
@@ -56,8 +56,7 @@ There are three different visibility settings:
 In addition to setting strings as values, you can also upload files as the value of an environment variable.
 
 One common use case of using file environment variable is passing a git ignored **google-services.json** configuration file to a build job.
-When you create the file type environment variable `GOOGLE_SERVICES_JSON` with the value of the path to the **google-services.json** file in your project, EAS will upload the file to the EAS' servers and make it available to your build job and Workflows jobs.
-During the job run, the file will be recreated in a random location on the filesystem and the path to the file will be assigned to the `GOOGLE_SERVICES_JSON` environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`).
+During the job run, the file will be created in a location outside of the project directory and the path to the file will be assigned to the environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`).
 For example: you can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or Workflows job.
 
 ```js app.config.ts
@@ -124,7 +123,6 @@ If you don't set the `environment` option, we will set the environment automatic
 
 > **info** This resolution logic is only available for EAS CLI in version 13.3.0 and higher. For older CLI versions, we always assume the `production` environment for all builds.
 
-
 ### Built-in environment variables
 
 The following environment variables are additonal system environment variables exposed to each job and can be used within any build step. They are not a part of any project environment and are not available when evaluating **app.config.ts** locally:
@@ -155,12 +153,14 @@ For example, you can add the following in one of the [EAS Build hooks](/build-re
 
 After creating an environment variable, you can read it on subsequent EAS Build jobs with `process.env.VARIABLE_NAME` from Node.js or in shell scripts as `$VARIABLE_NAME`.
 
-### Can I just set my environment variables on a CI provider when triggering the build using `eas build` command?
+### FAQ
+
+#### Can I just set my environment variables on a CI provider when triggering the build using `eas build` command?
 
 Environment variables must be defined on EAS servers to be made available to EAS Build builders.
 If you are triggering builds from CI the same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets on EAS servers.
 
-### How do environment variables work for my development builds?
+#### How do environment variables work for my development builds?
 
 Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build.
 When you run `npx expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used.
