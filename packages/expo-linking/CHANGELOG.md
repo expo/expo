@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `addEventListener` and `useURL` hook. ([#33076](https://github.com/expo/expo/pull/33076) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 7.0.2 — 2024-10-25
