@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Supported css properties (border, background and shadow) by default. ([#33074](https://github.com/expo/expo/pull/33074) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 - Fixed type errors when using `ts-jest`. ([#32954](https://github.com/expo/expo/pull/32954) by [@kudo](https://github.com/kudo))
