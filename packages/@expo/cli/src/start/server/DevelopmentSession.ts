@@ -4,15 +4,11 @@ import {
   closeDevelopmentSessionAsync,
   updateDevelopmentSessionAsync,
 } from '../../api/updateDevelopmentSession';
-import { getUserAsync } from '../../api/user/user';
+import { hasCredentials } from '../../api/user/UserSettings';
 import { env } from '../../utils/env';
 import * as ProjectDevices from '../project/devices';
 
 const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
-
-async function isAuthenticatedAsync(): Promise<boolean> {
-  return !!(await getUserAsync().catch(() => null));
-}
 
 export class DevelopmentSession {
   /** If the `startAsync` was successfully called */
@@ -52,7 +48,7 @@ export class DevelopmentSession {
 
       const deviceIds = await this.getDeviceInstallationIdsAsync();
 
-      if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+      if (!hasCredentials() && !deviceIds?.length) {
         debug(
           'Development session will not ping because the user is not authenticated and there are no devices.'
         );
@@ -93,7 +89,7 @@ export class DevelopmentSession {
     try {
       const deviceIds = await this.getDeviceInstallationIdsAsync();
 
-      if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+      if (!hasCredentials() && !deviceIds?.length) {
         return false;
       }
 
