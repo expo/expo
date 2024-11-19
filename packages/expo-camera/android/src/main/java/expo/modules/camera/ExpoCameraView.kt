@@ -164,6 +164,12 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
+  var videoEncodingBitrate: Int? = null
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
   var ratio: CameraRatio? = null
     set(value) {
       field = value
@@ -305,6 +311,7 @@ class ExpoCameraView(
       .setFileSizeLimit(options.maxFileSize.toLong())
       .setDurationLimitMillis(options.maxDuration.toLong() * 1000)
       .build()
+
     recorder?.let {
       if (!mute && ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
         promise.reject(Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO))
@@ -468,7 +475,11 @@ class ExpoCameraView(
     val fallbackStrategy = FallbackStrategy.higherQualityOrLowerThan(preferredQuality)
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
-    val recorder = Recorder.Builder()
+    val recorder = Recorder.Builder().apply {
+      videoEncodingBitrate?.let {
+        setTargetVideoEncodingBitRate(it)
+      }
+    }
       .setExecutor(ContextCompat.getMainExecutor(context))
       .setQualitySelector(qualitySelector)
       .build()
