@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Exclude virtual network devices when determining local IP address
+- Exclude virtual network devices when determining local IP address ([#33082](https://github.com/expo/expo/pull/33082) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
