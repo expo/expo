@@ -826,6 +826,14 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  */
 export declare function getCalendarPermissionsAsync(): Promise<PermissionResponse>;
 /**
+ * Checks user's write-only permissions for accessing and modifying user's calendars.
+ * This is a more limited scope than full calendar access, checking only event creation and modification permissions.
+ *
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
+ */
+export declare function getCalendarWritePermissionsAsync(): Promise<PermissionResponse>;
+/**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  * @platform ios
