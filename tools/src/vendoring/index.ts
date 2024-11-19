@@ -19,7 +19,11 @@ export async function listAvailableVendoredModulesAsync(
 ) {
   const autolinkedModules = await listExpoGoAutoLinkingModulesAsync();
   const bundledNativeModules = { ...(await getBundledVersionsAsync()), ...autolinkedModules };
-  const vendoredPackageNames = [...Object.keys(modules), ...Object.keys(autolinkedModules)];
+  const vendoredPackageNameSet = new Set([
+    ...Object.keys(modules),
+    ...Object.keys(autolinkedModules),
+  ]);
+  const vendoredPackageNames = Array.from(vendoredPackageNameSet);
   const packageViews: Npm.PackageViewType[] = await Promise.all(
     vendoredPackageNames.map((packageName: string) => Npm.getPackageViewAsync(packageName))
   );
