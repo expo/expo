@@ -156,7 +156,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           return
         }
       }
-      
+
       Prop("videoBitrate") { (view, bitrate: Int?) in
         if let bitrate {
           view.videoBitrate = bitrate
