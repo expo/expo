@@ -1910,7 +1910,7 @@ PODS:
     - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.4.1):
+  - react-native-pager-view (6.5.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1923,7 +1923,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-pager-view/common (= 6.4.1)
+    - react-native-pager-view/common (= 6.5.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1932,7 +1932,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-pager-view/common (6.4.1):
+  - react-native-pager-view/common (6.5.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2394,8 +2394,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNCMaskedView (0.3.1):
+  - RNCMaskedView (0.3.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNCPicker (2.9.0):
     - DoubleConversion
     - glog
@@ -3364,7 +3383,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 726951e68f4bb1c2513d322f2548798b2a3d628d
   React-microtasksnativemodule: 7a69a9b8fded72ea3cf81923ecf75cad5558ed26
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
-  react-native-pager-view: 94195f1bf32e7f78359fa20057c97e632364a08b
+  react-native-pager-view: abc5ef92699233eb726442c7f452cac82f73d0cb
   react-native-safe-area-context: 458f6b948437afcb59198016b26bbd02ff9c3b47
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-slider: 124ce99f9cd2d04c79f020da6dee9f8d38a6b8c7
@@ -3398,7 +3417,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 881faed7ef3ff3ec5783b4e74d3a49dbf58e6878
   ReactCommon: 208cb02e3c0bb8a727b3e1a1782202bcfa5d9631
   RNCAsyncStorage: a927b768986f83467b635cf6d7559e6edb46db7a
-  RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
+  RNCMaskedView: c22a01dd2d0744c16b56e06eb8720512b900988c
   RNCPicker: b978067931744f5a7316b48b8dcf145d4d722672
   RNDateTimePicker: 6008d74df8122d6af6d9d08096bff19a8c6ba647
   RNFlashList: 6f169ad83e52579b7754cbbcec1b004c27d82c93
@@ -3412,7 +3431,7 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   UMAppLoader: bda51f73f8599e336a778b23e0956130d1e244d5
-  Yoga: 96872ee462cfc43866ad013c8160d4ff6b85709b
+  Yoga: c5b0e913b5b3b4cde588227c1402e747797061f3
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 567bb58fe91a07874d34e36dc2ed989b409d33cd

@@ -13731,10 +13731,10 @@ react-native-maps@1.18.0:
   dependencies:
     "@types/geojson" "^7946.0.13"
 
-react-native-pager-view@6.4.1, react-native-pager-view@^6.4.1:
-  version "6.4.1"
-  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.4.1.tgz#82d04107229c19967a503de53a231dd95fcccd10"
-  integrity sha512-HnDxXTRHnR6WJ/vnOitv0C32KG9MJjxLnxswuQlBJmQ7RxF2GWOHSPIRAdZ9fLxdLstV38z9Oz1C95+t+yXkcg==
+react-native-pager-view@6.5.1:
+  version "6.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.5.1.tgz#e639e8c975f4c749aae1c3120dc4208265fce4cc"
+  integrity sha512-YdX7bP+rPYvATMU7HzlMq9JaG3ui/+cVRbFZFGW+QshDULANFg9ECR1BA7H7JTIcO/ZgWCwF+1aVmYG5yBA9Og==
 
 react-native-paper@^5.12.5:
   version "5.12.5"

@@ -1645,7 +1645,7 @@ PODS:
     - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.4.1):
+  - react-native-pager-view (6.5.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1658,7 +1658,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-pager-view/common (= 6.4.1)
+    - react-native-pager-view/common (= 6.5.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1667,7 +1667,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-pager-view/common (6.4.1):
+  - react-native-pager-view/common (6.5.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3051,7 +3051,7 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: a19fb4d0d52b26f250108aee430dc499f143ff11
+  hermes-engine: 35e838e3ab3dbad627f70ca9d4dd2a91f6285b29
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3094,7 +3094,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 7a69a9b8fded72ea3cf81923ecf75cad5558ed26
   react-native-maps: 2e6e9896195781327ee15b33e3e84bf73c08207a
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
-  react-native-pager-view: 94195f1bf32e7f78359fa20057c97e632364a08b
+  react-native-pager-view: abc5ef92699233eb726442c7f452cac82f73d0cb
   react-native-safe-area-context: 458f6b948437afcb59198016b26bbd02ff9c3b47
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-skia: 425a5610939828363e0681b8b3e994dd4f18b711
