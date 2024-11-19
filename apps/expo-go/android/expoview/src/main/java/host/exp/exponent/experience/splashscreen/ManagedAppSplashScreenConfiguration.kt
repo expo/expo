@@ -66,14 +66,10 @@ class ManagedAppSplashScreenConfiguration private constructor() {
      * - generic splash imageUrl
      */
     private fun parseImageUrl(manifest: Manifest): String? {
-      val pluginInfo = manifest.getPluginProperties("expo-splash-screen")
-      pluginInfo?.let { info ->
-        val url = manifest.getIconUrl()?.split("./")?.get(0)
-        val pluginUrl = info["image"] as String?
-        url?.let {
-          return "$it$pluginUrl"
-        }
-        return info["image"] as String?
+      // Because of the changes to splashscreen we are going to default to the app icon in expo go
+      val iconUrl = manifest.getIconUrl()
+      if (iconUrl != null) {
+        return iconUrl
       }
 
       val androidSplash = manifest.getAndroidSplashInfo()

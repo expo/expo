@@ -41,14 +41,8 @@ static const NSString *kImageResizeModeCover = @"cover";
 
 + (NSString * _Nullable)parseImageUrl:(EXManifestsManifest *)manifest
 {
-  NSDictionary *plugin = [manifest getPluginPropertiesWithPackageName:@"expo-splash-screen"];
-  NSString *image = [plugin valueForKey:@"image"];
-  if (image) {
-    NSURL *url = [NSURL URLWithString:manifest.bundleUrl];
-    NSString *origin = [NSString stringWithFormat:@"%@://%@:%@", url.scheme, url.host, url.port];
-    return [NSString stringWithFormat:@"%@/assets/%@", origin, image];
-  }
-  return manifest.iosSplashImageUrl;
+  // Because of the changes to splashscreen, we now default to the app icon in expo go
+  return manifest.iosAppIconUrl;
 }
 
 + (EXSplashScreenImageResizeMode)parseImageResizeMode:(EXManifestsManifest *)manifest
