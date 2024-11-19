@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import util from 'node:util';
 import readline from 'readline';
-import stripAnsi from 'strip-ansi';
 
 import { findPackagesToPromote } from './findPackagesToPromote';
 import logger from '../../Logger';
@@ -69,7 +69,7 @@ async function promptForPackagesToPromoteAsync(parcels: Parcel[]): Promise<strin
   // If possible, we clear everything that has been printed after the prompt.
   if (process.stdout.columns) {
     const bufferLength = choices.reduce(
-      (acc, choice) => acc + stripAnsi(choice.name).length + 2,
+      (acc, choice) => acc + util.stripVTControlCharacters(choice.name).length + 2,
       0
     );
     readline.moveCursor(process.stdout, 0, -Math.ceil(bufferLength / process.stdout.columns));

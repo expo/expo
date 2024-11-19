@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
+import util from 'node:util';
 import os from 'os';
 import path from 'path';
-import stripAnsi from 'strip-ansi';
 
 import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import {
@@ -109,7 +109,7 @@ describe(getPodUpdateMessage, () => {
 describe(getPodRepoUpdateMessage, () => {
   it(`formats pod repo update message`, () => {
     expect(
-      stripAnsi(
+      util.stripVTControlCharacters(
         getPodRepoUpdateMessage(
           '[!] Unable to find a specification for `expo-dev-menu-interface` depended upon by `expo-dev-launcher`'
         ).message
@@ -120,7 +120,7 @@ describe(getPodRepoUpdateMessage, () => {
   });
   it(`formats pod update message`, () => {
     expect(
-      stripAnsi(
+      util.stripVTControlCharacters(
         getPodRepoUpdateMessage(
           "You should run `pod update EXFileSystem` to apply changes you've made."
         ).message

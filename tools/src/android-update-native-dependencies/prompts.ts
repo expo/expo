@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import stripAnsi from 'strip-ansi';
+import util from 'node:util';
 
 import {
   AndroidProjectDependenciesUpdates,
@@ -74,7 +74,7 @@ async function promptForDependenciesVersions(
         group: dependency.group,
         fullName: dependency.fullName,
         oldVersion: dependency.currentVersion,
-        newVersion: stripAnsi(version),
+        newVersion: util.stripVTControlCharacters(version),
       });
     }
   }
