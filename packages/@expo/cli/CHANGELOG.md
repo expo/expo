@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Detect and enable offline mode after DNS is resolved, but network isn't accessible.
+- Detect and enable offline mode after DNS is resolved, but network isn't accessible. ([#33084](https://github.com/expo/expo/pull/33084) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
