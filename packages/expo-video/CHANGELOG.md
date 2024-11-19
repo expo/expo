@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `border` related props weren't applied correctly.
+
 ### 💡 Others
 
 ## 2.0.0 — 2024-11-11
