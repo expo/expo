@@ -47,6 +47,9 @@ function getRouteAddress(): string | null {
   }
 }
 
+/** By convention, a zero mac address means we have a virtual device, which we'd like to exclude */
+const VIRTUAL_MAC_ADDRESS = '00:00:00:00:00:00';
+
 /** Determines the internal IP address by opening a socket, then checking the socket address against non-internal network interface assignments
  * @throws If no address can be determined.
  */
@@ -69,7 +72,8 @@ function getRouteIPAddress(): string | null {
       if (
         assignment.family === 'IPv4' &&
         !assignment.internal &&
-        assignment.address === routeAddress
+        assignment.address === routeAddress &&
+        assignment.mac !== VIRTUAL_MAC_ADDRESS
       )
         return routeAddress;
     }
