@@ -266,7 +266,7 @@ public class Manifest: NSObject {
       ])
     }
   }
-  
+
   public func iosAppIconUrl() -> String? {
     return expoClientConfigRootObject().let { it in
       Manifest.string(fromManifest: it, atPath: ["iconUrl"])
