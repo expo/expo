@@ -69,6 +69,7 @@ function getRouteIPAddress(): string | null {
     for (let i = 0; assignments && i < assignments.length; i++) {
       const assignment = assignments[i];
       // Only use IPv4 assigments that aren't internal
+      // Only use IPv4 assignment if it's not a virtual device (e.g. a VPN network interface)
       if (
         assignment.family === 'IPv4' &&
         !assignment.internal &&
