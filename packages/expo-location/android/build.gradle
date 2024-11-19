@@ -20,5 +20,7 @@ android {
 
 dependencies {
   api 'com.google.android.gms:play-services-location:21.0.1'
-  implementation project(":${project.name}\$io.nlopez.smartlocation-jetified-aar")
+  api('io.nlopez.smartlocation:library:3.3.3') {
+    transitive = false
+  }
 }
