@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "52.0.7",
+  "version": "52.0.8",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -68,7 +68,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.21.5",
+    "@expo/cli": "0.21.6",
     "@expo/config": "~10.0.4",
     "@expo/config-plugins": "9.0.9",
     "@expo/fingerprint": "0.11.2",
@@ -77,11 +77,11 @@
     "babel-preset-expo": "~12.0.1",
     "expo-asset": "~11.0.1",
     "expo-constants": "~17.0.3",
-    "expo-file-system": "~18.0.3",
+    "expo-file-system": "~18.0.4",
     "expo-font": "~13.0.1",
     "expo-keep-awake": "~14.0.1",
     "expo-modules-autolinking": "2.0.2",
-    "expo-modules-core": "2.0.3",
+    "expo-modules-core": "2.0.4",
     "fbemitter": "^3.0.0",
     "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"

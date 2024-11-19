@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Add `videoBitrate` prop to allow setting the bitrate used when recording a video. ([#33087](https://github.com/expo/expo/pull/33087) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 16.0.6 — 2024-11-19
+
+### 🎉 New features
+
+- Add `videoBitrate` prop to allow setting the bitrate used when recording a video. ([#33087](https://github.com/expo/expo/pull/33087) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

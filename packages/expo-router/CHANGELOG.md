@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `<Link>` using a hash href causing a full page reload on web. ([#32645](https://github.com/expo/expo/pull/32645) by [@marklawlor](https://github.com/marklawlor))
-
 ### 💡 Others
+
+## 4.0.7 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- Fix `<Link>` using a hash href causing a full page reload on web. ([#32645](https://github.com/expo/expo/pull/32645) by [@marklawlor](https://github.com/marklawlor))
 
 ## 4.0.6 — 2024-11-15
 

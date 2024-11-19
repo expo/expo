@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `formatFullName` not specifying a return type. ([#33068](https://github.com/expo/expo/pull/33068) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 7.1.2 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- Fix `formatFullName` not specifying a return type. ([#33068](https://github.com/expo/expo/pull/33068) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 7.1.1 — 2024-11-15
 
