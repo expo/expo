@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Install TypeScript as a dev dependency
+
 ### 💡 Others
 
 ## 0.21.5 — 2024-11-14
