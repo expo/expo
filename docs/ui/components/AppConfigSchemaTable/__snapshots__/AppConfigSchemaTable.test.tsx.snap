@@ -19,8 +19,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline"
           >
             <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-              data-text="true"
+              class="font-medium"
             >
               name
             </code>
@@ -51,18 +50,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </a>
       </p>
-      <p
-        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+      <div
+        class="my-3"
         data-text="true"
       >
-        Type: 
-        <code
-          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        <span
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
           data-text="true"
         >
-          string
-        </code>
-      </p>
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            string
+          </code>
+        </span>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -163,8 +167,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline"
           >
             <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-              data-text="true"
+              class="font-medium"
             >
               androidNavigationBar
             </code>
@@ -195,18 +198,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </a>
       </p>
-      <p
-        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+      <div
+        class="my-3"
         data-text="true"
       >
-        Type: 
-        <code
-          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        <span
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
           data-text="true"
         >
-          object
-        </code>
-      </p>
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            object
+          </code>
+        </span>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -383,8 +391,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                data-text="true"
+                class="font-medium"
               >
                 visible
               </code>
@@ -415,27 +422,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </a>
         </p>
-        <p
-          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        <div
+          class="my-3"
           data-text="true"
         >
-          Type: 
-          <code
-            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
-            enum
-          </code>
-           • Path:
-           
-          <code
-            class="break-words px-1 text-secondary"
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              enum
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
           >
-            androidNavigationBar
-            .
-            visible
-          </code>
-        </p>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              androidNavigationBar
+              .
+              visible
+            </code>
+          </span>
+        </div>
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
@@ -535,8 +552,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class="inline"
               >
                 <code
-                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                  data-text="true"
+                  class="font-medium"
                 >
                   always
                 </code>
@@ -567,27 +583,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </a>
           </p>
-          <p
-            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+          <div
+            class="my-3"
             data-text="true"
           >
-            Type: 
-            <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
               data-text="true"
             >
-              boolean
-            </code>
-             • Path:
-             
-            <code
-              class="break-words px-1 text-secondary"
+              Type: 
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+                data-text="true"
+              >
+                boolean
+              </code>
+            </span>
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+              data-text="true"
             >
-              androidNavigationBar.visible
-              .
-              always
-            </code>
-          </p>
+               • Path:
+               
+              <code
+                class="break-words px-1 text-secondary"
+              >
+                androidNavigationBar.visible
+                .
+                always
+              </code>
+            </span>
+          </div>
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
             data-text="true"
@@ -612,8 +638,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                data-text="true"
+                class="font-medium"
               >
                 backgroundColor
               </code>
@@ -644,27 +669,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </a>
         </p>
-        <p
-          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        <div
+          class="my-3"
           data-text="true"
         >
-          Type: 
-          <code
-            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
-            string
-          </code>
-           • Path:
-           
-          <code
-            class="break-words px-1 text-secondary"
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              string
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
           >
-            androidNavigationBar
-            .
-            backgroundColor
-          </code>
-        </p>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              androidNavigationBar
+              .
+              backgroundColor
+            </code>
+          </span>
+        </div>
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
@@ -703,8 +738,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline"
           >
             <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-              data-text="true"
+              class="font-medium"
             >
               intentFilters
             </code>
@@ -735,18 +769,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </a>
       </p>
-      <p
-        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+      <div
+        class="my-3"
         data-text="true"
       >
-        Type: 
-        <code
-          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        <span
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
           data-text="true"
         >
-          array
-        </code>
-      </p>
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            array
+          </code>
+        </span>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -874,8 +913,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                data-text="true"
+                class="font-medium"
               >
                 autoVerify
               </code>
@@ -906,27 +944,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </a>
         </p>
-        <p
-          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        <div
+          class="my-3"
           data-text="true"
         >
-          Type: 
-          <code
-            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
-            boolean
-          </code>
-           • Path:
-           
-          <code
-            class="break-words px-1 text-secondary"
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              boolean
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
           >
-            intentFilters
-            .
-            autoVerify
-          </code>
-        </p>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              intentFilters
+              .
+              autoVerify
+            </code>
+          </span>
+        </div>
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
@@ -950,8 +998,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                data-text="true"
+                class="font-medium"
               >
                 data
               </code>
@@ -982,27 +1029,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </a>
         </p>
-        <p
-          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        <div
+          class="my-3"
           data-text="true"
         >
-          Type: 
-          <code
-            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
-            array || object
-          </code>
-           • Path:
-           
-          <code
-            class="break-words px-1 text-secondary"
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              array || object
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
           >
-            intentFilters
-            .
-            data
-          </code>
-        </p>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              intentFilters
+              .
+              data
+            </code>
+          </span>
+        </div>
         <div
           class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
         >
@@ -1019,8 +1076,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class="inline"
               >
                 <code
-                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                  data-text="true"
+                  class="font-medium"
                 >
                   host
                 </code>
@@ -1051,27 +1107,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </a>
           </p>
-          <p
-            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+          <div
+            class="my-3"
             data-text="true"
           >
-            Type: 
-            <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
               data-text="true"
             >
-              string
-            </code>
-             • Path:
-             
-            <code
-              class="break-words px-1 text-secondary"
+              Type: 
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+                data-text="true"
+              >
+                string
+              </code>
+            </span>
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+              data-text="true"
             >
-              intentFilters.data
-              .
-              host
-            </code>
-          </p>
+               • Path:
+               
+              <code
+                class="break-words px-1 text-secondary"
+              >
+                intentFilters.data
+                .
+                host
+              </code>
+            </span>
+          </div>
         </div>
       </div>
     </div>
