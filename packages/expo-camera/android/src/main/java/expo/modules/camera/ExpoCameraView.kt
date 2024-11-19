@@ -14,7 +14,6 @@ import android.media.MediaActionSound
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.util.Range
 import android.util.Size
 import android.view.OrientationEventListener
 import android.view.Surface
@@ -87,7 +86,6 @@ import kotlin.properties.Delegates
 
 const val ANIMATION_FAST_MILLIS = 50L
 const val ANIMATION_SLOW_MILLIS = 100L
-const val DEFAULT_VIDEO_BITRATE = 10_000_000
 
 @SuppressLint("ViewConstructor")
 class ExpoCameraView(

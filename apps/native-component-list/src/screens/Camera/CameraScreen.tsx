@@ -451,6 +451,7 @@ export default class CameraScreen extends React.Component<object, State> {
           mode={this.state.mode}
           mute={this.state.mute}
           zoom={this.state.zoom}
+          videoQuality="1080p"
           onMountError={this.handleMountError}
           barcodeScannerSettings={{
             barcodeTypes: ['qr', 'pdf417'],
