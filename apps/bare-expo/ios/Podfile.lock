@@ -49,7 +49,7 @@ PODS:
     - ExpoModulesCore
   - Expo (52.0.8):
     - ExpoModulesCore
-  - expo-dev-client (5.0.2):
+  - expo-dev-client (5.0.3):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -3276,7 +3276,7 @@ SPEC CHECKSUMS:
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
   EXNotifications: c5b96ad5fffef5515c9cfc7887ae10f8720c70a5
   Expo: c3e32beff4379726ad2e94068563fa03ae7109b0
-  expo-dev-client: 7eb2bb228895757364d5650b3744db4694ee0bf7
+  expo-dev-client: 84a7f4a302387b57388d053900b56611b28b65ee
   expo-dev-launcher: c454a423307d527de0f0016cca0aed6773a798ff
   expo-dev-menu: 30ffa4e9e93551c093d40725e81635e86b19c511
   expo-dev-menu-interface: 1495ca112a4961f9fbaf586ae952faaafdbd967b
