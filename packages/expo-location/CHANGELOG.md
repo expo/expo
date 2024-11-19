@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed NoClassDefFoundError for `Landroid/support/v4/app/ActivityCompat;`. ([#33088](https://github.com/expo/expo/pull/33088) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 18.0.1 — 2024-10-22
