@@ -44,7 +44,7 @@ code {
 
 ::selection {
   @apply text-default;
-  background-color: rgb(from var(--blue5) r g b / 80%);
+  background-color: rgb(from var(--blue-5) r g b / 80%);
 }
 
 ::-moz-selection {
@@ -123,9 +123,8 @@ div.tippy-box {
 }
 
 .tippy-box[data-theme~='expo'] .tippy-content {
-  @apply text-sm text-palette-white rounded-md py-3 px-4;
+  @apply text-sm text-palette-white bg-palette-black rounded-md py-3 px-4;
   line-height: 1.525;
-  background: #000;
 }
 
 .tippy-box[data-state='visible'] {
@@ -202,10 +201,10 @@ div.tippy-box {
   transition: 200ms ease all;
   transition-property: text-shadow, opacity;
   text-shadow:
-    var(--yellow7) 0 0 10px,
-    var(--yellow7) 0 0 10px,
-    var(--yellow7) 0 0 10px,
-    var(--yellow7) 0 0 10px;
+    var(--yellow-7) 0 0 10px,
+    var(--yellow-7) 0 0 10px,
+    var(--yellow-7) 0 0 10px,
+    var(--yellow-7) 0 0 10px;
 }
 
 .code-annotation.with-tooltip:hover {
@@ -254,7 +253,7 @@ div.tippy-box {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  @apply text-palette-red11;
+  @apply text-palette-red10;
 }
 
 .token.selector,
@@ -278,7 +277,7 @@ div.tippy-box {
 .token.atrule,
 .token.attr-value,
 .token.function {
-  @apply text-palette-purple11;
+  @apply text-palette-purple10 dark:text-palette-purple11;
 }
 
 .token.class-name,

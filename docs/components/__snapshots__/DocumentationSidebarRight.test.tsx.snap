@@ -11,12 +11,11 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       data-text="true"
     >
       <svg
-        class="text-icon-default icon-sm"
+        class="text-icon-default translate-z icon-sm"
         fill="none"
         role="img"
         stroke="currentColor"
         viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
       >
         <g
           id="layout-alt-03-outline-icon"
@@ -40,12 +39,11 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
         >
           <svg
             aria-label="Scroll to top"
-            class="icon-sm text-icon-secondary"
+            class="translate-z icon-sm text-icon-secondary"
             fill="none"
             role="img"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <g
               id="arrow-circle-up-outline-icon"

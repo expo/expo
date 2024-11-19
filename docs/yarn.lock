@@ -387,38 +387,38 @@
   dependencies:
     cross-spawn "^7.0.3"
 
-"@expo/styleguide-base@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-base/-/styleguide-base-1.0.1.tgz#c05b64370fc1754ed7e3c627fd2d788582445cd2"
-  integrity sha512-Iu52/esfpMXB5cOT3oyTvcSdkwok9re9Wtu4Tz7cmeumjh+81kTIB1GHZn8W1RFhSx9dys0NXr3UqPD8MkngtQ==
+"@expo/styleguide-base@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-base/-/styleguide-base-2.0.1.tgz#9fc3488ab81c846f3097733cc340feb38b7985db"
+  integrity sha512-zC0xawqLBcO32V+I1LB+pktBGablZsJVQaIYCY+elQ2Lo8ZBx385tS+oofh9uNjoT3U5DnQoRkxqXL5GIZ398A==
   dependencies:
-    "@radix-ui/colors" "^0.1.8"
+    "@radix-ui/colors" "^3.0.0"
 
-"@expo/styleguide-icons@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-2.0.3.tgz#234f741cab325cff5d0533626e61347faca1121b"
-  integrity sha512-7cZxGXclDYk9aghP6yTnZzLjYQxbTesCSG4Cau46bHmjzMVi8J1A2l5IflZCCWsQMsk051Ms3ketX3gcuTfXRQ==
+"@expo/styleguide-icons@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-2.1.1.tgz#7a46fb578b1f301511f33d122b92ca370edb6548"
+  integrity sha512-q8V5WQsAH8sWjWUM5wYUFRJMJ3aI29ha6yPo4PK8sHVEbaOtVcxCVzHs7tDI1B0NRH4wwRNoPa0XB296d8DoHQ==
   dependencies:
     tailwind-merge "^2.5.4"
 
-"@expo/styleguide-search-ui@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-2.1.2.tgz#065bc7a7f9a310a269f81159ceb95dd834e34e61"
-  integrity sha512-oDE6IvGaIJjlS9n7rmwG8LvS6SUi5C6C2gAGcV1LKZ2IlwRZEyYpTnbed+bPhmQXwfrgkZC6HW9T4gWi+C8drg==
+"@expo/styleguide-search-ui@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-2.2.4.tgz#23f139fb23c9076cea2ae66d51ddb35094155c66"
+  integrity sha512-0oXhvjgedmntNz0pZRLm7EAuT7P4doDC6Hu+J7qTLPaP18qPWHfIC4qGWVPEwTHwqKHE2QSK63iMonRtJGndew==
   dependencies:
-    "@expo/styleguide" "^8.3.0"
-    "@expo/styleguide-icons" "^2.0.3"
+    "@expo/styleguide" "^9.0.1"
+    "@expo/styleguide-icons" "^2.1.1"
     "@sanity/client" "^6.21.3"
     "@sanity/image-url" "^1.0.2"
     cmdk "^0.2.1"
     lodash.groupby "^4.6.0"
 
-"@expo/styleguide@^8.3.0":
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.3.0.tgz#28909a076eff138c34a02e6bdb4e29c1ce264d0f"
-  integrity sha512-VCMoM2ayHyWnzaza2JR7tv3ZBbgv1o32BUzOFDPCzg3vN0Bigp/Uk5Pq33vhyLM9UrTrfDnFSDx0srOwcIfD8Q==
+"@expo/styleguide@^9.0.1":
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-9.0.1.tgz#fe189e0d34c2d07468179d859d4d91cfad9c69ea"
+  integrity sha512-qaSI0xCMWSvb2vnq3vxRsCa+HO4W4QoKN6JBmvXOOe/Io59ZK1CA7mUZfV3YGnJbjuOPfqW31x3ST2UdFrQZow==
   dependencies:
-    "@expo/styleguide-base" "^1.0.1"
+    "@expo/styleguide-base" "^2.0.1"
     tailwind-merge "^2.5.4"
 
 "@floating-ui/core@^0.7.3":
@@ -1013,10 +1013,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
-"@radix-ui/colors@^0.1.8":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@radix-ui/colors/-/colors-0.1.9.tgz#aad732ecc4ce1018adcb3aedd3ce3c573c2256cc"
-  integrity sha512-Vxq944ErPJsdVepjEUhOLO9ApUVOocA63knc+V2TkJ09D/AVOjiMIgkca/7VoYgODcla0qbSIBjje0SMfZMbAw==
+"@radix-ui/colors@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@radix-ui/colors/-/colors-3.0.0.tgz#e8a591a303c44e503bd1212cacf40a09511165e0"
+  integrity sha512-FUOsGBkHrYJwCSEtWRCIfQbZG7q1e6DgxCIOe1SUQzDe/7rXXeA47s8yCn6fuTNQAj1Zq4oTFi9Yjp3wzElcxg==
 
 "@radix-ui/primitive@1.0.0":
   version "1.0.0"
