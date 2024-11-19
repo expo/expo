@@ -102,6 +102,10 @@ class FileSystemNextModule : Module() {
         file.base64()
       }
 
+      Function("bytes") { file: FileSystemFile ->
+        file.bytes()
+      }
+
       Property("exists") { file: FileSystemFile ->
         file.exists
       }
