@@ -476,10 +476,10 @@ class ExpoCameraView(
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
     val recorder = Recorder.Builder().apply {
-        videoEncodingBitrate?.let {
-          setTargetVideoEncodingBitRate(it)
-        }
+      videoEncodingBitrate?.let {
+        setTargetVideoEncodingBitRate(it)
       }
+    }
       .setExecutor(ContextCompat.getMainExecutor(context))
       .setQualitySelector(qualitySelector)
       .build()
