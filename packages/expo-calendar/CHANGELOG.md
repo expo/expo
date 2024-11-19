@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- [calendar] Request write only calendar permission on iOS in createEventInCalendarAsync ([#33062](https://github.com/expo/expo/pull/33062) by [@gunnartorfis](https://github.com/gunnartorfis))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
