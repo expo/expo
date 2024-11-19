@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Detect and enable offline mode after DNS is resolved, but network isn't accessible.
+
 ### 💡 Others
 
 ## 0.21.6 — 2024-11-19
