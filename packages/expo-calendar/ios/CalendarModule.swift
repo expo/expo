@@ -294,7 +294,6 @@ public class CalendarModule: Module {
             promise.reject("ERR_CALENDAR_PERMISSION", "Failed to request calendar write permission: \(error.localizedDescription)")
             return
           }
-          
           promise.resolve([
             "status": granted ? "granted" : "denied",
             "granted": granted,
@@ -307,7 +306,6 @@ public class CalendarModule: Module {
             promise.reject("ERR_CALENDAR_PERMISSION", "Failed to request calendar permission: \(error.localizedDescription)")
             return
           }
-          
           promise.resolve([
             "status": granted ? "granted" : "denied",
             "granted": granted,
@@ -316,7 +314,6 @@ public class CalendarModule: Module {
         }
       }
     }
-    
     AsyncFunction("getRemindersPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         RemindersPermissionRequester.self,
@@ -345,7 +342,6 @@ public class CalendarModule: Module {
           throw CalendarWriteAccessDeniedException()
         }
       }
-      
       guard calendarDialogDelegate == nil else {
         throw EventDialogInProgressException()
       }
