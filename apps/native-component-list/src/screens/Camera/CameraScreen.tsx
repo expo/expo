@@ -223,18 +223,26 @@ export default class CameraScreen extends React.Component<object, State> {
       this.camera?.current?.stopRecording();
       return Promise.resolve();
     } else {
-      return this.camera?.current?.recordAsync();
+      return this.camera?.current?.recordAsync({ codec: 'hvc1' });
     }
   };
 
   takeVideo = async () => {
-    const result = await this.recordVideo();
-    this.setState((state) => ({ recording: !state.recording }));
-    if (result?.uri) {
-      await FileSystem.moveAsync({
-        from: result.uri,
-        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
-      });
+    try {
+      const result = await this.recordVideo();
+      this.setState((state) => ({ recording: !state.recording }));
+
+      if (result?.uri) {
+        const info = await FileSystem.getInfoAsync(result.uri);
+        console.log({ info });
+        await FileSystem.moveAsync({
+          from: result.uri,
+          to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      this.setState(() => ({ recording: false }));
     }
   };
 
@@ -441,12 +449,13 @@ export default class CameraScreen extends React.Component<object, State> {
           animateShutter
           mirror={this.state.mirror}
           pictureSize={this.state.pictureSize}
+          videoBitrate={1_500_000}
           flash={this.state.flash}
           active
           mode={this.state.mode}
           mute={this.state.mute}
           zoom={this.state.zoom}
-          videoQuality="1080p"
+          videoQuality="720p"
           onMountError={this.handleMountError}
           barcodeScannerSettings={{
             barcodeTypes: ['qr', 'pdf417'],

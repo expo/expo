@@ -354,6 +354,11 @@ export type CameraViewProps = ViewProps & {
    */
   videoQuality?: VideoQuality;
   /**
+   * The bitrate of the video recording in bits per second.
+   * @default 10_000_000
+   */
+  videoBitrate?: number;
+  /**
    * A boolean that determines whether the camera shutter animation should be enabled.
    * @default true
    */

@@ -14,6 +14,7 @@ import android.media.MediaActionSound
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.util.Range
 import android.util.Size
 import android.view.OrientationEventListener
 import android.view.Surface
@@ -164,6 +165,12 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
+  var videoEncodingBitrate = 10_000_000
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
   var ratio: CameraRatio? = null
     set(value) {
       field = value
@@ -305,6 +312,7 @@ class ExpoCameraView(
       .setFileSizeLimit(options.maxFileSize.toLong())
       .setDurationLimitMillis(options.maxDuration.toLong() * 1000)
       .build()
+
     recorder?.let {
       if (!mute && ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
         promise.reject(Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO))
@@ -470,6 +478,7 @@ class ExpoCameraView(
 
     val recorder = Recorder.Builder()
       .setExecutor(ContextCompat.getMainExecutor(context))
+      .setTargetVideoEncodingBitRate(videoEncodingBitrate)
       .setQualitySelector(qualitySelector)
       .build()
       .also {
@@ -480,6 +489,7 @@ class ExpoCameraView(
       if (mirror) {
         setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
       }
+      setTargetFrameRate(Range(30, 30))
       setVideoStabilizationEnabled(true)
     }.build()
   }
