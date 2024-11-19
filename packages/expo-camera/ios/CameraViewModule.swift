@@ -162,8 +162,8 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           view.videoBitrate = bitrate
           return
         }
-        if view.videoBitrate != DEFAULT_VIDEO_BITRATE {
-          view.videoBitrate = DEFAULT_VIDEO_BITRATE
+        if view.videoBitrate != nil {
+          view.videoBitrate = nil
         }
       }
 

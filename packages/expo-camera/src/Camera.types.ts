@@ -355,7 +355,8 @@ export type CameraViewProps = ViewProps & {
   videoQuality?: VideoQuality;
   /**
    * The bitrate of the video recording in bits per second.
-   * @default 10_000_000
+   * Note: On iOS, you must specify the video codec when calling `recordAsync` to use this option.
+   * @example 10_000_000
    */
   videoBitrate?: number;
   /**

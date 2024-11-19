@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `videoBitrate` prop to allow setting the bitrate used when recording a video.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

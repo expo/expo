@@ -87,6 +87,7 @@ import kotlin.properties.Delegates
 
 const val ANIMATION_FAST_MILLIS = 50L
 const val ANIMATION_SLOW_MILLIS = 100L
+const val DEFAULT_VIDEO_BITRATE = 10_000_000
 
 @SuppressLint("ViewConstructor")
 class ExpoCameraView(
@@ -165,7 +166,7 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
-  var videoEncodingBitrate = 10_000_000
+  var videoEncodingBitrate: Int? = null
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -476,9 +477,12 @@ class ExpoCameraView(
     val fallbackStrategy = FallbackStrategy.higherQualityOrLowerThan(preferredQuality)
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
-    val recorder = Recorder.Builder()
+    val recorder = Recorder.Builder().apply {
+        videoEncodingBitrate?.let {
+          setTargetVideoEncodingBitRate(it)
+        }
+      }
       .setExecutor(ContextCompat.getMainExecutor(context))
-      .setTargetVideoEncodingBitRate(videoEncodingBitrate)
       .setQualitySelector(qualitySelector)
       .build()
       .also {
@@ -489,7 +493,6 @@ class ExpoCameraView(
       if (mirror) {
         setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
       }
-      setTargetFrameRate(Range(30, 30))
       setVideoStabilizationEnabled(true)
     }.build()
   }
