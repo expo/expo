@@ -837,6 +837,25 @@ export declare function getRemindersPermissionsAsync(): Promise<PermissionRespon
  */
 export declare function requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
 /**
+ * Asks the user to grant write-only permissions for accessing and modifying user's calendars.
+ * This is a more limited scope than full calendar access, allowing only event creation and modification.
+ *
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
+ */
+export declare function requestCalendarWritePermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request write-only permissions to access the calendar.
+ * This is a more limited scope than full calendar access, allowing only event creation and modification.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useCalendarWritePermissions();
+ * ```
+ * @platform ios
+ */
+export declare const useCalendarWritePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+/**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  * @platform ios

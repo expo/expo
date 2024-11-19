@@ -287,6 +287,36 @@ public class CalendarModule: Module {
       )
     }
 
+    AsyncFunction("requestCalendarWritePermissionsAsync") { (promise: Promise) in
+      if #available(iOS 17.0, *) {
+        eventStore.requestWriteOnlyAccessToEvents { (granted: Bool, error: Error?) in
+          if let error {
+            promise.reject("ERR_CALENDAR_PERMISSION", "Failed to request calendar write permission: \(error.localizedDescription)")
+            return
+          }
+          
+          promise.resolve([
+            "status": granted ? "granted" : "denied",
+            "granted": granted,
+            "canAskAgain": EKEventStore.authorizationStatus(for: .event) != .denied
+          ])
+        }
+      } else {
+        eventStore.requestAccess(to: .event) { (granted: Bool, error: Error?) in
+          if let error {
+            promise.reject("ERR_CALENDAR_PERMISSION", "Failed to request calendar permission: \(error.localizedDescription)")
+            return
+          }
+          
+          promise.resolve([
+            "status": granted ? "granted" : "denied",
+            "granted": granted,
+            "canAskAgain": EKEventStore.authorizationStatus(for: .event) != .denied
+          ])
+        }
+      }
+    }
+    
     AsyncFunction("getRemindersPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         RemindersPermissionRequester.self,
@@ -303,7 +333,19 @@ public class CalendarModule: Module {
     }
 
     AsyncFunction("createEventInCalendarAsync") { (event: Event, promise: Promise) in
-      try checkCalendarPermissions()
+      // Check if we have calendar access
+      if #available(iOS 17.0, *) {
+        let authStatus = EKEventStore.authorizationStatus(for: .event)
+        guard authStatus == .fullAccess || authStatus == .writeOnly else {
+          throw CalendarWriteAccessDeniedException()
+        }
+      } else {
+        let authStatus = EKEventStore.authorizationStatus(for: .event)
+        guard authStatus == .authorized else {
+          throw CalendarWriteAccessDeniedException()
+        }
+      }
+      
       guard calendarDialogDelegate == nil else {
         throw EventDialogInProgressException()
       }
