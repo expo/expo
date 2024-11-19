@@ -504,9 +504,12 @@ RCTAutoInsetsProtocol>
   return wkWebViewConfig;
 }
 
-- (void)didMoveToWindow
+- (void)initializeWebView
 {
-  if (self.window != nil && _webView == nil) {
+  @synchronized (self) {
+    if (_webView != nil) {
+      return;
+    }
     WKWebViewConfiguration *wkWebViewConfig = [self setUpWkWebViewConfig];
     _webView = [[RNCWKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
     [self setBackgroundColor: _savedBackgroundColor];
@@ -558,6 +561,23 @@ RCTAutoInsetsProtocol>
     [self setHideKeyboardAccessoryView: _savedHideKeyboardAccessoryView];
     [self setKeyboardDisplayRequiresUserAction: _savedKeyboardDisplayRequiresUserAction];
     [self visitSource];
+  }
+}
+
+// react-native-mac os does not support didMoveToSuperView
+#if !TARGET_OS_OSX
+- (void)didMoveToSuperview
+{
+  if (self.superview != nil && _webView == nil) {
+    [self initializeWebView];
+  }
+}
+#endif // !TARGET_OS_OSX
+
+- (void)didMoveToWindow
+{
+  if (self.window != nil && _webView == nil) {
+    [self initializeWebView];
   }
 
 #if !TARGET_OS_OSX
