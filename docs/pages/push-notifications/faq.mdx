@@ -1,18 +1,18 @@
 ---
 title: Push notifications troubleshooting and FAQ
 sidebar_title: Troubleshooting and FAQ
-description: A collection of common questions about Expo's push notification service.
+description: A collection of common questions about Expo push notification service.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-A collection of common issues and FAQs when setting up push notifications with the `expo-notifications` library and Expo's push notification service.
+A collection of common issues and FAQs when setting up push notifications with the `expo-notifications` library and Expo push notification service.
 
-## Expo's push notification service
+## Expo push notification service FAQ
 
 ### Cost of the push notification service
 
-There is no cost associated with sending notifications through Expo's classic push notification service.
+There is no cost associated with sending notifications through Expo push notification service.
 
 ### Limit of sending notifications
 
@@ -20,7 +20,7 @@ There is a limit of 600 notifications per second per project that can be sent. I
 
 For best results, we recommend you add throttling (which is handled automatically in the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node)) and retry logic to your server.
 
-### Using Expo's push notification service is not mandatory
+### Using Expo push notification service is not mandatory
 
 You can use any push notification service for Expo projects. The [`getDevicePushTokenAsync` method from `expo-notifications`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken) allows you to get the native device push token, which you can then use with other services, or even [send your notifications directly through FCM and APNs](/push-notifications/sending-notifications-custom).
 
@@ -30,7 +30,7 @@ Expo's connections to Apple and Google are encrypted and use HTTPS.
 
 ### Contents of the notification are not stored
 
-Expo doesn't store the contents of push notifications any longer than it takes to deliver the notifications to the push notification services operated by Apple, Google, and so on. Notifications are stored only in memory and in message queues and not stored in databases.
+Expo doesn't store the contents of push notifications any longer than it takes to deliver the notifications to the push notification services operated by Apple and Google. Notifications are stored only in memory and in message queues and not stored in databases.
 
 ### Contents of the notifications may be seen by Expo staff
 
@@ -42,15 +42,23 @@ Expo makes the best effort to deliver notifications to the push notification ser
 
 After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful. A push receipt denotes whether the underlying push notification service received the notification.
 
-Finally, the push notification services from Google, Apple, and so on follow their policies to deliver the notification to the device.
+Finally, the push notification services from Google and Apple follow their policies to deliver the notification to the device.
 
-## Push notifications
+### When and why does the `ExpoPushToken` change
+
+The `ExpoPushToken` remains the same across app upgrades. On Android, reinstalling the app may result in the token changing. On iOS, the token also remains the same even after uninstalling the app and reinstalling it.
+
+It also changes if you change your [`applicationId`](/versions/latest/sdk/application.mdx#applicationapplicationid) or `experienceId` (usually `@expoUsername/projectSlug`).
+
+The `ExpoPushToken` never expires. However, if one of your users uninstalls the app, you'll receive a `DeviceNotRegistered` error back from Expo's servers. This means you should stop sending notifications to this token.
+
+## Push notifications troubleshooting
 
 ### Notifications aren't working
 
 Push notifications have a lot of moving parts, so this can be due to a wide variety of reasons. To narrow things down, check the [push ticket](/push-notifications/sending-notifications/#push-tickets) and [push receipt](/push-notifications/sending-notifications/#push-receipts) for error messages.
 
-You can also narrow things even further by testing [local notifications](/versions/latest/sdk/notifications/#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
+You can also narrow things even further by testing [local notifications](/versions/latest/sdk/notifications/#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This ensures all of your client-side logic is correct, and narrow things down to the server side or app credentials.
 
 <Collapsible summary="See here for some quick terminal commands you can use to get the push receipt">
 
@@ -76,19 +84,11 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 
 </Collapsible>
 
-### When and why does the `ExpoPushToken` change
-
-The `ExpoPushToken` will remain the same across app upgrades. On iOS, it will also remain the same even after uninstalling the app and reinstalling it. On Android, this results in the push token changing.
-
-It will also change if you change your [`applicationId`](/versions/latest/sdk/application.mdx#applicationapplicationid) or `experienceId` (usually `@expoUsername/projectSlug`).
-
-The `ExpoPushToken` will never expire. However, if one of your users uninstalls the app, you'll receive a `DeviceNotRegistered` error back from Expo's servers. This means you should stop sending notifications to this app.
-
-### Notifications work in development, but not after building the app
+### Notifications work in development, but not in release mode
 
 This indicates that you have either misconfigured your credentials or didn't configure them at all in your production app. Expo Go uses Expo's credentials, which allows working on notifications in development.
 
-When you build your app for the app stores, you need to generate and use your own credentials. On Android, follow [this guide](/push-notifications/fcm-credentials). On iOS, this is handled by your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app will result in your notifications failing to be delivered. To fix that, add a new push key with `eas credentials`).
+When you build your app for the app stores, you need to generate and use your own credentials. On Android, follow [this guide](/push-notifications/fcm-credentials). On iOS, this is handled by your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app results in your notifications failing to be delivered. To fix that, add a new push key with `eas credentials`).
 
 For more information, see [app signing](/app-signing/app-credentials).
 
@@ -101,7 +101,7 @@ This is likely due to the `priority` level of the notifications you're sending. 
 - `normal`: mapped to the normal priority level documented by Apple and Google
 - (priority omitted): treated exactly as if `default` were specified
 
-And setting the priority to `high` gives your notification the greatest likelihood that the Android will display the notification.
+Setting the priority to `high` gives your notification the greatest likelihood that Android will display the notification.
 
 ### Handle expired push notification credentials
 
@@ -162,11 +162,3 @@ If you are not using [Expo's push notification service](/push-notifications/send
 ### Notification icon on Android is a grey or white square
 
 This indicates an issue with the image asset you're providing. The image should be all white with a transparent background (this is required and enforced by Google, not Expo). For more information, see [this article](https://clevertap.com/blog/fixing-notification-icon-for-android-lollipop-and-above/).
-
-### Play a custom sound when I send a notification
-
-The Expo push notification service currently doesn't support custom sounds. You will need to use FCM and APNs directly with the native device tokens received from `expo-notifications` in standalone apps.
-
-### Migrate from Expo's `LegacyNotifications` library
-
-For more information on how to migrate from Expo's `LegacyNotifications` library to use `expo-notifications`, see [the migration guide](https://expo.fyi/legacy-notifications-to-expo-notifications).
