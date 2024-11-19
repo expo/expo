@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Exclude virtual network devices when determining local IP address ([#33082](https://github.com/expo/expo/pull/33082) by [@kitten](https://github.com/kitten))
+- Install TypeScript as a dev dependency ([#33055](https://github.com/expo/expo/pull/33055) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
 

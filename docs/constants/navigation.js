@@ -289,6 +289,13 @@ const general = [
     { expanded: false }
   ),
   makeSection('EAS', [makePage('eas/index.mdx'), makePage('eas/json.mdx')]),
+  makeSection('Workflows', [
+    makePage('workflows/get-started.mdx'),
+    makePage('workflows/triggers.mdx'),
+    makePage('workflows/jobs.mdx'),
+    makePage('workflows/control-flow.mdx'),
+    makePage('workflows/variables.mdx'),
+  ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
     makePage('build/setup.mdx'),

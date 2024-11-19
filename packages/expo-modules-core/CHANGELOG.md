@@ -8,13 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- Fixed type errors when using `ts-jest`. ([#32954](https://github.com/expo/expo/pull/32954) by [@kudo](https://github.com/kudo))
+- [Android] Fixed `no non-static method "SharedObject.getSharedObjectId()" when proguard is enabled. ([#33011](https://github.com/expo/expo/pull/33011) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+- Use `findNodeHandle` with a native ref instead of a class component instance to avoid expensive calls to `findCurrentFiberUsingSlowPath`. ([#33016](https://github.com/expo/expo/pull/33016) by [@tsapeta](https://github.com/tsapeta))
 
 ## 2.0.3 — 2024-11-14
 
 ### 🐛 Bug fixes
 
 - Fixed requests from `expo/fetch` being stuck on iOS. ([#32894](https://github.com/expo/expo/pull/32894) by [@kudo](https://github.com/kudo))
+- [Android] Fixed sending event containing `ByteArray` from the Kotlin module results in string ID instead of `Uint8Array`. ([#32945](https://github.com/expo/expo/pull/32945) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.0.2 — 2024-11-13
 

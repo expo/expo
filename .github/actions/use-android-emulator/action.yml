@@ -5,7 +5,7 @@ inputs:
   avd-api:
     description: 'API version used in AVD'
     required: false
-    default: '33'
+    default: '34'
   avd-name:
     description: 'Created AVD name'
     required: true

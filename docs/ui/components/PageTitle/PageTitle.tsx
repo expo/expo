@@ -17,7 +17,7 @@ export const PageTitle = ({ title, description, packageName, iconUrl, sourceCode
     <>
       <div
         className={mergeClasses(
-          'my-2 flex items-start justify-between gap-4',
+          'mt-2 flex items-start justify-between gap-4',
           'max-xl-gutters:flex-col max-xl-gutters:items-start'
         )}>
         <H1 className="!my-0">

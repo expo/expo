@@ -110,7 +110,8 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           <LinkBase
             href={'#' + heading.current.slug}
             ref={heading.current.ref}
-            className="ml-auto inline">
+            className="ml-auto inline"
+            aria-label="Permalink">
             <PermalinkIcon className="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible" />
           </LinkBase>
           <div />

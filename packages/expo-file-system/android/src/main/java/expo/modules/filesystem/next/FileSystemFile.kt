@@ -53,7 +53,7 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
       create()
     }
     FileOutputStream(file).use {
-      it.write(content.toDirectBuffer().array())
+      it.channel.write(content.toDirectBuffer())
     }
   }
 
@@ -72,6 +72,12 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     validateType()
     validatePermission(Permission.READ)
     return Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
+  }
+
+  fun bytes(): ByteArray {
+    validateType()
+    validatePermission(Permission.READ)
+    return file.readBytes()
   }
 
   @OptIn(ExperimentalStdlibApi::class)

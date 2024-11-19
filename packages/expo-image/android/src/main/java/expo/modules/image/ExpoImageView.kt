@@ -12,13 +12,19 @@ import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
 import androidx.core.view.isVisible
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.modules.i18nmanager.I18nUtil
+import com.facebook.react.uimanager.BackgroundStyleApplicator
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.views.view.ReactViewBackgroundDrawable
+import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
+import com.facebook.react.uimanager.style.BorderRadiusProp
 import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.records.ContentPosition
 
+@OptIn(UnstableReactNativeAPI::class)
 @SuppressLint("ViewConstructor")
 class ExpoImageView(
   context: Context
@@ -45,17 +51,27 @@ class ExpoImageView(
   private var transformationMatrixChanged = false
 
   private val borderDrawableLazyHolder = lazy {
-    ReactViewBackgroundDrawable(context).apply {
+    CSSBackgroundDrawable(context).apply {
       callback = this@ExpoImageView
 
       outlineProvider.borderRadiiConfig
         .map { it.ifYogaDefinedUse(PixelUtil::toPixelFromDIP) }
         .withIndex()
         .forEach { (i, radius) ->
+          val appliedRadius =
+            if (radius.isNaN()) {
+              null
+            } else {
+              LengthPercentage(radius, LengthPercentageType.POINT)
+            }
           if (i == 0) {
-            setRadius(radius)
+            BackgroundStyleApplicator.setBorderRadius(
+              this@ExpoImageView,
+              BorderRadiusProp.BORDER_RADIUS,
+              appliedRadius
+            )
           } else {
-            setRadius(radius, i - 1)
+            BackgroundStyleApplicator.setBorderRadius(this@ExpoImageView, BorderRadiusProp.entries[i - 1], appliedRadius)
           }
         }
     }
@@ -148,10 +164,20 @@ class ExpoImageView(
     if (borderDrawableLazyHolder.isInitialized()) {
       val radius = borderRadius.ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
       borderDrawableLazyHolder.value.apply {
+        val appliedRadius =
+          if (radius.isNaN()) {
+            null
+          } else {
+            LengthPercentage(radius, LengthPercentageType.POINT)
+          }
         if (position == 0) {
-          setRadius(radius)
+          BackgroundStyleApplicator.setBorderRadius(
+            this@ExpoImageView,
+            BorderRadiusProp.BORDER_RADIUS,
+            appliedRadius
+          )
         } else {
-          setRadius(radius, position - 1)
+          BackgroundStyleApplicator.setBorderRadius(this@ExpoImageView, BorderRadiusProp.entries[position - 1], appliedRadius)
         }
       }
     }
@@ -161,8 +187,8 @@ class ExpoImageView(
     borderDrawable.setBorderWidth(position, width)
   }
 
-  internal fun setBorderColor(position: Int, rgb: Int) {
-    borderDrawable.setBorderColor(position, rgb)
+  internal fun setBorderColor(position: Int, color: Int) {
+    borderDrawable.setBorderColor(position, color)
   }
 
   internal fun setBorderStyle(style: String?) {

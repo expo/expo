@@ -8,7 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixes Gif animations never stopping even when loop count is set to 1. ([#32944](https://github.com/expo/expo/pull/32944) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `borderColor` is not applied. ([#33026](https://github.com/expo/expo/pull/33026) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+- [Android] migrate ImageView to CSSBackgroundDrawable ([#33024](https://github.com/expo/expo/pull/33024) by [@vonovak](https://github.com/vonovak))
 
 ## 2.0.0 — 2024-11-11
 
