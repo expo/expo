@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Install TypeScript as a dev dependency ([#33055](https://github.com/expo/expo/pull/33055) by [@kadikraman](https://github.com/kadikraman))
+
 ### 💡 Others
 
 ## 0.21.5 — 2024-11-14
