@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Exclude virtual network devices when determining local IP address
+
 ### 💡 Others
 
 ## 0.21.5 — 2024-11-14
