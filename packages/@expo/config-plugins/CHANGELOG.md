@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve config plugins using nested module specifiers on Windows.
+
 ### 💡 Others
 
 ## 9.0.9 — 2024-11-12
