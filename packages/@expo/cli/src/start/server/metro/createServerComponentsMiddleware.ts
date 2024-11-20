@@ -240,8 +240,20 @@ export function createServerComponentsMiddleware(
     return { reactClientReferences, reactServerReferences, cssModules };
   }
 
+  const routerCache = new Map<
+    string,
+    typeof import('expo-router/build/rsc/router/expo-definedRouter')
+  >();
+
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
-    return ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
+    // We can only cache this if we're using the client router since it doesn't change or use HMR
+    if (routerCache.has(platform) && useClientRouter) {
+      return routerCache.get(platform)!;
+    }
+
+    const router = await ssrLoadModule<
+      typeof import('expo-router/build/rsc/router/expo-definedRouter')
+    >(
       routerModule,
       {
         environment: 'react-server',
@@ -249,9 +261,12 @@ export function createServerComponentsMiddleware(
         platform,
       },
       {
-        hot: true,
+        hot: !useClientRouter,
       }
     );
+
+    routerCache.set(platform, router);
+    return router;
   }
 
   function getResolveClientEntry(context: {
