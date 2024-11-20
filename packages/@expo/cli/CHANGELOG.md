@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed DOM Components support on Windows. ([#33114](https://github.com/expo/expo/pull/33114) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.21.7 — 2024-11-20
