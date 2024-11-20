@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent `setOptions` from being called in expo go.
+
 ### 💡 Others
 
 ## 0.29.11 — 2024-11-15
