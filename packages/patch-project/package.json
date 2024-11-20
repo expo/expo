@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@expo/config": "~10.0.4",
-    "@expo/config-plugins": "~9.0.0",
+    "@expo/config-plugins": "~9.0.10",
     "@expo/env": "~0.4.0",
     "@expo/spawn-async": "^1.7.2",
     "arg": "5.0.2",
