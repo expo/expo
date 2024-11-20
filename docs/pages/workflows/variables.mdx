@@ -12,7 +12,7 @@ jobs:
   fingerprint:
     outputs:
       # @info Sets the <CODE>fingerprint_hash_for_workflow</CODE> as a variable #
-      fingerprint_hash_for_workflow: ${{ steps.fingerprint_step.outputs.fingerprint_hash }}
+      fingerprint_hash_for_workflow: ${{ steps.fingerprint_step.outputs.fingerprint_hash_for_workflow }}
       # @end #
     steps:
       - uses: eas/checkout
