@@ -3,7 +3,7 @@ import ExpoModulesCore
 import CoreMotion
 
 public class CameraView: ExpoView, EXAppLifecycleListener,
-  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, CameraEvent {
+  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, EXCameraInterface, CameraEvent {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
 
@@ -54,6 +54,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       }
     }
   }
+
+  var videoBitrate: Int?
 
   var presetCamera = AVCaptureDevice.Position.back {
     didSet {
@@ -246,9 +248,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   private func startSession() async {
-    #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
     return
-    #endif
+#else
     guard let manager = permissionsManager else {
       log.info("Permissions module not found.")
       return
@@ -274,6 +276,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     updateCameraIsActive()
     onCameraReady()
     enableTorch()
+#endif
   }
 
   private func updateZoom() {
@@ -586,10 +589,14 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     if let codec = options.codec {
       let codecType = codec.codecType()
       if videoFileOutput.availableVideoCodecTypes.contains(codecType) {
-        videoFileOutput.setOutputSettings([AVVideoCodecKey: codecType], for: connection)
+        var outputSettings: [String: Any] = [AVVideoCodecKey: codecType]
+        if let videoBitrate {
+          outputSettings[AVVideoCompressionPropertiesKey] = [AVVideoAverageBitRateKey: videoBitrate]
+        }
+        videoFileOutput.setOutputSettings(outputSettings, for: connection)
         self.videoCodecType = codecType
       } else {
-        promise.reject(CameraRecordingException(videoCodecType?.rawValue))
+        promise.reject(CameraRecordingException(options.codec?.rawValue))
         await cleanupMovieFileCapture()
         videoRecordedPromise = nil
         isValidVideoOptions = false
@@ -747,9 +754,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   private func stopSession() async {
-    #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
     return
-    #endif
+#else
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
@@ -765,6 +772,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     if session.isRunning {
       session.stopRunning()
     }
+#endif
   }
 
   func resumePreview() {

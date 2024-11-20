@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 9.0.10 — 2024-11-20
+
+### 🐛 Bug fixes
+
+- Resolve config plugins using nested module specifiers on Windows. ([#33106](https://github.com/expo/expo/pull/33106) by [@byCedric](https://github.com/byCedric))
+
 ## 9.0.9 — 2024-11-12
 
 ### 💡 Others

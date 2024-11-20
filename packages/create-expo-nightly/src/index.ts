@@ -39,7 +39,11 @@ const program = new Command(packageJSON.name)
     'dev.expo.testnightlies'
   )
   .option('--no-install', 'Skip installing CocoaPods.')
-  .option('--enable-new-architecture', 'Enable the New Architecture mode.')
+  .option(
+    '--enable-new-architecture <boolean>',
+    'Enable / disable the New Architecture mode (default: new arch enabled).',
+    'true'
+  )
   .parse(process.argv);
 
 async function runAsync(programName: string) {
@@ -52,7 +56,7 @@ async function runAsync(programName: string) {
   const nightlyVersion = await getNpmVersionAsync('react-native', 'nightly');
   const projectProps: ProjectProperties = {
     appId: programOpts.appId,
-    newArchEnabled: !!programOpts.enableNewArchitecture,
+    newArchEnabled: programOpts.enableNewArchitecture !== 'false',
     nightlyVersion,
     useExpoRepoPath: programOpts.expoRepo,
   };
@@ -72,11 +76,12 @@ async function runAsync(programName: string) {
   console.log(chalk.cyan(`Reinstalling packages`));
   await reinstallPackagesAsync(projectRoot);
 
-  console.log(chalk.cyan(`Running prebuild`));
+  console.log(chalk.cyan(`Creating expo-template-bare-minimum tarball`));
   const tarballPath = await packExpoBareTemplateTarballAsync(
     expoRepoPath,
     path.join(projectRoot, '.expo')
   );
+  console.log(chalk.cyan(`Running prebuild`));
   await prebuildAppAsync(projectRoot, tarballPath);
 
   if (programOpts.install) {

@@ -73,14 +73,23 @@ internal final class FileSystemFile: FileSystemPath {
     try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
   }
 
-  // TODO: typedarray, blobs, others support
+  // TODO: blob support
   func write(_ content: TypedArray) throws {
+    try validateType()
+    try validatePermission(.write)
+    try Data(bytes: content.rawPointer, count: content.byteLength).write(to: url)
   }
 
   func text() throws -> String {
     try validateType()
     try validatePermission(.read)
     return try String(contentsOf: url)
+  }
+
+  func bytes() throws -> Data {
+    try validateType()
+    try validatePermission(.read)
+    return try Data(contentsOf: url)
   }
 
   func base64() throws -> String {

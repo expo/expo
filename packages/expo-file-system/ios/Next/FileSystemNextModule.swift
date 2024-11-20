@@ -72,6 +72,10 @@ public final class FileSystemNextModule: Module {
         return try file.base64()
       }
 
+      Function("bytes") { file in
+        return try file.bytes()
+      }
+
       Function("open") { file in
         return try FileSystemFileHandle(file: file)
       }

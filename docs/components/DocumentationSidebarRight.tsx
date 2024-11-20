@@ -95,7 +95,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
               !this.state.showScrollTop && 'pointer-events-none opacity-0'
             )}
             onClick={e => this.handleTopClick(e)}>
-            <ArrowCircleUpIcon className="icon-sm text-icon-secondary" />
+            <ArrowCircleUpIcon className="icon-sm text-icon-secondary" aria-label="Scroll to top" />
           </Button>
         </CALLOUT>
         {displayedHeadings.map(heading => {

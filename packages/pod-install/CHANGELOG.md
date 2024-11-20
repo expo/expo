@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Do not treat unknown opts as possible project path. ([#32919](https://github.com/expo/expo/pull/32919) by [@Simek](https://github.com/Simek))
-
 ### 💡 Others
+
+## 0.3.2 — 2024-11-15
+
+### 🐛 Bug fixes
+
+- Do not treat unknown opts as possible project path. ([#32919](https://github.com/expo/expo/pull/32919) by [@Simek](https://github.com/Simek))
 
 ## 0.3.1 — 2024-11-14
 
