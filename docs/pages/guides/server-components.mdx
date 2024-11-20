@@ -73,6 +73,8 @@ export default async function renderInfo({ name }) {
 
 The views return value of the Server Function is a React Server Component payload that will be streamed to the client.
 
+> `web.output` must be "single" in the `app.json` during the developer preview. Support for more output modes is coming soon.
+
 ## Server Components
 
 Server Components run in the server, meaning they can access server APIs and Node.js built-ins (when running locally). They can also use async components.

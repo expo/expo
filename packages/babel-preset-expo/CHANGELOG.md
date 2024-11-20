@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for `TSInterfaceDeclaration` in server component plugin.
+
 ### 💡 Others
 
 ## 12.0.1 — 2024-11-14
