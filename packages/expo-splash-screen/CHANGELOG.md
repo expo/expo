@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent `setOptions` from being called in Expo Go. ([#33104](https://github.com/expo/expo/pull/33104) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 0.29.11 — 2024-11-15
