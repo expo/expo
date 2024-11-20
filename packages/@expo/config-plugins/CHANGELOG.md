@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Resolve config plugins using nested module specifiers on Windows.
+- Resolve config plugins using nested module specifiers on Windows. ([#33106](https://github.com/expo/expo/pull/33106) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
