@@ -17,6 +17,16 @@ Splashscreen.setOptions({ fade: true });
 // so that we load the module and register its background task on startup.
 optionalRequire(() => require('native-component-list/src/screens/BackgroundFetchScreen'));
 
+// Require the `BackgroundLocationMapScreen` component from `native-component-list` if it's available
+// so that we load the module and register its background task on startup.
+optionalRequire(() =>
+  require('native-component-list/src/screens/Location/BackgroundLocationMapScreen')
+);
+
+// Require the `GeofencingScreen` component from `native-component-list` if it's available
+// so that we load the module and register its background task on startup.
+optionalRequire(() => require('native-component-list/src/screens/Location/GeofencingScreen'));
+
 const loadAssetsAsync =
   optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??
   (async () => null);
