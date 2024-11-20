@@ -316,7 +316,13 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     private const val FOREGROUND_SERVICE_KEY = "foregroundService"
     private var sLastTimestamp: Long = 0
     fun shouldUseForegroundService(options: Map<String?, Any?>): Boolean {
-      return options.containsKey(FOREGROUND_SERVICE_KEY)
+      val hasForgroundServiceData = options.containsKey(FOREGROUND_SERVICE_KEY)
+      if (hasForgroundServiceData) {
+        val foregroundService: Map<String, Any?> = (options[FOREGROUND_SERVICE_KEY] as? Map<String, Any?>)
+          ?: emptyMap()
+        return foregroundService.isNotEmpty()
+      }
+      return false
     }
   }
 }
