@@ -3,10 +3,15 @@
  */
 import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Platform } from 'expo-modules-core';
 
 import ExponentImagePicker from '../ExponentImagePicker';
 
 describe('ExponentImagePicker', () => {
+  if (!Platform.isDOMAvailable) {
+    it(`noop`, () => {});
+    return;
+  }
   describe('getMediaLibraryPermissionsAsync', () => {
     it(`is always granted`, async () => {
       const response = await ExponentImagePicker.getMediaLibraryPermissionsAsync(true);
