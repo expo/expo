@@ -201,7 +201,7 @@ export class Image extends React.PureComponent<ImageProps> {
 
     if (restProps.children && !loggedRenderingChildrenWarning) {
       console.warn(
-        'The `<Image>` component does not support children. If you want to render content on top of the image, consider using the `<ImageBackground>` component or absolute positioning.'
+        'The <Image> component does not support children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.'
       );
       loggedRenderingChildrenWarning = true;
     }

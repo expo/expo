@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add a warning when `children` are passed to `Image`.
+
 ## 2.0.1 — 2024-11-19
 
 ### 🐛 Bug fixes
