@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed missing deserialization of calendarId field when calling createEventInCalendarAsync
+
 ### 💡 Others
 
 ## 14.0.2 — 2024-10-24
