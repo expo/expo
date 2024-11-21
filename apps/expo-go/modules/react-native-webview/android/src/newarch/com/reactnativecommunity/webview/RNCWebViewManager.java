@@ -41,7 +41,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
 
     public RNCWebViewManager() {
         mDelegate = new RNCWebViewManagerDelegate<>(this);
-        mRNCWebViewManagerImpl = new RNCWebViewManagerImpl(true);
+        mRNCWebViewManagerImpl = new RNCWebViewManagerImpl();
     }
 
     @Nullable
@@ -310,7 +310,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
     @Override
     @ReactProp(name = "newSource")
     public void setNewSource(RNCWebViewWrapper view, @Nullable ReadableMap value) {
-        mRNCWebViewManagerImpl.setSource(view, value);
+        mRNCWebViewManagerImpl.setSource(view, value, true);
     }
 
     @Override
@@ -537,12 +537,6 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
     @Override
     public void receiveCommand(@NonNull RNCWebViewWrapper reactWebView, String commandId, @Nullable ReadableArray args) {
         super.receiveCommand(reactWebView, commandId, args);
-    }
-
-    @Override
-    protected void onAfterUpdateTransaction(@NonNull RNCWebViewWrapper view) {
-        super.onAfterUpdateTransaction(view);
-        mRNCWebViewManagerImpl.onAfterUpdateTransaction(view);
     }
 
     @Override
