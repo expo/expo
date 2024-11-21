@@ -40,8 +40,8 @@ In this example, you don't need the view module included by `create-expo-module`
   cmdCopy="cd expo-native-configuration && rm ios/ExpoNativeConfigurationView.swift && rm android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationView.kt && rm src/ExpoNativeConfigurationView.tsx src/ExpoNativeConfiguration.types.ts && rm src/ExpoNativeConfigurationView.web.tsx src/ExpoNativeConfigurationModule.web.ts"
   cmd={[
     '$ cd expo-native-configuration',
-    '$ rm ios/ExpoNativeConfigurationView.swift',
     '$ rm android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationView.kt',
+    '$ rm ios/ExpoNativeConfigurationView.swift',
     '$ rm src/ExpoNativeConfigurationView.tsx src/ExpoNativeConfiguration.types.ts',
     '$ rm src/ExpoNativeConfigurationView.web.tsx src/ExpoNativeConfigurationModule.web.ts',
   ]}
@@ -314,22 +314,6 @@ After making this change, test that the plugin works correctly by running `npx e
 
 Make your native module read the fields added to **AndroidManifest.xml** and **Info.plist** by using platform-specific methods to access their contents.
 
-On iOS, you can read the content of an **Info.plist** property using the `Bundle.main.object(forInfoDictionaryKey: "")` method. To access the `"MY_CUSTOM_API_KEY"` value added earlier, update the **ios/ExpoNativeConfigurationModule.swift** file as shown:
-
-```swift ios/ExpoNativeConfigurationModule.swift
-import ExpoModulesCore
-
-public class ExpoNativeConfigurationModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoNativeConfiguration")
-
-    Function("getApiKey") {
-     return Bundle.main.object(forInfoDictionaryKey: "MY_CUSTOM_API_KEY") as? String
-    }
-  }
-}
-```
-
 On Android, access metadata information from the **AndroidManifest.xml** file using the `packageManager` class. To read the `"MY_CUSTOM_API_KEY"` value, update the **android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationModule.kt** file:
 
 ```kotlin android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationModule.kt
@@ -352,6 +336,22 @@ class ExpoNativeConfigurationModule() : Module() {
 }
 ```
 
+On iOS, you can read the content of an **Info.plist** property using the `Bundle.main.object(forInfoDictionaryKey: "")` method. To access the `"MY_CUSTOM_API_KEY"` value added earlier, update the **ios/ExpoNativeConfigurationModule.swift** file as shown:
+
+```swift ios/ExpoNativeConfigurationModule.swift
+import ExpoModulesCore
+
+public class ExpoNativeConfigurationModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoNativeConfiguration")
+
+    Function("getApiKey") {
+     return Bundle.main.object(forInfoDictionaryKey: "MY_CUSTOM_API_KEY") as? String
+    }
+  }
+}
+```
+
 </Step>
 
 <Step label="6">
@@ -366,10 +366,10 @@ With your native modules reading the fields added to the native files, you can n
     '$ cd example',
     '# execute our plugin and update native files',
     '$ npx expo prebuild',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
     '# Run the example app on Android',
     '$ npx expo run:android',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
   ]}
 />
 
