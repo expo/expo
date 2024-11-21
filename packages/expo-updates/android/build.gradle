@@ -21,6 +21,7 @@ version = '0.26.8'
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
 applyKotlinExpoModulesCorePlugin()
+applyKspJvmToolchain()
 useCoreDependencies()
 useDefaultAndroidSdkVersions()
 useExpoPublishing()
