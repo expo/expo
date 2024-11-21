@@ -90,6 +90,13 @@ jobs:
     steps:
       - uses: eas/checkout
 
-      - name: Install modules
-        run: yarn install
+      - uses: eas/install_node_modules
+      
+      - name: Say hello!
+        run: echo "Hello world!"
+        
+      - name: Multiline script
+        run: |
+          CURRENT_DATE=$(date)
+          echo "It is $CURRENT_DATE"
 ```
