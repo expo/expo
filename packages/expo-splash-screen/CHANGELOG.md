@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Correctly handle `resizeMode` in config plugin.
+- Correctly handle `resizeMode` in config plugin. ([#33143](https://github.com/expo/expo/pull/33143) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
