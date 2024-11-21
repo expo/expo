@@ -78,6 +78,22 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'FlatList of videos',
+    route: 'video/flat-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoFlatListScreen'));
+    },
+  },
+  {
+    name: 'FlashList of videos',
+    route: 'video/flash-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoFlashListScreen'));
+    },
+  },
+  {
     name: 'Generating video thumbnails',
     route: 'video/thumbnails',
     options: {},
