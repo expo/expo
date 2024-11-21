@@ -11,6 +11,10 @@
 #endif
 #import <React/RCTBridge.h>
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <rnviewshot/rnviewshot.h>
+#endif
+
 @implementation RNViewShot
 
 RCT_EXPORT_MODULE()
@@ -41,7 +45,7 @@ RCT_EXPORT_METHOD(releaseCapture:(nonnull NSString *)uri)
   }
 }
 
-RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
+RCT_EXPORT_METHOD(captureRef:(NSNumber *)target
                   withOptions:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -80,7 +84,7 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
         reject(RCTErrorUnspecified, [NSString stringWithFormat:@"snapshotContentContainer can only be used on a RCTScrollView. instead got: %@", view], nil);
         return;
       }
-      RCTScrollView* rctScrollView = (RCTScrollView *)view;
+      RCTScrollView* rctScrollView = view;
       scrollView = rctScrollView.scrollView;
       rendered = scrollView;
     }
@@ -117,6 +121,7 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
       // this doesn't work for large views and reports incorrect success even though the image is blank
       success = [rendered drawViewHierarchyInRect:(CGRect){CGPointZero, size} afterScreenUpdates:YES];
     }
+   
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
 
@@ -152,11 +157,11 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
       NSString *res = nil;
       if ([result isEqualToString:@"base64"]) {
         // Return as a base64 raw string
-        res = [data base64EncodedStringWithOptions: NSDataBase64Encoding64CharacterLineLength];
+        res = [data base64EncodedStringWithOptions: 0];
       }
       else if ([result isEqualToString:@"data-uri"]) {
         // Return as a base64 data uri string
-        NSString *base64 = [data base64EncodedStringWithOptions: NSDataBase64Encoding64CharacterLineLength];
+        NSString *base64 = [data base64EncodedStringWithOptions: 0];
         NSString *imageFormat = ([format isEqualToString:@"jpg"]) ? @"jpeg" : format;
         res = [NSString stringWithFormat:@"data:image/%@;base64,%@", imageFormat, base64];
       }
@@ -181,6 +186,14 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
     });
   }];
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeRNViewShotSpecJSI>(params);
+}
+#endif
 
 
 @end
