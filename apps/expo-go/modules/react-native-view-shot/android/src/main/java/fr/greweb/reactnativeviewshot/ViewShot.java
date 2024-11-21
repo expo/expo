@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.viewshot;
+package fr.greweb.reactnativeviewshot;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -26,6 +26,7 @@ import android.widget.ScrollView;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.fabric.interop.UIBlockViewResolver;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIBlock;
 
@@ -34,8 +35,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ import static android.view.View.VISIBLE;
 /**
  * Snapshot utility class allow to screenshot a view.
  */
-public class ViewShot implements UIBlock {
+public class ViewShot implements UIBlock, com.facebook.react.fabric.interop.UIBlock {
     //region Constants
     /**
      * Tag fort Class logs.
@@ -83,7 +82,6 @@ public class ViewShot implements UIBlock {
     private static final int SURFACE_VIEW_READ_PIXELS_TIMEOUT = 5;
 
     @SuppressWarnings("WeakerAccess")
-    @Retention(RetentionPolicy.SOURCE)
     @IntDef({Formats.JPEG, Formats.PNG, Formats.WEBP, Formats.RAW})
     public @interface Formats {
         int JPEG = 0; // Bitmap.CompressFormat.JPEG.ordinal();
@@ -101,7 +99,6 @@ public class ViewShot implements UIBlock {
     /**
      * Supported Output results.
      */
-    @Retention(RetentionPolicy.SOURCE)
     @StringDef({Results.BASE_64, Results.DATA_URI, Results.TEMP_FILE, Results.ZIP_BASE_64})
     public @interface Results {
         /**
@@ -187,6 +184,17 @@ public class ViewShot implements UIBlock {
     //region Overrides
     @Override
     public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
+        executeImpl(nativeViewHierarchyManager, null);
+    }
+
+    @Override
+    public void execute(@NonNull UIBlockViewResolver uiBlockViewResolver) {
+        executeImpl(null, uiBlockViewResolver);
+    }
+    //endregion
+
+    //region Implementation
+    private void executeImpl(final NativeViewHierarchyManager nativeViewHierarchyManager, final UIBlockViewResolver uiBlockViewResolver) {
         executor.execute(new Runnable () {
             @Override
             public void run() {
@@ -195,6 +203,8 @@ public class ViewShot implements UIBlock {
 
                     if (tag == -1) {
                         view = currentActivity.getWindow().getDecorView().findViewById(android.R.id.content);
+                    } else if (uiBlockViewResolver != null) {
+                        view = uiBlockViewResolver.resolveView(tag);
                     } else {
                         view = nativeViewHierarchyManager.resolveView(tag);
                     }
@@ -225,9 +235,7 @@ public class ViewShot implements UIBlock {
             }
         });
     }
-    //endregion
 
-    //region Implementation
     private void saveToTempFileOnDevice(@NonNull final View view) throws IOException {
         final FileOutputStream fos = new FileOutputStream(output);
         captureView(view, fos);

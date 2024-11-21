@@ -13,7 +13,30 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/aws-amplify/amplify-js.git',
     },
     'react-native-view-shot': {
-      source: 'https://github.com/gre/react-native-view-shot.git',
+      source: 'react-native-view-shot',
+      sourceType: 'npm',
+      excludeFiles: ['src/__tests__/**/*', 'windows/**/*'],
+      async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
+        // patch for scoped view-shot
+        const patchFile = path.join(
+          EXPOTOOLS_DIR,
+          'src/vendoring/config/react-native-view-shot-scoped.patch'
+        );
+        const patchContent = await fs.readFile(patchFile, 'utf8');
+
+        try {
+          await applyPatchAsync({
+            patchContent,
+            cwd: targetDirectory,
+            stripPrefixNum: 0,
+          });
+        } catch (e) {
+          logger.error(
+            `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+          );
+          throw e;
+        }
+      },
     },
     'react-native-webview': {
       source: 'react-native-webview',
