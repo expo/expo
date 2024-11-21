@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added fix to getNetworkStateAsync failing on iOS as described in #33012
+
 ### 💡 Others
 
 ## 7.0.0 — 2024-10-22
