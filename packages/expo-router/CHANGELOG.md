@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix hash links causing page reload when there is no history with a starting hash
+
 ### 💡 Others
 
 ## 4.0.7 — 2024-11-19
