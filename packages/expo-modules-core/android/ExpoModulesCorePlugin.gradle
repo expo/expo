@@ -51,6 +51,13 @@ ext.applyKotlinExpoModulesCorePlugin = {
   apply plugin: KotlinExpoModulesCorePlugin
 }
 
+// Apply JVM Toolchain version for KSP
+ext.applyKspJvmToolchain = {
+  project.ksp {
+    kotlin.jvmToolchain(17)
+  }
+}
+
 // Setup build options that are common for all modules
 ext.useDefaultAndroidSdkVersions = {
   project.android {
