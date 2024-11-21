@@ -88,32 +88,32 @@ public final class NetworkModule: Module {
   }
 
     private func getNetworkPathAsync() -> NWPath? {
-        // create a temporary monitor to avoid interfering with the module's monitor
-        // since we want to wait for the result to be updated once:
-        let tempMonitor = NWPathMonitor()
-        var tempPath: NWPath?
+      // create a temporary monitor to avoid interfering with the module's monitor
+      // since we want to wait for the result to be updated once:
+      let tempMonitor = NWPathMonitor()
+      var tempPath: NWPath?
 
-        let semaphore = DispatchSemaphore(value: 0)
+      let semaphore = DispatchSemaphore(value: 0)
 
-        tempMonitor.pathUpdateHandler = { updatedPath in
-          tempPath = updatedPath
-          semaphore.signal() // Notify that we got the path
-        }
+      tempMonitor.pathUpdateHandler = { updatedPath in
+        tempPath = updatedPath
+        semaphore.signal() // Notify that we got the path
+      }
 
-        tempMonitor.start(queue: monitorQueue)
+      tempMonitor.start(queue: monitorQueue)
 
-        // Wait max 5 seconds to avoid any locking issues if the monitor
-        // doesn't get an update in time.
-        let result = semaphore.wait(timeout: .now() + 5)
-        tempMonitor.cancel()
+      // Wait max 5 seconds to avoid any locking issues if the monitor
+      // doesn't get an update in time.
+      let result = semaphore.wait(timeout: .now() + 5)
+      tempMonitor.cancel()
 
-        if result == .timedOut {
-          // Handle the timeout case
-          print("Timeout waiting for network path.")
-          return nil
-        }
+      if result == .timedOut {
+        // Handle the timeout case
+        print("Timeout waiting for network path.")
+        return nil
+      }
 
-        return tempPath
+      return tempPath
     }
 
   private func getNetworkStateAsync(path: NWPath? = nil) -> [String: Any] {
