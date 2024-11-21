@@ -427,7 +427,7 @@ PODS:
   - ExpoMaps (0.6.1):
     - ExpoModulesCore
     - Google-Maps-iOS-Utils (= 6.1.0)
-    - GoogleMaps (= 9.1.1)
+    - GoogleMaps (= 9.2.0)
     - GooglePlaces (= 9.2.0)
   - ExpoMediaLibrary (17.0.2):
     - ExpoModulesCore
@@ -611,11 +611,9 @@ PODS:
   - glog (0.3.5)
   - Google-Maps-iOS-Utils (6.1.0):
     - GoogleMaps (~> 9.0)
-  - GoogleMaps (9.1.1):
-    - GoogleMaps/Maps (= 9.1.1)
-  - GoogleMaps/Base (9.1.1)
-  - GoogleMaps/Maps (9.1.1):
-    - GoogleMaps/Base
+  - GoogleMaps (9.2.0):
+    - GoogleMaps/Maps (= 9.2.0)
+  - GoogleMaps/Maps (9.2.0)
   - GooglePlaces (9.2.0)
   - hermes-engine (0.76.2):
     - hermes-engine/Pre-built (= 0.76.2)
@@ -3316,7 +3314,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: e0c5b5212381b0b800a2c1f715be823d17c51b05
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
-  ExpoMaps: 5703aef266ede6f7bac9de3c7f2f48b98969302c
+  ExpoMaps: cdf156f8aa42a58aa99f5901961e9282b1adb6ad
   ExpoMediaLibrary: 83f47430d5193186029bc57bae16e2130941bc83
   ExpoModulesCore: 6c76dd70d94c4d3fcb1335a46edcc09a9696dda5
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
@@ -3346,7 +3344,7 @@ SPEC CHECKSUMS:
   fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   Google-Maps-iOS-Utils: 0a484b05ed21d88c9f9ebbacb007956edd508a96
-  GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
+  GoogleMaps: 634ec3ca99698b31ca2253d64f017217d70cfb38
   GooglePlaces: f997a80fb7b88233ad53aa8c9d5f092c86ceae54
   hermes-engine: 3852e37f6158a2fcfad23e31215ed495da3a6a40
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7

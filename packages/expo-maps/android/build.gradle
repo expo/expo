@@ -23,7 +23,7 @@ dependencies {
   implementation "com.google.maps.android:android-maps-utils:3.9.0"
   implementation "com.google.maps.android:maps-utils-ktx:5.1.1"
   implementation "androidx.core:core-ktx:1.7.0"
-  implementation "com.google.android.libraries.places:places:4.1.0"
+  implementation "com.google.android.libraries.places:places:4.2.0"
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"
   implementation 'com.facebook.react:react-android'
 }

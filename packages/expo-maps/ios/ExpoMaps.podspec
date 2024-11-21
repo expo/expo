@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'GoogleMaps', '9.1.1'
+  s.dependency 'GoogleMaps', '9.2.0'
   s.dependency 'Google-Maps-iOS-Utils', '6.1.0'
   s.dependency 'GooglePlaces', '9.2.0'
 end
