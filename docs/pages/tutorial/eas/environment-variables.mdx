@@ -1,7 +1,7 @@
 ---
 title: Using EAS environment variables
 sidebar_title: Using EAS environment variables
-description: Learn how to use environment variables in EAS from practical examples.
+description: Learn how to use environment variables in EAS in practical scenarios.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -21,8 +21,8 @@ In this example, we'll look at a simple project that uses these common environme
 <Step label="1">
 ## Use environment variables in your code
 
-The environemnt variables with the [`EXPO_PUBLIC_`](/guides/environemnt-variables) prefix are available as `process.env` variables in your application code.
-This means you can use them to dynamically configure your app behavior based on the environment variables values.
+The environment variables with the [`EXPO_PUBLIC_`](/guides/environment-variables) prefix are available as `process.env` variables in your application code.
+This means you can use them to dynamically configure your app behavior based on the environment variables' values.
 
 ```tsx
 import { Button } from 'react-native';
@@ -93,10 +93,10 @@ export default {
 };
 ```
 
-In this example we additionally consider the [`SENTRY_AUTH_TOKEN`](/guides/using-sentry) as an example of variable that can be treated as sensitive environemnt variable.
+In this example we additionally consider the [`SENTRY_AUTH_TOKEN`](/guides/using-sentry) as an example of a variable that can be treated as a sensitive environment variable.
 It is used to authenticate with Sentry to upload source maps after builds and updates, so we want to be able access it outside of EAS servers as well.
 
-The `GOOGLE_SERVICES_JSON` is a secret file variable in our example setup that is not readable outside of the EAS servers and is used to provide the git ignored `google-services.json` file to the build job.
+The `GOOGLE_SERVICES_JSON` is a secret file variable in our example setup that is not readable outside of EAS' servers and is used to provide the git ignored **google-services.json** file to the build job.
 To use it in the app config, we can use the `process.env` variable and provide a fallback value in case the variable is not set (for local development when we usually have it in our repo).
 
 ```js app.config.ts
@@ -112,7 +112,7 @@ export default {
 </Step>
 
 <Step label="2">
-## Create EAS environemnt variables
+## Create EAS environment variables
 
 To create environment variables on EAS' servers, you can use the [environment variables creation form](https://expo.dev/accounts/[account]/projects/[project]/environment-variables/new) page or `eas env:create` command.
 
@@ -126,7 +126,7 @@ In the form, you can specify the name, value, environment(s) and visibility for 
 
 Created environment variables will be available in the list form on the [Environment Variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page.
 
-Based on the specification of our example environment variables, the list of successfully created environment variables would look like this:
+Based on the environment variables in this example, the list would look like this:
 
 <ContentSpotlight
   alt="List of successfully created environment variables"
@@ -137,19 +137,19 @@ Based on the specification of our example environment variables, the list of suc
 </Step>
 
 <Step label="3">
-## Pull EAS environment variables for local environment
+## Pull EAS environment variables for your local development environment
 
-The easiest way to use the EAS environment variables for local development with Expo framework is to pull them to the local **.env** file using the `eas env:pull --environemnt environemnt` command.
+The easiest way to use the EAS environment variables for local development is to pull them into a **.env** file using the `eas env:pull --environment environment` command.
 You can use the Export option on the [website](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) as well to download the file.
 
-After running
+After running the following command:
 
 <Terminal
-  cmd={['$ eas env:pull --environemnt development']}
-  cmdCopy="eas env:pull --environemnt development"
+  cmd={['$ eas env:pull --environment development']}
+  cmdCopy="eas env:pull --environment development"
 />
 
-command the **.env** file will be created in the root of your project with the following content:
+a **.env** file will be created in the root of your project with the following content:
 
 ```bash .env.local
 # Environment: development
@@ -160,40 +160,40 @@ EXPO_PUBLIC_API_URL=https://staging.my-api-url.mycompany.com
 SENTRY_AUTH_TOKEN=token
 ```
 
-The downloaded `EXPO_PUBLIC_` variables are available for local development when using `npx expo start` command. The `GOOGLE_SERVICES_JSON` variable is not available to be pulled to the local environment as it is a secret variable.
+The downloaded `EXPO_PUBLIC_` variables are available for local development when using the `npx expo start` command. The `GOOGLE_SERVICES_JSON` variable is not available to be pulled to the local environment since it is a secret variable.
 
-> **warning** It is best to add all of the **.env** files to the **.gitignore** to avoid committing it to the repository and exposing the sensitive information. Commiting the **.env** file may additionally lead to environment variables resolution conflicts.
+> **warning** It is best to add all of the **.env** files to **.gitignore** to avoid committing them to your repository and exposing sensitive information. Committing a **.env** file may additionally lead to environment variables resolution conflicts.
 
 </Step>
 
 <Step label="4">
 ## Use EAS environment variables with EAS Build
 
-To have a full control over the environments used for your builds, you can specify the [`environemnt`](/eas/json#environemnt) field in the build profiles settings in the `eas.json` file.
+To have a full control over the environments used for your builds, you can specify the [`environment`](/eas/json#environment) field in the build profiles settings in the **eas.json** file.
 
 ```json eas.json
 {
   "build": {
     "production": {
-      /* @info Using <CODE>production</CODE> environemnt */
+      /* @info Using <CODE>production</CODE> environment */
       "environment": "production"
       /* @end */
       /* @hide ... */ /* @end */
     },
     "preview": {
-      /* @info Using <CODE>preview</CODE> environemnt */
+      /* @info Using <CODE>preview</CODE> environment */
       "environment": "preview"
       /* @end */
       /* @hide ... */ /* @end */
     },
     "development": {
-      /* @info Using <CODE>development</CODE> environemnt */
+      /* @info Using <CODE>development</CODE> environment */
       "environment": "development"
       /* @end */
       /* @hide ... */ /* @end */
     },
     "my-profile": {
-      /* @info Using <CODE>production</CODE> environemnt */
+      /* @info Using <CODE>production</CODE> environment */
       "environment": "production"
       /* @end */
       /* @hide ... */ /* @end */
@@ -202,33 +202,33 @@ To have a full control over the environments used for your builds, you can speci
 }
 ```
 
-All of the environment variables from the selected environemnt will be used during the build process.
+All of the environment variables from the selected environment will be used during the build process.
 Plain text and sensitive variables will be available when resolving build configuration based on the dynamic app config in EAS CLI as well.
 
-> **info** The secret type environemnt variables are not available during build configuration resolution in EAS CLI as they are not readable outside of the EAS servers.
+> **info** The secret type environment variables are not available during build configuration resolution in EAS CLI as they are not readable outside of the EAS' servers.
 
-In case of our example app, all of the environment variables except `GOOGLE_SERVICES_JSON` (which is secret) will be available during build configuration resolution in EAS CLI.
+In our example app, all of the environment variables except `GOOGLE_SERVICES_JSON` (which is secret) will be available during build configuration resolution in EAS CLI.
 
-It's especially important in this context to have the correct visibility set for `APP_VARIANT` variable in order for it to be available in EAS CLI so it is able to generate credentials for the correct bundle identifier and package name.
+It's especially important in this context to have the correct visibility set for the `APP_VARIANT` variable so that it's available in EAS CLI so it is able to generate credentials for the correct bundle identifier and package name.
 
 </Step>
 
 <Step label="5">
 ## Use EAS environment variables with EAS Update
 
-The most coherent way to use EAS environment variables with EAS Update is to run the command with the `--environment` flag specified:
+The most convenient way to use EAS environment variables with EAS Update is to run the `eas update` command with the `--environment` flag specified:
 
 <Terminal
-  cmd={['$ eas update --environemnt production']}
-  cmdCopy="eas update --environemnt production"
+  cmd={['$ eas update --environment production']}
+  cmdCopy="eas update --environment production"
 />
 
 When the `--environment` flag is used, **only the environment variables from the specified EAS environment will be used during the update process**.
-It's easy to generate the updates using the same environemnt variables as builds this way.
+The `--environment` flag allows you to use the same environment variables while creating updates as with creating builds.
 
-> **info** The secret variables will not be available during the update process as they are not readable outside of the EAS servers.
+> **info** The secret variables will not be available during the update process as they are not readable outside of EAS' servers.
 
-> **warning** The default behavior of `eas update` commmand is to use **only the .env files** if `--environment` flag is not specified.
+> **warning** The default behavior of the `eas update` command is to use **.env** files if the `--environment` flag is not specified.
 
 </Step>
 
@@ -242,7 +242,7 @@ One way to supply non-secret EAS environment variables to other EAS commands is 
   cmdCopy="eeas env:exec --environment production 'echo $APP_VARIANT'"
 />
 
-It can be useful when uploading source maps to Sentry using `SENTRY_AUTH_TOKEN` variable after the update bundle is created.
+It can be useful when uploading source maps to Sentry using a `SENTRY_AUTH_TOKEN` variable after an update bundle is created.
 
 <Terminal
   cmd={["$ eas env:exec --environment production 'npx sentry-expo-upload-sourcemaps dist'"]}
