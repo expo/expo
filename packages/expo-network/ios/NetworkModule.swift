@@ -87,7 +87,7 @@ public final class NetworkModule: Module {
     return address
   }
 
-    private func getNetworkPath() -> NWPath? {
+    private func getNetworkPathAsync() -> NWPath? {
         // create a temporary monitor to avoid interfering with the module's monitor
         // since we want to wait for the result to be updated once:
         let tempMonitor = NWPathMonitor()
@@ -117,7 +117,7 @@ public final class NetworkModule: Module {
     }
 
   private func getNetworkStateAsync(path: NWPath? = nil) -> [String: Any] {
-    let currentPath = path ?? getNetworkPath()
+    let currentPath = path ?? getNetworkPathAsync()
     let isConnected = currentPath?.status == .satisfied
 
     if !isConnected {
