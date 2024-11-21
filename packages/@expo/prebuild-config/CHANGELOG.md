@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Added React Native 0.77 support for Kotlin and NDK version bumps. ([#33073](https://github.com/expo/expo/pull/33073) by [@kudo](https://github.com/kudo))
+
+## 8.0.18 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
 ## 8.0.17 — 2024-11-14
 
 _This version does not introduce any user-facing changes._

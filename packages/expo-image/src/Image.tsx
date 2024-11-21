@@ -17,6 +17,7 @@ import { resolveContentFit, resolveContentPosition, resolveTransition } from './
 import { resolveSource, resolveSources } from './utils/resolveSources';
 
 let loggedDefaultSourceDeprecationWarning = false;
+let loggedRenderingChildrenWarning = false;
 
 export class Image extends React.PureComponent<ImageProps> {
   nativeViewRef;
@@ -196,6 +197,13 @@ export class Image extends React.PureComponent<ImageProps> {
         '[expo-image]: `defaultSource` and `loadingIndicatorSource` props are deprecated, use `placeholder` instead'
       );
       loggedDefaultSourceDeprecationWarning = true;
+    }
+
+    if (restProps.children && !loggedRenderingChildrenWarning) {
+      console.warn(
+        'The <Image> component does not support children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.'
+      );
+      loggedRenderingChildrenWarning = true;
     }
 
     return (

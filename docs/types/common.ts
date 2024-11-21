@@ -44,7 +44,7 @@ export type NavigationRoute = {
   weight?: number;
   isNew?: boolean;
   isDeprecated?: boolean;
-  children?: NavigationRoute[];
+  children?: NavigationRouteWithSection[];
 };
 
 export type NavigationRouteWithSection = NavigationRoute & { section?: string };

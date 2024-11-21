@@ -33,7 +33,7 @@ public final class AppleAuthenticationModule: Module {
       }
     }
 
-    Function("formatFullName") { (fullName: FullName, formatStyle: FullNameFormatStyle?) in
+    Function("formatFullName") { (fullName: FullName, formatStyle: FullNameFormatStyle?) -> String in
       let formatStyle = formatStyle?.toFullNameFormatStyle() ?? .default
       var nameComponents = PersonNameComponents()
 

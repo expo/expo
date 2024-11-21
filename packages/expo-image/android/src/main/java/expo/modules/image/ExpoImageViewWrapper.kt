@@ -18,7 +18,6 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.facebook.yoga.YogaConstants
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.events.GlideRequestListener
@@ -115,18 +114,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       transformationMatrixChanged = true
     }
 
-  internal var borderStyle: String? = null
-    set(value) {
-      field = value
-      activeView.setBorderStyle(value)
-    }
-
-  internal var backgroundColor: Int? = null
-    set(value) {
-      field = value
-      activeView.setBackgroundColor(value)
-    }
-
   internal var tintColor: Int? = null
     set(value) {
       field = value
@@ -179,25 +166,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var priority: Priority = Priority.NORMAL
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
-  private var borderRadius = FloatArray(9) { YogaConstants.UNDEFINED }
-  private var borderWidth = FloatArray(9) { YogaConstants.UNDEFINED }
-  private var borderColor = Array(9) { YogaConstants.UNDEFINED.toInt() to YogaConstants.UNDEFINED }
-
-  fun setBorderRadius(index: Int, radius: Float) {
-    borderRadius[index] = radius
-    activeView.setBorderRadius(index, radius)
-  }
-
-  fun setBorderWidth(index: Int, width: Float) {
-    borderWidth[index] = width
-    activeView.setBorderWidth(index, width)
-  }
-
-  fun setBorderColor(index: Int, rgb: Int, alpha: Float) {
-    borderColor[index] = rgb to alpha
-    activeView.setBorderColor(index, rgb)
-  }
-
   fun setIsAnimating(setAnimating: Boolean) {
     val resource = activeView.drawable
 
@@ -237,20 +205,9 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private fun copyProps(view: ExpoImageView) {
     view.contentFit = contentFit
     view.contentPosition = contentPosition
-    view.setBorderStyle(borderStyle)
-    view.setBackgroundColor(backgroundColor)
     view.setTintColor(tintColor)
     view.isFocusable = isFocusableProp
     view.contentDescription = accessibilityLabel
-    borderColor.forEachIndexed { index, (rgb, alpha) ->
-      view.setBorderColor(index, rgb)
-    }
-    borderRadius.forEachIndexed { index, value ->
-      view.setBorderRadius(index, value)
-    }
-    borderWidth.forEachIndexed { index, value ->
-      view.setBorderWidth(index, value)
-    }
     setIsScreenReaderFocusable(view, accessible)
   }
 

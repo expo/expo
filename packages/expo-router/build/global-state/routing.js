@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
+exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
 const native_1 = require("@react-navigation/native");
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
@@ -58,6 +58,10 @@ function dismiss(count) {
     this.navigationRef?.dispatch(native_1.StackActions.pop(count));
 }
 exports.dismiss = dismiss;
+function dismissTo(href, options) {
+    return this.linkTo((0, href_1.resolveHref)(href), { ...options, event: 'POP_TO' });
+}
+exports.dismissTo = dismissTo;
 function replace(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'REPLACE' });
 }

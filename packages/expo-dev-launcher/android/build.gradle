@@ -17,7 +17,7 @@ android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "5.0.14"
+    versionName "5.0.15"
   }
 
   buildTypes {
@@ -35,15 +35,21 @@ android {
     def rnVersion = getRNVersion()
     main {
       java {
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
-          srcDirs += "src/react-native-74/main"
+        if (rnVersion >= versionToNumber(0, 77, 0)) {
+          srcDirs += "src/rn77/main"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += "src/rn74/main"
         }
       }
     }
     debug {
       java {
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
-          srcDirs += "src/react-native-74/debug"
+        if (rnVersion >= versionToNumber(0, 77, 0)) {
+          srcDirs += "src/rn77/debug"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += "src/rn74/debug"
         }
       }
     }

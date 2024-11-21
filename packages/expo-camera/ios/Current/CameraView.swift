@@ -3,7 +3,7 @@ import ExpoModulesCore
 import CoreMotion
 
 public class CameraView: ExpoView, EXAppLifecycleListener,
-  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, CameraEvent {
+  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, EXCameraInterface, CameraEvent {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
 
@@ -54,6 +54,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       }
     }
   }
+
+  var videoBitrate: Int?
 
   var presetCamera = AVCaptureDevice.Position.back {
     didSet {
@@ -587,10 +589,14 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     if let codec = options.codec {
       let codecType = codec.codecType()
       if videoFileOutput.availableVideoCodecTypes.contains(codecType) {
-        videoFileOutput.setOutputSettings([AVVideoCodecKey: codecType], for: connection)
+        var outputSettings: [String: Any] = [AVVideoCodecKey: codecType]
+        if let videoBitrate {
+          outputSettings[AVVideoCompressionPropertiesKey] = [AVVideoAverageBitRateKey: videoBitrate]
+        }
+        videoFileOutput.setOutputSettings(outputSettings, for: connection)
         self.videoCodecType = codecType
       } else {
-        promise.reject(CameraRecordingException(videoCodecType?.rawValue))
+        promise.reject(CameraRecordingException(options.codec?.rawValue))
         await cleanupMovieFileCapture()
         videoRecordedPromise = nil
         isValidVideoOptions = false

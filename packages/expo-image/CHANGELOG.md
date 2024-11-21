@@ -8,9 +8,21 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- Add a warning when `children` are passed to `Image`. ([#33139](https://github.com/expo/expo/pull/33139) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.0.1 — 2024-11-19
+
+### 🐛 Bug fixes
+
 - [Android] Fixes Gif animations never stopping even when loop count is set to 1. ([#32944](https://github.com/expo/expo/pull/32944) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `borderColor` is not applied. ([#33026](https://github.com/expo/expo/pull/33026) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `border` related props weren't applied correctly. ([#33078](https://github.com/expo/expo/pull/33078) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+- [Android] migrate ImageView to CSSBackgroundDrawable ([#33024](https://github.com/expo/expo/pull/33024) by [@vonovak](https://github.com/vonovak))
 
 ## 2.0.0 — 2024-11-11
 
