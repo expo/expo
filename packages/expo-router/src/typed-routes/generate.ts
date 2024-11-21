@@ -41,10 +41,7 @@ export function getTypedRoutesDeclarationFile(
   }
 
   const groupedNodes = groupRouteNodes(routeNode);
-  const staticRoutesStrings: string[] = [
-    'Router.RelativePathString',
-    'Router.ExternalPathString',
-  ];
+  const staticRoutesStrings: string[] = ['Router.RelativePathString', 'Router.ExternalPathString'];
   const staticRouteInputObjects: string[] = [
     '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams }',
     '{ pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }',
@@ -55,20 +52,12 @@ export function getTypedRoutesDeclarationFile(
   ];
 
   for (const type of groupedNodes.static) {
-    staticRoutesStrings.push(
-      contextKeyToType(type + urlParams, partialTypedGroups)
-    );
+    staticRoutesStrings.push(contextKeyToType(type + urlParams, partialTypedGroups));
     staticRouteInputObjects.push(
-      `{ pathname: ${contextKeyToType(
-        type,
-        partialTypedGroups
-      )}; params?: Router.UnknownInputParams; }`
+      `{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownInputParams; }`
     );
     staticRouteOutputObjects.push(
-      `{ pathname: ${contextKeyToType(
-        type,
-        partialTypedGroups
-      )}; params?: Router.UnknownOutputParams; }`
+      `{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownOutputParams; }`
     );
   }
 
@@ -80,9 +69,7 @@ export function getTypedRoutesDeclarationFile(
     const inputParams = paramsNames
       .map((param) => {
         const key = param.startsWith('...') ? param.slice(3) : param;
-        const value = param.startsWith('...')
-          ? '(string | number)[]'
-          : 'string | number';
+        const value = param.startsWith('...') ? '(string | number)[]' : 'string | number';
         return `${key}: ${value};`;
       })
       .join('');
@@ -105,16 +92,10 @@ export function getTypedRoutesDeclarationFile(
     );
 
     dynamicRouteInputObjects.push(
-      `{ pathname: ${contextKeyToType(
-        dynamicRouteTemplate,
-        partialTypedGroups
-      )}, params: Router.UnknownInputParams & { ${inputParams} } }`
+      `{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownInputParams & { ${inputParams} } }`
     );
     dynamicRouteOutputObjects.push(
-      `{ pathname: ${contextKeyToType(
-        dynamicRouteTemplate,
-        partialTypedGroups
-      )}, params: Router.UnknownOutputParams & { ${outputParams} } }`
+      `{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownOutputParams & { ${outputParams} } }`
     );
   }
 
@@ -125,14 +106,8 @@ export function getTypedRoutesDeclarationFile(
     ...dynamicRouteInputObjects,
   ].join(' | ');
 
-  const hrefInputParams = [
-    ...staticRouteInputObjects,
-    ...dynamicRouteInputObjects,
-  ].join(' | ');
-  const hrefOutputParams = [
-    ...staticRouteOutputObjects,
-    ...dynamicRouteOutputObjects,
-  ].join(' | ');
+  const hrefInputParams = [...staticRouteInputObjects, ...dynamicRouteInputObjects].join(' | ');
+  const hrefOutputParams = [...staticRouteOutputObjects, ...dynamicRouteOutputObjects].join(' | ');
 
   const tsExpectError = testIgnoreComments
     ? '// @ts-ignore-error -- During tests we need to ignore the "duplicate" declaration error, as multiple fixture declare types \n      '
