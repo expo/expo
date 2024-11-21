@@ -90,7 +90,7 @@ declare global {
    */
   var expo: ExpoGlobal;
 
-  // @ts-ignore - Suppress incompatible `NodeJS.Process` type if people includes process type from @types/node
+  // @ts-ignore - Suppress incompatible `NodeJS.Process` type if people include process type from `@types/node`
   var process: ExpoProcess;
 
   /**
