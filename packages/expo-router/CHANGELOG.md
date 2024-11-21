@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix typed route using `\` instead of `/` in windows ([#33146](https://github.com/expo/expo/pull/33146) by [@imranbarbhuiya](https://github.com/imranbarbhuiya))
+
 ### 💡 Others
 
 ## 4.0.7 — 2024-11-19
