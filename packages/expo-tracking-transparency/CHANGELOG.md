@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+- Add Apple TV support. ([#33157](https://github.com/expo/expo/pull/33157) by [@msynowski](https://github.com/msynowski))
 
 ### 🐛 Bug fixes
 
