@@ -11,6 +11,7 @@ type PluginConfig = {
   imageWidth?: number;
   enableFullScreenImage_legacy?: boolean;
   image?: string;
+  resizeMode?: 'contain' | 'cover' | 'native';
   dark?: {
     image?: string;
     backgroundColor?: string;
@@ -20,20 +21,20 @@ type PluginConfig = {
 };
 
 const withSplashScreen: ConfigPlugin<PluginConfig> = (config, props) => {
+  const resizeMode = props?.resizeMode || 'contain';
   const android: AndroidSplashConfig = {
     ...props,
     ...props?.android,
-    resizeMode: 'contain',
+    resizeMode,
     dark: {
       ...props?.android?.dark,
       ...props?.dark,
-      resizeMode: 'contain',
     },
   };
   const ios: IOSSplashConfig = {
     ...props,
     ...props?.ios,
-    resizeMode: 'contain',
+    resizeMode: resizeMode === 'native' ? 'contain' : resizeMode,
     dark: {
       ...props?.ios?.dark,
       ...props?.dark,

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Correctly handle `resizeMode` in config plugin. ([#33143](https://github.com/expo/expo/pull/33143) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 0.29.12 — 2024-11-20
