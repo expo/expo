@@ -15,7 +15,7 @@ const config: VendoringTargetConfig = {
     'react-native-view-shot': {
       source: 'react-native-view-shot',
       sourceType: 'npm',
-      excludeFiles: ['src/__tests__/**/*', 'windows/**/*', 'LICENSE', 'README.md'],
+      excludeFiles: ['src/__tests__/**/*', 'windows/**/*'],
       async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
         // patch for scoped view-shot
         const patchFile = path.join(

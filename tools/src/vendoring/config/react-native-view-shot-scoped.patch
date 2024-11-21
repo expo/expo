@@ -27,3 +27,23 @@
          final File cacheDir;
  
          if (externalCacheDir == null && internalCacheDir == null) {
+--- android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotPackage.java
++++ android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotPackage.java
+@@ -22,7 +22,7 @@ public class RNViewShotPackage extends TurboReactPackage {
+   @Nonnull
+   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
+     List<NativeModule> modules = new ArrayList<>();
+-    modules.add(new RNViewShotModule(reactContext));
++    modules.add(new RNViewShotModule(reactContext, reactContext.getCacheDir(), reactContext.getExternalCacheDir()));
+     return modules;
+   }
+   
+@@ -30,7 +30,7 @@ public class RNViewShotPackage extends TurboReactPackage {
+   @Override
+   public NativeModule getModule(@NonNull String name, @NonNull ReactApplicationContext reactApplicationContext) {
+     if (name.equals(RNViewShotModule.NAME)) {
+-      return new RNViewShotModule(reactApplicationContext);
++      return new RNViewShotModule(reactApplicationContext, reactApplicationContext.getCacheDir(), reactApplicationContext.getExternalCacheDir());
+     } else {
+       return null;
+     }
