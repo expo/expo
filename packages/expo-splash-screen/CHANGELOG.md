@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Correctly handle `resizeMode` in config plugin.
+
 ### 💡 Others
 
 ## 0.29.12 — 2024-11-20
