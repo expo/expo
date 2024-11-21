@@ -1,4 +1,4 @@
-package expo.modules.devlauncher.rncompatibility
+package expo.modules.devlauncher.react
 
 import android.content.Context
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory

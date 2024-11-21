@@ -1,9 +1,12 @@
-package expo.modules.devlauncher.rncompatibility
+package expo.modules.devlauncher.react
 
 import android.content.Context
 import android.util.Log
-import com.facebook.react.runtime.NonFinalBridgelessDevSupportManager
-import com.facebook.react.runtime.ReactHostImpl
+import com.facebook.react.devsupport.NonFinalBridgelessDevSupportManager
+import com.facebook.react.devsupport.ReactInstanceDevHelper
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
+import com.facebook.react.devsupport.interfaces.RedBoxHandler
+import com.facebook.react.packagerconnection.RequestHandler
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.helpers.injectDevServerHelper
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
@@ -13,14 +16,31 @@ import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 
 class DevLauncherBridgelessDevSupportManager(
-  host: ReactHostImpl,
-  context: Context,
-  packagerPathForJSBundleName: String?
-) : NonFinalBridgelessDevSupportManager(host, context, packagerPathForJSBundleName), DevLauncherKoinComponent {
+  applicationContext: Context,
+  reactInstanceDevHelper: ReactInstanceDevHelper,
+  packagerPathForJSBundleName: String?,
+  enableOnCreate: Boolean,
+  redBoxHandler: RedBoxHandler?,
+  devBundleDownloadListener: DevBundleDownloadListener?,
+  minNumShakes: Int,
+  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?
+) : NonFinalBridgelessDevSupportManager(
+  applicationContext,
+  reactInstanceDevHelper,
+  packagerPathForJSBundleName,
+  enableOnCreate,
+  redBoxHandler,
+  devBundleDownloadListener,
+  minNumShakes,
+  customPackagerCommandHandlers,
+  null,
+  null,
+  null
+), DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface? by optInject()
 
   init {
-    injectDevServerHelper(context, this, controller)
+    injectDevServerHelper(applicationContext, this, controller)
   }
 
   @Suppress("INAPPLICABLE_JVM_NAME")
