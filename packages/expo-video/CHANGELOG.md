@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Fixed `generateThumbnailsAsync` not being available on Android in the types. ([#33491](https://github.com/expo/expo/pull/33491) by [@hirbod](https://github.com/hirbod))
+- Run VideoManager.setAppropriateAudioSessionOrWarn on a different queue for a lower load on the main thread. ([#33127](https://github.com/expo/expo/pull/33127) by [@behenate](https://github.com/behenate))
 
 ## 2.0.2 - 2024-11-29
 
