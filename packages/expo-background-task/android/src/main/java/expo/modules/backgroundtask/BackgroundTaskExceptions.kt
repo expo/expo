@@ -9,3 +9,5 @@ class MissingTaskServiceException : CodedException(message = "TaskService not av
 class MissingAppScopeKey : CodedException(message = "Could not find required appScopeKey in worker.")
 
 class InvalidBackgroundTaskConsumer : CodedException(message = "Invalid background task consumer")
+
+class TaskMangerInterfaceNotFoundException : CodedException(message = "TaskManagerInterface not found")

@@ -1,7 +1,6 @@
 package expo.modules.backgroundtask
 
 import android.util.Log
-import expo.modules.backgroundfetch.TaskMangerInterfaceNotFoundException
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
