@@ -1,4 +1,3 @@
-import { BackgroundTaskInfo, BackgroundTaskOptions, BackgroundTaskLogEntry } from './BackgroundTask.types';
 /**
  * Removes all tasks from the task repository
  * */
@@ -18,7 +17,7 @@ export declare const createScheduledTaskInfo: (taskIdentifier: string, options: 
  * @returns List of task infos
  */
 export declare const getScheduledTaskInfos: () => Promise<BackgroundTaskInfo[]>;
-export declare const getScheduledTaskInfo: (taskIdentifier: string) => Promise<BackgroundTaskInfo | null>;
+export declare const getScheduledTaskInfo: (taskIdentifier: string) => Promise<any>;
 /**
  * Cancels a scheduled task by its identifier
  * @param taskIdentifier Identifier of task to cancel

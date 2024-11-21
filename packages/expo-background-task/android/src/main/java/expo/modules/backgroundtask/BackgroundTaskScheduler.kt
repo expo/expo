@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.work.Constraints
+import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
@@ -27,17 +28,23 @@ class BackgroundTaskScheduler {
     private val TAG: String = BackgroundTaskScheduler::class.java.simpleName
 
     /**
-    Tries to schedule the worker task to run
+     Schedules the worker task to run. The worker should run periodically
+     at least every 15 minutes
      */
-    suspend fun tryScheduleWorker(context: Context): Boolean {
+    suspend fun startWorker(context: Context, appScopeKey: String): Boolean {
       // Ensure we have the react context
       Log.i(TAG, "Enqueuing worker with identifier $WORKER_IDENTIFIER")
+
+      val data = Data.Builder()
+      data.putString("appScopeKey", appScopeKey)
 
       // Create the work request
       val builder = PeriodicWorkRequestBuilder<BackgroundTaskWork>(
         repeatIntervalTimeUnit = TimeUnit.MINUTES,
+        // TODO: Configurable?
         repeatInterval = 15
-      ).setConstraints(
+      ).setInputData(data.build())
+       .setConstraints(
         Constraints.Builder()
           .setRequiresBatteryNotLow(true)
           .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -55,9 +62,6 @@ class BackgroundTaskScheduler {
 
       // Get Work manager
       val workManager = WorkManager.getInstance(context)
-
-      // Prune existing
-      // workManager.pruneWork()
 
       // Enqueue the work
       return suspendCancellableCoroutine { continuation ->
@@ -122,8 +126,8 @@ class BackgroundTaskScheduler {
     /**
     Returns true if the worker task is pending
      */
-    suspend fun isWorkerRunning(context: AppContext ): Boolean {
-      val workInfo = context.reactContext?.let { getWorkerInfo(it) }
+    suspend fun isWorkerRunning(context: Context ): Boolean {
+      val workInfo = getWorkerInfo(context)
       return workInfo?.state == WorkInfo.State.RUNNING ||
              workInfo?.state == WorkInfo.State.ENQUEUED
     }
