@@ -95,6 +95,7 @@ function openFileBrowserAsync({
   input.setAttribute('type', 'file');
   input.setAttribute('accept', mediaTypeFormat);
   input.setAttribute('id', String(Math.random()));
+  input.setAttribute('data-testid', 'file-input');
   if (allowsMultipleSelection) {
     input.setAttribute('multiple', 'multiple');
   }
@@ -105,7 +106,7 @@ function openFileBrowserAsync({
 
   return new Promise((resolve) => {
     input.addEventListener('change', async () => {
-      if (input.files) {
+      if (input.files?.length) {
         const files = allowsMultipleSelection ? input.files : [input.files[0]];
         const assets: ImagePickerAsset[] = await Promise.all(
           Array.from(files).map((file) => readFile(file, { base64 }))
@@ -116,6 +117,9 @@ function openFileBrowserAsync({
         resolve({ canceled: true, assets: null });
       }
       document.body.removeChild(input);
+    });
+    input.addEventListener('cancel', () => {
+      input.dispatchEvent(new Event('change'));
     });
 
     const event = new MouseEvent('click');
