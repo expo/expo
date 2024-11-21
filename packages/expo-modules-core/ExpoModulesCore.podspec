@@ -47,7 +47,9 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.header_dir     = 'ExpoModulesCore'
 
-  header_search_paths = []
+  header_search_paths = [
+    '"$(PODS_ROOT)/Headers/Private/React-Core"', # as React-RCTAppDelegate.podspec to access JSCExecutorFactory.h
+  ]
   if ENV['USE_FRAMEWORKS']
     header_search_paths.concat([
       # [begin] transitive dependencies of React-RCTAppDelegate that are not defined modules
