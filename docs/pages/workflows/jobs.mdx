@@ -81,4 +81,15 @@ jobs:
         run: echo "Hello, world!"
 ```
 
-Within custom jobs, you can use our [built-in functions](/custom-builds/schema/#built-in-eas-functions), like `eas/checkout`, `eas/use_npm_token` to interact with the project.
+Within custom jobs, you can use our [built-in functions](/custom-builds/schema/#built-in-eas-functions), like `eas/checkout`, `eas/use_npm_token` to interact with the project. These need to be prefixed with the `uses:` keyword.
+
+```yaml .eas/workflows/custom-job.yaml
+jobs:
+  custom-job:
+    type: custom
+    steps:
+      - uses: eas/checkout
+
+      - name: Install modules
+        run: yarn install
+```
