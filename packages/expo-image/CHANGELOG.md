@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Add a warning when `children` are passed to `Image`.
+- Add a warning when `children` are passed to `Image`. ([#33139](https://github.com/expo/expo/pull/33139) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 2.0.1 — 2024-11-19
 
