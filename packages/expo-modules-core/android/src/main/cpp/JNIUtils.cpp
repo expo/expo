@@ -144,26 +144,24 @@ void JNIUtils::emitEventOnJavaScriptModule(
   jni::alias_ref<JavaScriptModuleObject::javaobject> jsiThis,
   jni::alias_ref<jni::HybridClass<JSIContext>::javaobject> jsiContextRef,
   jni::alias_ref<jstring> eventName,
-  jni::alias_ref<react::ReadableNativeMap::javaobject> eventBody
+  jni::alias_ref<jni::JMap<jstring, jobject>> eventBody
 ) {
-  folly::dynamic arg;
-  if (eventBody) {
-    arg = eventBody->cthis()->consume();
-  }
+  auto globalEventBody = jni::make_global(eventBody);
 
   JNIUtils::emitEventOnJSIObject(
     jsiThis->cthis()->getCachedJSIObject(),
     jsiContextRef,
     eventName,
-    [arg = std::move(arg)](jsi::Runtime &rt) -> std::vector<jsi::Value> {
-      jsi::Value convertedBody = jsi::valueFromDynamic(rt, arg);
-      std::vector<jsi::Value> args;
-      args.emplace_back(std::move(convertedBody));
-      return args;
+    [args = std::move(globalEventBody)](jsi::Runtime &rt) -> std::vector<jsi::Value> {
+      JNIEnv *env = jni::Environment::current();
+
+      auto localArgs = jni::static_ref_cast<jni::JMap<jstring, jobject>>(args);
+      std::vector<jsi::Value> result;
+      result.push_back(convertToJS(env, rt, localArgs));
+      return result;
     }
   );
 }
-
 
 void JNIUtils::emitEventOnJSIObject(
   std::weak_ptr<jsi::WeakObject> jsiThis,

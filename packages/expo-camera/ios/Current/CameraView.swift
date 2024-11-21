@@ -246,9 +246,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   private func startSession() async {
-    #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
     return
-    #endif
+#else
     guard let manager = permissionsManager else {
       log.info("Permissions module not found.")
       return
@@ -274,6 +274,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     updateCameraIsActive()
     onCameraReady()
     enableTorch()
+#endif
   }
 
   private func updateZoom() {
@@ -747,9 +748,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   private func stopSession() async {
-    #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
     return
-    #endif
+#else
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
@@ -765,6 +766,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     if session.isRunning {
       session.stopRunning()
     }
+#endif
   }
 
   func resumePreview() {

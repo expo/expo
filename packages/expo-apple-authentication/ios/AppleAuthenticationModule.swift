@@ -3,21 +3,6 @@ import ExpoModulesCore
 
 let credentialRevokedEventName = "Expo.appleIdCredentialRevoked"
 
-struct FullName: Record {
-  @Field
-  var namePrefix: String?
-  @Field
-  var nameSuffix: String?
-  @Field
-  var givenName: String?
-  @Field
-  var middleName: String?
-  @Field
-  var familyName: String?
-  @Field
-  var nickname: String?
-}
-
 public final class AppleAuthenticationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoAppleAuthentication")

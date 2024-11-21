@@ -113,6 +113,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   pause(): void;
 
   /**
+   * Replaces the current audio source with a new one.
+   */
+  replace(source: AudioSource): void;
+
+  /**
    * Seeks the playback by the given number of seconds.
    * @param seconds The number of seconds to seek by.
    */

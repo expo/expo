@@ -46,7 +46,7 @@ class AudioPlayer(
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
 
-  private val visualizer = Visualizer(player.audioSessionId).apply {
+  private var visualizer = Visualizer(player.audioSessionId).apply {
     captureSize = Visualizer.getCaptureSizeRange()[1]
     setDataCaptureListener(
       object : Visualizer.OnDataCaptureListener {
@@ -161,10 +161,10 @@ class AudioPlayer(
     }
   }
 
-  override fun deallocate() {
+  override fun sharedObjectDidRelease() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()
-      visualizer.release()
+      visualizer?.release()
       player.release()
     }
   }
