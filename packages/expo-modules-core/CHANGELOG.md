@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Introduced `applyKspJvmToolchain()` gradle helper to enforce JVM Toolchain version for KSP. ([#33148](https://github.com/expo/expo/pull/33148) by [@kudo](https://github.com/kudo))
+
 ## 2.0.4 — 2024-11-19
 
 ### 🎉 New features
