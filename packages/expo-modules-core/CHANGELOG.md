@@ -26,6 +26,7 @@
 ### 💡 Others
 
 - Use `findNodeHandle` with a native ref instead of a class component instance to avoid expensive calls to `findCurrentFiberUsingSlowPath`. ([#33016](https://github.com/expo/expo/pull/33016) by [@tsapeta](https://github.com/tsapeta))
+- Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
 
 ## 2.0.3 — 2024-11-14
 
