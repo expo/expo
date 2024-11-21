@@ -1,6 +1,7 @@
 import Foundation
 import ExpoModulesCore
 import CryptoKit
+import UniformTypeIdentifiers
 
 internal final class FileSystemFile: FileSystemPath {
   init(url: URL) {
@@ -65,6 +66,16 @@ internal final class FileSystemFile: FileSystemPath {
       let hash = Insecure.MD5.hash(data: fileData)
       return hash.map { String(format: "%02hhx", $0) }.joined()
     }
+  }
+  
+  var type: String? {
+    let pathExtension = url.pathExtension
+    if let utType = UTType(filenameExtension: pathExtension) {
+      if let mimeType = utType.preferredMIMEType {
+        return mimeType
+      }
+    }
+    return nil
   }
 
   func write(_ content: String) throws {

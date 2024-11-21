@@ -28,6 +28,43 @@ export class Paths extends PathUtilities {
   }
 }
 
+export class FileBlob implements Blob {
+  file: File;
+  key: string = 'FileBlob';
+
+  constructor(file: File) {
+    this.file = file;
+  }
+
+  get size() {
+    return this.file.size ?? 0;
+  }
+
+  get name() {
+    return this.file.name;
+  }
+
+  get type() {
+    return this.file.type ?? '';
+  }
+
+  async arrayBuffer(): Promise<ArrayBuffer> {
+    return this.file.bytes().buffer;
+  }
+  async text(): Promise<string> {
+    return this.file.text();
+  }
+  async bytes() {
+    return this.file.bytes();
+  }
+  stream(): globalThis.ReadableStream<Uint8Array> {
+    return this.file.readableStream();
+  }
+  slice(start?: number, end?: number, contentType?: string): Blob {
+    throw new Error('Method not implemented.');
+  }
+}
+
 export class File extends ExpoFileSystem.FileSystemFile {
   /**
    * Creates an instance of a file.
@@ -40,6 +77,20 @@ export class File extends ExpoFileSystem.FileSystemFile {
   constructor(...uris: (string | File | Directory)[]) {
     super(Paths.join(...uris));
     this.validatePath();
+  }
+  // async arrayBuffer(): Promise<ArrayBuffer> {
+  //   return this.bytes().buffer;
+  // }
+  // slice(
+  //   start?: number | undefined,
+  //   end?: number | undefined,
+  //   contentType?: string | undefined
+  // ): Blob {
+  //   throw new Error('Method not implemented.');
+  // }
+
+  blob(): Blob {
+    return new FileBlob(this);
   }
 
   /*

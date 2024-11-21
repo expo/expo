@@ -54,11 +54,16 @@ export function convertFormData(
     for (const [headerKey, headerValue] of Object.entries(entry.headers)) {
       results.push(`${headerKey}: ${headerValue}\r\n`);
     }
+
     results.push(`\r\n`);
     // @ts-expect-error: TypeScript doesn't know about the `string` property
     if (entry.string != null) {
       // @ts-expect-error: TypeScript doesn't know about the `string` property
       results.push(entry.string);
+      // @ts-expect-error: TypeScript doesn't know about the `file` property
+    } else if (entry.file != null && entry.file.bytes != null) {
+      // @ts-expect-error: TypeScript doesn't know about the `file` property
+      results.push(new TextDecoder('utf-8').decode(entry.file.bytes()));
     } else {
       throw new Error('Unsupported FormDataPart implementation');
     }
