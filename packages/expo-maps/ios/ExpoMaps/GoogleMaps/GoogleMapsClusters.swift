@@ -1,4 +1,3 @@
-#if HAS_GOOGLE_UTILS
 import GoogleMaps
 import GoogleMapsUtils
 
@@ -101,4 +100,3 @@ class ExpoClusterRenderer: GMUDefaultClusterRenderer {
     self.minimumClusterSize = UInt(minimumClusterSize)
   }
 }
-#endif

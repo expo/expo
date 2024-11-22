@@ -2,7 +2,7 @@ import GoogleMaps
 import GooglePlaces
 import ExpoModulesCore
 
-public final class GoogleMapsView: UIView, ExpoMapView {
+public final class GoogleMapsView: ExpoView, ExpoMapView {
   private let mapView: GMSMapView
   private let googleMapsViewDelegate: GoogleMapsViewDelegate
   private let controls: GoogleMapsControls
@@ -13,14 +13,12 @@ public final class GoogleMapsView: UIView, ExpoMapView {
   private let polylines: GoogleMapsPolylines
   private let circles: GoogleMapsCircles
 
-#if HAS_GOOGLE_UTILS
   private let clusters: GoogleMapsClusters
   private let googleMapsClusterManagerDelegate: GoogleMapsClusterManagerDelegate
   private let kmls: GoogleMapsKMLs
   private let geojsons: GoogleMapsGeoJsons
   private let overlays: GoogleMapsOverlays
   private let heatmaps: GoogleMapsHeatmaps
-#endif
 
   private let places: GoogleMapsPlaces
   private var wasInitialCameraPositionSet = false
@@ -46,7 +44,7 @@ public final class GoogleMapsView: UIView, ExpoMapView {
   var onLocationDotPress = EventDispatcher()
   var onLocationChange = EventDispatcher()
 
-  init(sendEvent: @escaping (String, [String: Any?]) -> Void) {
+  public required init(appContext: AppContext? = nil) {
     // just for now we do authentication here
     // should be moved to module's function
     GoogleMapsView.initializeGoogleMapsServices()
@@ -55,7 +53,7 @@ public final class GoogleMapsView: UIView, ExpoMapView {
     // TODO: use prop as a source for initial camera position
     let camera = GMSCameraPosition.camera(withLatitude: 51.5, longitude: 0, zoom: 4.0)
     mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
-    googleMapsViewDelegate = GoogleMapsViewDelegate(sendEvent: sendEvent, googleMapsMarkersManager: googleMapsMarkersManager)
+    googleMapsViewDelegate = GoogleMapsViewDelegate(googleMapsMarkersManager: googleMapsMarkersManager)
     mapView.delegate = googleMapsViewDelegate
     mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     controls = GoogleMapsControls(mapView: mapView)
@@ -66,7 +64,6 @@ public final class GoogleMapsView: UIView, ExpoMapView {
     polylines = GoogleMapsPolylines(mapView: mapView)
     circles = GoogleMapsCircles(mapView: mapView)
 
-#if HAS_GOOGLE_UTILS
     googleMapsClusterManagerDelegate = GoogleMapsClusterManagerDelegate(googleMapsMarkersManager: googleMapsMarkersManager)
     clusters = GoogleMapsClusters(
       mapView: mapView,
@@ -79,18 +76,13 @@ public final class GoogleMapsView: UIView, ExpoMapView {
     overlays = GoogleMapsOverlays(mapView: mapView)
     heatmaps = GoogleMapsHeatmaps(mapView: mapView)
     googleMapsClusterManagerDelegate.setOnClusterPress(onClusterPress: onClusterPress)
-#endif
 
     places = GoogleMapsPlaces(mapView: mapView, markers: markers)
     cameraAnimations = GoogleMapsCameraAnimations(mapView: mapView)
-    super.init(frame: CGRect.zero)
+    super.init(appContext: appContext)
     googleMapsViewDelegate.expoMapView = self
     mapView.addObserver(googleMapsViewDelegate, forKeyPath: "myLocation", context: nil)
     addSubview(mapView)
-  }
-
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
   }
 
   // Allows the double tap to work
@@ -213,9 +205,7 @@ public final class GoogleMapsView: UIView, ExpoMapView {
   }
 
   func setClusters(clusterObjects: [ClusterObject]) {
-#if HAS_GOOGLE_UTILS
     clusters.setClusters(clusterObjects: clusterObjects)
-#endif
   }
 
   func setEnabledTraffic(enableTraffic: Bool) {
@@ -223,27 +213,19 @@ public final class GoogleMapsView: UIView, ExpoMapView {
   }
 
   func setKMLs(kmlObjects: [KMLObject]) {
-#if HAS_GOOGLE_UTILS
     kmls.setKMLs(kmlObjects: kmlObjects)
-#endif
   }
 
   func setGeoJsons(geoJsonObjects: [GeoJsonObject]) {
-#if HAS_GOOGLE_UTILS
     geojsons.setGeoJsons(geoJsonObjects: geoJsonObjects)
-#endif
   }
 
   func setOverlays(overlayObjects: [OverlayObject]) {
-#if HAS_GOOGLE_UTILS
     overlays.setOverlays(overlayObjects: overlayObjects)
-#endif
   }
 
   func setHeatmaps(heatmapObjects: [HeatmapObject]) {
-#if HAS_GOOGLE_UTILS
     heatmaps.setHeatmaps(heatmapObjects: heatmapObjects)
-#endif
   }
 
   func setClickablePOIs(clickablePOIs: Bool) {

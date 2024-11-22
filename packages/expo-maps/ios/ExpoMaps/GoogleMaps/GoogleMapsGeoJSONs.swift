@@ -1,4 +1,3 @@
-#if HAS_GOOGLE_UTILS
 import GoogleMaps
 import GoogleMapsUtils
 
@@ -65,4 +64,3 @@ class GoogleMapsGeoJsons: GeoJsons {
     renderers = []
   }
 }
-#endif

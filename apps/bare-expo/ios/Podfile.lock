@@ -426,8 +426,9 @@ PODS:
     - ExpoModulesCore
   - ExpoMaps (0.6.1):
     - ExpoModulesCore
-    - GoogleMaps (= 7.4.0)
-    - GooglePlaces (= 7.3.0)
+    - Google-Maps-iOS-Utils (= 6.1.0)
+    - GoogleMaps (= 9.2.0)
+    - GooglePlaces (= 9.2.0)
   - ExpoMediaLibrary (17.0.2):
     - ExpoModulesCore
     - React-Core
@@ -608,12 +609,12 @@ PODS:
   - FBLazyVector (0.76.2)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - GoogleMaps (7.4.0):
-    - GoogleMaps/Maps (= 7.4.0)
-  - GoogleMaps/Base (7.4.0)
-  - GoogleMaps/Maps (7.4.0):
-    - GoogleMaps/Base
-  - GooglePlaces (7.3.0)
+  - Google-Maps-iOS-Utils (6.1.0):
+    - GoogleMaps (~> 9.0)
+  - GoogleMaps (9.2.0):
+    - GoogleMaps/Maps (= 9.2.0)
+  - GoogleMaps/Maps (9.2.0)
+  - GooglePlaces (9.2.0)
   - hermes-engine (0.76.2):
     - hermes-engine/Pre-built (= 0.76.2)
   - hermes-engine/Pre-built (0.76.2)
@@ -694,7 +695,7 @@ PODS:
     - FBLazyVector (= 0.76.2)
     - RCTRequired (= 0.76.2)
     - React-Core (= 0.76.2)
-  - ReachabilitySwift (5.2.3)
+  - ReachabilitySwift (5.2.4)
   - React (0.76.2):
     - React-Core (= 0.76.2)
     - React-Core/DevSupport (= 0.76.2)
@@ -2866,6 +2867,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Google-Maps-iOS-Utils
     - GoogleMaps
     - GooglePlaces
     - libavif
@@ -3312,7 +3314,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: e0c5b5212381b0b800a2c1f715be823d17c51b05
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
-  ExpoMaps: 03f99cbb20655c2beb1bffdca0e6de6a0124f69e
+  ExpoMaps: cdf156f8aa42a58aa99f5901961e9282b1adb6ad
   ExpoMediaLibrary: 83f47430d5193186029bc57bae16e2130941bc83
   ExpoModulesCore: 6c76dd70d94c4d3fcb1335a46edcc09a9696dda5
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
@@ -3341,8 +3343,9 @@ SPEC CHECKSUMS:
   FBLazyVector: bc70dcb22ad30ce734a7cce7210791dc737e230f
   fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
-  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
-  GooglePlaces: 0609463845250bbadafa1739938181e54dece439
+  Google-Maps-iOS-Utils: 0a484b05ed21d88c9f9ebbacb007956edd508a96
+  GoogleMaps: 634ec3ca99698b31ca2253d64f017217d70cfb38
+  GooglePlaces: f997a80fb7b88233ad53aa8c9d5f092c86ceae54
   hermes-engine: 3852e37f6158a2fcfad23e31215ed495da3a6a40
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3356,7 +3359,7 @@ SPEC CHECKSUMS:
   RCTDeprecation: d575d28132f93e5deef4849d5afffb4ac4e63226
   RCTRequired: e2e5df1df76aac8685aabfebca389e6bec64792b
   RCTTypeSafety: 30e36ceafa26979860e13fb3f234fb61692924c2
-  ReachabilitySwift: 7f151ff156cea1481a8411701195ac6a984f4979
+  ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   React: 10ad41b51f981992714011b6a4e081234c28dc2e
   React-callinvoker: 58b51494f8b2cca07a27fc6f69273239c30a1e70
   React-Core: 54860c16fb5873a6f00dd44d8979bbb648b34c7c
