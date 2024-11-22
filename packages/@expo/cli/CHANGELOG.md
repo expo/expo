@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.21.8 — 2024-11-22
+
+### 💡 Others
+
 - Improve simulators labels when printing usage verbosely ([#30403](https://github.com/expo/expo/pull/30403) by [@germanolira](https://github.com/germanolira))
 
 ## 0.21.7 — 2024-11-20
