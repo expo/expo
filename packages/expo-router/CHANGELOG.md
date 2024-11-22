@@ -10,6 +10,7 @@
 
 - Fix typed route using `\` instead of `/` in windows ([#33146](https://github.com/expo/expo/pull/33146) by [@imranbarbhuiya](https://github.com/imranbarbhuiya))
 - Fix hash links causing page reload when there is no history with a starting hash ([#33161](https://github.com/expo/expo/pull/33161) by [@marklawlor](https://github.com/marklawlor))
+- Change `react-native-screens` to have its version managed by the SDK
 
 ### 💡 Others
 

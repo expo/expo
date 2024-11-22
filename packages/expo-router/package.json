@@ -80,7 +80,7 @@
     "expo-linking": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
-    "react-native-screens": "^4.0.0"
+    "react-native-screens": "*"
   },
   "peerDependenciesMeta": {
     "react-native-reanimated": {
