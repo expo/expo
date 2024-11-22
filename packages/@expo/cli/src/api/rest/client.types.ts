@@ -1,5 +1,5 @@
-import { RequestInfo, RequestInit, Response } from 'node-fetch';
-import { URLSearchParams } from 'url';
+import type { RequestInfo, RequestInit, Response } from 'undici';
+import type { URLSearchParams } from 'url';
 
 export type ProgressCallback = (props: {
   /** Number ranging from 0 to 1 representing the download percentage. */

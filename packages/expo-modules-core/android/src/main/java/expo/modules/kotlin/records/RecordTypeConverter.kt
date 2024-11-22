@@ -82,7 +82,7 @@ class RecordTypeConverter<T : Record>(
         jsMap.getDynamic(jsKey).recycle {
           val javaField = property.javaField!!
 
-          val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, getType(), cause) }) {
+          val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
             descriptor.typeConverter.convert(this)
           }
 

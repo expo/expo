@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "51.0.8",
+  "version": "52.0.10",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -24,15 +24,21 @@
     "expo-module.config.json",
     "metro-config.js",
     "metro-config.d.ts",
+    "dom",
     "config.js",
     "config.d.ts",
     "config-plugins.js",
     "config-plugins.d.ts",
     "devtools.js",
     "devtools.d.ts",
+    "fetch.js",
+    "fetch.d.ts",
+    "fingerprint.js",
+    "fingerprint.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
-    "tsconfig.base.json"
+    "tsconfig.base.json",
+    "types"
   ],
   "scripts": {
     "build": "expo-module build",
@@ -62,27 +68,48 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.18.13",
-    "@expo/config": "9.0.2",
-    "@expo/config-plugins": "8.0.4",
-    "@expo/metro-config": "0.18.4",
+    "@expo/cli": "0.21.7",
+    "@expo/config": "~10.0.5",
+    "@expo/config-plugins": "~9.0.10",
+    "@expo/fingerprint": "0.11.2",
+    "@expo/metro-config": "0.19.4",
     "@expo/vector-icons": "^14.0.0",
-    "babel-preset-expo": "~11.0.6",
-    "expo-asset": "~10.0.6",
-    "expo-file-system": "~17.0.1",
-    "expo-font": "~12.0.5",
-    "expo-keep-awake": "~13.0.2",
-    "expo-modules-autolinking": "1.11.1",
-    "expo-modules-core": "1.12.11",
+    "babel-preset-expo": "~12.0.1",
+    "expo-asset": "~11.0.1",
+    "expo-constants": "~17.0.3",
+    "expo-file-system": "~18.0.4",
+    "expo-font": "~13.0.1",
+    "expo-keep-awake": "~14.0.1",
+    "expo-modules-autolinking": "2.0.2",
+    "expo-modules-core": "2.0.5",
     "fbemitter": "^3.0.0",
+    "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
-    "@types/react": "~18.0.14",
-    "@types/react-test-renderer": "^18.0.0",
-    "expo-module-scripts": "^3.5.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native": "0.74.2"
+    "@types/react": "~18.3.12",
+    "@types/react-test-renderer": "^18.3.0",
+    "expo-module-scripts": "^4.0.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.2"
+  },
+  "peerDependencies": {
+    "@expo/dom-webview": "*",
+    "@expo/metro-runtime": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-webview": "*"
+  },
+  "peerDependenciesMeta": {
+    "@expo/dom-webview": {
+      "optional": true
+    },
+    "@expo/metro-runtime": {
+      "optional": true
+    },
+    "react-native-webview": {
+      "optional": true
+    }
   }
 }

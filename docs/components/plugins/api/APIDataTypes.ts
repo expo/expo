@@ -1,4 +1,4 @@
-import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
+import { TypeDocKind } from './APISectionUtils';
 
 // Generic data type
 
@@ -36,6 +36,10 @@ export type TypeDefinitionData = {
   name?: string;
   type: string;
   types?: TypeDefinitionData[];
+  element?: {
+    name: string;
+    type: string;
+  };
   elements?: TypeDefinitionData[];
   elementType?: {
     name?: string;
@@ -71,6 +75,7 @@ export type TypeDefinitionData = {
   qualifiedName?: string;
   head?: string;
   tail?: (TypeDefinitionData | string)[][];
+  target?: TypeDefinitionData;
 };
 
 export type MethodParamData = {
@@ -86,6 +91,7 @@ export type TypePropertyDataFlags = {
   isOptional?: boolean;
   isStatic?: boolean;
   isRest?: boolean;
+  isReadonly?: boolean;
 };
 
 // Constants section
@@ -179,6 +185,7 @@ export type PropData = {
   flags?: TypePropertyDataFlags;
   defaultValue?: string;
   signatures?: MethodSignatureData[];
+  getSignature?: MethodSignatureData;
   overwrites?: TypeDefinitionData;
   implementationOf?: TypeDefinitionData;
   inheritedFrom?: InheritedFromData;

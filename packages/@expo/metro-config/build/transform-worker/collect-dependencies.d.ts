@@ -1,7 +1,7 @@
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
-type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
+export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch';
 type AllowOptionalDependenciesWithOptions = {
     exclude: string[];
 };
@@ -26,8 +26,14 @@ type MutableDependencyData = {
     isOptional?: boolean;
     locs: readonly t.SourceLocation[];
     contextParams?: RequireContextParams;
+    exportNames: string[];
+    css?: {
+        url: string;
+        supports: string | null;
+        media: string | null;
+    };
 };
-type DependencyData = Readonly<MutableDependencyData>;
+export type DependencyData = Readonly<MutableDependencyData>;
 type MutableInternalDependency = MutableDependencyData & {
     locs: t.SourceLocation[];
     index: number;
@@ -44,6 +50,8 @@ export type State = {
     keepRequireNames: boolean;
     allowOptionalDependencies: AllowOptionalDependencies;
     unstable_allowRequireContext: boolean;
+    /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+    collectOnly?: boolean;
 };
 export type Options = Readonly<{
     asyncRequireModulePath: string;
@@ -54,6 +62,8 @@ export type Options = Readonly<{
     allowOptionalDependencies: AllowOptionalDependencies;
     dependencyTransformer?: DependencyTransformer;
     unstable_allowRequireContext: boolean;
+    /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+    collectOnly?: boolean;
 }>;
 export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
     ast: TAst;
@@ -62,6 +72,7 @@ export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
 }>;
 export interface DependencyTransformer {
     transformSyncRequire(path: NodePath<CallExpression>, dependency: InternalDependency, state: State): void;
+    transformImportMaybeSyncCall(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformImportCall(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformPrefetch(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformIllegalDynamicRequire(path: NodePath<any>, state: State): void;
@@ -72,8 +83,10 @@ type ImportQualifier = Readonly<{
     asyncType: AsyncDependencyType | null;
     optional: boolean;
     contextParams?: RequireContextParams;
+    exportNames: string[];
 }>;
 declare function collectDependencies<TAst extends t.File>(ast: TAst, options: Options): CollectedDependencies<TAst>;
+export declare function getExportNamesFromPath(path: NodePath<any>): string[];
 declare class DependencyRegistry {
     private _dependencies;
     registerDependency(qualifier: ImportQualifier): InternalDependency;

@@ -1,12 +1,8 @@
-import { matchers } from '@emotion/jest';
-import { theme } from '@expo/styleguide';
 import { CheckCircleSolidIcon } from '@expo/styleguide-icons/solid/CheckCircleSolidIcon';
 import { render, screen } from '@testing-library/react';
 import ReactMarkdown from 'react-markdown';
 
 import { Callout } from '.';
-
-expect.extend(matchers);
 
 describe(Callout, () => {
   it('renders callout with icon emoji', () => {
@@ -41,31 +37,17 @@ describe(Callout, () => {
 
   it('renders callout with warning style from warning type', () => {
     render(<Callout type="warning">Hello</Callout>);
-    expect(screen.getByTestId('callout-container')).toHaveStyleRule(
-      'background-color',
-      theme.background.warning
-    );
+    expect(screen.getByTestId('callout-container')).toHaveClass('bg-warning');
   });
 
-  it('renders callout with error style from warning type', () => {
+  it('renders callout with error style from error type', () => {
     render(<Callout type="error">Hello</Callout>);
-    expect(screen.getByTestId('callout-container')).toHaveStyleRule(
-      'background-color',
-      theme.background.danger
-    );
+    expect(screen.getByTestId('callout-container')).toHaveClass('bg-danger');
   });
 
-  it('renders callout with info style from warning type', () => {
+  it('renders callout with info style from info type', () => {
     render(<Callout type="info">Hello</Callout>);
-    expect(screen.getByTestId('callout-container')).toHaveStyleRule(
-      'background-color',
-      theme.background.info
-    );
-
-    expect(screen.getByTestId('callout-container')).toHaveStyleRule(
-      'border-color',
-      theme.border.info
-    );
+    expect(screen.getByTestId('callout-container')).toHaveClass('bg-info border-info');
   });
 
   it('renders from translated Markdown', () => {
@@ -79,10 +61,7 @@ describe(Callout, () => {
       <ReactMarkdown components={{ blockquote: Callout }}>{`> **warning** Hello`}</ReactMarkdown>
     );
     expect(screen.getByTestId('callout-container')).toBeInTheDocument();
-    expect(screen.getByTestId('callout-container')).toHaveStyleRule(
-      'background-color',
-      theme.background.warning
-    );
+    expect(screen.getByTestId('callout-container')).toHaveClass('bg-warning');
     expect(screen.getByRole('img')).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
   });

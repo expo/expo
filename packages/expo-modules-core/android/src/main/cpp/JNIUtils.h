@@ -13,12 +13,21 @@
 #include "JavaScriptObject.h"
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptWeakObject.h"
+#include "JSharedObject.h"
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
+
+class JSIContext;
+
+jsi::Value convertSharedObject(
+  jni::local_ref<JSharedObject::javaobject> sharedObject,
+  jsi::Runtime &rt,
+  JSIContext *context
+);
 
 class JNIUtils : public jni::JavaClass<JNIUtils> {
 public:
@@ -48,7 +57,7 @@ public:
     jni::alias_ref<JavaScriptModuleObject::javaobject> jsiThis,
     jni::alias_ref<jni::HybridClass<JSIContext>::javaobject> jsiContextRef,
     jni::alias_ref<jstring> eventName,
-    jni::alias_ref<react::ReadableNativeMap::javaobject> eventBody
+    jni::alias_ref<jni::JMap<jstring, jobject>> eventBody
   );
 
 private:

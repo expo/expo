@@ -105,6 +105,10 @@ export class Package {
     return fs.pathExistsSync(path.join(this.path, 'utils'));
   }
 
+  get hasReactServerComponents(): boolean {
+    return 'test:rsc' in this.packageJson.scripts;
+  }
+
   get packageName(): string {
     return this.packageJson.name;
   }
@@ -366,6 +370,7 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
       ignore: [
         '**/example/**',
         '**/node_modules/**',
+        '**/static/**',
         '**/__tests__/**',
         '**/__mocks__/**',
         '**/__fixtures__/**',

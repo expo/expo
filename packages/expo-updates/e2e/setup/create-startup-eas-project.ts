@@ -9,7 +9,7 @@ import {
   transformAppJsonForE2EWithFallbackToCacheTimeout,
 } from './project';
 
-const repoRoot = nullthrows(process.env.EXPO_REPO_ROOT);
+const repoRoot = nullthrows(process.env.EXPO_REPO_ROOT, 'EXPO_REPO_ROOT is not defined');
 const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
 

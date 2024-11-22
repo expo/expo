@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 4.0.0 — 2024-10-22
+
+### 🐛 Bug fixes
+
+- Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+- Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+
 ## 3.0.0 — 2024-04-18
 
 ### 🎉 New features

@@ -49,6 +49,7 @@ body:
     attributes:
       label: Environment
       description: Run the `npx expo-env-info` command and paste its output in the field below.
+      render: text
     validations:
       required: true
   - type: textarea
@@ -69,6 +70,7 @@ body:
     attributes:
       label: Stacktrace (if a crash is involved)
       description: If your issue involves a crash, please provide the native stacktrace if you are able to.
+      render: text
   - type: markdown
     attributes:
       value: |

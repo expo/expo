@@ -33,7 +33,7 @@ export class Asset {
      * asset. When running the app from Expo CLI during development, this URI points to Expo CLI's
      * server running on your computer and the asset is served directly from your computer. If you
      * are not using Classic Updates (legacy), this field should be ignored as we ensure your assets
-     * are on device before before running your application logic.
+     * are on device before running your application logic.
      */
     uri;
     /**
@@ -108,6 +108,19 @@ export class Asset {
     static fromModule(virtualAssetModule) {
         if (typeof virtualAssetModule === 'string') {
             return Asset.fromURI(virtualAssetModule);
+        }
+        if (typeof virtualAssetModule === 'object' &&
+            'uri' in virtualAssetModule &&
+            typeof virtualAssetModule.uri === 'string') {
+            const extension = AssetUris.getFileExtension(virtualAssetModule.uri);
+            return new Asset({
+                name: '',
+                type: extension.startsWith('.') ? extension.substring(1) : extension,
+                hash: null,
+                uri: virtualAssetModule.uri,
+                width: virtualAssetModule.width,
+                height: virtualAssetModule.height,
+            });
         }
         const meta = getAssetByID(virtualAssetModule);
         if (!meta) {

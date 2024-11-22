@@ -1,6 +1,6 @@
 import { Platform, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import { ColorValue, processColor } from 'react-native';
+import { type ColorValue, processColor } from 'react-native';
 
 import ExpoNavigationBar from './ExpoNavigationBar';
 import {

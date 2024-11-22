@@ -1,35 +1,58 @@
 import assert from 'assert';
-import findUp from 'find-up';
 import * as path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { PluginError } from './errors';
-import { fileExists } from './modules';
 import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
-
+import { fileExists } from './modules';
 // Default plugin entry file name.
 export const pluginFileName = 'app.plugin.js';
 
-function findUpPackageJson(root: string): string {
-  const packageJson = findUp.sync('package.json', { cwd: root });
-  assert(packageJson, `No package.json found for module "${root}"`);
-  return packageJson;
-}
-
-export function resolvePluginForModule(projectRoot: string, modulePath: string) {
-  const resolved = resolveFrom.silent(projectRoot, modulePath);
-  if (!resolved) {
-    throw new PluginError(
-      `Failed to resolve plugin for module "${modulePath}" relative to "${projectRoot}"`,
-      'PLUGIN_NOT_FOUND'
+/**
+ * Resolve the config plugin from a node module or package.
+ * If the module or package does not include a config plugin, this function throws a `PluginError`.
+ * The resolution is done in following order:
+ *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
+ *     - Resolve the config plugin as-is
+ *   2. If the reference a module? e.g. `expo-font`
+ *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
+ *   3. Does the module have a valid config plugin in the `main` field?
+ *     - Resolve the `main` entry point as config plugin
+ */
+export function resolvePluginForModule(
+  projectRoot: string,
+  pluginReference: string
+): { filePath: string; isPluginFile: boolean } {
+  if (moduleNameIsDirectFileReference(pluginReference)) {
+    // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
+    const pluginScriptFile = resolveFrom.silent(projectRoot, pluginReference);
+    if (pluginScriptFile) {
+      return {
+        // NOTE(cedric): `path.sep` is required here, we are resolving the absolute path, not the plugin reference
+        isPluginFile: pluginScriptFile.endsWith(path.sep + pluginFileName),
+        filePath: pluginScriptFile,
+      };
+    }
+  } else if (moduleNameIsPackageReference(pluginReference)) {
+    // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
+    const pluginPackageFile = resolveFrom.silent(
+      projectRoot,
+      `${pluginReference}/${pluginFileName}`
     );
+    if (pluginPackageFile && fileExists(pluginPackageFile)) {
+      return { isPluginFile: true, filePath: pluginPackageFile };
+    }
+    // Try to resole the `main` entry as config plugin
+    const packageMainEntry = resolveFrom.silent(projectRoot, pluginReference);
+    if (packageMainEntry) {
+      return { isPluginFile: false, filePath: packageMainEntry };
+    }
   }
-  // If the modulePath is something like `@bacon/package/index.js` or `expo-foo/build/app`
-  // then skip resolving the module `app.plugin.js`
-  if (moduleNameIsDirectFileReference(modulePath)) {
-    return { isPluginFile: false, filePath: resolved };
-  }
-  return findUpPlugin(resolved);
+
+  throw new PluginError(
+    `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`,
+    'PLUGIN_NOT_FOUND'
+  );
 }
 
 // TODO: Test windows
@@ -43,7 +66,7 @@ export function moduleNameIsDirectFileReference(name: string): boolean {
     return true;
   }
 
-  const slashCount = name.split(path.sep)?.length;
+  const slashCount = name.split('/')?.length;
   // Orgs (like @expo/config ) should have more than one slash to be a direct file.
   if (name.startsWith('@')) {
     return slashCount > 2;
@@ -53,29 +76,9 @@ export function moduleNameIsDirectFileReference(name: string): boolean {
   return slashCount > 1;
 }
 
-function resolveExpoPluginFile(root: string): string | null {
-  // Find the expo plugin root file
-  const pluginModuleFile = resolveFrom.silent(
-    root,
-    // use ./ so it isn't resolved as a node module
-    `./${pluginFileName}`
-  );
-
-  // If the default expo plugin file exists use it.
-  if (pluginModuleFile && fileExists(pluginModuleFile)) {
-    return pluginModuleFile;
-  }
-  return null;
-}
-
-function findUpPlugin(root: string): { filePath: string; isPluginFile: boolean } {
-  // Get the closest package.json to the node module
-  const packageJson = findUpPackageJson(root);
-  // resolve the root folder for the node module
-  const moduleRoot = path.dirname(packageJson);
-  // use whatever the initial resolved file was ex: `node_modules/my-package/index.js` or `./something.js`
-  const pluginFile = resolveExpoPluginFile(moduleRoot);
-  return { filePath: pluginFile ?? root, isPluginFile: !!pluginFile };
+export function moduleNameIsPackageReference(name: string): boolean {
+  const slashCount = name.split('/')?.length;
+  return name.startsWith('@') ? slashCount === 2 : slashCount === 1;
 }
 
 export function normalizeStaticPlugin(plugin: StaticPlugin | ConfigPlugin | string): StaticPlugin {

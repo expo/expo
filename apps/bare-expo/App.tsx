@@ -1,12 +1,21 @@
+import { ThemeProvider } from 'ThemeProvider';
+import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
+
 let Notifications;
 try {
   Notifications = require('expo-notifications');
 } catch {
   // do nothing
 }
+
+Splashscreen.setOptions({ fade: true });
+
+// Require the `BackgroundFetchScreen` component from `native-component-list` if it's available
+// so that we load the module and register its background task on startup.
+optionalRequire(() => require('native-component-list/src/screens/BackgroundFetchScreen'));
 
 const loadAssetsAsync =
   optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??
@@ -20,6 +29,7 @@ function useLoaded() {
     loadAssetsAsync()
       .then(() => {
         if (isMounted) setLoaded(true);
+        Splashscreen.hide();
       })
       .catch((e) => {
         console.warn('Error loading assets: ' + e.message);
@@ -54,9 +64,5 @@ export default function Main() {
 
   const isLoaded = useLoaded();
 
-  if (!isLoaded) {
-    return null;
-  }
-
-  return <MainNavigator />;
+  return <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>;
 }

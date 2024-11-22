@@ -47,7 +47,7 @@ test.describe(inputDir, () => {
     const jsFile = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
       nodir: true,
     })[0].path;
-    expect(fs.readFileSync(jsFile, 'utf8')).toMatch(/__r\("index.js"\);/);
+    expect(fs.readFileSync(jsFile, 'utf8')).toMatch(/__r\("packages\/expo-router\/entry.js"\);/);
 
     console.time('npx serve');
     await serveCmd.startAsync([inputDir]);

@@ -5,12 +5,7 @@ import { ConfigAPI, NodePath, types } from '@babel/core';
 import nodePath from 'path';
 import resolveFrom from 'resolve-from';
 
-import {
-  getExpoRouterAbsoluteAppRoot,
-  getPlatform,
-  getPossibleProjectRoot,
-  getAsyncRoutes,
-} from './common';
+import { getExpoRouterAbsoluteAppRoot, getPossibleProjectRoot, getAsyncRoutes } from './common';
 
 const debug = require('debug')('expo:babel:router');
 
@@ -28,14 +23,12 @@ function getExpoRouterAppRoot(projectRoot: string, appFolder: string) {
  * Inlines environment variables to configure the process:
  *
  * EXPO_PROJECT_ROOT
- * EXPO_PUBLIC_USE_STATIC
  * EXPO_ROUTER_ABS_APP_ROOT
  * EXPO_ROUTER_APP_ROOT
  * EXPO_ROUTER_IMPORT_MODE
  */
 export function expoRouterBabelPlugin(api: ConfigAPI & { types: typeof types }) {
   const { types: t } = api;
-  const platform = api.caller(getPlatform);
   const possibleProjectRoot = api.caller(getPossibleProjectRoot);
   const asyncRoutes = api.caller(getAsyncRoutes);
   const routerAbsoluteRoot = api.caller(getExpoRouterAbsoluteAppRoot);
@@ -56,18 +49,6 @@ export function expoRouterBabelPlugin(api: ConfigAPI & { types: typeof types }) 
             // Used for log box on web.
             if (key.value.startsWith('EXPO_PROJECT_ROOT')) {
               path.replaceWith(t.stringLiteral(projectRoot));
-            } else if (
-              // TODO: Add cache invalidation.
-              key.value.startsWith('EXPO_PUBLIC_USE_STATIC')
-            ) {
-              if (platform === 'web') {
-                const isStatic =
-                  process.env.EXPO_PUBLIC_USE_STATIC === 'true' ||
-                  process.env.EXPO_PUBLIC_USE_STATIC === '1';
-                path.replaceWith(t.booleanLiteral(isStatic));
-              } else {
-                path.replaceWith(t.booleanLiteral(false));
-              }
             } else if (key.value.startsWith('EXPO_ROUTER_IMPORT_MODE')) {
               path.replaceWith(t.stringLiteral(asyncRoutes ? 'lazy' : 'sync'));
             }

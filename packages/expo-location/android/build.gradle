@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '17.0.1'
+version = '18.0.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,13 +14,11 @@ android {
   namespace "expo.modules.location"
   defaultConfig {
     versionCode 29
-    versionName "17.0.1"
+    versionName "18.0.2"
   }
 }
 
 dependencies {
   api 'com.google.android.gms:play-services-location:21.0.1'
-  api('io.nlopez.smartlocation:library:3.3.3') {
-    transitive = false
-  }
+  implementation project(":${project.name}\$io.nlopez.smartlocation-jetified-aar")
 }

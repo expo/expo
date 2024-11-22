@@ -181,11 +181,11 @@ export async function openBrowserAsync(
 /**
  * Dismisses the presented web browser.
  *
- * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
+ * @return The promise that resolves with `{ type: 'dismiss' }` on the successful attempt or throws an error if dismiss functionality is not available.
  * @platform ios
  */
-export function dismissBrowser(): void {
-  ExponentWebBrowser.dismissBrowser?.();
+export function dismissBrowser(): Promise<{ type: WebBrowserResultType.DISMISS }> {
+  return ExponentWebBrowser.dismissBrowser?.();
 }
 
 // @needsAudit
@@ -325,17 +325,10 @@ function _processOptions(options: WebBrowserOpenOptions) {
   };
 }
 
-/* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
+/* Android polyfill for ASWebAuthenticationSession flow */
 
 function _authSessionIsNativelySupported(): boolean {
-  if (Platform.OS === 'android') {
-    return false;
-  } else if (Platform.OS === 'web') {
-    return true;
-  }
-
-  const versionNumber = parseInt(String(Platform.Version), 10);
-  return versionNumber >= 11;
+  return Platform.OS !== 'android';
 }
 
 let _redirectSubscription: EmitterSubscription | null = null;

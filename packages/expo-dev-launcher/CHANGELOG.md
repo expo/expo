@@ -8,8 +8,108 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 5.0.16 — 2024-11-22
+
+### 💡 Others
+
+- Fixed compatibility for React Native 0.77. ([#33081](https://github.com/expo/expo/pull/33081) by [@kudo](https://github.com/kudo))
+
+## 5.0.15 — 2024-11-19
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.14 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.13 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.12 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.11 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.10 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
+- Fixed build error when `EX_DEV_CLIENT_NETWORK_INSPECTOR` is false. ([#32644](https://github.com/expo/expo/pull/32644) by [@kudo](https://github.com/kudo))
+- [iOS] Fix handling deep links ([#32677](https://github.com/expo/expo/pull/32677) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.9 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.8 — 2024-10-31
+
+### 💡 Others
+
+- Truncate runtime version in settings screen ([#32489](https://github.com/expo/expo/pull/32489) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.7 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.6 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.4 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fixed `java.nio.channels.ClosedChannelException` crash from network inspector. ([#32352](https://github.com/expo/expo/pull/32352) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Skipped internal bundles from debugging targets. ([#32322](https://github.com/expo/expo/pull/32322) by [@kudo](https://github.com/kudo))
+
+## 5.0.3 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- Fixed network inspector support for react-native 0.76. ([#32290](https://github.com/expo/expo/pull/32290) by [@kudo](https://github.com/kudo))
+
+## 5.0.2 — 2024-10-24
+
+### 🎉 New features
+
+- Add support for react-native 0.76 ([#32285](https://github.com/expo/expo/pull/32285) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30861](https://github.com/expo/expo/pull/30861) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Added other debuggable variants for network inspector by referring the `react.debuggableVariants`. ([#32014](https://github.com/expo/expo/pull/32014) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
 - Fix swift and c compiler debug flags for expo dev launcher in debug configurations. ([#30159](https://github.com/expo/expo/pull/30159) by [@matinzd](https://github.com/matinzd))
 - [Android] Fix `"launchMode": "launcher"` support. ([#30004](https://github.com/expo/expo/pull/30004) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Skip dev server websocket connection for expo updates. ([#30535](https://github.com/expo/expo/pull/30535) by [@joeporpeglia](https://github.com/joeporpeglia))
+- Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
@@ -18,10 +118,35 @@
 - Fix and update link for `expo-dev-client` in package's README. ([#30162](https://github.com/expo/expo/pull/30162) by [@amandeepmittal](https://github.com/amandeepmittal)).
 - Fixed broken unit test on iOS 17 where `URL()` without scheme returns nil. ([#30178](https://github.com/expo/expo/pull/30178) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
+- Refactor expo-updates context injection ([#31951](https://github.com/expo/expo/pull/31951) by [@wschurman](https://github.com/wschurman))
+- Remove unused `semver` dependency. ([#32063](https://github.com/expo/expo/pull/32063) by [@kitten](https://github.com/kitten))
+- [ios] Remove appContext property from updates interface. ([#32103](https://github.com/expo/expo/pull/32103) by [@wschurman](https://github.com/wschurman))
+- Fixed broken unit tests since React Native 0.76 bump. ([#32210](https://github.com/expo/expo/pull/32210) by [@kudo](https://github.com/kudo))
+
+## 4.0.27 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.26 - 2024-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.23 - 2024-07-29
 
 ### 🐛 Bug fixes
 
-- [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fixed the "Connect to Metro to develop JavaScript" banner lingering on iOS. ([#30663](https://github.com/expo/expo/pull/30663) by [@kudo](https://github.com/kudo))
+
+## 4.0.22 - 2024-07-03
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.74.3. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.0.21 - 2024-06-27
+
+_This version does not introduce any user-facing changes._
 
 ## 4.0.20 - 2024-06-13
 

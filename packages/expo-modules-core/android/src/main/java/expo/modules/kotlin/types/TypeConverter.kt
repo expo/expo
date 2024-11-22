@@ -40,7 +40,7 @@ abstract class NullAwareTypeConverter<Type : Any>(
   private val isOptional: Boolean
 ) : TypeConverter<Type>() {
   override fun convert(value: Any?, context: AppContext?): Type? {
-    if (value == null || value is Dynamic && value.isNull()) {
+    if (value == null || value is Dynamic && value.isNull) {
       if (isOptional) {
         return null
       }

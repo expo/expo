@@ -6,7 +6,8 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import { AndroidConfig, IOSConfig } from '..';
+import * as AndroidVersion from '../android/Version';
+import * as IOSVersion from '../ios/Version';
 
 export type ExpoConfigUpdates = Pick<
   ExpoConfig,
@@ -39,14 +40,14 @@ export function getNativeVersion(
   },
   platform: 'android' | 'ios'
 ): string {
-  const version = IOSConfig.Version.getVersion(config);
+  const version = IOSVersion.getVersion(config);
   switch (platform) {
     case 'ios': {
-      const buildNumber = IOSConfig.Version.getBuildNumber(config);
+      const buildNumber = IOSVersion.getBuildNumber(config);
       return `${version}(${buildNumber})`;
     }
     case 'android': {
-      const versionCode = AndroidConfig.Version.getVersionCode(config);
+      const versionCode = AndroidVersion.getVersionCode(config);
       return `${version}(${versionCode})`;
     }
     default: {
@@ -135,6 +136,14 @@ export function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): b
   }
 
   return getUpdateUrl(config) !== null;
+}
+
+export function getUpdatesUseEmbeddedUpdate(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
+  if (config.updates?.useEmbeddedUpdate !== undefined) {
+    return config.updates.useEmbeddedUpdate;
+  }
+
+  return true;
 }
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {

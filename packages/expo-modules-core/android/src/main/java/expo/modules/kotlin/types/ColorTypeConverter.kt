@@ -173,14 +173,14 @@ class ColorTypeConverter(
   isOptional: Boolean
 ) : DynamicAwareTypeConverters<Color>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): Color {
-    return when (value.getType()) {
+    return when (value.type) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
       ReadableType.String -> colorFromString(value.asString())
       ReadableType.Array -> {
         val colorsArray = value.asArray().toArrayList().map { it as Double }.toDoubleArray()
         colorFromDoubleArray(colorsArray)
       }
-      else -> throw UnexpectedException("Unknown argument type: ${value.getType()}")
+      else -> throw UnexpectedException("Unknown argument type: ${value.type}")
     }
   }
 

@@ -74,6 +74,10 @@ exports[`extractExpoPathFromURL Bare parses "scheme://expo-development-client/?u
 
 exports[`extractExpoPathFromURL Bare parses "scheme://expo-development-client/?url=http://acme.com/foo/bar?query=param" 1`] = `"foo/bar?query=param"`;
 
+exports[`extractExpoPathFromURL Bare parses "scheme_with|unusual%characters:///" 1`] = `""`;
+
+exports[`extractExpoPathFromURL Bare parses "scheme_with|unusual%characters://expo.host/?hello-bar" 1`] = `"expo.host/?hello-bar"`;
+
 exports[`extractExpoPathFromURL Expo Go parses "app.bacon.expo://expo-development-client" 1`] = `""`;
 
 exports[`extractExpoPathFromURL Expo Go parses "custom://" 1`] = `""`;
@@ -147,6 +151,10 @@ exports[`extractExpoPathFromURL Expo Go parses "scheme://expo-development-client
 exports[`extractExpoPathFromURL Expo Go parses "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%2Fexample%2Fpath" 1`] = `"example/path"`;
 
 exports[`extractExpoPathFromURL Expo Go parses "scheme://expo-development-client/?url=http://acme.com/foo/bar?query=param" 1`] = `"foo/bar?query=param"`;
+
+exports[`extractExpoPathFromURL Expo Go parses "scheme_with|unusual%characters:///" 1`] = `""`;
+
+exports[`extractExpoPathFromURL Expo Go parses "scheme_with|unusual%characters://expo.host/?hello-bar" 1`] = `"expo.host/?hello-bar"`;
 
 exports[`parsePathFromExpoGoLink parses "exp://127.0.0.1:19000/--/test/path?query=param" 1`] = `"test/path?query=param"`;
 

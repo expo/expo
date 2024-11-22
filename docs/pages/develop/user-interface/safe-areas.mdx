@@ -3,13 +3,13 @@ title: Safe areas
 description: Learn how to add safe areas for screen components inside your Expo project.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
 
-Creating a safe area ensures your app screen's content is positioned correctly. This means it doesn't get overlapped by notches, status bars, home indicators, and other interface elements. When the content gets overlapped, it gets concealed by these interface elements.
+Creating a safe area ensures your app screen's content is positioned correctly. This means it doesn't get overlapped by notches, status bars, home indicators, and other interface elements that are part of the device's physical hardware or are controlled by the operating system. When the content gets overlapped, it gets concealed by these interface elements.
 
-Here's an example of an app screen's content concealed by the status bar on Android. On iOS, the same content is concealed by rounded corners, notch, and the status bar.
+Here's an example of an app screen's content getting concealed by the status bar on Android. On iOS, the same content is concealed by rounded corners, notch, and the status bar.
 
 <ContentSpotlight
   alt="Without defining a safe area, the content can be obscured by the device's interface elements."
@@ -37,31 +37,7 @@ You can skip installing `react-native-safe-area-context` if you have created a p
 
 ### Usage
 
-<Step label="1">
-
-Import and add [`SafeAreaProvider`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaprovider). If your project uses Expo Router, add it to the [root layout (**app/\_layout.tsx**)](/develop/file-based-routing/#_layout-file) file. Otherwise, add it to the root component file (such as **App.tsx**).
-
-```tsx app/_layout.tsx
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-function RootLayout() {
-  return (
-    <SafeAreaProvider>
-      <Stack>
-        <Screen name="index" options={{ headerShown: false }} />
-      </Stack>
-    </SafeAreaProvider>
-  );
-}
-```
-
-> **Note:** In the above example, the `Stack` is wrapping one screen. Your project's root layout file may have more than one screen. The `index` screen is used here an example to represent a screen component.
-
-</Step>
-
-<Step label="2">
-
-Use [`SafeAreaView`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaview) to wrap the content of your screen's component. It is a regular `<View>` with the safe area insets applied as extra padding or margin.
+You can directly use [`SafeAreaView`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaview) to wrap the content of your screen's component. It is a regular `<View>` with the safe area insets applied as extra padding or margin.
 
 ```tsx app/index.tsx
 import { Text } from 'react-native';
@@ -76,7 +52,21 @@ export default function HomeScreen() {
 }
 ```
 
-</Step>
+<Collapsible summary="Using a different Expo template and don't have Expo Router installed?">
+
+Import and add [`SafeAreaProvider`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaprovider) to the root component file (such as **App.tsx**) before using `SafeAreaView` in your screen component.
+
+```tsx App.tsx
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+export default function App() {
+  return (
+    return <SafeAreaProvider>...</SafeAreaProvider>;
+  );
+}
+```
+
+</Collapsible>
 
 ## Alternate: `useSafeAreaInsets` hook
 

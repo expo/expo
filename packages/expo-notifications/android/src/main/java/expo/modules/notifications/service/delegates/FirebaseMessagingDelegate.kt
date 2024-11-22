@@ -2,17 +2,18 @@ package expo.modules.notifications.service.delegates
 
 import android.content.Context
 import com.google.firebase.messaging.RemoteMessage
-import expo.modules.notifications.notifications.JSONNotificationContentBuilder
+import expo.modules.interfaces.taskManager.TaskServiceProviderHelper
 import expo.modules.notifications.notifications.RemoteMessageSerializer
 import expo.modules.notifications.notifications.background.BackgroundRemoteNotificationTaskConsumer
+import expo.modules.notifications.notifications.debug.DebugLogging
+import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
+import expo.modules.notifications.notifications.model.RemoteNotificationContent
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
-import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -86,20 +87,31 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     sLastToken = token
   }
 
-  fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
+  private fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
-    NotificationsService.receive(context, createNotification(remoteMessage))
+    // the entry point for notifications. For its behavior, see table at https://firebase.google.com/docs/cloud-messaging/android/receive
+    DebugLogging.logRemoteMessage("FirebaseMessagingDelegate.onMessageReceived: message", remoteMessage)
+    val notification = createNotification(remoteMessage)
+    DebugLogging.logNotification("FirebaseMessagingDelegate.onMessageReceived: notification", notification)
+    NotificationsService.receive(context, notification)
+    runTaskManagerTasks(remoteMessage)
+  }
+
+  private fun runTaskManagerTasks(remoteMessage: RemoteMessage) {
+    // getTaskServiceImpl() has a side effect:
+    // the TaskService constructor calls restoreTasks which then constructs a BackgroundRemoteNotificationTaskConsumer,
+    // and the getBackgroundTasks() call below doesn't return an empty collection.
+    TaskServiceProviderHelper.getTaskServiceImpl(context.applicationContext)
     getBackgroundTasks().forEach {
-      it.scheduleJob(RemoteMessageSerializer.toBundle(remoteMessage))
+      it.executeTask(RemoteMessageSerializer.toBundle(remoteMessage))
     }
   }
 
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {
     val identifier = getNotificationIdentifier(remoteMessage)
-    val payload = JSONObject(remoteMessage.data as Map<*, *>)
-    val content = JSONNotificationContentBuilder(context).setPayload(payload).build()
-    val request = createNotificationRequest(identifier, content, FirebaseNotificationTrigger(remoteMessage))
+
+    val request = createNotificationRequest(identifier, RemoteNotificationContent(remoteMessage), FirebaseNotificationTrigger(remoteMessage))
     return Notification(request, Date(remoteMessage.sentTime))
   }
 
@@ -109,12 +121,12 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
    * the existing notification is replaced, but the ID can remain constant.
    */
   protected fun getNotificationIdentifier(remoteMessage: RemoteMessage): String {
-    return remoteMessage.data?.get("tag") ?: remoteMessage.messageId ?: UUID.randomUUID().toString()
+    return remoteMessage.data["tag"] ?: remoteMessage.messageId ?: UUID.randomUUID().toString()
   }
 
   protected open fun createNotificationRequest(
     identifier: String,
-    content: NotificationContent,
+    content: INotificationContent,
     notificationTrigger: FirebaseNotificationTrigger
   ): NotificationRequest {
     return NotificationRequest(identifier, content, notificationTrigger)

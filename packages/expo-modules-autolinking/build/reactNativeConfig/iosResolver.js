@@ -12,10 +12,13 @@ async function resolveDependencyConfigImplIosAsync(packageRoot, reactNativeConfi
         // Skip autolinking for this package.
         return null;
     }
-    const podspecPath = (await (0, fast_glob_1.default)('*.podspec', { cwd: packageRoot, absolute: true }))?.[0];
-    if (!podspecPath) {
+    const podspecs = await (0, fast_glob_1.default)('*.podspec', { cwd: packageRoot });
+    if (!podspecs?.length) {
         return null;
     }
+    const mainPackagePodspec = path_1.default.basename(packageRoot) + '.podspec';
+    const podspecFile = podspecs.includes(mainPackagePodspec) ? mainPackagePodspec : podspecs[0];
+    const podspecPath = path_1.default.join(packageRoot, podspecFile);
     const packageJson = JSON.parse(await promises_1.default.readFile(path_1.default.join(packageRoot, 'package.json'), 'utf8'));
     return {
         podspecPath,

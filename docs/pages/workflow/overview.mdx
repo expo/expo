@@ -5,7 +5,6 @@ description: An overview of the development process of building an Expo app to h
 
 import { DocsLogo } from '@expo/styleguide';
 
-import Highlight from '~/components/plugins/Highlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Diagram } from '~/ui/components/Diagram';
@@ -110,7 +109,7 @@ The following three commands result in more or less the same project:
     '',
     '$ npx create-expo-app --template bare-minimum',
     '',
-    '$ npx react-native init MyApp && cd MyApp && npx install-expo-modules',
+    '$ npx @react-native-community/cli@latest init MyApp && cd MyApp && npx install-expo-modules',
   ]}
 />
 
@@ -189,12 +188,15 @@ In most cases, you will create and use a development build of your project. You 
 
 The core development loop described in the diagram above is a cycle of four main activities that you typically go through when developing an app.
 
-- <Highlight isBlue>**Write and run JavaScript code**</Highlight>: This involves creating
-  components, writing business logic, or installing libraries from npm that don't require native
+- #### Write and run JavaScript code
+
+  This involves creating components, writing business logic, or installing libraries from npm that don't require native
   code changes. The changes you make here are reflected in your app without needing any interaction
   with the native side of your app.
 
-- <Highlight isBlue>**Update app configuration**</Highlight>: This involves modifying your app's
+- #### Update app configuration
+
+  This involves modifying your app's
   configuration using the app config file (**app.json** or **app.config.js**). It includes updating
   your app's name, icon, splash screen, and other properties. These changes don't all affect the
   native project directly. However, if you make changes that affect the native projects, you can use
@@ -203,13 +205,15 @@ The core development loop described in the diagram above is a cycle of four main
   reference](/versions/latest/config/app/) for a complete list of properties available in the app
   config file.
 
-- <Highlight isBlue>**Write native code or modify native project configuration**</Highlight>: This
-  includes writing native code directly or modifying native code configuration. You either need
+- #### Write native code or modify native project configuration
+
+  This includes writing native code directly or modifying native code configuration. You either need
   access to the native code project directories to make these changes, or you can write native code
   with a [local Expo Module](/modules/get-started/#adding-a-new-module-to-an-existing-application).
 
-- <Highlight isBlue>**Install a library that requires native code modifications**</Highlight>: This
-  includes that a library requires making changes to the native code project configuration. Either
+- #### Install a library that requires native code modifications
+
+  This includes that a library requires making changes to the native code project configuration. Either
   the library provides a config plugin or steps to take to update the app config. Like the previous
   activity, this also requires you to create a development build.
 
@@ -227,13 +231,13 @@ The next step to developing an app is to share your app with your team, with bet
 
 If you are using EAS Build, we recommend going through [Internal distribution](/build/internal-distribution/) to learn more about sharing your app for testing.
 
-If you compile your app locally, you can create [release builds locally](/deploy/build-project/#production-builds-locally).
+If you compile your app locally, you can create [production builds locally](/guides/local-app-production/).
 
 ## Release app to stores
 
 To release your app on the app stores, you can use [EAS Submit](/submit/introduction/). For more information on using EAS Submit, see [Submit to Google Play Store](/submit/android/) and [Submit to Apple App Store](/submit/ios/).
 
-To create a release build locally, see [release builds locally](/deploy/build-project/#production-builds-locally) and then go through the app stores guide to submit your app.
+To create a production build locally, see the [guide](/guides/local-app-production/) on the same and then go through the app stores guide to submit your app.
 
 ## Monitor app in production
 
@@ -245,4 +249,4 @@ Analytics allows you to track how users interact with your app. See [analytics o
 
 The `expo-updates` library allows you to programmatically make instant updates to your app's JavaScript available to your production app.
 
-You can use [EAS Update](/eas-update/introduction/) which provides first-class support for instant updates in a React Native app. It serves updates from the edge of a global CDN and uses modern networking protocols such as HTTP/3 for clients that support them. It is also [tailored for developers](/eas-update/develop-faster/) who use EAS Build. You can also use it for builds you have created [locally](/eas-update/build-locally/).
+You can use [EAS Update](/eas-update/introduction/) which provides first-class support for instant updates in a React Native app. It serves updates from the edge of a global CDN and uses modern networking protocols such as HTTP/3 for clients that support them. It is also [tailored for developers](/eas-update/develop-faster/) who use EAS Build. You can also use it for builds you have created [locally](/eas-update/standalone-service/).

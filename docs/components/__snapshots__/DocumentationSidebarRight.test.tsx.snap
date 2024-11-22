@@ -3,20 +3,19 @@
 exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="pt-14 pb-12 px-6 w-[280px]"
+    class="w-[280px] px-6 pb-12 pt-14"
     data-sidebar="true"
   >
     <p
-      class="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10 css-1t1p06f-TextComponent"
+      class="text-default text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium absolute z-10 -mt-14 mb-2 flex min-h-[32px] w-[248px] select-none items-center gap-2 bg-default pb-2 pt-4"
       data-text="true"
     >
       <svg
-        class="text-icon-default icon-sm"
+        class="text-icon-default translate-z icon-sm"
         fill="none"
         role="img"
         stroke="currentColor"
         viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
       >
         <g
           id="layout-alt-03-outline-icon"
@@ -32,19 +31,19 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </svg>
        On this page
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium gap-2 items-center whitespace-nowrap h-8 text-3xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 ml-auto mr-2 px-2 transition-opacity duration-300 opacity-0 pointer-events-none"
+        class="cursor-pointer inline-flex border border-solid rounded-md font-medium items-center whitespace-nowrap gap-1.5 h-8 text-3xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 ml-auto mr-2 px-2 transition-opacity duration-300 pointer-events-none opacity-0"
         type="button"
       >
         <span
           class="flex self-center text-inherit leading-none"
         >
           <svg
-            class="icon-sm text-icon-secondary"
+            aria-label="Scroll to top"
+            class="translate-z icon-sm text-icon-secondary"
             fill="none"
             role="img"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <g
               id="arrow-circle-up-outline-icon"
@@ -62,38 +61,36 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </button>
     </p>
     <a
-      class="flex mb-1.5 truncate items-center justify-between !text-pretty focus-visible:relative focus-visible:z-10"
+      class="mb-1.5 flex items-center justify-between truncate !text-pretty focus-visible:relative focus-visible:z-10"
       data-state="closed"
       href="#base-level-heading"
     >
       <p
-        class="w-full !text-secondary hocus:!text-link css-1yjys1n-TextComponent"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
         data-text="true"
       >
         Base level heading
       </p>
     </a>
     <a
-      class="flex mb-1.5 truncate items-center justify-between !text-pretty focus-visible:relative focus-visible:z-10"
+      class="mb-1.5 flex items-center justify-between truncate !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
       data-state="closed"
       href="#level-3-subheading"
-      style="padding-left: 12px;"
     >
       <p
-        class="w-full !text-secondary hocus:!text-link css-1yjys1n-TextComponent"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
         data-text="true"
       >
         Level 3 subheading
       </p>
     </a>
     <a
-      class="flex mb-1.5 truncate items-center justify-between !text-pretty focus-visible:relative focus-visible:z-10"
+      class="mb-1.5 flex items-center justify-between truncate !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
       data-state="closed"
       href="#code-heading-depth-1"
-      style="padding-left: 12px;"
     >
       <code
-        class="w-full !text-secondary hocus:!text-link truncate !text-2xs css-yszm2s-TextComponent"
+        class="leading-[1.6154] text-default w-full !text-secondary hocus:!text-link truncate !text-2xs"
         data-text="true"
       >
         Code heading depth 1

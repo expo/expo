@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridgeModule.h>
+#import <React/React-Core-umbrella.h>
 
 // Escape hatch for modules that both have to depend on React Native
 // and want to be exported as an internal universal module.

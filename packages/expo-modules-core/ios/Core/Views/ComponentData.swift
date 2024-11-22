@@ -56,6 +56,17 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
       log.warn("App context has been lost")
       return
     }
+
+    // Props are set differently in SwiftUI hosting views – delegate the work to `ExpoSwiftUI.HostingView`.
+    if let hostingView = view as? ExpoSwiftUI.AnyHostingView {
+      hostingView.updateProps(props)
+
+      // Pass props to React too, to apply layout and styles for the hosting view.
+      super.setProps(props, forView: view)
+
+      return
+    }
+
     let propsDict = viewDefinition.propsDict()
     var remainingProps = props
 
@@ -88,9 +99,9 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
     let superClass: AnyClass? = managerClass.superclass()
 
     if let viewDefinition = moduleHolder?.definition.view {
-      for prop in viewDefinition.props {
+      for propName in viewDefinition.getSupportedPropNames() {
         // `id` allows every type to be passed in
-        propTypes[prop.name] = "id"
+        propTypes[propName] = "id"
       }
       for eventName in viewDefinition.eventNames {
         directEvents.append(RCTNormalizeInputEventName(eventName))

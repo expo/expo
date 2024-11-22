@@ -2,23 +2,20 @@ import React, { useState } from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
 import AudioModeSelector from './AudioModeSelector';
-import Player from './AudioPlayer';
+import AudioPlayer from './AudioPlayer';
 import Recorder from './Recorder';
 import HeadingText from '../../../components/HeadingText';
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-
 export default function RecordingScreen() {
-  const [recordingUri, setRecordingUri] = useState<string | undefined>(undefined);
+  const [uri, setUri] = useState<string | undefined>(undefined);
 
-  const onRecordingFinished = (recordingUri: string) => setRecordingUri(recordingUri);
+  const onRecordingFinished = (recordingUri: string) => setUri(recordingUri);
 
   const maybeRenderLastRecording = () => {
-    return recordingUri ? (
+    return uri ? (
       <>
         <HeadingText>Last recording</HeadingText>
-        <Player source={{ uri: recordingUri }} />
+        <AudioPlayer source={{ uri }} />
       </>
     ) : null;
   };

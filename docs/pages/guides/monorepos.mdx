@@ -10,7 +10,13 @@ Monorepos, or _"monolithic repositories"_, are single repositories containing mu
 
 > **warning** Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds more complexity, and often requires specific tooling configuration. You can get far with just a single repository.
 
-## Example monorepo
+## Automatic configuration
+
+Starting from **SDK 48**, Expo automatically detects and configures monorepos using [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), or [yarn](https://yarnpkg.com/features/workspaces). From **SDK 52**, Expo also automatically sets up monorepos using [pnpm](https://pnpm.io/workspaces). The detection is based on the workspaces configuration in your project.
+
+> **info** Expo's automatic monorepo setup adds all workspaces in your monorepo as `watchFolders` to Metro. This might slow Metro down for larger monorepos. You can also manually configure which folders Metro should watch by changing the `watchFolders` in your **metro.config.js**, see [Modify the Metro config](#modify-the-metro-config).
+
+## Manual configuration
 
 In this example, we will set up a monorepo using Yarn workspaces without the [nohoist](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/) option. We will assume some familiar names, but you can fully customize them. After this guide, our basic structure should look like this:
 
@@ -58,7 +64,7 @@ After copying or creating the first app, run `yarn` to check for common warnings
 
 #### Modify the Metro config
 
-Expo's Metro config has monorepo support for bun, npm, and yarn. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/). If that's the case, you can skip this step.
+Expo's Metro config has monorepo support for bun, npm, yarn, and pnpm. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/). If that's the case, you can skip this step.
 
 To configure a monorepo with Metro manually, there are two main changes:
 
@@ -131,6 +137,8 @@ config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(monorepoRoot, 'node_modules'),
 ];
+
+module.exports = config;
 ```
 
 </Collapsible>
@@ -167,7 +175,7 @@ registerRootComponent(App);
 
 > This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
 
-If you are using [Expo Router](/router/introduction/), define the [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables) environment variable when running the `npx expo start` command. It enables the auto server root detection for Metro.
+If you are using [Expo Router](/router/introduction/), do not change the default entrypoint. When running `npx expo start` command, use the [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables). It enables the auto server root detection for Metro.
 
 <Terminal cmd={['$ EXPO_USE_METRO_WORKSPACE_ROOT=1 npx expo start']} />
 
@@ -218,7 +226,7 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.73.0",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
@@ -340,12 +348,4 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 
 In the snippets above, you can see that we use Node's own [`require.resolve()`](https://nodejs.org/api/modules.html#requireresolverequest-options) method to find the package location. We explicitly refer to `package.json` because we want to find the root location of the package, not the location of the entry point. And with that root location, we can resolve to the expected relative path within the package. [Learn more about these references here](https://github.com/expo/expo/blob/4633ab2364e30ea87ca2da968f3adaf5cdde9d8b/packages/expo-modules-core/README.mdx#importing-native-dependencies---autolinking).
 
-All Expo SDK modules and templates have these dynamic references and work with monorepos. But, occasionally, you might run into packages that still use the hardcoded path. You can manually edit it with [patch-package](https://github.com/ds300/patch-package#readme) or mention this to the package maintainers.
-
-### Remove expo-yarn-workspaces
-
-Before SDK 43, `expo-yarn-workspaces` was the recommended way to use Yarn workspaces with your Expo project. It was used to symlink all required dependencies back to the app's **node_modules** directory. Although this works for most apps, it has some flaws. For example, it doesn't work well with multiple versions of the same package.
-
-We made some significant changes with Expo SDK 43 to improve support for monorepos. [The auto linker in the newer Expo modules](https://blog.expo.dev/whats-new-in-expo-modules-infrastructure-7a7cdda81ebc) now also looks for packages in parent **node_modules** directories. None of our native files inside our template contain hardcoded paths to packages.
-
-If you are following this guide, you should remove that package from your project's dependencies.
+All Expo SDK modules and templates have these dynamic references and work with monorepos. However, occasionally, you might run into packages that still use the hardcoded path. You can manually edit it with [`patch-package`](https://github.com/ds300/patch-package#readme) or mention this to the package maintainers.

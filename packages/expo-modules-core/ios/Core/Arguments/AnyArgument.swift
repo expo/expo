@@ -16,23 +16,80 @@ extension AnyArgument {
 // Extend the primitive types — these may come from React Native bridge.
 extension Bool: AnyArgument {}
 
-extension Int: AnyArgument {}
-extension Int8: AnyArgument {}
-extension Int16: AnyArgument {}
-extension Int32: AnyArgument {}
-extension Int64: AnyArgument {}
+extension Int: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: Int.self)
+  }
+}
+extension Int8: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: Int8.self)
+  }
+}
+extension Int16: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: Int16.self)
+  }
+}
+extension Int32: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: Int32.self)
+  }
+}
+extension Int64: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: Int64.self)
+  }
+}
 
-extension UInt: AnyArgument {}
-extension UInt8: AnyArgument {}
-extension UInt16: AnyArgument {}
-extension UInt32: AnyArgument {}
-extension UInt64: AnyArgument {}
+extension UInt: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: UInt.self)
+  }
+}
+extension UInt8: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: UInt8.self)
+  }
+}
+extension UInt16: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: UInt16.self)
+  }
+}
+extension UInt32: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: UInt32.self)
+  }
+}
+extension UInt64: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: UInt64.self)
+  }
+}
 
-extension Float32: AnyArgument {}
-extension Double: AnyArgument {}
-extension CGFloat: AnyArgument {}
+extension Float32: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: Float32.self)
+  }
+}
+extension Double: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: Double.self)
+  }
+}
 
-extension String: AnyArgument {}
+extension CGFloat: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicNumberType(numberType: CGFloat.self)
+  }
+}
+
+extension String: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicStringType.shared
+  }
+}
 
 extension Optional: AnyArgument where Wrapped: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
@@ -54,6 +111,6 @@ extension Array: AnyArgument {
 
 extension Data: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
-    return DynamicDataType()
+    return DynamicDataType.shared
   }
 }

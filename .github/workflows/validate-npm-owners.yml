@@ -1,0 +1,35 @@
+name: Validate owners of packages on npm
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 8 * * *' # 8:00 AM UTC time every day
+
+jobs:
+  validate-npm-owners:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-tools: 'true'
+      - name: 🔎 Validate
+        run: expotools validate-npm-owners
+        env:
+          NPM_TOKEN_READ_ONLY: ${{ secrets.NPM_TOKEN_READ_ONLY }}
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+        with:
+          channel: '#expo-sdk'
+          status: ${{ job.status }}
+          fields: job,message,ref,eventName,author,took
+          author_name: Validate npm owners
+

@@ -1,7 +1,9 @@
 import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
+import npmPackageArg from 'npm-package-arg';
 import semver from 'semver';
+import semverRangeSubset from 'semver/ranges/subset';
 
 import { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
@@ -124,14 +126,62 @@ export async function getVersionedDependenciesAsync(
 
   if (pkg?.expo?.install?.exclude) {
     const packagesToExclude = pkg.expo.install.exclude;
-    const incorrectAndExcludedDeps = incorrectDeps.filter((dep) =>
-      packagesToExclude.includes(dep.packageName)
+
+    // Parse the exclude list to ensure we can factor in any specified version ranges
+    const parsedPackagesToExclude = packagesToExclude.reduce(
+      (acc: Record<string, npmPackageArg.Result>, packageName: string) => {
+        const npaResult = npmPackageArg(packageName);
+        if (typeof npaResult.name === 'string') {
+          acc[npaResult.name] = npaResult;
+        } else {
+          acc[packageName] = npaResult;
+        }
+        return acc;
+      },
+      {}
     );
+
+    const incorrectAndExcludedDeps = incorrectDeps
+      .filter((dep) => {
+        if (parsedPackagesToExclude[dep.packageName]) {
+          const { name, raw, rawSpec, type } = parsedPackagesToExclude[dep.packageName];
+          const suggestedRange = combinedKnownPackages[name];
+
+          // If only the package name itself is specified, then we keep it in the exclude list
+          if (name === raw) {
+            return true;
+          } else if (type === 'version') {
+            return suggestedRange === rawSpec;
+          } else if (type === 'range') {
+            // Fall through exclusions if the suggested range is invalid
+            if (!semver.validRange(suggestedRange)) {
+              debug(
+                `Invalid semver range in combined known packages for package ${name} in expo.install.exclude: %O`,
+                suggestedRange
+              );
+              return false;
+            }
+
+            return semverRangeSubset(suggestedRange, rawSpec);
+          } else {
+            debug(
+              `Unsupported npm package argument type for package ${name} in expo.install.exclude: %O`,
+              type
+            );
+          }
+        }
+
+        return false;
+      })
+      .map((dep) => dep.packageName);
+
     debug(
       `Incorrect dependency warnings filtered out by expo.install.exclude: %O`,
-      incorrectAndExcludedDeps.map((dep) => dep.packageName)
+      incorrectAndExcludedDeps
     );
-    incorrectDeps = incorrectDeps.filter((dep) => !packagesToExclude.includes(dep.packageName));
+    incorrectDeps = incorrectDeps.filter(
+      (dep) => !incorrectAndExcludedDeps.includes(dep.packageName)
+    );
   }
 
   return incorrectDeps;
@@ -183,7 +233,7 @@ function findIncorrectDependencies(
   return incorrectDeps;
 }
 
-function isDependencyVersionIncorrect(
+export function isDependencyVersionIncorrect(
   packageName: string,
   actualVersion: string,
   expectedVersionOrRange?: string
@@ -197,8 +247,12 @@ function isDependencyVersionIncorrect(
     return semver.ltr(actualVersion, expectedVersionOrRange);
   }
 
-  // all other packages: version range is based on Expo SDK version, so we always want to match range
-  return !semver.intersects(expectedVersionOrRange, actualVersion);
+  // For all other packages, check if the actual version satisfies the expected range
+  const satisfies = semver.satisfies(actualVersion, expectedVersionOrRange, {
+    includePrerelease: true,
+  });
+
+  return !satisfies;
 }
 
 function findDependencyType(

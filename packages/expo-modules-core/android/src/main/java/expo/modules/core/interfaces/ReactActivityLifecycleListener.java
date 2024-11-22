@@ -11,6 +11,8 @@ public interface ReactActivityLifecycleListener {
 
   default void onPause(Activity activity) {}
 
+  default void onUserLeaveHint(Activity activity) {}
+
   default void onDestroy(Activity activity) {}
 
   /**

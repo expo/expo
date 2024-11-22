@@ -6,15 +6,36 @@
 // swiftlint:disable force_unwrapping
 
 import Foundation
+#if canImport(sqlite3)
 import sqlite3
+#else
+import SQLite3
+#endif
 
-enum UpdatesDatabaseInitializationError: Error {
-  case migrateAndRemoveOldDatabaseFailure
-  case moveExistingCorruptedDatabaseFailure
+enum UpdatesDatabaseInitializationError: Error, Sendable, LocalizedError {
+  case migrateAndRemoveOldDatabaseFailure(cause: Error)
+  case moveExistingCorruptedDatabaseFailure(cause: Error)
   case openAfterMovingCorruptedDatabaseFailure
   case openInitialDatabaseOtherFailure
   case openDatabaseFalure
   case databseSchemaInitializationFailure
+
+  var errorDescription: String? {
+    switch self {
+    case let .migrateAndRemoveOldDatabaseFailure(cause):
+      return "Failed to remove old database after failed migration: \(cause.localizedDescription)"
+    case let .moveExistingCorruptedDatabaseFailure(cause):
+      return "Failed to archive corrupted databse: \(cause.localizedDescription)"
+    case .openAfterMovingCorruptedDatabaseFailure:
+      return "Failed to open new database after corrupted database archive operation"
+    case .openInitialDatabaseOtherFailure:
+      return "Failed to open database: other failure"
+    case .openDatabaseFalure:
+      return "Failed to open database"
+    case .databseSchemaInitializationFailure:
+      return "Failed to initialize database schema"
+    }
+  }
 }
 
 /**
@@ -95,16 +116,17 @@ internal final class UpdatesDatabaseInitialization {
     shouldMigrate: Bool,
     migrations: [UpdatesDatabaseMigration]
   ) throws -> OpaquePointer {
+    let logger = UpdatesLogger()
     let dbUrl = directory.appendingPathComponent(filename)
     var shouldInitializeDatabaseSchema = !FileManager.default.fileExists(atPath: dbUrl.path)
 
-    let success = migrateDatabase(inDirectory: directory, migrations: migrations)
+    let success = migrateDatabase(inDirectory: directory, migrations: migrations, logger: logger)
     if !success {
       if FileManager.default.fileExists(atPath: dbUrl.path) {
         do {
           try FileManager.default.removeItem(atPath: dbUrl.path)
         } catch {
-          throw UpdatesDatabaseInitializationError.migrateAndRemoveOldDatabaseFailure
+          throw UpdatesDatabaseInitializationError.migrateAndRemoveOldDatabaseFailure(cause: error)
         }
       }
       shouldInitializeDatabaseSchema = true
@@ -120,7 +142,7 @@ internal final class UpdatesDatabaseInitialization {
     }
 
     if resultCode != SQLITE_OK {
-      NSLog("Error opening SQLite db: %@", [UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db).message])
+      logger.warn(message: "Error opening SQLite db: \(UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db).message)", code: .initializationError)
       sqlite3_close(db)
 
       if resultCode == SQLITE_CORRUPT || resultCode == SQLITE_NOTADB {
@@ -129,10 +151,10 @@ internal final class UpdatesDatabaseInitialization {
         do {
           try FileManager.default.moveItem(at: dbUrl, to: destinationUrl)
         } catch {
-          throw UpdatesDatabaseInitializationError.moveExistingCorruptedDatabaseFailure
+          throw UpdatesDatabaseInitializationError.moveExistingCorruptedDatabaseFailure(cause: error)
         }
 
-        NSLog("Moved corrupt SQLite db to %@", archivedDbFilename)
+        logger.info(message: "Moved corrupt SQLite db to %@ \(archivedDbFilename)")
         var dbInit2: OpaquePointer?
         guard sqlite3_open(dbUrl.path, &dbInit2) == SQLITE_OK else {
           throw UpdatesDatabaseInitializationError.openAfterMovingCorruptedDatabaseFailure
@@ -153,7 +175,7 @@ internal final class UpdatesDatabaseInitialization {
     do {
       _ = try UpdatesDatabaseUtils.execute(sql: "PRAGMA foreign_keys=ON;", withArgs: nil, onDatabase: db)
     } catch {
-      NSLog("Error turning on foreign key constraint: %@", [error.localizedDescription])
+      logger.warn(message: "Error turning on foreign key constraint: \(error.localizedDescription)")
     }
 
     if shouldInitializeDatabaseSchema {
@@ -165,7 +187,7 @@ internal final class UpdatesDatabaseInitialization {
     return db
   }
 
-  private static func migrateDatabase(inDirectory directory: URL, migrations: [UpdatesDatabaseMigration]) -> Bool {
+  private static func migrateDatabase(inDirectory directory: URL, migrations: [UpdatesDatabaseMigration], logger: UpdatesLogger) -> Bool {
     let latestURL = directory.appendingPathComponent(LatestFilename)
     if FileManager.default.fileExists(atPath: latestURL.path) {
       return true
@@ -190,13 +212,13 @@ internal final class UpdatesDatabaseInitialization {
     do {
       try FileManager.default.moveItem(atPath: existingURL.path, toPath: latestURL.path)
     } catch {
-      NSLog("Migration failed: failed to rename database file")
+      logger.warn(message: "Migration failed: failed to rename database file")
       return false
     }
 
     var db: OpaquePointer?
     if sqlite3_open(latestURL.path, &db) != SQLITE_OK {
-      NSLog("Error opening migrated SQLite db: %@", [UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message])
+      logger.warn(message: "Error opening migrated SQLite db: \(UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message)")
       sqlite3_close(db)
       return false
     }
@@ -205,7 +227,7 @@ internal final class UpdatesDatabaseInitialization {
     do {
       _ = try UpdatesDatabaseUtils.execute(sql: "PRAGMA foreign_keys=ON;", withArgs: nil, onDatabase: db!)
     } catch {
-      NSLog("Error turning on foreign key constraint: %@", [error.localizedDescription])
+      logger.warn(message: "Error turning on foreign key constraint: \(error.localizedDescription)")
     }
 
     for index in startingMigrationIndex..<migrations.count {
@@ -213,7 +235,7 @@ internal final class UpdatesDatabaseInitialization {
       do {
         try migration.runMigration(onDatabase: db!)
       } catch {
-        NSLog("Error migrating SQLite db: %@", [UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message])
+        logger.warn(message: "Error migrating SQLite db: \(UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message)")
         sqlite3_close(db)
         return false
       }
@@ -224,3 +246,6 @@ internal final class UpdatesDatabaseInitialization {
     return true
   }
 }
+
+// swiftlint:enable force_unwrapping
+// swiftlint:enable identifier_name

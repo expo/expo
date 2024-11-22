@@ -97,6 +97,7 @@ module.exports = withExpo({
   // older versions can use next-transpile-modules
   transpilePackages: [
     'react-native',
+    'react-native-web',
     'expo',
     // Add more React Native/Expo packages here...
   ],
@@ -114,6 +115,7 @@ const nextConfig = withExpo({
   swcMinify: true,
   transpilePackages: [
     'react-native',
+    'react-native-web',
     'expo',
     // Add more React Native/Expo packages here...
   ],
@@ -216,8 +218,9 @@ module.exports = withExpo({
     transpilePackages: [
       // NOTE: Even though `react-native` is never used in Next.js,
       // you need to list `react-native` because `react-native-web`
-      // is aliased to `react-native`. Adding `react-native-web` will not work.
+      // is aliased to `react-native`.
       'react-native',
+      'react-native-web',
       'expo',
       // Add more React Native/Expo packages here...
     ],
@@ -230,24 +233,33 @@ module.exports = withExpo({
 This is Vercel's preferred method for deploying Next.js projects to production.
 
 <Step label="1">
-  Add a **build** script to your **package.json**:
-  ```json package.json
-  {
-    "scripts": {
-      "build": "next build"
-    }
+
+Add a `build` script to your **package.json**:
+
+```json package.json
+{
+  "scripts": {
+    "build": "next build"
   }
-  ```
+}
+```
+
 </Step>
 
 <Step label="2">
-  Install the Vercel CLI:
-  <Terminal cmd={['$ npm i -g vercel']} />
+
+Install the Vercel CLI:
+
+<Terminal cmd={['$ npm i -g vercel']} />
+
 </Step>
 
 <Step label="3">
-  Deploy to Vercel:
-  <Terminal cmd={['$ vercel']} />
+
+Deploy to Vercel:
+
+<Terminal cmd={['$ vercel']} />
+
 </Step>
 
 ## Limitations or differences compared to the default Expo for Web
@@ -276,6 +288,7 @@ module.exports = withExpo({
   experimental: {
     transpilePackages: [
       'react-native',
+      'react-native-web',
       'expo',
       // Add the failing package here, and restart the server...
     ],

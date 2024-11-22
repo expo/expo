@@ -52,6 +52,7 @@ export function getTestModules() {
     require('./tests/Asset'),
     require('./tests/Constants'),
     require('./tests/FileSystem'),
+    require('./tests/FileSystemNext'),
     require('./tests/Font'),
     require('./tests/ImagePicker'),
     require('./tests/ModulesCore'),
@@ -70,7 +71,7 @@ export function getTestModules() {
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
-    optionalRequire(() => require('./tests/SQLiteLegacy'))
+    require('./tests/Fetch')
   );
 
   if (['android', 'ios'].includes(Platform.OS)) {
@@ -80,6 +81,10 @@ export function getTestModules() {
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
     modules.push(require('./tests/Hermes'));
+  }
+
+  if (__DEV__) {
+    modules.push(require('./tests/DevToolsPluginClient'));
   }
 
   if (Platform.OS === 'web') {
@@ -151,7 +156,6 @@ export function getTestModules() {
   }
   if (Constants.isDevice) {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
-    modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
   return modules
     .filter(Boolean)

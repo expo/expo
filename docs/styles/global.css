@@ -1,0 +1,339 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @apply bg-default;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  line-height: 1;
+}
+
+input {
+  appearance: unset;
+}
+
+#__next[aria-hidden] {
+  filter: none !important;
+}
+
+img {
+  max-width: 768px;
+  width: 100%;
+}
+
+img.wide-image {
+  max-width: 900px;
+}
+
+code {
+  font-variant-ligatures: none;
+}
+
+.strike {
+  text-decoration: line-through;
+}
+
+[cmdk-input] {
+  outline: none;
+}
+
+/* Selections */
+
+::selection {
+  @apply text-default;
+  background-color: rgb(from var(--blue-5) r g b / 80%);
+}
+
+::-moz-selection {
+  @apply bg-palette-blue5;
+}
+
+*:focus-visible {
+  @apply rounded-sm;
+  outline: 3px solid var(--expo-theme-icon-info);
+  outline-offset: 1px;
+}
+
+/* Scrollbars */
+
+div:not(#root) > ::-webkit-scrollbar {
+  width: 6px;
+  height: 5px;
+}
+
+div:not(#root) > ::-webkit-scrollbar-track {
+  background-color: transparent;
+  cursor: pointer;
+}
+
+div:not(#root) > ::-webkit-scrollbar-thumb {
+  @apply bg-palette-gray5 rounded-sm;
+}
+
+div:not(#root) > ::-webkit-scrollbar-thumb:hover {
+  @apply bg-palette-gray6;
+}
+
+div[class*='terminal-snippet'] > ::-webkit-scrollbar-thumb {
+  @apply bg-palette-gray11;
+}
+
+div[class*='terminal-snippet'] > ::-webkit-scrollbar-thumb:hover {
+  @apply bg-palette-gray12;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* NProgress */
+
+#nprogress {
+  pointer-events: none;
+}
+#nprogress .bar {
+  @apply bg-palette-blue11;
+  position: fixed;
+  z-index: 1031;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+.nprogress-custom-parent {
+  overflow: hidden;
+  position: relative;
+}
+.nprogress-custom-parent #nprogress .bar {
+  position: absolute;
+}
+
+/* Tippy */
+
+div.tippy-box {
+  @apply rounded-md;
+  transform: translateY(6px);
+}
+
+.tippy-box svg {
+  transform: rotate(180deg);
+}
+
+.tippy-box[data-theme~='expo'] .tippy-content {
+  @apply text-sm text-palette-white bg-palette-black rounded-md py-3 px-4;
+  line-height: 1.525;
+}
+
+.tippy-box[data-state='visible'] {
+  transform: translateY(12px);
+}
+
+.tippy-content a {
+  @apply text-palette-white;
+}
+
+/* Diff */
+
+.diff-unified {
+  @apply text-2xs;
+  border-collapse: collapse;
+  white-space: pre-wrap;
+  width: 100%;
+
+  td, th {
+    border-bottom: none;
+  }
+}
+
+.diff-line:first-of-type {
+  td {
+    @apply pt-2;
+  }
+}
+
+.diff-line:last-of-type {
+  td {
+    @apply pb-2;
+  }
+}
+
+.diff-gutter-col {
+  @apply bg-element w-10;
+}
+
+.diff-gutter {
+  @apply text-3xs px-2;
+  text-align: right;
+  user-select: none;
+}
+
+.diff-gutter-normal {
+  @apply text-icon-secondary;
+}
+
+.diff-code {
+  @apply pl-4;
+  word-break: break-word;
+}
+
+.diff-code-insert {
+  @apply bg-palette-green2 text-success;
+}
+
+.diff-gutter-insert {
+  @apply bg-palette-green4 text-success;
+}
+
+.diff-code-delete {
+  @apply bg-palette-red2 text-danger;
+}
+
+.diff-gutter-delete {
+  @apply bg-palette-red4 text-danger;
+}
+
+/* Code annotations */
+
+.code-annotation {
+  transition: 200ms ease all;
+  transition-property: text-shadow, opacity;
+  text-shadow:
+    var(--yellow-7) 0 0 10px,
+    var(--yellow-7) 0 0 10px,
+    var(--yellow-7) 0 0 10px,
+    var(--yellow-7) 0 0 10px;
+}
+
+.code-annotation.with-tooltip:hover {
+  cursor: pointer;
+  animation: none;
+  opacity: 0.8;
+}
+
+.code-hidden {
+  display: none;
+}
+
+.code-placeholder {
+  opacity: 0.5;
+}
+
+.tutorial-code-annotation {
+  @apply bg-palette-green4 text-palette-green9;
+  transition: 200ms ease all;
+}
+
+.tutorial-code-annotation.with-tooltip:hover {
+  cursor: pointer;
+  animation: none;
+  opacity: 0.8;
+}
+
+/* Prism */
+
+.token.comment,
+.token.block-comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  @apply text-palette-gray10;
+}
+
+.token.operator,
+.token.punctuation {
+  @apply text-palette-gray9;
+}
+
+.token.attr-name,
+.token.boolean,
+.token.function-name,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  @apply text-palette-red10;
+}
+
+.token.selector,
+.token.char,
+.token.builtin,
+.token.script,
+.token.inserted {
+  @apply text-palette-green10;
+}
+
+.token.entity,
+.token.variable {
+  @apply text-palette-green11;
+}
+
+.token.keyword {
+  @apply text-palette-pink10;
+}
+
+.token.property,
+.token.atrule,
+.token.attr-value,
+.token.function {
+  @apply text-palette-purple10 dark:text-palette-purple11;
+}
+
+.token.class-name,
+.token.regex,
+.token.important,
+.token.tag {
+  @apply text-palette-orange11;
+}
+
+.token.number,
+.token.string {
+  @apply text-palette-yellow11;
+}
+
+.token.url,
+.token.literal-property,
+.token.property-access {
+  @apply text-palette-blue11;
+}
+
+.token.important {
+  font-weight: normal;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.namespace {
+  opacity: 0.7;
+}
+
+.token.tab:not(:empty):before,
+.token.cr:before,
+.token.lf:before {
+  @apply text-palette-gray9;
+}
+
+.terminal-snippet {
+  .token.property,
+  .token.atrule,
+  .token.attr-value,
+  .token.function {
+    @apply text-palette-pink10;
+  }
+}
+
+/* Misc */
+
+.react-player > video {
+  outline: none;
+}

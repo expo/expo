@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import expo.modules.contacts.models.BaseModel
+import expo.modules.contacts.models.BirthdayModel
 import expo.modules.contacts.models.DateModel
 import expo.modules.contacts.models.EmailModel
 import expo.modules.contacts.models.ExtraNameModel
@@ -109,7 +110,7 @@ class ContactQuery : Record {
   val name: String? = null
 
   @Field
-  val id: String? = null
+  val id: List<String>? = null
 }
 
 class QueryArguments(
@@ -125,8 +126,8 @@ class ContactsModule : Module() {
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
 
-  private val activity: Activity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+  private val currentActivity: Activity
+    get() = appContext.throwingActivity
 
   override fun definition() = ModuleDefinition {
     Name("ExpoContacts")
@@ -153,9 +154,11 @@ class ContactsModule : Module() {
       appContext
         .backgroundCoroutineScope
         .launch {
-          if (options.id != null) {
-            val contact = getContactById(options.id, options.fields)
-            promise.resolve(contact.toBundle(options.fields))
+          if (!options.id.isNullOrEmpty()) {
+            val contacts = options.id.mapNotNull { id ->
+              getContactById(id, options.fields)
+            }
+            promise.resolve(ContactPage(data = contacts).toBundle(options.fields))
             return@launch
           }
 
@@ -233,7 +236,7 @@ class ContactsModule : Module() {
         putExtra(Intent.EXTRA_STREAM, uri)
         putExtra(Intent.EXTRA_SUBJECT, subject)
       }
-      activity.startActivity(intent)
+      currentActivity.startActivity(intent)
     }
 
     AsyncFunction("writeContactToFileAsync") { contact: Map<String, Any?> ->
@@ -295,7 +298,7 @@ class ContactsModule : Module() {
       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
 
       contactPickingPromise = promise
-      activity.startActivityForResult(intent, RC_PICK_CONTACT)
+      currentActivity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
   }
 
@@ -304,7 +307,7 @@ class ContactsModule : Module() {
     intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getFinalDisplayName())
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.contentValues)
     contactManipulationPromise = promise
-    activity.startActivityForResult(intent, RC_ADD_CONTACT)
+    currentActivity.startActivityForResult(intent, RC_ADD_CONTACT)
   }
 
   private fun presentEditForm(contact: Contact, promise: Promise) {
@@ -315,7 +318,7 @@ class ContactsModule : Module() {
     val intent = Intent(Intent.ACTION_EDIT)
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
     contactManipulationPromise = promise
-    activity.startActivityForResult(intent, RC_EDIT_CONTACT)
+    currentActivity.startActivityForResult(intent, RC_EDIT_CONTACT)
   }
 
   private val resolver: ContentResolver
@@ -397,6 +400,14 @@ class ContactsModule : Module() {
       contact.dates = it
     }
 
+    data["birthday"]?.takeIf { it is Map<*, *> }?.let {
+      contact.dates.add(
+        BirthdayModel().apply {
+          fromMap(it as Map<String, Any>)
+        }
+      )
+    }
+
     BaseModel.decodeList(
       data.safeGet("relationships"),
       RelationshipModel::class.java
@@ -434,10 +445,7 @@ class ContactsModule : Module() {
       null
     )?.use { cursor ->
       val contacts = loadContactsFrom(cursor)
-      val contactList = ArrayList(contacts.values)
-      if (contactList.size > 0) {
-        return contactList[0]
-      }
+      return contacts.values.firstOrNull()
     }
     return null
   }
@@ -647,11 +655,8 @@ class ContactsModule : Module() {
       val contactId = cursor.getString(columnIndex)
 
       // add or update existing contact for iterating data based on contact id
-      if (!map.containsKey(contactId)) {
-        map[contactId] = Contact(contactId)
-      }
-      val contact = map[contactId]
-      contact!!.fromCursor(cursor)
+      val contact = map.getOrPut(contactId) { Contact(contactId) }
+      contact.fromCursor(cursor)
     }
     return map
   }

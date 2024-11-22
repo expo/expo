@@ -1,6 +1,6 @@
 import { Platform } from 'expo-modules-core';
 
-import { CameraNativeProps, CameraType, FlashMode, CameraProps } from '../Camera.types';
+import { CameraNativeProps, CameraType, FlashMode, CameraViewProps } from '../Camera.types';
 import CameraManager from '../ExpoCameraManager';
 
 // Values under keys from this object will be transformed to native options
@@ -12,7 +12,7 @@ export const ConversionTables: {
   flash: CameraManager.FlashMode,
 };
 
-export function convertNativeProps(props?: CameraProps): CameraNativeProps {
+export function convertNativeProps(props?: CameraViewProps): CameraNativeProps {
   if (!props || typeof props !== 'object') {
     return {};
   }
@@ -30,7 +30,7 @@ export function convertNativeProps(props?: CameraProps): CameraNativeProps {
   return nativeProps;
 }
 
-export function ensureNativeProps(props?: CameraProps): CameraNativeProps {
+export function ensureNativeProps(props?: CameraViewProps): CameraNativeProps {
   const newProps = convertNativeProps(props);
 
   newProps.barcodeScannerEnabled = !!props?.onBarcodeScanned;

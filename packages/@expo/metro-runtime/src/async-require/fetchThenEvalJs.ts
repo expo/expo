@@ -4,12 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { MetroServerError } from './errors';
 import { fetchAsync } from './fetchAsync';
-
 /**
  * Load a bundle for a URL using fetch + eval on native and script tag injection on web.
  *
- * @param bundlePath Given a statement like `import('./Bacon')` `bundlePath` would be `Bacon`.
+ * @param url Given a statement like `import('./Bacon')` `bundlePath` would be `Bacon`.
  */
 export function fetchThenEvalAsync(url: string): Promise<void> {
   return fetchAsync(url).then(({ body, status, headers }) => {
@@ -33,21 +33,11 @@ export function fetchThenEvalAsync(url: string): Promise<void> {
         if (error) {
           // TODO: This is essentially like the Metro native red box errors. We should do a better job formatting them so
           // the user experience doesn't feel bad. This can be tested by loading a split bundle that results in a missing module error from Metro.
-          if ('message' in error) {
-            throw new Error(
-              'Failed to load split bundle from Metro ' +
-                url +
-                ' (check terminal for more info).\n(load: ' +
-                error.message +
-                ')'
-            );
-          }
+          throw new MetroServerError(error, url);
         }
       }
 
-      throw new Error(
-        `Failed to load split bundle from Metro ${url} (check terminal for more info).\n${body}`
-      );
+      throw new Error(`Failed to load split bundle from URL: ${url}\n${body}`);
     }
   });
 }

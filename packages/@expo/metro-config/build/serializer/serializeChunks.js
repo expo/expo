@@ -29,11 +29,14 @@ function pathToRegex(path) {
     // Create a RegExp object with the modified string
     return new RegExp('^' + regexSafePath + '$');
 }
+const sourceMapString = typeof sourceMapString_1.default !== 'function'
+    ? sourceMapString_1.default.sourceMapString
+    : sourceMapString_1.default;
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
+        entryFile,
         projectRoot: options.projectRoot,
-        processModuleFilter: options.processModuleFilter,
     });
     // Create chunks for splitting.
     const chunks = new Set();
@@ -183,8 +186,8 @@ class Chunk {
         const jsSplitBundle = (0, baseJSBundle_1.baseJSBundleWithDependencies)(entryFile, preModules, dependencies, {
             ...this.options,
             runBeforeMainModule: serializerConfig?.getModulesRunBeforeMainModule?.(path_1.default.relative(this.options.projectRoot, entryFile)) ?? [],
-            runModule: !this.isVendor && !this.isAsync,
-            modulesOnly: this.preModules.size === 0,
+            runModule: this.options.runModule && !this.isVendor && !this.isAsync,
+            modulesOnly: this.options.modulesOnly || this.preModules.size === 0,
             platform: this.getPlatform(),
             baseUrl: (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options),
             splitChunks: !!this.options.serializerOptions?.splitChunks,
@@ -273,11 +276,11 @@ class Chunk {
     }
     boolishTransformOption(name) {
         const value = this.graph.transformOptions?.customTransformOptions?.[name];
-        return value === true || value === 'true';
+        return value === true || value === 'true' || value === '1';
     }
     async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }) {
         // Create hash without wrapping to prevent it changing when the wrapping changes.
-        const outputFile = this.getFilenameForConfig(serializerConfig);
+        let outputFile = this.getFilenameForConfig(serializerConfig);
         // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
         const debugId = (0, debugId_1.stringToUUID)(path_1.default.basename(outputFile, path_1.default.extname(outputFile)));
         let premodules = [...this.preModules];
@@ -286,6 +289,8 @@ class Chunk {
                 premodules = plugin({ graph: this.graph, premodules, debugId });
             }
             this.preModules = new Set(premodules);
+            // If the premodules have changed, we need to recompute the output file hash.
+            outputFile = this.getFilenameForConfig(serializerConfig);
         }
         const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
         const relativeEntry = path_1.default.relative(this.options.projectRoot, this.name);
@@ -300,6 +305,19 @@ class Chunk {
                 // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
                 modulePaths: [...this.deps].map((module) => module.path),
                 paths: jsCode.paths,
+                expoDomComponentReferences: [
+                    ...new Set([...this.deps]
+                        .map((module) => {
+                        return module.output.map((output) => {
+                            if ('expoDomComponentReference' in output.data &&
+                                typeof output.data.expoDomComponentReference === 'string') {
+                                return output.data.expoDomComponentReference;
+                            }
+                            return undefined;
+                        });
+                    })
+                        .flat()),
+                ].filter((value) => typeof value === 'string'),
                 reactClientReferences: [
                     ...new Set([...this.deps]
                         .map((module) => {
@@ -307,6 +325,19 @@ class Chunk {
                             if ('reactClientReference' in output.data &&
                                 typeof output.data.reactClientReference === 'string') {
                                 return output.data.reactClientReference;
+                            }
+                            return undefined;
+                        });
+                    })
+                        .flat()),
+                ].filter((value) => typeof value === 'string'),
+                reactServerReferences: [
+                    ...new Set([...this.deps]
+                        .map((module) => {
+                        return module.output.map((output) => {
+                            if ('reactServerReference' in output.data &&
+                                typeof output.data.reactServerReference === 'string') {
+                                return output.data.reactServerReference;
                             }
                             return undefined;
                         });
@@ -352,7 +383,7 @@ class Chunk {
                 return module;
             });
             // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
-            const sourceMap = mutateSourceMapWithDebugId((0, sourceMapString_1.default)(modules, {
+            const sourceMap = mutateSourceMapWithDebugId(sourceMapString(modules, {
                 excludeSource: false,
                 ...this.options,
             }));
@@ -386,6 +417,16 @@ class Chunk {
                 // @ts-expect-error: TODO
                 jsAsset.source = hermesBundleOutput.hbc;
                 jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
+                // Replace mappings with hbc
+                if (jsAsset.metadata.paths) {
+                    jsAsset.metadata.paths = Object.fromEntries(Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
+                        key,
+                        Object.fromEntries(Object.entries(value).map(([key, value]) => [
+                            key,
+                            value ? value.replace(/\.js$/, '.hbc') : value,
+                        ])),
+                    ]));
+                }
             }
             if (assets[1] && hermesBundleOutput.sourcemap) {
                 assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);

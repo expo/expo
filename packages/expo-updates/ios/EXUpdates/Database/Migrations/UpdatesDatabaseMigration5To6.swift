@@ -3,7 +3,11 @@
 // swiftlint:disable line_length
 
 import Foundation
+#if canImport(sqlite3)
 import sqlite3
+#else
+import SQLite3
+#endif
 
 internal final class UpdatesDatabaseMigration5To6: UpdatesDatabaseMigration {
   private(set) var filename: String = "expo-v5.db"
@@ -46,3 +50,5 @@ internal final class UpdatesDatabaseMigration5To6: UpdatesDatabaseMigration {
     }
   }
 }
+
+// swiftlint:enable line_length

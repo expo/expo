@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 1.3.1 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 1.3.0 — 2024-10-22
+
+### 💡 Others
+
 - Update `commander` dependency. ([#29603](https://github.com/expo/expo/pull/29603) by [@Simek](https://github.com/Simek))
 - Update `glob@7` to `glob@10`. ([#29935](https://github.com/expo/expo/pull/29935) by [@byCedric](https://github.com/byCedric))
 

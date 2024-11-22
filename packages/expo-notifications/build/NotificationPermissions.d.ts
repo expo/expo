@@ -1,4 +1,4 @@
-import { NotificationPermissionsRequest, NotificationPermissionsStatus } from './NotificationPermissions.types';
+import { NotificationPermissionsRequest } from './NotificationPermissions.types';
 /**
  * Calling this function checks current permissions settings related to notifications.
  * It lets you verify whether the app is currently allowed to display alerts, play sounds, etc.
@@ -18,7 +18,7 @@ import { NotificationPermissionsRequest, NotificationPermissionsStatus } from '.
  * ```
  * @header permissions
  */
-export declare function getPermissionsAsync(): Promise<NotificationPermissionsStatus>;
+export declare function getPermissionsAsync(): Promise<import("./NotificationPermissions.types").NotificationPermissionsStatus>;
 /**
  * Prompts the user for notification permissions according to request. **Request defaults to asking the user to allow displaying alerts,
  * setting badge count and playing sounds**.
@@ -35,22 +35,11 @@ export declare function getPermissionsAsync(): Promise<NotificationPermissionsSt
  *       allowAlert: true,
  *       allowBadge: true,
  *       allowSound: true,
- *       allowAnnouncements: true,
  *     },
  *   });
  * }
  * ```
  * @header permissions
  */
-export declare function requestPermissionsAsync(permissions?: NotificationPermissionsRequest): Promise<NotificationPermissionsStatus>;
-/**
- * Check or request permissions to send and receive push notifications.
- * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
- * @example
- * ```ts
- * const [permissionResponse, requestPermission] = Notifications.usePermissions();
- * ```
- * @header permission
- */
-export declare const usePermissions: (options?: import("expo-modules-core").PermissionHookOptions<NotificationPermissionsRequest> | undefined) => [NotificationPermissionsStatus | null, () => Promise<NotificationPermissionsStatus>, () => Promise<NotificationPermissionsStatus>];
+export declare function requestPermissionsAsync(permissions?: NotificationPermissionsRequest): Promise<import("./NotificationPermissions.types").NotificationPermissionsStatus>;
 //# sourceMappingURL=NotificationPermissions.d.ts.map

@@ -6,6 +6,7 @@ import {
 } from '@expo/multipart-body-parser';
 import assert from 'assert';
 import spawn from 'cross-spawn';
+import { ChildProcess } from 'child_process';
 import { once } from 'events';
 import { EventEmitter } from 'fbemitter';
 import stripAnsi from 'strip-ansi';
@@ -16,10 +17,10 @@ export const bin = require.resolve('../../build/bin/cli');
 export class ExpoStartCommand extends EventEmitter {
   protected cliOutput: string = '';
 
-  url: string;
+  url: string | undefined;
 
   private isStopping: boolean = false;
-  private childProcess?: import('child_process').ChildProcess;
+  private childProcess?: ChildProcess;
 
   constructor(
     public projectRoot: string,
@@ -47,14 +48,14 @@ export class ExpoStartCommand extends EventEmitter {
     }
   }
 
-  private parseStdio(childProcess) {
-    childProcess.stdout.on('data', (chunk) => {
+  private parseStdio(childProcess: ChildProcess) {
+    childProcess.stdout?.on('data', (chunk) => {
       const msg = chunk.toString();
       if (!process.env.CI) process.stdout.write(chunk);
       this.cliOutput += msg;
       this.emit('stdout', [msg]);
     });
-    childProcess.stderr.on('data', (chunk) => {
+    childProcess.stderr?.on('data', (chunk) => {
       const msg = chunk.toString();
       if (!process.env.CI) process.stderr.write(chunk);
       this.cliOutput += msg;
@@ -160,10 +161,10 @@ export class ExpoStartCommand extends EventEmitter {
             console.error(`'${cmdArgs.join(' ')}' exited unexpectedly with: ${code || signal}`);
           }
         });
-        const isReadyCallback = (message) => {
+        const isReadyCallback = (message: string) => {
           const resolveServer = () => {
             try {
-              new URL(this.url);
+              new URL(this.url!);
             } catch (err) {
               reject({
                 err,
@@ -204,17 +205,16 @@ export class ExpoStartCommand extends EventEmitter {
   }
 }
 
-export class ServeStaticCommand extends EventEmitter {
+export abstract class ServeAbstractCommand extends EventEmitter {
   protected cliOutput: string = '';
 
-  url: string;
+  url: string | undefined;
 
   private isStopping: boolean = false;
   private childProcess?: import('child_process').ChildProcess;
 
   constructor(
     public projectRoot: string,
-
     public env: NodeJS.ProcessEnv = {}
   ) {
     super();
@@ -239,14 +239,14 @@ export class ServeStaticCommand extends EventEmitter {
     }
   }
 
-  private parseStdio(childProcess) {
-    childProcess.stdout.on('data', (chunk) => {
+  private parseStdio(childProcess: ChildProcess) {
+    childProcess.stdout?.on('data', (chunk) => {
       const msg = chunk.toString();
       if (!process.env.CI) process.stdout.write(chunk);
       this.cliOutput += msg;
       this.emit('stdout', [msg]);
     });
-    childProcess.stderr.on('data', (chunk) => {
+    childProcess.stderr?.on('data', (chunk) => {
       const msg = chunk.toString();
       if (!process.env.CI) process.stderr.write(chunk);
       this.cliOutput += msg;
@@ -255,7 +255,7 @@ export class ServeStaticCommand extends EventEmitter {
   }
 
   getUrl(): string {
-    assert(this.url, 'npx serve not started');
+    assert(this.url, 'serve not started');
     return this.url;
   }
 
@@ -272,16 +272,18 @@ export class ServeStaticCommand extends EventEmitter {
     });
   }
 
+  abstract isReadyCallback(message: string): boolean;
+
   async startAsync(args: string[] = []) {
     if (this.childProcess) {
-      throw new Error('npx serve already started');
+      throw new Error('serve already started');
     }
     this.cliOutput = '';
 
-    const cmdArgs = ['npx', 'serve', ...args].filter(Boolean) as string[];
+    const cmdArgs = args.filter(Boolean) as string[];
 
     console.log('$', cmdArgs.join(' '));
-    await new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       try {
         this.childProcess = spawn(cmdArgs[0], cmdArgs.slice(1), {
           cwd: this.projectRoot,
@@ -302,38 +304,20 @@ export class ServeStaticCommand extends EventEmitter {
         this.childProcess.on('close', (code, signal) => {
           if (this.isStopping) return;
           if (code || signal) {
-            console.error(`'${cmdArgs.join(' ')}' exited unexpectedly with: ${code || signal}`);
+            const errMessage = `'${cmdArgs.join(' ')}' exited unexpectedly with: ${code || signal}`;
+            console.error(errMessage);
+            reject(new Error(errMessage));
           }
         });
-        const isReadyCallback = (message) => {
-          const resolveServer = () => {
-            try {
-              new URL(this.url);
-            } catch (err) {
-              reject({
-                err,
-                msg: message,
-              });
-            }
-            resolve();
-          };
-
-          for (const rawStr of stripAnsi(message)) {
-            const tag = 'Accepting connections at ';
-            if (rawStr.includes(tag)) {
-              const matchedLine = rawStr
-                .split('\n')
-                ?.find((line) => line.includes(tag))
-                ?.split(/Accepting connections at\s+/)
-                ?.pop()
-                ?.trim();
-              if (!matchedLine) {
-                return reject(new Error('Failed to parse server URL: ' + message));
-              }
-              this.url = matchedLine;
+        const isReadyCallback = (message: string) => {
+          try {
+            if (this.isReadyCallback(message)) {
               callback.remove();
-              return resolveServer();
+              new URL(this.url!);
+              resolve();
             }
+          } catch (error) {
+            reject(error);
           }
         };
         const callback = this.addListener('stdout', isReadyCallback);
@@ -342,5 +326,57 @@ export class ServeStaticCommand extends EventEmitter {
         setTimeout(() => process.exit(1), 0);
       }
     });
+  }
+}
+
+export class ServeStaticCommand extends ServeAbstractCommand {
+  isReadyCallback(message: string): boolean {
+    const tag = 'Accepting connections at ';
+    for (const rawStr of stripAnsi(message)) {
+      if (rawStr.includes(tag)) {
+        const matchedLine = rawStr
+          .split('\n')
+          ?.find((line) => line.includes(tag))
+          ?.split(/Accepting connections at\s+/)
+          ?.pop()
+          ?.trim();
+        if (!matchedLine) {
+          return false;
+        }
+        this.url = matchedLine;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async startAsync(args: string[] = []) {
+    return super.startAsync(['npx', 'serve', ...args]);
+  }
+}
+
+export class ExpoServeLocalCommand extends ServeAbstractCommand {
+  isReadyCallback(message: string): boolean {
+    const tag = 'Server running at ';
+    for (const rawStr of stripAnsi(message)) {
+      if (rawStr.includes(tag)) {
+        const matchedLine = rawStr
+          .split('\n')
+          ?.find((line) => line.includes(tag))
+          ?.split(/Server running at\s+/)
+          ?.pop()
+          ?.trim();
+        if (!matchedLine) {
+          return false;
+        }
+        this.url = matchedLine;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async startAsync(args: string[] = []) {
+    return super.startAsync(['npx', 'expo', 'serve', ...args]);
   }
 }

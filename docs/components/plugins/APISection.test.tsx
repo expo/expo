@@ -31,8 +31,8 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(24);
-    expect(screen.getAllByRole('table')).toHaveLength(11);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(26);
+    expect(screen.getAllByRole('table')).toHaveLength(12);
 
     expect(screen.queryByText('Event Subscriptions'));
     expect(screen.queryByText('Components'));
@@ -44,33 +44,6 @@ describe('APISection', () => {
     expect(screen.queryAllByText('Constants')).toHaveLength(0);
     expect(screen.queryAllByText('Hooks')).toHaveLength(0);
     expect(screen.queryAllByText('Interfaces')).toHaveLength(0);
-
-    expect(container).toMatchSnapshot();
-  });
-
-  test('expo-barcode-scanner', () => {
-    const { container } = renderWithHeadings(
-      <APISection
-        packageName="expo-barcode-scanner"
-        apiName="BarCodeScanner"
-        forceVersion="unversioned"
-        testRequire={require}
-      />
-    );
-
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
-
-    expect(screen.queryByText('Components'));
-    expect(screen.queryByText('Hooks'));
-
-    expect(screen.queryByDisplayValue('BarCodeEvent'));
-    expect(screen.queryByDisplayValue('BarCodeScannerProps'));
-    expect(screen.queryByDisplayValue('Subscription'));
-    expect(screen.queryByDisplayValue('usePermissions'));
-    expect(screen.queryByDisplayValue('Inherited Props'));
-
-    expect(screen.queryAllByText('Constants')).toHaveLength(0);
 
     expect(container).toMatchSnapshot();
   });

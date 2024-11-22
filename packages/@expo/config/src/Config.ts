@@ -1,5 +1,6 @@
 import { ModConfig } from '@expo/config-plugins';
 import JsonFile, { JSONObject } from '@expo/json-file';
+import deepMerge from 'deepmerge';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
@@ -76,7 +77,7 @@ function getSupportedPlatforms(projectRoot: string): Platform[] {
   if (resolveFrom.silent(projectRoot, 'react-native')) {
     platforms.push('ios', 'android');
   }
-  if (resolveFrom.silent(projectRoot, 'react-native-web')) {
+  if (resolveFrom.silent(projectRoot, 'react-dom')) {
     platforms.push('web');
   }
   return platforms;
@@ -277,53 +278,164 @@ export async function modifyConfigAsync(
 ): Promise<{
   type: 'success' | 'warn' | 'fail';
   message?: string;
-  config: AppJSONConfig | null;
+  config: ExpoConfig | null;
 }> {
   const config = getConfig(projectRoot, readOptions);
-  if (config.dynamicConfigPath) {
-    // We cannot automatically write to a dynamic config.
-    /* Currently we should just use the safest approach possible, informing the user that they'll need to manually modify their dynamic config.
+  const isDryRun = writeOptions.dryRun;
 
-    if (config.staticConfigPath) {
-      // Both a dynamic and a static config exist.
-      if (config.dynamicConfigObjectType === 'function') {
-        // The dynamic config exports a function, this means it possibly extends the static config.
-      } else {
-        // Dynamic config ignores the static config, there isn't a reason to automatically write to it.
-        // Instead we should warn the user to add values to their dynamic config.
+  // Create or modify the static config, when not using dynamic config
+  if (!config.dynamicConfigPath) {
+    const outputConfig = mergeConfigModifications(config, modifications);
+
+    if (!isDryRun) {
+      const configPath = config.staticConfigPath ?? path.join(projectRoot, 'app.json');
+      await JsonFile.writeAsync(configPath, outputConfig, { json5: false });
+    }
+
+    return { type: 'success', config: outputConfig.expo ?? outputConfig };
+  }
+
+  // Attempt to write to a function-like dynamic config, when used with a static config
+  if (
+    config.staticConfigPath &&
+    config.dynamicConfigObjectType === 'function' &&
+    !modifications.hasOwnProperty('plugins') // We don't know what plugins are in dynamic configs
+  ) {
+    const outputConfig = mergeConfigModifications(config, modifications);
+
+    if (isDryRun) {
+      return {
+        type: 'warn',
+        message: `Cannot verify config modifications in dry-run mode for config at: ${path.relative(projectRoot, config.dynamicConfigPath)}`,
+        config: null,
+      };
+    }
+
+    // Attempt to write the static config with the config modifications
+    await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
+
+    // Verify that the dynamic config is using the static config
+    const newConfig = getConfig(projectRoot, readOptions);
+    console.log(`New config: ${JSON.stringify(newConfig.exp, null, 2)}`);
+    console.log(`Modifications: ${JSON.stringify(modifications, null, 2)}`);
+    const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
+    if (newConfighasModifications) {
+      return {
+        type: 'success',
+        config: newConfig.exp,
+      };
+    }
+
+    // Rollback the changes when the reloaded config did not include the modifications
+    await JsonFile.writeAsync(config.staticConfigPath, config.rootConfig, { json5: false });
+  }
+
+  // We cannot automatically write to a dynamic config
+  return {
+    type: 'warn',
+    message: `Cannot automatically write to dynamic config at: ${path.relative(
+      projectRoot,
+      config.dynamicConfigPath
+    )}`,
+    config: null,
+  };
+}
+
+/**
+ * Merge the config modifications, using an optional possible top-level `expo` object.
+ * Note, changes in the plugins are merged differently to avoid duplicate entries.
+ */
+function mergeConfigModifications(
+  config: ProjectConfig,
+  { plugins, ...modifications }: Partial<ExpoConfig>
+): AppJSONConfig {
+  const modifiedExpoConfig: ExpoConfig = !config.rootConfig.expo
+    ? deepMerge(config.rootConfig, modifications)
+    : deepMerge(config.rootConfig.expo, modifications);
+
+  if (plugins?.length) {
+    // When adding plugins, ensure the config has a plugin list
+    if (!modifiedExpoConfig.plugins) {
+      modifiedExpoConfig.plugins = [];
+    }
+
+    // Create a plugin lookup map
+    const existingPlugins: Record<string, any> = Object.fromEntries(
+      modifiedExpoConfig.plugins.map((definition) =>
+        typeof definition === 'string' ? [definition, undefined] : definition
+      )
+    );
+
+    for (const plugin of plugins) {
+      // Unpack the plugin definition, using either the short (string) or normal (array) notation
+      const [pluginName, pluginProps] = Array.isArray(plugin) ? plugin : [plugin];
+      // Abort if the plugin definition is empty
+      if (!pluginName) continue;
+
+      // Add the plugin if it doesn't exist yet, including its properties
+      if (!(pluginName in existingPlugins)) {
+        modifiedExpoConfig.plugins.push(plugin);
+        continue;
+      }
+
+      // If the plugin has properties, and it exists, merge the properties
+      if (pluginProps) {
+        modifiedExpoConfig.plugins = modifiedExpoConfig.plugins.map((existingPlugin) => {
+          const [existingPluginName] = Array.isArray(existingPlugin)
+            ? existingPlugin
+            : [existingPlugin];
+
+          // Do not modify other plugins
+          if (existingPluginName !== pluginName) {
+            return existingPlugin;
+          }
+
+          // Add the props to the existing plugin entry
+          if (typeof existingPlugin === 'string') {
+            return [existingPlugin, pluginProps];
+          }
+
+          // Merge the props to the existing plugin properties
+          if (Array.isArray(existingPlugin) && existingPlugin[0]) {
+            return [existingPlugin[0], deepMerge(existingPlugin[1] ?? {}, pluginProps)];
+          }
+
+          return existingPlugin;
+        });
+        continue;
+      }
+
+      // If the same plugin exists with properties, and the modification does not contain properties, ignore
+    }
+  }
+
+  const finalizedConfig = !config.rootConfig.expo
+    ? modifiedExpoConfig
+    : { ...config.rootConfig, expo: modifiedExpoConfig };
+
+  return finalizedConfig as AppJSONConfig;
+}
+
+function isMatchingObject<T extends Record<string, any>>(
+  expectedValues: T,
+  actualValues: T
+): boolean {
+  for (const key in expectedValues) {
+    if (!expectedValues.hasOwnProperty(key)) {
+      continue;
+    }
+
+    if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
+      if (!isMatchingObject(expectedValues[key], actualValues[key])) {
+        return false;
+      }
+    } else {
+      if (expectedValues[key] !== actualValues[key]) {
+        return false;
       }
     }
-    */
-    return {
-      type: 'warn',
-      message: `Cannot automatically write to dynamic config at: ${path.relative(
-        projectRoot,
-        config.dynamicConfigPath
-      )}`,
-      config: null,
-    };
-  } else if (config.staticConfigPath == null) {
-    // No config in the project, use a default location.
-    config.staticConfigPath = path.join(projectRoot, 'app.json');
   }
-
-  // Static with no dynamic config, this means we can append to the config automatically.
-  let outputConfig: AppJSONConfig;
-  // If the config has an expo object (app.json) then append the options to that object.
-  if (config.rootConfig.expo) {
-    outputConfig = {
-      ...config.rootConfig,
-      expo: { ...config.rootConfig.expo, ...modifications },
-    };
-  } else {
-    // Otherwise (app.config.json) just add the config modification to the top most level.
-    outputConfig = { ...config.rootConfig, ...modifications };
-  }
-  if (!writeOptions.dryRun) {
-    await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
-  }
-
-  return { type: 'success', config: outputConfig };
+  return true;
 }
 
 function ensureConfigHasDefaultValues({

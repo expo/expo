@@ -9,6 +9,8 @@ import { getIcons, setIconsAsync } from '../withIosIcons';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 
+jest.setTimeout(30 * 1000);
+
 jest.mock('@expo/config-plugins', () => ({
   ...jest.requireActual<object>('@expo/config-plugins'),
   WarningAggregator: {
@@ -39,12 +41,32 @@ describe('iOS Icons', () => {
     ).toMatch('iosIcon');
   });
 
+  it(`uses more specific icon - appearance aware`, () => {
+    expect(
+      getIcons({
+        icon: 'icon',
+      })
+    ).toMatch('icon');
+    expect(
+      getIcons({
+        icon: 'icon',
+        ios: {
+          icon: {
+            dark: 'iosIcon',
+          },
+        },
+      })
+    ).toMatchObject({ dark: 'iosIcon' });
+  });
+
   it(`does not support empty string icons`, () => {
     expect(
       getIcons({
         icon: '',
         ios: {
-          icon: '',
+          icon: {
+            any: '',
+          },
         },
       })
     ).toBe(null);
@@ -53,7 +75,9 @@ describe('iOS Icons', () => {
       getIcons({
         icon: 'icon',
         ios: {
-          icon: '',
+          icon: {
+            any: '',
+          },
         },
       })
     ).toMatch('icon');

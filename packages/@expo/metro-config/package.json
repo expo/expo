@@ -1,8 +1,9 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.18.4",
+  "version": "0.19.4",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
+  "types": "build/ExpoMetroConfig.d.ts",
   "scripts": {
     "build": "expo-module tsc",
     "clean": "expo-module clean",
@@ -37,26 +38,26 @@
     "@babel/generator": "^7.20.5",
     "@babel/parser": "^7.20.0",
     "@babel/types": "^7.20.0",
-    "@expo/config": "~9.0.0",
-    "@expo/env": "~0.3.0",
-    "@expo/json-file": "~8.3.0",
+    "@expo/config": "~10.0.4",
+    "@expo/env": "~0.4.0",
+    "@expo/json-file": "~9.0.0",
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
-    "find-yarn-workspace-root": "~2.0.0",
     "fs-extra": "^9.1.0",
     "getenv": "^1.0.0",
     "glob": "^10.4.2",
     "jsc-safe-url": "^0.2.4",
-    "lightningcss": "~1.19.0",
+    "lightningcss": "~1.27.0",
+    "minimatch": "^3.0.4",
     "postcss": "~8.4.32",
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",
-    "expo-module-scripts": "^3.3.0",
-    "sass": "^1.60.0",
-    "dedent": "^1.5.3"
+    "dedent": "^1.5.3",
+    "expo-module-scripts": "^4.0.0",
+    "sass": "^1.60.0"
   },
   "publishConfig": {
     "access": "public"

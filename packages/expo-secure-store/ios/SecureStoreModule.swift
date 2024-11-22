@@ -1,5 +1,7 @@
 import ExpoModulesCore
+#if !os(tvOS)
 import LocalAuthentication
+#endif
 import Security
 
 public final class SecureStoreModule: Module {
@@ -51,6 +53,9 @@ public final class SecureStoreModule: Module {
     }
 
     Function("canUseBiometricAuthentication") {() -> Bool in
+      #if os(tvOS)
+      return false
+      #else
       let context = LAContext()
       var error: NSError?
       let isBiometricsSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
@@ -59,6 +64,7 @@ public final class SecureStoreModule: Module {
         return false
       }
       return isBiometricsSupported
+      #endif
     }
   }
 

@@ -88,7 +88,7 @@ it('runs `npx expo prebuild --help`', async () => {
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
         --bun                                    Use bun to install dependencies. Default when bun.lockb exists
         --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
-        --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
+        --template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
         --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
         -h, --help                               Usage info
@@ -217,68 +217,53 @@ it(
     });
 
     // If this changes then everything else probably changed as well.
-    expect(files).toMatchInlineSnapshot(`
-      [
-        "App.js",
-        "android/.gitignore",
-        "android/app/build.gradle",
-        "android/app/debug.keystore",
-        "android/app/proguard-rules.pro",
-        "android/app/src/debug/AndroidManifest.xml",
-        "android/app/src/main/AndroidManifest.xml",
-        "android/app/src/main/java/com/example/minimal/MainActivity.kt",
-        "android/app/src/main/java/com/example/minimal/MainApplication.kt",
-        "android/app/src/main/res/drawable/rn_edit_text_material.xml",
-        "android/app/src/main/res/drawable/splashscreen.xml",
-        "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/values/colors.xml",
-        "android/app/src/main/res/values/strings.xml",
-        "android/app/src/main/res/values/styles.xml",
-        "android/app/src/main/res/values-night/colors.xml",
-        "android/build.gradle",
-        "android/gradle/wrapper/gradle-wrapper.jar",
-        "android/gradle/wrapper/gradle-wrapper.properties",
-        "android/gradle.properties",
-        "android/gradlew",
-        "android/gradlew.bat",
-        "android/settings.gradle",
-        "app.json",
-        "bun.lockb",
-        "ios/.gitignore",
-        "ios/.xcode.env",
-        "ios/Podfile",
-        "ios/Podfile.properties.json",
-        "ios/basicprebuild/AppDelegate.h",
-        "ios/basicprebuild/AppDelegate.mm",
-        "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
-        "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
-        "ios/basicprebuild/Images.xcassets/Contents.json",
-        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
-        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/image.png",
-        "ios/basicprebuild/Info.plist",
-        "ios/basicprebuild/SplashScreen.storyboard",
-        "ios/basicprebuild/Supporting/Expo.plist",
-        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
-        "ios/basicprebuild/basicprebuild.entitlements",
-        "ios/basicprebuild/main.m",
-        "ios/basicprebuild/noop-file.swift",
-        "ios/basicprebuild.xcodeproj/project.pbxproj",
-        "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
-        "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
-        "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
-        "metro.config.js",
-        "package.json",
-      ]
-    `);
+    expect(files).toMatchSnapshot();
+  },
+  // Could take 45s depending on how fast npm installs
+  60 * 1000
+);
+
+it(
+  'runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`',
+  async () => {
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
+
+    const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
+    await execa('node', [bin, 'prebuild', '--no-install', '--template', npmTemplatePackage], {
+      cwd: projectRoot,
+    });
+
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(projectRoot)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(projectRoot, entry.path);
+      })
+      .filter(Boolean);
+
+    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+
+    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+
+    // Added new packages
+    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+      'expo',
+      'react',
+      'react-native',
+    ]);
+
+    // Updated scripts
+    expect(pkg.scripts).toStrictEqual({
+      android: 'expo run:android',
+      ios: 'expo run:ios',
+    });
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toMatchSnapshot();
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000
@@ -333,68 +318,7 @@ it(
     });
 
     // If this changes then everything else probably changed as well.
-    expect(files).toMatchInlineSnapshot(`
-      [
-        "App.js",
-        "android/.gitignore",
-        "android/app/build.gradle",
-        "android/app/debug.keystore",
-        "android/app/proguard-rules.pro",
-        "android/app/src/debug/AndroidManifest.xml",
-        "android/app/src/main/AndroidManifest.xml",
-        "android/app/src/main/java/com/example/minimal/MainActivity.kt",
-        "android/app/src/main/java/com/example/minimal/MainApplication.kt",
-        "android/app/src/main/res/drawable/rn_edit_text_material.xml",
-        "android/app/src/main/res/drawable/splashscreen.xml",
-        "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/values/colors.xml",
-        "android/app/src/main/res/values/strings.xml",
-        "android/app/src/main/res/values/styles.xml",
-        "android/app/src/main/res/values-night/colors.xml",
-        "android/build.gradle",
-        "android/gradle/wrapper/gradle-wrapper.jar",
-        "android/gradle/wrapper/gradle-wrapper.properties",
-        "android/gradle.properties",
-        "android/gradlew",
-        "android/gradlew.bat",
-        "android/settings.gradle",
-        "app.json",
-        "bun.lockb",
-        "ios/.gitignore",
-        "ios/.xcode.env",
-        "ios/Podfile",
-        "ios/Podfile.properties.json",
-        "ios/githubtemplateprebuild/AppDelegate.h",
-        "ios/githubtemplateprebuild/AppDelegate.mm",
-        "ios/githubtemplateprebuild/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
-        "ios/githubtemplateprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
-        "ios/githubtemplateprebuild/Images.xcassets/Contents.json",
-        "ios/githubtemplateprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
-        "ios/githubtemplateprebuild/Images.xcassets/SplashScreenBackground.imageset/image.png",
-        "ios/githubtemplateprebuild/Info.plist",
-        "ios/githubtemplateprebuild/SplashScreen.storyboard",
-        "ios/githubtemplateprebuild/Supporting/Expo.plist",
-        "ios/githubtemplateprebuild/githubtemplateprebuild-Bridging-Header.h",
-        "ios/githubtemplateprebuild/githubtemplateprebuild.entitlements",
-        "ios/githubtemplateprebuild/main.m",
-        "ios/githubtemplateprebuild/noop-file.swift",
-        "ios/githubtemplateprebuild.xcodeproj/project.pbxproj",
-        "ios/githubtemplateprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
-        "ios/githubtemplateprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
-        "ios/githubtemplateprebuild.xcodeproj/xcshareddata/xcschemes/githubtemplateprebuild.xcscheme",
-        "metro.config.js",
-        "package.json",
-      ]
-    `);
+    expect(files).toMatchSnapshot();
   },
   // Could take 1-2m depending on how fast github returns the tarball of expo/expo
   2 * 60 * 1000

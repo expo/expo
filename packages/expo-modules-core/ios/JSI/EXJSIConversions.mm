@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ReactCommon/TurboModuleUtils.h>
+#import <ReactCommon/CallbackWrapper.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
 #import <ExpoModulesCore/EXJavaScriptWeakObject.h>
@@ -70,7 +70,7 @@ jsi::Value createUint8Array(jsi::Runtime &runtime, NSData *data) {
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
 {
   if ([value isKindOfClass:[EXJavaScriptValue class]]) {
-    return jsi::Value(runtime, *[(EXJavaScriptValue *)value get]);
+    return [(EXJavaScriptValue *)value get];
   }
   if ([value isKindOfClass:[EXJavaScriptObject class]]) {
     return jsi::Value(runtime, *[(EXJavaScriptObject *)value get]);
@@ -120,8 +120,8 @@ NSArray<EXJavaScriptValue *> *convertJSIValuesToNSArray(EXJavaScriptRuntime *run
   jsi::Runtime *jsiRuntime = [runtime get];
 
   for (int i = 0; i < count; i++) {
-    std::shared_ptr<jsi::Value> value = std::make_shared<jsi::Value>(*jsiRuntime, values[i]);
-    array[i] = [[EXJavaScriptValue alloc] initWithRuntime:runtime value:value];
+    array[i] = [[EXJavaScriptValue alloc] initWithRuntime:runtime
+                                                    value:jsi::Value(*jsiRuntime, values[i])];
   }
   return array;
 }

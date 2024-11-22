@@ -208,8 +208,8 @@ export default createRunOncePlugin(
   If anything goes wrong with the plugin, users should still be able to manually add the package to their project.
   Doing this often helps you find ways to reduce the setup, which can lead to a simpler plugin.
   - Document the available properties for the plugin, and specify if the plugin works without props.
-  - If you can make your plugin work after running prebuild multiple times, that’s a big plus! It can improve the developer experience to be able to run `npx expo prebuild` without the `--clean` flag to sync changes.
-- **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after “with”. For example, `withAndroidSplash`, `withIosSplash`.
+  - If you can make your plugin work after running prebuild multiple times, that's a big plus! It can improve the developer experience to be able to run `npx expo prebuild` without the `--clean` flag to sync changes.
+- **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after "with". For example, `withAndroidSplash`, `withIosSplash`.
   There is no universally agreed upon casing for `iOS` in camel cased identifiers, we prefer this style and suggest using it for your config plugins too.
 - **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts).
   Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the app config.
@@ -629,20 +629,20 @@ This makes setup a bit easier and helps prevent users from forgetting to add a p
 
 This does come with a couple of caveats:
 
-1. Packages must export a plugin via **app.plugin.js**, this rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
+1. Packages can use both use a root **app.plugin.js** file or use the `main` entry point to ship a config plugin. `expo install` only adds config plugins using the root **app.config.js** file automatically to the app manifest. This rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
 2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props then `expo-camera` would throw an error.
 3. Plugins can only be automatically added when the user's project uses a static app config (**app.json** and **app.config.json**). If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
 
-   ```sh
-   Cannot automatically write to dynamic config at: app.config.js
-   Please add the following to your app config
+```sh
+Cannot automatically write to dynamic config at: app.config.js
+Please add the following to your app config
 
-     {
-       "plugins": [
-       "expo-camera"
-       ]
-     }
-   ```
+{
+  "plugins": [
+    "expo-camera"
+  ]
+}
+```
 
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme

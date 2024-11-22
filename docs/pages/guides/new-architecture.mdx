@@ -11,25 +11,16 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **info** We recommend using SDK 51 or later for the best experience with the New Architecture.
+> **info** We recommend using SDK 52 or newer for the best experience with the New Architecture.
 
 The New Architecture is a name that we use to describe a complete refactoring of the internals of React Native. It is also used to solve limitations of the original React Native architecture discovered over years of usage in production at Meta and other companies.
 
 In this guide, we'll talk about how to use the New Architecture in Expo projects today.
 
-To learn more about the ideas and motivations behind the New Architecture, we recommend the following resources:
-
 <BoxLink
-  title="Introduction to the New Architecture"
-  description="A starting point for exploring the various topics related to the New Architecture."
-  href="https://reactnative.dev/docs/the-new-architecture/landing-page"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Why a New Architecture"
-  description="A high level overview of the motivations behind the New Architecture."
-  href="https://reactnative.dev/docs/the-new-architecture/why"
+  title="New Architecture is here"
+  description="A blog post from the React Native team at Meta that gives an overview of the features of the New Architecture and the motivations behind building it."
+  href="https://reactnative.dev/blog/2024/10/23/the-new-architecture-is-here"
   Icon={BookOpen02Icon}
 />
 
@@ -47,68 +38,114 @@ Additionally, all modules written using the [Expo Modules API](/modules/overview
 
 ## Third-party libraries and the New Architecture
 
-The compatibility status of many of the most popular libraries, such as `react-native-bootsplash`, `react-native-fbsdk-next`, and `react-native-pdf`, are tracked in the ["New Architecture support in popular libraries" spreadsheet](https://docs.google.com/spreadsheets/d/1F1tI9PQLl_uab3HNYNwgjPVL2r0hJ9VymXcgDp5etdg/edit?usp=sharing). This does not track every library, only those that appeared in the top 400 most installed libraries on EAS Build, so if a library is not there it does not mean it is necessarily unsupported.
+The compatibility status of many of the most popular libraries is tracked on [React Native Directory](https://reactnative.directory/) ([learn more about known issues in third-party libraries](#known-issues-in-third-party-libraries)). We've built tooling into Expo Doctor to integrate with React Native Directory to help you validate your dependencies, so you can quickly learn which libraries are unmaintained and which incompatible or untested with the New Architecture.
 
-In React Native 0.74, there are various Interop Layers enabled by default which allows many libraries to work without any changes. However, it's not perfect and some libraries will need to be updated. The libraries that are most likely to require updates are those that ship or depend on third-party native code. [Learn more about library support in the New Architecture](https://github.com/reactwg/react-native-new-architecture/discussions/167).
+### Validate your dependencies with React Native Directory
 
-[Learn more about known issues](#known-issues-in-third-party-libraries).
+Run `npx expo-doctor` to check your dependencies against the data in React Native Directory.
+
+<Terminal cmd={['$ npx expo-doctor@latest']} />
+
+You can configure the React Native Directory check in your **package.json** file. For example, if you would like to exclude a package from validation:
+
+```json package.json
+{
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": ["react-redux"]
+      }
+    }
+  }
+}
+```
+
+<Collapsible summary="See all available options">
+
+- **enabled**: If `true`, the check will warn if any packages are missing from React Native Directory. Set this to `false` to disable this behavior. On SDK 52 and above, this is set to `true` by default, otherwise it is `false` by default. You can also override this setting with the `EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK` environment variable (0 is `false`, 1 is `true`).
+- **exclude**: List any packages you want to exclude from the check. Supports exact package names and regex patterns. For example, `["exact-package", "/or-a-regex-.*/"]`.
+- **listUnknownPackages**: By default, the check will warn if any packages are missing from React Native Directory. Set this to false to disable this behavior.
+
+</Collapsible>
 
 ## Initialize a new project with the New Architecture
 
-The easiest way to get started with the New Architecture is to use the `with-new-arch` template when creating a new project:
+**As of SDK 52**, all new projects will be initialized with the New Architecture enabled by default.
 
-<Terminal cmd={['$ npx create-expo-app@latest -e with-new-arch']} />
+<Terminal cmd={['$ npx create-expo-app@latest']} />
 
 ## Enable the New Architecture in an existing project
 
-You can enable the New Architecture in your app using the [`expo-build-properties`](/versions/latest/sdk/build-properties/) config plugin:
-
 <Step label="1">
 
-Install `expo-build-properties`:
+Set `newArchEnabled` on target platforms:
 
-<Terminal cmd={['$ npx expo install expo-build-properties']} />
+<Tabs>
+  <Tab label="SDK 52 and above">
+    To enable it on both Android and iOS, use the `newArchEnabled` at the root of the `expo` object in your app config. You can selectively enable it for a single platform by setting, for example, `"android": { "newArchEnabled": true }`.
+
+    ```json app.json
+    {
+      "expo": {
+        "newArchEnabled": true
+      }
+    }
+    ```
+
+  </Tab>
+
+  <Tab label="SDK 51 and below">
+    To enable it, you need to [install the `expo-build-properties` plugin](/versions/latest/sdk/build-properties/#installation) and set `newArchEnabled` on target platforms.
+
+    ```json app.json
+    {
+      "expo": {
+        "plugins": [
+          [
+            "expo-build-properties",
+            {
+              "android": {
+                "newArchEnabled": true
+              },
+              "ios": {
+                "newArchEnabled": true
+              }
+            }
+          ]
+        ]
+      }
+    }
+    ```
+
+  </Tab>
+</Tabs>
 
 </Step>
 
 <Step label="2">
 
-Set `newArchEnabled` on target platforms:
-
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "newArchEnabled": true
-          },
-          "android": {
-            "newArchEnabled": true
-          }
-        }
-      ]
-    ]
-  }
-}
-```
-
-</Step>
-
-<Step label="3">
-
-Run the prebuild command and compile your project:
+Create a new build.
 
 <Tabs tabs={['Android', 'iOS']}>
   <Tab>
     <Terminal
-      cmd={['$ npx expo prebuild --clean', '$ npx expo run:android', '$ eas build -p android']}
+      cmd={[
+        '# Run a clean prebuild and start a local build, if you like',
+        '$ npx expo prebuild --clean && npx expo run:android',
+        '# Run a build with EAS if you prefer',
+        '$ eas build -p android',
+      ]}
     />
   </Tab>
   <Tab>
-    <Terminal cmd={['$ npx expo prebuild --clean', '$ npx expo run:ios', '$ eas build -p ios']} />
+    <Terminal
+      cmd={[
+        '# Run a clean prebuild and start a local build, if you like',
+        '$ npx expo prebuild --clean && npx expo run:ios',
+        '# Run a build with EAS if you prefer',
+        '$ eas build -p ios',
+      ]}
+    />
   </Tab>
 </Tabs>
 
@@ -131,48 +168,45 @@ Meta and Expo are working towards making the New Architecture the default for al
 
 <Collapsible summary="Can I still try the New Architecture even if some of the libraries I use aren't supported?">
 
-Yes! You can try the New Architecture in your app even if some of the libraries you use aren't supported. Create a new branch in your repository and remove any of the libraries that aren't compatible, until your app is running. This will give you a good idea of what libraries still need work before you can fully migrate to the New Architecture. We recommend creating issues or pull requests on those libraries' repositories to help them become compatible with the New Architecture.
-
-We'd also love it if you could [report your experience](https://github.com/reactwg/react-native-new-architecture/discussions/177), so we can learn how developers like you are getting on and help you out where possible.
+You may be able to try the New Architecture in your app even if some of the libraries you use aren't supported, but it will require temporarily removing those libraries. Create a new branch in your repository and remove any of the libraries that aren't compatible until your app is running. This will give you a good idea of what libraries still need work before you can fully migrate to the New Architecture. We recommend creating issues or pull requests on those libraries' repositories to help them become compatible with the New Architecture. Alternatively, you could switch to other libraries that are compatible with the New Architecture. Refer to [React Native Directory](https://reactnative.directory/) to find compatible libraries.
 
 </Collapsible>
 
 <Collapsible summary="Known issues in Expo SDK libraries">
 
-While there are likely incompatibilities we are not aware of, the following are the known issues with the New Architecture in the Expo SDK:
+As of SDK 52, the following are the known issues with the New Architecture in the Expo SDK:
 
-- **expo-dev-client**: we are currently investigating issues with stability on iOS, so you may encounter an increased crash rate in your development builds.
-- **expo-notifications**: local notifications work, but remote notifications not yet fully supported.
-- **expo-task-manager** and **expo-background-fetch**: not yet supported.
 - **expo-location**: background location is not yet supported.
+
+You may encounter other issues in older SDK releases. We recommend upgrading to the latest SDK version.
 
 </Collapsible>
 
 <Collapsible summary="Known issues in React Native">
 
-- Reloading the app quickly in development may cause the app to crash. A fix is in progress.
+Refer to the [issues labeled with "Type: New Architecture" on the React Native GitHub repository](https://github.com/facebook/react-native/issues?q=is%3Aopen+is%3Aissue+label%3A%22Type%3A+New+Architecture%22).
 
 </Collapsible>
 
 <Collapsible summary="Known issues in third-party libraries">
 
-Refer to the [reactwg/react-native-new-architecture/discussions#167](https://github.com/reactwg/react-native-new-architecture/discussions/167) for general information, and the issues on any specific libraries you use for more details. The following is a summary of issues and, when available, workarounds for some popular libraries that Expo has tracked:
+Since React Native 0.74, there are various Interop Layers enabled by default. This allows many libraries built for the old architecture to work on the New Architecture without any changes. However, the interop is not perfect and some libraries will need to be updated. The libraries that are most likely to require updates are those that ship or depend on third-party native code. [Learn more about library support in the New Architecture](https://github.com/reactwg/react-native-new-architecture/discussions/167).
 
-- **React Native Firebase**: this suite of libraries does not yet support the New Architecture.
+Refer to [React Native Directory](https://reactnative.directory/) a more complete list of libraries and their compatibility with the New Architecture. The following libraries were found to be popular among Expo apps and are known to be incompatible:
+
 - **@react-native-community/masked-view**: use `@react-native-masked-view/masked-view` instead.
 - **@react-native-community/clipboard**: use `@react-native-clipboard/clipboard` instead.
 - **rn-fetch-blob**: use `react-native-blob-util` instead.
 - **react-native-fs**: use `expo-file-system` or [a fork of react-native-fs](https://github.com/birdofpreyru/react-native-fs) instead.
 - **react-native-geolocation-service**: use `expo-location` instead.
 - **react-native-datepicker**: use `react-native-date-picker` or `@react-native-community/datetimepicker` instead.
-- **@shopify/flash-list**: may have not correctly in some cases. Be sure to test it thoroughly when migrating your app, and consider temporarily moving back to `FlatList` if you encounter issues.
 
 </Collapsible>
 
 <Collapsible summary="My build failed after enabling the New Architecture">
 
-This isn't entirely surprising! Not all libraries are compatible yet. Read the logs to determine which library is incompatible. The first thing to do is to try updating it to the latest version, and if the issue persists, try temporarily removing it from your **package.json** and from your application code. Repeat this until your app runs.
+This isn't entirely surprising! Not all libraries are compatible yet, and in some cases compatibility was only recently added and so you will want to ensure you update your libraries to their latest versions. Read the logs to determine which library is incompatible. Also, run `npx expo-doctor@latest` to check your dependencies against the data in React Native Directory.
 
-Once you have a running app, you can decide whether to look for alternative libraries that are compatible with the New Architecture, and report any issues you encounter to the library maintainers. Create a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) and report the issue to the library author, if applicable, or to the React Native team if you believe the issue originates in React Native itself.
+When you are using the latest version of a library and it is not compatible, report any issues you encounter to the respective GitHub repository. Create a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) and report the issue to the library author. If you believe the issue originates in React Native itself, rather than a library, report it to the React Native team (again, with a minimal reproducible example).
 
 </Collapsible>

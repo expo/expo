@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import execa from 'execa';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
@@ -8,6 +9,8 @@ import { execute, projectRoot, getLoadedModulesAsync, bin } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
+
+jest.unmock('resolve-from');
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
@@ -60,6 +63,7 @@ it('runs `npx expo export:embed --help`', async () => {
         --asset-catalog-dest <string>          Directory to create an iOS Asset Catalog for images
         --unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default
         --reset-cache                          Removes cached files
+        --eager                                Eagerly export the bundle with default options
         -v, --verbose                          Enables debug logging
         --config <string>                      Path to the CLI configuration file
         --read-global-cache                    Try to fetch transformed JS code from the global cache, if configured.
@@ -93,7 +97,7 @@ it(
         bin,
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -136,6 +140,8 @@ it(
       'assets/__packages/expo-router/assets/file.png',
       'assets/__packages/expo-router/assets/forward.png',
       'assets/__packages/expo-router/assets/pkg.png',
+      'assets/__packages/expo-router/assets/sitemap.png',
+      'assets/__packages/expo-router/assets/unmatched.png',
       'assets/assets/icon.png',
       'output.js',
     ]);
@@ -167,7 +173,7 @@ it(
         bin,
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -221,6 +227,8 @@ it(
       'assets/__packages/expo-router/assets/file.png',
       'assets/__packages/expo-router/assets/forward.png',
       'assets/__packages/expo-router/assets/pkg.png',
+      'assets/__packages/expo-router/assets/sitemap.png',
+      'assets/__packages/expo-router/assets/unmatched.png',
       'assets/assets/icon.png',
       'output.js',
       'output.js.map',
@@ -244,7 +252,7 @@ it(
         bin,
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -297,6 +305,8 @@ it(
       'assets/__packages/expo-router/assets/file.png',
       'assets/__packages/expo-router/assets/forward.png',
       'assets/__packages/expo-router/assets/pkg.png',
+      'assets/__packages/expo-router/assets/sitemap.png',
+      'assets/__packages/expo-router/assets/unmatched.png',
       'output.js',
     ]);
   },
@@ -315,7 +325,7 @@ it(
       [
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -340,7 +350,7 @@ it(
         bin,
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -396,6 +406,8 @@ it(
       'drawable-mdpi/__packages_exporouter_assets_file.png',
       'drawable-mdpi/__packages_exporouter_assets_forward.png',
       'drawable-mdpi/__packages_exporouter_assets_pkg.png',
+      'drawable-mdpi/__packages_exporouter_assets_sitemap.png',
+      'drawable-mdpi/__packages_exporouter_assets_unmatched.png',
       'drawable-mdpi/assets_icon.png',
       'output.js',
       'output.js.map',

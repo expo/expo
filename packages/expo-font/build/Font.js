@@ -2,21 +2,8 @@ import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
-import { loaded, loadPromises } from './memory';
+import { isLoadedInCache, isLoadedNative, loadPromises, markLoaded, purgeCache, purgeFontFamilyFromCache, } from './memory';
 import { registerStaticFont } from './server';
-// @needsAudit
-/**
- * Used to transform font family names to the scoped name. This does not need to
- * be called in standalone or bare apps, but it will return unscoped font family
- * names if it is called in those contexts.
- *
- * @param fontFamily Name of font to process.
- * @returns Returns a name processed for use with the [current workflow](https://docs.expo.dev/archive/managed-vs-bare/).
- * @deprecated This method is not needed anymore and will be removed in the future.
- */
-export function processFontFamily(fontFamily) {
-    return fontFamily;
-}
 // @needsAudit
 /**
  * Synchronously detect if the font for `fontFamily` has finished loading.
@@ -26,9 +13,18 @@ export function processFontFamily(fontFamily) {
  */
 export function isLoaded(fontFamily) {
     if (Platform.OS === 'web') {
-        return fontFamily in loaded || !!ExpoFontLoader.isLoaded(fontFamily);
+        return isLoadedInCache(fontFamily) || !!ExpoFontLoader.isLoaded(fontFamily);
     }
-    return fontFamily in loaded || ExpoFontLoader.customNativeFonts?.includes(fontFamily);
+    return isLoadedNative(fontFamily);
+}
+/**
+ * Synchronously get all the fonts that have been loaded.
+ * This includes fonts that were bundled at build time using the config plugin, as well as those loaded at runtime using `loadAsync`.
+ *
+ * @returns Returns array of strings which you can use as `fontFamily` [style prop](https://reactnative.dev/docs/text#style).
+ */
+export function getLoadedFonts() {
+    return ExpoFontLoader.getLoadedFonts();
 }
 // @needsAudit
 /**
@@ -42,9 +38,11 @@ export function isLoading(fontFamily) {
 }
 // @needsAudit
 /**
- * Highly efficient method for loading fonts from static or remote resources which can then be used
- * with the platform's native text elements. In the browser this generates a `@font-face` block in
+ * An efficient method for loading fonts from static or remote resources which can then be used
+ * with the platform's native text elements. In the browser, this generates a `@font-face` block in
  * a shared style sheet for fonts. No CSS is needed to use this method.
+ *
+ * > **Note**: We recommend using the [config plugin](#configuration-in-appjsonappconfigjs) instead whenever possible.
  *
  * @param fontFamilyOrFontMap String or map of values that can be used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
  * with React Native `Text` elements.
@@ -80,7 +78,9 @@ async function loadFontInNamespaceAsync(fontFamily, source) {
     if (!source) {
         throw new CodedError(`ERR_FONT_SOURCE`, `Cannot load null or undefined font source: { "${fontFamily}": ${source} }. Expected asset of type \`FontSource\` for fontFamily of name: "${fontFamily}"`);
     }
-    if (loaded[fontFamily]) {
+    // we consult the native module to see if the font is already loaded
+    // this is slower than checking the cache but can help avoid loading the same font n times
+    if (isLoaded(fontFamily)) {
         return;
     }
     if (loadPromises.hasOwnProperty(fontFamily)) {
@@ -94,7 +94,7 @@ async function loadFontInNamespaceAsync(fontFamily, source) {
     loadPromises[fontFamily] = (async () => {
         try {
             await loadSingleFontAsync(fontFamily, asset);
-            loaded[fontFamily] = true;
+            markLoaded(fontFamily);
         }
         finally {
             delete loadPromises[fontFamily];
@@ -105,6 +105,7 @@ async function loadFontInNamespaceAsync(fontFamily, source) {
 // @needsAudit
 /**
  * Unloads all the custom fonts. This is used for testing.
+ * @hidden
  */
 export async function unloadAllAsync() {
     if (!ExpoFontLoader.unloadAllAsync) {
@@ -113,19 +114,18 @@ export async function unloadAllAsync() {
     if (Object.keys(loadPromises).length) {
         throw new CodedError(`ERR_UNLOAD`, `Cannot unload fonts while they're still loading: ${Object.keys(loadPromises).join(', ')}`);
     }
-    for (const fontFamily of Object.keys(loaded)) {
-        delete loaded[fontFamily];
-    }
+    purgeCache();
     await ExpoFontLoader.unloadAllAsync();
 }
 // @needsAudit
 /**
  * Unload custom fonts matching the `fontFamily`s and display values provided.
- * Because fonts are automatically unloaded on every platform this is mostly used for testing.
+ * This is used for testing.
  *
  * @param fontFamilyOrFontMap The name or names of the custom fonts that will be unloaded.
  * @param options When `fontFamilyOrFontMap` is a string, this should be the font source used to load
  * the custom font originally.
+ * @hidden
  */
 export async function unloadAsync(fontFamilyOrFontMap, options) {
     if (!ExpoFontLoader.unloadAsync) {
@@ -143,11 +143,11 @@ export async function unloadAsync(fontFamilyOrFontMap, options) {
     return await unloadFontInNamespaceAsync(fontFamilyOrFontMap, options);
 }
 async function unloadFontInNamespaceAsync(fontFamily, options) {
-    if (!loaded[fontFamily]) {
+    if (!isLoaded(fontFamily)) {
         return;
     }
     else {
-        delete loaded[fontFamily];
+        purgeFontFamilyFromCache(fontFamily);
     }
     // Important: we want all callers that concurrently try to load the same font to await the same
     // promise. If we're here, we haven't created the promise yet. To ensure we create only one

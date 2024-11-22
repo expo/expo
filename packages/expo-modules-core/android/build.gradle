@@ -1,7 +1,9 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '1.12.11'
+version = '2.0.5'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -51,6 +53,8 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
+def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
+
 android {
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
@@ -63,7 +67,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.12.11"
+    versionName "2.0.5"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -105,9 +109,11 @@ android {
       "**/libhermes.so",
       "**/libjscexecutor.so",
       "**/libjsi.so",
+      "**/libreactnative.so",
       "**/libreactnativejni.so",
       "**/libreact_debug.so",
       "**/libreact_nativemodule_core.so",
+      "**/libreact_utils.so",
       "**/libreact_render_debug.so",
       "**/libreact_render_graphics.so",
       "**/libreact_render_core.so",
@@ -135,6 +141,18 @@ android {
     }
   }
 
+  sourceSets {
+    main {
+      java {
+        if (REACT_NATIVE_TARGET_VERSION >= 77) {
+          srcDirs += 'src/rn77'
+        } else {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += 'src/rn74'
+        }
+      }
+    }
+  }
 
   testOptions {
     unitTests.includeAndroidResources = true
@@ -187,5 +205,14 @@ dependencies {
     } else {
       compileOnly "org.webkit:android-jsc:+"
     }
+  }
+}
+
+if (shouldTurnWarningsIntoErrors) {
+  tasks.withType(JavaCompile) configureEach {
+    options.compilerArgs << "-Werror" << "-Xlint:all" << '-Xlint:-serial' << '-Xlint:-rawtypes'
+  }
+  tasks.withType(KotlinCompile) configureEach {
+    compilerOptions.allWarningsAsErrors = true
   }
 }

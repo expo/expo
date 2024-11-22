@@ -1,19 +1,42 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setNotificationSounds = exports.withNotificationSounds = exports.withNotificationsIOS = void 0;
+exports.setNotificationSounds = exports.withNotificationsIOS = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = require("fs");
 const path_1 = require("path");
 const ERROR_MSG_PREFIX = 'An error occurred while configuring iOS notifications. ';
-const withNotificationsIOS = (config, { mode = 'development', sounds = [] }) => {
+const withNotificationsIOS = (config, { mode = 'development', sounds = [], enableBackgroundRemoteNotifications }) => {
     config = (0, config_plugins_1.withEntitlementsPlist)(config, (config) => {
-        config.modResults['aps-environment'] = mode;
+        if (!config.modResults['aps-environment']) {
+            config.modResults['aps-environment'] = mode;
+        }
         return config;
     });
-    config = (0, exports.withNotificationSounds)(config, { sounds });
+    config = withNotificationSounds(config, { sounds });
+    config = withBackgroundRemoteNotifications(config, enableBackgroundRemoteNotifications);
     return config;
 };
 exports.withNotificationsIOS = withNotificationsIOS;
+const withBackgroundRemoteNotifications = (config, enableBackgroundRemoteNotifications) => {
+    if (!(enableBackgroundRemoteNotifications === undefined ||
+        typeof enableBackgroundRemoteNotifications === 'boolean')) {
+        throw new Error(ERROR_MSG_PREFIX +
+            `"enableBackgroundRemoteNotifications" has an invalid value: ${enableBackgroundRemoteNotifications}. Expected a boolean.`);
+    }
+    if (!enableBackgroundRemoteNotifications) {
+        return config;
+    }
+    return (0, config_plugins_1.withInfoPlist)(config, (config) => {
+        if (!Array.isArray(config.modResults.UIBackgroundModes)) {
+            config.modResults.UIBackgroundModes = [];
+        }
+        const notificationBackgroundMode = 'remote-notification';
+        if (!config.modResults.UIBackgroundModes.includes(notificationBackgroundMode)) {
+            config.modResults.UIBackgroundModes.push(notificationBackgroundMode);
+        }
+        return config;
+    });
+};
 const withNotificationSounds = (config, { sounds }) => {
     return (0, config_plugins_1.withXcodeProject)(config, (config) => {
         setNotificationSounds(config.modRequest.projectRoot, {
@@ -24,7 +47,6 @@ const withNotificationSounds = (config, { sounds }) => {
         return config;
     });
 };
-exports.withNotificationSounds = withNotificationSounds;
 /**
  * Save sound files to the Xcode project root and add them to the Xcode project.
  */

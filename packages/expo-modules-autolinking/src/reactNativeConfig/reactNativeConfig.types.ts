@@ -66,6 +66,7 @@ export type RNConfigReactNativePlatformsConfigAndroid = any;
 export type RNConfigReactNativePlatformsConfigIos = any;
 
 interface RNConfigReactNativePlatformsConfig {
+  root?: string;
   platforms?: {
     android?: RNConfigReactNativePlatformsConfigAndroid;
     ios?: RNConfigReactNativePlatformsConfigIos;
@@ -76,7 +77,7 @@ interface RNConfigReactNativePlatformsConfig {
  * The `react-native.config.js` config from projectRoot.
  */
 export interface RNConfigReactNativeProjectConfig {
-  dependencies: Record<string, RNConfigReactNativePlatformsConfig>;
+  dependencies?: Record<string, RNConfigReactNativePlatformsConfig>;
 }
 
 /**
@@ -90,3 +91,16 @@ export interface RNConfigReactNativeLibraryConfig {
 export type RNConfigReactNativeConfig =
   | RNConfigReactNativeProjectConfig
   | RNConfigReactNativeLibraryConfig;
+
+/**
+ * The `project` config represents the app project configuration.
+ */
+export interface RNConfigReactNativeAppProjectConfig {
+  android?: {
+    sourceDir: string;
+    packageName: string;
+  };
+  ios?: {
+    sourceDir: string;
+  };
+}

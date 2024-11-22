@@ -1,6 +1,6 @@
-import { getConfig, type ExpoConfig } from '@expo/config';
-import { type ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
+import { getConfig, type ExpoConfig } from 'expo/config';
+import { type ModPlatform } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import { glob as globAsync } from 'glob';
 import path from 'path';

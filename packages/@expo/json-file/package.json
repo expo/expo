@@ -1,6 +1,6 @@
 {
   "name": "@expo/json-file",
-  "version": "8.3.3",
+  "version": "9.0.0",
   "description": "A module for reading, writing, and manipulating JSON files",
   "main": "build/JsonFile.js",
   "scripts": {
@@ -31,14 +31,15 @@
   ],
   "dependencies": {
     "@babel/code-frame": "~7.10.4",
-    "json5": "^2.2.2",
+    "json5": "^2.2.3",
     "write-file-atomic": "^2.3.0"
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.0.1",
     "@types/json5": "^2.2.0",
     "@types/write-file-atomic": "^2.1.1",
-    "expo-module-scripts": "^3.3.0"
+    "expo-module-scripts": "^4.0.0",
+    "memfs": "^3.2.0"
   },
   "publishConfig": {
     "access": "public"

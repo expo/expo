@@ -1,7 +1,8 @@
 import { vol } from 'memfs';
 import requireString from 'require-from-string';
 
-import { loadConfigAsync } from '../Config';
+import { loadConfigAsync, normalizeSourceSkips } from '../Config';
+import { SourceSkips } from '../sourcer/SourceSkips';
 
 jest.mock('fs/promises');
 
@@ -112,5 +113,58 @@ module.exports = config;
       const config = await loadConfigAsync('/app', true);
       expect(config).toEqual({ debug: true });
     });
+  });
+
+  it('should support sourceSkips as an array of strings', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const configContents = `\
+const config = {
+  sourceSkips: [
+    'ExpoConfigRuntimeVersionIfString',
+    'ExpoConfigNames',
+  ],
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
+      const config = await loadConfigAsync('/app', true);
+      expect(config).toEqual({
+        sourceSkips: SourceSkips.ExpoConfigRuntimeVersionIfString | SourceSkips.ExpoConfigNames,
+      });
+    });
+  });
+});
+
+describe(normalizeSourceSkips, () => {
+  it('should return SourceSkips.None if sourceSkips is undefined', () => {
+    expect(normalizeSourceSkips(undefined)).toEqual(SourceSkips.None);
+  });
+
+  it('should return original number if sourceSkips is a number', () => {
+    const skips: SourceSkips =
+      SourceSkips.ExpoConfigRuntimeVersionIfString | SourceSkips.ExpoConfigNames;
+    const result = normalizeSourceSkips(skips);
+    expect(result).toEqual(skips);
+  });
+
+  it('should return an empty array if sourceSkips is an empty array', () => {
+    expect(normalizeSourceSkips([])).toEqual(SourceSkips.None);
+  });
+
+  it('should return an array with normalized source skips', () => {
+    const result = normalizeSourceSkips(['ExpoConfigRuntimeVersionIfString', 'ExpoConfigNames']);
+    expect(result).toEqual(
+      SourceSkips.ExpoConfigRuntimeVersionIfString | SourceSkips.ExpoConfigNames
+    );
+  });
+
+  it('should throw for invalid sourceSkips type', () => {
+    // @ts-expect-error
+    expect(() => normalizeSourceSkips({})).toThrow();
+    // @ts-expect-error
+    expect(() => normalizeSourceSkips('test')).toThrow();
   });
 });

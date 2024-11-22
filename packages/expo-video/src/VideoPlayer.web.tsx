@@ -1,12 +1,17 @@
 import { useMemo } from 'react';
 
 import type {
+  BufferOptions,
   PlayerError,
-  VideoPlayer,
-  VideoPlayerEvents,
   VideoPlayerStatus,
   VideoSource,
+  VideoPlayer,
+  SubtitleTrack,
+  AudioMixingMode,
 } from './VideoPlayer.types';
+import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
+import { VideoThumbnail } from './VideoThumbnail';
+import resolveAssetSource from './resolveAssetSource';
 
 export function useVideoPlayer(
   source: VideoSource,
@@ -22,10 +27,23 @@ export function useVideoPlayer(
 }
 
 export function getSourceUri(source: VideoSource): string | null {
-  if (typeof source == 'string') {
+  if (typeof source === 'string') {
     return source;
   }
+  if (typeof source === 'number') {
+    return resolveAssetSource(source)?.uri ?? null;
+  }
+  if (typeof source?.assetId === 'number' && !source?.uri) {
+    return resolveAssetSource(source.assetId)?.uri ?? null;
+  }
+
   return source?.uri ?? null;
+}
+
+export function createVideoPlayer(source: VideoSource): VideoPlayer {
+  const parsedSource = typeof source === 'string' ? { uri: source } : source;
+
+  return new VideoPlayerWeb(parsedSource);
 }
 
 export default class VideoPlayerWeb
@@ -49,8 +67,18 @@ export default class VideoPlayerWeb
   _preservesPitch: boolean = true;
   _status: VideoPlayerStatus = 'idle';
   _error: PlayerError | null = null;
+  _timeUpdateLoop: number | null = null;
+  _timeUpdateEventInterval: number = 0;
+  audioMixingMode: AudioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
+  allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
+  currentLiveTimestamp: number | null = null; // Not supported on web. Dummy to match the interface.
+  currentOffsetFromLive: number | null = null; // Not supported on web. Dummy to match the interface.
+  targetOffsetFromLive: number = 0; // Not supported on web. Dummy to match the interface.
+  bufferOptions: BufferOptions = {} as BufferOptions; // Not supported on web. Dummy to match the interface.
+  subtitleTrack: SubtitleTrack | null = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
+  availableSubtitleTracks: SubtitleTrack[] = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
@@ -74,7 +102,7 @@ export default class VideoPlayerWeb
   }
 
   get isLive(): boolean {
-    return [...this._mountedVideos][0].duration === Infinity;
+    return [...this._mountedVideos][0]?.duration === Infinity;
   }
 
   set volume(value: number) {
@@ -101,7 +129,7 @@ export default class VideoPlayerWeb
 
   get currentTime(): number {
     // All videos should be synchronized, so we return the position of the first video.
-    return [...this._mountedVideos][0].currentTime;
+    return [...this._mountedVideos][0]?.currentTime ?? 0;
   }
 
   set currentTime(value: number) {
@@ -112,7 +140,7 @@ export default class VideoPlayerWeb
 
   get duration(): number {
     // All videos should have the same duration, so we return the duration of the first video.
-    return [...this._mountedVideos][0].duration;
+    return [...this._mountedVideos][0]?.duration ?? 0;
   }
 
   get preservesPitch(): boolean {
@@ -126,17 +154,65 @@ export default class VideoPlayerWeb
     this._preservesPitch = value;
   }
 
+  get timeUpdateEventInterval(): number {
+    return this._timeUpdateEventInterval;
+  }
+  set timeUpdateEventInterval(value: number) {
+    this._timeUpdateEventInterval = value;
+    if (this._timeUpdateLoop) {
+      clearInterval(this._timeUpdateLoop);
+    }
+    if (value > 0) {
+      // Emit the first event immediately like on other platforms
+      this.emit('timeUpdate', {
+        currentTime: this.currentTime,
+        currentLiveTimestamp: null,
+        currentOffsetFromLive: null,
+        bufferedPosition: this.bufferedPosition,
+      });
+
+      this._timeUpdateLoop = setInterval(() => {
+        this.emit('timeUpdate', {
+          currentTime: this.currentTime,
+          currentLiveTimestamp: null,
+          currentOffsetFromLive: null,
+          bufferedPosition: this.bufferedPosition,
+        });
+      }, value * 1000);
+    }
+  }
+
   get status(): VideoPlayerStatus {
     return this._status;
+  }
+
+  get bufferedPosition(): number {
+    if (this._mountedVideos.size === 0 || this.status === 'error') {
+      return -1;
+    }
+    const buffered = [...this._mountedVideos][0]?.buffered;
+    for (let i = 0; i < buffered.length; i++) {
+      if (buffered.start(i) <= this.currentTime && buffered.end(i) >= this.currentTime) {
+        return buffered.end(i);
+      }
+    }
+    return 0;
   }
 
   private set status(value: VideoPlayerStatus) {
     if (this._status === value) return;
 
     if (value === 'error' && this._error) {
-      this.emit('statusChange', value, this._status, this._error);
+      this.emit('statusChange', {
+        status: value,
+        oldStatus: this._status,
+        error: this._error,
+      });
     } else {
-      this.emit('statusChange', value, this._status);
+      this.emit('statusChange', {
+        status: value,
+        oldStatus: this._status,
+      });
       this._error = null;
     }
     this._status = value;
@@ -239,6 +315,10 @@ export default class VideoPlayerWeb
     this.playing = true;
   }
 
+  generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]> {
+    throw new Error('Generating video thumbnails is not supported on Web yet');
+  }
+
   _synchronizeWithFirstVideo(video: HTMLVideoElement): void {
     const firstVideo = [...this._mountedVideos][0];
     if (!firstVideo) return;
@@ -271,7 +351,10 @@ export default class VideoPlayerWeb
 
   _addListeners(video: HTMLVideoElement): void {
     video.onplay = () => {
-      this._emitOnce(video, 'playingChange', true, this.playing);
+      this._emitOnce(video, 'playingChange', {
+        isPlaying: true,
+        oldIsPlaying: this.playing,
+      });
       this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.play();
@@ -279,7 +362,10 @@ export default class VideoPlayerWeb
     };
 
     video.onpause = () => {
-      this._emitOnce(video, 'playingChange', false, this.playing);
+      this._emitOnce(video, 'playingChange', {
+        isPlaying: false,
+        oldIsPlaying: this.playing,
+      });
       this.playing = false;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.pause();
@@ -287,12 +373,8 @@ export default class VideoPlayerWeb
     };
 
     video.onvolumechange = () => {
-      this._emitOnce(
-        video,
-        'volumeChange',
-        { volume: video.volume, isMuted: video.muted },
-        { volume: this.volume, isMuted: this.muted }
-      );
+      this._emitOnce(video, 'volumeChange', { volume: video.volume, oldVolume: this.volume });
+      this._emitOnce(video, 'mutedChange', { muted: video.muted, oldMuted: this.muted });
       this.volume = video.volume;
       this.muted = video.muted;
     };
@@ -312,7 +394,10 @@ export default class VideoPlayerWeb
     };
 
     video.onratechange = () => {
-      this._emitOnce(video, 'playbackRateChange', video.playbackRate, this.playbackRate);
+      this._emitOnce(video, 'playbackRateChange', {
+        playbackRate: video.playbackRate,
+        oldPlaybackRate: this.playbackRate,
+      });
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo.playbackRate === video.playbackRate) return;
         this._playbackRate = video.playbackRate;
@@ -347,7 +432,7 @@ export default class VideoPlayerWeb
     };
 
     video.onloadstart = () => {
-      this._emitOnce(video, 'sourceChange', this.src, this.previousSrc);
+      this._emitOnce(video, 'sourceChange', { source: this.src, oldSource: this.previousSrc });
     };
   }
 }

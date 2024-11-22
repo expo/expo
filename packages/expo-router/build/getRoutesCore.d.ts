@@ -7,8 +7,10 @@ export type Options = {
     ignoreEntryPoints?: boolean;
     internal_stripLoadRoute?: boolean;
     skipGenerated?: boolean;
+    notFound?: boolean;
     importMode?: string;
     platformRoutes?: boolean;
+    sitemap?: boolean;
     platform?: string;
     /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
     getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>) => RouteNode;

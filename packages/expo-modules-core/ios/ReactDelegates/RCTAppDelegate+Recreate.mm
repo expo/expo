@@ -12,7 +12,7 @@
                             launchOptions:(nullable NSDictionary *)launchOptions
 {
   if (self.bridgelessEnabled) {
-    id reactHost = [self.rootViewFactory valueForKey:@"_reactHost"];
+    id reactHost = self.rootViewFactory.reactHost;
     RCTAssert(reactHost == nil, @"recreateRootViewWithBundleURL: does not support when react instance is created");
   } else {
     RCTAssert(self.rootViewFactory.bridge == nil, @"recreateRootViewWithBundleURL: does not support when react instance is created");

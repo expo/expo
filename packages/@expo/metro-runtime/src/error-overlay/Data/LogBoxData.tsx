@@ -9,6 +9,7 @@
 'use client';
 
 import * as React from 'react';
+import { NativeEventEmitter } from 'react-native';
 
 import { LogBoxLog, StackType } from './LogBoxLog';
 import type { LogLevel } from './LogBoxLog';
@@ -356,10 +357,27 @@ export function observe(observer: Observer): Subscription {
   };
 }
 
+const emitter = new NativeEventEmitter({
+  addListener() {},
+  removeListeners() {},
+});
+
 export function withSubscription(WrappedComponent: React.FC<object>): React.Component<object> {
   class LogBoxStateSubscription extends React.Component<React.PropsWithChildren<Props>, State> {
     static getDerivedStateFromError() {
       return { hasError: true };
+    }
+
+    constructor(props) {
+      super(props);
+
+      if (process.env.NODE_ENV === 'development') {
+        emitter.addListener('devLoadingView:hide', () => {
+          if (this.state.hasError) {
+            this.retry();
+          }
+        });
+      }
     }
 
     componentDidCatch(err: Error, errorInfo: { componentStack: string } & any) {
@@ -377,13 +395,15 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
       selectedLogIndex: -1,
     };
 
-    render() {
-      if (this.state.hasError) {
-        // This happens when the component failed to render, in which case we delegate to the native redbox.
-        // We can't show any fallback UI here, because the error may be with <View> or <Text>.
-        return null;
-      }
+    retry = () => {
+      return new Promise<void>((resolve) => {
+        this.setState({ hasError: false }, () => {
+          resolve();
+        });
+      });
+    };
 
+    render() {
       return (
         <LogContext.Provider
           value={{
@@ -391,7 +411,7 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
             isDisabled: this.state.isDisabled,
             logs: Array.from(this.state.logs),
           }}>
-          {this.props.children}
+          {this.state.hasError ? null : this.props.children}
           <WrappedComponent />
         </LogContext.Provider>
       );
@@ -399,7 +419,11 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
 
     componentDidMount(): void {
       this._subscription = observe((data) => {
-        this.setState(data);
+        // Ignore the initial empty log
+        if (data.selectedLogIndex === -1) return;
+        React.startTransition(() => {
+          this.setState(data);
+        });
       });
     }
 

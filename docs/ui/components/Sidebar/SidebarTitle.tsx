@@ -7,7 +7,7 @@ type SidebarTitleProps = {
 } & PropsWithChildren;
 
 export const SidebarTitle = ({ children, Icon }: SidebarTitleProps) => (
-  <div className="flex gap-2 items-center relative ml-3 -mr-4 pb-1 select-none">
+  <div className="relative -mr-4 ml-3 flex items-center gap-2 pb-1">
     {Icon && <Icon className="icon-sm" />}
     <LABEL weight="medium" crawlable={false}>
       {children}

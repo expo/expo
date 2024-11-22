@@ -1,0 +1,140 @@
+---
+title: Haptics
+description: A library that provides access to the system's vibration effects on Android and the haptics engine on iOS.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-52/packages/expo-haptics'
+packageName: 'expo-haptics'
+iconUrl: '/static/images/packages/expo-haptics.png'
+platforms: ['android', 'ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { SnackInline } from '~/ui/components/Snippet';
+
+`expo-haptics` provides haptic (touch) feedback for:
+
+- Android devices using Vibrator system service.
+- iOS 10+ devices using the Taptic Engine.
+
+On iOS, the Taptic engine will do nothing if any of the following conditions are true on a user's device:
+
+- Low Power Mode is enabled. This can be detected with [`expo-battery`](/versions/latest/sdk/battery/).
+- User disabled the Taptic Engine in settings.
+- iOS Camera is active (to prevent destabilization).
+- iOS dictation is active (to not disturb the microphone input).
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration
+
+On Android, this library requires permission to control vibration on the device. The `VIBRATE` permission is added automatically.
+
+## Usage
+
+<SnackInline label='Haptics usage' dependencies={['expo-haptics']}>
+
+```jsx
+import { StyleSheet, View, Text, Button } from 'react-native';
+import * as Haptics from 'expo-haptics';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Haptics.selectionAsync</Text>
+      <View style={styles.buttonContainer}>
+        <Button title="Selection" onPress={() => /* @info */ Haptics.selectionAsync() /* @end */} />
+      </View>
+      <Text style={styles.text}>Haptics.notificationAsync</Text>
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Success"
+          onPress={
+            () =>
+              /* @info */ Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success
+              ) /* @end */
+          }
+        />
+        <Button
+          title="Error"
+          onPress={
+            () =>
+              /* @info */ Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Error
+              ) /* @end */
+          }
+        />
+        <Button
+          title="Warning"
+          onPress={
+            () =>
+              /* @info */ Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Warning
+              ) /* @end */
+          }
+        />
+      </View>
+      <Text style={styles.text}>Haptics.impactAsync</Text>
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Light"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) /* @end */
+          }
+        />
+        <Button
+          title="Medium"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium) /* @end */
+          }
+        />
+        <Button
+          title="Heavy"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) /* @end */
+          }
+        />
+        <Button
+          title="Rigid"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid) /* @end */
+          }
+        />
+        <Button
+          title="Soft"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft) /* @end */
+          }
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginTop: 10,
+    marginBottom: 30,
+    justifyContent: 'space-between',
+  },
+});
+```
+
+</SnackInline>
+
+## API
+
+```js
+import * as Haptics from 'expo-haptics';
+```
+
+<APISection packageName="expo-haptics" apiName="Haptics" />

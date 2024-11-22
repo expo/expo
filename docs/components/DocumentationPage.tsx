@@ -137,11 +137,11 @@ export default function DocumentationPage({
       </Head>
       <div
         className={mergeClasses(
-          'mx-auto py-10 px-14',
-          'max-lg-gutters:px-4 max-lg-gutters:pt-5 max-lg-gutters:pb-12'
+          'mx-auto px-14 py-10',
+          'max-lg-gutters:px-4 max-lg-gutters:pb-12 max-lg-gutters:pt-5'
         )}>
         {version && version === 'unversioned' && (
-          <Callout type="default" size="sm" className="!inline-flex w-full !mb-5">
+          <Callout type="default" size="sm" className="!mb-5 !inline-flex w-full">
             This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
             <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
             {versionToText(LATEST_VERSION)}).

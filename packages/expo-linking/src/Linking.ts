@@ -14,9 +14,9 @@ import { validateURL } from './validateURL';
  * It is recommended to use the [`useURL()`](#useurl) hook instead.
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
- * [`EventType`](#eventype).
+ * [`EventType`](#eventtype).
  * @return An EmitterSubscription that has the remove method from EventSubscription
- * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
+ * @see [React Native documentation on Linking](https://reactnative.dev/docs/linking#addeventlistener).
  */
 export function addEventListener(type: 'url', handler: URLListener): EmitterSubscription {
   return RNLinking.addEventListener(type, handler);
@@ -47,7 +47,7 @@ export async function parseInitialURLAsync(): Promise<ParsedURL> {
 // @needsAudit
 /**
  * Launch an Android intent with extras.
- * > Use [IntentLauncher](./intent-launcher) instead, `sendIntent` is only included in
+ * > Use [`expo-intent-launcher`](./intent-launcher) instead. `sendIntent` is only included in
  * > `Linking` for API compatibility with React Native's Linking API.
  * @platform android
  */
@@ -93,7 +93,7 @@ export function getLinkingURL(): string | null {
 /**
  * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
  * for more information.
- * @param url A URL for the operating system to open, eg: `tel:5555555`, `exp://`.
+ * @param url A URL for the operating system to open. For example: `tel:5555555`, `exp://`.
  * @return A `Promise` that is fulfilled with `true` if the link is opened operating system
  * automatically or the user confirms the prompt to open the link. The `Promise` rejects if there
  * are no applications registered for the URL or the user cancels the dialog.
@@ -110,7 +110,6 @@ export async function openURL(url: string): Promise<true> {
  * @param url The URL that you want to test can be opened.
  * @return A `Promise` object that is fulfilled with `true` if the URL can be handled, otherwise it
  * `false` if not.
- *
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
  * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#linking-from-your-app).
  */

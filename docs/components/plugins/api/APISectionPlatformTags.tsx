@@ -1,5 +1,6 @@
-import { CommentData, CommentTagData } from '~/components/plugins/api/APIDataTypes';
-import { getAllTagData, getCommentContent } from '~/components/plugins/api/APISectionUtils';
+import { CommentData, CommentTagData } from './APIDataTypes';
+import { getAllTagData, getCommentContent } from './APISectionUtils';
+
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { PlatformTags, StatusTag } from '~/ui/components/Tag';
@@ -23,7 +24,7 @@ export const APISectionPlatformTags = ({
   const { platforms: defaultPlatforms } = usePageMetadata();
   const { version } = usePageApiVersion();
 
-  const isUnversionedVersion = version === 'unversioned';
+  const isCompatibleVersion = ['unversioned', 'latest', 'v52.0.0'].includes(version);
   const platformsData = platforms || getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
 
@@ -31,7 +32,7 @@ export const APISectionPlatformTags = ({
     ? userProvidedPlatforms
     : platformsData.length > 0
       ? platformsData?.map(platformData => getCommentContent(platformData.content))
-      : isUnversionedVersion && !disableFallback
+      : isCompatibleVersion && !disableFallback
         ? defaultPlatforms?.map(platform => platform.replace('*', ''))
         : [];
 
@@ -40,7 +41,7 @@ export const APISectionPlatformTags = ({
   }
 
   return (
-    <div className="flex flex-row items-center mb-2">
+    <div className="mb-2 flex flex-row items-center">
       {experimentalData.length > 0 && (
         <CALLOUT tag="span" theme="secondary" className="inline-flex flex-row">
           <StatusTag status="experimental" className="!mr-0" />
@@ -48,7 +49,7 @@ export const APISectionPlatformTags = ({
         </CALLOUT>
       )}
       <PlatformTags
-        prefix={isUnversionedVersion ? prefix : prefix ?? 'Only for:'}
+        prefix={isCompatibleVersion ? prefix : (prefix ?? 'Only for:')}
         platforms={platformNames}
       />
     </div>

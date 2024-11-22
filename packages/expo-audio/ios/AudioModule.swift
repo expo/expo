@@ -1,18 +1,10 @@
 import ExpoModulesCore
-import Combine
 
 public class AudioModule: Module {
-  private var timeTokens = [String: Any?]()
-  private var players = [String: AudioPlayer]()
-  private var recorders = [String: AudioRecorder]()
   private var sessionIsActive = true
 
   // MARK: Properties
   private var recordingSettings = [String: Any]()
-
-  // MARK: Observers
-  private var cancellables = Set<AnyCancellable>()
-  private var endObservers = [String: NSObjectProtocol]()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -48,40 +40,24 @@ public class AudioModule: Module {
     }
 
     OnDestroy {
-      for observer in endObservers.values {
-        NotificationCenter.default.removeObserver(observer)
-      }
-      players.removeAll()
-      recorders.removeAll()
-      timeTokens.removeAll()
-      cancellables.removeAll()
+      AudioComponentRegistry.shared.removeAll()
     }
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
-        let avPlayer = AudioUtils.createAVPlayer(source: source)
+        let avPlayer = AudioUtils.createAVPlayer(from: source)
         let player = AudioPlayer(avPlayer, interval: updateInterval)
-        players[player.id] = player
-        // Gets the duration of the item on load
-        player.ref
-          .publisher(for: \.currentItem?.status)
-          .sink { status in
-            guard let status else {
-              return
-            }
-            if status == .readyToPlay {
-              player.updateStatus(with: [
-                "isLoaded": true
-              ])
-            }
-          }
-          .store(in: &cancellables)
+        AudioComponentRegistry.shared.add(player)
         return player
       }
 
       Property("id") { player in
         player.id
+      }
+
+      Property("isAudioSamplingSupported") {
+        true
       }
 
       Property("isBuffering") { player in
@@ -131,7 +107,7 @@ public class AudioModule: Module {
       }
 
       Property("paused") { player in
-        return player.ref.rate == 0.0
+        player.isPaused
       }
 
       Property("volume") { player in
@@ -149,9 +125,7 @@ public class AudioModule: Module {
           return
         }
         let rate = player.currentRate > 0 ? player.currentRate : 1.0
-        addPlaybackEndNotification(player: player)
-        registerTimeObserver(player: player)
-        player.ref.playImmediately(atRate: rate)
+        player.play(at: rate)
       }
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
@@ -166,17 +140,20 @@ public class AudioModule: Module {
         }
       }
 
+      Function("replace") { (player, source: AudioSource) in
+        player.ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
+      }
+
       Function("pause") { player in
         player.ref.pause()
       }
 
       Function("remove") { player in
-        let id = player.id
-        if let token = timeTokens[id] {
-          player.ref.removeTimeObserver(token as Any)
-        }
-        player.ref.pause()
-        players.removeValue(forKey: player.id)
+        AudioComponentRegistry.shared.remove(player)
+      }
+
+      Function("setAudioSamplingEnabled") { (player, enabled: Bool) in
+        player.setSamplingEnabled(enabled: enabled)
       }
 
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
@@ -192,12 +169,10 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
-        guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
-          throw Exceptions.AppContextLost()
-        }
-        let avRecorder = AudioUtils.createRecorder(directory: directory, with: options)
+        let recordingDir = try recordingDirectory()
+        let avRecorder = AudioUtils.createRecorder(directory: recordingDir, with: options)
         let recorder = AudioRecorder(avRecorder)
-        recorders[recorder.id] = recorder
+        AudioComponentRegistry.shared.add(recorder)
 
         return recorder
       }
@@ -218,31 +193,23 @@ public class AudioModule: Module {
         recorder.uri
       }
 
+      AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
+        recorder.prepare(options: options)
+      }
+
       Function("record") { (recorder: AudioRecorder) -> [String: Any] in
         try checkPermissions()
-        recorder.ref.record()
-        recorder.startTimestamp = Int(recorder.deviceCurrentTime)
-        return recorder.getRecordingStatus()
+        return recorder.startRecording()
       }
 
       Function("pause") { recorder in
         try checkPermissions()
-        recorder.ref.pause()
-        let current = recorder.deviceCurrentTime
-        recorder.previousRecordingDuration += (current - recorder.startTimestamp)
-        recorder.startTimestamp = 0
+        recorder.pauseRecording()
       }
 
-      Function("stop") { recorder in
+      AsyncFunction("stop") { recorder in
         try checkPermissions()
-        recorder.ref.stop()
-        recorder.startTimestamp = 0
-        recorder.previousRecordingDuration = 0
-      }
-
-      Function("release") { recorder in
-        recorder.ref.stop()
-        recorders.removeValue(forKey: recorder.id)
+        recorder.stopRecording()
       }
 
       Function("getStatus") { recorder -> [String: Any] in
@@ -273,9 +240,16 @@ public class AudioModule: Module {
     }
   }
 
+  private func recordingDirectory() throws -> URL {
+    guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
+      throw Exceptions.AppContextLost()
+    }
+    return directory
+  }
+
   private func setIsAudioActive(_ isActive: Bool) throws {
     if !isActive {
-      for player in players.values {
+      for player in AudioComponentRegistry.shared.players.values {
         player.ref.pause()
       }
     }
@@ -294,9 +268,10 @@ public class AudioModule: Module {
     var options: AVAudioSession.CategoryOptions = []
 
     if !mode.allowsRecording {
-      recorders.values.forEach { recorder in
+      AudioComponentRegistry.shared.recorders.values.forEach { recorder in
         if recorder.isRecording {
           recorder.ref.stop()
+          recorder.allowsRecording = false
         }
       }
     }
@@ -337,36 +312,6 @@ public class AudioModule: Module {
       default:
         break
       }
-    }
-  }
-
-  private func addPlaybackEndNotification(player: AudioPlayer) {
-    if let previous = endObservers[player.id] {
-      NotificationCenter.default.removeObserver(previous)
-    }
-    endObservers[player.id] = NotificationCenter.default.addObserver(
-      forName: .AVPlayerItemDidPlayToEndTime,
-      object: player.ref.currentItem,
-      queue: nil
-    ) { _ in
-      if player.isLooping {
-        player.ref.seek(to: CMTime.zero)
-        player.ref.play()
-      } else {
-        player.updateStatus(with: [
-          "isPlaying": false
-        ])
-      }
-    }
-  }
-
-  private func registerTimeObserver(player: AudioPlayer) {
-    let updateInterval = player.interval / 1000
-    let interval = CMTime(seconds: updateInterval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-    timeTokens[player.id] = player.ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { time in
-      player.updateStatus(with: [
-        "currentPosition": time.seconds * 1000
-      ])
     }
   }
 }

@@ -157,6 +157,20 @@ module Expo
         phase.is_a?(Xcodeproj::Project::PBXSourcesBuildPhase)
       }
 
+      entitlement_path = nil
+      native_target.build_configurations.each do |build_configuration|
+        current_entitlement_path = build_configuration.build_settings['CODE_SIGN_ENTITLEMENTS']
+        unless current_entitlement_path
+          next
+        end
+        current_entitlement_path = File.join(project.project_dir, current_entitlement_path)
+        if !entitlement_path.nil? && entitlement_path != current_entitlement_path
+          Pod::UI.warn("Found multiple entitlement files in the build configurations of the target '#{native_target.name}' and using the first matched '#{current_entitlement_path}' for build")
+          next
+        end
+        entitlement_path = current_entitlement_path
+      end
+
       if xcode_build_script_index.nil?
         # This is almost impossible to get here as the script was just created with `new_shell_script_build_phase`
         # that puts the script at the end of the phases, but let's log it just in case.
@@ -184,7 +198,7 @@ module Expo
       # Write to the shell script so it's always in-sync with the autolinking configuration
       IO.write(
         support_script_path,
-        generate_support_script(autolinking_manager, modules_provider_path)
+        generate_support_script(autolinking_manager, modules_provider_path, entitlement_path)
       )
 
       # Make the support script executable
@@ -211,10 +225,11 @@ module Expo
     end
 
     # Generates the support script that is executed by the build script phase.
-    def self.generate_support_script(autolinking_manager, modules_provider_path)
+    def self.generate_support_script(autolinking_manager, modules_provider_path, entitlement_path)
       args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }
       platform = autolinking_manager.platform_name.downcase
       package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
+      entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -265,6 +280,7 @@ module Expo
         --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" \\
         generate-modules-provider #{args.join(' ')} \\
         --target "#{modules_provider_path}" \\
+        #{entitlement_param} \\
         --platform "apple" \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT

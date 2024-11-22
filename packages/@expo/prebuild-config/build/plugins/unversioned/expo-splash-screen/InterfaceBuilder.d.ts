@@ -50,7 +50,7 @@ export type IBFontDescription = IBItem<{
     type?: 'system' | 'boldSystem' | 'UICTFontTextStyleCallout' | 'UICTFontTextStyleBody' | string;
 }>;
 export type ImageContentMode = 'scaleAspectFit' | 'scaleAspectFill';
-export type ConstraintAttribute = 'top' | 'bottom' | 'trailing' | 'leading';
+export type ConstraintAttribute = 'top' | 'bottom' | 'trailing' | 'leading' | 'centerX' | 'centerY';
 export type IBImageView = IBItem<{
     id: string;
     userLabel: string;
@@ -58,8 +58,8 @@ export type IBImageView = IBItem<{
     clipsSubviews?: IBBoolean;
     userInteractionEnabled: IBBoolean;
     contentMode: IBContentMode;
-    horizontalHuggingPriority: number;
-    verticalHuggingPriority: number;
+    horizontalHuggingPriority?: number;
+    verticalHuggingPriority?: number;
     insetsLayoutMarginsFromSafeArea?: IBBoolean;
     translatesAutoresizingMaskIntoConstraints?: IBBoolean;
 }, {
@@ -130,7 +130,14 @@ export type IBViewController = IBItem<{
         }>[];
         color: IBItem<{
             key: string | 'backgroundColor';
-            systemColor: string | 'systemBackgroundColor';
+            name?: string;
+            systemColor?: string | 'systemBackgroundColor';
+            red?: string;
+            green?: string;
+            blue?: string;
+            alpha?: string;
+            colorSpace?: string;
+            customColorSpace?: string;
         }>[];
         constraints: IBItem<object, {
             constraint: IBConstraint[];
@@ -165,6 +172,16 @@ export type IBResourceImage = IBItem<{
     width: number;
     height: number;
 }>;
+export type IBResourceNamedColor = IBItem<{
+    name?: string;
+    systemColor?: string | 'systemBackgroundColor';
+    red?: string;
+    green?: string;
+    blue?: string;
+    alpha?: string;
+    colorSpace?: string;
+    customColorSpace?: string;
+}>;
 export type IBDevice = IBItem<{
     id: string;
     orientation: string | 'portrait';
@@ -191,6 +208,11 @@ export type IBSplashScreenDocument = {
         }[];
         resources: {
             image: IBResourceImage[];
+            namedColor?: IBItem<{
+                name: string;
+            }, {
+                color: IBResourceNamedColor[];
+            }>[];
         }[];
     }>;
 };
@@ -199,9 +221,12 @@ export declare function createConstraintId(...attributes: string[]): string;
 export declare function removeImageFromSplashScreen(xml: IBSplashScreenDocument, { imageName }: {
     imageName: string;
 }): IBSplashScreenDocument;
-export declare function applyImageToSplashScreenXML(xml: IBSplashScreenDocument, { imageName, contentMode, }: {
+export declare function applyImageToSplashScreenXML(xml: IBSplashScreenDocument, { imageName, contentMode, backgroundColor, enableFullScreenImage, imageWidth, }: {
     imageName: string;
     contentMode: ImageContentMode;
+    backgroundColor: string;
+    enableFullScreenImage: boolean;
+    imageWidth?: number;
 }): IBSplashScreenDocument;
 /**
  * IB does not allow two items to have the same ID.
@@ -220,3 +245,13 @@ export declare function removeExisting<TItem extends {
 export declare function toString(xml: any): string;
 /** Parse string contents into an object. */
 export declare function toObjectAsync(contents: string): Promise<any>;
+export declare const parseColor: (value: string) => Color;
+type Color = {
+    hex: string;
+    rgb: {
+        red: string;
+        green: string;
+        blue: string;
+    };
+};
+export {};

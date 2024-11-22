@@ -184,6 +184,7 @@ export async function exportFromServerAsync(
         template,
         baseUrl,
         route,
+        hydrate: true,
       });
 
       if (injectFaviconTag) {
@@ -198,6 +199,7 @@ export async function exportFromServerAsync(
     platform,
     includeSourceMaps,
     files,
+    isServerHosted: true,
   });
 
   if (resources.assets) {
@@ -213,7 +215,7 @@ export async function exportFromServerAsync(
 
   if (exportServer) {
     const apiRoutes = await exportApiRoutesAsync({
-      outputDir,
+      platform: 'web',
       server: devServer,
       manifest: serverManifest,
       // NOTE(kitten): For now, we always output source maps for API route exports
@@ -245,12 +247,18 @@ export function getHtmlFiles({
     route: RouteNode | null,
     baseUrl = ''
   ) {
-    for (const value of Object.values(screens)) {
+    for (const [key, value] of Object.entries(screens)) {
       let leaf: string | null = null;
       if (typeof value === 'string') {
         leaf = value;
       } else if (Object.keys(value.screens).length === 0) {
-        leaf = value.path;
+        // Ensure the trailing index is accounted for.
+        if (key === value.path + '/index') {
+          leaf = key;
+        } else {
+          leaf = value.path;
+        }
+
         route = value._route ?? null;
       }
 
@@ -381,23 +389,61 @@ export function getPathVariations(routePath: string): string[] {
   return Array.from(variations);
 }
 
+export async function exportApiRoutesStandaloneAsync(
+  devServer: MetroBundlerDevServer,
+  {
+    files = new Map(),
+    platform,
+    apiRoutesOnly,
+  }: {
+    files?: ExportAssetMap;
+    platform: string;
+    apiRoutesOnly: boolean;
+  }
+) {
+  const { serverManifest } = await devServer.getServerManifestAsync();
+
+  const apiRoutes = await exportApiRoutesAsync({
+    server: devServer,
+    manifest: serverManifest,
+    // NOTE(kitten): For now, we always output source maps for API route exports
+    includeSourceMaps: true,
+    platform,
+    apiRoutesOnly,
+  });
+
+  // Add the api routes to the files to export.
+  for (const [route, contents] of apiRoutes) {
+    files.set(route, contents);
+  }
+
+  return files;
+}
+
 async function exportApiRoutesAsync({
   includeSourceMaps,
-  outputDir,
   server,
+  platform,
+  apiRoutesOnly,
   ...props
-}: Pick<Options, 'outputDir' | 'includeSourceMaps'> & {
+}: Pick<Options, 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
   manifest: ExpoRouterServerManifestV1;
+  platform: string;
+  apiRoutesOnly?: boolean;
 }): Promise<ExportAssetMap> {
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
     includeSourceMaps,
-    platform: 'web',
+    platform,
   });
 
-  Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
+  // HACK: Clear out the HTML and 404 routes if we're only exporting API routes. This is used for native apps that are using API routes but haven't implemented web support yet.
+  if (apiRoutesOnly) {
+    manifest.htmlRoutes = [];
+    manifest.notFoundRoutes = [];
+  }
 
   files.set('_expo/routes.json', {
     contents: JSON.stringify(manifest, null, 2),

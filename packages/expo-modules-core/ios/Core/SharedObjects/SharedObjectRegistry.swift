@@ -101,9 +101,18 @@ public final class SharedObjectRegistry {
     // but with the current implementation it's possible to use a raw object for registration.
     jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: [.writable])
 
-    // Set the native state in the JS object.
+    if let sharedRef = nativeObject as? AnySharedRef {
+      jsObject.defineProperty("nativeRefType", value: sharedRef.nativeRefType, options: [])
+    }
+
+    // Set the native state and memory footprint in the JS object.
     if let runtime = try? appContext?.runtime {
       SharedObjectUtils.setNativeState(jsObject, runtime: runtime, objectId: id, releaser: objectReleaser)
+
+      let memoryPressure = nativeObject.getAdditionalMemoryPressure()
+      if memoryPressure > 0 {
+        jsObject.setExternalMemoryPressure(memoryPressure)
+      }
     }
 
     // Save the pair in the dictionary.
@@ -121,11 +130,13 @@ public final class SharedObjectRegistry {
   internal func delete(_ id: SharedObjectId) {
     Self.lockQueue.async {
       if let pair = self.pairs[id] {
+        pair.native.sharedObjectWillRelease()
         // Reset an ID on the objects.
         pair.native.sharedObjectId = 0
 
         // Delete the pair from the dictionary.
         self.pairs[id] = nil
+        pair.native.sharedObjectDidRelease()
       }
     }
   }

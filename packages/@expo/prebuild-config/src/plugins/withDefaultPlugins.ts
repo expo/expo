@@ -12,8 +12,10 @@ import {
 import { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 
+import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';
 import { withAndroidIcons } from './icons/withAndroidIcons';
 import { withIosIcons } from './icons/withIosIcons';
+import { withSdk52ReactNative77CompatAndroid } from './sdk52/ReactNative77CompatPlugin';
 import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
 import withContacts from './unversioned/expo-contacts';
@@ -24,7 +26,6 @@ import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-scree
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
 import withMaps from './unversioned/react-native-maps';
-import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';
 
 const debug = Debug('expo:prebuild-config');
 
@@ -54,12 +55,14 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.Version.withVersion,
     IOSConfig.Google.withGoogleServicesFile,
     IOSConfig.BuildProperties.withJsEnginePodfileProps,
+    IOSConfig.BuildProperties.withNewArchEnabledPodfileProps,
     // Entitlements
     IOSConfig.Entitlements.withAssociatedDomains,
     // XcodeProject
     IOSConfig.DeviceFamily.withDeviceFamily,
     IOSConfig.Bitcode.withBitcode,
     IOSConfig.Locales.withLocales,
+    IOSConfig.DevelopmentTeam.withDevelopmentTeam,
     // Dangerous
     withIosIcons,
     IOSConfig.PrivacyInfo.withPrivacyInfo,
@@ -80,6 +83,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
   return withPlugins(config, [
     // gradle.properties
     AndroidConfig.BuildProperties.withJsEngineGradleProps,
+    AndroidConfig.BuildProperties.withNewArchEnabledGradleProps,
 
     // settings.gradle
     AndroidConfig.Name.withNameSettingsGradle,
@@ -108,6 +112,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
 
     // Dangerous -- these plugins run in reverse order.
     AndroidConfig.GoogleServices.withGoogleServicesFile,
+    withSdk52ReactNative77CompatAndroid,
 
     // Modify colors.xml and styles.xml
     AndroidConfig.StatusBar.withStatusBar,
@@ -165,7 +170,6 @@ const legacyExpoPlugins = [
   'expo-app-auth',
   'expo-av',
   'expo-background-fetch',
-  'expo-barcode-scanner',
   'expo-brightness',
   'expo-calendar',
   'expo-camera',

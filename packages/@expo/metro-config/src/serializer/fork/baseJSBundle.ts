@@ -35,6 +35,7 @@ export type ExpoSerializerOptions = SerializerOptions & {
   serializerOptions?: {
     baseUrl?: string;
     skipWrapping?: boolean;
+    usedExports?: boolean;
     splitChunks?: boolean;
     output?: string;
     includeSourceMaps?: boolean;
@@ -162,7 +163,7 @@ export function baseJSBundleWithDependencies(
     // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web and native in production.
     sourceUrl:
       options.platform === 'web' ? undefined : !options.dev ? undefined : options.sourceUrl,
-  });
+  }) as Module[];
 
   // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
   // NOTE: We may want to move this assertion up further.

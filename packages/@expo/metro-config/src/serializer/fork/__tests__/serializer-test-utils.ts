@@ -1,6 +1,8 @@
 import assert from 'assert';
 
 import { microBundle, projectRoot } from './mini-metro';
+import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
+import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';
 import {
   SerialAsset,
   SerializerConfigOptions,
@@ -56,10 +58,59 @@ export async function serializeTo(
 // Serialize to a split bundle
 export async function serializeSplitAsync(
   fs: Record<string, string>,
-  options: { isReactServer?: boolean } = {}
+  options: { isReactServer?: boolean; treeshake?: boolean } = {}
 ) {
   return await serializeTo({
     fs,
     options: { platform: 'web', dev: false, output: 'static', splitChunks: true, ...options },
   });
+}
+
+// Serialize to a split bundle
+export async function serializeShakingAsync(
+  fs: Record<string, string>,
+  options: {
+    isReactServer?: boolean;
+    treeshake?: boolean;
+    optimize?: boolean;
+    splitChunks?: boolean;
+    minify?: boolean;
+  } = {}
+) {
+  return serializeOptimizeAsync(fs, { treeshake: true, ...options });
+}
+
+export async function serializeOptimizeAsync(
+  fs: Record<string, string>,
+  options: {
+    isReactServer?: boolean;
+    treeshake?: boolean;
+    optimize?: boolean;
+    splitChunks?: boolean;
+    minify?: boolean;
+    dev?: boolean;
+  } = {}
+) {
+  return await serializeToWithGraph(
+    {
+      fs,
+      options: {
+        platform: 'web',
+        dev: false,
+        output: 'static',
+        treeshake: false,
+        optimize: true,
+        splitChunks: true,
+        minify: false,
+        inlineRequires: true,
+        ...options,
+      },
+    },
+    [treeShakeSerializer, reconcileTransformSerializerPlugin]
+  );
+}
+
+export function expectImports(graph, name: string) {
+  if (!graph.dependencies.has(name)) throw new Error(`Module not found: ${name}`);
+  return expect([...graph.dependencies.get(name).dependencies.values()]);
 }

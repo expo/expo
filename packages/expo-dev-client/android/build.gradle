@@ -10,7 +10,7 @@ android {
   namespace "expo.modules.devclient"
   defaultConfig {
     versionCode 1
-    versionName "4.0.14"
+    versionName "5.0.4"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
@@ -47,13 +47,13 @@ dependencies {
   androidTestImplementation 'com.facebook.react:react-android'
   androidTestImplementation 'com.facebook.react:hermes-android'
 
-  androidTestImplementation('androidx.test.espresso:espresso-core:3.4.0')
-  androidTestImplementation('androidx.test:core:1.4.0')
-  androidTestImplementation('androidx.test:core-ktx:1.4.0')
-  androidTestImplementation('androidx.test.ext:junit:1.1.3')
-  androidTestImplementation('androidx.test.ext:junit-ktx:1.1.3')
-  androidTestImplementation('androidx.test:runner:1.4.0')
-  androidTestImplementation('androidx.test:rules:1.4.0')
+  androidTestImplementation('androidx.test.espresso:espresso-core:3.6.1')
+  androidTestImplementation('androidx.test:core:1.6.1')
+  androidTestImplementation('androidx.test:core-ktx:1.6.1')
+  androidTestImplementation('androidx.test.ext:junit:1.2.1')
+  androidTestImplementation('androidx.test.ext:junit-ktx:1.2.1')
+  androidTestImplementation('androidx.test:runner:1.6.2')
+  androidTestImplementation('androidx.test:rules:1.6.1')
 
   androidTestImplementation 'org.webkit:android-jsc:+'
 
@@ -63,10 +63,10 @@ dependencies {
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1"
 
-  androidTestImplementation "androidx.appcompat:appcompat:1.1.0"
+  androidTestImplementation "androidx.appcompat:appcompat:1.7.0"
 
   androidTestImplementation "com.google.truth:truth:1.1.2"
-  androidTestImplementation 'io.mockk:mockk-android:1.12.3'
+  androidTestImplementation 'io.mockk:mockk-android:1.13.11'
 
   // Fixes "e: java.lang.AssertionError: No such enum entry LIBRARY_GROUP_PREFIX in org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl@b254b575"
   // According to the https://stackoverflow.com/a/67736351

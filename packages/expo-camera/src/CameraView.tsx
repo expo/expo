@@ -5,7 +5,7 @@ import {
   CameraCapturedPicture,
   CameraOrientation,
   CameraPictureOptions,
-  CameraProps,
+  CameraViewProps,
   CameraRecordingOptions,
   CameraViewRef,
   ScanningOptions,
@@ -27,8 +27,14 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
     return {};
   }
 
-  if (!options.quality) {
+  if (options.quality === undefined) {
     options.quality = 1;
+  }
+
+  if (options.mirror) {
+    console.warn(
+      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
+    );
   }
 
   if (options.onPictureSaved) {
@@ -44,6 +50,12 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
 function ensureRecordingOptions(options: CameraRecordingOptions = {}): CameraRecordingOptions {
   if (!options || typeof options !== 'object') {
     return {};
+  }
+
+  if (options.mirror) {
+    console.warn(
+      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
+    );
   }
 
   return options;
@@ -62,7 +74,7 @@ function _onPictureSaved({
   }
 }
 
-export default class CameraView extends Component<CameraProps> {
+export default class CameraView extends Component<CameraViewProps> {
   /**
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
    */
@@ -104,10 +116,24 @@ export default class CameraView extends Component<CameraProps> {
     return (await this._cameraRef.current?.getAvailablePictureSizes()) ?? [];
   }
 
+  /**
+   * Resumes the camera preview.
+   */
+  async resumePreview(): Promise<void> {
+    return this._cameraRef.current?.resumePreview();
+  }
+
+  /**
+   * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
+   */
+  async pausePreview(): Promise<void> {
+    return this._cameraRef.current?.pausePreview();
+  }
+
   // Values under keys from this object will be transformed to native options
   static ConversionTables = ConversionTables;
 
-  static defaultProps: CameraProps = {
+  static defaultProps: CameraViewProps = {
     zoom: 0,
     facing: 'back',
     enableTorch: false,
@@ -139,6 +165,8 @@ export default class CameraView extends Component<CameraProps> {
    *
    * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
    * > to make a permanent copy of the image.
+   *
+   * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
    */
   async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);

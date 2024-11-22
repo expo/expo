@@ -2,10 +2,7 @@ package host.exp.exponent.generated;
 
 import com.facebook.common.internal.DoNotStrip;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import expo.modules.splashscreen.SplashScreenImageResizeMode;
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode;
 import host.exp.exponent.BuildConfig;
 import host.exp.exponent.Constants;
 

@@ -8,6 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.component6
+import expo.modules.kotlin.component7
+import expo.modules.kotlin.component8
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.functions.AsyncFunction
@@ -16,14 +19,11 @@ import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.functions.createAsyncFunctionComponent
 import expo.modules.kotlin.modules.DefinitionMarker
+import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.types.toAnyType
+import expo.modules.kotlin.types.toArgsArray
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import expo.modules.kotlin.component6
-import expo.modules.kotlin.component7
-import expo.modules.kotlin.component8
-import expo.modules.kotlin.types.enforceType
-import expo.modules.kotlin.types.toArgsArray
 
 @DefinitionMarker
 class ViewDefinitionBuilder<T : View>(
@@ -139,6 +139,15 @@ class ViewDefinitionBuilder<T : View>(
   ) {
     for ((name, value) in props) {
       Prop<ViewType, PropType>(name) { view, prop -> body(view, value, prop) }
+    }
+  }
+
+  inline fun <reified ViewType : View, reified PropType> PropGroup(
+    vararg props: String,
+    noinline body: (view: ViewType, value: Int, prop: PropType) -> Unit
+  ) {
+    props.forEachIndexed { index, name ->
+      Prop<ViewType, PropType>(name) { view, prop -> body(view, index, prop) }
     }
   }
 
@@ -384,39 +393,40 @@ class ViewDefinitionBuilder<T : View>(
     name: String
   ) = AsyncFunctionBuilder(name).also { functionBuilders[name] = it }
 
-  private fun createViewFactory(): (Context, AppContext) -> View = viewFactory@{ context: Context, appContext: AppContext ->
-    val fullConstructor = try {
-      // Try to use constructor with two arguments
-      viewClass.java.getConstructor(Context::class.java, AppContext::class.java)
-    } catch (e: NoSuchMethodException) {
-      null
-    }
-
-    fullConstructor?.let {
-      return@viewFactory try {
-        it.newInstance(context, appContext)
-      } catch (e: Throwable) {
-        handleFailureDuringViewCreation(context, appContext, e)
+  private fun createViewFactory(): (Context, AppContext) -> View =
+    viewFactory@{ context: Context, appContext: AppContext ->
+      val fullConstructor = try {
+        // Try to use constructor with two arguments
+        viewClass.java.getConstructor(Context::class.java, AppContext::class.java)
+      } catch (e: NoSuchMethodException) {
+        null
       }
-    }
 
-    val contextConstructor = try {
-      // Try to use constructor that use Android's context
-      viewClass.java.getConstructor(Context::class.java)
-    } catch (e: NoSuchMethodException) {
-      null
-    }
-
-    contextConstructor?.let {
-      return@viewFactory try {
-        it.newInstance(context)
-      } catch (e: Throwable) {
-        handleFailureDuringViewCreation(context, appContext, e)
+      fullConstructor?.let {
+        return@viewFactory try {
+          it.newInstance(context, appContext)
+        } catch (e: Throwable) {
+          handleFailureDuringViewCreation(context, appContext, e)
+        }
       }
-    }
 
-    throw IllegalStateException("Didn't find a correct constructor for $viewClass")
-  }
+      val contextConstructor = try {
+        // Try to use constructor that use Android's context
+        viewClass.java.getConstructor(Context::class.java)
+      } catch (e: NoSuchMethodException) {
+        null
+      }
+
+      contextConstructor?.let {
+        return@viewFactory try {
+          it.newInstance(context)
+        } catch (e: Throwable) {
+          handleFailureDuringViewCreation(context, appContext, e)
+        }
+      }
+
+      throw IllegalStateException("Didn't find a correct constructor for $viewClass")
+    }
 
   private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, e: Throwable): View {
     Log.e("ExpoModulesCore", "Couldn't create view of type $viewClass", e)

@@ -2,6 +2,8 @@
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 
+#import <EXDevMenu/DevClientNoOpLoadingView.h>
+
 #import <React/RCTBundleURLProvider.h>
 #if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)
 // for importing the header from framework, the dash will be transformed to underscore
@@ -13,6 +15,7 @@
 @interface RCTAppDelegate ()
 
 - (RCTRootViewFactory *)createRCTRootViewFactory;
+- (Class)getModuleClassFromName:(const char *)name;
 
 @end
 
@@ -33,6 +36,15 @@
 
 - (NSURL *)bundleURL {
   return self.bundleURLGetter();
+}
+
+- (Class)getModuleClassFromName:(const char *)name
+{
+  // Overrides DevLoadingView as no-op when loading dev-launcher bundle
+  if (strcmp(name, "DevLoadingView") == 0) {
+    return [DevClientNoOpLoadingView class];
+  }
+  return [super getModuleClassFromName:name];
 }
 
 @end

@@ -340,6 +340,12 @@ private:
    * Converter used to convert array elements.
    */
   std::shared_ptr<FrontendConverter> parameterConverter;
+
+  jobject convertSingleValue(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    const jsi::Value &value
+  ) const;
 };
 
 /**

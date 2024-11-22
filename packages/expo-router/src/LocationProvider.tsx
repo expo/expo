@@ -1,5 +1,5 @@
-import type { State } from './fork/getPathFromState';
-import { stripBaseUrl } from './fork/getStateFromPath';
+import { type State } from './fork/getPathFromState';
+import { stripBaseUrl } from './fork/getStateFromPath-forks';
 
 type SearchParams = Record<string, string | string[]>;
 
@@ -68,23 +68,26 @@ export function getNormalizedStatePath(
     segments: stripBaseUrl(pathname, baseUrl).split('/').filter(Boolean).map(decodeURIComponent),
     // TODO: This is not efficient, we should generate based on the state instead
     // of converting to string then back to object
-    params: Object.entries(params).reduce((prev, [key, value]) => {
-      if (Array.isArray(value)) {
-        prev[key] = value.map((v: string) => {
-          try {
-            return decodeURIComponent(v);
-          } catch {
-            return v;
-          }
-        });
-      } else {
-        try {
-          prev[key] = decodeURIComponent(value as string);
-        } catch {
-          prev[key] = value as string;
-        }
-      }
-      return prev;
-    }, {} as SearchParams),
+    params: decodeParams(params),
   };
+}
+
+function decodeParams(params: Record<string, string>) {
+  const parsed: Record<string, any> = {};
+
+  for (const [key, value] of Object.entries(params)) {
+    try {
+      if (key === 'params' && typeof value === 'object') {
+        parsed[key] = decodeParams(value);
+      } else if (Array.isArray(value)) {
+        parsed[key] = value.map((v) => decodeURIComponent(v));
+      } else {
+        parsed[key] = decodeURIComponent(value);
+      }
+    } catch {
+      parsed[key] = value;
+    }
+  }
+
+  return parsed;
 }

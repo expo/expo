@@ -54,9 +54,9 @@ The above command returns an object in JSON format with modules that have been f
 
 Resolving is the second phase based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details, such as the path to the podspec or **build.gradle** files and module classes to link.
 
-<Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <ios|android>']} />
+<Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <apple|android>']} />
 
-For example, with the `--platform ios` option it returns an object in JSON format with an array of modules and resolved details for the iOS platform:
+For example, with the `--platform apple` option it returns an object in JSON format with an array of modules and resolved details for the platform:
 
 ```json
 {
@@ -197,16 +197,20 @@ use_expo_modules!({
 
 ### How to set up the autolinking in my app?
 
-All projects created with the `npx create-expo-app` command are already configured to use Expo Autolinking. If your project was created using different tools, please refer to [Installing Expo modules](/bare/installing-expo-modules) to make sure your project includes all necessary changes.
+All projects created with the `npx create-expo-app` command are already configured to use Expo Autolinking. If your project was created using a different tool, see [Installing Expo modules](/bare/installing-expo-modules) to make sure your project includes all necessary changes.
 
 ### What do I need to have in my module to make it autolinkable?
 
 The module resolution algorithm searches only for packages that contain the [Expo module config](/modules/module-config/) file (**expo-module.config.json**) at the root directory, next to the **package.json** file.
 It's also necessary to include supported platforms in the `platforms` array — if the platform for which the autolinking algorithm is run is not present in this array, it's just skipped in the search results.
 
-### How is it different from React Native autolinking?
+### How is it different from React Native community CLI autolinking?
 
 - Expo Autolinking comes in with built-in support for monorepos, Yarn workspaces and transitive dependencies.
 - It's also significantly faster, even though the module resolution algorithm is more complex to be more reliable and match the Node's module resolution.
 - Expo module resolution is also capable of detecting the duplicates which is a common issue in monorepos.
 - Last but not least, it integrates well with all the features offered by Expo Modules APIs.
+
+### Opting out of Expo Autolinking
+
+Starting from SDK 52, Expo Autolinking comes enabled by default, if you would like to use the React Native community CLI autolinking instead, set `EXPO_USE_COMMUNITY_AUTOLINKING=1` and add `@react-native-community/cli` as a dev dependency to your project.

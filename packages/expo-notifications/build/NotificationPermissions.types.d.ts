@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionResponse } from 'expo-modules-core';
 export declare enum IosAlertStyle {
     NONE = 0,
     BANNER = 1,
@@ -16,7 +16,6 @@ export declare enum IosAuthorizationStatus {
     PROVISIONAL = 3,
     EPHEMERAL = 4
 }
-export { PermissionHookOptions };
 export interface NotificationPermissionsStatus extends PermissionResponse {
     android?: {
         importance: number;
@@ -70,11 +69,6 @@ export interface IosNotificationPermissionsRequest {
      * The ability to post noninterrupting notifications provisionally to the Notification Center.
      */
     allowProvisional?: boolean;
-    /**
-     * The ability for Siri to automatically read out messages over AirPods.
-     * @deprecated
-     */
-    allowAnnouncements?: boolean;
 }
 export type NativeNotificationPermissionsRequest = IosNotificationPermissionsRequest | object;
 /**

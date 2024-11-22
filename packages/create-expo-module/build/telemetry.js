@@ -79,7 +79,7 @@ async function logEventAsync(event) {
 exports.logEventAsync = logEventAsync;
 function eventCreateExpoModule(packageManager, options) {
     return {
-        event: 'create expo module',
+        event: 'create expo module', // DO NOT EDIT, unless knowing what you are doing
         properties: {
             nodeVersion: process.version,
             packageManager,

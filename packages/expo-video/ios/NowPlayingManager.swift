@@ -16,6 +16,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
   private var players = NSHashTable<VideoPlayer>.weakObjects()
+  private var artworkDataTask: URLSessionDataTask?
 
   private var playTarget: Any?
   private var pauseTarget: Any?
@@ -32,7 +33,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 
   func registerPlayer(_ player: VideoPlayer) {
     players.add(player)
-    player.observer.registerDelegate(delegate: self)
+    player.observer?.registerDelegate(delegate: self)
 
     if mostRecentInteractionPlayer == nil {
       setMostRecentInteractionPlayer(player: player.pointer)
@@ -41,7 +42,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 
   func unregisterPlayer(_ player: VideoPlayer) {
     players.remove(player)
-    player.observer.unregisterDelegate(delegate: self)
+    player.observer?.unregisterDelegate(delegate: self)
 
     if mostRecentInteractionPlayer == player.pointer {
       let newPlayer = players.allObjects.first(where: { $0.playbackRate != 0 })
@@ -64,10 +65,11 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     if let timeObserver {
       mostRecentInteractionPlayer?.removeTimeObserver(timeObserver)
     }
+    artworkDataTask?.cancel()
+    artworkDataTask = nil
 
     self.mostRecentInteractionPlayer = player
-    self.setupNowPlayingControls()
-    self.updateNowPlayingInfo()
+    refreshNowPlaying()
 
     timeObserver = player?.addPeriodicTimeObserver(
       forInterval: CMTimeMake(value: 1, timescale: 4),
@@ -168,20 +170,28 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
       nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
+      nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
       nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = await player.rate
       nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
-      nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      if let artworkUrl = userMetadata?.artwork, artworkDataTask?.originalRequest?.url != artworkUrl {
+        artworkDataTask?.cancel()
+        artworkDataTask = fetchArtwork(url: artworkUrl) { artwork in
+          // We can't reuse the `nowPlayingInfo` as the actual nowPlayingInfo might've changed while the image was being fetched
+          var currentNowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+          currentNowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+          MPNowPlayingInfoCenter.default().nowPlayingInfo = currentNowPlayingInfo
+        }
+      } else if userMetadata?.artwork == nil {
+        self.artworkDataTask = nil
+        nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      }
 
       MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
   }
 
   private func loadMetadata(for mediaItem: AVPlayerItem) async throws -> [AVMetadataItem] {
-    if #available(iOS 15.0, tvOS 15.0, *) {
-      return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
-    }
-
-    return mediaItem.asset.metadata
+    return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
   }
 
   // Updates nowPlaying information that changes dynamically during playback e.g. progress
@@ -209,8 +219,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   }
 
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
-    setupNowPlayingControls()
-    updateNowPlayingInfo()
+    refreshNowPlaying()
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
@@ -226,8 +235,40 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status) {
     // The player can be registered before it's item has loaded. We have to re-update the notification when item data is loaded
     if player == mostRecentInteractionPlayer && newStatus == .readyToPlay {
-      setupNowPlayingControls()
-      updateNowPlayingInfo()
+      refreshNowPlaying()
     }
   }
+
+  func refreshNowPlaying() {
+    setupNowPlayingControls()
+    updateNowPlayingInfo()
+  }
+}
+
+private func fetchArtwork(url: URL, completion: @escaping (MPMediaItemArtwork?) -> Void) -> URLSessionDataTask {
+  let task = URLSession.shared.dataTask(with: url) { data, response, error in
+    if let error = error {
+      log.warn("ExpoVideo - Couldn't fetch the artwork: \(error.localizedDescription)")
+      completion(nil)
+      return
+    }
+
+    guard let data, response is HTTPURLResponse else {
+      log.warn("ExpoVideo - Couldn't display the artwork: the response was empty")
+      completion(nil)
+      return
+    }
+
+    if let image = UIImage(data: data) {
+      let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in
+        return image
+      }
+      completion(artwork)
+    } else {
+      completion(nil)
+    }
+  }
+
+  task.resume()
+  return task
 }

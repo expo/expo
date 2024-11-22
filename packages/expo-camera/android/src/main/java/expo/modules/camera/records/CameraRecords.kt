@@ -5,6 +5,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.video.Quality
 import com.google.mlkit.vision.barcode.common.Barcode
+import expo.modules.camera.CameraExceptions
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -21,11 +22,13 @@ enum class CameraType(val value: String) : Enumerable {
 
 enum class CameraRatio(val value: String) : Enumerable {
   FOUR_THREE("4:3"),
-  SIXTEEN_NINE("16:9");
+  SIXTEEN_NINE("16:9"),
+  ONE_ONE("1:1");
 
   fun mapToStrategy() = when (this) {
     FOUR_THREE -> AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY
     SIXTEEN_NINE -> AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
+    else -> throw CameraExceptions.UnsupportedAspectRatioException(this.value)
   }
 }
 

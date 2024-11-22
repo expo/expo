@@ -7,7 +7,7 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && node ./tools/bin/expotools.js validate-workspace-dependencies",
+    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && patch-package && node ./tools/bin/expotools.js validate-workspace-dependencies",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },
@@ -19,16 +19,25 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.74.2",
-    "@react-navigation/native": "^6.1.6",
-    "@react-navigation/core": "^6.4.9",
+    "react-native": "0.76.2",
+    "react": "18.3.1",
+    "@react-navigation/bottom-tabs": "7.0.0",
+    "@react-navigation/core": "7.0.0",
+    "@react-navigation/drawer": "7.0.0",
+    "@react-navigation/elements": "2.0.0",
+    "@react-navigation/native": "7.0.0",
+    "@react-navigation/native-stack": "7.0.0",
+    "@react-navigation/routers": "7.0.0",
+    "@react-navigation/stack": "7.0.0",
+    "react-native-screens": "~4.1.0",
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
-    "prettier": "^3.1.1",
+    "patch-package": "^8.0.0",
+    "prettier": "^3.3.3",
     "yarn-deduplicate": "^6.0.2"
   },
   "volta": {

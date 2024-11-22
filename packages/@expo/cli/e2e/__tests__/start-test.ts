@@ -5,7 +5,6 @@ import {
 } from '@expo/multipart-body-parser';
 import execa from 'execa';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -154,7 +153,7 @@ describe('server', () => {
 
       const multipartParts = await parseMultipartMixedResponseAsync(
         response.headers.get('content-type') as string,
-        await response.buffer()
+        Buffer.from(await response.arrayBuffer())
       );
       const manifestPart = nullthrows(
         multipartParts.find((part) => isMultipartPartWithName(part, 'manifest'))
@@ -173,7 +172,7 @@ describe('server', () => {
 
       // URLs
       expect(manifest.launchAsset.url).toBe(
-        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=true&transform.routerRoot=app'
+        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable'
       );
       expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:8081');
       expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
@@ -181,7 +180,7 @@ describe('server', () => {
 
       // Manifest
       expect(manifest.runtimeVersion).toBe('1.0');
-      expect(manifest.extra.expoClient.sdkVersion).toBe('51.0.0');
+      expect(manifest.extra.expoClient.sdkVersion).toBe('52.0.0');
       expect(manifest.extra.expoClient.slug).toBe('basic-start');
       expect(manifest.extra.expoClient.name).toBe('basic-start');
 

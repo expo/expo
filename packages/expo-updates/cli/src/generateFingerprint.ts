@@ -5,6 +5,7 @@ import { Command } from './cli';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
 import { CommandError } from './utils/errors';
 import * as Log from './utils/log';
+import { withConsoleDisabledAsync } from './utils/withConsoleDisabledAsync';
 
 export const generateFingerprint: Command = async (argv) => {
   const args = assertArgs(
@@ -60,13 +61,17 @@ Generate fingerprint for use in expo-updates runtime version
 
   const projectRoot = getProjectRoot(args);
 
-  let result;
-  try {
-    const workflow = workflowArg ?? (await resolveWorkflowAsync(projectRoot, platform));
-    result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true, debug });
-  } catch (e: any) {
-    throw new CommandError(e.message);
-  }
+  const result = await withConsoleDisabledAsync(async () => {
+    try {
+      const workflow = workflowArg ?? (await resolveWorkflowAsync(projectRoot, platform));
+      return await createFingerprintAsync(projectRoot, platform, workflow, {
+        silent: true,
+        debug,
+      });
+    } catch (e: any) {
+      throw new CommandError(e.message);
+    }
+  });
 
   console.log(JSON.stringify(result));
 };

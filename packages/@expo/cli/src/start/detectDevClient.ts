@@ -1,4 +1,10 @@
+import { getPackageJson } from '@expo/config';
 import resolveFrom from 'resolve-from';
+
+export function hasDirectDevClientDependency(projectRoot: string): boolean {
+  const { dependencies = {}, devDependencies = {} } = getPackageJson(projectRoot);
+  return !!dependencies['expo-dev-client'] || !!devDependencies['expo-dev-client'];
+}
 
 export function canResolveDevClient(projectRoot: string): boolean {
   try {

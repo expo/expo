@@ -34,7 +34,7 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
 
 function isCustomTruthy(value: any): boolean {
-  return value === true || value === 'true';
+  return String(value) === 'true';
 }
 
 function memoize<T extends (...args: any[]) => any>(fn: T): T {
@@ -82,7 +82,7 @@ function getBabelCaller({
     // Metro automatically updates the cache to account for the custom transform options.
     isServer,
 
-    // Enable React Server Component rules for AST.
+    // Enable React Server Component rules for AST. The naming maps to the resolver property `--conditions=react-server`.
     isReactServer,
 
     // The base url to make requests from, used for hosting from non-standard locations.
@@ -115,7 +115,8 @@ function getBabelCaller({
     isHMREnabled: options.hot,
 
     // Set the standard Babel flag to disable ESM transformations.
-    supportsStaticESM: options.experimentalImportSupport,
+    supportsStaticESM:
+      isCustomTruthy(options.customTransformOptions?.optimize) || options.experimentalImportSupport,
 
     // Enable React compiler support in Babel.
     // TODO: Remove this in the future when compiler is on by default.
@@ -182,6 +183,7 @@ const transform: BabelTransformer['transform'] = ({
     if (!result) {
       // BabelTransformer specifies that the `ast` can never be null but
       // the function returns here. Discovered when typing `BabelNode`.
+      // @ts-expect-error: see https://github.com/facebook/react-native/blob/401991c3f073bf734ee04f9220751c227d2abd31/packages/react-native-babel-transformer/src/index.js#L220-L224
       return { ast: null };
     }
 

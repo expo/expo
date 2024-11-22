@@ -24,7 +24,7 @@ import {
 } from './resolvePackageManager';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
-import { newStep } from './utils';
+import { newStep } from './utils/ora';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
@@ -105,7 +105,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   // Make one line break between prompts and progress logs
   console.log();
 
-  const packageManager = await resolvePackageManager();
+  const packageManager = resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
@@ -471,12 +471,12 @@ function printFurtherLocalInstructions(slug: string, name: string) {
   console.log();
   console.log(`You can now import this module inside your application.`);
   console.log(`For example, you can add this line to your App.js or App.tsx file:`);
-  console.log(`${chalk.gray.italic(`import { hello } from './modules/${slug}';`)}`);
+  console.log(`${chalk.gray.italic(`import ${name} './modules/${slug}';`)}`);
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
     chalk.yellow(
-      `Remember you need to rebuild your development client or reinstall pods to see the changes.`
+      `Remember to re-build your native app (for example, with ${chalk.bold('npx expo run')}) when you make changes to the module. Native code changes are not reloaded with Fast Refresh.`
     )
   );
 }

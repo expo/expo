@@ -47,30 +47,33 @@ type ViewConfig = {
         registrationName: string;
     }>;
 };
+export interface ExpoProcess {
+    env: {
+        NODE_ENV: string;
+        /** Used in `@expo/metro-runtime`. */
+        EXPO_DEV_SERVER_ORIGIN?: string;
+        EXPO_ROUTER_IMPORT_MODE?: string;
+        EXPO_ROUTER_ABS_APP_ROOT?: string;
+        EXPO_ROUTER_APP_ROOT?: string;
+        /** Maps to the `experiments.baseUrl` property in the project Expo config. This is injected by `babel-preset-expo` and supports automatic cache invalidation. */
+        EXPO_BASE_URL?: string;
+        /** Build-time representation of the `Platform.OS` value that the current JavaScript was bundled for. Does not support platform shaking wrapped require statements. */
+        EXPO_OS?: string;
+        [key: string]: any;
+    };
+    [key: string]: any;
+}
 declare global {
     /**
      * Global object containing all the native bindings installed by Expo.
      * This object is not available in projects without the `expo` package installed.
      */
     var expo: ExpoGlobal;
-    const process: {
-        env: {
-            NODE_ENV: string;
-            /** Used in `@expo/metro-runtime`. */
-            EXPO_DEV_SERVER_ORIGIN?: string;
-            /** Enables static rendering entry point on web. */
-            EXPO_PUBLIC_USE_STATIC?: string;
-            EXPO_ROUTER_IMPORT_MODE?: string;
-            EXPO_ROUTER_ABS_APP_ROOT?: string;
-            EXPO_ROUTER_APP_ROOT?: string;
-            /** Maps to the `experiments.baseUrl` property in the project Expo config. This is injected by `babel-preset-expo` and supports automatic cache invalidation. */
-            EXPO_BASE_URL?: string;
-            /** Build-time representation of the `Platform.OS` value that the current JavaScript was bundled for. Does not support platform shaking wrapped require statements. */
-            EXPO_OS?: string;
-            [key: string]: any;
-        };
-        [key: string]: any;
-    };
+    var process: ExpoProcess;
+    /**
+     * ExpoDomWebView is defined in `@expo/dom-webview` runtime.
+     */
+    var ExpoDomWebView: Record<string, any> | undefined;
 }
 export {};
 //# sourceMappingURL=global.d.ts.map

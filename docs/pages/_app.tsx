@@ -1,4 +1,3 @@
-import { css, Global } from '@emotion/react';
 import { ThemeProvider } from '@expo/styleguide';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
@@ -14,7 +13,7 @@ import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCo
 import { markdownComponents } from '~/ui/components/Markdown';
 import * as Tooltip from '~/ui/components/Tooltip';
 
-import 'global-styles/global.css';
+import '~/styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
 import 'tippy.js/dist/tippy.css';
@@ -35,16 +34,20 @@ Sentry.init({
   dsn: 'https://1a2f5c8cec574bcea3971b74f91504d6@o30871.ingest.sentry.io/1526800',
   beforeSend: preprocessSentryError,
   environment: isDev ? 'development' : 'production',
-  denyUrls: isDev
-    ? undefined
-    : [
-        /https:\/\/docs-expo-dev\.translate\.goog/,
-        /https:\/\/translated\.turbopages\.org/,
-        /https:\/\/docs\.expo\.dev\/index\.html/,
-        /https:\/\/expo\.nodejs\.cn/,
-      ],
-  integrations: [Sentry.browserTracingIntegration()],
-  tracesSampleRate: 0.001,
+  denyUrls: [
+    /https:\/\/docs-expo-dev\.translate\.goog/,
+    /https:\/\/translated\.turbopages\.org/,
+    /https:\/\/docs\.expo\.dev\/index\.html/,
+    /https:\/\/expo\.nodejs\.cn/,
+  ],
+  integrations: [Sentry.browserTracingIntegration(), Sentry.extraErrorDataIntegration()],
+  tracesSampleRate: 0.002,
+  replaysSessionSampleRate: 0.0001,
+  replaysOnErrorSampleRate: 0.05,
+});
+
+import('@sentry/react').then(lazyLoadedSentry => {
+  Sentry.addIntegration(lazyLoadedSentry.replayIntegration());
 });
 
 const rootMarkdownComponents = {
@@ -57,28 +60,38 @@ export { reportWebVitals } from '~/providers/Analytics';
 export default function App({ Component, pageProps }: AppProps) {
   useNProgress();
   return (
-    <AnalyticsProvider>
-      <ThemeProvider>
-        <TutorialChapterCompletionProvider>
-          <CodeBlockSettingsProvider>
-            <MDXProvider components={rootMarkdownComponents}>
-              <Tooltip.Provider>
-                <Global
-                  styles={css({
-                    'html, body, kbd, button, input, select': {
-                      fontFamily: regularFont.style.fontFamily,
-                    },
-                    'code, pre, table.diff': {
-                      fontFamily: monospaceFont.style.fontFamily,
-                    },
-                  })}
-                />
-                <Component {...pageProps} />
-              </Tooltip.Provider>
-            </MDXProvider>
-          </CodeBlockSettingsProvider>
-        </TutorialChapterCompletionProvider>
-      </ThemeProvider>
-    </AnalyticsProvider>
+    <>
+      {/* eslint-disable-next-line react/no-unknown-property */}
+      <style jsx global>{`
+        html,
+        body,
+        kbd,
+        button,
+        input,
+        select,
+        tspan,
+        text {
+          font-family: ${regularFont.style.fontFamily}, sans-serif;
+        }
+        code,
+        pre,
+        table.diff {
+          font-family: ${monospaceFont.style.fontFamily}, monospace;
+        }
+      `}</style>
+      <AnalyticsProvider>
+        <ThemeProvider>
+          <TutorialChapterCompletionProvider>
+            <CodeBlockSettingsProvider>
+              <MDXProvider components={rootMarkdownComponents}>
+                <Tooltip.Provider>
+                  <Component {...pageProps} />
+                </Tooltip.Provider>
+              </MDXProvider>
+            </CodeBlockSettingsProvider>
+          </TutorialChapterCompletionProvider>
+        </ThemeProvider>
+      </AnalyticsProvider>
+    </>
   );
 }

@@ -39,6 +39,22 @@ You will not be able to update your app on Google Play. You may want to download
 
 Expo tools never ask you to provide your Google account credentials.
 
+## Android submit credentials
+
+### Google Service Account Key
+
+Google Service Account Key is the authentication method used to submit an Android app to the Google Play Store with EAS Submit. This key is stored on Expo servers and encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest. The key will remain on Expo servers to be re-used for subsequent submissions, and it can be removed at any time by a user with the requisite permissions.
+
+#### Consequences if compromised
+
+If a malicious actor somehow gains access to your Google Service Account Key, they would be able to perform actions in the Google Play Console on your behalf. The actions they could perform would be limited to the permissions granted to the service account key.
+
+If the attacker has additionally gained access to your upload keystore, they would be able to submit a new version of an existing app. The actor would not be able to submit a new app to the Google Play Store in your name, as the first Google Play submission needs to be done through the web console.
+
+#### Consequences if lost
+
+None. If you lose the Google Service Account Key, you can revoke it using the Google Cloud Console and create a new one.
+
 ## iOS Push Notification credentials
 
 There are two types of iOS push notification credentials: one modern approach recommended by Apple and the legacy approach. The default behavior is to use the modern approach, but developers may opt-in to the legacy approach by providing a p12 certificate.
@@ -95,6 +111,42 @@ For ad-hoc builds, if a user were to gain access to your session token it would 
 ### Consequences if lost
 
 None. They are available through the Apple Developer console.
+
+## iOS submit credentials
+
+### Apple App Store Connect (ASC) API key
+
+Apple App Store Connect (ASC) API key is one of the authentication methods that can be used to submit an iOS app to Apple's App Store using the EAS Submit service. This key is stored on the Expo servers and encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest. The key will remain on Expo servers to be re-used for subsequent submissions, and it can be removed at any time by a user with the requisite permissions.
+
+The ASC API key is the default and **recommended** authentication method for submitting your apps to the App Store using EAS Submit.
+
+#### Consequences if compromised
+
+If a malicious actor somehow gains access to the ASC API key, they would be able to perform actions in the App Store Connect on your behalf. The actions they could perform would be limited to the permissions granted to the API key.
+
+If the attacker has additionally gained access to your build credentials, they would be able to submit a new version of an existing app. They would only be able to submit the app signed with those build credentials, and they can't submit any arbitrary app to the App Store in your name.
+
+#### Consequences if lost
+
+None. If you lose the ASC API key, you can revoke it using the App Store Connect portal and create a new one.
+
+### Apple app-specific password
+
+Apple app-specific password is another authentication method that can be used to submit an iOS app to Apple's App Store using the EAS Submit. Unlike other credentials, the app-specific password is not stored in the Expo servers between submissions, it must be provided each time it is to be used.
+
+The password is encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) and stored only for the period required to submit the app to the App Store plus 24 hours, to allow for retries during that time. Once this period is over, the password is deleted from the Expo servers.
+
+This authentication method is **not recommended**. We recommend using the Apple Store Connect (ASC) API key for submitting your apps to the App Store instead. Expo won't use the Apple app-specific password in any way other than to submit your app to the App Store.
+
+#### Consequences if compromised
+
+If a malicious actor somehow gains access to the app-specific password, they would be able to access information like mail, contacts, and calendars that you store in iCloud (check [Apple's documentation](https://support.apple.com/en-us/102654) for more details).
+
+If the attacker has additionally gained access to your build credentials, they would be able to submit a new version of an existing app. They would only be able to submit the app signed with those build credentials, and they can't submit any arbitrary app to the App Store in your name.
+
+#### Consequences if lost
+
+None. If you lose the app-specific password, you can revoke it and create a new one in the Apple account settings.
 
 ## Device tokens for Android and iOS push notifications
 

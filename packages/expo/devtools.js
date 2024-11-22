@@ -1,1 +1,1 @@
-module.exports = require('./build/devtools');
+module.exports = require('./src/devtools');

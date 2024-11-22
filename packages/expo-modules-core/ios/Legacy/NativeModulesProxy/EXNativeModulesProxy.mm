@@ -2,15 +2,8 @@
 
 #import <objc/runtime.h>
 
-#import <React/RCTLog.h>
-#import <React/RCTUIManager.h>
-#import <React/RCTComponentData.h>
-#import <React/RCTModuleData.h>
-#import <React/RCTEventDispatcherProtocol.h>
-
-#ifdef RN_FABRIC_ENABLED
-#import <React/RCTComponentViewFactory.h>
-#endif
+#import <React/React-Core-umbrella.h>
+#import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 
 #import <jsi/jsi.h>
 
@@ -266,7 +259,9 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
   // Add dynamic wrappers for view modules written in Sweet API.
   for (ViewModuleWrapper *swiftViewModule in [_appContext getViewManagers]) {
-    Class wrappedViewModuleClass = [self registerComponentData:swiftViewModule inBridge:bridge];
+    Class wrappedViewModuleClass = [self registerComponentData:swiftViewModule
+                                                      inBridge:bridge
+                                                      forAppId:_appContext.appIdentifier];
     [additionalModuleClasses addObject:wrappedViewModuleClass];
     [visitedSweetModules addObject:swiftViewModule.name];
   }
@@ -330,15 +325,19 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     }
   }
 
-  [bridge registerAdditionalModuleClasses:moduleClasses];
+  if (bridge.isLoading) {
+    [bridge registerModulesForClasses:moduleClasses];
+  } else {
+    [bridge registerAdditionalModuleClasses:moduleClasses];
+  }
 }
 
-- (Class)registerComponentData:(ViewModuleWrapper *)viewModule inBridge:(RCTBridge *)bridge
+- (Class)registerComponentData:(ViewModuleWrapper *)viewModule inBridge:(RCTBridge *)bridge forAppId:(NSString *)appId
 {
   // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
   NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [[bridge uiManager] valueForKey:@"_componentDataByName"];
 
-  Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule];
+  Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule appId:appId];
   NSString *className = NSStringFromClass(wrappedViewModuleClass);
 
   if (componentDataByName[className]) {
@@ -351,8 +350,8 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
                                                                         bridge:bridge];
   componentDataByName[className] = componentData;
 
-#ifdef RN_FABRIC_ENABLED
-  Class viewClass = [ExpoFabricView makeViewClassForAppContext:_appContext className:className];
+#ifdef RCT_NEW_ARCH_ENABLED
+  Class viewClass = [ExpoFabricView makeViewClassForAppContext:_appContext moduleName:viewModule.name className:className];
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
 #endif
 

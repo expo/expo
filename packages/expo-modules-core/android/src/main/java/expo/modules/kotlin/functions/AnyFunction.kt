@@ -22,13 +22,13 @@ abstract class AnyFunction(
   protected val name: String,
   protected val desiredArgsTypes: Array<AnyType>
 ) {
-  internal val argsCount get() = desiredArgsTypes.size
-
   @PublishedApi
   internal var canTakeOwner: Boolean = false
 
   @PublishedApi
   internal var ownerType: KType? = null
+
+  internal var isEnumerable: Boolean = true
 
   internal val takesOwner: Boolean
     get() {
@@ -79,7 +79,7 @@ abstract class AnyFunction(
       val desiredType = desiredArgsTypes[index]
       argIterator.next().recycle {
         exceptionDecorator({ cause ->
-          ArgumentCastException(desiredType.kType, index, getType().toString(), cause)
+          ArgumentCastException(desiredType.kType, index, type.toString(), cause)
         }) {
           finalArgs[index] = desiredType.convert(this)
         }
@@ -119,7 +119,11 @@ abstract class AnyFunction(
    */
   abstract fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String)
 
-  fun getCppRequiredTypes(): List<ExpectedType> {
+  internal fun getCppRequiredTypes(): List<ExpectedType> {
     return desiredArgsTypes.map { it.getCppRequiredTypes() }
+  }
+
+  fun enumerable(isEnumerable: Boolean = true) = apply {
+    this.isEnumerable = isEnumerable
   }
 }

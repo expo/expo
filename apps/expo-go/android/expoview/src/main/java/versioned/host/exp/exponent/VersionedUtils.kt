@@ -6,24 +6,13 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import com.facebook.common.logging.FLog
-import com.facebook.hermes.reactexecutor.HermesExecutorFactory
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactInstanceManagerBuilder
-import com.facebook.react.bridge.JavaScriptExecutorFactory
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.jscexecutor.JSCExecutorFactory
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
-import com.facebook.react.shell.MainReactPackage
 import expo.modules.jsonutils.getNullable
-import host.exp.exponent.RNObject
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.expoview.Exponent
-import host.exp.expoview.Exponent.InstanceManagerBuilderProperties
 import org.json.JSONObject
 
 object VersionedUtils {
@@ -39,7 +28,7 @@ object VersionedUtils {
     }
   }
 
-  private fun reloadExpoApp() {
+  private fun reloadExpoApp() = synchronized(this) {
     val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
       FLog.e(
         ReactConstants.TAG,
@@ -53,7 +42,7 @@ object VersionedUtils {
       )
     }
 
-    devSupportManager.callRecursive("reloadExpoApp")
+    devSupportManager.reloadExpoApp()
   }
 
   private fun toggleElementInspector() {
@@ -70,7 +59,7 @@ object VersionedUtils {
       )
     }
 
-    devSupportManager.callRecursive("toggleElementInspector")
+    devSupportManager.toggleElementInspector()
   }
 
   private fun requestOverlayPermission(context: Context) {
@@ -107,14 +96,13 @@ object VersionedUtils {
       )
     }
 
-    val devSettings = devSupportManager.callRecursive("getDevSettings")
+    val devSettings = devSupportManager.devSettings
     if (devSettings != null) {
-      val isFpsDebugEnabled = devSettings.call("isFpsDebugEnabled") as Boolean
-      if (!isFpsDebugEnabled) {
+      if (!devSettings.isFpsDebugEnabled) {
         // Request overlay permission if needed when "Show Perf Monitor" option is selected
         requestOverlayPermission(currentActivity)
       }
-      devSettings.call("setFpsDebugEnabled", !isFpsDebugEnabled)
+      devSettings.isFpsDebugEnabled = !devSettings.isFpsDebugEnabled
     }
   }
 
@@ -132,10 +120,10 @@ object VersionedUtils {
       )
     }
 
-    val devSettings = devSupportManager.callRecursive("getDevSettings")
+    val devSettings = devSupportManager.devSettings
     if (devSettings != null) {
-      val isRemoteJSDebugEnabled = devSettings.call("isRemoteJSDebugEnabled") as Boolean
-      devSettings.call("setRemoteJSDebugEnabled", !isRemoteJSDebugEnabled)
+      val isRemoteJSDebugEnabled = devSettings.isRemoteJSDebugEnabled
+      devSettings.isRemoteJSDebugEnabled = !isRemoteJSDebugEnabled
     }
   }
 
@@ -151,7 +139,7 @@ object VersionedUtils {
     currentActivity.emitRCTNativeAppEvent("RCTDevMenuShown", null)
   }
 
-  private fun createPackagerCommandHelpers(): Map<String, RequestHandler> {
+  fun createPackagerCommandHelpers(): Map<String, RequestHandler> {
     // Attach listeners to the bundler's dev server web socket connection.
     // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
     val packagerCommandHandlers = mutableMapOf<String, RequestHandler>()
@@ -193,76 +181,5 @@ object VersionedUtils {
     }
 
     return packagerCommandHandlers
-  }
-
-  @JvmStatic fun getReactInstanceManagerBuilder(instanceManagerBuilderProperties: InstanceManagerBuilderProperties): ReactInstanceManagerBuilder {
-    // Build the instance manager
-    var builder = ReactInstanceManager.builder()
-      .setApplication(instanceManagerBuilderProperties.application)
-      .addPackage(MainReactPackage())
-      .addPackage(ExpoReanimatedPackage())
-      .addPackage(
-        ExponentPackage(
-          instanceManagerBuilderProperties.experienceProperties,
-          instanceManagerBuilderProperties.manifest,
-          // DO NOT EDIT THIS COMMENT - used by versioning scripts
-          // When distributing change the following two arguments to nulls
-          instanceManagerBuilderProperties.expoPackages,
-          instanceManagerBuilderProperties.exponentPackageDelegate,
-          instanceManagerBuilderProperties.singletonModules
-        )
-      )
-      .addPackage(
-        ExpoTurboPackage(
-          instanceManagerBuilderProperties.experienceProperties,
-          instanceManagerBuilderProperties.manifest
-        )
-      )
-      .setMinNumShakes(100) // disable the RN dev menu
-      .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
-      .setCustomPackagerCommandHandlers(createPackagerCommandHelpers())
-      .setJavaScriptExecutorFactory(createJSExecutorFactory(instanceManagerBuilderProperties))
-    if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath!!.isNotEmpty()) {
-      builder = builder.setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath)
-    }
-    return builder
-  }
-
-  private fun getDevSupportManager(reactApplicationContext: ReactApplicationContext): RNObject? {
-    val currentActivity = Exponent.instance.currentActivity
-    return if (currentActivity != null) {
-      if (currentActivity is ReactNativeActivity) {
-        currentActivity.devSupportManager
-      } else {
-        null
-      }
-    } else {
-      try {
-        val devSettingsModule = reactApplicationContext.catalystInstance.getNativeModule("DevSettings")
-        val devSupportManagerField = devSettingsModule!!.javaClass.getDeclaredField("mDevSupportManager")
-        devSupportManagerField.isAccessible = true
-        RNObject.wrap(devSupportManagerField[devSettingsModule]!!)
-      } catch (e: Throwable) {
-        e.printStackTrace()
-        null
-      }
-    }
-  }
-
-  private fun createJSExecutorFactory(
-    instanceManagerBuilderProperties: InstanceManagerBuilderProperties
-  ): JavaScriptExecutorFactory? {
-    val appName = instanceManagerBuilderProperties.manifest.getName() ?: ""
-    val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
-
-    val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.jsEngine
-    return if (jsEngineFromManifest == "hermes") {
-      HermesExecutorFactory()
-    } else {
-      JSCExecutorFactory(
-        appName,
-        deviceName
-      )
-    }
   }
 }

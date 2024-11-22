@@ -1,6 +1,6 @@
 import { getConfig } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
-import * as Fingerprint from '@expo/fingerprint';
+import * as Fingerprint from 'expo/fingerprint';
 
 import { createFingerprintAsync } from './createFingerprintAsync';
 import { Workflow, resolveWorkflowAsync } from './workflow';

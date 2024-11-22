@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client-components",
-  "version": "1.8.1",
+  "version": "2.0.2",
   "description": "Shared JS components and configuration for expo-dev-client",
   "main": "src/index.ts",
   "scripts": {
@@ -29,10 +29,14 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {
     "@expo/styleguide-native": "^1.0.1",
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "devDependencies": {
     "@testing-library/react-native": "^12.5.1"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   },
   "jest": {
     "preset": "@testing-library/react-native",

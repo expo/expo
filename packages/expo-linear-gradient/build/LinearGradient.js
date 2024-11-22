@@ -1,12 +1,12 @@
 // Copyright © 2024 650 Industries.
 'use client';
-import * as React from 'react';
+import { Component } from 'react';
 import { Platform, processColor } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.
  */
-export class LinearGradient extends React.Component {
+export class LinearGradient extends Component {
     render() {
         const { colors, locations, start, end, dither, ...props } = this.props;
         let resolvedLocations = locations;

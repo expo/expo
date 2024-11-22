@@ -1,4 +1,5 @@
- import XCTest
+import XCTest
+import React
 
  @testable import EXDevMenu
 

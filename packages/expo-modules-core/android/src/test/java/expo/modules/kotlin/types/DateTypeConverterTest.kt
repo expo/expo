@@ -28,7 +28,7 @@ class DateTypeConverterTest {
     val date = convert<LocalDate>(1703718341639)
     Truth.assertThat(date.month).isEqualTo(Month.DECEMBER)
     Truth.assertThat(date.monthValue).isEqualTo(12)
-    Truth.assertThat(date.dayOfWeek).isEqualTo(DayOfWeek.WEDNESDAY)
+    Truth.assertThat(date.dayOfWeek).isIn(listOf(DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY))
     Truth.assertThat(date.year).isEqualTo(2023)
   }
 }

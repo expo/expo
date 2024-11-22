@@ -133,3 +133,9 @@ internal class FailedToReadImageDataForBase64Exception: Exception {
     "Failed to read image data to perform base64 encoding"
   }
 }
+
+internal class FailedToPickLivePhotoException: Exception {
+  override var reason: String {
+    "Failed to read the selected item as a live photo"
+  }
+}

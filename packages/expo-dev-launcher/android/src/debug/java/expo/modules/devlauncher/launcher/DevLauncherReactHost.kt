@@ -10,7 +10,6 @@ import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
@@ -48,7 +47,6 @@ object DevLauncherReactHost {
         jsRuntimeFactory = jsRuntimeFactory,
         turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       )
-    val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
     val componentFactory = ComponentFactory()
     DefaultComponentsRegistry.register(componentFactory)
     val useDeveloperSupport = launcherIp != null
@@ -57,12 +55,9 @@ object DevLauncherReactHost {
       defaultReactHostDelegate,
       componentFactory,
       useDeveloperSupport,
-      reactJsExceptionHandler,
       useDeveloperSupport
     )
-      .apply {
-        jsEngineResolutionAlgorithm = jsResolutionAlgorithm
-      }
+
     if (useDeveloperSupport) {
       injectDebugServerHost(application.applicationContext, reactHost, launcherIp!!, jsMainModuleName)
     }

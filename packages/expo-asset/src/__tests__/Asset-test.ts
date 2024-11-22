@@ -140,6 +140,18 @@ if (Platform.OS !== 'web') {
   });
 }
 
+it(`can parse object asset`, () => {
+  const { Asset } = require('../index');
+
+  expect(
+    Asset.fromModule({
+      uri: 'https://example.com/icon.png',
+      width: 1,
+      height: 1,
+    })
+  ).toBeDefined();
+});
+
 it(`throws when creating an asset from a missing module`, () => {
   const { Asset } = require('../index');
 

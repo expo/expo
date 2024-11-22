@@ -18,7 +18,7 @@ const packageManager_1 = require("./packageManager");
 const prompts_2 = require("./prompts");
 const resolvePackageManager_1 = require("./resolvePackageManager");
 const telemetry_1 = require("./telemetry");
-const utils_1 = require("./utils");
+const ora_1 = require("./utils/ora");
 const debug = require('debug')('create-expo-module:main');
 const packageJson = require('../package.json');
 // Opt in to using beta versions
@@ -72,21 +72,21 @@ async function main(target, options) {
     const data = await askForSubstitutionDataAsync(slug, options.local);
     // Make one line break between prompts and progress logs
     console.log();
-    const packageManager = await (0, resolvePackageManager_1.resolvePackageManager)();
+    const packageManager = (0, resolvePackageManager_1.resolvePackageManager)();
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir, options.local);
     (0, telemetry_1.logEventAsync)((0, telemetry_1.eventCreateExpoModule)(packageManager, options));
-    await (0, utils_1.newStep)('Creating the module from template files', async (step) => {
+    await (0, ora_1.newStep)('Creating the module from template files', async (step) => {
         await createModuleFromTemplate(packagePath, targetDir, data);
         step.succeed('Created the module from template files');
     });
     if (!options.local) {
-        await (0, utils_1.newStep)('Installing module dependencies', async (step) => {
+        await (0, ora_1.newStep)('Installing module dependencies', async (step) => {
             await (0, packageManager_1.installDependencies)(packageManager, targetDir);
             step.succeed('Installed module dependencies');
         });
-        await (0, utils_1.newStep)('Compiling TypeScript files', async (step) => {
+        await (0, ora_1.newStep)('Compiling TypeScript files', async (step) => {
             await (0, spawn_async_1.default)(packageManager, ['run', 'build'], {
                 cwd: targetDir,
                 stdio: 'ignore',
@@ -110,7 +110,7 @@ async function main(target, options) {
             // Create "example" folder
             await (0, createExampleApp_1.createExampleApp)(data, targetDir, packageManager);
         }
-        await (0, utils_1.newStep)('Creating an empty Git repository', async (step) => {
+        await (0, ora_1.newStep)('Creating an empty Git repository', async (step) => {
             try {
                 const result = await createGitRepositoryAsync(targetDir);
                 if (result) {
@@ -203,7 +203,7 @@ async function getTemplateVersion(isLocal) {
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir, isLocal = false) {
-    return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
+    return await (0, ora_1.newStep)('Downloading module template from npm', async (step) => {
         const templateVersion = await getTemplateVersion(isLocal);
         let tarballUrl = null;
         try {
@@ -363,10 +363,10 @@ function printFurtherLocalInstructions(slug, name) {
     console.log();
     console.log(`You can now import this module inside your application.`);
     console.log(`For example, you can add this line to your App.js or App.tsx file:`);
-    console.log(`${chalk_1.default.gray.italic(`import { hello } from './modules/${slug}';`)}`);
+    console.log(`${chalk_1.default.gray.italic(`import ${name} './modules/${slug}';`)}`);
     console.log();
     console.log(`Learn more on Expo Modules APIs: ${chalk_1.default.blue.bold(DOCS_URL)}`);
-    console.log(chalk_1.default.yellow(`Remember you need to rebuild your development client or reinstall pods to see the changes.`));
+    console.log(chalk_1.default.yellow(`Remember to re-build your native app (for example, with ${chalk_1.default.bold('npx expo run')}) when you make changes to the module. Native code changes are not reloaded with Fast Refresh.`));
 }
 const program = new commander_1.Command();
 program

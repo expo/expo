@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
-import { shadows, theme } from '@expo/styleguide';
-import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
+import { mergeClasses } from '@expo/styleguide';
 
 import { Icon } from './Icon';
 
@@ -19,56 +17,24 @@ export const GridItem = ({
   protocol = [],
   href = `#${title.toLowerCase().replaceAll(' ', '-')}`,
 }: GridItemProps) => (
-  <A href={href} css={itemStyle} isStyled>
+  <A
+    href={href}
+    className={mergeClasses(
+      'group flex flex-col items-center justify-center gap-1.5 rounded-md border border-default p-6 shadow-xs transition-all',
+      'hocus:scale-105 hocus:shadow-md'
+    )}
+    isStyled>
     <Icon title={title} image={image} />
-    <RawH4 css={titleStyle}>{title}</RawH4>
+    <RawH4 className="!mt-1 text-center">{title}</RawH4>
     {(protocol || []).length && (
-      <CALLOUT theme="secondary" css={protocolStyle}>
+      <CALLOUT
+        theme="secondary"
+        className={mergeClasses(
+          'relative top-1.5 opacity-0 transition-all duration-300',
+          'group-hover:top-0 group-hover:scale-100 group-hover:opacity-75'
+        )}>
         {protocol.join(' | ')}
       </CALLOUT>
     )}
   </A>
 );
-
-const protocolStyle = css({
-  opacity: 0,
-  transform: `translateY(4px)`,
-  transitionProperty: 'all',
-  transitionDuration: '0.15s',
-  textAlign: 'center',
-});
-
-const titleStyle = css({
-  marginTop: spacing[2],
-  textAlign: 'center',
-});
-
-const itemStyle = css({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: spacing[6],
-  gap: spacing[2],
-  textDecoration: 'none',
-  borderRadius: borderRadius.sm,
-  transition: 'box-shadow 0.15s ease 0s, transform 0.15s ease 0s',
-  boxShadow: shadows.xs,
-  border: `1px solid ${theme.border.default}`,
-
-  ':hover': {
-    boxShadow: shadows.md,
-    transform: 'scale(1.05)',
-
-    p: {
-      opacity: 0.75,
-      transform: 'translateY(0)',
-    },
-  },
-
-  [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
-    p: {
-      opacity: 0.75,
-    },
-  },
-});

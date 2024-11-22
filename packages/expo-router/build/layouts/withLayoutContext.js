@@ -1,18 +1,38 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withLayoutContext = exports.useFilterScreenChildren = void 0;
-const react_1 = __importDefault(require("react"));
+const react_1 = __importStar(require("react"));
 const Route_1 = require("../Route");
 const useScreens_1 = require("../useScreens");
 const Screen_1 = require("../views/Screen");
 function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = {}) {
-    return react_1.default.useMemo(() => {
+    return (0, react_1.useMemo)(() => {
         const customChildren = [];
-        const screens = react_1.default.Children.map(children, (child) => {
-            if (react_1.default.isValidElement(child) && child && child.type === Screen_1.Screen) {
+        const screens = react_1.Children.map(children, (child) => {
+            if ((0, react_1.isValidElement)(child) && child && child.type === Screen_1.Screen) {
                 if (!child.props.name) {
                     throw new Error(`<Screen /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`);
                 }
@@ -47,9 +67,12 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
     }, [children]);
 }
 exports.useFilterScreenChildren = useFilterScreenChildren;
-/** Return a navigator that automatically injects matched routes and renders nothing when there are no children. Return type with children prop optional */
+/**
+ * Returns a navigator that automatically injects matched routes and renders nothing when there are no children.
+ * Return type with `children` prop optional.
+ */
 function withLayoutContext(Nav, processor) {
-    const Navigator = react_1.default.forwardRef(({ children: userDefinedChildren, ...props }, ref) => {
+    return Object.assign((0, react_1.forwardRef)(({ children: userDefinedChildren, ...props }, ref) => {
         const contextKey = (0, Route_1.useContextKey)();
         const { screens } = useFilterScreenChildren(userDefinedChildren, {
             contextKey,
@@ -60,14 +83,10 @@ function withLayoutContext(Nav, processor) {
         if (!sorted.length) {
             return null;
         }
-        return (
-        // @ts-expect-error
-        <Nav {...props} id={contextKey} ref={ref} children={sorted}/>);
+        return <Nav {...props} id={contextKey} ref={ref} children={sorted}/>;
+    }), {
+        Screen: Screen_1.Screen,
     });
-    // @ts-expect-error
-    Navigator.Screen = Screen_1.Screen;
-    // @ts-expect-error
-    return Navigator;
 }
 exports.withLayoutContext = withLayoutContext;
 //# sourceMappingURL=withLayoutContext.js.map

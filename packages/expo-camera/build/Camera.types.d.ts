@@ -5,7 +5,7 @@ export type CameraType = 'front' | 'back';
 export type FlashMode = 'off' | 'on' | 'auto';
 export type ImageType = 'png' | 'jpg';
 export type CameraMode = 'picture' | 'video';
-export type CameraRatio = '4:3' | '16:9';
+export type CameraRatio = '4:3' | '16:9' | '1:1';
 /**
  * This option specifies the mode of focus on the device.
  * - `on` - Indicates that the device should autofocus once and then lock the focus.
@@ -124,6 +124,14 @@ export type CameraPictureOptions = {
      */
     isImageMirror?: boolean;
     /**
+     * When set to `true`, the output image will be flipped along the vertical axis when using the front camera.
+     * @default false
+     * @platform ios
+     * @platform android
+     * @deprecated Use `mirror` prop on `CameraView` instead.
+     */
+    mirror?: boolean;
+    /**
      * @hidden
      */
     id?: number;
@@ -135,6 +143,11 @@ export type CameraPictureOptions = {
      * @hidden
      */
     maxDownsampling?: number;
+    /**
+     * To programmatically disable the camera shutter sound
+     * @default true
+     */
+    shutterSound?: boolean;
 };
 export type CameraRecordingOptions = {
     /**
@@ -148,7 +161,7 @@ export type CameraRecordingOptions = {
     /**
      * If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default,
      * but you can reverse that back by setting this to `true`. On Android, this is handled in the user's device settings.
-     * @platform ios
+     * @deprecated Use `mirror` prop on `CameraView` instead.
      */
     mirror?: boolean;
     /**
@@ -240,7 +253,7 @@ export type BarcodeScanningResult = {
      */
     cornerPoints: BarcodePoint[];
     /**
-     * The [BarcodeBounds](#barcodebounds) object.
+     * The [`BarcodeBounds`](#barcodebounds) object.
      * `bounds` in some case will be representing an empty rectangle.
      * Moreover, `bounds` doesn't have to bound the whole barcode.
      * For some types, they will represent the area used by the scanner.
@@ -248,7 +261,7 @@ export type BarcodeScanningResult = {
     bounds: BarcodeBounds;
 };
 export type ScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
-export type CameraProps = ViewProps & {
+export type CameraViewProps = ViewProps & {
     /**
      * Camera facing. Use one of `CameraType`. When `front`, use the front-facing camera.
      * When `back`, use the back-facing camera.
@@ -262,12 +275,12 @@ export type CameraProps = ViewProps & {
      */
     flash?: FlashMode;
     /**
-     * A value between `0` and `1` being a percentage of device's max zoom. `0` - not zoomed, `1` - maximum zoom.
+     * A value between `0` and `1` being a percentage of device's max zoom, where `0` means not zoomed and `1` means maximum zoom.
      * @default 0
      */
     zoom?: number;
     /**
-     * Used to select image or video output
+     * Used to select image or video output.
      * @default 'picture'
      */
     mode?: CameraMode;
@@ -277,17 +290,35 @@ export type CameraProps = ViewProps & {
      */
     mute?: boolean;
     /**
+     * A boolean that determines whether the camera should mirror the image when using the front camera.
+     * @default false
+     */
+    mirror?: boolean;
+    /**
      * Indicates the focus mode to use.
      * @default off
      * @platform ios
      */
     autofocus?: FocusMode;
     /**
+     * A boolean that determines whether the camera should be active.
+     * Useful in situations where the camera may not have unmounted but you still want to stop the camera session.
+     * @default true
+     * @platform ios
+     */
+    active?: boolean;
+    /**
      * Specify the quality of the recorded video. Use one of `VideoQuality` possible values:
      * for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
      * If the chosen quality is not available for a device, the highest available is chosen.
      */
     videoQuality?: VideoQuality;
+    /**
+     * The bitrate of the video recording in bits per second.
+     * Note: On iOS, you must specify the video codec when calling `recordAsync` to use this option.
+     * @example 10_000_000
+     */
+    videoBitrate?: number;
     /**
      * A boolean that determines whether the camera shutter animation should be enabled.
      * @default true
@@ -300,7 +331,7 @@ export type CameraProps = ViewProps & {
      */
     pictureSize?: string;
     /**
-     * A boolean to enable or disable the torch
+     * A boolean to enable or disable the torch.
      * @default false
      */
     enableTorch?: boolean;
@@ -327,14 +358,15 @@ export type CameraProps = ViewProps & {
      */
     poster?: string;
     /**
-     * Whether to allow responsive orientation of the camera when the screen orientation is locked (i.e. when set to `true`
-     * landscape photos will be taken if the device is turned that way, even if the app or device orientation is locked to portrait)
+     * Whether to allow responsive orientation of the camera when the screen orientation is locked (that is, when set to `true`,
+     * landscape photos will be taken if the device is turned that way, even if the app or device orientation is locked to portrait).
      * @platform ios
      */
     responsiveOrientationWhenOrientationLocked?: boolean;
     /**
      * A string representing the aspect ratio of the preview. For example, `4:3` and `16:9`.
-     * @default 4:3
+     * Note: Setting the aspect ratio here will change the scaleType of the camera preview from `FILL` to `FIT`.
+     * Also, when using 1:1, devices only support certain sizes. If you specify an unsupported size, the closest supported ratio will be used.
      * @platform android
      */
     ratio?: CameraRatio;
@@ -352,12 +384,11 @@ export type CameraProps = ViewProps & {
      * an object of the [`BarcodeScanningResult`](#barcodescanningresult) shape, where the `type`
      * refers to the barcode type that was scanned, and the `data` is the information encoded in the barcode
      * (in this case of QR codes, this is often a URL). See [`BarcodeType`](#barcodetype) for supported values.
-     * for supported values.
      * @param scanningResult
      */
     onBarcodeScanned?: (scanningResult: BarcodeScanningResult) => void;
     /**
-     * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`
+     * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`.
      * @param event result object that contains updated orientation of camera
      * @platform ios
      */
@@ -374,6 +405,8 @@ export interface CameraViewRef {
     }>;
     readonly stopRecording: () => Promise<void>;
     readonly launchModernScanner: () => Promise<void>;
+    readonly resumePreview: () => Promise<void>;
+    readonly pausePreview: () => Promise<void>;
 }
 /**
  * @hidden

@@ -4,7 +4,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import { xcrunAsync } from './xcrun';
+import { isSpawnResultError, xcrunAsync } from './xcrun';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
@@ -351,7 +351,16 @@ export async function simctlAsync(
   args: (string | undefined)[],
   options?: SpawnOptions
 ): Promise<SpawnResult> {
-  return xcrunAsync(['simctl', ...args], options);
+  try {
+    return await xcrunAsync(['simctl', ...args], options);
+  } catch (error) {
+    if (isSpawnResultError(error)) {
+      // TODO: Add more tips.
+      // if (error.status === 115) {
+      // }
+    }
+    throw error;
+  }
 }
 
 function resolveId(device: Partial<DeviceContext>): string {

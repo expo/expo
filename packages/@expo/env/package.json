@@ -1,6 +1,6 @@
 {
   "name": "@expo/env",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "hydrate environment variables from .env files into process.env",
   "main": "build/index.js",
   "scripts": {
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@types/getenv": "^1.0.0",
-    "expo-module-scripts": "^3.3.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"

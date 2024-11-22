@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - .github/workflows/tvos-compile-test.yml
+      - packages/expo-updates/e2e/setup/create-eas-project-tv.ts
+      - packages/expo-updates/e2e/setup/project.ts
   push:
     branches: [main, 'sdk-*']
     paths:

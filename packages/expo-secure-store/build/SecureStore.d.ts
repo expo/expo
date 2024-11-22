@@ -137,7 +137,9 @@ export declare function setItem(key: string, value: string, options?: SecureStor
 export declare function getItem(key: string, options?: SecureStoreOptions): string | null;
 /**
  * Checks if the value can be saved with `requireAuthentication` option enabled.
- * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`.
+ * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`. Always returns false on tvOS.
+ * @platform android
+ * @platform ios
  */
 export declare function canUseBiometricAuthentication(): boolean;
 //# sourceMappingURL=SecureStore.d.ts.map

@@ -20,7 +20,7 @@ export function AccountModal() {
   if (loading) {
     return (
       <View flex="1" style={{ backgroundColor: theme.background.screen }}>
-        {Platform.OS === 'ios' && <ModalHeader />}
+        <ModalHeader />
         <View flex="1" padding="medium" align="centered">
           <ActivityIndicator color={theme.highlight.accent} />
         </View>
@@ -84,8 +84,8 @@ export function AccountModal() {
   // if data.viewer is undefined, then the user is not authenticated, so show the login screen
 
   return (
-    <View flex="1">
-      {Platform.OS === 'ios' && <ModalHeader />}
+    <View flex="1" style={{ backgroundColor: theme.background.screen }}>
+      <ModalHeader />
       {data?.meUserActor?.accounts ? (
         <LoggedInAccountView accounts={data.meUserActor.accounts} />
       ) : (

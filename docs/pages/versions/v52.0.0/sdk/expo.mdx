@@ -1,0 +1,74 @@
+---
+title: Expo
+description: Set of common methods and types for Expo and related packages.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-52/packages/expo'
+packageName: 'expo'
+iconUrl: '/static/images/packages/expo.png'
+platforms: ['android', 'ios', 'tvos', 'web']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+## Installation
+
+<APIInstallSection hideBareInstructions />
+
+## API
+
+```tsx
+import * as Expo from 'expo';
+```
+
+### `expo/fetch` API
+
+`expo/fetch` provides a [WinterCG-compliant Fetch API](https://fetch.spec.wintercg.org/) that works consistently across web and mobile environments, ensuring a standardized and cross-platform fetch experience within Expo applications.
+
+```ts Streaming fetch
+import { fetch } from 'expo/fetch';
+
+const resp = await fetch('https://httpbin.org/drip?numbytes=512&duration=2', {
+  headers: { Accept: 'text/event-stream' },
+});
+const reader = resp.body.getReader();
+const chunks = [];
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) {
+    break;
+  }
+  chunks.push(value);
+}
+const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+console.log(buffer.length); // 512
+```
+
+<APISection packageName="expo" />
+
+## Common questions
+
+### What if I want to name my main app file something other than App.js?
+
+You can set the `"main"` in **package.json** to any file within your project. If you do this, then you need to use `registerRootComponent`. The `export default` will not make this component the root of the app if you are using a custom entry file.
+
+For example, you want to make **src/main.jsx** the entry file for your app and organize all of your app's source code in **src** directory. You can set this in **package.json**:
+
+```json package.json
+{
+  "main": "src/main.jsx"
+}
+```
+
+Then, in **src/main.jsx**, make sure you call `registerRootComponent` and pass in the component you want to render at the root of the app:
+
+```jsx src/main.jsx
+import { registerRootComponent } from 'expo';
+import { View } from 'react-native';
+
+function App() {
+  return <View />;
+}
+
+registerRootComponent(App);
+```

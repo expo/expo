@@ -15,6 +15,5 @@ export type UseUpdatesStateType = {
 };
 export declare const updateFromManifest: (manifest: NonNullable<Manifest>) => UpdateInfo;
 export declare const updateFromRollback: (rollback: UpdatesNativeStateRollback) => UpdateInfo;
-export declare const defaultUseUpdatesState: UseUpdatesStateType;
-export declare const reduceUpdatesStateFromContext: (updatesState: UseUpdatesStateType, context: UpdatesNativeStateMachineContext) => UseUpdatesStateType;
+export declare const updatesStateFromContext: (context: UpdatesNativeStateMachineContext) => UseUpdatesStateType;
 //# sourceMappingURL=UseUpdatesUtils.d.ts.map

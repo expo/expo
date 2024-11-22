@@ -33,4 +33,12 @@ describe(isIgnoredPath, () => {
     expect(isIgnoredPath('/app/ios/Podfile', ignorePaths)).toBe(false);
     expect(isIgnoredPath('/app/ios/Podfile.lock', ignorePaths)).toBe(true);
   });
+
+  it('should match node_modules from parent directories', () => {
+    const ignorePaths = ['**/node_modules/chalk/**/*'];
+    expect(isIgnoredPath('node_modules/chalk/package.json', ignorePaths)).toBe(true);
+    expect(isIgnoredPath('../node_modules/chalk/package.json', ignorePaths)).toBe(true);
+    expect(isIgnoredPath('../../node_modules/chalk/package.json', ignorePaths)).toBe(true);
+    expect(isIgnoredPath('../../../node_modules/chalk/package.json', ignorePaths)).toBe(true);
+  });
 });

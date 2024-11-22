@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Update `@typescript-eslint` dependencies to new major version, migrate rule set. ([#31571](https://github.com/expo/expo/pull/31571) by [@Simek](https://github.com/Simek))
+
+### 🎉 New features
+
+- Bring over more lint rules from Expo server for typescript configs. ([#30491](https://github.com/expo/expo/pull/30491) by [@wschurman](https://github.com/wschurman))
+
 ## 13.0.0 — 2024-05-30
 
 ### 💡 Others

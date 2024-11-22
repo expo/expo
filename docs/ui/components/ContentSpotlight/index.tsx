@@ -8,13 +8,11 @@ import { LightboxImage } from './LightboxImage';
 const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
 
 const PLAYER_WIDTH = '100%' as const;
-const PLAYER_HEIGHT = 400 as const;
-const YOUTUBE_DOMAINS = ['youtube.com', 'youtu.be'] as const;
+const PLAYER_HEIGHT = '100%' as const;
 
 type ContentSpotlightProps = {
   alt?: string;
   src?: string;
-  url?: string;
   file?: string;
   caption?: string;
   controls?: any;
@@ -26,7 +24,6 @@ type ContentSpotlightProps = {
 export function ContentSpotlight({
   alt,
   src,
-  url,
   file,
   caption,
   controls,
@@ -34,16 +31,13 @@ export function ContentSpotlight({
   className,
   containerClassName,
 }: ContentSpotlightProps) {
-  const isYouTubeDomain = (url?: string) => {
-    return url ? YOUTUBE_DOMAINS.some(domain => url.includes(domain)) : false;
-  };
-  const [forceShowControls, setForceShowControls] = useState(isYouTubeDomain(url));
-  const isVideo = !!(url || file);
+  const [forceShowControls, setForceShowControls] = useState<boolean>();
+  const isVideo = !!file;
 
   return (
     <figure
       className={mergeClasses(
-        'text-center py-2.5 my-5 rounded-lg cursor-pointer',
+        'my-5 cursor-pointer rounded-lg py-2.5 text-center',
         containerClassName,
         !isVideo && 'bg-subtle'
       )}
@@ -64,9 +58,9 @@ export function ContentSpotlight({
       ) : isVideo ? (
         <VisibilitySensor partialVisibility>
           {({ isVisible }: { isVisible: boolean }) => (
-            <div className="relative w-full h-[400px] bg-palette-black rounded-lg overflow-hidden">
+            <div className="relative aspect-video overflow-hidden rounded-lg bg-palette-black">
               <ReactPlayer
-                url={isVisible ? url || `/static/videos/${file}` : undefined}
+                url={`/static/videos/${file}`}
                 className="react-player"
                 width={PLAYER_WIDTH}
                 height={PLAYER_HEIGHT}
@@ -89,7 +83,7 @@ export function ContentSpotlight({
       {caption && (
         <figcaption
           className={mergeClasses(
-            'mt-3.5 text-secondary text-center text-xs px-8 py-2 cursor-text',
+            'mt-3.5 cursor-text px-8 py-2 text-center text-xs text-secondary',
             isVideo && 'bg-transparent'
           )}>
           {caption}

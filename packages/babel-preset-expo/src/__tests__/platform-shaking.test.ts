@@ -1,7 +1,7 @@
 import * as babel from '@babel/core';
 
-import { minifyLikeMetroAsync } from './minify-util';
 import preset from '..';
+import { minifyLikeMetroAsync } from './minify-util';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
@@ -440,7 +440,7 @@ it(`removes Platform module usage on native`, () => {
       `Platform.select({ ios: () => console.log('ios'), web: () => console.log('web'), android: () => console.log('android'), })`,
       options
     )!.code
-  ).toEqual(`(function(){return console.log('android');});`);
+  ).toEqual(`()=>console.log('android');`);
 
   const sourceCode = `
     import { Platform } from 'react-native';
@@ -457,7 +457,7 @@ it(`removes Platform module usage on native`, () => {
     `;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('android');});`
+    `()=>console.log('android');`
   );
 });
 

@@ -4,15 +4,18 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
+    "resolveJsonModule": true,
     "types": [
       "jest",
       "jest-require",
       "node"
-    ],
+    ]
   },
   "include": [
     "./src",
     "./types/expect.d.ts",
+    "./types/react-navigation.d.ts",
+    "../@expo/cli/ts-declarations",
     "../expo/src/ts-declarations"
   ],
   "exclude": [
@@ -20,6 +23,7 @@
     "**/.expo/*",
     "./build/*",
     "**/__tests__/*",
+    "**/__rsc_tests__/*",
     "./node",
     "./entry.js",
     "./_ctx.d.ts"

@@ -1,10 +1,9 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'com.android.library'
-apply plugin: 'de.undercouch.download'
 
 group = 'host.exp.exponent'
-version = '14.0.3'
+version = '15.0.3'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -21,15 +20,21 @@ String toPlatformIndependentPath(File path) {
   return result
 }
 
-def SQLITE_VERSION = '3450300'
-def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
-def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
-def SQLITE3_SRC_DIR = new File("$buildDir/sqlite3_src")
+ext {
+  USE_SQLCIPHER = findProperty('expo.sqlite.useSQLCipher') == 'true'
+}
+def SQLITE3_SRC_DIR = new File("${projectDir}/../vendor/sqlite3")
+if (ext.USE_SQLCIPHER) {
+  SQLITE3_SRC_DIR = new File("${projectDir}/../vendor/sqlcipher")
+}
 
 def getSQLiteBuildFlags() {
-  def buildFlags = '-DSQLITE_ENABLE_BYTECODE_VTAB=1'
-  if (findProperty('expo.sqlite.enableFTS') !== 'false') {
-    buildFlags <<= '-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
+  def buildFlags = '-DSQLITE_ENABLE_BYTECODE_VTAB=1 -DSQLITE_TEMP_STORE=2'
+  if (findProperty('expo.sqlite.enableFTS') != 'false') {
+    buildFlags <<= ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
+  }
+  if (ext.USE_SQLCIPHER) {
+    buildFlags <<= ' -DSQLITE_HAS_CODEC=1 -DSQLCIPHER_CRYPTO_OPENSSL'
   }
   def customBuildFlags = findProperty('expo.sqlite.customBuildFlags') ?: ''
   if (customBuildFlags != '') {
@@ -44,27 +49,19 @@ def reactNativeArchitectures() {
   return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-buildscript {
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath("de.undercouch:gradle-download-task:5.5.0")
-  }
-}
-
 android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "14.0.3"
+    versionName "15.0.3"
 
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
           "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}",
-          "-DSQLITE_BUILDFLAGS=${getSQLiteBuildFlags()}"
+          "-DSQLITE_BUILDFLAGS=${getSQLiteBuildFlags()}",
+          "-DUSE_SQLCIPHER=${project.ext.USE_SQLCIPHER}"
       }
     }
   }
@@ -79,41 +76,8 @@ android {
 }
 
 dependencies {
+  if (project.ext.USE_SQLCIPHER) {
+    compileOnly 'com.android.ndk.thirdparty:openssl:1.1.1q-beta-1'
+  }
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
-}
-
-def createNativeDepsDirectories = tasks.register('createNativeDepsDirectories') {
-  downloadsDir.mkdirs()
-  SQLITE3_SRC_DIR.mkdirs()
-}
-
-def downloadSQLite = tasks.register('downloadSQLite', Download) {
-  dependsOn(createNativeDepsDirectories)
-  src("https://www.sqlite.org/2024/sqlite-amalgamation-${SQLITE_VERSION}.zip")
-  onlyIfNewer(true)
-  overwrite(false)
-  dest(new File(downloadsDir, "sqlite-amalgamation-${SQLITE_VERSION}.zip"))
-}
-
-def prepareSQLite = tasks.register("prepareSQLite", Copy) {
-  dependsOn(downloadSQLite)
-  from(zipTree(downloadSQLite.get().dest))
-  into(SQLITE3_SRC_DIR)
-  eachFile { file ->
-    // flatten files
-    file.path = file.name
-  }
-}
-
-void nativeBuildDependsOn(project, dependsOnTask) {
-  def buildTasks = project.tasks.findAll { task ->
-    def taskName = task.name
-    if (taskName.contains("Clean")) { return false }
-    return taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")
-  }
-  buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
-}
-
-afterEvaluate {
-  nativeBuildDependsOn(project, prepareSQLite)
 }

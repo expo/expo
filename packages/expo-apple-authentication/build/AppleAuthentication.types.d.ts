@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle, ViewProps } from 'react-native';
+import type { StyleProp, ViewStyle, ViewProps } from 'react-native';
 export declare type AppleAuthenticationButtonProps = ViewProps & {
     /**
      * The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#appleauthenticationisavailableasync)
@@ -161,6 +161,14 @@ export type AppleAuthenticationFullName = {
     nameSuffix: string | null;
     nickname: string | null;
 };
+/**
+ * A value to specify the style for formatting a name.
+ *
+ * @see [Apple
+ * Documentation](https://developer.apple.com/documentation/foundation/personnamecomponentsformatter)
+ * for more details.
+ */
+export type AppleAuthenticationFullNameFormatStyle = 'default' | 'short' | 'medium' | 'long' | 'abbreviated';
 /**
  * An enum whose values specify scopes you can request when calling [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions).
  *

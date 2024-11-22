@@ -212,10 +212,12 @@ function getDirectoryTree(contextModule, options) {
     }
     // Only include the sitemap if there are routes.
     if (!options.skipGenerated) {
-        if (hasRoutes) {
+        if (hasRoutes && options.sitemap !== false) {
             appendSitemapRoute(rootDirectory, options);
         }
-        appendNotFoundRoute(rootDirectory, options);
+        if (options.notFound !== false) {
+            appendNotFoundRoute(rootDirectory, options);
+        }
     }
     return rootDirectory;
 }
@@ -402,15 +404,24 @@ function getLayoutNode(node, options) {
      * Each of these layouts will have a different initialRouteName based upon the first group name.
      */
     // We may strip loadRoute during testing
-    const groupName = (0, matchers_1.matchGroupName)(node.route);
+    const groupName = (0, matchers_1.matchLastGroupName)(node.route);
     const childMatchingGroup = node.children.find((child) => {
         return child.route.replace(/\/index$/, '') === groupName;
     });
     let initialRouteName = childMatchingGroup?.route;
     const loaded = node.loadRoute();
     if (loaded?.unstable_settings) {
-        // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-        initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+        try {
+            // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+            initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                if (!error.message.match(/You cannot dot into a client module/)) {
+                    throw error;
+                }
+            }
+        }
         if (groupName) {
             // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
             const groupSpecificInitialRouteName = loaded.unstable_settings?.[groupName]?.initialRouteName;
@@ -449,8 +460,17 @@ function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = [
         if (!options.internal_stripLoadRoute) {
             const loaded = node.loadRoute();
             if (loaded?.unstable_settings) {
-                // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-                initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+                try {
+                    // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+                    initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+                }
+                catch (error) {
+                    if (error instanceof Error) {
+                        if (!error.message.match(/You cannot dot into a client module/)) {
+                            throw error;
+                        }
+                    }
+                }
                 if (groupName) {
                     // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
                     const groupSpecificInitialRouteName = loaded.unstable_settings?.[groupName]?.initialRouteName;

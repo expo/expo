@@ -1,4 +1,8 @@
+import { ChildProcess } from 'node:child_process';
+import process from 'node:process';
+
 import { guardAsync } from './fn';
+import { warn } from '../log';
 
 const debug = require('debug')('expo:utils:exit') as typeof console.log;
 
@@ -65,4 +69,97 @@ function attachMasterListener() {
       process.removeListener(signal, hook);
     }
   };
+}
+
+/**
+ * Monitor if the current process is exiting before the delay is reached.
+ * If there are active resources, the process will be forced to exit after the delay is reached.
+ *
+ * @see https://nodejs.org/docs/latest-v18.x/api/process.html#processgetactiveresourcesinfo
+ */
+export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtMs = Date.now()) {
+  // Create a list of the expected active resources before exiting.
+  // Note, the order is undeterministic
+  const expectedResources = [
+    process.stdout.isTTY ? 'TTYWrap' : 'PipeWrap',
+    process.stderr.isTTY ? 'TTYWrap' : 'PipeWrap',
+    process.stdin.isTTY ? 'TTYWrap' : 'PipeWrap',
+  ];
+  // Check active resources, besides the TTYWrap/PipeWrap (process.stdin, process.stdout, process.stderr)
+  // @ts-expect-error Added in v17.3.0, v16.14.0 but unavailable in v18 typings
+  const activeResources = process.getActiveResourcesInfo() as string[];
+  // Filter the active resource list by subtracting the expected resources, in undeterministic order
+  const unexpectedActiveResources = activeResources.filter((activeResource) => {
+    const index = expectedResources.indexOf(activeResource);
+    if (index >= 0) {
+      expectedResources.splice(index, 1);
+      return false;
+    }
+
+    return true;
+  });
+
+  const canExitProcess = !unexpectedActiveResources.length;
+  if (canExitProcess) {
+    return debug('no active resources detected, process can safely exit');
+  } else {
+    debug(
+      `process is trying to exit, but is stuck on unexpected active resources:`,
+      unexpectedActiveResources
+    );
+  }
+
+  // Check if the process needs to be force-closed
+  const elapsedTime = Date.now() - startedAtMs;
+  if (elapsedTime > waitUntilExitMs) {
+    debug('active handles detected past the exit delay, forcefully exiting:', activeResources);
+    tryWarnActiveProcesses();
+    return process.exit(0);
+  }
+
+  const timeoutId = setTimeout(() => {
+    // Ensure the timeout is cleared before checking the active resources
+    clearTimeout(timeoutId);
+    // Check if the process can exit
+    ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs);
+  }, 100);
+}
+
+/**
+ * Try to warn the user about unexpected active processes running in the background.
+ * This uses the internal `process._getActiveHandles` method, within a try-catch block.
+ * If active child processes are detected, the commands of these processes are logged.
+ *
+ * @example ```bash
+ * Done writing bundle output
+ * Detected 2 processes preventing Expo from exiting, forcefully exiting now.
+ *   - node /Users/cedric/../node_modules/nativewind/dist/metro/tailwind/v3/child.js
+ *   - node /Users/cedric/../node_modules/nativewind/dist/metro/tailwind/v3/child.js
+ * ```
+ */
+function tryWarnActiveProcesses() {
+  let activeProcesses: string[] = [];
+
+  try {
+    const children: ChildProcess[] = process
+      // @ts-expect-error - This is an internal method, not designed to be exposed. It's also our only way to get this info
+      ._getActiveHandles()
+      .filter((handle: any) => handle instanceof ChildProcess);
+
+    if (children.length) {
+      activeProcesses = children.map((child) => child.spawnargs.join(' '));
+    }
+  } catch (error) {
+    debug('failed to get active process information:', error);
+  }
+
+  if (!activeProcesses.length) {
+    warn('Something prevented Expo from exiting, forcefully exiting now.');
+  } else {
+    const singularOrPlural =
+      activeProcesses.length === 1 ? '1 process' : `${activeProcesses.length} processes`;
+
+    warn(`Detected ${singularOrPlural} preventing Expo from exiting, forcefully exiting now.`);
+    warn('  - ' + activeProcesses.join('\n  - '));
+  }
 }

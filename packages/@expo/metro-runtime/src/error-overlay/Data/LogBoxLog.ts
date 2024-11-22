@@ -169,7 +169,7 @@ export class LogBoxLog {
 
     if (this.symbolicated[type].status !== 'PENDING') {
       this.updateStatus(type, null, null, null);
-      LogBoxSymbolication.symbolicate(this.getStack(type)).then(
+      LogBoxSymbolication.symbolicate(ensureStackFilesHaveParams(this.getStack(type))).then(
         (data) => {
           this.updateStatus(type, null, data?.stack, data?.codeFrame);
         },
@@ -218,4 +218,41 @@ export class LogBoxLog {
       }
     }
   }
+}
+
+// Sometime the web stacks don't have correct query params, this can lead to Metro errors when it attempts to resolve without a platform.
+// This will attempt to reconcile the issue by adding the current query params to the stack frames if they exist, or fallback to some common defaults.
+function ensureStackFilesHaveParams(stack: Stack): Stack {
+  const currentSrc =
+    typeof document !== 'undefined' && document.currentScript
+      ? ('src' in document.currentScript && document.currentScript.src) || null
+      : null;
+
+  const currentParams = currentSrc
+    ? new URLSearchParams(currentSrc)
+    : new URLSearchParams({
+        platform: 'web',
+        dev: String(__DEV__),
+      });
+
+  return stack.map((frame) => {
+    if (
+      !frame.file?.startsWith('http') ||
+      // Account for Metro malformed URLs
+      frame.file.includes('&platform=')
+    )
+      return frame;
+
+    const url = new URL(frame.file);
+    if (url.searchParams.has('platform')) {
+      return frame;
+    }
+
+    currentParams.forEach((value, key) => {
+      if (url.searchParams.has(key)) return;
+      url.searchParams.set(key, value);
+    });
+
+    return { ...frame, file: url.toString() };
+  });
 }

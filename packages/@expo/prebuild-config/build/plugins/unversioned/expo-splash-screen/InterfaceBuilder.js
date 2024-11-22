@@ -7,6 +7,7 @@ exports.applyImageToSplashScreenXML = applyImageToSplashScreenXML;
 exports.createConstraint = createConstraint;
 exports.createConstraintId = createConstraintId;
 exports.ensureUniquePush = ensureUniquePush;
+exports.parseColor = void 0;
 exports.removeExisting = removeExisting;
 exports.removeImageFromSplashScreen = removeImageFromSplashScreen;
 exports.toObjectAsync = toObjectAsync;
@@ -25,7 +26,7 @@ function _xml2js() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = require('debug')('expo:prebuild-config:expo-splash-screen:ios:InterfaceBuilder');
 
 /** @example `<color key="textColor" systemColor="linkColor"/>` */
@@ -55,38 +56,46 @@ function removeImageFromSplashScreen(xml, {
   debug(`Remove all splash screen image elements`);
   removeExisting(mainView.subviews[0].imageView, IMAGE_ID);
 
-  // Add Constraints
+  // Remove Constraints
   getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach(constraint => {
     // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
     const constrainsArray = mainView.constraints[0].constraint;
     removeExisting(constrainsArray, constraint);
   });
 
-  // Add resource
+  // Remove resource
+  xml.document.resources[0].image = xml.document.resources[0].image ?? [];
   const imageSection = xml.document.resources[0].image;
   const existingImageIndex = imageSection.findIndex(image => image.$.name === imageName);
-  if (existingImageIndex > -1) {
-    imageSection.splice(existingImageIndex, 1);
+  if (existingImageIndex && existingImageIndex > -1) {
+    imageSection?.splice(existingImageIndex, 1);
   }
   return xml;
 }
-function getAbsoluteConstraints(childId, parentId) {
-  return [createConstraint([childId, 'top'], [parentId, 'top']), createConstraint([childId, 'leading'], [parentId, 'leading']), createConstraint([childId, 'trailing'], [parentId, 'trailing']), createConstraint([childId, 'bottom'], [parentId, 'bottom'])];
+function getAbsoluteConstraints(childId, parentId, legacy = false) {
+  if (legacy) {
+    return [createConstraint([childId, 'top'], [parentId, 'top']), createConstraint([childId, 'leading'], [parentId, 'leading']), createConstraint([childId, 'trailing'], [parentId, 'trailing']), createConstraint([childId, 'bottom'], [parentId, 'bottom'])];
+  }
+  return [createConstraint([childId, 'centerX'], [parentId, 'centerX']), createConstraint([childId, 'centerY'], [parentId, 'centerY'])];
 }
 function applyImageToSplashScreenXML(xml, {
   imageName,
-  contentMode
+  contentMode,
+  backgroundColor,
+  enableFullScreenImage,
+  imageWidth = 100
 }) {
-  const width = 414;
-  const height = 736;
+  const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
+  const width = enableFullScreenImage ? 414 : imageWidth;
+  const height = enableFullScreenImage ? 736 : imageWidth;
+  const x = enableFullScreenImage ? 0 : (mainView.rect[0].$.width - width) / 2;
+  const y = enableFullScreenImage ? 0 : (mainView.rect[0].$.height - height) / 2;
   const imageView = {
     $: {
       id: IMAGE_ID,
       userLabel: imageName,
       image: imageName,
       contentMode,
-      horizontalHuggingPriority: 251,
-      verticalHuggingPriority: 251,
       clipsSubviews: true,
       userInteractionEnabled: false,
       translatesAutoresizingMaskIntoConstraints: false
@@ -94,26 +103,26 @@ function applyImageToSplashScreenXML(xml, {
     rect: [{
       $: {
         key: 'frame',
-        x: 0.0,
-        y: 0.0,
+        x,
+        y,
         width,
         height
       }
     }]
   };
-  const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
 
   // Add ImageView
   ensureUniquePush(mainView.subviews[0].imageView, imageView);
+  mainView.constraints[0].constraint = [];
 
   // Add Constraints
-  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach(constraint => {
-    // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
+  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID, enableFullScreenImage).forEach(constraint => {
     const constrainsArray = mainView.constraints[0].constraint;
     ensureUniquePush(constrainsArray, constraint);
   });
 
   // Add resource
+  xml.document.resources[0].image = xml.document.resources[0].image ?? [];
   const imageSection = xml.document.resources[0].image;
   const existingImageIndex = imageSection.findIndex(image => image.$.name === imageName);
   if (existingImageIndex > -1) {
@@ -121,12 +130,41 @@ function applyImageToSplashScreenXML(xml, {
     imageSection.splice(existingImageIndex, 1);
   }
   imageSection.push({
-    // <image name="SplashScreen" width="414" height="736"/>
     $: {
       name: imageName,
       width,
       height
     }
+  });
+
+  // Add background color
+  mainView.color = mainView.color ?? [];
+  const colorSection = mainView.color;
+  colorSection.push({
+    $: {
+      key: 'backgroundColor',
+      name: 'SplashScreenBackground'
+    }
+  });
+
+  // Add background named color reference
+  xml.document.resources[0].namedColor = xml.document.resources[0].namedColor ?? [];
+  const namedColorSection = xml.document.resources[0].namedColor;
+  const color = parseColor(backgroundColor);
+  namedColorSection.push({
+    $: {
+      name: 'SplashScreenBackground'
+    },
+    color: [{
+      $: {
+        alpha: '1.000',
+        blue: color.rgb.blue,
+        green: color.rgb.green,
+        red: color.rgb.red,
+        customColorSpace: 'sRGB',
+        colorSpace: 'custom'
+      }
+    }]
   });
   return xml;
 }
@@ -172,4 +210,24 @@ function toString(xml) {
 function toObjectAsync(contents) {
   return new (_xml2js().Parser)().parseStringPromise(contents);
 }
+
+// Function taken from react-native-bootsplash
+const parseColor = value => {
+  const color = value.toUpperCase().replace(/[^0-9A-F]/g, '');
+  if (color.length !== 3 && color.length !== 6) {
+    console.error(`"${value}" value is not a valid hexadecimal color.`);
+    process.exit(1);
+  }
+  const hex = color.length === 3 ? '#' + color[0] + color[0] + color[1] + color[1] + color[2] + color[2] : '#' + color;
+  const rgb = {
+    red: (parseInt('' + hex[1] + hex[2], 16) / 255).toPrecision(15),
+    green: (parseInt('' + hex[3] + hex[4], 16) / 255).toPrecision(15),
+    blue: (parseInt('' + hex[5] + hex[6], 16) / 255).toPrecision(15)
+  };
+  return {
+    hex,
+    rgb
+  };
+};
+exports.parseColor = parseColor;
 //# sourceMappingURL=InterfaceBuilder.js.map

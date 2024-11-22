@@ -9,9 +9,7 @@ interface State {
   selectedPrinter?: Print.Printer;
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class PrintScreen extends React.Component<{}, State> {
+export default class PrintScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Print',
   };

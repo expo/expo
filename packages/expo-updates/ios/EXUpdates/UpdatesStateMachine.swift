@@ -5,14 +5,6 @@
 
 import Foundation
 
-/**
- Protocol with a method for sending state change events to JS.
- In production, this will be implemented by the AppController.sharedInstance.
- */
-internal protocol UpdatesStateChangeDelegate: AnyObject {
-  func sendUpdateStateChangeEventToAppContext(_ eventType: UpdatesStateEventType, body: [String: Any?])
-}
-
 // MARK: - Enums
 
 /**
@@ -29,7 +21,7 @@ internal enum UpdatesStateValue: String, CaseIterable {
  All the possible types of events that can be sent to the machine. Each event
  will cause the machine to transition to a new state.
  */
-internal enum UpdatesStateEventType: String {
+public enum UpdatesStateEventType: String {
   case check
   case checkCompleteUnavailable
   case checkCompleteAvailable
@@ -156,8 +148,8 @@ let iso8601DateFormatter = ISO8601DateFormatter()
 /**
  Structure for a rollback. Only the commitTime is used for now.
  */
-internal struct UpdatesStateContextRollback {
-  let commitTime: Date
+public struct UpdatesStateContextRollback {
+  public let commitTime: Date
 
   var json: [String: Any] {
     return [
@@ -170,18 +162,19 @@ internal struct UpdatesStateContextRollback {
  The state machine context, with information that will be readable from JS.
  */
 public struct UpdatesStateContext {
-  let isUpdateAvailable: Bool
-  let isUpdatePending: Bool
-  let isRollback: Bool
-  let isChecking: Bool
-  let isDownloading: Bool
-  let isRestarting: Bool
-  let latestManifest: [String: Any]?
-  let downloadedManifest: [String: Any]?
-  let rollback: UpdatesStateContextRollback?
-  let checkError: [String: String]?
-  let downloadError: [String: String]?
-  let lastCheckForUpdateTime: Date?
+  public let isUpdateAvailable: Bool
+  public let isUpdatePending: Bool
+  public let isRollback: Bool
+  public let isChecking: Bool
+  public let isDownloading: Bool
+  public let isRestarting: Bool
+  public let latestManifest: [String: Any]?
+  public let downloadedManifest: [String: Any]?
+  public let rollback: UpdatesStateContextRollback?
+  public let checkError: [String: String]?
+  public let downloadError: [String: String]?
+  public let lastCheckForUpdateTime: Date?
+  private let sequenceNumber: Int
 
   private var lastCheckForUpdateTimeDateString: String? {
     guard let lastCheckForUpdateTime = lastCheckForUpdateTime else {
@@ -203,12 +196,13 @@ public struct UpdatesStateContext {
       "checkError": self.checkError,
       "downloadError": self.downloadError,
       "lastCheckForUpdateTimeString": lastCheckForUpdateTimeDateString,
-      "rollback": rollback?.json
+      "rollback": rollback?.json,
+      "sequenceNumber": sequenceNumber
     ] as [String: Any?]
   }
 }
 
-extension UpdatesStateContext {
+public extension UpdatesStateContext {
   init() {
     self.isUpdateAvailable = false
     self.isUpdatePending = false
@@ -222,14 +216,20 @@ extension UpdatesStateContext {
     self.downloadError = nil
     self.lastCheckForUpdateTime = nil
     self.rollback = nil
+    self.sequenceNumber = 0
   }
 
   // struct copy, lets you overwrite specific variables retaining the value of the rest
   // using a closure to set the new values for the copy of the struct
-  func copy(build: (inout Builder) -> Void) -> UpdatesStateContext {
+  func copyAndIncrementSequenceNumber(build: (inout Builder) -> Void) -> UpdatesStateContext {
     var builder = Builder(original: self)
     build(&builder)
-    return builder.toContext()
+    return builder.toContext(newSequenceNumber: self.sequenceNumber + 1)
+  }
+
+  func resetCopyWithIncrementedSequenceNumber() -> UpdatesStateContext {
+    let builder = Builder(original: UpdatesStateContext())
+    return builder.toContext(newSequenceNumber: self.sequenceNumber + 1)
   }
 
   struct Builder {
@@ -261,7 +261,7 @@ extension UpdatesStateContext {
       self.rollback = original.rollback
     }
 
-    fileprivate func toContext() -> UpdatesStateContext {
+    fileprivate func toContext(newSequenceNumber: Int) -> UpdatesStateContext {
       return UpdatesStateContext(
         isUpdateAvailable: isUpdateAvailable,
         isUpdatePending: isUpdatePending,
@@ -274,7 +274,8 @@ extension UpdatesStateContext {
         rollback: rollback,
         checkError: checkError,
         downloadError: downloadError,
-        lastCheckForUpdateTime: lastCheckForUpdateTime
+        lastCheckForUpdateTime: lastCheckForUpdateTime,
+        sequenceNumber: newSequenceNumber
       )
     }
   }
@@ -287,9 +288,11 @@ extension UpdatesStateContext {
  in a production app, instantiated as a property of AppController.
  */
 internal class UpdatesStateMachine {
+  private let eventManager: UpdatesEventManager
   private let validUpdatesStateValues: Set<UpdatesStateValue>
 
-  required init(validUpdatesStateValues: Set<UpdatesStateValue>) {
+  required init(eventManager: UpdatesEventManager, validUpdatesStateValues: Set<UpdatesStateValue>) {
+    self.eventManager = eventManager
     self.validUpdatesStateValues = validUpdatesStateValues
   }
 
@@ -322,11 +325,6 @@ internal class UpdatesStateMachine {
   }
 
   /**
-   In production, this is the AppController instance.
-   */
-  internal weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
-
-  /**
    The current state
    */
   private var state: UpdatesStateValue = .idle
@@ -344,9 +342,9 @@ internal class UpdatesStateMachine {
    */
   private func reset() {
     state = .idle
-    context = UpdatesStateContext()
+    context = context.resetCopyWithIncrementedSequenceNumber()
     logger.info(message: "Updates state is reset, state = \(state), context = \(context)")
-    sendChangeEventToJS()
+    sendContextToJS()
   }
   internal func resetForTesting() {
     reset()
@@ -361,8 +359,7 @@ internal class UpdatesStateMachine {
       // Only change context if transition succeeds
       context = reducedContext(context, event)
       logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
-      // Send change event
-      sendChangeEventToJS(event)
+      sendContextToJS()
     }
   }
   internal func processEventForTesting(_ event: UpdatesStateEvent) {
@@ -404,11 +401,11 @@ internal class UpdatesStateMachine {
 
     switch event.type {
     case .check:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isChecking = true
       }
     case .checkCompleteUnavailable:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isChecking = false
         $0.checkError = nil
         $0.latestManifest = nil
@@ -418,7 +415,7 @@ internal class UpdatesStateMachine {
         $0.rollback = nil
       }
     case .checkCompleteAvailable:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isChecking = false
         $0.checkError = nil
         $0.latestManifest = event.manifest
@@ -427,17 +424,17 @@ internal class UpdatesStateMachine {
         $0.rollback = rollback
       }
     case .checkError:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isChecking = false
         $0.checkError = event.error
         $0.lastCheckForUpdateTime = Date()
       }
     case .download:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = true
       }
     case .downloadComplete:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
         $0.latestManifest = event.manifest ?? context.latestManifest
@@ -446,24 +443,23 @@ internal class UpdatesStateMachine {
         $0.isUpdateAvailable = event.manifest != nil || context.isUpdateAvailable
       }
     case .downloadError:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = event.error
       }
     case .restart:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isRestarting = true
       }
     }
   }
 
   /**
-   On each state change, all context properties are sent to JS
+   On each state change, all context properties are sent to JS.
+   The owning controller should also request a re-emit of context to JS upon event emitter observation.
    */
-  private func sendChangeEventToJS(_ event: UpdatesStateEvent? = nil) {
-    changeEventDelegate?.sendUpdateStateChangeEventToAppContext(event?.type ?? .restart, body: [
-      "context": context.json
-    ])
+  internal func sendContextToJS() {
+    eventManager.sendStateMachineContextEvent(context: context)
   }
 
   // MARK: - Static definitions of the state machine rules

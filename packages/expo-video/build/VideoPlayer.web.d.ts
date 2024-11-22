@@ -1,6 +1,9 @@
-import type { PlayerError, VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
+import type { BufferOptions, PlayerError, VideoPlayerStatus, VideoSource, VideoPlayer, SubtitleTrack, AudioMixingMode } from './VideoPlayer.types';
+import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
+import { VideoThumbnail } from './VideoThumbnail';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 export declare function getSourceUri(source: VideoSource): string | null;
+export declare function createVideoPlayer(source: VideoSource): VideoPlayer;
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
     constructor(source: VideoSource);
     src: VideoSource;
@@ -15,8 +18,18 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     _preservesPitch: boolean;
     _status: VideoPlayerStatus;
     _error: PlayerError | null;
+    _timeUpdateLoop: number | null;
+    _timeUpdateEventInterval: number;
+    audioMixingMode: AudioMixingMode;
+    allowsExternalPlayback: boolean;
     staysActiveInBackground: boolean;
     showNowPlayingNotification: boolean;
+    currentLiveTimestamp: number | null;
+    currentOffsetFromLive: number | null;
+    targetOffsetFromLive: number;
+    bufferOptions: BufferOptions;
+    subtitleTrack: SubtitleTrack | null;
+    availableSubtitleTracks: SubtitleTrack[];
     set muted(value: boolean);
     get muted(): boolean;
     set playbackRate(value: number);
@@ -31,7 +44,10 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     get duration(): number;
     get preservesPitch(): boolean;
     set preservesPitch(value: boolean);
+    get timeUpdateEventInterval(): number;
+    set timeUpdateEventInterval(value: number);
     get status(): VideoPlayerStatus;
+    get bufferedPosition(): number;
     private set status(value);
     mountVideoView(video: HTMLVideoElement): void;
     unmountVideoView(video: HTMLVideoElement): void;
@@ -42,6 +58,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     replace(source: VideoSource): void;
     seekBy(seconds: number): void;
     replay(): void;
+    generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
     _synchronizeWithFirstVideo(video: HTMLVideoElement): void;
     /**
      * If there are multiple mounted videos, all of them will emit an event, as they are synchronised.

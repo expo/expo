@@ -1,3 +1,4 @@
+#if !os(macOS)
 /**
  An extension to ``UIFont`` that adds a custom implementation of `fontNames(forFamilyName:)` that supports aliasing font families.
  */
@@ -25,3 +26,4 @@ public extension UIFont {
     return fontNames
   }
 }
+#endif

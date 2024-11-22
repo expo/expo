@@ -4,9 +4,12 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
   <application>
-    <activity android:name=".FullscreenPlayerActivity" />
+    <activity android:name=".FullscreenPlayerActivity"
+      android:supportsPictureInPicture="true"
+      android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+      android:theme="@style/Fullscreen"/>
     <service
-      android:name=".ExpoVideoPlaybackService"
+      android:name=".playbackService.ExpoVideoPlaybackService"
       android:exported="false"
       android:foregroundServiceType="mediaPlayback">
       <intent-filter>

@@ -1,4 +1,4 @@
-import { ConfigPlugin } from '@expo/config-plugins';
+import { type ConfigPlugin } from 'expo/config-plugins';
 type WithExpoVideoOptions = {
     supportsBackgroundPlayback?: boolean;
     supportsPictureInPicture?: boolean;

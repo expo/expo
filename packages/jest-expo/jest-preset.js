@@ -6,6 +6,7 @@ const isEqual = require('lodash/isEqual');
 const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
+const { resolveBabelConfig } = require('./src/resolveBabelConfig');
 
 // Emulate the alias behavior of Expo's Metro resolver.
 jestPreset.moduleNameMapper = {
@@ -22,20 +23,64 @@ if (upstreamBabelJest) {
 }
 
 // transform
-jestPreset.transform['\\.[jt]sx?$'] = [
-  'babel-jest',
-  { caller: { name: 'metro', bundler: 'metro', platform: 'ios' } },
+const babelOpts = {
+  caller: { name: 'metro', bundler: 'metro', platform: 'ios' },
+};
+const babelConfigFile = resolveBabelConfig(process.cwd());
+if (babelConfigFile) {
+  babelOpts.configFile = babelConfigFile;
+}
+jestPreset.transform['\\.[jt]sx?$'] = ['babel-jest', babelOpts];
+
+/* Update this when metro changes their default extensions */
+const defaultMetroAssetExts = [
+  // Image formats
+  'bmp',
+  'gif',
+  'jpg',
+  'jpeg',
+  'png',
+  'psd',
+  'svg',
+  'webp',
+  'xml',
+  // Video formats
+  'm4v',
+  'mov',
+  'mp4',
+  'mpeg',
+  'mpg',
+  'webm',
+  // Audio formats
+  'aac',
+  'aiff',
+  'caf',
+  'm4a',
+  'mp3',
+  'wav',
+  // Document formats
+  'html',
+  'pdf',
+  'yaml',
+  'yml',
+  // Font formats
+  'otf',
+  'ttf',
+  // Archives (virtual files)
+  'zip',
 ];
 
-const defaultAssetNamePattern = '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
-if (!jestPreset.transform[defaultAssetNamePattern]) {
-  console.warn(`Expected react-native/jest-preset to define transform[${defaultAssetNamePattern}]`);
-} else {
-  delete jestPreset.transform[defaultAssetNamePattern];
-}
+/** Update this when we change @expo/metro-config */
+const defaultExpoMetroAssetExts = [
+  ...defaultMetroAssetExts,
+  // Add default support for `expo-image` file types.
+  'heic',
+  'avif',
+  // Add default support for `expo-sqlite` file types.
+  'db',
+];
 
-const assetNamePattern =
-  '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp|ttf|otf|m4v|mov|mp4|mpeg|mpg|webm|aac|aiff|caf|m4a|mp3|wav|html|pdf|obj)$';
+const assetNamePattern = `^.+\\.(${defaultExpoMetroAssetExts.join('|')})$`;
 jestPreset.transform[assetNamePattern] = require.resolve(
   'jest-expo/src/preset/assetFileTransformer.js'
 );
@@ -53,9 +98,9 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
   );
 }
 
-// Also please keep `testing-with-jest.md` file up to date
+// Also please keep `unit-testing.mdx` file up to date
 jestPreset.transformIgnorePatterns = [
-  '/node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
+  '/node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)',
   '/node_modules/react-native-reanimated/plugin/',
 ];
 

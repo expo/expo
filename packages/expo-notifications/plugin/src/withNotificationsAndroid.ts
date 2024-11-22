@@ -33,17 +33,20 @@ const {
 const BASELINE_PIXEL_SIZE = 24;
 const ERROR_MSG_PREFIX = 'An error occurred while configuring Android notifications. ';
 
-export const META_DATA_NOTIFICATION_ICON =
+export const META_DATA_FCM_NOTIFICATION_ICON =
   'com.google.firebase.messaging.default_notification_icon';
-export const META_DATA_NOTIFICATION_ICON_COLOR =
+export const META_DATA_FCM_NOTIFICATION_ICON_COLOR =
   'com.google.firebase.messaging.default_notification_color';
-export const META_DATA_NOTIFICATION_DEFAULT_CHANNEL_ID =
+export const META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID =
   'com.google.firebase.messaging.default_notification_channel_id';
 
-export const META_DATA_LEGACY_NOTIFICATION_ICON =
+export const META_DATA_LOCAL_NOTIFICATION_ICON =
   'expo.modules.notifications.default_notification_icon';
-export const META_DATA_LEGACY_NOTIFICATION_ICON_COLOR =
+export const META_DATA_LOCAL_NOTIFICATION_ICON_COLOR =
   'expo.modules.notifications.default_notification_color';
+
+// TODO @vonovak add config for local notification large icon
+// expo.modules.notifications.large_notification_icon
 
 export const NOTIFICATION_ICON = 'notification_icon';
 export const NOTIFICATION_ICON_RESOURCE = `@drawable/${NOTIFICATION_ICON}`;
@@ -136,52 +139,49 @@ function setNotificationConfig(
   if (props.icon) {
     addMetaDataItemToMainApplication(
       mainApplication,
-      META_DATA_NOTIFICATION_ICON,
+      META_DATA_FCM_NOTIFICATION_ICON,
       NOTIFICATION_ICON_RESOURCE,
       'resource'
     );
     addMetaDataItemToMainApplication(
       mainApplication,
-      META_DATA_LEGACY_NOTIFICATION_ICON,
+      META_DATA_LOCAL_NOTIFICATION_ICON,
       NOTIFICATION_ICON_RESOURCE,
       'resource'
     );
   } else {
-    removeMetaDataItemFromMainApplication(mainApplication, META_DATA_NOTIFICATION_ICON);
-    removeMetaDataItemFromMainApplication(mainApplication, META_DATA_LEGACY_NOTIFICATION_ICON);
+    removeMetaDataItemFromMainApplication(mainApplication, META_DATA_FCM_NOTIFICATION_ICON);
+    removeMetaDataItemFromMainApplication(mainApplication, META_DATA_LOCAL_NOTIFICATION_ICON);
   }
   if (props.color) {
     addMetaDataItemToMainApplication(
       mainApplication,
-      META_DATA_NOTIFICATION_ICON_COLOR,
+      META_DATA_FCM_NOTIFICATION_ICON_COLOR,
       NOTIFICATION_ICON_COLOR_RESOURCE,
       'resource'
     );
     addMetaDataItemToMainApplication(
       mainApplication,
-      META_DATA_LEGACY_NOTIFICATION_ICON_COLOR,
+      META_DATA_LOCAL_NOTIFICATION_ICON_COLOR,
       NOTIFICATION_ICON_COLOR_RESOURCE,
       'resource'
     );
   } else {
-    removeMetaDataItemFromMainApplication(mainApplication, META_DATA_NOTIFICATION_ICON_COLOR);
-    removeMetaDataItemFromMainApplication(
-      mainApplication,
-      META_DATA_LEGACY_NOTIFICATION_ICON_COLOR
-    );
+    removeMetaDataItemFromMainApplication(mainApplication, META_DATA_FCM_NOTIFICATION_ICON_COLOR);
+    removeMetaDataItemFromMainApplication(mainApplication, META_DATA_LOCAL_NOTIFICATION_ICON_COLOR);
   }
 
   if (props.defaultChannel) {
     addMetaDataItemToMainApplication(
       mainApplication,
-      META_DATA_NOTIFICATION_DEFAULT_CHANNEL_ID,
+      META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID,
       props.defaultChannel,
       'value'
     );
   } else {
     removeMetaDataItemFromMainApplication(
       mainApplication,
-      META_DATA_NOTIFICATION_DEFAULT_CHANNEL_ID
+      META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID
     );
   }
   return manifest;

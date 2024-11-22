@@ -99,7 +99,12 @@ export async function authenticateAsync(
   }
 
   const promptMessage = options.promptMessage || 'Authenticate';
-  const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
+  const cancelLabel = options.cancelLabel || 'Cancel';
+  const result = await ExpoLocalAuthentication.authenticateAsync({
+    ...options,
+    promptMessage,
+    cancelLabel,
+  });
 
   return result;
 }

@@ -14,15 +14,13 @@ const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 const BACKGROUND_TASK_SUCCESSFUL = 'Background task successfully ran!';
 const BACKGROUND_TEST_INFO = `To test background notification handling:\n(1) Background the app.\n(2) Send a push notification from your terminal. The push token can be found in your logs, and the command to send a notification can be found at https://docs.expo.dev/push-notifications/sending-notifications/#http2-api. On iOS, you need to include "_contentAvailable": "true" in your payload.\n(3) After receiving the notification, check your terminal for:\n"${BACKGROUND_TASK_SUCCESSFUL}"`;
 
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, (_data) => {
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async () => {
   console.log(BACKGROUND_TASK_SUCCESSFUL);
 });
 
 const remotePushSupported = Device.isDevice;
 export default class NotificationScreen extends React.Component<
-  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  {},
+  object,
   {
     lastNotifications?: Notifications.Notification;
   }
@@ -34,9 +32,7 @@ export default class NotificationScreen extends React.Component<
   private _onReceivedListener: EventSubscription | undefined;
   private _onResponseReceivedListener: EventSubscription | undefined;
 
-  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  constructor(props: {}) {
+  constructor(props: object) {
     super(props);
     this.state = {};
   }
@@ -92,6 +88,28 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={this._presentLocalNotificationAsync}
           title="Present a notification immediately"
+        />
+        <ListButton
+          onPress={async () => {
+            await this._obtainUserFacingNotifPermissionsAsync();
+            await Notifications.setNotificationChannelAsync('high-importance', {
+              name: 'important notification',
+              importance: Notifications.AndroidImportance.MAX,
+              bypassDnd: true,
+            });
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                categoryIdentifier: 'welcome',
+                title: 'Here is a notification!',
+                body: 'This one has buttons!',
+                autoDismiss: true,
+              },
+              trigger: {
+                channelId: 'high-importance',
+              },
+            });
+          }}
+          title="Present a notification with action buttons"
         />
         <ListButton
           onPress={this._scheduleLocalNotificationAsync}
@@ -152,18 +170,19 @@ export default class NotificationScreen extends React.Component<
         <HeadingText>Notification triggers debugging</HeadingText>
         <ListButton
           onPress={() =>
-            Notifications.getNextTriggerDateAsync({ seconds: 10 }).then((timestamp) =>
-              alert(new Date(timestamp!))
-            )
+            Notifications.getNextTriggerDateAsync({
+              type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+              seconds: 10,
+            }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for time interval + 10 seconds"
         />
         <ListButton
           onPress={() =>
             Notifications.getNextTriggerDateAsync({
+              type: Notifications.SchedulableTriggerInputTypes.DAILY,
               hour: 9,
               minute: 0,
-              repeats: true,
             }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for 9 AM"
@@ -171,10 +190,10 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={() =>
             Notifications.getNextTriggerDateAsync({
+              type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
               hour: 9,
               minute: 0,
               weekday: 1,
-              repeats: true,
             }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for Sunday, 9 AM"
@@ -197,7 +216,18 @@ export default class NotificationScreen extends React.Component<
     // Calling alert(message) immediately fails to show the alert on Android
     // if after backgrounding the app and then clicking on a notification
     // to foreground the app
-    setTimeout(() => Alert.alert('You clicked on the notification 🥇'), 1000);
+    setTimeout(
+      () =>
+        Alert.alert(
+          'You clicked on the notification 🥇',
+          JSON.stringify({
+            actionIdentifier: notificationResponse.actionIdentifier,
+            userText: notificationResponse.userText,
+          })
+        ),
+      1000
+    );
+    Notifications.dismissNotificationAsync(notificationResponse.notification.request.identifier);
   };
 
   private getPermissionsAsync = async () => {
@@ -262,6 +292,7 @@ export default class NotificationScreen extends React.Component<
         sound: true,
       },
       trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: 10,
       },
     });
@@ -286,6 +317,7 @@ export default class NotificationScreen extends React.Component<
         sound: 'cat.wav',
       },
       trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         channelId: 'custom-sound',
         seconds: 1,
       },
@@ -301,6 +333,7 @@ export default class NotificationScreen extends React.Component<
         sound: true,
       },
       trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: 10,
       },
     });

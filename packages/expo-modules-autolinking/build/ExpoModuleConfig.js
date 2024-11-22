@@ -93,6 +93,12 @@ class ExpoModuleConfig {
         return arrayize(this.rawConfig.android?.gradlePlugins ?? []);
     }
     /**
+     * Returns gradle projects containing AAR files defined by the module author.
+     */
+    androidGradleAarProjects() {
+        return arrayize(this.rawConfig.android?.gradleAarProjects ?? []);
+    }
+    /**
      * Returns serializable raw config.
      */
     toJSON() {

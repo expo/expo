@@ -3,7 +3,7 @@
 #include "JSPropertiesDecorator.h"
 #include "../JavaScriptObject.h"
 #include "JSIUtils.h"
-
+#include "JSFunctionsDecorator.h"
 
 #include <jsi/jsi.h>
 
@@ -21,22 +21,29 @@ void JSPropertiesDecorator::registerProperty(
   jni::alias_ref<JNIFunctionBody::javaobject> setter
 ) {
   auto cName = name->toStdString();
-
-  auto getterMetadata = make_shared<MethodMetadata>(
-    cName,
-    getterTakesOwner &
-    0x1, // We're unsure if getterTakesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
-    false,
-    jni::make_local(getterExpectedArgsTypes),
+  MethodMetadata::Info getterInfo {
+    .name = cName,
+    // We're unsure if getterTakesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
+    .takesOwner = static_cast<bool>(getterTakesOwner & 0x1),
+    .isAsync = false,
+    .enumerable = true,
+    .argTypes = JSFunctionsDecorator::mapConverters(getterExpectedArgsTypes)
+  };
+  auto getterMetadata = std::make_shared<MethodMetadata>(
+    std::move(getterInfo),
     jni::make_global(getter)
   );
 
-  auto setterMetadata = make_shared<MethodMetadata>(
-    cName,
-    setterTakesOwner &
-    0x1, // We're unsure if setterTakesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
-    false,
-    jni::make_local(setterExpectedArgsTypes),
+  MethodMetadata::Info setterInfo {
+    .name = cName,
+    // We're unsure if setterTakesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
+    .takesOwner = static_cast<bool>(setterTakesOwner & 0x1),
+    .isAsync = false,
+    .enumerable = true,
+    .argTypes = JSFunctionsDecorator::mapConverters(setterExpectedArgsTypes)
+  };
+  auto setterMetadata = std::make_shared<MethodMetadata>(
+    std::move(setterInfo),
     jni::make_global(setter)
   );
 
@@ -57,16 +64,23 @@ void JSPropertiesDecorator::decorate(
 
     auto descriptor = JavaScriptObject::preparePropertyDescriptor(runtime,
                                                                   1 << 1 /* enumerable */);
-    descriptor.setProperty(
-      runtime,
-      "get",
-      jsi::Value(runtime, *getter->toJSFunction(runtime))
-    );
-    descriptor.setProperty(
-      runtime,
-      "set",
-      jsi::Value(runtime, *setter->toJSFunction(runtime))
-    );
+    auto jsGetter = getter->toJSFunction(runtime);
+    if (jsGetter != nullptr) {
+      descriptor.setProperty(
+        runtime,
+        "get",
+        jsi::Value(runtime, *jsGetter)
+      );
+    }
+
+    auto jsSetter = setter->toJSFunction(runtime);
+    if (jsSetter != nullptr) {
+      descriptor.setProperty(
+        runtime,
+        "set",
+        jsi::Value(runtime, *jsSetter)
+      );
+    }
     common::defineProperty(runtime, &jsObject, name.c_str(), std::move(descriptor));
   }
 }

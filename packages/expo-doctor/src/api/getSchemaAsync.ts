@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 export async function getSchemaAsync(sdkVersion: string): Promise<any> {
   const result = await fetch(
     new URL(
@@ -7,7 +5,7 @@ export async function getSchemaAsync(sdkVersion: string): Promise<any> {
       getExpoHostApiBaseUrl()
     ).toString()
   );
-  const resultJson = await result.json();
+  const resultJson: any = await result.json();
   return resultJson.data?.schema;
 }
 

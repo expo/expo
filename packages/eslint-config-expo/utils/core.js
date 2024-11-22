@@ -58,7 +58,7 @@ module.exports = {
     ],
     'import/resolver': {
       node: { extensions: jsExtensions },
-      typescript: true
+      typescript: true,
     },
   },
   overrides: [
@@ -66,6 +66,12 @@ module.exports = {
       files: ['*.d.ts'],
       rules: {
         'import/order': 'off',
+      },
+    },
+    {
+      files: ['metro.config.js'],
+      env: {
+        node: true,
       },
     },
   ],

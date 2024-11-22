@@ -10,7 +10,26 @@
 
 ### 💡 Others
 
+## 3.1.2 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.1 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.0 — 2024-11-04
+
+### 🎉 New features
+
+- Add log hint for `--template` and `--example` arguments. ([#32519](https://github.com/expo/expo/pull/32519) by [@kitten](https://github.com/kitten))
+
+## 3.0.1 — 2024-10-22
+
+### 💡 Others
+
 - Update `tar` dependency. ([#29663](https://github.com/expo/expo/pull/29663) by [@Simek](https://github.com/Simek))
+- Use `npx` for npm examples. ([#31012](https://github.com/expo/expo/pull/31012) by [](@kadikraman)(https://github.com/kadikraman))
 
 ## 3.0.0 — 2024-06-10
 
@@ -22,6 +41,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
 - Update list of available templates ([#29955](https://github.com/expo/expo/pull/29955) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others

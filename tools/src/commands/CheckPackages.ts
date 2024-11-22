@@ -27,6 +27,7 @@ export default (program: Command) => {
       'Whether to check the uniformity of committed and generated build files.',
       false
     )
+    .option('--no-dependency-check', 'Whether to skip the valid dependency chain check.', false)
     .description('Checks if packages build successfully and their tests pass.')
     .asyncAction(main);
 };

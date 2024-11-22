@@ -80,7 +80,7 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceEventListener, DevLaun
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    return devMenuManager.onKeyEvent(keyCode, event) == true || super.onKeyUp(keyCode, event)
+    return devMenuManager.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event)
   }
 
   override fun onReactContextInitialized(context: ReactContext) {

@@ -288,6 +288,36 @@ describe(`require.context`, () => {
     );
   });
 
+  it('can preserve the require.context AST in collection mode', () => {
+    const ast = astFromCode(`
+      const a = require.context('./');
+    `);
+    const { dependencies, dependencyMapName } = collectDependencies(ast, {
+      ...optsWithContext,
+      collectOnly: true,
+    });
+    expect(dependencies).toEqual([
+      {
+        name: './',
+        data: objectContaining({
+          contextParams: {
+            filter: {
+              pattern: '.*',
+              flags: '',
+            },
+            mode: 'sync',
+            recursive: true,
+          },
+        }),
+      },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        const a = require.context(${dependencyMapName}[0], "./");
+      `)
+    );
+  });
+
   it('distinguishes require from require.context', () => {
     const ast = astFromCode(`
       const a = require.context('./');
@@ -773,6 +803,35 @@ it('uses dependencyMapName parameter as-is if provided', () => {
   );
 });
 
+it('respects magic comments when collecting', () => {
+  const ast = astFromCode(`
+    import(/* @metro-ignore */ "some/async/module").then(foo => {});
+  `);
+  const { dependencies } = collectDependencies(ast, opts);
+  expect(dependencies).toEqual([
+    // Should be empty
+  ]);
+  expect(codeFromAst(ast)).toEqual(
+    comparableCode(`
+      import(/* @metro-ignore */"some/async/module").then(foo => {});
+    `)
+  );
+});
+
+it('respects magic comments after the import tokens', () => {
+  expect(
+    codeFromAst(
+      astFromCode(`
+    import("some/async/module" /* @metro-ignore */).then(foo => {});
+  `)
+    )
+  ).toEqual(
+    comparableCode(`
+      import("some/async/module" /* @metro-ignore */).then(foo => {});
+    `)
+  );
+});
+
 it('collects asynchronous dependencies', () => {
   const ast = astFromCode(`
     import("some/async/module").then(foo => {});
@@ -901,6 +960,68 @@ describe('import() prefetching', () => {
       },
       { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
       { name: 'some/async/module', data: objectContaining({ asyncType: 'async' }) },
+    ]);
+  });
+});
+
+describe('require.unstable_importMaybeSync()', () => {
+  it('collects require.unstable_importMaybeSync calls', () => {
+    const ast = astFromCode(`
+      require.unstable_importMaybeSync("some/async/module");
+    `);
+    const { dependencies, dependencyMapName } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      {
+        name: 'some/async/module',
+        data: objectContaining({ asyncType: 'maybeSync' }),
+      },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        require(${dependencyMapName}[1], "asyncRequire").unstable_importMaybeSync(${dependencyMapName}[0], _dependencyMap.paths, "some/async/module");
+      `)
+    );
+  });
+
+  it('keepRequireNames: false', () => {
+    const ast = astFromCode(`
+      require.unstable_importMaybeSync("some/async/module");
+    `);
+    const { dependencies, dependencyMapName } = collectDependencies(ast, {
+      ...opts,
+      keepRequireNames: false,
+    });
+    expect(dependencies).toEqual([
+      {
+        name: 'some/async/module',
+        data: objectContaining({ asyncType: 'maybeSync' }),
+      },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        require(${dependencyMapName}[1]).unstable_importMaybeSync(${dependencyMapName}[0], _dependencyMap.paths);
+      `)
+    );
+  });
+
+  it('distinguishes between require.unstable_importMaybeSync and prefetch dependencies on the same module', () => {
+    const ast = astFromCode(`
+      __prefetchImport("some/async/module");
+      require.unstable_importMaybeSync("some/async/module").then(() => {});
+    `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      {
+        name: 'some/async/module',
+        data: objectContaining({ asyncType: 'prefetch' }),
+      },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+      {
+        name: 'some/async/module',
+        data: objectContaining({ asyncType: 'maybeSync' }),
+      },
     ]);
   });
 });
@@ -1143,9 +1264,9 @@ it('collects export from', () => {
 
   const { dependencies } = collectDependencies(ast, opts);
   expect(dependencies).toEqual([
-    { name: 'Apple', data: objectContaining({ asyncType: null }) },
-    { name: 'Banana', data: objectContaining({ asyncType: null }) },
-    { name: 'Kiwi', data: objectContaining({ asyncType: null }) },
+    { name: 'Apple', data: objectContaining({ asyncType: null, exportNames: ['Apple'] }) },
+    { name: 'Banana', data: objectContaining({ asyncType: null, exportNames: ['Banana'] }) },
+    { name: 'Kiwi', data: objectContaining({ asyncType: null, exportNames: ['*'] }) },
   ]);
 });
 
@@ -1495,6 +1616,21 @@ it('collects require.resolveWeak calls', () => {
   );
 });
 
+describe('export names', () => {
+  it('collects export names from multiple imports', () => {
+    const ast = astFromCode(`
+    import {A} from 'Apple';
+    export { A }
+    export { B, C } from 'Apple';
+  `);
+
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      { name: 'Apple', data: objectContaining({ asyncType: null, exportNames: ['A', 'B', 'C'] }) },
+    ]);
+  });
+});
+
 function formatDependencyLocs(dependencies: readonly Dependency[], code: any) {
   return (
     '\n' +
@@ -1550,6 +1686,10 @@ const MockDependencyTransformer: DependencyTransformer = {
 
   transformImportCall(path: NodePath, dependency: InternalDependency, state: State): void {
     transformAsyncRequire(path, dependency, state, 'async');
+  },
+
+  transformImportMaybeSyncCall(path: NodePath, dependency: InternalDependency, state: State): void {
+    transformAsyncRequire(path, dependency, state, 'unstable_importMaybeSync');
   },
 
   transformPrefetch(path: NodePath, dependency: InternalDependency, state: State): void {

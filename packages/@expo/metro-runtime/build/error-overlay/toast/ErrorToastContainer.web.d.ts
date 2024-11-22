@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-export declare function ErrorToastContainer(): JSX.Element | null;
+export declare function ErrorToastContainer(): React.JSX.Element | null;
 declare const _default: React.Component<object, {}, any>;
 export default _default;
 //# sourceMappingURL=ErrorToastContainer.web.d.ts.map

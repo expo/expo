@@ -91,7 +91,7 @@ export function LoggedInAccountView({ accounts }: Props) {
                         {account.ownerUserActor.fullName ? (
                           <>
                             <Text
-                              type="InterBold"
+                              type="InterSemiBold"
                               style={{ paddingRight: spacing[4] }}
                               numberOfLines={1}>
                               {account.ownerUserActor.fullName}
@@ -108,7 +108,7 @@ export function LoggedInAccountView({ accounts }: Props) {
                           </>
                         ) : (
                           <Text
-                            type="InterBold"
+                            type="InterSemiBold"
                             style={{ paddingRight: spacing[4] }}
                             numberOfLines={1}>
                             {account.ownerUserActor.username}

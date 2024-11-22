@@ -7,6 +7,7 @@ sidebar_title: Runtime issues
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors into two categories:
 
@@ -61,7 +62,7 @@ Build the app from Android Studio and connect the debugger. See [Google's docume
 
 </Step>
 
-> You can delete the **android** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself (which is bare workflow).
+> You can delete the **android** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself.
 
 #### Xcode
 
@@ -97,7 +98,7 @@ You can now utilize [**Low-level debugger (LLDB)**](https://developer.apple.com/
 
 </Step>
 
-> You can delete the **ios** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself (which is bare workflow).
+> You can delete the **ios** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself.
 
 ## Production errors
 
@@ -114,7 +115,11 @@ It can be a frustrating scenario when a production app crashes. There is very li
 
 Start by reproducing the crash using your production app and then **find an associated crash report**. For Android, you can use `adb logcat` and for iOS you can use the Console app in Xcode.
 
-<ContentSpotlight url="https://www.youtube.com/watch?v=LvCci4Bwmpc" />
+<VideoBoxLink
+  videoId="LvCci4Bwmpc"
+  title="How to use Logcat & macOS Console to debug"
+  description="In this tutorial, you'll learn how to use native device logging features like ADB Logcat and macOS Console to find bugs in your code and quickly fix them."
+/>
 
 #### Crash reports using adb logcat
 
@@ -165,6 +170,16 @@ For more information, see Apple's [Diagnosing Issues Using Crash Reports and Dev
 ### App crashes on certain (older) devices
 
 This might indicate that there is a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React DevTools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
+
+### Using error reporting services
+
+Implementing a crash and bug reporting service in your production app offers several benefits, such as:
+
+- Real-time insights on production deployments with information to reproduce crashes and bugs.
+- Setting up an alert system to get notified about fatal JavaScript errors or any other event you configure.
+- Using a web dashboard to see details on exceptions such as stack traces, device information, and so on.
+
+With Expo, you can integrate a reporting service like [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/) to get more insights in real-time.
 
 ## Stuck?
 

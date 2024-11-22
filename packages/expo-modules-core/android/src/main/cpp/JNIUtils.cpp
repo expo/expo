@@ -5,8 +5,64 @@
 #include "JSIUtils.h"
 #include "types/JNIToJSIConverter.h"
 #include <jsi/JSIDynamic.h>
+#include "JSIContext.h"
 
 namespace expo {
+
+jsi::Value convertSharedObject(
+  jni::local_ref<JSharedObject::javaobject> sharedObject,
+  jsi::Runtime &rt,
+  JSIContext *jsiContext
+) {
+  int id = sharedObject->getId();
+  if (id != 0) {
+    return jsi::Value(rt, *jsiContext->getSharedObject(id)->cthis()->get());
+  }
+
+  auto jsClass = jsiContext->getJavascriptClass(sharedObject->getClass());
+  if (jsClass == nullptr) {
+    // If the shared object is an instance of `ShareRef` and the class was not found,
+    // we can create a new JavaScript object with the empty prototype.
+    // User didn't register SharedRef using Class component.
+    if (sharedObject->isInstanceOf(JSharedRef::javaClassStatic())) {
+      auto jsObject = std::make_shared<jsi::Object>(jsi::Object(rt));
+      auto jsObjectRef = JavaScriptObject::newInstance(
+        jsiContext,
+        jsiContext->runtimeHolder,
+        jsObject
+      );
+      jsiContext->registerSharedObject(sharedObject, jsObjectRef);
+      return jsi::Value(rt, *jsObject);
+    }
+
+    throwNewJavaException(
+      UnexpectedException::create(
+        "Could not find JavaScript class for shared object: " + sharedObject->toString()
+      ).get()
+    );
+
+  }
+  auto prototype = jsClass
+    ->cthis()
+    ->get()
+    ->getProperty(rt, "prototype")
+    .asObject(rt);
+
+  auto objSharedPtr = std::make_shared<jsi::Object>(
+    expo::common::createObjectWithPrototype(rt, &prototype)
+  );
+  auto jsObjectInstance = JavaScriptObject::newInstance(
+    jsiContext,
+    jsiContext->runtimeHolder,
+    objSharedPtr
+  );
+  jni::local_ref<JavaScriptObject::javaobject> jsRef = jni::make_local(
+    jsObjectInstance
+  );
+  jsiContext->registerSharedObject(sharedObject, jsRef);
+
+  return jsi::Value(rt, *objSharedPtr);
+}
 
 void JNIUtils::registerNatives() {
   javaClassStatic()->registerNatives({
@@ -88,26 +144,24 @@ void JNIUtils::emitEventOnJavaScriptModule(
   jni::alias_ref<JavaScriptModuleObject::javaobject> jsiThis,
   jni::alias_ref<jni::HybridClass<JSIContext>::javaobject> jsiContextRef,
   jni::alias_ref<jstring> eventName,
-  jni::alias_ref<react::ReadableNativeMap::javaobject> eventBody
+  jni::alias_ref<jni::JMap<jstring, jobject>> eventBody
 ) {
-  folly::dynamic arg;
-  if (eventBody) {
-    arg = eventBody->cthis()->consume();
-  }
+  auto globalEventBody = jni::make_global(eventBody);
 
   JNIUtils::emitEventOnJSIObject(
     jsiThis->cthis()->getCachedJSIObject(),
     jsiContextRef,
     eventName,
-    [arg = std::move(arg)](jsi::Runtime &rt) -> std::vector<jsi::Value> {
-      jsi::Value convertedBody = jsi::valueFromDynamic(rt, arg);
-      std::vector<jsi::Value> args;
-      args.emplace_back(std::move(convertedBody));
-      return args;
+    [args = std::move(globalEventBody)](jsi::Runtime &rt) -> std::vector<jsi::Value> {
+      JNIEnv *env = jni::Environment::current();
+
+      auto localArgs = jni::static_ref_cast<jni::JMap<jstring, jobject>>(args);
+      std::vector<jsi::Value> result;
+      result.push_back(convertToJS(env, rt, localArgs));
+      return result;
     }
   );
 }
-
 
 void JNIUtils::emitEventOnJSIObject(
   std::weak_ptr<jsi::WeakObject> jsiThis,

@@ -8,17 +8,22 @@ import { Terminal } from '~/ui/components/Snippet';
 
 This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
 
-Before building with EAS on CI, we need to install and configure `eas-cli`. Then, we can trigger new builds with the `eas build` command.
-
 ## Prerequisites
 
 ### Run a successful build from your local machine
 
-To trigger EAS builds from a CI environment, we first need to configure our app for EAS Build and successfully run a build from our local machine for each platform that we'd like to support on CI.
+To trigger EAS builds from a CI environment, your app needs to be set up to use EAS Build in non-interactive mode. To do this, go through the EAS Build initialization steps and run a successful build from your local terminal for each platform you would like to support on CI. This way, the `eas build` command can prompt for any additional configuration it needs, and then that configuration will be available for future non-interactive runs on CI.
 
-If you have run `eas build -p [all|ios|android]` successfully before, then you can continue.
+Running a build locally will accomplish the following critical configuration steps:
 
-If you haven't done this yet, see [Create your first build](setup.mdx) guide and return here when you're ready.
+- Initialize the project on EAS by generating a `projectId`.
+- Add an **eas.json** file defining your build profiles.
+- Populates critical app config properties for native builds, such as `android.packageName` and `ios.bundleIdentifier`.
+- Ensure build credentials are created, including Android keystores and iOS distribution certs and provisioning profiles.
+
+Run `eas build -p [all|android|ios]` and verify that your builds for each platform complete successfully. Then, continue with the below steps for implementing EAS Build on CI.
+
+If you haven't done this yet, see the [Create your first build](/build/setup/) guide and return here when you're ready.
 
 ## Configure your app for CI
 

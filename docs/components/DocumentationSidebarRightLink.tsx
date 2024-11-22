@@ -49,9 +49,9 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
             onMouseOut={isCode ? onMouseOut : undefined}
             href={'#' + slug}
             onClick={onClick}
-            style={paddingLeft ? { paddingLeft } : undefined}
             className={mergeClasses(
-              'flex mb-1.5 truncate items-center justify-between !text-pretty',
+              'mb-1.5 flex items-center justify-between truncate !text-pretty',
+              convertToIndentClass(paddingLeft),
               'focus-visible:relative focus-visible:z-10'
             )}>
             <TitleElement
@@ -59,7 +59,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
                 'w-full !text-secondary hocus:!text-link',
                 isCodeOrFilePath && 'truncate !text-2xs',
                 isActive && '!text-link',
-                isDeprecated && 'opacity-80 line-through'
+                isDeprecated && 'line-through opacity-80'
               )}>
               {displayTitle}
             </TitleElement>
@@ -108,5 +108,22 @@ const isOverflowing = (el: HTMLElement) => {
   const indent = parseInt(window.getComputedStyle(el).paddingLeft, 10);
   return childrenWidth > 220 && childrenWidth >= el.scrollWidth - indent;
 };
+
+function convertToIndentClass(spacing: number) {
+  switch (spacing) {
+    case 12:
+      return 'pl-3';
+    case 24:
+      return 'pl-6';
+    case 36:
+      return 'pl-9';
+    case 48:
+      return 'pl-12';
+    case 60:
+      return 'pl-15';
+    default:
+      return '';
+  }
+}
 
 export default DocumentationSidebarRightLink;

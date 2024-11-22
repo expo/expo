@@ -1,8 +1,8 @@
 import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import { type TransformInputOptions } from 'metro/src/DeltaBundler/types';
 import CountingSet from 'metro/src/lib/CountingSet';
 import * as path from 'path';
 
+import { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
 
 export const projectRoot = '/app';
@@ -40,17 +40,19 @@ export async function microBundle({
         }
       }
     }
-    if (id === 'expo-mock/async-require' && !fullFs['expo-mock/async-require']) {
-      fullFs['expo-mock/async-require'] = `
+
+    for (const mid of [
+      'expo-mock/async-require',
+      'react-server-dom-webpack/server',
+      'react-server-dom-webpack/client',
+      'expo-router/rsc/internal',
+    ]) {
+      if (id === mid && !fullFs[mid]) {
+        fullFs[mid] = `
                 module.exports = () => 'MOCK'
             `;
-      return 'expo-mock/async-require';
-    }
-    if (id === 'react-server-dom-webpack/server' && !fullFs['react-server-dom-webpack/server']) {
-      fullFs['react-server-dom-webpack/server'] = `
-                module.exports = () => 'MOCK'
-            `;
-      return 'react-server-dom-webpack/server';
+        return mid;
+      }
     }
 
     throw new Error(
@@ -75,7 +77,11 @@ export async function microBundle({
     isReactServer?: boolean;
     inlineSourceMaps?: boolean;
     hot?: boolean;
+    minify?: boolean;
     splitChunks?: boolean;
+    treeshake?: boolean;
+    optimize?: boolean;
+    inlineRequires?: boolean;
   };
   preModulesFs?: Record<string, string>;
 }): Promise<
@@ -87,7 +93,10 @@ export async function microBundle({
   ]
 > {
   const fullFs = {
+    'expo-router/rsc/internal': ``,
     'react-server-dom-webpack/server': ``,
+    'react-server-dom-webpack/client': ``,
+
     'expo-mock/async-require': `
     module.exports = () => 'MOCK'
 `,
@@ -106,21 +115,22 @@ export async function microBundle({
 
   const absEntry = path.join(projectRoot, entry);
   const dev = options.dev ?? true;
-  const transformOptions: TransformInputOptions = {
+  const transformOptions: PickPartial<JsTransformOptions, 'inlinePlatform' | 'inlineRequires'> = {
     hot: options.hot ?? false,
-    minify: false,
+    minify: options.minify ?? false,
     dev,
     type: 'module',
     unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
     platform: options.platform ?? 'web',
+    inlineRequires: options.inlineRequires ?? false,
     customTransformOptions: {
       __proto__: null,
       bytecode: options.hermes,
       baseUrl: options.baseUrl,
       engine: options.hermes ? 'hermes' : undefined,
       environment: options.isReactServer ? 'react-server' : options.isServer ? 'node' : undefined,
+      optimize: options.optimize ?? options.treeshake,
     },
-
     // NOTE: This is non-standard but it provides a cleaner output
     experimentalImportSupport: true,
   };
@@ -134,15 +144,12 @@ export async function microBundle({
     )
   );
 
-  async function recurseWith(queue: string[], parent?: Module) {
+  async function recurseWith(queue: string[], parent?: Module, onResolve?: (fp: string) => void) {
     while (queue.length) {
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
       if (visited.has(absPath)) {
-        modules.get(absPath)?.inverseDependencies.add(
-          // @ts-expect-error
-          parent?.path
-        );
+        modules.get(absPath)?.inverseDependencies.add(parent?.path);
         continue;
       }
       visited.add(absPath);
@@ -150,6 +157,7 @@ export async function microBundle({
       if (code == null) {
         throw new Error(`File not found: ${id}`);
       }
+      onResolve?.(absPath);
       const module = await parseModule(id, code, transformOptions);
       modules.set(absPath, module);
 
@@ -163,11 +171,45 @@ export async function microBundle({
           throw new Error(`mini-metro runner doesn't support require context (yet)`);
         }
 
-        const resolved = resolve(id, dep.data.name);
-        await recurseWith([resolved], module);
+        try {
+          const resolved = resolve(id, dep.data.name);
+          await recurseWith([resolved], module, (fp) => {
+            // @ts-expect-error
+            dep.absolutePath = fp;
+          });
+        } catch (error) {
+          if (dep.data.data.isOptional) {
+            // Skip optional modules that cannot be found.
+            continue;
+          }
+          throw error;
+        }
       }
     }
   }
+
+  function moduleExists(id: string) {
+    if (fullFs[id] != null) {
+      return id;
+    }
+    const p = id.replace(/^\/+/, '');
+    if (fullFs[p] != null) {
+      return p;
+    }
+    return null;
+  }
+
+  const findUpPackageJsonPath = (projectRoot: string, dir: string): string | null => {
+    if (dir === path.sep || dir.length < projectRoot.length) {
+      return null;
+    }
+    const packageJsonPath = path.relative(projectRoot, path.join(dir, 'package.json'));
+    const exists = moduleExists(packageJsonPath);
+    if (exists != null) {
+      return exists;
+    }
+    return findUpPackageJsonPath(projectRoot, path.dirname(dir));
+  };
   await recurseWith([entry]);
 
   return [
@@ -185,8 +227,13 @@ export async function microBundle({
     {
       // @ts-ignore
       serializerOptions:
-        options.output || options.hermes || options.sourceMaps || options.splitChunks
+        options.output ||
+        options.hermes ||
+        options.sourceMaps ||
+        options.splitChunks ||
+        options.treeshake
           ? {
+              usedExports: options.treeshake,
               output: options.output,
               includeSourceMaps: options.sourceMaps,
               splitChunks: options.splitChunks,
@@ -219,15 +266,26 @@ export async function microBundle({
       runBeforeMainModule: [],
       runModule: true,
       serverRoot: projectRoot,
+
+      // For testing only since we do extra FS work in the serializer
+      _test_getPackageJson(dir: string) {
+        const packageJsonPath = findUpPackageJsonPath(projectRoot, dir);
+        if (packageJsonPath) {
+          return [JSON.parse(fullFs[packageJsonPath]), packageJsonPath];
+        }
+        return [null, null];
+      },
     },
   ];
 }
+
+type PickPartial<T, K extends keyof T> = Partial<Pick<T, K>> & Omit<T, K>;
 
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.
 export async function parseModule(
   relativeFilePath: string,
   code: string,
-  transformOptions: TransformInputOptions,
+  transformOptions: PickPartial<JsTransformOptions, 'inlinePlatform' | 'inlineRequires'>,
   transformConfig: any = {}
 ): Promise<Module<{ type: string; data: { lineCount: number; code: string } }>> {
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
@@ -248,9 +306,9 @@ export async function parseModule(
     absoluteFilePath,
     codeBuffer,
     {
+      inlineRequires: false,
       ...transformOptions,
       inlinePlatform: true,
-      inlineRequires: false,
     }
   );
 
@@ -272,7 +330,7 @@ export async function parseModule(
   };
 }
 
-function mockAbsolutePath(name: string) {
+function mockAbsolutePath(name: string, fp: string = name) {
   if (name.match(/^(\.|\/)/)) {
     return path.join(projectRoot, name.replace(/\.[tj]sx?/, '')) + '.js';
   }

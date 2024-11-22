@@ -22,7 +22,7 @@ export type Options = {
   includeAsyncPaths: boolean;
   projectRoot: string;
   serverRoot: string;
-  sourceUrl: string | undefined;
+  sourceUrl?: string | null;
   splitChunks: boolean;
   skipWrapping: boolean;
   computedAsyncModulePaths: Record<string, string> | null;
@@ -39,11 +39,7 @@ export function wrapModule(
   }
 
   const { params, paths } = getModuleParams(module, options);
-  let src = output.data.code;
-  if (!options.skipWrapping) {
-    src = addParamsToDefineCall(output.data.code, ...params);
-  }
-
+  const src = addParamsToDefineCall(output.data.code, ...params);
   return { src, paths };
 }
 

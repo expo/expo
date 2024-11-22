@@ -11,6 +11,7 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import io.mockk.every
 import io.mockk.mockk
@@ -54,6 +55,7 @@ class DatabaseLauncherTest {
     db.assetDao().insertAssets(listOf(testAsset), testUpdate)
 
     val launcher = DatabaseLauncher(
+      context,
       UpdatesConfiguration(
         null,
         mapOf(
@@ -67,17 +69,18 @@ class DatabaseLauncherTest {
         mockk(),
         mockk(),
         mockk()
-      )
+      ),
+      UpdatesLogger(context)
     )
     val spyLauncher = spyk(launcher)
-    every { spyLauncher.getLaunchableUpdate(any(), any()) } returns db.updateDao().loadUpdateWithId(testUpdate.id)
+    every { spyLauncher.getLaunchableUpdate(any()) } returns db.updateDao().loadUpdateWithId(testUpdate.id)
 
     val mockedFile = File(context.cacheDir, "test")
-    every { spyLauncher.ensureAssetExists(any(), any(), any()) } returns mockedFile
+    every { spyLauncher.ensureAssetExists(any(), any()) } returns mockedFile
 
     val mockedCallback = mockk<LauncherCallback>(relaxed = true)
 
-    spyLauncher.launch(db, context, mockedCallback)
+    spyLauncher.launch(db, mockedCallback)
 
     verify { mockedCallback.onSuccess() }
 

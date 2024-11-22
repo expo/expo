@@ -46,19 +46,21 @@ class MovableFloatingActionButton(
 
     setOnTouchListener(this)
 
-    addView(View(context).apply {
-      layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT).apply {
-        gravity = Gravity.CENTER
+    addView(
+      View(context).apply {
+        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT).apply {
+          gravity = Gravity.CENTER
+        }
+        setBackgroundColor(Color.MAGENTA)
       }
-      setBackgroundColor(Color.MAGENTA)
-    })
+    )
   }
 
   fun onClick() {
     val reactHostWrapper = DevMenuManager.getReactHost()
-                           ?: return
+      ?: return
     val currentActivity = reactHostWrapper.currentReactContext?.currentActivity
-                          ?: return
+      ?: return
 
     DevMenuManager.openMenu(currentActivity)
   }

@@ -32,7 +32,7 @@ export async function test(t) {
         const image = await context.renderAsync();
 
         t.expect(image).toBeDefined();
-        t.expect(image instanceof ImageManipulator.ImageRef).toBe(true);
+        t.expect(image instanceof ImageManipulator.Image).toBe(true);
         t.expect(image.width).toBe(100);
         t.expect(image.height).toBe(100);
       });
@@ -45,7 +45,7 @@ export async function test(t) {
         const image = await context.renderAsync();
 
         t.expect(image).toBeDefined();
-        t.expect(image instanceof ImageManipulator.ImageRef).toBe(true);
+        t.expect(image instanceof ImageManipulator.Image).toBe(true);
         t.expect(image.width).toBe(100);
         t.expect(image.height).toBe(100);
       });
@@ -106,7 +106,7 @@ export async function test(t) {
       });
     });
 
-    t.describe('ImageRef', () => {
+    t.describe('Image', () => {
       t.it('saves with default format', async () => {
         const image = await ImageManipulator.manipulate(asset.localUri)
           .resize({

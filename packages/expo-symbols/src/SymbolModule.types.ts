@@ -1,4 +1,4 @@
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 export type SymbolViewProps = {

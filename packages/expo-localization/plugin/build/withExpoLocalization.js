@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Manifest_1 = require("@expo/config-plugins/build/android/Manifest");
 const config_plugins_1 = require("expo/config-plugins");
 function withExpoLocalizationIos(config, data) {
     const mergedConfig = { ...config.extra, ...data };
@@ -21,7 +20,7 @@ function withExpoLocalizationIos(config, data) {
 function withExpoLocalizationAndroid(config, data) {
     if (data.allowDynamicLocaleChangesAndroid) {
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
-            const mainActivity = (0, Manifest_1.getMainActivityOrThrow)(config.modResults);
+            const mainActivity = config_plugins_1.AndroidConfig.Manifest.getMainActivityOrThrow(config.modResults);
             if (!mainActivity.$['android:configChanges']?.includes('locale')) {
                 mainActivity.$['android:configChanges'] += '|locale';
             }

@@ -48,17 +48,16 @@ export async function installExpoPackageAsync(
     throw error;
   }
 
-  Log.log(chalk`\u203A Running {bold npx expo install} under the updated expo version`);
-
-  let commandSegments = ['expo', 'install', ...followUpCommandArgs];
-  if (packageManagerArguments.length) {
-    commandSegments = [...commandSegments, '--', ...packageManagerArguments];
-  }
-
-  Log.log('> ' + commandSegments.join(' '));
-
-  // Spawn a new process to install the rest of the packages, as only then will the latest Expo package be used
+  // Spawn a new process to install the rest of the packages if there are any, as only then will the latest Expo package be used
   if (followUpCommandArgs.length) {
+    let commandSegments = ['expo', 'install', ...followUpCommandArgs];
+    if (packageManagerArguments.length) {
+      commandSegments = [...commandSegments, '--', ...packageManagerArguments];
+    }
+
+    Log.log(chalk`\u203A Running {bold npx expo install} under the updated expo version`);
+    Log.log('> ' + commandSegments.join(' '));
+
     await spawnAsync('npx', commandSegments, {
       stdio: 'inherit',
       cwd: projectRoot,

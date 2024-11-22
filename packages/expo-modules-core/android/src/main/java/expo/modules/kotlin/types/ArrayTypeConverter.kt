@@ -26,7 +26,7 @@ class ArrayTypeConverter(
         .getDynamic(i)
         .recycle {
           exceptionDecorator({ cause ->
-            CollectionElementCastException(arrayType, arrayType.arguments.first().type!!, getType(), cause)
+            CollectionElementCastException(arrayType, arrayType.arguments.first().type!!, type, cause)
           }) {
             arrayElementConverter.convert(this)
           }

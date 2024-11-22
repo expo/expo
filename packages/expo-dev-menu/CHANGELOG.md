@@ -8,10 +8,117 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client. ([#29697](https://github.com/expo/expo/pull/29697) by [@lukmccall](https://github.com/lukmccall))
-- [macOS] Don't hide the dev menu when hovering the window with the mouse. ([#30066](https://github.com/expo/expo/pull/30066) by [@343max](https://github.com/343max))
+### 💡 Others
+
+## 6.0.11 — 2024-11-22
 
 ### 💡 Others
+
+- Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
+
+## 6.0.10 — 2024-11-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed issue where `UIWindow` was called on off the main thread. ([#29559](https://github.com/expo/expo/pull/29559) by [@hakonk](https://github.com/hakonk))
+
+## 6.0.9 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.8 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.7 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
+
+## 6.0.6 — 2024-11-04
+
+### 💡 Others
+
+- Remove unused `graphql` dependencies. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
+
+## 6.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.4 — 2024-10-29
+
+### 💡 Others
+
+- Add module mocks. ([#32412](https://github.com/expo/expo/pull/32412) by [@aleqsio](https://github.com/aleqsio))
+
+## 6.0.3 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fix build failure on 0.76 with use frameworks. ([#32341](https://github.com/expo/expo/pull/32341) by [@matinzd](https://github.com/matinzd))
+
+### 💡 Others
+
+- Skipped internal bundles from debugging targets. ([#32322](https://github.com/expo/expo/pull/32322) by [@kudo](https://github.com/kudo))
+
+## 6.0.2 — 2024-10-24
+
+### 🎉 New features
+
+- Add support for react-native 0.76 ([#32285](https://github.com/expo/expo/pull/32285) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30861](https://github.com/expo/expo/pull/30861) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client. ([#29697](https://github.com/expo/expo/pull/29697) by [@lukmccall](https://github.com/lukmccall))
+- [macOS] Don't hide the dev menu when hovering the window with the mouse. ([#30066](https://github.com/expo/expo/pull/30066) by [@343max](https://github.com/343max))
+- Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
+- Removed deprecated code for SDK 49. ([#31740](https://github.com/expo/expo/pull/31740) by [@kudo](https://github.com/kudo))
+- Remove unused `semver` dependency. ([#32063](https://github.com/expo/expo/pull/32063) by [@kitten](https://github.com/kitten))
+- Fixed broken unit tests since React Native 0.76 bump. ([#32210](https://github.com/expo/expo/pull/32210) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+## 5.0.21 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.20 - 2024-08-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fix build error on `0.75` because of missing headers. ([#31100](https://github.com/expo/expo/pull/31100) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix a crash on android when calling `setSystemGestureExclusionRects` on apis below 29. ([#31114](https://github.com/expo/expo/pull/31114) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.0.17 - 2024-07-29
+
+### 🐛 Bug fixes
+
+- Fixed the "Connect to Metro to develop JavaScript" banner lingering on iOS. ([#30663](https://github.com/expo/expo/pull/30663) by [@kudo](https://github.com/kudo))
+
+## 5.0.16 - 2024-07-03
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.74.3. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 5.0.15 - 2024-06-06
 

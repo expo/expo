@@ -15,9 +15,7 @@ const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 // Constants.supportedExpoSdks is not guaranteed to be sorted!
 const sortedSupportedExpoSdks = SupportedExpoSdks.sort();
 
-const supportedSdksString = `SDK${
-  SupportedExpoSdks.length === 1 ? ':' : 's:'
-} ${sortedSupportedExpoSdks.map((sdk) => semver.major(sdk)).join(', ')}`;
+const supportedSdksString = `${sortedSupportedExpoSdks.map((sdk) => semver.major(sdk)).join('')}`;
 
 export default {
   IOSClientReleaseType,

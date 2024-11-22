@@ -283,7 +283,7 @@ export type AssetsOptions = {
    */
   sortBy?: SortByValue[] | SortByValue;
   /**
-   * An array of [MediaTypeValue](#expomedialibrarymediatypevalue)s or a single `MediaTypeValue`.
+   * An array of [MediaTypeValue](#mediatypevalue)s or a single `MediaTypeValue`.
    * @default MediaType.photo
    */
   mediaType?: MediaTypeValue[] | MediaTypeValue;
@@ -488,11 +488,11 @@ export const usePermissions = createPermissionHook<
  *
  * @return A promise that either rejects if the method is unavailable, or resolves to `void`.
  * > __Note:__ This method doesn't inform you if the user changes which assets your app has access to.
- * That information is only exposed by iOS, and to obtain it, you need to subscribe for updates to the user's media library using [addListener(listener)](#medialibraryaddlistenerlistener).
+ * That information is only exposed by iOS, and to obtain it, you need to subscribe for updates to the user's media library using [`addListener()`](#medialibraryaddlistenerlistener).
  * If `hasIncrementalChanges` is `false`, the user changed their permissions.
  *
  * @platform android 14+
- * @platform ios 14+
+ * @platform ios
  */
 export async function presentPermissionsPickerAsync(
   mediaTypes: MediaTypeFilter[] = ['photo', 'video']

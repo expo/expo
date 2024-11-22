@@ -26,6 +26,17 @@ inline fun <T, P> RequestBuilder<T>.customize(value: P?, block: RequestBuilder<T
 }
 
 /**
+ * Conditionally applies the block to the RequestBuilder if both values aren't null.
+ */
+inline fun <T, P1, P2> RequestBuilder<T>.customize(first: P1?, second: P2?, block: RequestBuilder<T>.(P1, P2) -> RequestBuilder<T>): RequestBuilder<T> {
+  if (first == null || second == null) {
+    return this
+  }
+
+  return block(first, second)
+}
+
+/**
  * Conditionally applies the block to the RequestOptions if the condition is true.
  */
 inline fun RequestOptions.customize(`when`: Boolean, block: RequestOptions.() -> RequestOptions): RequestOptions {

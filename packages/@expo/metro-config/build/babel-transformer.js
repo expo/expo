@@ -8,7 +8,7 @@ const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
 const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
-    return value === true || value === 'true';
+    return String(value) === 'true';
 }
 function memoize(fn) {
     const cache = new Map();
@@ -43,7 +43,7 @@ function getBabelCaller({ filename, options, }) {
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer,
-        // Enable React Server Component rules for AST.
+        // Enable React Server Component rules for AST. The naming maps to the resolver property `--conditions=react-server`.
         isReactServer,
         // The base url to make requests from, used for hosting from non-standard locations.
         baseUrl: typeof options.customTransformOptions?.baseUrl === 'string'
@@ -67,7 +67,7 @@ function getBabelCaller({ filename, options, }) {
         isNodeModule,
         isHMREnabled: options.hot,
         // Set the standard Babel flag to disable ESM transformations.
-        supportsStaticESM: options.experimentalImportSupport,
+        supportsStaticESM: isCustomTruthy(options.customTransformOptions?.optimize) || options.experimentalImportSupport,
         // Enable React compiler support in Babel.
         // TODO: Remove this in the future when compiler is on by default.
         supportsReactCompiler: isCustomTruthy(options.customTransformOptions?.reactCompiler)
@@ -117,6 +117,7 @@ plugins, }) => {
         if (!result) {
             // BabelTransformer specifies that the `ast` can never be null but
             // the function returns here. Discovered when typing `BabelNode`.
+            // @ts-expect-error: see https://github.com/facebook/react-native/blob/401991c3f073bf734ee04f9220751c227d2abd31/packages/react-native-babel-transformer/src/index.js#L220-L224
             return { ast: null };
         }
         (0, node_assert_1.default)(result.ast);

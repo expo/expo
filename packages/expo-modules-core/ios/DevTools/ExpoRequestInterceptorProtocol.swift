@@ -7,10 +7,12 @@ import Foundation
  */
 @objc(EXRequestInterceptorProtocol)
 public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDelegate {
-  private static let sessionDelegateProxy = URLSessionSessionDelegateProxy()
+  private static var requestIdProvider = RequestIdProvider()
+  private static let sessionDelegate
+    = URLSessionSessionDelegateProxy(dispatchQueue: ExpoRequestCdpInterceptor.shared.dispatchQueue)
   private static let urlSession = URLSession(
     configuration: URLSessionConfiguration.default,
-    delegate: sessionDelegateProxy,
+    delegate: sessionDelegate,
     delegateQueue: nil
   )
   private var requestId: String?
@@ -47,7 +49,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     // swiftlint:disable force_cast
     let mutableRequest = request as! NSMutableURLRequest
     // swiftlint:enable force_cast
-    self.requestId = Self.sessionDelegateProxy.addDelegate(delegate: self)
+    self.requestId = Self.requestIdProvider.create()
     guard let requestId else {
       fatalError("requestId should not be nil.")
     }
@@ -57,6 +59,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
       in: mutableRequest
     )
     let dataTask = Self.urlSession.dataTask(with: mutableRequest as URLRequest)
+    Self.sessionDelegate.addDelegate(task: dataTask, delegate: self)
     Self.delegate.willSendRequest(
       requestId: requestId,
       task: dataTask,
@@ -75,9 +78,9 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
   }
 
   public override func stopLoading() {
-    dataTask_?.cancel()
-    if let requestId {
-      Self.sessionDelegateProxy.removeDelegate(requestId: requestId)
+    if let task = dataTask_ {
+      task.cancel()
+      Self.sessionDelegate.removeDelegate(task: task)
     }
   }
 
@@ -135,6 +138,17 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     completionHandler(request)
   }
 
+  public func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    didReceive challenge: URLAuthenticationChallenge,
+    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+  ) {
+    let sender = URLAuthenticationChallengeForwardSender(completionHandler: completionHandler)
+    let challengeWithSender = URLAuthenticationChallenge(authenticationChallenge: challenge, sender: sender)
+    client?.urlProtocol(self, didReceive: challengeWithSender)
+  }
+
   /**
    Data structure to save the response for redirection
    */
@@ -157,116 +171,16 @@ protocol ExpoRequestInterceptorProtocolDelegate {
 }
 
 /**
- Shared URLSessionDataDelegate instance and delete calls back to ExpoRequestInterceptorProtocol instances.
+ A helper class to create a unique request ID
  */
-private class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDelegate {
-  private var requestIdProvider = RequestIdProvider()
-  private var delegateMap: [String: URLSessionDataDelegate] = [:]
-  private let dispatchQueue = ExpoRequestCdpInterceptor.shared.dispatchQueue
+private struct RequestIdProvider {
+  private var value: UInt64 = 0
 
-  func addDelegate(delegate: URLSessionDataDelegate) -> String {
-    let requestId = self.requestIdProvider.create()
-    self.dispatchQueue.async {
-      self.delegateMap[requestId] = delegate
-    }
-    return requestId
-  }
-
-  func removeDelegate(requestId: String) {
-    self.dispatchQueue.async {
-      self.delegateMap.removeValue(forKey: requestId)
-    }
-  }
-
-  private func getRequestId(task: URLSessionTask) -> String? {
-    if let currentRequest = task.currentRequest,
-      let requestId = URLProtocol.property(
-        forKey: REQUEST_ID,
-        in: currentRequest
-      ) as? String {
-      return requestId
-    }
-    return nil
-  }
-
-  private func getDelegate(requestId: String) -> URLSessionDataDelegate? {
-    return self.dispatchQueue.sync {
-      return self.delegateMap[requestId]
-    }
-  }
-
-  private func getDelegate(task: URLSessionTask) -> URLSessionDataDelegate? {
-    guard let requestId = self.getRequestId(task: task) else {
-      return nil
-    }
-    return self.getDelegate(requestId: requestId)
-  }
-
-  // MARK: URLSessionDataDelegate implementations
-
-  func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive: Data) {
-    if let delegate = getDelegate(task: dataTask) {
-      delegate.urlSession?(
-        session,
-        dataTask: dataTask,
-        didReceive: didReceive)
-    }
-  }
-
-  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError: Error?) {
-    if let requestId = self.getRequestId(task: task), let delegate = getDelegate(requestId: requestId) {
-      delegate.urlSession?(
-        session,
-        task: task,
-        didCompleteWithError: didCompleteWithError)
-      self.removeDelegate(requestId: requestId)
-    }
-  }
-
-  func urlSession(
-    _ session: URLSession,
-    dataTask: URLSessionDataTask,
-    didReceive: URLResponse,
-    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
-  ) {
-    if let delegate = getDelegate(task: dataTask) {
-      delegate.urlSession?(
-        session,
-        dataTask: dataTask,
-        didReceive: didReceive,
-        completionHandler: completionHandler)
-    }
-  }
-
-  func urlSession(
-    _ session: URLSession,
-    task: URLSessionTask,
-    willPerformHTTPRedirection: HTTPURLResponse,
-    newRequest: URLRequest,
-    completionHandler: @escaping (URLRequest?) -> Void
-  ) {
-    if let delegate = getDelegate(task: task) {
-      delegate.urlSession?(
-        session,
-        task: task,
-        willPerformHTTPRedirection: willPerformHTTPRedirection,
-        newRequest: newRequest,
-        completionHandler: completionHandler)
-    }
-  }
-
-  /**
-   A helper class to create a unique request ID
-   */
-  private struct RequestIdProvider {
-    private var value: UInt64 = 0
-
-    mutating func create() -> String {
-      // We could ensure the increment thread safety,
-      // because we access this function from the same thread (com.apple.CFNetwork.CustomProtocols).
-      value += 1
-      return String(value)
-    }
+  mutating func create() -> String {
+    // We can ensure it is thread-safe to increment this value,
+    // because we always access this function from the same thread (com.apple.CFNetwork.CustomProtocols).
+    value += 1
+    return String(value)
   }
 }
 

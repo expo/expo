@@ -1,5 +1,6 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
+import { Paths } from 'expo-file-system/next';
 import * as SQLite from 'expo-sqlite';
 import path from 'path';
 import semver from 'semver';
@@ -836,8 +837,148 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
       await db2.closeAsync();
     });
   });
+
+  describe('SQLCipher', () => {
+    const isSQLCipherSupported = checkIsSQLCipherSupportedSync();
+    const scopedIt = isSQLCipherSupported ? it : t.xit;
+
+    beforeAll(async () => {
+      if (!isSQLCipherSupported) {
+        return;
+      }
+      await SQLite.deleteDatabaseAsync('testcipher.db').catch(() => {});
+
+      const db = await SQLite.openDatabaseAsync('testcipher.db');
+      await db.execAsync(`PRAGMA key = 'testkey'`);
+
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+`);
+      const statement = await db.prepareAsync('INSERT INTO users (name, k, j) VALUES (?, ?, ?)');
+      await statement.executeAsync('Tim Duncan', 1, 23.4);
+      await statement.executeAsync(['Manu Ginobili', 5, 72.8]);
+      await statement.executeAsync(['Nikhilesh Sigatapu', 7, 42.14]);
+      await statement.finalizeAsync();
+    });
+
+    scopedIt('should open a database with a password', async () => {
+      const db = await SQLite.openDatabaseAsync('testcipher.db');
+      await db.execAsync(`PRAGMA key = 'testkey'`);
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(3);
+      await db.closeAsync();
+    });
+
+    scopedIt('should throw when executing with wrong password', async () => {
+      const db = await SQLite.openDatabaseAsync('testcipher.db');
+      let error = null;
+      try {
+        await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      } catch (e) {
+        error = e;
+      } finally {
+        await db.closeAsync();
+      }
+      expect(error).not.toBeNull();
+    });
+  });
+
+  describe('Custom path', () => {
+    beforeAll(async () => {
+      const dir = FS.cacheDirectory + 'SQLite';
+
+      await FS.deleteAsync(dir, { idempotent: true });
+      await FS.makeDirectoryAsync(dir, { intermediates: true });
+    });
+
+    it('should create and delete a database in the cache directory', async () => {
+      const dbDirectory = FS.cacheDirectory + 'SQLite';
+      const dbUri = dbDirectory + '/test.db';
+
+      const db = await SQLite.openDatabaseAsync('test.db', {}, dbDirectory);
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
+`);
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(1);
+      await db.closeAsync();
+
+      let fileInfo = await FS.getInfoAsync(dbUri);
+      expect(fileInfo.exists).toBeTruthy();
+
+      await SQLite.deleteDatabaseAsync('test.db', dbDirectory);
+      fileInfo = await FS.getInfoAsync(dbUri);
+      expect(fileInfo.exists).toBeFalsy();
+    });
+
+    addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
+  });
+}
+
+function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
+  const sharedContainerRoot = Object.values(Paths.appleSharedContainers)?.[0];
+  const sharedContainerDir = sharedContainerRoot ? sharedContainerRoot.uri + 'SQLite' : null;
+  const scopedIt = sharedContainerDir ? it : t.xit;
+
+  describe('iOS App Group', () => {
+    beforeEach(async () => {
+      if (sharedContainerDir) {
+        await FS.deleteAsync(sharedContainerDir, { idempotent: true });
+        await FS.makeDirectoryAsync(sharedContainerDir, { intermediates: true });
+      }
+      await FS.deleteAsync(FS.documentDirectory + 'SQLite', { idempotent: true });
+      await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite', { intermediates: true });
+    });
+
+    scopedIt('should create and delete a database in a shared container', async () => {
+      const dbUri = sharedContainerDir + '/test.db';
+
+      const db = await SQLite.openDatabaseAsync('test.db', {}, sharedContainerDir);
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
+`);
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(1);
+      await db.closeAsync();
+
+      let fileInfo = await FS.getInfoAsync(dbUri);
+      expect(fileInfo.exists).toBeTruthy();
+
+      await SQLite.deleteDatabaseAsync('test.db', sharedContainerDir);
+      fileInfo = await FS.getInfoAsync(dbUri);
+      expect(fileInfo.exists).toBeFalsy();
+    });
+
+    scopedIt(
+      'should support internal importDatabaseFromAssetAsync without using expo-file-system',
+      async () => {
+        await SQLite.importDatabaseFromAssetAsync(
+          'test.db',
+          { assetId: require('../assets/asset-db.db') },
+          sharedContainerDir
+        );
+        const db = await SQLite.openDatabaseAsync('test.db', {}, sharedContainerDir);
+        const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+        expect(results.length).toEqual(3);
+        expect(results[0].j).toBeCloseTo(23.4);
+        await db.closeAsync();
+      }
+    );
+  });
 }
 
 async function delayAsync(timeMs: number) {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
+}
+
+function checkIsSQLCipherSupportedSync(): boolean {
+  const db = SQLite.openDatabaseSync(':memory:');
+  const isSQLCipher = db.getFirstSync('PRAGMA cipher_version') != null;
+  db.closeSync();
+  return isSQLCipher;
 }

@@ -46,6 +46,10 @@ export type CurrentlyRunningInfo = {
    */
   emergencyLaunchReason: string | null;
   /**
+   * Number of milliseconds it took to launch.
+   */
+  launchDuration?: number;
+  /**
    * If `expo-updates` is enabled, this is the
    * [manifest](https://docs.expo.dev/versions/latest/sdk/updates/#updatesmanifest) object for the update that's currently
    * running.

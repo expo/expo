@@ -1,3 +1,3 @@
-export declare const NativeExpoAppleMapsModule: import("expo-modules-core").ProxyNativeModule;
-export declare const NativeExpoGoogleMapsModule: import("expo-modules-core").ProxyNativeModule;
+export declare const NativeExpoAppleMapsModule: any;
+export declare const NativeExpoGoogleMapsModule: any;
 //# sourceMappingURL=ExpoMaps.d.ts.map

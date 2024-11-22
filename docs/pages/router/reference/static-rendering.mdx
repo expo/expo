@@ -14,7 +14,8 @@ To enable Search Engine Optimization (SEO) on the web you must statically render
 ## Setup
 
 <Step label="1">
-  Enable metro bundler and static rendering in the project's [app config](/versions/latest/config/app/):
+
+Enable metro bundler and static rendering in the project's [app config](/versions/latest/config/app/):
 
 ```json app.json
 {
@@ -34,7 +35,8 @@ To enable Search Engine Optimization (SEO) on the web you must statically render
 </Step>
 
 <Step label="2">
-  If you have a **metro.config.js** file in your project, ensure it extends **expo/metro-config** as shown below:
+
+If you have a **metro.config.js** file in your project, ensure it extends **expo/metro-config** as shown below:
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -47,57 +49,69 @@ const config = getDefaultConfig(__dirname, {
 module.exports = config;
 ```
 
-You can also [learn more](/guides/customizing-metro/) about customizing Metro.
+You can also learn more about [customizing Metro](/guides/customizing-metro/) .
 
 </Step>
 
 <Step label="3">
-  Ensure Fast Refresh is configured.
+Ensure Fast Refresh is configured.
 
-  <Tabs>
-    <Tab label="Expo Router v3">
+<Tabs>
 
-        Expo Router requires at least `react-refresh@0.14.0` this is available in SDK 50. Ensure you **do not** have any overrides or resolutions for `react-refresh` in your **package.json**.
+<Tab label="Expo Router v3">
 
-    </Tab>
-    <Tab label="Expo Router v2">
+Expo Router requires at least `react-refresh@0.14.0`. This is available in SDK 50 and above. Ensure you **do not** have any overrides or resolutions for `react-refresh` in your **package.json**.
 
-    Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 and Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+</Tab>
 
-    <Tabs>
-      <Tab label="Yarn">
-          ```json package.json
-          {
-            /* @hide ... */
-            /* @end */
-            "resolutions": {
-              "react-refresh": "~0.14.0"
-            }
-          }
-          ```
-      </Tab>
-      <Tab label="npm">
-          ```json package.json
-          {
-            /* @hide ... */
-            /* @end */
-            "overrides": {
-              "react-refresh": "~0.14.0"
-            }
-          }
-          ```
-      </Tab>
-    </Tabs>
+<Tab label="Expo Router v2">
 
-    </Tab>
+Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 and Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
 
-  </Tabs>
+<Tabs>
+
+<Tab label="npm">
+
+```json package.json
+{
+  /* @hide ... */
+  /* @end */
+  "overrides": {
+    "react-refresh": "~0.14.0"
+  }
+}
+```
+
+</Tab>
+
+<Tab label="Yarn">
+
+```json package.json
+{
+  /* @hide ... */
+  /* @end */
+  "resolutions": {
+    "react-refresh": "~0.14.0"
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+</Tab>
+
+</Tabs>
+
 </Step>
 
 <Step label="4">
-  Finally, start the development server:
 
-  <Terminal cmd={['$ npx expo start']} />
+Start the development server:
+
+<Terminal cmd={['$ npx expo start']} />
+
 </Step>
 
 ## Production

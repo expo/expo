@@ -25,7 +25,7 @@ When Expo was first created, React Native had yet to be publicly released. This 
 
 The Expo SDK is well-tested, written in TypeScript, documented, and built for Android, iOS, and the web. Every module in the Expo SDK works together to ensure versioning always matches. This creates a nice upgrading experience.
 
-The Expo SDK is also written with the [Expo native API](/modules) to make contributing, maintaining, and understanding easier.
+The Expo SDK is also written with the [Expo Modules API](/modules) to make contributing, maintaining, and understanding easier.
 
 ## What is the difference between Expo and React Native?
 
@@ -63,7 +63,7 @@ Traditionally you needed a macOS to develop iOS apps, however, you can use [EAS 
 
 ## What versions of Android and iOS are supported by the Expo SDK?
 
-Expo SDK supports Android 5+ and iOS 13+. For more information, see [Support for Android and iOS versions](/versions/latest/#support-for-android-and-ios-versions).
+Expo SDK supports Android 6+ and iOS 13.4+. For more information, see [Support for Android and iOS versions](/versions/latest/#support-for-android-and-ios-versions).
 
 ## What is the minimal size of a "hello world" expo app?
 
@@ -125,11 +125,13 @@ Source: [3.3.1 APIs and Functionality - B. Executable Code](https://developer.ap
 
 ## Should I use Expo CLI or React Native Community CLI?
 
-Expo CLI can be used simultaneously with React Native Community CLI (also sometimes referred to as "React Native CLI"). Expo CLI provides the same core functionality as React Native CLI, and additional functionality like automatic [TypeScript setup](/guides/typescript), [web support](/workflow/web), [auto installing compatible libraries](/more/expo-cli/#install), [improved native build commands](/more/expo-cli#compiling), [tunneling](/more/expo-cli#tunneling), [prebuild](/workflow/prebuild), [and more](/more/expo-cli).
+Expo CLI offers the same core functionality as React Native Community CLI (also known as "React Native CLI") with additional features such as automatic [TypeScript setup](/guides/typescript), [web support](/workflow/web), [auto installing compatible libraries](/more/expo-cli/#install), [improved native build commands](/more/expo-cli#compiling), [tunneling](/more/expo-cli#tunneling), [Prebuild](/workflow/prebuild), and [more](/more/expo-cli).
 
-Regardless of which CLI you use, you can use any part of the [Expo SDK](/versions/latest/) and [Expo Application Services](/eas) with your project.
+It can be used simultaneously with React Native Community. Regardless of which CLI you use, you can use any part of the [Expo SDK](/versions/latest/) and [Expo Application Services](/eas) with your project. For more information, see:
 
-[Learn more about why you might want to use Expo CLI](/bare/using-expo-cli/).
+- Learn how you can migrate to use Expo CLI in an [existing React Native project](/bare/using-expo-cli/).
+- Learn about the benefits of [using a framework to build React Native apps](https://reactnative.dev/blog/2024/06/25/use-a-framework-to-build-react-native-apps).
+- Learn about the benefits of migrating to Expo CLI such as improved app performance, expedites release, and fostering stronger collaboration across you team in [this blog post](https://expo.dev/blog/from-rnc-cli-to-expo).
 
 ## Is Expo Go open source?
 
@@ -172,11 +174,9 @@ For more information on what current limitations exist with EAS, see the followi
   Icon={Bell03Icon}
 />
 
-#### Bare workflow
+#### EAS and bare React Native projects
 
-Similar to [development builds](/develop/development-builds/introduction/), the bare workflow also provides access to the underlying native projects and any native code. It's a "bare" native project where you can make direct changes to the project's native **android** and **ios** directories rather than continuously generating them on demand using the [app config and prebuild](/workflow/prebuild).
-
-EAS Build is compatible with bare workflow projects if you check in the native directories, but no longer runs prebuild, as that could overwrite any manual customizations you have made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
+EAS Build is compatible with bare (existing) React Native projects (where native directories are checked in version control). When these directories are present, it does not run prebuild, as that could overwrite any manual customizations you have made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
 
 ### Expo Go
 

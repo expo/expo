@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 import type {
   EASConfig as ManifestsEASConfig,
   ExpoGoConfig as ManifestsExpoGoConfig,
@@ -13,7 +13,7 @@ import type {
 
 export enum AppOwnership {
   /**
-   * The experience is running inside of the Expo Go app.
+   * The experience is running inside the Expo Go app.
    * @deprecated Use [`Constants.executionEnvironment`](#executionenvironment) instead.
    */
   Expo = 'expo',
@@ -40,7 +40,10 @@ export enum UserInterfaceIdiom {
 }
 
 // @needsAudit
-export interface IOSManifest {
+/**
+ * @platform ios
+ */
+export type IOSManifest = {
   /**
    * The build number specified in the embedded **Info.plist** value for `CFBundleVersion` in this app.
    * In a standalone app, you can set this with the `ios.buildNumber` value in **app.json**. This
@@ -50,7 +53,9 @@ export interface IOSManifest {
    */
   buildNumber: string | null;
   /**
-   * The Apple internal model identifier for this device. For example, `iPhone1,1`.
+   * The Apple internal model identifier for this device.
+   * @example
+   * `iPhone1,1`
    * @deprecated Use `expo-device`'s [`Device.modelId`](./device/#devicemodelid).
    */
   platform: string;
@@ -66,27 +71,31 @@ export interface IOSManifest {
    */
   userInterfaceIdiom: UserInterfaceIdiom;
   /**
-   * The version of iOS running on this device. For example, `10.3`.
+   * The version of iOS running on this device.
+   * @example
+   * `10.3`
    * @deprecated Use `expo-device`'s [`Device.osVersion`](./device/#deviceosversion).
    */
   systemVersion: string;
-  [key: string]: any;
-}
+} & Record<string, any>;
 
 // @needsAudit
-export interface AndroidManifest {
+/**
+ * @platform android
+ */
+export type AndroidManifest = {
   /**
    * The version code set by `android.versionCode` in app.json.
    * The value is set to `null` in case you run your app in Expo Go.
    * @deprecated Use `expo-application`'s [`Application.nativeBuildVersion`](./application/#applicationnativebuildversion).
    */
   versionCode: number;
-  [key: string]: any;
-}
+} & Record<string, any>;
 
-export interface WebManifest {
-  [key: string]: any;
-}
+/**
+ * @platform web
+ */
+export type WebManifest = Record<string, any>;
 
 // type re-exports to prevent breaking change
 
@@ -99,7 +108,7 @@ export type ExpoGoConfig = ManifestsExpoGoConfig;
 export type ExpoGoPackagerOpts = ExpoGoPackagerOptsForReExport;
 
 // @needsAudit @docsMissing
-export interface PlatformManifest {
+export type PlatformManifest = {
   ios?: IOSManifest;
   android?: AndroidManifest;
   web?: WebManifest;
@@ -110,11 +119,10 @@ export interface PlatformManifest {
   scheme?: string;
   hostUri?: string;
   developer?: string;
-  [key: string]: any;
-}
+} & Record<string, any>;
 
 // @needsAudit @docsMissing
-export interface NativeConstants {
+export type NativeConstants = {
   /**
    * @hidden
    */
@@ -142,7 +150,9 @@ export interface NativeConstants {
    */
   executionEnvironment: ExecutionEnvironment;
   experienceUrl: string;
-  // only nullable on web
+  /**
+   * Nullable only on the web.
+   */
   expoRuntimeVersion: string | null;
   /**
    * The version string of the Expo Go app currently running.
@@ -220,24 +230,24 @@ export interface NativeConstants {
    * requests.
    */
   getWebViewUserAgentAsync: () => Promise<string | null>;
-  [key: string]: any;
-}
+} & Record<string, any>;
 
-export interface Constants extends NativeConstants {
+/**
+ * @hidden
+ */
+export type Constants = NativeConstants & {
   /**
-   * @hidden
-   * @warning do not use this property. Use `manifest` by default.
+   * > **Warning**: Do not use this property. Use `manifest` by default.
    *
    * In certain cases accessing manifest via this property
    * suppresses important warning about missing manifest.
    */
   __unsafeNoWarnManifest?: EmbeddedManifest;
   /**
-   * @hidden
-   * @warning do not use this property. Use `manifest2` by default.
+   * > **Warning**: Do not use this property. Use `manifest2` by default.
    *
    * In certain cases accessing manifest via this property
    * suppresses important warning about missing manifest.
    */
   __unsafeNoWarnManifest2?: ExpoUpdatesManifest;
-}
+};

@@ -1,4 +1,4 @@
-import createHttpsProxyAgent from 'https-proxy-agent';
+import { EnvHttpProxyAgent } from 'undici';
 
 import { FetchLike } from './client.types';
 import { env } from '../../utils/env';
@@ -9,11 +9,11 @@ const debug = require('debug')('expo:api:fetch:proxy') as typeof console.log;
 export function wrapFetchWithProxy(fetchFunction: FetchLike): FetchLike {
   // NOTE(EvanBacon): DO NOT RETURN AN ASYNC WRAPPER. THIS BREAKS LOADING INDICATORS.
   return function fetchWithProxy(url, options = {}) {
-    const proxy = env.HTTP_PROXY;
-    if (!options.agent && proxy) {
-      debug('Using proxy:', proxy);
-      options.agent = createHttpsProxyAgent(proxy);
+    if (!options.dispatcher && env.HTTP_PROXY) {
+      debug('Using proxy:', env.HTTP_PROXY);
+      options.dispatcher = new EnvHttpProxyAgent();
     }
+
     return fetchFunction(url, options);
   };
 }

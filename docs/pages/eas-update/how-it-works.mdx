@@ -104,7 +104,7 @@ Now that we're familiar with the core concepts of EAS Update, let's talk about h
 
 When an Expo project that includes `expo-updates` is built the included native Android and iOS code is responsible for managing, fetching, parsing, and validating updates.
 
-When the library checks for updates and when it downloads them is [configurable](/versions/latest/config/app.mdx#updates). By default, the library will check for an update when it is opened. If an update newer than the current running update is found, it will download and run the newer update. If the library does not find a newer update, it will instead run the newest downloaded update, falling back to the update that was embedded inside the app at build time if none have been downloaded.
+When the library checks for updates and when it downloads them, they are [configurable](/versions/latest/config/app/#updates). By default, the library will check for an update when it is opened. If an update newer than the currently running update is found, it will download and run the newer update. If the library does not find a newer update, it will instead run the newest downloaded update, falling back to the update that was embedded inside the app at build time if none have been downloaded.
 
 `expo-updates` downloads updates in two phases. First, it downloads the most recent update _manifest_, which contains information about the update including a list of assets (images, JavaScript bundles, font files, and so on) that are required to run the update.
 Second, the library downloads the assets specified in the manifest that it has not yet downloaded from prior updates. For instance, if an update contains a new image, the library will download the new image asset before running the update. To help end-users get updates quickly and reliably, updates should be kept as small as possible.
@@ -116,4 +116,4 @@ If the library is able to download the manifest (phase 1) and all the required a
 ## Wrap up
 
 With EAS Update, we can quickly deliver small, critical bug fixes to our users and give users the best experience possible. This is set up with a build's runtime version, platform, and channel. With these three constraints, we can make an update available to a specific group of builds. This allows us to test our changes before going to production within a deployment process.
-Depending on how we set up our deployment process, we can optimize for speed. We can also optimize our deployments to be as safe a bug-free as possible. The deployment possibilities are vast and can match nearly any release process you prefer.
+Depending on how we set up our deployment process, we can optimize for speed. We can also optimize our deployments to be as safe and bug-free as possible. The deployment possibilities are vast and can match nearly any release process you prefer.

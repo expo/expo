@@ -1,3 +1,5 @@
+import { isRunningInExpoGo } from 'expo';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
@@ -17,6 +19,16 @@ export const ModulesCoreScreens = [
     },
   },
 ];
+
+if (!isRunningInExpoGo()) {
+  ModulesCoreScreens.push({
+    name: 'Benchmarks',
+    route: 'modulescore/benchmarks',
+    getComponent() {
+      return optionalRequire(() => require('./ModulesBenchmarksScreen'));
+    },
+  });
+}
 
 export default function ModulesCoreScreen() {
   const apis: ListElement[] = ModulesCoreScreens.map((screen) => {

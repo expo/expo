@@ -10,7 +10,7 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.devsupport.DevLauncherDevServerHelper
-import com.facebook.react.devsupport.DevLauncherInternalSettings
+import com.facebook.react.devsupport.DevLauncherSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -19,9 +19,10 @@ import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import expo.modules.devlauncher.react.DevLauncherBridgeDevSupportManager
+import expo.modules.devlauncher.react.DevLauncherBridgelessDevSupportManager
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
-import expo.modules.devlauncher.rncompatibility.DevLauncherBridgeDevSupportManager
-import expo.modules.devlauncher.rncompatibility.DevLauncherBridgelessDevSupportManager
+import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import okhttp3.HttpUrl
 
@@ -53,6 +54,10 @@ fun injectReactInterceptor(
 
 private fun injectDevSupportManager(reactHost: ReactHostWrapper) {
   DevLauncherDevSupportManagerSwapper().swapDevSupportManagerImpl(reactHost)
+
+  // Swapping dev support manager overrides dev menu setup.
+  // We need to reinitialize it.
+  DevMenuManager.initializeWithReactHost(reactHost)
 }
 
 fun injectDebugServerHost(
@@ -61,10 +66,10 @@ fun injectDebugServerHost(
   debugServerHost: String,
   appBundleName: String
 ): Boolean {
-  if (reactHost.isBridgelessMode) {
-    return injectDebugServerHost(context, reactHost.reactHost, debugServerHost, appBundleName)
+  return if (reactHost.isBridgelessMode) {
+    injectDebugServerHost(context, reactHost.reactHost, debugServerHost, appBundleName)
   } else {
-    return injectDebugServerHost(context, reactHost.reactNativeHost, debugServerHost, appBundleName)
+    injectDebugServerHost(context, reactHost.reactNativeHost, debugServerHost, appBundleName)
   }
 }
 
@@ -112,7 +117,7 @@ private fun injectDebugServerHost(
   debugServerHost: String,
   appBundleName: String
 ) {
-  val settings = DevLauncherInternalSettings(context, debugServerHost)
+  val settings = DevLauncherSettings(context, debugServerHost)
   val devSupportManagerBaseClass: Class<*> = DevSupportManagerBase::class.java
   devSupportManagerBaseClass.setProtectedDeclaredField(
     devSupportManager,
@@ -215,18 +220,24 @@ private fun injectLocalBundleLoader(
 
 fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager, controller: DevLauncherControllerInterface?) {
   val defaultServerHost = AndroidInfoHelpers.getServerHost(context)
-  val devSettings = DevLauncherInternalSettings(context, defaultServerHost)
+  val devSettings = DevLauncherSettings(context, defaultServerHost)
   val devLauncherDevServerHelper = DevLauncherDevServerHelper(
     context = context,
     controller = controller,
     devSettings = devSettings,
     packagerConnection = devSettings.public_getPackagerConnectionSettings()
   )
+  val oldDevServerHelper: DevServerHelper = DevSupportManagerBase::class.java.getProtectedFieldValue(
+    devSupportManager,
+    "mDevServerHelper"
+  )
   DevSupportManagerBase::class.java.setProtectedDeclaredField(
     devSupportManager,
     "mDevServerHelper",
     devLauncherDevServerHelper
   )
+  oldDevServerHelper.closePackagerConnection()
+  oldDevServerHelper.closeInspectorConnection()
 }
 
 fun findDevMenuPackage(): ReactPackage? {

@@ -5,22 +5,18 @@ class EventObservingDefinition(
   private val filer: Filter,
   private val body: () -> Unit
 ) {
+  enum class Type(val value: String) {
+    StartObserving("startObserving"),
+    StopObserving("stopObserving")
+  }
+
   sealed class Filter
 
   data object AllEventsFilter : Filter()
 
   class SelectedEventFiler(val event: String) : Filter()
 
-  enum class Type(val value: String) {
-    StartObserving("startObserving"),
-    StopObserving("stopObserving")
-  }
-
-  private fun shouldBeInvoked(eventType: Type, eventName: String): Boolean {
-    if (eventType != type) {
-      return false
-    }
-
+  internal fun shouldBeInvoked(eventName: String): Boolean {
     return when (filer) {
       is AllEventsFilter -> true
       is SelectedEventFiler -> filer.event == eventName
@@ -28,7 +24,7 @@ class EventObservingDefinition(
   }
 
   fun invokedIfNeed(eventType: Type, eventName: String) {
-    if (shouldBeInvoked(eventType, eventName)) {
+    if (eventType == type && shouldBeInvoked(eventName)) {
       body()
     }
   }

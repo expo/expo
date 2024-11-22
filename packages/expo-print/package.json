@@ -1,6 +1,6 @@
 {
   "name": "expo-print",
-  "version": "13.0.1",
+  "version": "14.0.2",
   "description": "Provides an API for Android and iOS (AirPrint) printing functionality.",
   "main": "build/Print.js",
   "types": "build/Print.d.ts",
@@ -38,9 +38,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react-native": "*"
   }
 }

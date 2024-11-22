@@ -2,8 +2,11 @@
 
 package expo.modules.kotlin.types
 
+import com.facebook.react.bridge.Dynamic
+import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.unwrap
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -32,7 +35,17 @@ class UnconvertedValue(
 
 data class ConvertedValue(val convertedValue: Any) : DeferredValue()
 
+/**
+ * Converts the type T to KClass. It preserves all parameters of type T if it's a generic.
+ * For instance, `toKClass<List<String>>() == KClass<List<String>>`
+ * Getting `KClass<List<String>>` isn't possible without a helper function because
+ * `List<String>::class` isn't a valid syntax.
+ */
+inline fun <reified T : Any> toKClass(): KClass<T> = T::class
+
 @EitherType
+@DoNotStrip
+// We can't strip this class because typeOf<Either<T,P>> won't work in the release builds.
 open class Either<FirstType : Any, SecondType : Any>(
   private val bareValue: Any,
   private val deferredValue: MutableList<DeferredValue>,
@@ -66,7 +79,11 @@ open class Either<FirstType : Any, SecondType : Any>(
           convertedValue
         } catch (e: Throwable) {
           deferredValue[index] = IncompatibleValue
-          throw TypeCastException("Cannot cast '$bareValue' to '${types[index]}'")
+          if (bareValue is Dynamic) {
+            throw TypeCastException("Cannot cast '[$bareValue] ${bareValue.unwrap()}' to '${types[index]}' - ${e.message}")
+          } else {
+            throw TypeCastException("Cannot cast '$bareValue' to '${types[index]}' - ${e.message}")
+          }
         }
       }
     }
@@ -90,6 +107,7 @@ open class Either<FirstType : Any, SecondType : Any>(
 }
 
 @EitherType
+@DoNotStrip
 open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
   bareValue: Any,
   deferredValue: MutableList<DeferredValue>,
@@ -99,12 +117,13 @@ open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
   fun `is`(@Suppress("UNUSED_PARAMETER") type: KClass<ThirdType>): Boolean = `is`(2)
 
   @JvmName("getThirdType")
-  fun get(@Suppress("UNUSED_PARAMETER") type: KClass<ThirdType>) = get(3) as ThirdType
+  fun get(@Suppress("UNUSED_PARAMETER") type: KClass<ThirdType>) = get(2) as ThirdType
 
-  fun third(): ThirdType = get(3) as ThirdType
+  fun third(): ThirdType = get(2) as ThirdType
 }
 
 @EitherType
+@DoNotStrip
 class EitherOfFour<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   bareValue: Any,
   deferredValue: MutableList<DeferredValue>,

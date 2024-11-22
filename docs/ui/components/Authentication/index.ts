@@ -26,6 +26,7 @@ export const ASSETS = {
   slack: ASSETS_PATH + 'slack.png',
   spotify: ASSETS_PATH + 'spotify.png',
   strava: ASSETS_PATH + 'strava.png',
+  strivacity: ASSETS_PATH + 'strivacity.png',
   twitch: ASSETS_PATH + 'twitch.png',
   twitter: ASSETS_PATH + 'twitter.png',
   uber: ASSETS_PATH + 'uber.png',

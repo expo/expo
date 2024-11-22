@@ -4,7 +4,6 @@ import ExpoModulesCore
 import MobileCoreServices
 import PhotosUI
 
-internal let DEFAULT_QUALITY = 0.2
 internal let MAXIMUM_QUALITY = 1.0
 
 internal let UNLIMITED_SELECTION = 0
@@ -18,10 +17,10 @@ internal struct ImagePickerOptions: Record {
   var aspect: [Double]
 
   @Field
-  var quality: Double?
+  var quality: Double = 1.0
 
   @Field
-  var mediaTypes: MediaType = .images
+  var mediaTypes: [MediaType] = [.images]
 
   @Field
   var exif: Bool
@@ -55,6 +54,38 @@ internal struct ImagePickerOptions: Record {
 
   @Field
   var orderedSelection: Bool = false
+
+  func toMediaTypesArray() -> [String] {
+    var mediaTypesArray = mediaTypes.map { mediaType in
+      mediaType.toUTTypeString()
+    }
+
+    // For legacy picker selecting only livePhotos is not allowed
+    if mediaTypes.contains(.livePhotos) && !mediaTypes.contains(.images) {
+      mediaTypesArray.append(UTType.image.identifier)
+    }
+
+    if mediaTypesArray.isEmpty {
+      return [UTType.image.identifier]
+    }
+    return mediaTypesArray
+  }
+
+  func toPickerFilter() -> PHPickerFilter {
+    let allowedArray = mediaTypes.map { mediaType in
+      mediaType.toPickerFilter()
+    }
+    if allowedArray.isEmpty {
+      return .images
+    }
+    return .any(of: allowedArray)
+  }
+
+  func requiresMicrophonePermission() -> Bool {
+    return mediaTypes.contains { mediaType in
+      mediaType.requiresMicrophonePermission()
+    }
+  }
 }
 
 internal enum PresentationStyle: String, Enumerable {
@@ -101,7 +132,6 @@ internal enum PreferredAssetRepresentationMode: String, Enumerable {
   case compatible
   case current
 
-  @available(iOS 14.0, *)
   func toAssetRepresentationMode() -> PHPickerConfiguration.AssetRepresentationMode {
     switch self {
     case .automatic:
@@ -141,18 +171,18 @@ internal enum VideoQuality: Int, Enumerable {
 }
 
 internal enum MediaType: String, Enumerable {
-  case all = "All"
-  case videos = "Videos"
-  case images = "Images"
+  case videos
+  case images
+  case livePhotos
 
-  func toArray() -> [String] {
+  func toUTTypeString() -> String {
     switch self {
     case .images:
-      return [kUTTypeImage as String]
+      return UTType.image.identifier
     case .videos:
-      return [kUTTypeMovie as String]
-    case .all:
-      return [kUTTypeImage as String, kUTTypeMovie as String]
+      return UTType.movie.identifier
+    case .livePhotos:
+      return UTType.livePhoto.identifier
     }
   }
 
@@ -162,21 +192,19 @@ internal enum MediaType: String, Enumerable {
       return false
     case .videos:
       return true
-    case .all:
-      return true
+    case .livePhotos:
+      return false
     }
   }
 
-  @available(iOS 14, *)
   func toPickerFilter() -> PHPickerFilter {
-    // TODO: (barthap) Maybe add support for live photos
     switch self {
     case .images:
       return .images
     case .videos:
       return .videos
-    case .all:
-      return .any(of: [.images, .videos])
+    case .livePhotos:
+      return .livePhotos
     }
   }
 }

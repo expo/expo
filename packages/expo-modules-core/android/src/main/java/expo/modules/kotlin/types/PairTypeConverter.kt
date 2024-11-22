@@ -50,7 +50,7 @@ class PairTypeConverter(
   private fun convertElement(array: ReadableArray, index: Int): Any? {
     return array.getDynamic(index).recycle {
       exceptionDecorator({ cause ->
-        CollectionElementCastException(pairType, pairType.arguments[index].type!!, getType(), cause)
+        CollectionElementCastException(pairType, pairType.arguments[index].type!!, type, cause)
       }) {
         converters[index].convert(this)
       }

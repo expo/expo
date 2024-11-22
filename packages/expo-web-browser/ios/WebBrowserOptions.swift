@@ -76,11 +76,7 @@ internal enum PresentationStyle: String, Enumerable {
     case .none:
       return .none
     case .automatic:
-      if #available(iOS 13.0, *) {
-        return .automatic
-      }
-      // default prior iOS 13
-      return .fullScreen
+      return .automatic
     }
   }
 }
