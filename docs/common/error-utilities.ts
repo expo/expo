@@ -425,4 +425,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After deleting deprecated docs from archive section
   '/guides/using-flipper/': '/debugging/devtools-plugins/',
+
+  // After new environment variables guide
+  '/build-reference/variables/': '/eas/environment-variables/',
+  '/eas-update/environment-variables/': '/eas/environment-variables/#eas-update',
 };

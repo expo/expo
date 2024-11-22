@@ -290,6 +290,10 @@ redirects[router/reference/hooks]=versions/latest/sdk/router
 # After moving custom tabs under Expo Router > Navigation patterns
 redirects[router/ui/tabs]=router/advanced/custom-tabs
 
+# After new environment variables guide
+redirects[build-reference/variables]=eas/environment-variables
+redirects[eas-update/environment-variables]=eas/environment-variables
+
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
