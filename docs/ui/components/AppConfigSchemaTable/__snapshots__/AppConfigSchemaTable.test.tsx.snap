@@ -84,11 +84,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -232,11 +231,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -309,11 +307,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -470,11 +467,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="ml-1.5 mr-2 mt-[5px] self-baseline"
             >
               <svg
-                class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+                class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
                 fill="none"
                 role="img"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <g
                   id="triangle-down-custom-icon"
@@ -803,11 +799,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"

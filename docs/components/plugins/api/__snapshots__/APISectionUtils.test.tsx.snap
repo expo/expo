@@ -21,14 +21,13 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       data-text="true"
     >
       <div
-        class="mr-2 inline-flex select-none items-center gap-1 rounded-full border border-default bg-element px-2 py-1 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 !bg-palette-green3 !text-palette-green12 !border-palette-green4"
+        class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-2 py-1 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
       >
         <svg
-          class="icon-xs mt-[-0.5px] text-palette-green12 opacity-80"
+          class="translate-z icon-xs mt-[-0.5px] text-palette-green12 opacity-80"
           fill="none"
           role="img"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="android-custom-icon"
@@ -81,12 +80,11 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
         data-text="true"
       >
         <svg
-          class="icon-sm text-icon-secondary"
+          class="translate-z icon-sm text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="code-square-01-outline-icon"
