@@ -366,7 +366,7 @@ export default function Settings() {
   const router = useRouter();
   /* @end */
 
-  const handleDismissTo = () => {
+  const handleDismissAll = () => {
     /* @info In the handler method, call <CODE>router.dismissAll</CODE> to go back to the first screen in a stack. */
     router.dismissAll()
     /* @end */
@@ -375,7 +375,7 @@ export default function Settings() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       /* @info Trigger the handler method on a touchable or button component. */
-      <Button title="Go to first screen" onPress={handleDismissTo} />
+      <Button title="Go to first screen" onPress={handleDismissAll} />
       /* @end */
     </View>
   );
