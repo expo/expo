@@ -67,7 +67,7 @@ it(
     expect(exp.platforms).toStrictEqual([]);
     expect(exp.version).toBe('1.0.0');
     expect(exp._internal.dynamicConfigPath).toBe(null);
-    expect(exp._internal.staticConfigPath).toMatch(/\/basic-config\/app\.json$/);
+    expect(exp._internal.staticConfigPath).toMatchPath(/\/basic-config\/app\.json$/);
   }, // Could take 45s depending on how fast npm installs
   120 * 1000
 );
@@ -102,6 +102,7 @@ it('throws on invalid project root', async () => {
     await execute('config', 'very---invalid', '--json');
   } catch (e) {
     const error = e as ExecaError;
-    expect(error.stderr).toMatch(/Invalid project root: \//);
+    // Test on the invalid project prefix, and absolute path ending in the expected project folder
+    expect(error.stderr).toMatch(/Invalid project root: .*very---invalid/);
   }
 });
