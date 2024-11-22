@@ -292,6 +292,7 @@ const general = [
     makePage('eas/index.mdx'),
     makePage('eas/json.mdx'),
     makePage('eas/environment-variables.mdx'),
+    makePage('eas/using-environment-variables.mdx'),
   ]),
   makeSection('Workflows', [
     makePage('workflows/get-started.mdx'),
