@@ -13,7 +13,7 @@ const debug = (0, debug_1.default)('expo:router:doctor');
  * which in turn will change the structure of the outDir.
  */
 const routerPkg = require('../../package.json');
-const routerDependencies = Object.entries(Object.assign({}, routerPkg.dependencies, routerPkg.peerDependencies)).filter((entry) => entry[1] !== '*');
+const routerDependencies = Object.entries(Object.assign({}, routerPkg.dependencies, routerPkg.peerDependencies)).filter((entry) => entry[0].startsWith('@react-navigation') && entry[1] !== '*');
 function doctor(pkg, appReactNavigationPath, 
 // Reuse the formatting functions from expo-cli
 { bold, learnMore, }) {
