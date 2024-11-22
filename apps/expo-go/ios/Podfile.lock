@@ -77,7 +77,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (14.0.0):
     - ExpoModulesCore
-  - ExpoHead (4.0.7):
+  - ExpoHead (4.0.8):
     - ExpoModulesCore
   - ExpoImage (2.0.2):
     - ExpoModulesCore
@@ -173,7 +173,7 @@ PODS:
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
-  - ExpoNetwork (7.0.1):
+  - ExpoNetwork (7.0.2):
     - ExpoModulesCore
   - ExpoPrint (14.0.2):
     - ExpoModulesCore
@@ -3031,7 +3031,7 @@ SPEC CHECKSUMS:
   ExpoFont: 7522d869d84ee2ee8093ee997fef5b86f85d856b
   ExpoGL: 3e7c3b8478a6783d737103b33b9c11235deb6675
   ExpoHaptics: e636188d1d5f7ccb79f3c1bfab47aaf5a1768c73
-  ExpoHead: 43187036da62330d381a79a34fc37aeaca9530f8
+  ExpoHead: 53bf3275866fa9609f2516e4feba0c0bc5b0396c
   ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
   ExpoImageManipulator: 774eb1a17c5db07944d6f9000650d422ebb3ce47
   ExpoImagePicker: 440a560c9bfc63edae854d08b9f12f75bd11c112
@@ -3046,7 +3046,7 @@ SPEC CHECKSUMS:
   ExpoMediaLibrary: 83f47430d5193186029bc57bae16e2130941bc83
   ExpoModulesCore: 8f010532d9ab0115f047c76e0303b9f0a1a50e97
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
-  ExpoNetwork: 2864024ec79a588ffee6c375f2f5166c896c6f4b
+  ExpoNetwork: f07b371f7e143812980075fda6768702c154a0a0
   ExpoPrint: 3f9f5a5a19dbda5b30963d5bf078918f024aa29d
   ExpoScreenCapture: 14768e6fe66412d678862858f5c2e0241b7f84b7
   ExpoScreenOrientation: 191c1ca42371747ae9b95b0ad93fbb75f33cf7b3

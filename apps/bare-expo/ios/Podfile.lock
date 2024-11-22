@@ -49,7 +49,7 @@ PODS:
     - ExpoModulesCore
   - Expo (52.0.10):
     - ExpoModulesCore
-  - expo-dev-client (5.0.3):
+  - expo-dev-client (5.0.4):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -487,7 +487,7 @@ PODS:
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
-  - ExpoNetwork (7.0.1):
+  - ExpoNetwork (7.0.2):
     - ExpoModulesCore
   - ExpoPrint (14.0.2):
     - ExpoModulesCore
@@ -3276,7 +3276,7 @@ SPEC CHECKSUMS:
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
   EXNotifications: c5b96ad5fffef5515c9cfc7887ae10f8720c70a5
   Expo: 7571b8c65b98450ac23a123dcc4d8ee3d50f1e42
-  expo-dev-client: 84a7f4a302387b57388d053900b56611b28b65ee
+  expo-dev-client: 8c99b4979086a27f19e773e96ef10219102a5c4f
   expo-dev-launcher: bfe7e8eadf0752211cee653f079239991f82bc81
   expo-dev-menu: 24e697acc838b1d19b635ad924487177f884e239
   expo-dev-menu-interface: 4baf2f8b3b79ce37cf4b900e4b3ba6df3384f0a1
@@ -3316,7 +3316,7 @@ SPEC CHECKSUMS:
   ExpoMediaLibrary: 83f47430d5193186029bc57bae16e2130941bc83
   ExpoModulesCore: 8f010532d9ab0115f047c76e0303b9f0a1a50e97
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
-  ExpoNetwork: 2864024ec79a588ffee6c375f2f5166c896c6f4b
+  ExpoNetwork: f07b371f7e143812980075fda6768702c154a0a0
   ExpoPrint: 3f9f5a5a19dbda5b30963d5bf078918f024aa29d
   ExpoScreenCapture: 14768e6fe66412d678862858f5c2e0241b7f84b7
   ExpoScreenOrientation: 191c1ca42371747ae9b95b0ad93fbb75f33cf7b3
