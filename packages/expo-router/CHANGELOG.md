@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix using style arrays on `expo-router/ui` `<Tab>` components ([#32887](https://github.com/expo/expo/pull/32887) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 4.0.8 — 2024-11-22

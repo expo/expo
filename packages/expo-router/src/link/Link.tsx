@@ -4,13 +4,13 @@
 import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef } from 'react';
 import { Text, GestureResponderEvent, Platform } from 'react-native';
 
-import { Slot } from './LinkSlot';
 import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';
 import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
+import { Slot } from '../ui/Slot';
 
 export interface LinkComponent {
   (props: PropsWithChildren<LinkProps>): JSX.Element;
