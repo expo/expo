@@ -312,6 +312,42 @@ export default function Settings() {
 }
 ```
 
+### `dismissTo` action
+
+> `dismissTo` was added in Expo Router `4.0.8`. It operates similar to the `navigation` function in Expo Router v3
+
+Dismisses screens in the current `<Stack />` until the specified `Href` is reached. If the `Href` is not present in the history, a `PUSH` action will be performed instead.
+
+For example, the given a history of `/one`, `/two`, `/three`, where `/three` is the current route. The action `router.dismissTo('/one')` will cause the history to go back twice, while `router.dismissTo('/four')` will `PUSH` the history forwards to the `/four` route.
+
+{/* prettier-ignore */}
+```tsx app/settings.tsx
+import { Button, View, Text } from 'react-native';
+/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+import { useRouter } from 'expo-router';
+/* @end */
+
+export default function Settings() {
+  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  const router = useRouter();
+  /* @end */
+
+  const handleDismissAll = () => {
+    /* @info In the handler method, call <CODE>router.dismissTo</CODE> to go back to a specific route. */
+    router.dismissTo('/')
+    /* @end */
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      /* @info Trigger the handler method on a touchable or button component. */
+      <Button title="Go to first screen" onPress={handleDismissAll} />
+      /* @end */
+    </View>
+  );
+}
+```
+
 ### `dismissAll` action
 
 To return to the first screen in the closest stack. This is similar to [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action.
@@ -330,7 +366,7 @@ export default function Settings() {
   const router = useRouter();
   /* @end */
 
-  const handleDismissAll = () => {
+  const handleDismissTo = () => {
     /* @info In the handler method, call <CODE>router.dismissAll</CODE> to go back to the first screen in a stack. */
     router.dismissAll()
     /* @end */
@@ -339,7 +375,7 @@ export default function Settings() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       /* @info Trigger the handler method on a touchable or button component. */
-      <Button title="Go to first screen" onPress={handleDismissAll} />
+      <Button title="Go to first screen" onPress={handleDismissTo} />
       /* @end */
     </View>
   );
