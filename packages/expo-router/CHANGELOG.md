@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix navigation from an open Drawer to sub-routes
+
 ### 💡 Others
 
 ## 4.0.8 — 2024-11-22
