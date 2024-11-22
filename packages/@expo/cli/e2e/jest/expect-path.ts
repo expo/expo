@@ -8,7 +8,7 @@ export function convertPathToPosix(path: string): string {
 }
 
 /**
- * Match a path using a string or regular expression.
+ * Matches any path that contains the exact provided path, or matches the path pattern.
  * This matcher normalizes UNIX paths to POSIX paths, to simplify path assertions on different platforms.
  */
 const toMatchPath: MatcherFunction<[path: string | RegExp]> = function (received, expected) {
@@ -62,17 +62,30 @@ const toMatchPath: MatcherFunction<[path: string | RegExp]> = function (received
 };
 
 expect.extend({
+  // Symetric matchers
   toMatchPath,
+  // Asymetric matchers
+  pathMatching: toMatchPath,
 });
 
 declare global {
   namespace jest {
+    // `expect(received).<matcher>()`
     interface Matchers<R> {
       /**
-       * Match a path using a string or regular expression.
+       * Matches any path that contains the exact provided path, or matches the path pattern.
        * This matcher normalizes UNIX paths to POSIX paths, to simplify path assertions on different platforms.
        */
       toMatchPath(path: string | RegExp): R;
+    }
+
+    // `expect.<matcher>()`
+    interface Expect {
+      /**
+       * Matches any path that contains the exact provided path, or matches the path pattern.
+       * This matcher normalizes UNIX paths to POSIX paths, to simplify path assertions on different platforms.
+       */
+      pathMatching(path: string | RegExp): void;
     }
   }
 }
