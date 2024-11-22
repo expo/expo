@@ -7,9 +7,12 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.await
+import com.google.common.util.concurrent.ListenableFuture
 import expo.modules.kotlin.AppContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.time.Duration
@@ -64,31 +67,17 @@ class BackgroundTaskScheduler {
       val workManager = WorkManager.getInstance(context)
 
       // Enqueue the work
-      return suspendCancellableCoroutine { continuation ->
+      return try {
         val operation = workManager.enqueueUniquePeriodicWork(
           WORKER_IDENTIFIER,
           ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-          workRequest)
+          workRequest).await()
 
-        val future = operation.result
-        future.addListener(kotlinx.coroutines.Runnable {
-          try {
-            // This blocks until the result is available
-            future.get()
-            // Operation succeeded
-            Log.i(TAG, "Worker enqueued successfully")
-            continuation.resume(true)
-          } catch (e: Exception) {
-            Log.e(TAG, "Worker failed to start with error " + e.message)
-            continuation.resumeWithException(e)
-          }
-        }, Executors.newSingleThreadExecutor())
-
-        continuation.invokeOnCancellation {
-          // Clean up if coroutine gets cancelled
-          Log.w(TAG, "Starting worker was cancelled")
-          future.cancel(true)
-        }
+        Log.i(TAG, "Worker enqueued successfully")
+        true
+      } catch (e: Exception) {
+        Log.e(TAG, "Worker failed to start with error " + e.message)
+        false
       }
     }
 
@@ -100,27 +89,13 @@ class BackgroundTaskScheduler {
 
       // Stop our main worker
       val workManager = WorkManager.getInstance(context)
-      return suspendCancellableCoroutine { continuation ->
-        val operation = workManager.cancelUniqueWork(WORKER_IDENTIFIER)
-        val future = operation.result
-        future.addListener(kotlinx.coroutines.Runnable {
-          try {
-            // This blocks until the result is available
-            future.get()
-            Log.i(TAG, "Worker cancelled successfully")
-            continuation.resume(true)   // Worker is still running
-          } catch (e: Exception) {
-            Log.i(TAG, "Stopping worker failed with error " + e.message)
-            continuation.resumeWithException(e)
-          }
-        }, Executors.newSingleThreadExecutor())
-
-        continuation.invokeOnCancellation {
-          // Clean up if coroutine gets cancelled
-          Log.w(TAG, "Stopping worker was cancelled.")
-          future.cancel(true)
+      return try {
+          workManager.cancelUniqueWork(WORKER_IDENTIFIER).await()
+          workManager.pruneWork().await()
+        } catch (e: Exception) {
+          Log.i(TAG, "Stopping worker failed with error " + e.message)
+          false
         }
-      }
     }
 
     /**
@@ -140,22 +115,59 @@ class BackgroundTaskScheduler {
       // Get work manager
       val workManager = WorkManager.getInstance(context)
 
-      return suspendCancellableCoroutine<WorkInfo?> { continuation ->
-        val workInfosFuture = workManager.getWorkInfosForUniqueWork(WORKER_IDENTIFIER)
-        workInfosFuture.addListener(kotlinx.coroutines.Runnable {
-          try {
-            // This blocks until the result is available
-            val workInfos = workInfosFuture.get()
-            continuation.resume(workInfos.firstOrNull())
-          } catch (e: Exception) {
-            continuation.resumeWithException(e)
-          }
-        }, Executors.newSingleThreadExecutor())
+      return try {
+        val workInfos = workManager.getWorkInfosForUniqueWork(WORKER_IDENTIFIER).await()
+        return workInfos.firstOrNull()
+      } catch (e: Exception) {
+        Log.i(TAG, "Calling getWorkInfosForUniqueWork failed with error " + e.message)
+        null
+      }
+    }
 
-        continuation.invokeOnCancellation {
-          // Clean up if coroutine gets cancelled
-          workInfosFuture.cancel(true)
+    /**
+     * Helper function for calling functions returning an Operation
+     */
+    suspend fun Operation.await(): Boolean = suspendCancellableCoroutine { continuation ->
+      val future = this.result
+      val executor = Executors.newCachedThreadPool()
+
+      future.addListener({
+        try {
+          future.run { get() }
+          continuation.resume(true)
+        } catch (e: Exception) {
+          continuation.resumeWithException(e)
+        } finally {
+          executor.shutdown()
         }
+      }, executor)
+
+      continuation.invokeOnCancellation {
+        future.cancel(true)
+        executor.shutdown()
+      }
+    }
+
+    /**
+     * Helper function for calling functions returning a ListenableFuture
+     */
+    suspend fun <T> ListenableFuture<T>.await(): T = suspendCancellableCoroutine { continuation ->
+      val executor = Executors.newCachedThreadPool()
+
+      this.addListener({
+        try {
+          val result = runCatching { this.get() }
+          continuation.resume(result.getOrThrow())
+        } catch (e: Exception) {
+          continuation.resumeWithException(e)
+        } finally {
+          executor.shutdown()
+        }
+      }, executor)
+
+      continuation.invokeOnCancellation {
+        this.cancel(true)
+        executor.shutdown()
       }
     }
   }

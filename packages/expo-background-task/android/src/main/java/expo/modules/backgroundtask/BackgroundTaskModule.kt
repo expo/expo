@@ -23,12 +23,12 @@ class BackgroundTaskModule : Module() {
     }
 
     AsyncFunction("registerTaskAsync") { taskName: String, options: Map<String, Any?> ->
-      Log.e(TAG, "registerTaskAsync: $taskName")
+      Log.i(TAG, "registerTaskAsync: $taskName")
       taskManager.registerTask(taskName, BackgroundTaskConsumer::class.java, options)
     }
 
     AsyncFunction("unregisterTaskAsync") { taskName: String ->
-      Log.e(TAG, "unregisterTaskAsync: $taskName")
+      Log.i(TAG, "unregisterTaskAsync: $taskName")
       taskManager.unregisterTask(taskName, BackgroundTaskConsumer::class.java)
     }
   }

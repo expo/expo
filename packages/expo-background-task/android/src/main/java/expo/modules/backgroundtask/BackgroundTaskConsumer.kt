@@ -44,6 +44,8 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
         // Start worker
         Log.i(TAG, "didRegister: worker not running - starting worker.")
         BackgroundTaskScheduler.startWorker(context, task.appScopeKey)
+      } else {
+        Log.i(TAG, "didRegister: worker already running.")
       }
     }
   }
@@ -51,22 +53,30 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   override fun didUnregister() {
     Log.i(TAG, "didUnregister: ${mTask?.name}")
 
-    // Check if the task manager has more tasks like this
-    val taskService = TaskServiceProviderHelper.getTaskServiceImpl(context.applicationContext)
-      ?: throw MissingTaskServiceException()
+    taskCoroutineScope.launch {
+      if (!BackgroundTaskScheduler.isWorkerRunning(context)) {
+        return@launch
+      }
 
-    // Get tasks for our appScope
-    val appScopeKey = mTask?.appScopeKey ?: throw MissingTaskException()
-    mTask = null
+      // Check if the task manager has more tasks like this
+      val taskService = TaskServiceProviderHelper.getTaskServiceImpl(context.applicationContext)
+        ?: throw MissingTaskServiceException()
 
-    // Check if we have a task that
-    val tasks = taskService.getTasksForAppScopeKey(appScopeKey)
-    val ourTasks = tasks.filter { it.getString("taskType") == BACKGROUND_TASK_TYPE }
-    if (ourTasks.isEmpty()) {
-      Log.i(TAG, "didUnregister: ${mTask?.name} - stopping worker, no more $BACKGROUND_TASK_TYPE tasks running.")
-      taskCoroutineScope.launch {
-        // We should just stop the worker
-        BackgroundTaskScheduler.stopWorker(context)
+      // Get tasks for our appScope
+      val appScopeKey = mTask?.appScopeKey ?: throw MissingTaskException()
+      mTask = null
+
+      // Check if we have a task that
+      val tasks = taskService.getTasksForAppScopeKey(appScopeKey)
+      val ourTasks = tasks.filter { it.getString("taskType") == BACKGROUND_TASK_TYPE }
+      if (ourTasks.isEmpty()) {
+        Log.i(TAG, "didUnregister: ${mTask?.name} - stopping worker, no more $BACKGROUND_TASK_TYPE tasks running.")
+        taskCoroutineScope.launch {
+          // We should just stop the worker
+          BackgroundTaskScheduler.stopWorker(context)
+        }
+      } else {
+        Log.i(TAG, "didRegister: Leaving worker running.")
       }
     }
   }

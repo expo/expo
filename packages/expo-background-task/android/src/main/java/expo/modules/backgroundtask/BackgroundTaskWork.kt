@@ -12,6 +12,13 @@ class BackgroundTaskWork(context: Context, params: WorkerParameters) : Coroutine
     private val TAG: String = BackgroundTaskWork::class.java.simpleName
   }
 
+  /**
+   * The doWork function is called by the Android Work Manager to execute work. When we've scheduled
+   * work this function can be called from :
+   * 1) The WorkManager calls the function on a running app to execute any tasks
+   * 2) The device was rebooted and the app is auto-started
+   * 3) The app is started from the background
+   */
   override suspend fun doWork(): Result {
     Log.i(TAG, "doWork: Starting worker")
 
