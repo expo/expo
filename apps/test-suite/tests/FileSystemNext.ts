@@ -178,14 +178,14 @@ export async function test({ describe, expect, it, ...t }) {
       });
 
       it('Throws an error if the file exists', () => {
-        const file = new File(testDirectory + 'newFolder');
+        const file = new File(testDirectory, 'newFolder');
         file.create();
         expect(file.exists).toBe(true);
         expect(file.text()).toBe('');
       });
 
       it('Overwrites a file if it exists and `overwrite` is set', () => {
-        const file = new File(testDirectory + 'newFolder');
+        const file = new File(testDirectory, 'newFolder');
         file.create();
         expect(file.exists).toBe(true);
         file.write('Hello world');
