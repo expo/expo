@@ -13,7 +13,7 @@ const routerPkg: PackageJSONConfig = require('../../package.json');
 
 const routerDependencies = Object.entries<string>(
   Object.assign({}, routerPkg.dependencies, routerPkg.peerDependencies)
-).filter((entry) => entry[1] !== '*');
+).filter((entry) => entry[0].startsWith('@react-navigation') && entry[1] !== '*');
 
 type IncorrectDependency = {
   packageName: string;
