@@ -127,6 +127,7 @@ function groupRouteNodes(routeNode, groupedContextKeys = {
         // Not all generated files will have the `/` prefix
         routeKey = `/${routeKey}`;
     }
+    routeKey = routeKey.replace(/\\/g, '/');
     if (routeNode.dynamic) {
         groupedContextKeys.dynamic.set(routeKey, routeKey
             .split('/')
