@@ -1,4 +1,5 @@
 import { useTheme } from '@expo/styleguide';
+import { useEffect, useState } from 'react';
 
 import { DotGrid } from './DotGrid';
 
@@ -11,7 +12,15 @@ type Props = {
 
 export const Diagram = ({ source, darkSource, disableSrcSet, alt }: Props) => {
   const { themeName } = useTheme();
-  const isDark = themeName === 'dark';
+  const [isDark, setDark] = useState(themeName === 'dark');
+
+  useEffect(() => {
+    if (themeName === 'auto') {
+      setDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    } else {
+      setDark(themeName === 'dark');
+    }
+  }, [themeName]);
 
   if (!source.match(/\.png$/)) {
     return (
