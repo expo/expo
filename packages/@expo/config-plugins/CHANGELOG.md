@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 9.0.10 —  2024-11-24
+
+### 💡 Others
+
+- Add foregroundServiceType property to Android ManifestServiceAttributes by [@micaelomota](https://github.com/micaelomota))
+
 ## 9.0.10 — 2024-11-20
 
 ### 🐛 Bug fixes
