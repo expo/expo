@@ -13,6 +13,7 @@ import treeKill from 'tree-kill';
 import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
+import '../jest/expect-path';
 
 export const bin = require.resolve('../../build/bin/cli');
 
