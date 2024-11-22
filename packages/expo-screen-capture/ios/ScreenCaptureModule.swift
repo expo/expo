@@ -47,18 +47,20 @@ public final class ScreenCaptureModule: Module {
     if shouldListen && !isListening {
       // swiftlint:disable:next line_length
       NotificationCenter.default.addObserver(self, selector: #selector(self.listenForScreenCapture), name: UIApplication.userDidTakeScreenshotNotification, object: nil)
+      NotificationCenter.default.addObserver(self, selector: #selector(self.listenForScreenRecording), name: UIScreen.capturedDidChangeNotification, object: nil)
       isListening = true
     } else if !shouldListen && isListening {
       NotificationCenter.default.removeObserver(self, name: UIApplication.userDidTakeScreenshotNotification, object: nil)
+      NotificationCenter.default.removeObserver(self, name: UIScreen.capturedDidChangeNotification, object: nil)
       isListening = false
     }
   }
 
   @objc
   func preventScreenRecording() {
-    let isCaptured = UIScreen.main.isCaptured
+    let isRecording = UIScreen.main.isRecording
 
-    if isCaptured {
+    if isRecording {
       UIApplication.shared.keyWindow?.subviews.first?.addSubview(blockView)
     } else {
       blockView.removeFromSuperview()
@@ -75,7 +77,7 @@ public final class ScreenCaptureModule: Module {
   @objc
   func listenForScreenRecording() {
     sendEvent(onRecordingEventName, [
-      "body": nil
+      "isRecording": UIScreen.main.isRecording
     ])
   }
 }

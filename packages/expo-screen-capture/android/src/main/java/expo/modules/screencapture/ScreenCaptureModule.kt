@@ -11,6 +11,7 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import android.app.Activity.ScreenCaptureCallback
 
 const val screenshotEventName = "onScreenshot"
 const val recordingEventName = "onRecording"
@@ -40,8 +41,14 @@ class ScreenCaptureModule : Module() {
 
     OnCreate {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        screenCaptureCallback = Activity.ScreenCaptureCallback {
-          sendEvent(screenshotEventName)
+        screenCaptureCallback = object : ScreenCaptureCallback {
+          override fun onScreenCaptureStateChanged(isRecording: Boolean) {
+            sendEvent(recordingEventName, mapOf("isRecording" to isRecording))
+          }
+
+          override fun onScreenCaptured() {
+            sendEvent(screenshotEventName)
+          }
         }
         // Let's try to register the callback
         registerCallback()
@@ -49,7 +56,7 @@ class ScreenCaptureModule : Module() {
         ScreenCaptureEventEmitter = ScreenCaptureEventEmitter(context, {
           sendEvent(screenshotEventName)
         }, {
-          sendEvent(recordingEventName)
+          sendEvent(recordingEventName, mapOf("isRecording" to true))
         })
       }
     }

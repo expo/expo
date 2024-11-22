@@ -11,7 +11,7 @@ function useScreenCapture({
   onRecording,
 }: {
   onScreenshot: () => void;
-  onRecording: () => void;
+  onRecording: (isRecording: boolean) => void;
 }) {
   const hasPermissions = async () => {
     const { status } = await ScreenCapture.requestPermissionsAsync();
@@ -43,7 +43,7 @@ function useScreenCapture({
 export default function ScreenCaptureScreen() {
   const [isEnabled, setEnabled] = React.useState(true);
   const [timestamps, setTimestamps] = React.useState<
-    { type: 'screenshot' | 'recording'; timestamp: Date }[]
+    { type: 'screenshot' | 'recording'; timestamp: Date; isRecording?: boolean }[]
   >([]);
 
   React.useEffect(() => {
@@ -59,10 +59,11 @@ export default function ScreenCaptureScreen() {
       setTimestamps((timestamps) =>
         timestamps.concat([{ type: 'screenshot', timestamp: new Date() }])
       ),
-    onRecording: () =>
+    onRecording: (isRecording) => {
       setTimestamps((timestamps) =>
-        timestamps.concat([{ type: 'recording', timestamp: new Date() }])
-      ),
+        timestamps.concat([{ type: 'recording', timestamp: new Date(), isRecording }])
+      );
+    },
   });
 
   return (
@@ -79,6 +80,7 @@ export default function ScreenCaptureScreen() {
         renderItem={({ item }) => (
           <MonoText>
             {item.timestamp.toLocaleTimeString()} - {item.type}
+            {item.type === 'recording' ? (item.isRecording ? ' - Started' : '- Stopped') : ''}
           </MonoText>
         )}
       />
