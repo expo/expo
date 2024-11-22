@@ -292,6 +292,7 @@ const general = [
     makePage('eas/index.mdx'),
     makePage('eas/json.mdx'),
     makePage('eas/environment-variables.mdx'),
+    makePage('eas/using-environment-variables.mdx'),
   ]),
   makeSection('Workflows', [
     makePage('workflows/get-started.mdx'),
@@ -535,7 +536,6 @@ const learn = [
       makePage('tutorial/eas/android-production-build.mdx'),
       makePage('tutorial/eas/ios-production-build.mdx'),
       makePage('tutorial/eas/team-development.mdx'),
-      makePage('tutorial/eas/environment-variables.mdx'),
       makePage('tutorial/eas/using-github.mdx'),
       makePage('tutorial/eas/next-steps.mdx'),
     ],

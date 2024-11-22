@@ -239,14 +239,14 @@ One way to supply non-secret EAS environment variables to other EAS commands is 
 
 <Terminal
   cmd={["$ eas env:exec --environment production 'echo $APP_VARIANT'"]}
-  cmdCopy="eeas env:exec --environment production 'echo $APP_VARIANT'"
+  cmdCopy="eas env:exec --environment production 'echo $APP_VARIANT'"
 />
 
 It can be useful when uploading source maps to Sentry using a `SENTRY_AUTH_TOKEN` variable after an update bundle is created.
 
 <Terminal
   cmd={["$ eas env:exec --environment production 'npx sentry-expo-upload-sourcemaps dist'"]}
-  cmdCopy="eeas env:exec --environment production 'npx sentry-expo-upload-sourcemaps dist'"
+  cmdCopy="eas env:exec --environment production 'npx sentry-expo-upload-sourcemaps dist'"
 />
 
 </Step>
