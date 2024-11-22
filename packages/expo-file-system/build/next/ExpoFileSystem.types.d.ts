@@ -1,10 +1,12 @@
 type CreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
+     * @default false
      */
     intermediates?: boolean;
     /**
      * Whether to overwrite the file or directory if it exists.
+     * @default false
      */
     overwrite?: boolean;
 };
