@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix navigation from an open Drawer to sub-routes
+- Fix navigation from an open Drawer to sub-routes ([#33170](https://github.com/expo/expo/pull/33170) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
