@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 2.0.5 — 2024-11-22
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed build error when using jsEngine=jsc. ([#33130](https://github.com/expo/expo/pull/33130) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

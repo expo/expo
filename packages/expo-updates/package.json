@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.26.8",
+  "version": "0.26.9",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
