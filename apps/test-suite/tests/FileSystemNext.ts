@@ -223,7 +223,7 @@ export async function test({ describe, expect, it, ...t }) {
           } catch {}
           src.write('Hello world');
           src.copy(dst);
-          expect(dst.uri).toBe(FS.documentDirectory, 'file.txt');
+          expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
           expect(dst.exists).toBe(true);
           expect(dst.md5).toBe(src.md5);
         });
@@ -252,8 +252,8 @@ export async function test({ describe, expect, it, ...t }) {
           file.create();
           const destination = new Directory(testDirectory, 'newDestination/');
           file.copy(destination);
-          expect(destination.uri).toBe(testDirectory, 'newDestination/');
-          expect(file.uri).toBe(testDirectory, 'source/');
+          expect(destination.uri).toBe(testDirectory + 'newDestination/');
+          expect(file.uri).toBe(testDirectory + 'source/');
         });
 
         // this should not be allowed by TS, but we can handle it anyways
@@ -332,7 +332,7 @@ export async function test({ describe, expect, it, ...t }) {
           file.create();
           const folder = new Directory(testDirectory, 'newDestination/');
           file.move(folder);
-          expect(file.uri).toBe(testDirectory, 'newDestination/');
+          expect(file.uri).toBe(testDirectory + 'newDestination/');
         });
 
         // this should not be allowed by TS, but we can handle it anyways
@@ -480,7 +480,7 @@ export async function test({ describe, expect, it, ...t }) {
         });
         it('can be easily used with joining paths', () => {
           const file = new File(Paths.document, 'file.txt');
-          expect(file.uri).toBe(FS.documentDirectory, 'file.txt');
+          expect(file.uri).toBe(FS.documentDirectory + 'file.txt');
         });
       });
 
