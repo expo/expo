@@ -25,10 +25,11 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
     return BACKGROUND_TASK_TYPE
   }
 
-  fun executeTask(context: Context, callback: TaskExecutionCallback) {
-    // Check if we're loading as a react application or if we are loading from
-    // the background TODO:
-    
+  /**
+   * Exposing the execute task function so that the BackgroundTaskWork (WorkManager Work unit)
+   * can execute the inner task.
+   */
+  fun executeTask(callback: TaskExecutionCallback) {
     taskManagerUtils.executeTask(mTask, null, callback)
   }
 
