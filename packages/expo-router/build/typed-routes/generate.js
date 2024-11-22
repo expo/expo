@@ -14,9 +14,9 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
     let routeNode = null;
     try {
         routeNode = (0, getRoutes_1.getRoutes)(ctx, {
-            ignore: [/_layout\.[tj]sx?$/],
-            platformRoutes: false,
-            notFound: false,
+            ignore: [/_layout\.[tj]sx?$/], // Skip layout files
+            platformRoutes: false, // We don't need to generate platform specific routes
+            notFound: false, // We don't need +not-found routes either
             ignoreEntryPoints: true,
             ignoreRequireErrors: true,
             importMode: 'async', // Don't load the file

@@ -14,9 +14,9 @@ export declare const META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID = "com.google
 export declare const META_DATA_LOCAL_NOTIFICATION_ICON = "expo.modules.notifications.default_notification_icon";
 export declare const META_DATA_LOCAL_NOTIFICATION_ICON_COLOR = "expo.modules.notifications.default_notification_color";
 export declare const NOTIFICATION_ICON = "notification_icon";
-export declare const NOTIFICATION_ICON_RESOURCE: string;
+export declare const NOTIFICATION_ICON_RESOURCE = "@drawable/notification_icon";
 export declare const NOTIFICATION_ICON_COLOR = "notification_icon_color";
-export declare const NOTIFICATION_ICON_COLOR_RESOURCE: string;
+export declare const NOTIFICATION_ICON_COLOR_RESOURCE = "@color/notification_icon_color";
 export declare const withNotificationIcons: ConfigPlugin<{
     icon: string | null;
 }>;
