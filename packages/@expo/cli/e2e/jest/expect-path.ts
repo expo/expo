@@ -3,6 +3,10 @@ import type { MatcherFunction } from 'expect';
 import type { MatcherHintOptions } from 'jest-matcher-utils';
 import { platform } from 'node:process';
 
+export function convertPathToPosix(path: string): string {
+  return platform === 'win32' ? path.replace(/\\/g, '/') : path;
+}
+
 /**
  * Match a path using a string or regular expression.
  * This matcher normalizes UNIX paths to POSIX paths, to simplify path assertions on different platforms.
@@ -28,7 +32,7 @@ const toMatchPath: MatcherFunction<[path: string | RegExp]> = function (received
   }
 
   // Normalize possible UNIX paths to POSIX paths, simplifing path assertions on different platforms.
-  const receivedPath = platform === 'win32' ? received.replace(/\\/g, '/') : received;
+  const receivedPath = convertPathToPosix(received);
 
   const pass =
     typeof expected === 'string'

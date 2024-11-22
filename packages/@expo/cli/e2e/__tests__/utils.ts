@@ -13,7 +13,7 @@ import treeKill from 'tree-kill';
 import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
-import '../jest/expect-path';
+import { convertPathToPosix } from '../jest/expect-path';
 
 export const bin = require.resolve('../../build/bin/cli');
 
@@ -235,19 +235,25 @@ export async function setupTestProjectWithOptionsAsync(
   return projectRoot;
 }
 
-/** Returns a list of loaded modules relative to the repo root. Useful for preventing lazy loading from breaking unexpectedly.   */
+/**
+ * Returns a list of loaded modules relative to the repo root.
+ * Useful for preventing lazy loading from breaking unexpectedly.
+ * Note, this method returns module specifiers in alphabetical order.
+ */
 export async function getLoadedModulesAsync(statement: string): Promise<string[]> {
   const repoRoot = path.join(__dirname, '../../../../');
   const results = await execa(
     'node',
     [
       '-e',
-      [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join('\n'),
+      [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join('; '),
     ],
     { cwd: __dirname }
   );
   const loadedModules = JSON.parse(results.stdout.trim());
-  return loadedModules.map((value: string) => path.relative(repoRoot, value)).sort();
+  return loadedModules
+    .map((value: string) => convertPathToPosix(path.relative(repoRoot, value)))
+    .sort();
 }
 
 const pTreeKill = promisify(treeKill);
