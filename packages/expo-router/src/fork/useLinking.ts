@@ -251,7 +251,7 @@ export function useLinking(
            *
            * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event#when_popstate_is_sent
            */
-          (index === previousIndex && `${record?.path}${location.hash}` === path)
+          (index === previousIndex && (!record || `${record?.path}${location.hash}` === path))
           // END FORK
         ) {
           const action = getActionFromStateRef.current(state, configRef.current);

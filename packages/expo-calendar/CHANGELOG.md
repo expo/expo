@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 14.0.3 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed missing deserialization of calendarId field when calling createEventInCalendarAsync ([#33142](https://github.com/expo/expo/pull/33142) by [@chrfalch](https://github.com/chrfalch))
+
 ## 14.0.2 — 2024-10-24
 
 _This version does not introduce any user-facing changes._

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Added fix to getNetworkStateAsync failing on iOS ([#33137](https://github.com/expo/expo/pull/33137) by [@chrfalch](https://github.com/chrfalch))
-
 ### 💡 Others
+
+## 7.0.1 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Added fix to getNetworkStateAsync failing on iOS ([#33137](https://github.com/expo/expo/pull/33137) by [@chrfalch](https://github.com/chrfalch))
 
 ## 7.0.0 — 2024-10-22
 

@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 2.0.5 — 2024-11-22
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed build error when using jsEngine=jsc. ([#33130](https://github.com/expo/expo/pull/33130) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- [Android] Introduced `applyKspJvmToolchain()` gradle helper to enforce JVM Toolchain version for KSP. ([#33148](https://github.com/expo/expo/pull/33148) by [@kudo](https://github.com/kudo))
 
 ## 2.0.4 — 2024-11-19
 

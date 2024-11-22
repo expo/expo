@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 0.26.9 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Fixed `Inconsistent JVM-target compatibility` error when building with JDK 21. ([#33148](https://github.com/expo/expo/pull/33148) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
 - Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
 
 ## 0.26.8 — 2024-11-20

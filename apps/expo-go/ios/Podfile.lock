@@ -28,7 +28,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.29.8):
     - ExpoModulesCore
-  - Expo (52.0.8):
+  - Expo (52.0.10):
     - ExpoModulesCore
   - ExpoAppleAuthentication (7.1.2):
     - ExpoModulesCore
@@ -42,7 +42,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (13.0.2):
     - ExpoModulesCore
-  - ExpoCalendar (14.0.2):
+  - ExpoCalendar (14.0.3):
     - ExpoModulesCore
   - ExpoCamera (16.0.6):
     - ExpoModulesCore
@@ -79,13 +79,13 @@ PODS:
     - ExpoModulesCore
   - ExpoHead (4.0.7):
     - ExpoModulesCore
-  - ExpoImage (2.0.1):
+  - ExpoImage (2.0.2):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-  - ExpoImage/Tests (2.0.1):
+  - ExpoImage/Tests (2.0.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -96,7 +96,7 @@ PODS:
     - EXImageLoader
     - ExpoModulesCore
     - SDWebImageWebPCoder
-  - ExpoImagePicker (16.0.2):
+  - ExpoImagePicker (16.0.3):
     - ExpoModulesCore
   - ExpoKeepAwake (14.0.1):
     - ExpoModulesCore
@@ -121,7 +121,7 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
-  - ExpoModulesCore (2.0.4):
+  - ExpoModulesCore (2.0.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -144,7 +144,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (2.0.4):
+  - ExpoModulesCore/Tests (2.0.5):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -173,7 +173,7 @@ PODS:
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
-  - ExpoNetwork (7.0.0):
+  - ExpoNetwork (7.0.1):
     - ExpoModulesCore
   - ExpoPrint (14.0.2):
     - ExpoModulesCore
@@ -232,7 +232,7 @@ PODS:
   - EXTaskManager (12.0.3):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.26.7):
+  - EXUpdates (0.26.9):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -259,7 +259,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdates/Tests (0.26.7):
+  - EXUpdates/Tests (0.26.9):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -1843,7 +1843,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-webview (13.12.4):
+  - react-native-webview (13.12.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3011,14 +3011,14 @@ SPEC CHECKSUMS:
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
   EXNotifications: c5b96ad5fffef5515c9cfc7887ae10f8720c70a5
-  Expo: c3e32beff4379726ad2e94068563fa03ae7109b0
+  Expo: 7571b8c65b98450ac23a123dcc4d8ee3d50f1e42
   ExpoAppleAuthentication: 218e275c9bf19963247a198c450ce3852e6a9342
   ExpoAsset: 8138f2a9ec55ae1ad7c3871448379f7d97692d15
   ExpoBackgroundFetch: a3080ab72736b60441adf5f452919426c62e0533
   ExpoBattery: 71bb388c37c3bcd0e87077e06e95780ea34fa6c8
   ExpoBlur: 562b3da84d3cd79016c411671eaf71a404266415
   ExpoBrightness: ce777f6a365592f745428cb0acc9066b400182e8
-  ExpoCalendar: eefd37e02e2cf34060ce4fded953acf8cdf28672
+  ExpoCalendar: c063db1cf7b5c9a11930745cb75bb5ee9ce68029
   ExpoCamera: c98e7c44765d186469ca37985e76bda1cb972758
   ExpoCellular: c7ae03fd9480e6a4296a5632c35ab00ddaea4783
   ExpoClipboard: 166ca8c13ca1041f5ba619a211f59427ab5da8a7
@@ -3032,9 +3032,9 @@ SPEC CHECKSUMS:
   ExpoGL: 3e7c3b8478a6783d737103b33b9c11235deb6675
   ExpoHaptics: e636188d1d5f7ccb79f3c1bfab47aaf5a1768c73
   ExpoHead: 43187036da62330d381a79a34fc37aeaca9530f8
-  ExpoImage: baf7dee5cb59e3b7b9c8dc204c54385fcc39ff71
+  ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
   ExpoImageManipulator: 774eb1a17c5db07944d6f9000650d422ebb3ce47
-  ExpoImagePicker: a4be622c7081848925519d3329c0ebfac48f0d92
+  ExpoImagePicker: 440a560c9bfc63edae854d08b9f12f75bd11c112
   ExpoKeepAwake: 783e68647b969b210a786047c3daa7b753dcac1f
   ExpoLinearGradient: 7ca3b1d1625a1ab85c129abce4a3cdc78a9500a3
   ExpoLinking: a8332a219379ba80f8e612d5a5de4a3da446886e
@@ -3044,9 +3044,9 @@ SPEC CHECKSUMS:
   ExpoLocation: e0c5b5212381b0b800a2c1f715be823d17c51b05
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
   ExpoMediaLibrary: 83f47430d5193186029bc57bae16e2130941bc83
-  ExpoModulesCore: 28ce5c3193da2ff32648d023a282f65131ade10a
+  ExpoModulesCore: 8f010532d9ab0115f047c76e0303b9f0a1a50e97
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
-  ExpoNetwork: 786e4a0f27543c9c70d595d24f59759167da854b
+  ExpoNetwork: 2864024ec79a588ffee6c375f2f5166c896c6f4b
   ExpoPrint: 3f9f5a5a19dbda5b30963d5bf078918f024aa29d
   ExpoScreenCapture: 14768e6fe66412d678862858f5c2e0241b7f84b7
   ExpoScreenOrientation: 191c1ca42371747ae9b95b0ad93fbb75f33cf7b3
@@ -3065,7 +3065,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: afcec33a6643f24fed4a89062757037b185c8a88
-  EXUpdates: 30abdcac4213db71620a683e91ff378c8c88642a
+  EXUpdates: c35f6924eb729c633c472eca04a8f04b1f26948e
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   FBLazyVector: bc70dcb22ad30ce734a7cce7210791dc737e230f
   FirebaseCore: 8542de610f35f86196ba26cdb2544565a5157c8e
@@ -3075,7 +3075,7 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: f9205150d6a2d2adc171f8747cd2ea7824c06b7b
+  hermes-engine: 35e838e3ab3dbad627f70ca9d4dd2a91f6285b29
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3124,7 +3124,7 @@ SPEC CHECKSUMS:
   react-native-skia: 425a5610939828363e0681b8b3e994dd4f18b711
   react-native-slider: 124ce99f9cd2d04c79f020da6dee9f8d38a6b8c7
   react-native-view-shot: f0b94997decfc338383ba9dc0748985b02934b8c
-  react-native-webview: 0bd56be54d01756f20eb942dad37a2cd22a6def2
+  react-native-webview: 06f91954784dde28e1210f381c791f0c5f9bd9a2
   React-nativeconfig: 470fce6d871c02dc5eff250a362d56391b7f52d6
   React-NativeModulesApple: 6297fc3136c1fd42884795c51d7207de6312b606
   React-perflogger: f2c94413cfad44817c96cab33753831e73f0d0dd
