@@ -41,7 +41,7 @@ class BackgroundTaskWork(context: Context, params: WorkerParameters) : Coroutine
 
         val taskCompletion = CompletableDeferred<Unit>()
 
-        bgTaskConsumer.executeTask(applicationContext) {
+        bgTaskConsumer.executeTask {
           Log.i(TAG, "Task successfully finished")
           taskCompletion.complete(Unit)
         }
