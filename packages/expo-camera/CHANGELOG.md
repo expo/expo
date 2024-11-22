@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix an issue where devices supporting the `hevc` codec have `jpeg` set in the `photoSettings`.
+
 ### 💡 Others
 
 ## 16.0.6 — 2024-11-19
