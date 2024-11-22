@@ -14,6 +14,7 @@ import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
 import { convertPathToPosix } from '../jest/expect-path';
+import klawSync from 'klaw-sync';
 
 export const bin = require.resolve('../../build/bin/cli');
 
@@ -319,4 +320,19 @@ export function expectChunkPathMatching(name: string) {
       `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
     )
   );
+}
+
+/**
+ * Find all project files in the given project root.
+ * This returns all paths in POSIX format, sorted alphabetically, and relative to the project root without any prefix.
+ */
+export function findProjectFiles(projectRoot: string) {
+  return klawSync(projectRoot, { nodir: true })
+    .map((entry) =>
+      entry.path.includes('node_modules')
+        ? null
+        : convertPathToPosix(path.relative(projectRoot, entry.path))
+    )
+    .filter(Boolean)
+    .sort();
 }
