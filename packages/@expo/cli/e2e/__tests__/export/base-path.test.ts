@@ -5,7 +5,7 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getPageHtml, getRouterE2ERoot } from '../utils';
+import { bin, findProjectFiles, getPageHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -37,17 +37,7 @@ describe('static-rendering with a custom base path', () => {
   it(
     'has expected files',
     async () => {
-      // List output files with sizes for snapshotting.
-      // This is to make sure that any changes to the output are intentional.
-      // Posix path formatting is used to make paths the same across OSes.
-      const files = klawSync(outputDir)
-        .map((entry) => {
-          if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-            return null;
-          }
-          return path.posix.relative(outputDir, entry.path);
-        })
-        .filter(Boolean);
+      const files = findProjectFiles(outputDir);
 
       expect(
         files.find((file) => file?.match(/\_expo\/static\/js\/web\/entry-.*\.js/))

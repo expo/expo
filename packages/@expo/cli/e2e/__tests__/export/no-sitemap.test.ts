@@ -1,10 +1,9 @@
 /* eslint-env jest */
 import execa from 'execa';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getRouterE2ERoot } from '../utils';
+import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -34,17 +33,7 @@ describe('static-rendering with no sitemap', () => {
   it(
     'has expected files',
     async () => {
-      // List output files with sizes for snapshotting.
-      // This is to make sure that any changes to the output are intentional.
-      // Posix path formatting is used to make paths the same across OSes.
-      const files = klawSync(outputDir)
-        .map((entry) => {
-          if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-            return null;
-          }
-          return path.posix.relative(outputDir, entry.path);
-        })
-        .filter(Boolean);
+      const files = findProjectFiles(outputDir);
 
       // The wrapper should not be included as a route.
       expect(files).not.toContain('+html.html');

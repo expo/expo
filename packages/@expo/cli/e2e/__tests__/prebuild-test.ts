@@ -176,6 +176,7 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
   // android/app/src/main/java/com/minimal/MainApplication.java
 }
 
+// This tests contains assertions related to ios files, making it incompatible with Windows
 itNotWindows(
   'runs `npx expo prebuild`',
   async () => {
@@ -212,6 +213,7 @@ itNotWindows(
   60 * 1000
 );
 
+// This tests contains assertions related to ios files, making it incompatible with Windows
 itNotWindows(
   'runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`',
   async () => {
@@ -246,6 +248,7 @@ itNotWindows(
   60 * 1000
 );
 
+// This tests contains assertions related to ios files, making it incompatible with Windows
 itNotWindows(
   'runs `npx expo prebuild --template <github-url>`',
   async () => {

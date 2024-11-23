@@ -1,10 +1,9 @@
-import fs from 'fs/promises';
 import execa from 'execa';
-import klawSync from 'klaw-sync';
+import fs from 'fs/promises';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, ensurePortFreeAsync, getRouterE2ERoot } from '../utils';
+import { bin, ensurePortFreeAsync, findProjectFiles, getRouterE2ERoot, killChildProcess } from '../utils';
 
 runExportSideEffects();
 
@@ -30,20 +29,6 @@ describe('server-output', () => {
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
   );
-
-  function getFiles() {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    return klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-  }
 
   describe('requests', () => {
     beforeAll(async () => {
@@ -74,7 +59,7 @@ describe('server-output', () => {
     let server: execa.ExecaChildProcess<string> | undefined;
 
     afterAll(async () => {
-      server?.kill();
+      await killChildProcess(server);
     });
 
     ['POST', 'GET', 'PUT', 'DELETE'].map(async (method) => {
@@ -146,10 +131,11 @@ describe('server-output', () => {
     });
 
     it(`can serve up static html in array group`, async () => {
-      expect(getFiles()).not.toContain('server/multi-group.html');
-      expect(getFiles()).not.toContain('server/(a,b)/multi-group.html');
-      expect(getFiles()).toContain('server/(a)/multi-group.html');
-      expect(getFiles()).toContain('server/(b)/multi-group.html');
+      const files = findProjectFiles(outputDir);
+      expect(files).not.toContain('server/multi-group.html');
+      expect(files).not.toContain('server/(a,b)/multi-group.html');
+      expect(files).toContain('server/(a)/multi-group.html');
+      expect(files).toContain('server/(b)/multi-group.html');
       expect(await fetch('http://localhost:3000/multi-group').then((res) => res.text())).toMatch(
         /<div data-testid="multi-group">/
       );
@@ -173,7 +159,7 @@ describe('server-output', () => {
     });
 
     it(`can serve up API route in array group`, async () => {
-      const files = getFiles();
+      const files = findProjectFiles(outputDir);
       expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
       expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
       expect(files).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
@@ -341,7 +327,7 @@ describe('server-output', () => {
       async () => {
         await expect(
           fetch('http://localhost:3000/api/externals').then((r) => r.text())
-        ).resolves.toEqual('a/b/c');
+        ).resolves.toMatchPath('a/b/c');
       },
       5 * 1000
     );
@@ -355,7 +341,7 @@ describe('server-output', () => {
       // List output files with sizes for snapshotting.
       // This is to make sure that any changes to the output are intentional.
       // Posix path formatting is used to make paths the same across OSes.
-      const files = getFiles();
+      const files = findProjectFiles(outputDir);
 
       // The wrapper should not be included as a route.
       expect(files).not.toContain('server/+html.html');

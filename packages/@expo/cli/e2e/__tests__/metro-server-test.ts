@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import { bin, killProcess, setupTestProjectWithOptionsAsync } from './utils';
+import { bin, killChildProcess, setupTestProjectWithOptionsAsync } from './utils';
 
 describe('bundling code', () => {
   const metro = withMetroServer('metro-server-bundle-code', 'with-blank');
@@ -64,15 +64,7 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
   }
 
   async function stopServer() {
-    // Ignore if the server wasn't started, or is killed
-    if (!metroProcess || metroProcess.killed) return;
-    // Throw if the server was started, but has no PID
-    if (!metroProcess.pid) {
-      throw new Error('Metro process reference found without active PID, cannot kill process.');
-    }
-    // Kill the server, and reset the reference
-    // Note(cedric): `spawn.kill()` does not work well on Windows with nested processes
-    await killProcess(metroProcess.pid);
+    if (metroProcess) await killChildProcess(metroProcess);
     metroProcess = null;
   }
 

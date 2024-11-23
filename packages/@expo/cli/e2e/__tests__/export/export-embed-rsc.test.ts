@@ -1,20 +1,14 @@
 /* eslint-env jest */
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
-import execa from 'execa';
 import * as fs from 'fs';
 import { remove } from 'fs-extra';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
 import { ExpoServeLocalCommand } from '../../utils/command-instance';
-import { bin, getRouterE2ERoot } from '../utils';
+import { bin, execaLog, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
-
-function execaLog(command: string, args: string[], options: execa.Options) {
-  //   console.log(`Running: ${command} ${args.join(' ')}`);
-  return execa(command, args, options);
-}
 
 jest.unmock('resolve-from');
 

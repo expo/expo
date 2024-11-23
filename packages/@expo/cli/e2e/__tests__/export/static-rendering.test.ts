@@ -1,11 +1,10 @@
 /* eslint-env jest */
 import execa from 'execa';
 import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, ensurePortFreeAsync, getPageHtml, getRouterE2ERoot } from '../utils';
+import { bin, ensurePortFreeAsync, findProjectFiles, getPageHtml, getRouterE2ERoot, killChildProcess } from '../utils';
 
 runExportSideEffects();
 
@@ -68,10 +67,7 @@ describe('exports static', () => {
     );
 
     afterAll(async () => {
-      if (server) {
-        server.kill();
-        await server;
-      }
+      await killChildProcess(server);
     });
 
     it(`can serve up index html`, async () => {
@@ -83,17 +79,7 @@ describe('exports static', () => {
   });
 
   it('has expected files', async () => {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     // The wrapper should not be included as a route.
     expect(files).not.toContain('+html.html');
@@ -115,17 +101,7 @@ describe('exports static', () => {
   });
 
   it('has source maps', async () => {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     const mapFiles = files.filter((file) => file?.endsWith('.map'));
     expect(mapFiles).toEqual([expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.map/)]);

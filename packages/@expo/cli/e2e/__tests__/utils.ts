@@ -283,8 +283,13 @@ export async function ensurePortFreeAsync(port: number) {
   }
 }
 
-export async function killProcess(pid: number) {
-  await pTreeKill(pid);
+export async function killChildProcess(child?: execa.ExecaChildProcess | null) {
+  if (!child) return;
+  if (!child.pid) {
+    throw new Error('Child process has no PID, cannot kill process');
+  }
+
+  await pTreeKill(child.pid!);
 }
 
 export async function getPage(output: string, route: string): Promise<string> {
@@ -348,7 +353,7 @@ export function findProjectFiles(projectRoot: string) {
         : convertPathToPosix(path.relative(projectRoot, entry.path))
     )
     .filter(Boolean)
-    .sort();
+    .sort() as string[];
 }
 
 /**

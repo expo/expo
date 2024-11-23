@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import * as fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
