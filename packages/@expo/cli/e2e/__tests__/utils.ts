@@ -254,9 +254,10 @@ export async function getLoadedModulesAsync(statement: string): Promise<string[]
     ],
     { cwd: __dirname }
   );
-  const loadedModules = JSON.parse(results.stdout.trim());
+  const loadedModules = JSON.parse(results.stdout.trim()) as string[];
   return loadedModules
-    .map((value: string) => convertPathToPosix(path.relative(repoRoot, value)))
+    .map((value) => convertPathToPosix(path.relative(repoRoot, value)))
+    .filter((value) => !value.includes('/ms-vscode.js-debug/')) // Ignore injected vscode debugger scripts
     .sort();
 }
 
