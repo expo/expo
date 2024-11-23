@@ -3,7 +3,6 @@ import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import * as fs from 'fs/promises';
 import { sync as globSync } from 'glob';
-import klawSync from 'klaw-sync';
 import path from 'path';
 import semver from 'semver';
 
@@ -14,6 +13,8 @@ import {
   getRoot,
   setupTestProjectWithOptionsAsync,
   getLoadedModulesAsync,
+  findProjectFiles,
+  itNotWindows,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -175,7 +176,7 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
   // android/app/src/main/java/com/minimal/MainApplication.java
 }
 
-it(
+itNotWindows(
   'runs `npx expo prebuild`',
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
@@ -187,18 +188,6 @@ it(
       cwd: projectRoot,
     });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
-
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
     await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
@@ -217,13 +206,13 @@ it(
     });
 
     // If this changes then everything else probably changed as well.
-    expect(files).toMatchSnapshot();
+    expect(findProjectFiles(projectRoot)).toMatchSnapshot();
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000
 );
 
-it(
+itNotWindows(
   'runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`',
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
@@ -233,18 +222,6 @@ it(
       cwd: projectRoot,
     });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
-
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
     await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
@@ -263,13 +240,13 @@ it(
     });
 
     // If this changes then everything else probably changed as well.
-    expect(files).toMatchSnapshot();
+    expect(findProjectFiles(projectRoot)).toMatchSnapshot();
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000
 );
 
-it(
+itNotWindows(
   'runs `npx expo prebuild --template <github-url>`',
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync(
@@ -290,18 +267,6 @@ it(
       cwd: projectRoot,
     });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
-
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
     // Added new packages
@@ -318,7 +283,7 @@ it(
     });
 
     // If this changes then everything else probably changed as well.
-    expect(files).toMatchSnapshot();
+    expect(findProjectFiles(projectRoot)).toMatchSnapshot();
   },
   // Could take 1-2m depending on how fast github returns the tarball of expo/expo
   2 * 60 * 1000

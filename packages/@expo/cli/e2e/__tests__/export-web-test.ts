@@ -3,7 +3,6 @@ import JsonFile from '@expo/json-file';
 import assert from 'assert';
 import execa from 'execa';
 import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import {
@@ -12,6 +11,7 @@ import {
   getLoadedModulesAsync,
   bin,
   setupTestProjectWithOptionsAsync,
+  findProjectFiles,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -69,26 +69,16 @@ it(
     });
 
     const outputDir = path.join(projectRoot, 'web-build');
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     const assetsManifest = await JsonFile.readAsync(path.resolve(outputDir, 'asset-manifest.json'));
     expect(assetsManifest.entrypoints).toEqual([
-      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
+      expect.pathMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
+      expect.pathMatching(/static\/js\/main\.[a-z\d]+\.js/),
     ]);
 
     const knownFiles = [
-      ['main.js', expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/)],
+      ['main.js', expect.pathMatching(/static\/js\/main\.[a-z\d]+\.js/)],
       ['index.html', '/index.html'],
       ['manifest.json', '/manifest.json'],
       ['serve.json', '/serve.json'],
@@ -103,8 +93,8 @@ it(
     }
 
     for (const [key, value] of Object.entries(assetsManifest?.files ?? {})) {
-      expect(key).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
-      expect(value).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
+      expect(key).toMatchPath(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
+      expect(value).toMatchPath(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
     }
 
     expect(await JsonFile.readAsync(path.resolve(outputDir, 'manifest.json'))).toEqual({
@@ -146,11 +136,11 @@ it(
       'index.html',
       'manifest.json',
       'serve.json',
-      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.LICENSE\.txt/),
-      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.map/),
-      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js\.map/),
+      expect.pathMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
+      expect.pathMatching(/static\/js\/\d+\.[a-z\d]+\.js\.LICENSE\.txt/),
+      expect.pathMatching(/static\/js\/\d+\.[a-z\d]+\.js\.map/),
+      expect.pathMatching(/static\/js\/main\.[a-z\d]+\.js/),
+      expect.pathMatching(/static\/js\/main\.[a-z\d]+\.js\.map/),
     ]);
   },
   // Could take 45s depending on how fast npm installs

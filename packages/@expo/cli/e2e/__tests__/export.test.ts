@@ -250,8 +250,8 @@ describe('server', () => {
 
       // If this changes then everything else probably changed as well.
       expect(findProjectFiles(outputDir)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js\.map/),
+        expect.pathMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js/),
+        expect.pathMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js\.map/),
         'assetmap.json',
         'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
         'assets/9ce7db807e4147e00df372d053c154c2',

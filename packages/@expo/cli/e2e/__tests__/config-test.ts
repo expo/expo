@@ -103,6 +103,6 @@ it('throws on invalid project root', async () => {
   } catch (e) {
     const error = e as ExecaError;
     // Test on the invalid project prefix, and absolute path ending in the expected project folder
-    expect(error.stderr).toMatch(/Invalid project root: .*very---invalid/);
+    expect(error.stderr).toMatch(/^Invalid project root: .*very---invalid$/);
   }
 });

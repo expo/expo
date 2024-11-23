@@ -2,10 +2,9 @@
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import execa from 'execa';
 import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { execute, projectRoot, getLoadedModulesAsync, bin } from './utils';
+import { execute, projectRoot, getLoadedModulesAsync, bin, findProjectFiles } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -121,17 +120,7 @@ it(
     );
 
     const outputDir = path.join(projectRoot, 'dist-export-embed');
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     // If this changes then everything else probably changed as well.
     expect(files).toEqual([
@@ -200,17 +189,7 @@ it(
     );
 
     const outputDir = path.join(projectRoot, output);
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     // Ensure output.js is a utf8 encoded file
     const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
@@ -283,17 +262,7 @@ it(
     );
 
     const outputDir = path.join(projectRoot, output);
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     // Ensure output.js is a utf8 encoded file
     const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
@@ -380,17 +349,7 @@ it(
     expect(res.stderr).toBe('Experimental module resolution is enabled.');
 
     const outputDir = path.join(projectRoot, output);
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     // Ensure output.js is a utf8 encoded file
     const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');

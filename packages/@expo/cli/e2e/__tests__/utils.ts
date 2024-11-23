@@ -2,19 +2,25 @@
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import mockedSpawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
-import assert from 'assert';
 import execa from 'execa';
 import findProcess from 'find-process';
-import fs from 'fs';
 import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
-import os from 'os';
-import path from 'path';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import process from 'node:process';
+import { promisify } from 'node:util';
 import treeKill from 'tree-kill';
-import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
 import { convertPathToPosix } from '../jest/expect-path';
+
+/** Run a test case on any platform except Windows */
+export const itNotWindows = process.platform === 'win32' ? it.skip : it;
+/** Run a test case on any platform except Windows */
+export const testNotWindows = process.platform === 'win32' ? test.skip : test;
 
 export const bin = require.resolve('../../build/bin/cli');
 
