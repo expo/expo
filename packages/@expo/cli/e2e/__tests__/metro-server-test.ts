@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import { bin, setupTestProjectWithOptionsAsync } from './utils';
+import { bin, killProcess, setupTestProjectWithOptionsAsync } from './utils';
 
 describe('bundling code', () => {
   const metro = withMetroServer('metro-server-bundle-code', 'with-blank');
@@ -54,7 +54,7 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
   // Ensure the Metro server is active before each test, even when closed manually
   beforeEach(() => startServer());
   // Ensure the Metro server is killed after all tests
-  afterAll(() => killServer());
+  afterAll(() => stopServer());
 
   async function setupServer() {
     // Prepare the test project
@@ -63,15 +63,16 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
     await fs.remove(path.join(projectRoot, '.expo'));
   }
 
-  async function killServer() {
-    metroProcess?.kill('SIGINT');
-    await metroProcess;
-    metroProcess = null;
-  }
-
   async function stopServer() {
-    metroProcess?.kill('SIGTERM');
-    await metroProcess;
+    // Ignore if the server wasn't started, or is killed
+    if (!metroProcess || metroProcess.killed) return;
+    // Throw if the server was started, but has no PID
+    if (!metroProcess.pid) {
+      throw new Error('Metro process reference found without active PID, cannot kill process.');
+    }
+    // Kill the server, and reset the reference
+    // Note(cedric): `spawn.kill()` does not work well on Windows with nested processes
+    await killProcess(metroProcess.pid);
     metroProcess = null;
   }
 
@@ -81,7 +82,7 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
 
     console.log('Starting server');
 
-    metroProcess = execa('node', [bin, 'start', '--port=' + port], {
+    metroProcess = execa('node', [bin, 'start', '--max-workers=0', '--port=' + port], {
       cwd: projectRoot!,
       env: {
         ...process.env,
@@ -115,7 +116,6 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
   return {
     startServer,
     stopServer,
-    killServer,
     fetch: (path: string, init?: RequestInit) => fetch(`http://localhost:${port}${path}`, init),
   };
 }

@@ -277,6 +277,10 @@ export async function ensurePortFreeAsync(port: number) {
   }
 }
 
+export async function killProcess(pid: number) {
+  await pTreeKill(pid);
+}
+
 export async function getPage(output: string, route: string): Promise<string> {
   return await fs.promises.readFile(path.join(output, route), 'utf8');
 }
