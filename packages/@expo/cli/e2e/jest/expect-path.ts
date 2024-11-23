@@ -85,7 +85,7 @@ declare global {
        * Matches any path that contains the exact provided path, or matches the path pattern.
        * This matcher normalizes UNIX paths to POSIX paths, to simplify path assertions on different platforms.
        */
-      pathMatching(path: string | RegExp): void;
+      pathMatching(path: string | RegExp): any;
     }
   }
 }
