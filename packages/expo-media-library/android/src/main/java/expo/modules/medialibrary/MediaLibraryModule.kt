@@ -139,7 +139,7 @@ class MediaLibraryModule : Module() {
               .execute()
           }
         }
-        runActionWithPermissions(assetsId, action)
+        runActionWithDeletePermissions(assetsId, action)
       }
     }
 
@@ -307,7 +307,7 @@ class MediaLibraryModule : Module() {
     }
 
     OnActivityResult { _, payload ->
-      awaitingAction?.takeIf { payload.requestCode == WRITE_REQUEST_CODE }?.let {
+      awaitingAction?.takeIf { payload.requestCode == WRITE_REQUEST_CODE || payload.requestCode == DELETE_REQUEST_CODE }?.let {
         it.runWithPermissions(payload.resultCode == Activity.RESULT_OK)
         awaitingAction = null
       }
@@ -457,6 +457,31 @@ class MediaLibraryModule : Module() {
     action.runWithPermissions(true)
   }
 
+  private fun runActionWithDeletePermissions(assetsId: List<String>, action: Action) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+       val assetUris = MediaLibraryUtils.getAssetsUris(context, assetsId)
+      val deleteRequest =
+        MediaStore.createDeleteRequest(context.contentResolver, assetUris)
+      try {
+        awaitingAction = action
+        appContext.throwingActivity.startIntentSenderForResult(
+          deleteRequest.intentSender,
+          DELETE_REQUEST_CODE,
+          null,
+          0,
+          0,
+          0
+        )
+      } catch (e: SendIntentException) {
+        awaitingAction = null
+        throw e
+      }
+      // the action will be called when permissions are granted
+      return
+    }
+    action.runWithPermissions(true)
+  }
+
   private fun actionIfUserGrantedPermission(
     promise: Promise,
     block: () -> Unit
@@ -500,6 +525,7 @@ class MediaLibraryModule : Module() {
 
   companion object {
     private const val WRITE_REQUEST_CODE = 7463
+    private const val DELETE_REQUEST_CODE = 7464
     internal val TAG = MediaLibraryModule::class.java.simpleName
   }
 }
