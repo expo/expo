@@ -12,7 +12,7 @@
 
 ## 2.0.3 — 2024-11-23
 
-- Update `ImageProps` so `children` are omitted. ([#33afe30](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))
+- Update `ImageProps` so `children` are omitted. ([#33afe30](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017)) ([#33210](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))
 
 ### 💡 Others
 
