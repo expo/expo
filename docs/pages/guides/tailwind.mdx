@@ -39,6 +39,8 @@ Configure Tailwind CSS in your Expo project according to the [Tailwind PostCSS d
 
 Install `tailwindcss` and its required peer dependencies. Then, the run initialization command to create **tailwind.config.js** and **post.config.js** files in the root of your project.
 
+{/* <!-- vale off --> */}
+
 <Terminal
   cmd={[
     '# Install Tailwind and its peer dependencies',
@@ -48,6 +50,8 @@ Install `tailwindcss` and its required peer dependencies. Then, the run initiali
     '$ npx tailwindcss init -p',
   ]}
 />
+
+{/* <!-- vale on --> */}
 
 </Step>
 
@@ -59,10 +63,10 @@ Add paths to all of your template files inside **tailwind.config.js**.
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    // Ensure this points to your source code...
+    // Ensure this points to your source code
     './app/**/*.{js,tsx,ts,jsx}',
-    // If you use a `src` folder, add: './src/**/*.{js,tsx,ts,jsx}'
-    // Do the same with `components`, `hooks`, `styles`, or any other top-level folders...
+    // If you use a `src` directory, add: './src/**/*.{js,tsx,ts,jsx}'
+    // Do the same with `components`, `hooks`, `styles`, or any other top-level directories
   ],
   theme: {
     extend: {},
