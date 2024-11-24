@@ -110,7 +110,7 @@ import { View, StyleSheet, Button } from 'react-native';
 import { useAudioRecorder, RecordingOptions, AudioModule, RecordingPresets } from 'expo-audio';
 
 export default function App() {
-  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY;);
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 
   const record = () => audioRecorder.record();
 
