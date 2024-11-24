@@ -18,7 +18,7 @@ describe.each(configTypes)('exports monorepo using "%s"', (configType) => {
     async () => {
       // Create a project from the monorepo fixture
       const projectRoot = await setupTestProjectWithOptionsAsync(
-        `basic-export-monorepo-${configType}`,
+        `basic-export-monorepo-${configType.replace('.', '-')}`,
         'with-monorepo'
       );
 
