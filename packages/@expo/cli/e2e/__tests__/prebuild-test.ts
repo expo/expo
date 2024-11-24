@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
-import * as fs from 'fs/promises';
+import fs from 'fs/promises';
 import { sync as globSync } from 'glob';
 import path from 'path';
 import semver from 'semver';
@@ -14,7 +14,6 @@ import {
   setupTestProjectWithOptionsAsync,
   getLoadedModulesAsync,
   findProjectFiles,
-  itNotWindows,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;

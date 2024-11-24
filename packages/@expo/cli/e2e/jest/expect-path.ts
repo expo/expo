@@ -3,7 +3,7 @@ import type { MatcherFunction } from 'expect';
 import type { MatcherHintOptions } from 'jest-matcher-utils';
 import { platform } from 'node:process';
 
-export function convertPathToPosix(path: string): string {
+function convertPathToPosix(path: string): string {
   return platform === 'win32' ? path.replace(/\\/g, '/') : path;
 }
 

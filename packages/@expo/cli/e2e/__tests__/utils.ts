@@ -15,12 +15,6 @@ import { promisify } from 'node:util';
 import treeKill from 'tree-kill';
 
 import { copySync } from '../../src/utils/dir';
-import { convertPathToPosix } from '../jest/expect-path';
-
-/** Run a test case on any platform except Windows */
-export const itNotWindows = process.platform === 'win32' ? it.skip : it;
-/** Run a test case on any platform except Windows */
-export const testNotWindows = process.platform === 'win32' ? test.skip : test;
 
 export const bin = require.resolve('../../build/bin/cli');
 
@@ -339,6 +333,10 @@ export function expectChunkPathMatching(name: string) {
       `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
     )
   );
+}
+
+export function convertPathToPosix(path: string): string {
+  return process.platform === 'win32' ? path.replace(/\\/g, '/') : path;
 }
 
 /**

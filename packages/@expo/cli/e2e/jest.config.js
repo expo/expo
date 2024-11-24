@@ -1,7 +1,5 @@
 /* eslint-env node */
-const path = require('path');
-
-const roots = ['../__mocks__', '.'];
+const path = require('node:path');
 
 /** @type {import('jest').Config} */
 module.exports = {
@@ -11,6 +9,6 @@ module.exports = {
   watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
   rootDir: path.resolve(__dirname),
   displayName: require('../package').name,
-  roots,
-  setupFilesAfterEnv: [path.resolve(__dirname, 'jest/expect-path.ts')],
+  roots: ['../__mocks__', '.'],
+  setupFilesAfterEnv: [path.resolve(__dirname, './setup.ts')],
 };
