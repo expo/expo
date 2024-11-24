@@ -100,7 +100,7 @@ export function parseTrigger(userFacingTrigger) {
         return timeIntervalTrigger;
     }
     return Platform.select({
-        default: null, // There's no notion of channels on platforms other than Android.
+        default: null,
         android: {
             type: 'channel',
             channelId: typeof userFacingTrigger === 'object' &&

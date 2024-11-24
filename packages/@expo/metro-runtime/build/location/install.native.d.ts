@@ -4,8 +4,8 @@ import 'expo';
 declare const polyfillSymbol: unique symbol;
 export declare function wrapFetchWithWindowLocation(fetch: Function & {
     [polyfillSymbol]?: boolean;
-}): Function & {
+}): (Function & {
     [polyfillSymbol]?: boolean | undefined;
-};
+}) | ((...props: any[]) => any);
 export {};
 //# sourceMappingURL=install.native.d.ts.map

@@ -57,7 +57,7 @@ function getStatusFromMedia(media) {
     const status = {
         isLoaded: true,
         uri: media.src,
-        progressUpdateIntervalMillis: 100, //TODO: Bacon: Add interval between calls
+        progressUpdateIntervalMillis: 100,
         durationMillis: media.duration * 1000,
         positionMillis: media.currentTime * 1000,
         // playableDurationMillis: media.buffered * 1000,
@@ -65,7 +65,7 @@ function getStatusFromMedia(media) {
         // seekMillisToleranceAfter?: number
         shouldPlay: media.autoplay,
         isPlaying,
-        isBuffering: false, //media.waiting,
+        isBuffering: false,
         rate: media.playbackRate,
         // TODO: Bacon: This seems too complicated right now: https://webaudio.github.io/web-audio-api/#dom-biquadfilternode-frequency
         shouldCorrectPitch: false,
