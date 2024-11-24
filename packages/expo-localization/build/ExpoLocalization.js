@@ -155,7 +155,7 @@ export default {
             {
                 calendar: (locale?.calendar || locale?.calendars?.[0]) || null,
                 timeZone: locale?.timeZone || locale?.timeZones?.[0] || null,
-                uses24hourClock: (locale?.hourCycle || locale?.hourCycles?.[0])?.startsWith('h2') ?? null,
+                uses24hourClock: (locale?.hourCycle || locale?.hourCycles?.[0])?.startsWith('h2') ?? null, //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/hourCycle
                 firstWeekday: locale?.weekInfo?.firstDay || null,
             },
         ];
