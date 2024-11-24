@@ -15,7 +15,7 @@ In this example, we'll look at a simple project that uses these common environme
 
 - `EXPO_PUBLIC_API_URL`: a plain text [`EXPO_PUBLIC_`](/guides/environment-variables/) variable that holds the URL of the API server
 - `SENTRY_AUTH_TOKEN`: a sensitive variable that holds the authentication token for Sentry used to upload source maps after builds and updates
-- `APP_VARINT`: a plain text variable to select an [app variant](/tutorial/eas/multiple-app-variants/)
+- `APP_VARIANT`: a plain text variable to select an [app variant](/tutorial/eas/multiple-app-variants/)
 - `GOOGLE_SERVICES_JSON`: a secret file variable to supply your gitignored `google-services.json` file to the build job
 
 <Step label="1">
@@ -154,7 +154,7 @@ a **.env** file will be created in the root of your project with the following c
 ```bash .env.local
 # Environment: development
 
-APP_VARINT=development
+APP_VARIANT=development
 EXPO_PUBLIC_API_URL=https://staging.my-api-url.mycompany.com
 # GOOGLE_SERVICES_JSON=***** (secret variables are not available for reading)
 SENTRY_AUTH_TOKEN=token
