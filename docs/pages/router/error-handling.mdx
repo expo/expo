@@ -34,7 +34,7 @@ Expo Router enables fine-tuned error handling to enable a more opinionated data-
   className="max-w-[720px]"
 />
 
-You can export a nested [`ErrorBoundary`](/versions/v52.0.0/sdk/router/#errorboundary) component from any route to intercept and format component-level errors using [React Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary):
+You can export a nested [`ErrorBoundary`](/versions/latest/sdk/router/#errorboundary) component from any route to intercept and format component-level errors using [React Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary):
 
 {/* prettier-ignore */}
 ```tsx app/home.tsx
@@ -67,7 +67,7 @@ function Route({ ErrorBoundary, Component }) {
 }
 ```
 
-When `ErrorBoundary` is not present, the error will be thrown to the nearest parent's `ErrorBoundary` and accepts [`error`](/versions/v52.0.0/sdk/router/#error) and [`retry`](/versions/v52.0.0/sdk/router/#retry) props.
+When `ErrorBoundary` is not present, the error will be thrown to the nearest parent's `ErrorBoundary` and accepts [`error`](/versions/latest/sdk/router/#error) and [`retry`](/versions/latest/sdk/router/#retry) props.
 
 ### Work in progress
 
