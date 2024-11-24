@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Add foregroundServiceType property to Android ManifestServiceAttributes by [@micaelomota](https://github.com/micaelomota)) ([#33166](https://github.com/expo/expo/pull/33166) by [@micaelomota](https://github.com/micaelomota))
+- Add foregroundServiceType property to Android ManifestServiceAttributes by [@micaelomota](https://github.com/micaelomota)) ([#33166](https://github.com/expo/expo/pull/33166)
 
 ## 9.0.10 — 2024-11-20
 
