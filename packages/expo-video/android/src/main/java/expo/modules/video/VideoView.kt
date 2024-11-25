@@ -107,6 +107,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   init {
     VideoManager.registerVideoView(this)
     playerView.setFullscreenButtonClickListener { enterFullscreen() }
+    // The prop `useNativeControls` prop is sometimes applied after the view is created, and sometimes there is a visible
+    // flash of controls event when they are set to off. Initially we set it to `false` and apply it in `onAttachedToWindow` to avoid this.
+    this.playerView.useController = false
     addView(
       playerView,
       ViewGroup.LayoutParams(
@@ -249,6 +252,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .commitAllowingStateLoss()
     }
     applyAutoEnterPiP(currentActivity, autoEnterPiP)
+    this.playerView.useController = useNativeControls
   }
 
   override fun onDetachedFromWindow() {
