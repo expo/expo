@@ -226,8 +226,8 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 
 - `InvalidCredentials`: Your push notification credentials for your standalone app are invalid (for example, you may have revoked them).
 
-- **Android**: Make sure that you have correctly uploaded the server key from the Firebase Console as specified in [uploading FCM V1 server credentials](/push-notifications/fcm-credentials).
-- **iOS**: Run `eas credentials` and follow the prompts to regenerate new push notification credentials. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key will **not** change your users' Expo Push Tokens. Sometimes, these errors will contain further details claiming an `InvalidProviderToken` error. This is actually tied to both your APN key **and** your provisioning profile. To resolve this error, you should rebuild the app and regenerate a new push key and provisioning profile.
+  - **Android**: Make sure that you have correctly uploaded the server key from the Firebase Console as specified in [uploading FCM V1 server credentials](/push-notifications/fcm-credentials).
+  - **iOS**: Run `eas credentials` and follow the prompts to regenerate new push notification credentials. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key will **not** change your users' Expo Push Tokens. Sometimes, these errors will contain further details claiming an `InvalidProviderToken` error. This is actually tied to both your APN key **and** your provisioning profile. To resolve this error, you should rebuild the app and regenerate a new push key and provisioning profile.
 
 > For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](/app-signing/app-credentials#ios).
 

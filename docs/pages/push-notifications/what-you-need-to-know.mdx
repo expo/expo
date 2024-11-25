@@ -42,11 +42,11 @@ The table below summarizes what happens when a push notification is delivered to
 
 For the cases when user interacts with the notification (for example by pressing an action button), the following handlers are made available to you.
 
-| App state  | Listener(s) triggered                                                   |
-| ---------- | ----------------------------------------------------------------------- |
+| App state  | Listener(s) triggered                                                     |
+| ---------- | ------------------------------------------------------------------------- |
 | Foreground | `NotificationReceivedListener` and `NotificationResponseReceivedListener` |
-| Background | `NotificationResponseReceivedListener`                                  |
-| Terminated | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
+| Background | `NotificationResponseReceivedListener`                                    |
+| Terminated | `useLastNotificationResponse` or `getLastNotificationResponseAsync`       |
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
 
