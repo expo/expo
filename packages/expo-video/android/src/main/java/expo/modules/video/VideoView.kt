@@ -252,7 +252,6 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .commitAllowingStateLoss()
     }
     applyAutoEnterPiP(currentActivity, autoEnterPiP)
-    this.playerView.useController = useNativeControls
   }
 
   override fun onDetachedFromWindow() {
