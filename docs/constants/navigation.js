@@ -425,8 +425,8 @@ const general = [
       'Reference',
       [
         makePage('push-notifications/fcm-credentials.mdx'),
-        makePage('push-notifications/faq.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
+        makePage('push-notifications/faq.mdx'),
       ],
       { expanded: false }
     ),

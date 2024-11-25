@@ -11,7 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-To utilize Expo's push notification service, you must configure your app by installing a set of libraries, implement functions to handle notifications, and set up credentials for Android and iOS.
+To utilize Expo push notification service, you must configure your app by installing a set of libraries, implement functions to handle notifications, and set up credentials for Android and iOS.
 
 Complete the steps outlined in this guide or follow the more detailed video below. At the end, you'll be able to send a push notification and receive it on a device.
 
@@ -26,7 +26,7 @@ To get the client-side ready for push notifications, the following things are re
 <br />
 <Collapsible summary="Do you want to use FCM / APNs directly, instead of the Expo push notification service?">
 
-If you need finer-grained control over your notifications, communicating directly with FCM and APNs may be necessary. Expo does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic. Learn how to ["Send notifications with FCM and APNs"](/push-notifications/sending-notifications-custom/).
+If you need finer-grained control over your notifications, communicating directly with FCM and APNs may be necessary. Expo does not lock you into using Expo Application Services, and the `expo-notifications` API is push-service agnostic. Learn how to ["Send notifications with FCM and APNs"](/push-notifications/sending-notifications-custom/).
 
 </Collapsible>
 
@@ -73,7 +73,7 @@ Notifications.setNotificationHandler({
 });
 /* @end */
 
-/* @info Sends a notification to Expo. Can also use Expo's push notification tool at https://expo.dev/notifications. */
+/* @info Sends a notification to Expo. Can also use Expo push notification tool at https://expo.dev/notifications. */
 async function sendPushNotification(expoPushToken: string) {
   const message = {
     to: expoPushToken,
@@ -251,7 +251,7 @@ For Android and iOS, there are different requirements to set up your credentials
 <Step label="5">
 ## Test using the push notifications tool
 
-After creating and installing the development build, you can use [Expo's push notifications tool](https://expo.dev/notifications) to quickly send a test notification to your device.
+After creating and installing the development build, you can use [Expo push notifications tool](https://expo.dev/notifications) to quickly send a test notification to your device.
 
 1. Start the development server for your project:
 

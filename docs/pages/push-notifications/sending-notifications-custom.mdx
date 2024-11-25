@@ -4,13 +4,13 @@ hideFromSearch: true
 description: Learn how to send notifications with FCM and APNs.
 ---
 
-You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic.
+You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo Application Services, and the `expo-notifications` API is push-service agnostic.
 
 > **Note**: This guide does not aim to be a comprehensive resource for sending notifications via FCM or APNs. We recommend you read the official documentation to make sure you're following the latest instructions.
 
 ## Obtaining a device token for FCM or APNs
 
-When using Expo's notification service, you use the `ExpoPushToken` obtained with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken).
+When using Expo notification service, you use the `ExpoPushToken` obtained with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken).
 
 If you instead want to send notifications via FCM or APNs, you need to obtain the native device token with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
 

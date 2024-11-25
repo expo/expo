@@ -1,12 +1,11 @@
 ---
 title: Send notifications with the Expo Push Service
-sidebar_title: Send notifications with the Expo Push Service
-description: Learn how to call Expo's Push Service API to send push notifications from your server.
+description: Learn how to call Expo Push Service API to send push notifications from your server.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-The [`expo-notifications`](/versions/latest/sdk/notifications) library provides all the client-side functionality for push notifications. Expo also handles sending push notifications off to FCM and APNs which then send them to particular devices. All you need to do is send a request to Expo's Push API with the `ExpoPushToken` you obtain with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions).
+The [`expo-notifications`](/versions/latest/sdk/notifications) library provides all the client-side functionality for push notifications. Expo also handles sending push notifications off to FCM and APNs which then send them to particular devices. All you need to do is send a request to Expo Push API with the `ExpoPushToken` you obtain with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions).
 
 > If you'd rather build a server that communicates with APNs and FCM directly, see [Send notifications with FCM and APNs](/push-notifications/sending-notifications-custom/). It's more complex than using Expo Push Service, but allows finer-grained control, and full access to all FCM and APNs features.
 
@@ -37,7 +36,7 @@ The Expo team and community have taken care of creating back-ends for you in a f
 | [expo-server-sdk-java](https://github.com/nia-medtech/expo-server-sdk-java)                              | Java     | Community     |
 | [laravel-expo-notifier](https://github.com/YieldStudio/laravel-expo-notifier)                            | Laravel  | Community     |
 
-Each of the example servers above is a wrapper around Expo's Push Service API.
+Each of the example servers above is a wrapper around Expo Push Service API.
 
 ## Implement push notifications reliably
 
@@ -66,7 +65,7 @@ The Expo push notification service responds with [**push tickets**](#push-ticket
 
 You must check your push receipts. If there is an issue delivering push notifications, the push receipts are the best way to get information about the underlying cause. For example, the receipts may indicate a problem with FCMs or APNs, the Expo push notification service, or your notification payload.
 
-Push receipts may also tell you if a recipient device has unsubscribed from notifications (for example, by revoking notification permissions or uninstalling your app) if APNs or FCM responds with that information. The push receipt will contain a `details` → `error` field set to `DeviceNotRegistered`. In this scenario, stop sending notifications to this device's push token until it re-registers with your server, so your app remains a good citizen. The `DeviceNotRegistered` error appears in push receipts only when Apple or Google deems the device to be unregistered. It takes an undefined amount of time and is often impossible to test by uninstalling your app and sending a push notification shortly after.
+Push receipts may also tell you if a recipient device has unsubscribed from notifications (for example, by revoking notification permissions or uninstalling your app) if APNs or FCM responds with that information. The push receipt will contain a `details` → `error` field set to `DeviceNotRegistered`. In this scenario, stop sending notifications to this device's push token until it re-registers with your server, so your app remains a good citizen. The `DeviceNotRegistered` error appears in push receipts only when Google or Apple deems the device to be unregistered. It takes an undefined amount of time and is often impossible to test by uninstalling your app and sending a push notification shortly after.
 
 We recommend checking push receipts 15 minutes after sending your push notifications. While push receipts are often available much sooner, a 15-minute window gives the Expo push notification service a comfortable amount of time to make the receipts available to you. If after 15 minutes there is no push receipt, this likely indicates an error with the Expo push notification service. Lastly, push receipts are cleared after 24 hours.
 
