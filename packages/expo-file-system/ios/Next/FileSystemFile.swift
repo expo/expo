@@ -67,7 +67,7 @@ internal final class FileSystemFile: FileSystemPath {
       return hash.map { String(format: "%02hhx", $0) }.joined()
     }
   }
-  
+
   var type: String? {
     let pathExtension = url.pathExtension
     if let utType = UTType(filenameExtension: pathExtension) {

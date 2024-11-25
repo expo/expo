@@ -21,8 +21,6 @@ export async function test({ describe, expect, it, ...t }) {
       await FS.deleteAsync(testDirectory);
     } catch {}
   });
-  const only = it;
-  it = () => {};
   describe('FileSystem (Next)', () => {
     if (Constants.appOwnership === 'expo') {
       describe('managed workflow', () => {
@@ -639,17 +637,31 @@ export async function test({ describe, expect, it, ...t }) {
       expect(src.text()).toBe(alphabet);
     });
 
-    only('Supports sending a file using blob', async () => {
+    it('Returns correct file type', async () => {
       const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
-
       const src = new File(asset.localUri);
-      // const src = new File(testDirectory, 'test.txt');
-      // src.write('Hello world');
+      expect(src.type).toBe('image/jpeg');
+      const src2 = new File(testDirectory, 'file.txt');
+      src2.write('abcde');
+      expect(src2.type).toBe('text/plain');
+    });
 
-      const formData = new FormData();
+    it('Exposes a file as blob', async () => {
+      const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
+      const src = new File(asset.localUri);
+
       const blob = src.blob();
 
       expect(blob.size).toBe(src.size);
+    });
+
+    // Use something like twostoryrobot/simple-file-upload to test
+    it('Supports sending a file using blob', async () => {
+      const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
+      const src = new File(asset.localUri);
+
+      const formData = new FormData();
+      const blob = src.blob();
 
       formData.append('data', blob);
       await fetch('http://localhost:3000/upload?key=TESTUSER', {

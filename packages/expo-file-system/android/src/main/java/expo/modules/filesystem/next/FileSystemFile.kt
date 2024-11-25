@@ -1,15 +1,14 @@
 package expo.modules.filesystem.next
 
-import android.content.ContentResolver
 import android.net.Uri
 import android.util.Base64
+import android.webkit.MimeTypeMap
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.File
 import java.io.FileOutputStream
 import java.security.MessageDigest
-
 
 @OptIn(EitherType::class)
 class FileSystemFile(file: File) : FileSystemPath(file) {
@@ -99,9 +98,7 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
   }
 
   val type: String? get() {
-    val uri = Uri.fromFile(file)
-    val cR: ContentResolver? = appContext?.reactContext?.contentResolver
-    val mime = cR?.getType(uri)
-    return mime
+    return MimeTypeMap.getFileExtensionFromUrl(file.path)
+      ?.run { MimeTypeMap.getSingleton().getMimeTypeFromExtension(lowercase()) }
   }
 }
