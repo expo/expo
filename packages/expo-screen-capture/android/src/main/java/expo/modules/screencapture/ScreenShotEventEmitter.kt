@@ -14,7 +14,7 @@ import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import expo.modules.core.interfaces.LifecycleEventListener
 
-class ScreenShotEventEmitter(val context: Context, onScreenShot: () -> Unit) : LifecycleEventListener {
+class ScreenshotEventEmitter(val context: Context, onCapture: () -> Unit) : LifecycleEventListener {
   private var isListening: Boolean = true
   private var previousPath: String = ""
 
@@ -29,7 +29,7 @@ class ScreenShotEventEmitter(val context: Context, onScreenShot: () -> Unit) : L
         val path = getFilePathFromContentResolver(context, uri)
         if (path != null && isPathOfNewScreenshot(path)) {
           previousPath = path
-          onScreenShot()
+          onCapture()
         }
       }
     }
