@@ -76,7 +76,7 @@ import { useState, useRef } from 'react';
 /* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
-  /* @tutinfo Create an imageRef variable. */ const imageRef = useRef();/* @end */
+  /* @tutinfo Create an imageRef variable. */ const imageRef = useRef<View>(null);/* @end */
 
   // ...rest of the code remains same
 
@@ -142,7 +142,7 @@ export default function Index() {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });

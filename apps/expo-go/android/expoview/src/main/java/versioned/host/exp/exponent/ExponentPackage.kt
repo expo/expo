@@ -28,6 +28,7 @@ import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
+import fr.greweb.reactnativeviewshot.RNViewShotModule
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExponentKernelModuleProvider
@@ -41,7 +42,6 @@ import versioned.host.exp.exponent.modules.api.ScreenOrientationModule
 import versioned.host.exp.exponent.modules.api.URLHandlerModule
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
-import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule
@@ -124,7 +124,7 @@ class ExponentPackage : ReactPackage {
         val experienceKey = ExperienceKey.fromManifest(manifest)
         val scopedContext = ScopedContext(reactContext, experienceKey)
         nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), manifest.getEASProjectID()))
-        nativeModules.add(RNViewShotModule(reactContext, scopedContext))
+        nativeModules.add(RNViewShotModule(reactContext, scopedContext.cacheDir, scopedContext.externalCacheDir))
         nativeModules.add(ExponentTestNativeModule(reactContext))
         nativeModules.add(PedometerModule(reactContext))
         nativeModules.add(ScreenOrientationModule(reactContext))
@@ -134,7 +134,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.addAll(SvgPackage().getNativeModuleIterator(reactContext).map { it.module })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
-        nativeModules.addAll(RNDateTimePickerPackage().getNativeModuleIterator(reactContext).map { it.module })
+        nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name(), reactContext)!! })
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 

@@ -82,10 +82,10 @@ index a4b0833035..84879d83ac 100644
 -    applyNativeModulesAppBuildGradle(project)
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 5217550826..9a8e058010 100644
+index 5217550826..150248b6b3 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-@@ -18,7 +18,7 @@
+@@ -18,13 +18,12 @@
      </intent>
    </queries>
  
@@ -94,6 +94,12 @@ index 5217550826..9a8e058010 100644
      <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
+         <category android:name="android.intent.category.LAUNCHER"/>
+       </intent-filter>
+     </activity>
+-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
+   </application>
+ </manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 index 5f6e05ce07..e61349d130 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
@@ -127,6 +133,98 @@ index 5f6e05ce07..e61349d130 100644
      if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
        // If you opted-in for the New Architecture, we load the native entry point for this app.
        load()
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png
+new file mode 100644
+index 0000000000..31df827b18
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png
+new file mode 100644
+index 0000000000..ef243aab6c
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png
+new file mode 100644
+index 0000000000..e9d5474519
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png
+new file mode 100644
+index 0000000000..d61da15d24
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png
+new file mode 100644
+index 0000000000..4aeed11d00
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
+similarity index 53%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
+index 12f2f76980..883b2a080f 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
+@@ -1,4 +1,6 @@
+-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+   <item android:drawable="@color/splashscreen_background"/>
++  <item>
++    <bitmap android:gravity="center" android:src="@drawable/splashscreen_logo"/>
++  </item>
+ </layer-list>
+\ No newline at end of file
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png
+deleted file mode 100644
+index cc94f379de..0000000000
+Binary files a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png and /dev/null differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
+similarity index 100%
+rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
+index 90bcc87b8e..51fbc1e5a7 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
+@@ -10,6 +10,6 @@
+     <item name="android:textColor">@android:color/black</item>
+   </style>
+   <style name="Theme.App.SplashScreen" parent="AppTheme">
+-    <item name="android:windowBackground">@drawable/splashscreen</item>
++    <item name="android:windowBackground">@drawable/splashscreen_logo</item>
+   </style>
+ </resources>
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
 index 932bf7b34b..e34231b2ff 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
@@ -352,6 +450,18 @@ index baac9e50ca..0000000000
 -    presets: ['babel-preset-expo']
 -  };
 -};
+diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
+index 05647d55c7..d16e1efbb3 100644
+--- a/templates/expo-template-bare-minimum/gitignore
++++ b/templates/expo-template-bare-minimum/gitignore
+@@ -7,6 +7,7 @@ node_modules/
+ .expo/
+ dist/
+ web-build/
++expo-env.d.ts
+ 
+ # Native
+ *.orig.*
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 index f945940c25..1ccb9b422d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
@@ -392,6 +502,219 @@ index f945940c25..1ccb9b422d 100644
  				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
  				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
  				MTL_ENABLE_DEBUG_INFO = NO;
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json
+deleted file mode 100644
+index e67cd6c5e2..0000000000
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json
++++ /dev/null
+@@ -1,21 +0,0 @@
+-{
+-  "images": [
+-    {
+-      "idiom": "universal",
+-      "filename": "splashscreen.png",
+-      "scale": "1x"
+-    },
+-    {
+-      "idiom": "universal",
+-      "scale": "2x"
+-    },
+-    {
+-      "idiom": "universal",
+-      "scale": "3x"
+-    }
+-  ],
+-  "info": {
+-    "version": 1,
+-    "author": "expo"
+-  }
+-}
+\ No newline at end of file
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png
+deleted file mode 100644
+index cc94f379de..0000000000
+Binary files a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png and /dev/null differ
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json
+deleted file mode 100644
+index b5914aac6a..0000000000
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json
++++ /dev/null
+@@ -1,21 +0,0 @@
+-{
+-  "images": [
+-    {
+-      "idiom": "universal",
+-      "filename": "background.png",
+-      "scale": "1x"
+-    },
+-    {
+-      "idiom": "universal",
+-      "scale": "2x"
+-    },
+-    {
+-      "idiom": "universal",
+-      "scale": "3x"
+-    }
+-  ],
+-  "info": {
+-    "version": 1,
+-    "author": "expo"
+-  }
+-}
+\ No newline at end of file
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png
+deleted file mode 100644
+index ff3dd16fd7..0000000000
+Binary files a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png and /dev/null differ
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+index 53d78e8903..596dc7ce6b 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+@@ -24,6 +24,8 @@
+ 	<string>1</string>
+ 	<key>LSRequiresIPhoneOS</key>
+ 	<true/>
++	<key>LSMinimumSystemVersion</key>
++	<string>12.0</string>
+ 	<key>NSAppTransportSecurity</key>
+ 	<dict>
+ 		<key>NSAllowsArbitraryLoads</key>
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
+index 24eec3df5c..447b418898 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
+@@ -1,91 +1,42 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<document
+-  type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB"
+-  version="3.0"
+-  toolsVersion="16096"
+-  targetRuntime="iOS.CocoaTouch"
+-  propertyAccessControl="none"
+-  useAutolayout="YES"
+-  launchScreen="YES"
+-  useTraitCollections="YES"
+-  useSafeAreas="YES"
+-  colorMatched="YES"
+-  initialViewController="EXPO-VIEWCONTROLLER-1"
+->
+-  <device id="retina5_5" orientation="portrait" appearance="light"/>
+-  <dependencies>
+-    <deployment identifier="iOS"/>
+-    <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+-    <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+-    <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+-  </dependencies>
+-  <scenes>
+-    <!--View Controller-->
+-    <scene sceneID="EXPO-SCENE-1">
+-      <objects>
+-        <viewController
+-          storyboardIdentifier="SplashScreenViewController"
+-          id="EXPO-VIEWCONTROLLER-1"
+-          sceneMemberID="viewController"
+-        >
+-          <view
+-            key="view"
+-            userInteractionEnabled="NO"
+-            contentMode="scaleToFill"
+-            insetsLayoutMarginsFromSafeArea="NO"
+-            id="EXPO-ContainerView"
+-            userLabel="ContainerView"
+-          >
+-            <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+-            <subviews>
+-              <imageView
+-                userInteractionEnabled="NO"
+-                contentMode="scaleAspectFill"
+-                horizontalHuggingPriority="251"
+-                verticalHuggingPriority="251"
+-                insetsLayoutMarginsFromSafeArea="NO"
+-                image="SplashScreenBackground"
+-                translatesAutoresizingMaskIntoConstraints="NO"
+-                id="EXPO-SplashScreenBackground"
+-                userLabel="SplashScreenBackground"
+-              >
+-                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+-              </imageView>
+-              <imageView
+-                clipsSubviews="YES"
+-                userInteractionEnabled="NO"
+-                contentMode="scaleAspectFit"
+-                horizontalHuggingPriority="251"
+-                verticalHuggingPriority="251"
+-                translatesAutoresizingMaskIntoConstraints="NO"
+-                image="SplashScreen"
+-                id="EXPO-SplashScreen"
+-                userLabel="SplashScreen"
+-              >
+-                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+-              </imageView>
+-            </subviews>
+-            <constraints>
+-              <constraint firstItem="EXPO-SplashScreenBackground" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="1gX-mQ-vu6"/>
+-              <constraint firstItem="EXPO-SplashScreenBackground" firstAttribute="leading" secondItem="EXPO-ContainerView" secondAttribute="leading" id="6tX-OG-Sck"/>
+-              <constraint firstItem="EXPO-SplashScreenBackground" firstAttribute="trailing" secondItem="EXPO-ContainerView" secondAttribute="trailing" id="ABX-8g-7v4"/>
+-              <constraint firstItem="EXPO-SplashScreenBackground" firstAttribute="bottom" secondItem="EXPO-ContainerView" secondAttribute="bottom" id="jkI-2V-eW5"/>
+-              <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
+-              <constraint firstItem="EXPO-SplashScreen" firstAttribute="leading" secondItem="EXPO-ContainerView" secondAttribute="leading" id="LhH-Ei-DKo"/>
+-              <constraint firstItem="EXPO-SplashScreen" firstAttribute="trailing" secondItem="EXPO-ContainerView" secondAttribute="trailing" id="I6l-TP-6fn"/>
+-              <constraint firstItem="EXPO-SplashScreen" firstAttribute="bottom" secondItem="EXPO-ContainerView" secondAttribute="bottom" id="nbp-HC-eaG"/>
+-            </constraints>
+-            <viewLayoutGuide key="safeArea" id="Rmq-lb-GrQ"/>
+-          </view>
+-        </viewController>
+-        <placeholder placeholderIdentifier="IBFirstResponder" id="EXPO-PLACEHOLDER-1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+-      </objects>
+-      <point key="canvasLocation" x="140.625" y="129.4921875"/>
+-    </scene>
+-  </scenes>
+-  <resources>
+-    <image name="SplashScreen" width="414" height="736"/>
+-    <image name="SplashScreenBackground" width="1" height="1"/>
+-  </resources>
++<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EXPO-VIEWCONTROLLER-1">
++    <device id="retina6_12" orientation="portrait" appearance="light"/>
++    <dependencies>
++        <deployment identifier="iOS"/>
++        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
++        <capability name="Named colors" minToolsVersion="9.0"/>
++        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
++        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
++    </dependencies>
++    <scenes>
++        <!--View Controller-->
++        <scene sceneID="EXPO-SCENE-1">
++            <objects>
++                <viewController storyboardIdentifier="SplashScreenViewController" id="EXPO-VIEWCONTROLLER-1" sceneMemberID="viewController">
++                    <view key="view" userInteractionEnabled="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="EXPO-ContainerView" userLabel="ContainerView">
++                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
++                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
++                        <subviews>
++                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SplashScreen" translatesAutoresizingMaskIntoConstraints="NO" id="EXPO-SplashScreen" userLabel="SplashScreen">
++                                <rect key="frame" x="146.66666666666666" y="381" width="100" height="90.333333333333314"/>
++                                <accessibility key="accessibilityConfiguration">
++                                    <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
++                                </accessibility>
++                            </imageView>
++                        </subviews>
++                        <viewLayoutGuide key="safeArea" id="Rmq-lb-GrQ"/>
++                        <constraints>
++                            <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerY" secondItem="EXPO-ContainerView" secondAttribute="centerY" id="0VC-Wk-OaO"/>
++                            <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerX" secondItem="EXPO-ContainerView" secondAttribute="centerX" id="zR4-NK-mVN"/>
++                        </constraints>
++                    </view>
++                </viewController>
++                <placeholder placeholderIdentifier="IBFirstResponder" id="EXPO-PLACEHOLDER-1" userLabel="First Responder" sceneMemberID="firstResponder"/>
++            </objects>
++            <point key="canvasLocation" x="0.0" y="0.0"/>
++        </scene>
++    </scenes>
++    <resources>
++        <image name="SplashScreenLogo" width="100" height="90.333335876464844"/>
++    </resources>
+ </document>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
 index 57c1dd3834..f740040e7b 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
@@ -457,7 +780,7 @@ index 57c1dd3834..f740040e7b 100644
 -  end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 563853071f..64764d0cd9 100644
+index 563853071f..bfd1e57dac 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -466,7 +789,7 @@ index 563853071f..64764d0cd9 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "51.0.56",
 +  "license": "0BSD",
-+  "version": "52.0.3",
++  "version": "52.0.40",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -478,10 +801,10 @@ index 563853071f..64764d0cd9 100644
 -    "expo-status-bar": "~1.12.1",
 -    "react": "18.2.0",
 -    "react-native": "0.74.5"
-+    "expo": "~52.0.0-preview.3",
++    "expo": "~52.0.9",
 +    "expo-status-bar": "~2.0.0",
 +    "react": "18.3.1",
-+    "react-native": "0.76.0"
++    "react-native": "0.76.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

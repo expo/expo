@@ -47,7 +47,7 @@ type Links = {
 
 type Props = StackScreenProps<Links, 'Events'>;
 
-function createEvent(recurring: boolean = false) {
+function createEvent(calendarId: string, recurring: boolean = false) {
   const timeInOneHour = new Date();
   timeInOneHour.setHours(timeInOneHour.getHours() + 1);
   const newEvent: Parameters<typeof Calendar.createEventAsync>[1] = {
@@ -57,6 +57,7 @@ function createEvent(recurring: boolean = false) {
     endDate: timeInOneHour,
     notes: 'This is a cool note',
     timeZone: 'America/Los_Angeles',
+    calendarId,
   };
   if (recurring) {
     newEvent.recurrenceRule = {
@@ -103,7 +104,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
 
     try {
-      const newEvent = createEvent(recurring);
+      const newEvent = createEvent(calendar.id, recurring);
       await Calendar.createEventAsync(calendar.id, newEvent);
       Alert.alert('Event saved successfully');
       this._findEvents(calendar.id);
@@ -211,7 +212,8 @@ export default class EventsScreen extends React.Component<Props, State> {
         <Button onPress={() => this._addEvent(true)} title="Add New Recurring Event" />
         <Button
           onPress={async () => {
-            const newEvent = createEvent(true);
+            const { calendar } = this.props.route.params!;
+            const newEvent = createEvent(calendar.id);
             const result = await Calendar.createEventInCalendarAsync(newEvent);
             setTimeout(() => {
               Alert.alert('createEventInCalendarAsync result', JSON.stringify(result), undefined, {

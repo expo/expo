@@ -5,8 +5,12 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { createMetadataJson } from './createMetadataJson';
+import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
+import {
+  exportDomComponentAsync,
+  updateDomComponentAssetsForMD5Naming,
+} from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
 import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
@@ -121,6 +125,7 @@ export async function exportAppAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   const bundles: Partial<Record<Platform, BundleOutput>> = {};
+  const domComponentAssetsMetadata: Partial<Record<Platform, PlatformMetadata['assets']>> = {};
 
   const spaPlatforms = useServerRendering
     ? platforms.filter((platform) => platform !== 'web')
@@ -163,12 +168,51 @@ export async function exportAppAsync(
           );
 
           bundles[platform] = bundle;
+          domComponentAssetsMetadata[platform] = [];
 
           getFilesFromSerialAssets(bundle.artifacts, {
             includeSourceMaps: sourceMaps,
             files,
             isServerHosted: devServer.isReactServerComponentsEnabled,
           });
+
+          // TODO: Remove duplicates...
+          const expoDomComponentReferences = bundle.artifacts
+            .map((artifact) =>
+              Array.isArray(artifact.metadata.expoDomComponentReferences)
+                ? artifact.metadata.expoDomComponentReferences
+                : []
+            )
+            .flat();
+          await Promise.all(
+            // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
+            expoDomComponentReferences.map(async (filePath) => {
+              const { bundle: platformDomComponentsBundle, htmlOutputName } =
+                await exportDomComponentAsync({
+                  filePath,
+                  projectRoot,
+                  dev,
+                  devServer,
+                  isHermes,
+                  includeSourceMaps: sourceMaps,
+                  exp,
+                  files,
+                });
+
+              // Merge the assets from the DOM component into the output assets.
+              // @ts-expect-error: mutate assets
+              bundle.assets.push(...platformDomComponentsBundle.assets);
+
+              const assetsMetadata = updateDomComponentAssetsForMD5Naming({
+                domComponentReference: filePath,
+                nativeBundle: bundle,
+                domComponentBundle: platformDomComponentsBundle,
+                files,
+                htmlOutputName,
+              });
+              domComponentAssetsMetadata[platform]?.push(...assetsMetadata);
+            })
+          );
 
           if (platform === 'web') {
             // TODO: Unify with exportStaticAsync
@@ -242,6 +286,7 @@ export async function exportAppAsync(
         bundles,
         fileNames,
         embeddedHashSet,
+        domComponentAssetsMetadata,
       });
       files.set('metadata.json', { contents: JSON.stringify(contents) });
     }

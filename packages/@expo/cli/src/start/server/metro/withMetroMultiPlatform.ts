@@ -286,8 +286,12 @@ export function withExtendedResolver(
   }
 
   // TODO: This is a hack to get resolveWeak working.
-  const idFactory =
-    config.serializer?.createModuleIdFactory?.() ?? ((id: number | string): number | string => id);
+  const idFactory = (config.serializer?.createModuleIdFactory?.() ??
+    ((id: number | string, context: { platform: string; environment?: string }): number | string =>
+      id)) as (
+    id: number | string,
+    context: { platform: string; environment?: string }
+  ) => number | string;
 
   const getAssetRegistryModule = () => {
     const virtualModuleId = `\0polyfill:assets-registry`;
@@ -325,6 +329,11 @@ export function withExtendedResolver(
           );
         }
 
+        // TODO: Windows doesn't support externals somehow.
+        if (process.platform === 'win32') {
+          return /^(source-map-support(\/.*)?)$/.test(moduleName);
+        }
+
         // Extern these modules in standard Node.js environments in development to prevent API routes side-effects
         // from leaking into the dev server process.
         return /^(source-map-support(\/.*)?|react|react-native-helmet-async|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
@@ -353,10 +362,7 @@ export function withExtendedResolver(
         }
 
         const isExternal = // Extern these modules in standard Node.js environments.
-          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
-            moduleName
-          ) ||
-          /^react-native-web\/dist\/exports\/(Platform|NativeEventEmitter|StyleSheet|NativeModules|DeviceEventEmitter|Text|View)$/.test(
+          /^(deprecated-react-native-prop-types|react|react\/jsx-dev-runtime|scheduler|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
             moduleName
           ) ||
           // TODO: Add more
@@ -461,6 +467,7 @@ export function withExtendedResolver(
       if (moduleName.endsWith('/package.json')) {
         return null;
       }
+      const environment = context.customResolverOptions?.environment;
 
       const strictResolve = getStrictResolver(context, platform);
 
@@ -475,7 +482,10 @@ export function withExtendedResolver(
             // TODO: Make this use require.resolveWeak again. Previously this was just resolving to the same path.
             const realModule = strictResolve(moduleName);
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
-            const opaqueId = idFactory(realPath);
+            const opaqueId = idFactory(realPath, {
+              platform: platform!,
+              environment,
+            });
 
             const contents =
               typeof opaqueId === 'number'

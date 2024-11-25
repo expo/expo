@@ -3,7 +3,7 @@ import execa from 'execa';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
-import { bin, ServeLocalCommand } from '../../utils/command-instance';
+import { bin, ExpoServeLocalCommand } from '../../utils/command-instance';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -17,7 +17,7 @@ test.beforeAll(async () => {
   test.setTimeout(560 * 1000);
 });
 
-let serveCmd: ServeLocalCommand;
+let serveCmd: ExpoServeLocalCommand;
 
 test.beforeAll('bundle and serve', async () => {
   console.time('expo export');
@@ -27,7 +27,7 @@ test.beforeAll('bundle and serve', async () => {
       NODE_ENV: 'production',
       EXPO_USE_STATIC: 'single',
       E2E_ROUTER_SRC: testName,
-      EXPO_UNSTABLE_SERVER_ACTIONS: '1',
+      EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
       E2E_ROUTER_JS_ENGINE: 'hermes',
       EXPO_USE_METRO_REQUIRE: '1',
       E2E_CANARY_ENABLED: '1',
@@ -39,12 +39,13 @@ test.beforeAll('bundle and serve', async () => {
   });
   console.timeEnd('expo export');
 
-  serveCmd = new ServeLocalCommand(projectRoot, {
+  serveCmd = new ExpoServeLocalCommand(projectRoot, {
     NODE_ENV: 'production',
+    TEST_SECRET_VALUE: 'test-secret',
   });
 
   console.time('npx serve');
-  await serveCmd.startAsync(['serve.js', '--port=' + randomPort(), '--dist=' + inputDir]);
+  await serveCmd.startAsync([inputDir, '--port=' + randomPort()]);
   console.timeEnd('npx serve');
   console.log('Server running:', serveCmd.url);
 });

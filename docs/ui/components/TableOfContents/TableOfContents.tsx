@@ -17,7 +17,7 @@ export function TableOfContents() {
   return (
     <LayoutScroll ref={autoScroll.ref}>
       <nav className="block w-full p-8">
-        <CALLOUT className="mt-4 mb-1.5" weight="medium">
+        <CALLOUT className="mb-1.5 mt-4" weight="medium">
           On this page
         </CALLOUT>
         <ul className="list-none">

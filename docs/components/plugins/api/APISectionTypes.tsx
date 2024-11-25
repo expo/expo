@@ -29,7 +29,7 @@ import {
   getCommentContent,
   listParams,
 } from './APISectionUtils';
-import { STYLES_APIBOX } from './styles';
+import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
 
 import { APIBox } from '~/components/plugins/APIBox';
 import { Cell, Row, Table } from '~/ui/components/Table';
@@ -160,9 +160,9 @@ const renderType = (
             ))
           : null}
         {type.declaration.signatures && type.declaration.signatures[0].type && (
-          <div className="flex flex-row gap-2 items-start mt-4">
-            <div className="flex flex-row gap-2 items-center">
-              <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
+          <div className="mt-4 flex flex-row items-start gap-2">
+            <div className="flex flex-row items-center gap-2">
+              <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
               <CALLOUT tag="span" theme="secondary" weight="medium">
                 Returns:
               </CALLOUT>
@@ -186,11 +186,8 @@ const renderType = (
           <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
-        <CALLOUT>
-          <SPAN theme="secondary" weight="medium">
-            Tuple:{' '}
-          </SPAN>
-          <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
+        <CALLOUT className={STYLES_SECONDARY}>
+          Tuple: <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
         </CALLOUT>
       </div>
     );
@@ -217,10 +214,8 @@ const renderType = (
           <CommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' || type.type === 'union' ? (
             <>
-              <CALLOUT>
-                <SPAN theme="secondary" weight="medium">
-                  Type:{' '}
-                </SPAN>
+              <CALLOUT className={STYLES_SECONDARY}>
+                Type:{' '}
                 {type.types
                   .filter(type =>
                     ['reference', 'union', 'intersection', 'intrinsic', 'literal'].includes(
@@ -233,14 +228,12 @@ const renderType = (
                       {type.type === 'union' ? ' or ' : ' '}
                     </Fragment>
                   ))}
-                <SPAN theme="secondary">
-                  {type.type === 'union'
-                    ? propMethodDefinitions.length > 2
-                      ? 'an anonymous method defined as described below'
-                      : 'object shaped as below'
-                    : 'extended by'}
-                  :
-                </SPAN>
+                {type.type === 'union'
+                  ? propMethodDefinitions.length > 2
+                    ? 'an anonymous method defined as described below'
+                    : 'object shaped as below'
+                  : 'extended by'}
+                :
               </CALLOUT>
               <br />
             </>
@@ -274,21 +267,13 @@ const renderType = (
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <CommentTextBlock comment={comment} includePlatforms={false} />
-          <CALLOUT>
-            <SPAN theme="secondary" weight="medium">
-              Acceptable values are:{' '}
-            </SPAN>
+          <CALLOUT className={STYLES_SECONDARY}>
+            Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
-              <span key={`${name}-literal-type-${index}`}>
+              <Fragment key={`${name}-literal-type-${index}`}>
                 <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
-                {index + 1 !== literalTypes.length ? (
-                  <CALLOUT tag="span" theme="quaternary">
-                    {' | '}
-                  </CALLOUT>
-                ) : (
-                  ''
-                )}
-              </span>
+                {index + 1 !== literalTypes.length ? ' | ' : ''}
+              </Fragment>
             ))}
           </CALLOUT>
         </div>

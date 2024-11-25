@@ -63,12 +63,12 @@ function AndroidPermissionRow({
           <P className={mergeClasses((warning || explanation) && '!mb-4')}>{description}</P>
         )}
         {!!warning && (
-          <Callout className="mt-1.5 mb-0" type="warning">
+          <Callout className="mb-0 mt-1.5" type="warning">
             {warning}
           </Callout>
         )}
         {explanation && !warning && (
-          <Callout className="mt-1.5 mb-0">
+          <Callout className="mb-0 mt-1.5">
             <span dangerouslySetInnerHTML={{ __html: explanation }} />
           </Callout>
         )}

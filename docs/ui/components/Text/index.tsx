@@ -72,7 +72,7 @@ export function createTextComponent(Element: TextElement, textClassName?: string
     return (
       <TextElementTag
         className={mergeClasses(
-          'text-inherit text-default leading-[1.6154]',
+          'text-inherit leading-[1.6154] text-default',
           textClassName,
           getTextWeightClassName(textWeight),
           getTextColorClassName(textTheme),
@@ -102,7 +102,7 @@ export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferre
         !isStyled &&
           'font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline',
         !isStyled &&
-          '[&_span]:text-link [&_code]:text-link [&_strong]:text-link [&_em]:text-link [&_b]:text-link [&_i]:text-link',
+          '[&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link',
         className
       )}
       {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
@@ -166,7 +166,7 @@ export const RawH2 = createTextComponent(
   TextElement.H2,
   mergeClasses(
     'text-[25px] font-bold leading-[1.4] tracking-[-0.021rem]',
-    'mt-8 mb-3.5 [&_code]:text-[90%]',
+    'mb-3.5 mt-8 [&_code]:text-[90%]',
     'max-md-gutters:text-[22px] max-md-gutters:leading-[1.409]',
     'max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263]'
   )
@@ -175,7 +175,7 @@ export const RawH3 = createTextComponent(
   TextElement.H3,
   mergeClasses(
     'text-[20px] font-semibold leading-normal tracking-[-0.017rem]',
-    'mt-7 mb-3 [&_code]:text-[90%]',
+    'mb-3 mt-7 [&_code]:text-[90%]',
     'max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555]',
     'max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed'
   )
@@ -184,14 +184,14 @@ export const RawH4 = createTextComponent(
   TextElement.H4,
   mergeClasses(
     'text-[16px] font-semibold leading-relaxed tracking-[-0.011rem]',
-    'mt-6 mb-2 [&_code]:text-[90%]'
+    'mb-2 mt-6 [&_code]:text-[90%]'
   )
 );
 export const RawH5 = createTextComponent(
   TextElement.H5,
   mergeClasses(
     'text-[13px] font-medium leading-[1.5833] tracking-[-0.003rem]',
-    'mt-4 mb-1 [&_code]:text-[90%]'
+    'mb-1 mt-4 [&_code]:text-[90%]'
   )
 );
 

@@ -119,28 +119,59 @@ function createNumericModuleIdFactory(): (path: string) => number {
   };
 }
 
-function createStableModuleIdFactory(root: string): (path: string) => number {
-  const fileToIdMap = new Map<string, string>();
-  // This is an absolute file path.
-  return (modulePath: string): number => {
-    // TODO: We may want a hashed version for production builds in the future.
-    let id = fileToIdMap.get(modulePath);
-    if (id == null) {
-      // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
-      if (modulePath == null) {
-        id = 'MODULE_NOT_FOUND';
-      } else if (isVirtualModule(modulePath)) {
-        // Virtual modules should be stable.
-        id = modulePath;
-      } else if (path.isAbsolute(modulePath)) {
-        id = path.relative(root, modulePath);
-      } else {
-        id = modulePath;
-      }
-      fileToIdMap.set(modulePath, id);
+function memoize<T extends (...args: any[]) => any>(fn: T): T {
+  const cache = new Map<string, any>();
+  return ((...args: any[]) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
     }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  }) as T;
+}
+
+export function createStableModuleIdFactory(
+  root: string
+): (path: string, context?: { platform: string; environment?: string }) => number {
+  const getModulePath = (modulePath: string, scope: string) => {
+    // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+    if (modulePath == null) {
+      return 'MODULE_NOT_FOUND';
+    } else if (isVirtualModule(modulePath)) {
+      // Virtual modules should be stable.
+      return modulePath;
+    } else if (path.isAbsolute(modulePath)) {
+      return path.relative(root, modulePath) + scope;
+    } else {
+      return modulePath + scope;
+    }
+  };
+
+  const memoizedGetModulePath = memoize(getModulePath);
+
+  // This is an absolute file path.
+  // TODO: We may want a hashed version for production builds in the future.
+  return (modulePath: string, context?: { platform: string; environment?: string }): number => {
+    const env = context?.environment ?? 'client';
+
+    if (env === 'client') {
+      // Only need scope for server bundles where multiple dimensions could run simultaneously.
+      // @ts-expect-error: we patch this to support being a string.
+      return memoizedGetModulePath(modulePath, '');
+    }
+
+    // Helps find missing parts to the patch.
+    if (!context?.platform) {
+      // context = { platform: 'web' };
+      throw new Error('createStableModuleIdFactory: `context.platform` is required');
+    }
+
+    // Only need scope for server bundles where multiple dimensions could run simultaneously.
+    const scope = env !== 'client' ? `?platform=${context?.platform}&env=${env}` : '';
     // @ts-expect-error: we patch this to support being a string.
-    return id;
+    return memoizedGetModulePath(modulePath, scope);
   };
 }
 

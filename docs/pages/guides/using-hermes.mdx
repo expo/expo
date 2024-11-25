@@ -12,17 +12,17 @@ The Hermes engine is the default JavaScript engine used by Expo and it is fully 
 
 ### Switch JavaScript engine on a specific platform
 
-You may want to use Hermes on one platform and JSC on another. One way to do this is to set the `"jsEngine"` to `"hermes"` at the top level and then override it with `"jsc"` under the `"ios"` key. You may alternatively prefer to explicitly set `"hermes"` on just the `"android"` key in this case.
+You may want to use Hermes on one platform and JSC on another. One way to do this is to set the `"jsEngine"` to `"hermes"` at the top level in app config and then override it with `"jsc"` under the `"ios"` key. You may alternatively prefer to explicitly set `"hermes"` on just the `"android"` key in this case.
 
 {/* prettier-ignore */}
-```js
+```json app.json
 {
   "expo": {
     "jsEngine": "hermes",
     "ios": {
       /* @info jsEngine inside platform section will take precedence over the common field */
       "jsEngine": "jsc"
-    /* @end */
+      /* @end */
     }
   }
 }

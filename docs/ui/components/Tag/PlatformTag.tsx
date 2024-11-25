@@ -16,14 +16,14 @@ export const PlatformTag = ({ platform, className }: PlatformTagProps) => {
   return (
     <div
       className={mergeClasses(
-        'select-none inline-flex bg-element py-1 px-2 mr-2 rounded-full items-center gap-1 border border-default',
+        'mr-2 inline-flex select-none items-center gap-1 rounded-full border border-default bg-element px-2 py-1',
         '[table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5',
         '[h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0',
         getTagClasses(platformName),
         className
       )}>
       <PlatformIcon platform={platformName} />
-      <span className={mergeClasses('text-2xs !leading-[16px] font-normal', '[table_&]:text-3xs')}>
+      <span className={mergeClasses('text-2xs font-normal !leading-[16px]', '[table_&]:text-3xs')}>
         {formatName(platform)}
       </span>
     </div>

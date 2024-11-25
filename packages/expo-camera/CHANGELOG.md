@@ -10,6 +10,35 @@
 
 ### 💡 Others
 
+## 16.0.7 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fix an issue where devices supporting the `hevc` codec have `jpeg` set in the `photoSettings`. ([#33186](https://github.com/expo/expo/pull/33186) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.0.6 — 2024-11-19
+
+### 🎉 New features
+
+- Add `videoBitrate` prop to allow setting the bitrate used when recording a video. ([#33087](https://github.com/expo/expo/pull/33087) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Bring back `expo-gl` integration. ([#33027](https://github.com/expo/expo/pull/33027) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.0.5 — 2024-11-13
+
+### 💡 Others
+
+- [Android] Drop legacy `cameraview-aar` dependency. ([#32853](https://github.com/expo/expo/pull/32853) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Return the correct bounding box and corner points when scanning barcodes. ([#32871](https://github.com/expo/expo/pull/32871) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.0.4 — 2024-11-13
+
+### 🐛 Bug fixes
+
+- [iOS] Fix shutter animation not running. ([#32820](https://github.com/expo/expo/pull/32820) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 16.0.3 — 2024-10-28
 
 ### 🐛 Bug fixes

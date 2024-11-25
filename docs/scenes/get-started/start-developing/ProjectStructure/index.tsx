@@ -5,7 +5,6 @@ import { Tab } from './Tab';
 import AppJson from './files/app-json.mdx';
 import App from './files/app.mdx';
 import Assets from './files/assets.mdx';
-import BabelConfigJs from './files/babel-config-js.mdx';
 import Components from './files/components.mdx';
 import Constants from './files/constants.mdx';
 import Hooks from './files/hooks.mdx';
@@ -19,15 +18,15 @@ export function ProjectStructure() {
   const [selected, setSelected] = useState('app');
 
   return (
-    <div className="text-default rounded-md overflow-hidden border border-default">
-      <div className="bg-subtle p-3 flex pl-4 border-b border-default">
+    <div className="overflow-hidden rounded-md border border-default text-default">
+      <div className="flex border-b border-default bg-subtle p-3 pl-4">
         <HEADLINE>Files</HEADLINE>
       </div>
       <div className="grid grid-cols-[250px_minmax(0,_1fr)] max-md-gutters:grid-cols-1">
         <div
           className={mergeClasses(
-            'p-3 flex flex-col gap-1 border-r border-default',
-            'max-md-gutters:border-r-0 max-md-gutters:border-b'
+            'flex flex-col gap-1 border-r border-default p-3',
+            'max-md-gutters:border-b max-md-gutters:border-r-0'
           )}>
           <Tab
             title="app"
@@ -72,12 +71,6 @@ export function ProjectStructure() {
             type="file"
           />
           <Tab
-            title="babel.config.js"
-            onClick={() => setSelected('babel.config.js')}
-            isSelected={selected === 'babel.config.js'}
-            type="file"
-          />
-          <Tab
             title="package.json"
             onClick={() => setSelected('package.json')}
             isSelected={selected === 'package.json'}
@@ -98,7 +91,6 @@ export function ProjectStructure() {
           {selected === 'hooks' ? <Hooks /> : null}
           {selected === 'scripts' ? <Scripts /> : null}
           {selected === 'app.json' ? <AppJson /> : null}
-          {selected === 'babel.config.js' ? <BabelConfigJs /> : null}
           {selected === 'package.json' ? <PackageJson /> : null}
           {selected === 'tsconfig.json' ? <TsconfigJson /> : null}
         </div>

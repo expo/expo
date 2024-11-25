@@ -205,6 +205,16 @@ class CameraViewModule : Module() {
         view.mirror = false
       }
 
+      Prop("videoBitrate") { view, bitrate: Int? ->
+        bitrate?.let {
+          view.videoEncodingBitrate = it
+          return@Prop
+        }
+        if (view.videoEncodingBitrate != null) {
+          view.videoEncodingBitrate = null
+        }
+      }
+
       OnViewDidUpdateProps { view ->
         view.createCamera()
       }

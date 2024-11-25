@@ -12,11 +12,11 @@ See more information about **metro.config.js** in the [customizing Metro guide](
 
 ## Environment variables
 
-In SDK 49 and higher, the Expo CLI can load environment variables from **.env** files. Learn more about how to use environment variables in Expo CLI in the [environment variables guide](/guides/environment-variables/).
+Expo CLI can load environment variables from **.env** files. Learn more about how to use environment variables in Expo CLI in the [environment variables guide](/guides/environment-variables/).
 
 EAS CLI uses a different mechanism for environment variables, except when it invokes Expo CLI for compiling and bundling. Learn more about [environment variables in EAS](/build-reference/variables/).
 
-If you are migrating an older project to SDK 49 or above, then you should ignore local env files by adding the following to your **.gitignore**:
+If you are migrating an older project, then you should ignore local env files by adding the following to your **.gitignore**:
 
 ```sh .gitignore
 # local env files
@@ -244,26 +244,13 @@ Then, configure Tailwind according to the [Tailwind PostCSS docs](https://tailwi
 
 Install `tailwindcss` and its peer dependencies, and create a **tailwind.config.js** file:
 
-<Terminal cmd={['$ yarn add --dev tailwindcss postcss autoprefixer', '$ npx tailwindcss init']} />
+<Terminal
+  cmd={['$ npx expo add --dev tailwindcss postcss autoprefixer', '$ npx tailwindcss init -p']}
+/>
 
 </Step>
 
 <Step label="2">
-
-Add `tailwindcss` and `autoprefixer` to your **postcss.config.js** file:
-
-```js postcss.config.js
-module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-};
-```
-
-</Step>
-
-<Step label="3">
 
 Add the paths to all of your template files in your **tailwind.config.js** file:
 
@@ -287,7 +274,7 @@ module.exports = {
 
 </Step>
 
-<Step label="4">
+<Step label="3">
 
 Create **global.css** in your project and add directives for each of Tailwind's layers:
 
@@ -304,15 +291,17 @@ Ensure you import this file in your root-most JavaScript file:
 import './global.css';
 ```
 
+If you're using [DOM Components](/guides/dom-components), ensure you import this file in each module marked with `"use dom"` as they don't share globals.
+
 > When using Expo Router, you can use **./index.js** or **./app/\_layout.js**. They both work the same.
 
 </Step>
 
-<Step label="5">
+<Step label="4">
 
-Start your project by clearing the transform cache for good measure:
+Start your project:
 
-<Terminal cmd={['$ npx expo --clear']} />
+<Terminal cmd={['$ npx expo']} />
 
 </Step>
 
@@ -340,6 +329,27 @@ export default function Page() {
     <View style={{ $$css: true, _: 'bg-slate-100 rounded-xl' }}>
       <Text style={{ $$css: true, _: 'text-lg font-medium' }}>Welcome to Tailwind</Text>
     </View>
+  );
+}
+```
+
+#### Tailwind for native
+
+Tailwind does not support native platforms directly but you can use the compatibility library [nativewind](https://www.nativewind.dev/) for universal support.
+
+Alternatively, you can use [DOM Components](/guides/dom-components) to render your Tailwind web code in a WebView on native.
+
+```tsx app/index.tsx
+'use dom';
+
+// Remember to import the global.css file in each DOM component.
+import '../global.css';
+
+export default function Page() {
+  return (
+    <div className="bg-slate-100 rounded-xl">
+      <p className="text-lg font-medium">Welcome to Tailwind</p>
+    </div>
   );
 }
 ```

@@ -1,5 +1,8 @@
+import { ReadableStream, WritableStream } from 'web-streams-polyfill';
+
 import ExpoFileSystem from './ExpoFileSystem';
 import { PathUtilities } from './pathUtilities';
+import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
 export class Paths extends PathUtilities {
   /**
@@ -59,6 +62,14 @@ export class File extends ExpoFileSystem.FileSystemFile {
    */
   get name() {
     return Paths.basename(this.uri);
+  }
+
+  readableStream() {
+    return new ReadableStream<Uint8Array>(new FileSystemReadableStreamSource(super.open()));
+  }
+
+  writableStream() {
+    return new WritableStream<Uint8Array>(new FileSystemWritableSink(super.open()));
   }
 }
 

@@ -10,6 +10,50 @@
 
 ### 💡 Others
 
+## 0.1.18 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.17 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.16 — 2024-11-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.15 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.14 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.13 — 2024-11-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.12 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.11 — 2024-11-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.10 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.9 — 2024-11-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.8 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
 ## 0.1.7 — 2024-10-31
 
 _This version does not introduce any user-facing changes._

@@ -180,6 +180,7 @@ export type IBViewController = IBItem<
         >[];
         color: IBItem<{
           key: string | 'backgroundColor';
+          name?: string;
           systemColor?: string | 'systemBackgroundColor';
           red?: string;
           green?: string;
@@ -231,6 +232,17 @@ export type IBResourceImage = IBItem<{
   height: number;
 }>;
 
+export type IBResourceNamedColor = IBItem<{
+  name?: string;
+  systemColor?: string | 'systemBackgroundColor';
+  red?: string;
+  green?: string;
+  blue?: string;
+  alpha?: string;
+  colorSpace?: string;
+  customColorSpace?: string;
+}>;
+
 export type IBDevice = IBItem<{
   id: string;
   orientation: string | 'portrait';
@@ -260,6 +272,7 @@ export type IBSplashScreenDocument = {
       }[];
       resources: {
         image: IBResourceImage[];
+        namedColor?: IBItem<{ name: string }, { color: IBResourceNamedColor[] }>[];
       }[];
     }
   >;
@@ -300,24 +313,33 @@ export function removeImageFromSplashScreen(
 
   removeExisting(mainView.subviews[0].imageView, IMAGE_ID);
 
-  // Add Constraints
+  // Remove Constraints
   getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach((constraint) => {
     // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
     const constrainsArray = mainView.constraints[0].constraint;
     removeExisting(constrainsArray, constraint);
   });
 
-  // Add resource
+  // Remove resource
+  xml.document.resources[0].image = xml.document.resources[0].image ?? [];
   const imageSection = xml.document.resources[0].image;
 
   const existingImageIndex = imageSection.findIndex((image) => image.$.name === imageName);
-  if (existingImageIndex > -1) {
-    imageSection.splice(existingImageIndex, 1);
+  if (existingImageIndex && existingImageIndex > -1) {
+    imageSection?.splice(existingImageIndex, 1);
   }
   return xml;
 }
 
-function getAbsoluteConstraints(childId: string, parentId: string) {
+function getAbsoluteConstraints(childId: string, parentId: string, legacy: boolean = false) {
+  if (legacy) {
+    return [
+      createConstraint([childId, 'top'], [parentId, 'top']),
+      createConstraint([childId, 'leading'], [parentId, 'leading']),
+      createConstraint([childId, 'trailing'], [parentId, 'trailing']),
+      createConstraint([childId, 'bottom'], [parentId, 'bottom']),
+    ];
+  }
   return [
     createConstraint([childId, 'centerX'], [parentId, 'centerX']),
     createConstraint([childId, 'centerY'], [parentId, 'centerY']),
@@ -330,19 +352,21 @@ export function applyImageToSplashScreenXML(
     imageName,
     contentMode,
     backgroundColor,
-    logoWidth = 100,
+    enableFullScreenImage,
+    imageWidth = 100,
   }: {
     imageName: string;
     contentMode: ImageContentMode;
     backgroundColor: string;
-    logoWidth?: number;
+    enableFullScreenImage: boolean;
+    imageWidth?: number;
   }
 ): IBSplashScreenDocument {
   const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
-  const width = logoWidth;
-  const height = logoWidth;
-  const x = (mainView.rect[0].$.width - width) / 2;
-  const y = (mainView.rect[0].$.height - height) / 2;
+  const width = enableFullScreenImage ? 414 : imageWidth;
+  const height = enableFullScreenImage ? 736 : imageWidth;
+  const x = enableFullScreenImage ? 0 : (mainView.rect[0].$.width - width) / 2;
+  const y = enableFullScreenImage ? 0 : (mainView.rect[0].$.height - height) / 2;
 
   const imageView: IBImageView = {
     $: {
@@ -373,13 +397,15 @@ export function applyImageToSplashScreenXML(
   mainView.constraints[0].constraint = [];
 
   // Add Constraints
-  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach((constraint) => {
-    // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
-    const constrainsArray = mainView.constraints[0].constraint;
-    ensureUniquePush(constrainsArray, constraint);
-  });
+  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID, enableFullScreenImage).forEach(
+    (constraint: IBConstraint) => {
+      const constrainsArray = mainView.constraints[0].constraint;
+      ensureUniquePush(constrainsArray, constraint);
+    }
+  );
 
   // Add resource
+  xml.document.resources[0].image = xml.document.resources[0].image ?? [];
   const imageSection = xml.document.resources[0].image;
 
   const existingImageIndex = imageSection.findIndex((image) => image.$.name === imageName);
@@ -398,16 +424,35 @@ export function applyImageToSplashScreenXML(
   // Add background color
   mainView.color = mainView.color ?? [];
   const colorSection = mainView.color;
-  const color = parseColor(backgroundColor);
 
   colorSection.push({
     $: {
       key: 'backgroundColor',
-      ...color.rgb,
-      alpha: '1',
-      colorSpace: 'custom',
-      customColorSpace: 'sRGB',
+      name: 'SplashScreenBackground',
     },
+  });
+
+  // Add background named color reference
+  xml.document.resources[0].namedColor = xml.document.resources[0].namedColor ?? [];
+  const namedColorSection = xml.document.resources[0].namedColor;
+  const color = parseColor(backgroundColor);
+
+  namedColorSection.push({
+    $: {
+      name: 'SplashScreenBackground',
+    },
+    color: [
+      {
+        $: {
+          alpha: '1.000',
+          blue: color.rgb.blue,
+          green: color.rgb.green,
+          red: color.rgb.red,
+          customColorSpace: 'sRGB',
+          colorSpace: 'custom',
+        },
+      },
+    ],
   });
 
   return xml;

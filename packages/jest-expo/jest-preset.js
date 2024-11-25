@@ -6,6 +6,7 @@ const isEqual = require('lodash/isEqual');
 const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
+const { resolveBabelConfig } = require('./src/resolveBabelConfig');
 
 // Emulate the alias behavior of Expo's Metro resolver.
 jestPreset.moduleNameMapper = {
@@ -22,10 +23,14 @@ if (upstreamBabelJest) {
 }
 
 // transform
-jestPreset.transform['\\.[jt]sx?$'] = [
-  'babel-jest',
-  { caller: { name: 'metro', bundler: 'metro', platform: 'ios' } },
-];
+const babelOpts = {
+  caller: { name: 'metro', bundler: 'metro', platform: 'ios' },
+};
+const babelConfigFile = resolveBabelConfig(process.cwd());
+if (babelConfigFile) {
+  babelOpts.configFile = babelConfigFile;
+}
+jestPreset.transform['\\.[jt]sx?$'] = ['babel-jest', babelOpts];
 
 /* Update this when metro changes their default extensions */
 const defaultMetroAssetExts = [
@@ -93,9 +98,9 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
   );
 }
 
-// Also please keep `testing-with-jest.md` file up to date
+// Also please keep `unit-testing.mdx` file up to date
 jestPreset.transformIgnorePatterns = [
-  '/node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
+  '/node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)',
   '/node_modules/react-native-reanimated/plugin/',
 ];
 

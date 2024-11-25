@@ -8,7 +8,7 @@ import path from 'path';
 import { IOSSplashConfig } from './getIosSplashConfig';
 import {
   ContentsJsonImage,
-  ContentsJsonImageAppearance,
+  ContentsJsonAppearance,
   createContentsJsonItem,
   writeContentsJsonAsync,
 } from '../../icons/AssetContents';
@@ -38,7 +38,8 @@ export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splas
         darkImage: splash.dark?.image,
         tabletImage: splash.tabletImage,
         darkTabletImage: splash.dark?.tabletImage,
-        logoWidth: splash.logoWidth ?? 100,
+        imageWidth: splash.imageWidth ?? 100,
+        enableFullScreenImage: splash.enableFullScreenImage_legacy,
       });
 
       return config;
@@ -56,18 +57,19 @@ async function configureImageAssets({
   darkImage,
   tabletImage,
   darkTabletImage,
-  logoWidth,
+  imageWidth,
+  enableFullScreenImage,
 }: {
   projectRoot: string;
   iosNamedProjectRoot: string;
   image?: string | null;
   darkImage?: string | null;
-  tabletImage: string | null;
+  tabletImage?: string;
   darkTabletImage?: string | null;
-  logoWidth: number;
+  imageWidth: number;
+  enableFullScreenImage?: boolean;
 }) {
   const imageSetPath = path.resolve(iosNamedProjectRoot, IMAGESET_PATH);
-
   // ensure old SplashScreen imageSet is removed
   await fs.remove(imageSetPath);
 
@@ -90,7 +92,8 @@ async function configureImageAssets({
     darkImage,
     tabletImage,
     darkTabletImage,
-    logoWidth,
+    imageWidth,
+    enableFullScreenImage,
   });
 }
 
@@ -101,7 +104,8 @@ async function copyImageFiles({
   darkImage,
   tabletImage,
   darkTabletImage,
-  logoWidth,
+  imageWidth,
+  enableFullScreenImage,
 }: {
   projectRoot: string;
   iosNamedProjectRoot: string;
@@ -109,45 +113,31 @@ async function copyImageFiles({
   darkImage?: string | null;
   tabletImage?: string | null;
   darkTabletImage?: string | null;
-  logoWidth: number;
+  imageWidth: number;
+  enableFullScreenImage?: boolean;
 }) {
-  await Promise.all(
-    [
-      { ratio: 1, suffix: '' },
-      { ratio: 2, suffix: '@2x' },
-      { ratio: 3, suffix: '@3x' },
-    ].map(async ({ ratio, suffix }) => {
-      const filePath = path.resolve(
-        iosNamedProjectRoot,
-        IMAGESET_PATH,
-        `${PNG_FILENAME}${suffix}.png`
-      );
-
-      const size = logoWidth * ratio;
-
-      const { source } = await generateImageAsync(
-        { projectRoot, cacheType: IMAGE_CACHE_NAME },
-        {
-          src: image,
-          width: size,
-          height: size,
-          resizeMode: 'contain',
-        }
-      );
-      return await fs.writeFile(filePath, source);
-    })
-  );
-
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
-      // Using this method will cache the images in `.expo` based on the properties used to generate them.
-      // this method also supports remote URLs and using the global sharp instance.
-      const { source } = await generateImageAsync({ projectRoot, cacheType: IMAGE_CACHE_NAME }, {
-        src: item,
-      } as any);
-      // Write image buffer to the file system.
-      // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
-      await fs.writeFile(path.resolve(iosNamedProjectRoot, IMAGESET_PATH, fileName), source);
+      [
+        { ratio: 1, suffix: '' },
+        { ratio: 2, suffix: '@2x' },
+        { ratio: 3, suffix: '@3x' },
+      ].map(async ({ ratio, suffix }) => {
+        const size = imageWidth * ratio;
+        // Using this method will cache the images in `.expo` based on the properties used to generate them.
+        // this method also supports remote URLs and using the global sharp instance.
+        const { source } = await generateImageAsync({ projectRoot, cacheType: IMAGE_CACHE_NAME }, {
+          src: item,
+          width: enableFullScreenImage ? undefined : size,
+          height: enableFullScreenImage ? undefined : size,
+        } as any);
+        // Write image buffer to the file system.
+        // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
+        await fs.writeFile(
+          path.resolve(iosNamedProjectRoot, IMAGESET_PATH, `${fileName}${suffix}.png`),
+          source
+        );
+      });
     },
     anyItem: image,
     darkItem: darkImage,
@@ -179,11 +169,11 @@ async function generateImagesAssetsAsync({
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }
 
-const darkAppearances: ContentsJsonImageAppearance[] = [
+const darkAppearances: ContentsJsonAppearance[] = [
   {
     appearance: 'luminosity',
     value: 'dark',
-  } as ContentsJsonImageAppearance,
+  } as ContentsJsonAppearance,
 ];
 
 export function buildContentsJsonImages({
@@ -220,43 +210,48 @@ export function buildContentsJsonImages({
         idiom: 'universal',
         appearances: darkAppearances,
         scale: '1x',
+        filename: `${darkImage}.png`,
       }),
     darkImage &&
       createContentsJsonItem({
         idiom: 'universal',
         appearances: darkAppearances,
         scale: '2x',
+        filename: `${darkImage}@2x.png`,
       }),
     darkImage &&
       createContentsJsonItem({
         idiom: 'universal',
         appearances: darkAppearances,
         scale: '3x',
+        filename: `${darkImage}@3x.png`,
       }),
     // Tablet light
     tabletImage &&
       createContentsJsonItem({
         idiom: 'ipad',
-        filename: tabletImage,
+        filename: `${tabletImage}.png`,
         scale: '1x',
       }),
     tabletImage &&
       createContentsJsonItem({
         idiom: 'ipad',
         scale: '2x',
+        filename: `${tabletImage}@2x.png`,
       }),
     // Phone dark
     darkTabletImage &&
       createContentsJsonItem({
         idiom: 'ipad',
         appearances: darkAppearances,
-        filename: darkTabletImage ?? undefined,
+        filename: `${darkTabletImage}.png`,
         scale: '1x',
       }),
     darkTabletImage &&
       createContentsJsonItem({
         idiom: 'ipad',
         appearances: darkAppearances,
+        filename: `${darkTabletImage}@2x.png`,
         scale: '2x',
       }),
   ].filter(Boolean) as ContentsJsonImage[];

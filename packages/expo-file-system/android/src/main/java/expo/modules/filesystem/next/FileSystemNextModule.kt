@@ -52,6 +52,10 @@ class FileSystemNextModule : Module() {
         to.file
       }
 
+      if (destination.exists()) {
+        throw DestinationAlreadyExistsException()
+      }
+
       val body = response.body ?: throw UnableToDownloadException("response body is null")
       body.byteStream().use { input ->
         FileOutputStream(destination).use { output ->
@@ -98,6 +102,10 @@ class FileSystemNextModule : Module() {
         file.base64()
       }
 
+      Function("bytes") { file: FileSystemFile ->
+        file.bytes()
+      }
+
       Property("exists") { file: FileSystemFile ->
         file.exists
       }
@@ -128,6 +136,33 @@ class FileSystemNextModule : Module() {
         } catch (e: Exception) {
           null
         }
+      }
+
+      Function("open") { file: FileSystemFile ->
+        FileSystemFileHandle(file)
+      }
+    }
+
+    Class(FileSystemFileHandle::class) {
+      Constructor { file: FileSystemFile ->
+        FileSystemFileHandle(file)
+      }
+      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
+        fileHandle.read(bytes)
+      }
+      Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+        fileHandle.write(data)
+      }
+      Function("close") { fileHandle: FileSystemFileHandle ->
+        fileHandle.close()
+      }
+      Property("offset") { fileHandle: FileSystemFileHandle ->
+        fileHandle.offset
+      }.set { fileHandle: FileSystemFileHandle, offset: Long ->
+        fileHandle.offset = offset
+      }
+      Property("size") { fileHandle: FileSystemFileHandle ->
+        fileHandle.size
       }
     }
 

@@ -43,7 +43,7 @@ const ExamplePicker: React.FunctionComponent<{
 }> = ({ value, onChange }) => (
   <Picker selectedValue={value} onValueChange={onChange} style={styles.examplePicker}>
     {Object.values(EXAMPLES).map(({ name }) => (
-      <Picker.Item key={name} label={name} value={name} />
+      <Picker.Item key={name} label={name} value={name} color="black" />
     ))}
   </Picker>
 );

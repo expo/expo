@@ -14,6 +14,7 @@ import { logMetroError } from './metroErrorInterface';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { memoize } from '../../../utils/fn';
+import { getIpAddress } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import {
@@ -45,12 +46,17 @@ export function createServerComponentsMiddleware(
     ssrLoadModule,
     ssrLoadModuleArtifacts,
     useClientRouter,
+    createModuleId,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
     useClientRouter: boolean;
+    createModuleId: (
+      filePath: string,
+      context: { platform: string; environment: string }
+    ) => string | number;
   }
 ) {
   const routerModule = useClientRouter
@@ -64,10 +70,22 @@ export function createServerComponentsMiddleware(
     rscPath,
     onError: console.error,
     renderRsc: async (args) => {
+      // In development we should add simulated versions of common production headers.
+      if (args.headers['x-real-ip'] == null) {
+        args.headers['x-real-ip'] = getIpAddress();
+      }
+      if (args.headers['x-forwarded-for'] == null) {
+        args.headers['x-forwarded-for'] = args.headers['x-real-ip'];
+      }
+      if (args.headers['x-forwarded-proto'] == null) {
+        args.headers['x-forwarded-proto'] = 'http';
+      }
+
       // Dev server-only implementation.
       try {
         return await renderRscToReadableStream({
           ...args,
+          headers: new Headers(args.headers),
           body: args.body!,
         });
       } catch (error: any) {
@@ -103,7 +121,11 @@ export function createServerComponentsMiddleware(
   }
 
   async function exportServerActionsAsync(
-    { platform, entryPoints }: { platform: string; entryPoints: string[] },
+    {
+      platform,
+      entryPoints,
+      domRoot,
+    }: { platform: string; entryPoints: string[]; domRoot?: string },
     files: ExportAssetMap
   ): Promise<{
     clientBoundaries: string[];
@@ -111,10 +133,9 @@ export function createServerComponentsMiddleware(
   }> {
     const uniqueEntryPoints = [...new Set(entryPoints)];
     // TODO: Support multiple entry points in a single split server bundle...
-    const serverRoot = getMetroServerRootMemo(projectRoot);
-
     const manifest: Record<string, [string, string]> = {};
     const nestedClientBoundaries: string[] = [];
+
     for (const entryPoint of uniqueEntryPoints) {
       const contents = await ssrLoadModuleArtifacts(entryPoint, {
         environment: 'react-server',
@@ -123,6 +144,8 @@ export function createServerComponentsMiddleware(
         modulesOnly: true,
         // Required
         runModule: true,
+        // Required to ensure assets load as client boundaries.
+        domRoot,
       });
 
       const reactClientReferences = contents.artifacts
@@ -140,7 +163,11 @@ export function createServerComponentsMiddleware(
             entryPoint
         );
       }
-      const relativeName = path.relative(serverRoot, entryPoint);
+
+      const relativeName = createModuleId(entryPoint, {
+        platform,
+        environment: 'react-server',
+      });
       const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;
@@ -151,7 +178,7 @@ export function createServerComponentsMiddleware(
       });
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
-      manifest[entryPoint] = [relativeName, outputName];
+      manifest[entryPoint] = [String(relativeName), outputName];
     }
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
@@ -164,7 +191,7 @@ export function createServerComponentsMiddleware(
   }
 
   async function getExpoRouterClientReferencesAsync(
-    { platform }: { platform: string },
+    { platform, domRoot }: { platform: string; domRoot?: string },
     files: ExportAssetMap
   ): Promise<{
     reactClientReferences: string[];
@@ -174,6 +201,8 @@ export function createServerComponentsMiddleware(
     const contents = await ssrLoadModuleArtifacts(routerModule, {
       environment: 'react-server',
       platform,
+      modulesOnly: true,
+      domRoot,
     });
 
     // Extract the global CSS modules that are imported from the router.
@@ -228,7 +257,13 @@ export function createServerComponentsMiddleware(
     platform: string;
     engine?: 'hermes' | null;
     ssrManifest?: Map<string, string>;
-  }) {
+  }): (
+    file: string,
+    isServer: boolean
+  ) => {
+    id: string;
+    chunks: string[];
+  } {
     const serverRoot = getMetroServerRootMemo(projectRoot);
 
     const {
@@ -265,11 +300,12 @@ export function createServerComponentsMiddleware(
         const chunk = context.ssrManifest.get(relativeFilePath);
 
         return {
-          id: relativeFilePath,
+          id: String(createModuleId(file, { platform: context.platform, environment: 'client' })),
           chunks: chunk != null ? [chunk] : [],
         };
       }
 
+      const environment = isServer ? 'react-server' : 'client';
       const searchParams = createBundleUrlSearchParams({
         mainModuleName: '',
         platform: context.platform,
@@ -286,7 +322,7 @@ export function createServerComponentsMiddleware(
         bytecode: false,
         clientBoundaries: [],
         inlineSourceMap: false,
-        environment: isServer ? 'react-server' : 'client',
+        environment,
         modulesOnly: true,
         runModule: false,
       });
@@ -301,6 +337,7 @@ export function createServerComponentsMiddleware(
       clientReferenceUrl.search = searchParams.toString();
 
       const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+
       const relativeFilePath = path.relative(serverRoot, filePath);
 
       clientReferenceUrl.pathname = relativeFilePath;
@@ -311,9 +348,12 @@ export function createServerComponentsMiddleware(
       }
 
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
-      const id = clientReferenceUrl.pathname + clientReferenceUrl.search;
+      const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
-      return { id: relativeFilePath, chunks: [id] };
+      return {
+        id: String(createModuleId(filePath, { platform: context.platform, environment })),
+        chunks: [chunkName],
+      };
     };
   }
 
@@ -355,7 +395,7 @@ export function createServerComponentsMiddleware(
   async function renderRscToReadableStream(
     {
       input,
-      searchParams,
+      headers,
       method,
       platform,
       body,
@@ -365,7 +405,7 @@ export function createServerComponentsMiddleware(
       decodedBody,
     }: {
       input: string;
-      searchParams: URLSearchParams;
+      headers: Headers;
       method: 'POST' | 'GET';
       platform: string;
       body?: ReadableStream<Uint8Array>;
@@ -385,13 +425,17 @@ export function createServerComponentsMiddleware(
       assert(body, 'Server request must be provided when method is POST (server actions)');
     }
 
+    const context = getRscRenderContext(platform);
+
+    context['__expo_requestHeaders'] = headers;
+
     const { renderRsc } = await getRscRendererAsync(platform);
 
     return renderRsc(
       {
         body,
         decodedBody,
-        context: getRscRenderContext(platform),
+        context,
         config: {},
         input,
         contentType,
@@ -451,7 +495,7 @@ export function createServerComponentsMiddleware(
                 input,
                 method: 'GET',
                 platform,
-                searchParams: new URLSearchParams(),
+                headers: new Headers(),
                 ssrManifest,
               },
               true

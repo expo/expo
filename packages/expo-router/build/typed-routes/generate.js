@@ -9,6 +9,7 @@ const CATCH_ALL = /\[\.\.\..+?\]/g;
 const SLUG = /\[.+?\]/g;
 // /(group)/path/(group2)/route - Match [(group), (group2)]
 const GROUP = /(?:^|\/)\(.*?\)/g;
+const urlParams = "${`?${string}` | `#${string}` | ''}";
 function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIgnoreComments = false, } = {}) {
     let routeNode = null;
     try {
@@ -36,7 +37,7 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
         '{ pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams }',
     ];
     for (const type of groupedNodes.static) {
-        staticRoutesStrings.push(contextKeyToType(type + "${`?${string}` | `#${string}` | ''}", partialTypedGroups));
+        staticRoutesStrings.push(contextKeyToType(type + urlParams, partialTypedGroups));
         staticRouteInputObjects.push(`{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownInputParams; }`);
         staticRouteOutputObjects.push(`{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownOutputParams; }`);
     }
@@ -126,6 +127,7 @@ function groupRouteNodes(routeNode, groupedContextKeys = {
         // Not all generated files will have the `/` prefix
         routeKey = `/${routeKey}`;
     }
+    routeKey = routeKey.replace(/\\/g, '/');
     if (routeNode.dynamic) {
         groupedContextKeys.dynamic.set(routeKey, routeKey
             .split('/')
@@ -145,6 +147,9 @@ function groupRouteNodes(routeNode, groupedContextKeys = {
     return groupedContextKeys;
 }
 function contextKeyToType(contextKey, partialTypedGroups) {
+    if (contextKey.match(GROUP) === null) {
+        return `\`${contextKey}\``;
+    }
     // If the route has groups, turn them into template strings
     const typeWithGroups = contextKey.replaceAll(GROUP, (match) => {
         const groups = match.slice(2, -1); // Remove the leading ( and the trailing )
@@ -163,12 +168,15 @@ function contextKeyToType(contextKey, partialTypedGroups) {
             return match;
         }
     });
-    const typeWithoutGroups = contextKey.replaceAll(GROUP, '');
-    if (typeWithGroups === typeWithoutGroups) {
-        return `\`${typeWithGroups}\``;
+    let typeWithoutGroups = contextKey.replaceAll(GROUP, '') || '/';
+    /**
+     * When getting the static routes, they include a urlParams string at the end.
+     * If we have a route like `/(group)/(group2)`, this would normally be collapsed to `/`.
+     * But because of the urlParams, it becomes `${urlParams}` and we need to add a `/` to the start.
+     */
+    if (typeWithoutGroups.startsWith(urlParams)) {
+        typeWithoutGroups = `/${typeWithoutGroups}`;
     }
-    else {
-        return `\`${typeWithGroups}\` | \`${typeWithoutGroups}\``;
-    }
+    return `\`${typeWithGroups}\` | \`${typeWithoutGroups}\``;
 }
 //# sourceMappingURL=generate.js.map

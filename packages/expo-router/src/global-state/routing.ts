@@ -48,6 +48,10 @@ export function dismiss(this: RouterStore, count?: number) {
   this.navigationRef?.dispatch(StackActions.pop(count));
 }
 
+export function dismissTo(this: RouterStore, href: Href, options?: NavigationOptions) {
+  return this.linkTo(resolveHref(href), { ...options, event: 'POP_TO' });
+}
+
 export function replace(this: RouterStore, url: Href, options?: NavigationOptions) {
   return this.linkTo(resolveHref(url), { ...options, event: 'REPLACE' });
 }

@@ -92,7 +92,6 @@ it(`sets up typed routes and removes`, async () => {
     '/.expo/types',
     '/.gitignore',
   ]);
-  expect(fs.readFileSync('/.gitignore', 'utf8')).not.toMatch('expo-env.d.ts');
 });
 
 it(`removes typed routes from malformed project`, async () => {
@@ -136,6 +135,4 @@ it(`removes typed routes from malformed project`, async () => {
     '/package.json',
     '/app.json',
   ]);
-
-  expect(fs.readFileSync('/.gitignore', 'utf8')).not.toMatch('expo-env.d.ts');
 });

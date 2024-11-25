@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReadableNativeMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import com.facebook.react.uimanager.UIManagerHelper
@@ -12,7 +11,7 @@ import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.JSTypeConverter
-import expo.modules.kotlin.types.toJSValue
+import expo.modules.kotlin.types.toJSValueExperimental
 import java.lang.ref.WeakReference
 
 /**
@@ -27,25 +26,25 @@ class KModuleEventEmitterWrapper(
 ) : KEventEmitterWrapper(legacyEventEmitter, reactContextHolder) {
   override fun emit(eventName: String, eventBody: Bundle?) {
     checkIfEventWasExported(eventName)
-    emitNative(eventName, eventBody?.toJSValue(JSTypeConverter.DefaultContainerProvider) as? ReadableNativeMap)
+    emitNative(eventName, eventBody?.toJSValueExperimental())
   }
 
   override fun emit(eventName: String, eventBody: WritableMap?) {
     checkIfEventWasExported(eventName)
-    emitNative(eventName, eventBody as? ReadableNativeMap)
+    emitNative(eventName, eventBody?.toHashMap())
   }
 
   override fun emit(eventName: String, eventBody: Record?) {
     checkIfEventWasExported(eventName)
-    emitNative(eventName, eventBody?.toJSValue(JSTypeConverter.DefaultContainerProvider) as? ReadableNativeMap)
+    emitNative(eventName, eventBody?.toJSValueExperimental())
   }
 
   override fun emit(eventName: String, eventBody: Map<*, *>?) {
     checkIfEventWasExported(eventName)
-    emitNative(eventName, eventBody?.toJSValue(JSTypeConverter.DefaultContainerProvider) as? ReadableNativeMap)
+    emitNative(eventName, eventBody?.toJSValueExperimental())
   }
 
-  private fun emitNative(eventName: String, eventBody: ReadableNativeMap?) {
+  private fun emitNative(eventName: String, eventBody: Map<String, Any?>?) {
     val runtimeContext = moduleHolder.module.runtimeContext
     val jsObject = moduleHolder.safeJSObject ?: return
     try {

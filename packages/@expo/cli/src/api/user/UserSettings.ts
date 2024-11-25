@@ -55,6 +55,15 @@ export async function setSessionAsync(sessionData?: SessionData) {
 }
 
 /**
+ * Check if there are credentials available, without fetching the user information.
+ * This can be used as a faster check to see if users are authenticated.
+ * Note, this isn't checking the validity of the credentials.
+ */
+export function hasCredentials() {
+  return !!getAccessToken() || !!getSession();
+}
+
+/**
  * Get an anonymous and randomly generated identifier.
  * This is used to group telemetry event by unknown actor,
  * and cannot be used to identify a single user.

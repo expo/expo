@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 13.0.3 — 2024-11-13
+
+### 🐛 Bug fixes
+
+- Android: Fixed so that background fetch will run when app is killed or in the background. ([#32849](https://github.com/expo/expo/pull/32849) by [@chrfalch](https://github.com/chrfalch))
+
+## 13.0.2 — 2024-11-10
+
+_This version does not introduce any user-facing changes._
+
 ## 13.0.1 — 2024-10-22
 
 _This version does not introduce any user-facing changes._

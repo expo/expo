@@ -1,7 +1,7 @@
 ---
 title: Audio (expo-audio)
 description: A library that provides an API to implement audio playback and recording in apps.
-sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-audio'
 packageName: 'expo-audio'
 iconUrl: '/static/images/packages/expo-av.png'
 platforms: ['android', 'ios', 'web']
@@ -109,7 +109,7 @@ import { View, StyleSheet, Button } from 'react-native';
 import { useAudioRecorder, RecordingOptions, AudioModule, RecordingPresets } from 'expo-audio';
 
 export default function App() {
-  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY;);
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 
   const record = () => audioRecorder.record();
 

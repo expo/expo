@@ -86,9 +86,9 @@ it(
 
     // Added expected package
     const pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~12.0.1');
+    expect(pkgDependencies['expo-sms']).toBe('~13.0.0');
     expect(pkg.devDependencies).toEqual({
-      '@babel/core': '^7.19.3',
+      '@babel/core': '^7.25.2',
     });
 
     // Added new packages
@@ -129,13 +129,13 @@ it(
       throw new Error('SHOULD NOT HAPPEN');
     } catch (e) {
       const error = e as ExecaError;
-      expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~5\.\d\.\d/);
-      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~12\.\d\.\d/);
+      expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~\d\.\d\.\d/);
+      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~\d+\.\d\.\d/);
     }
 
     await expect(
       execa('node', [bin, 'install', 'expo-sms', '--check'], { cwd: projectRoot })
-    ).rejects.toThrow(/expo-sms@1\.0\.0 - expected version: ~12\.\d\.\d/);
+    ).rejects.toThrow(/expo-sms@1\.0\.0 - expected version: ~\d+\.\d\.\d/);
 
     // Check doesn't fix packages
     pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
@@ -166,7 +166,7 @@ it(
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
     let pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~12.0.1');
+    expect(pkgDependencies['expo-sms']).toBe('~13.0.0');
 
     // Didn't fix expo-auth-session since we didn't pass it in
     expect(pkgDependencies['expo-auth-session']).toBe('1.0.0');
@@ -179,7 +179,7 @@ it(
 
     // Didn't fix expo-auth-session since we didn't pass it in
     pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-auth-session']).toBe('~5.5.2');
+    expect(pkgDependencies['expo-auth-session']).toBe('~6.0.0');
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000
@@ -216,3 +216,41 @@ it(
   // Could take 45s depending on how fast npm installs
   60 * 1000
 );
+
+describe('expo-router integration', () => {
+  it(
+    'runs `npx expo install --fix`',
+    async () => {
+      const projectRoot = await setupTestProjectWithOptionsAsync(
+        'install-expo-router-integration',
+        'with-router',
+        {
+          reuseExisting: false,
+          sdkVersion: '52.0.0',
+          linkExpoPackages: ['expo-router'],
+        }
+      );
+      const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+
+      // Add a package that requires "fixing" when using canary
+      await execa('node', [bin, 'install', '@react-navigation/native@6.1.18'], {
+        cwd: projectRoot,
+      });
+
+      // Ensure `@react-navigation/native` is installed
+      expect(pkg.read().dependencies).toMatchObject({
+        '@react-navigation/native': '6.1.18',
+      });
+
+      // Add `expo@canary` to the project, and `--fix` project dependencies
+      await execa('node', [bin, 'install', '--fix'], { cwd: projectRoot });
+
+      // Ensure `@react-navigation/native` was updated
+      expect(pkg.read().dependencies).toMatchObject({
+        '@react-navigation/native': '^7.0.0',
+      });
+    },
+    // Could take 45s depending on how fast npm installs
+    60 * 1000
+  );
+});

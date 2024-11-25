@@ -272,19 +272,27 @@ redirects[develop/user-interface/splash-screen]=develop/user-interface/splash-sc
 
 # Preview section
 redirects[/preview/support]=preview/introduction
+redirects[preview/react-compiler]=guides/react-compiler
 
 # Archived
 redirects[guides/using-flipper]=archive/using-flipper
-
-# Temporary redirects
-redirects[guides/react-compiler]=preview/react-compiler
 
 # Troubleshooting section
 redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
 
 # After adding "Linking" (/linking/**) section
 redirects[guides/linking]=linking/overview
-redirects[guides/deep-linking]=/linking/into-your-app
+redirects[guides/deep-linking]=linking/into-your-app
+
+# After adding /sdk/router/ API reference
+redirects[router/reference/hooks]=versions/latest/sdk/router
+
+# After moving custom tabs under Expo Router > Navigation patterns
+redirects[router/ui/tabs]=router/advanced/custom-tabs
+
+# After new environment variables guide
+redirects[build-reference/variables]=eas/environment-variables
+redirects[eas-update/environment-variables]=eas/environment-variables
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

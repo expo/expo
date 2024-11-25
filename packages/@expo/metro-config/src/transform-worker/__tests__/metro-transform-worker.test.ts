@@ -700,7 +700,7 @@ it('outputs comments when `minify: false`', async () => {
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-      arbitrary(code);
+      /*#__PURE__*/arbitrary(code);
     });"
   `);
 });
@@ -730,7 +730,7 @@ it('allows outputting comments when `minify: true`', async () => {
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, d) {
-      minified(code);
+      /*#__PURE__*/minified(code);
     });"
   `);
 });

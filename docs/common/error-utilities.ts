@@ -160,8 +160,8 @@ const RENAMED_PAGES: Record<string, string> = {
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
-  '/guides/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
-  '/distribution/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
+  '/guides/building-standalone-apps/': '/build/setup/',
+  '/distribution/building-standalone-apps/': '/build/setup/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
@@ -264,7 +264,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/bare/using-web/': '/workflow/web/',
   '/guides/running-in-the-browser/': '/workflow/web/',
   '/bare/unimodules-full-list/': '/bare/overview/',
-  '/bare/updating-your-app/': '/eas-update/updating-your-app/',
+  '/bare/updating-your-app/': '/eas-update/getting-started/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',
@@ -309,13 +309,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
-  '/eas-update/bare-react-native/': '/eas-update/updating-your-app/',
+  '/eas-update/bare-react-native/': '/eas-update/getting-started/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
-  '/classic/building-standalone-apps/': '/archive/classic-builds/building-standalone-apps/',
+  '/classic/building-standalone-apps/': '/build/setup/',
   '/classic/turtle-cli/': '/archive/classic-builds/turtle-cli/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
-  '/archive/classic-updates/building-standalone-apps/':
-    '/archive/classic-builds/building-standalone-apps/',
+  '/archive/classic-updates/building-standalone-apps/': '/build/setup/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
@@ -380,6 +379,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
   '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
   '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
+  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
   '/versions/v50.0.0/sdk': '/versions/v50.0.0',
   '/versions/v49.0.0/sdk': '/versions/v49.0.0',
@@ -404,9 +404,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Preview section
   '/preview/support/': '/preview/introduction/',
-
-  // Temporary redirects
-  '/guides/react-compiler/': '/preview/react-compiler/',
+  '/preview/react-compiler/': '/guides/react-compiler/',
 
   // Troubleshooting section
   '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',
@@ -418,4 +416,17 @@ const RENAMED_PAGES: Record<string, string> = {
   // After adding "Linking" (/linking/**) section
   '/guides/linking/': '/linking/overview/',
   '/guides/deep-linking/': '/linking/into-your-app/',
+
+  // After adding /sdk/router/ API reference
+  '/router/reference/hooks/': '/versions/latest/sdk/router/#hooks',
+
+  // After moving custom tabs under Expo Router > Navigation patterns
+  '/router/ui/tabs/': '/router/advanced/custom-tabs/',
+
+  // After deleting deprecated docs from archive section
+  '/guides/using-flipper/': '/debugging/devtools-plugins/',
+
+  // After new environment variables guide
+  '/build-reference/variables/': '/eas/environment-variables/',
+  '/eas-update/environment-variables/': '/eas/environment-variables/#eas-update',
 };

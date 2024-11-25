@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 10.0.5 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.4 — 2024-11-14
+
+### 🐛 Bug fixes
+
+- Skip modifying the plugins array in app.json when using a dynamic app config as well ([#32882](https://github.com/expo/expo/pull/32882) by [@brentvatne](https://github.com/brentvatne))
+
+## 10.0.3 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.2 — 2024-10-28
 
 ### 🐛 Bug fixes

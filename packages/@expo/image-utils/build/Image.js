@@ -117,7 +117,9 @@ function getDimensionsId(imageOptions) {
         : `${imageOptions.width}x${imageOptions.height}`;
 }
 async function maybeWarnAboutInstallingSharpAsync() {
-    // Putting the warning here will prevent the warning from showing if all images were reused from the cache
+    if (env_1.env.EXPO_IMAGE_UTILS_NO_SHARP) {
+        return;
+    }
     if (env_1.env.EXPO_IMAGE_UTILS_DEBUG && !hasWarned && !(await Sharp.isAvailableAsync())) {
         hasWarned = true;
         console.warn(chalk_1.default.yellow(`Using node to generate images. This is much slower than using native packages.\n\u203A Optionally you can stop the process and try again after successfully running \`npm install -g sharp-cli\`.\n`));

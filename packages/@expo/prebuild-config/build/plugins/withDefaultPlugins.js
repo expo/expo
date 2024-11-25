@@ -43,6 +43,13 @@ function _withIosIcons() {
   };
   return data;
 }
+function _ReactNative77CompatPlugin() {
+  const data = require("./sdk52/ReactNative77CompatPlugin");
+  _ReactNative77CompatPlugin = function () {
+    return data;
+  };
+  return data;
+}
 function _expoAdsAdmob() {
   const data = _interopRequireDefault(require("./unversioned/expo-ads-admob/expo-ads-admob"));
   _expoAdsAdmob = function () {
@@ -167,7 +174,7 @@ const withAndroidExpoPlugins = (config, props) => {
   // strings.xml
   _configPlugins().AndroidConfig.Name.withName,
   // Dangerous -- these plugins run in reverse order.
-  _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile,
+  _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile, _ReactNative77CompatPlugin().withSdk52ReactNative77CompatAndroid,
   // Modify colors.xml and styles.xml
   _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, _withAndroidIcons().withAndroidIcons,
   // If we renamed the package, we should also move it around and rename it in source files

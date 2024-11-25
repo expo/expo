@@ -110,7 +110,7 @@ class ContactQuery : Record {
   val name: String? = null
 
   @Field
-  val id: String? = null
+  val id: List<String>? = null
 }
 
 class QueryArguments(
@@ -154,9 +154,11 @@ class ContactsModule : Module() {
       appContext
         .backgroundCoroutineScope
         .launch {
-          if (options.id != null) {
-            val contact = getContactById(options.id, options.fields)
-            promise.resolve(contact.toBundle(options.fields))
+          if (!options.id.isNullOrEmpty()) {
+            val contacts = options.id.mapNotNull { id ->
+              getContactById(id, options.fields)
+            }
+            promise.resolve(ContactPage(data = contacts).toBundle(options.fields))
             return@launch
           }
 

@@ -30,7 +30,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRootState = exports.useExpoRouter = exports.store = exports.RouterStore = void 0;
 const native_1 = require("@react-navigation/native");
 const expo_constants_1 = __importDefault(require("expo-constants"));
-const SplashScreen = __importStar(require("expo-splash-screen"));
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -42,6 +41,7 @@ const getPathFromState_1 = require("../fork/getPathFromState");
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const getRoutes_1 = require("../getRoutes");
 const useScreens_1 = require("../useScreens");
+const SplashScreen = __importStar(require("../views/Splash"));
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
  *
@@ -67,6 +67,7 @@ class RouterStore {
     canGoBack = routing_1.canGoBack.bind(this);
     push = routing_1.push.bind(this);
     dismiss = routing_1.dismiss.bind(this);
+    dismissTo = routing_1.dismissTo.bind(this);
     replace = routing_1.replace.bind(this);
     dismissAll = routing_1.dismissAll.bind(this);
     canDismiss = routing_1.canDismiss.bind(this);
@@ -139,7 +140,6 @@ class RouterStore {
                 this.hasAttemptedToHideSplash = true;
                 // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
                 this.splashScreenAnimationFrame = requestAnimationFrame(() => {
-                    // @ts-expect-error: This function is native-only and for internal-use only.
                     SplashScreen._internal_maybeHideAsync?.();
                 });
             }

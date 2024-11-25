@@ -32,7 +32,7 @@
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
-		402B73292CC90F7100FA17BC /* RequestLocalNetworkAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402B73282CC90F7100FA17BC /* RequestLocalNetworkAccess.swift */; };
+		402B73292CC90F7100FA17BC /* LocalNetworkAccessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402B73282CC90F7100FA17BC /* LocalNetworkAccessManager.swift */; };
 		4089335A2CAAF7A20095810E /* ExpoAppInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 408933592CAAF7A20095810E /* ExpoAppInstance.mm */; };
 		40CB1D752CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D722CD2A0C200CB3717 /* EXSplashScreenViewNativeProvider.m */; };
 		40CB1D762CD2A0C200CB3717 /* EXSplashScreenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D6C2CD2A0C200CB3717 /* EXSplashScreenModule.m */; };
@@ -119,7 +119,6 @@
 		B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */; };
 		B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738F1FF6DADB001C764B /* EXImageUtils.m */; };
 		B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A11FF6DADB001C764B /* EXUtil.m */; };
-		B5FB74B61FF6DADC001C764B /* RNViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A31FF6DADB001C764B /* RNViewShot.m */; };
 		B5FB74DE1FF6DADC001C764B /* EXVersionManagerObjC.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73FC1FF6DADB001C764B /* EXVersionManagerObjC.mm */; };
 		B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74001FF6DADB001C764B /* EXDevSettings.m */; };
 		B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74021FF6DADB001C764B /* EXDevSettingsDataSource.m */; };
@@ -249,7 +248,7 @@
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
-		402B73282CC90F7100FA17BC /* RequestLocalNetworkAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestLocalNetworkAccess.swift; sourceTree = "<group>"; };
+		402B73282CC90F7100FA17BC /* LocalNetworkAccessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNetworkAccessManager.swift; sourceTree = "<group>"; };
 		408933582CAAF7870095810E /* ExpoAppInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoAppInstance.h; sourceTree = "<group>"; };
 		408933592CAAF7A20095810E /* ExpoAppInstance.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoAppInstance.mm; sourceTree = "<group>"; };
 		40CB1D6B2CD2A0C200CB3717 /* EXSplashScreenModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenModule.h; sourceTree = "<group>"; };
@@ -416,8 +415,6 @@
 		B5FB738F1FF6DADB001C764B /* EXImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImageUtils.m; sourceTree = "<group>"; };
 		B5FB73A01FF6DADB001C764B /* EXUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUtil.h; sourceTree = "<group>"; };
 		B5FB73A11FF6DADB001C764B /* EXUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUtil.m; sourceTree = "<group>"; };
-		B5FB73A21FF6DADB001C764B /* RNViewShot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNViewShot.h; sourceTree = "<group>"; };
-		B5FB73A31FF6DADB001C764B /* RNViewShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNViewShot.m; sourceTree = "<group>"; };
 		B5FB73FA1FF6DADB001C764B /* EXUnversioned.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUnversioned.h; sourceTree = "<group>"; };
 		B5FB73FB1FF6DADB001C764B /* EXVersionManagerObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVersionManagerObjC.h; sourceTree = "<group>"; };
 		B5FB73FC1FF6DADB001C764B /* EXVersionManagerObjC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXVersionManagerObjC.mm; sourceTree = "<group>"; };
@@ -583,15 +580,6 @@
 				B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */,
 			);
 			path = UniversalModules;
-			sourceTree = "<group>";
-		};
-		31F25C9123717B08009AD55F /* ViewShot */ = {
-			isa = PBXGroup;
-			children = (
-				B5FB73A21FF6DADB001C764B /* RNViewShot.h */,
-				B5FB73A31FF6DADB001C764B /* RNViewShot.m */,
-			);
-			path = ViewShot;
 			sourceTree = "<group>";
 		};
 		40CB1D742CD2A0C200CB3717 /* EXSplashScreen */ = {
@@ -825,7 +813,7 @@
 				B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */,
 				B2E2CCC92AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift */,
 				B2E2CCCF2AA7DF9C00E2260C /* HomeAppLoaderTask.swift */,
-				402B73282CC90F7100FA17BC /* RequestLocalNetworkAccess.swift */,
+				402B73282CC90F7100FA17BC /* LocalNetworkAccessManager.swift */,
 			);
 			path = Client;
 			sourceTree = "<group>";
@@ -1104,7 +1092,6 @@
 		B5FB72711FF6DADB001C764B /* Api */ = {
 			isa = PBXGroup;
 			children = (
-				31F25C9123717B08009AD55F /* ViewShot */,
 				BBD0318A200011C9009F0434 /* Cognito */,
 				B5FB738E1FF6DADB001C764B /* EXImageUtils.h */,
 				B5FB738F1FF6DADB001C764B /* EXImageUtils.m */,
@@ -1840,7 +1827,6 @@
 				B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */,
 				B526B5081E6A543500606CAB /* ExpoKit.m in Sources */,
 				B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */,
-				B5FB74B61FF6DADC001C764B /* RNViewShot.m in Sources */,
 				314791F02551CF2A00A81BA1 /* EXScopedServerRegistrationModule.m in Sources */,
 				F1D6AF61244714C100AC1C74 /* EXDevMenuGestureRecognizer.m in Sources */,
 				78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */,
@@ -1867,7 +1853,7 @@
 				B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */,
 				B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */,
 				31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */,
-				402B73292CC90F7100FA17BC /* RequestLocalNetworkAccess.swift in Sources */,
+				402B73292CC90F7100FA17BC /* LocalNetworkAccessManager.swift in Sources */,
 				B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */,
 				31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */,
 				B248B8842AD8888C003C9C10 /* UpdatesBinding.swift in Sources */,

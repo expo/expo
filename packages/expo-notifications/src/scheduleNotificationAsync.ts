@@ -35,6 +35,7 @@ import {
  *     body: 'Change sides!',
  *   },
  *   trigger: {
+ *     type: SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60,
  *   },
  * });
@@ -49,6 +50,7 @@ import {
  *     title: 'Remember to drink water!',
  *   },
  *   trigger: {
+ *     type: SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60 * 20,
  *     repeats: true,
  *   },

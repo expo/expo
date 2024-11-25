@@ -10,6 +10,40 @@
 
 ### 💡 Others
 
+## 6.0.12 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.11 — 2024-11-22
+
+### 💡 Others
+
+- Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
+
+## 6.0.10 — 2024-11-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed issue where `UIWindow` was called on off the main thread. ([#29559](https://github.com/expo/expo/pull/29559) by [@hakonk](https://github.com/hakonk))
+
+## 6.0.9 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.8 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.7 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
+
+## 6.0.6 — 2024-11-04
+
+### 💡 Others
+
 - Remove unused `graphql` dependencies. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
 
 ## 6.0.5 — 2024-10-29

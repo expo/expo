@@ -8,9 +8,29 @@
 
 ### 🐛 Bug fixes
 
-- Fix issue when no dependencies in a package. ([#32547](https://github.com/expo/expo/pull/32547) by [@douglowder](https://github.com/douglowder))
+### 💡 Others
+
+## 2.0.2 — 2024-11-13
+
+### 🐛 Bug fixes
+
+- Fixed autolinking when `react-native-config` doesn't specify local dependencies. ([#32841](https://github.com/expo/expo/pull/32841) by [@thespacemanatee](https://github.com/thespacemanatee))
+
+## 2.0.1 — 2024-11-13
 
 ### 💡 Others
+
+- Added local project dependencies support to `react-native-config` autolinking. ([#32821](https://github.com/expo/expo/pull/32821) by [@kudo](https://github.com/kudo))
+
+## 2.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0-preview.3 — 2024-11-04
+
+### 🐛 Bug fixes
+
+- Fix issue when no dependencies in a package. ([#32547](https://github.com/expo/expo/pull/32547) by [@douglowder](https://github.com/douglowder))
 
 ## 2.0.0-preview.2 — 2024-10-28
 

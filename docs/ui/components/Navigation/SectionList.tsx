@@ -16,17 +16,17 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
 
   return (
     <Collapsible
-      className="pt-3 mb-3"
+      className="mb-3 pt-3"
       open={isActive || route.expanded}
       summary={
-        <div className="flex items-center select-none mx-4">
+        <div className="mx-4 flex select-none items-center">
           <ChevronDownIcon
             className={mergeClasses(
-              'icon-sm text-icon-default shrink-0 -rotate-90 transition-transform duration-150',
+              'icon-sm shrink-0 -rotate-90 text-icon-default transition-transform duration-150',
               '[details[open]>summary_&]:rotate-0'
             )}
           />
-          <CALLOUT className="font-medium p-1.5" tag="span">
+          <CALLOUT className="p-1.5 font-medium" tag="span">
             {route.name}
           </CALLOUT>
         </div>

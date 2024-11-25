@@ -105,7 +105,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   // Make one line break between prompts and progress logs
   console.log();
 
-  const packageManager = await resolvePackageManager();
+  const packageManager = resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
@@ -476,7 +476,7 @@ function printFurtherLocalInstructions(slug: string, name: string) {
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
     chalk.yellow(
-      `Remember you need to rebuild your development client or reinstall pods to see the changes.`
+      `Remember to re-build your native app (for example, with ${chalk.bold('npx expo run')}) when you make changes to the module. Native code changes are not reloaded with Fast Refresh.`
     )
   );
 }

@@ -10,6 +10,64 @@
 
 ### 💡 Others
 
+## 0.29.13 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Correctly handle `resizeMode` in config plugin. ([#33143](https://github.com/expo/expo/pull/33143) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.12 — 2024-11-20
+
+### 🐛 Bug fixes
+
+- Prevent `setOptions` from being called in Expo Go. ([#33104](https://github.com/expo/expo/pull/33104) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.11 — 2024-11-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.10 — 2024-11-14
+
+### 💡 Others
+
+- Bump minimum @expo/prebuild-config version.
+
+## 0.29.9 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.8 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.7 — 2024-11-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.6 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.5 — 2024-11-10
+
+### 🐛 Bug fixes
+
+- [Android] Added guard to prevent null pointer exception when the splashScreen property is referenced without an activity (headless JS) ([#32707](https://github.com/expo/expo/pull/32707) by [@chrfalch](https://github.com/chrfalch))
+
+## 0.29.4 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.3 — 2024-11-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.2 — 2024-11-05
+
+### 💡 Others
+
+- Migrate internal logic used by router from JS to native ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+
 ## 0.29.1 — 2024-10-31
 
 _This version does not introduce any user-facing changes._

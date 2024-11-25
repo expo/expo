@@ -7,7 +7,7 @@ export function Input({ className, ...rest }: Props) {
   return (
     <input
       className={mergeClasses(
-        'block shadow-xs border border-default rounded-md text-default bg-default h-12 w-full my-2.5 px-4 placeholder:text-icon-quaternary',
+        'my-2.5 block h-12 w-full rounded-md border border-default bg-default px-4 text-default shadow-xs placeholder:text-icon-quaternary',
         className
       )}
       {...rest}

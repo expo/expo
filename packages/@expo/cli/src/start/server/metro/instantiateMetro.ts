@@ -4,12 +4,17 @@ import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
+import { ReadOnlyGraph } from 'metro';
 import Bundler from 'metro/src/Bundler';
+import hmrJSBundle from 'metro/src/DeltaBundler/Serializers/hmrJSBundle';
 import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
 import MetroHmrServer from 'metro/src/HmrServer';
+import RevisionNotFoundError from 'metro/src/IncrementalBundler/RevisionNotFoundError';
+import formatBundlingError from 'metro/src/lib/formatBundlingError';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
+import path from 'path';
 
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
@@ -68,14 +73,14 @@ export async function loadMetroConfigAsync(
   let reportEvent: ((event: any) => void) | undefined;
 
   const serverActionsEnabled =
-    exp.experiments?.reactServerActions ?? env.EXPO_UNSTABLE_SERVER_ACTIONS;
+    exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
 
   if (serverActionsEnabled) {
-    process.env.EXPO_UNSTABLE_SERVER_ACTIONS = '1';
+    process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS = '1';
   }
 
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
-  if (exp.experiments?.reactServerComponents || serverActionsEnabled) {
+  if (exp.experiments?.reactServerComponentRoutes || serverActionsEnabled) {
     process.env.EXPO_USE_METRO_REQUIRE = '1';
     process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
@@ -135,11 +140,11 @@ export async function loadMetroConfigAsync(
 
   if (serverActionsEnabled) {
     Log.warn(
-      `Experimental React Server Actions are enabled. Production exports are not supported yet.`
+      `Experimental React Server Functions are enabled. Production exports are not supported yet.`
     );
-    if (!exp.experiments?.reactServerComponents) {
+    if (!exp.experiments?.reactServerComponentRoutes) {
       Log.warn(
-        `- React Server Components are NOT enabled. Routes will render in client-only mode.`
+        `- React Server Component routes are NOT enabled. Routes will render in client mode.`
       );
     }
   }
@@ -152,12 +157,12 @@ export async function loadMetroConfigAsync(
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled:
-      (exp.experiments?.reactServerComponents ||
+      (exp.experiments?.reactServerComponentRoutes ||
         serverActionsEnabled ||
         exp.experiments?.reactCanary) ??
       false,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
-    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponents,
+    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
   });
 
@@ -282,6 +287,93 @@ export async function instantiateMetroAsync(
 
   setEventReporter(eventsSocket.reportMetroEvent);
 
+  // This function ensures that modules in source maps are sorted in the same
+  // order as in a plain JS bundle.
+  metro._getSortedModules = function (this: Metro.Server, graph: ReadOnlyGraph) {
+    const modules = [...graph.dependencies.values()];
+
+    const ctx = {
+      platform: graph.transformOptions.platform,
+      environment: graph.transformOptions.customTransformOptions?.environment,
+    };
+    // Assign IDs to modules in a consistent order
+    for (const module of modules) {
+      // @ts-expect-error
+      this._createModuleId(module.path, ctx);
+    }
+    // Sort by IDs
+    return modules.sort(
+      // @ts-expect-error
+      (a, b) => this._createModuleId(a.path, ctx) - this._createModuleId(b.path, ctx)
+    );
+  };
+
+  if (hmrServer) {
+    // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs.
+    hmrServer._prepareMessage = async function (this: MetroHmrServer, group, options, changeEvent) {
+      // Fork of https://github.com/facebook/metro/blob/3b3e0aaf725cfa6907bf2c8b5fbc0da352d29efe/packages/metro/src/HmrServer.js#L327-L393
+      // with patch for `_createModuleId`.
+      const logger = !options.isInitialUpdate ? changeEvent?.logger : null;
+      try {
+        const revPromise = this._bundler.getRevision(group.revisionId);
+        if (!revPromise) {
+          return {
+            type: 'error',
+            body: formatBundlingError(new RevisionNotFoundError(group.revisionId)),
+          };
+        }
+        logger?.point('updateGraph_start');
+        const { revision, delta } = await this._bundler.updateGraph(await revPromise, false);
+        logger?.point('updateGraph_end');
+        this._clientGroups.delete(group.revisionId);
+        group.revisionId = revision.id;
+        for (const client of group.clients) {
+          client.revisionIds = client.revisionIds.filter(
+            (revisionId) => revisionId !== group.revisionId
+          );
+          client.revisionIds.push(revision.id);
+        }
+        this._clientGroups.set(group.revisionId, group);
+        logger?.point('serialize_start');
+        // NOTE(EvanBacon): This is the patch
+        const moduleIdContext = {
+          platform: revision.graph.transformOptions.platform,
+          environment: revision.graph.transformOptions.customTransformOptions?.environment,
+        };
+        const hmrUpdate = hmrJSBundle(delta, revision.graph, {
+          clientUrl: group.clientUrl,
+          // NOTE(EvanBacon): This is also the patch
+          createModuleId: (moduleId: string) => {
+            // @ts-expect-error
+            return this._createModuleId(moduleId, moduleIdContext);
+          },
+          includeAsyncPaths: group.graphOptions.lazy,
+          projectRoot: this._config.projectRoot,
+          serverRoot: this._config.server.unstable_serverRoot ?? this._config.projectRoot,
+        });
+        logger?.point('serialize_end');
+        return {
+          type: 'update',
+          body: {
+            revisionId: revision.id,
+            isInitialUpdate: options.isInitialUpdate,
+            ...hmrUpdate,
+          },
+        };
+      } catch (error: any) {
+        const formattedError = formatBundlingError(error);
+        this._config.reporter.update({
+          type: 'bundling_error',
+          error,
+        });
+        return {
+          type: 'error',
+          body: formattedError,
+        };
+      }
+    };
+  }
+
   return {
     metro,
     hmrServer,
@@ -296,6 +388,9 @@ function pruneCustomTransformOptions(
   filePath: string,
   transformOptions: TransformOptions
 ): TransformOptions {
+  // Normalize the filepath for cross platform checking.
+  filePath = filePath.split(path.sep).join('/');
+
   if (
     transformOptions.customTransformOptions?.dom &&
     // The only generated file that needs the dom root is `expo/dom/entry.js`
@@ -324,8 +419,8 @@ function pruneCustomTransformOptions(
 
   if (
     transformOptions.customTransformOptions?.clientBoundaries &&
-    // The client boundaries are only used in `expo-router/virtual-client-boundaries.js` for production RSC exports.
-    !filePath.match(/\/expo-router\/virtual-client-boundaries\.js$/)
+    // The client boundaries are only used in `@expo/metro-runtime/src/virtual.js` for production RSC exports.
+    !filePath.match(/\/@expo\/metro-runtime\/rsc\/virtual\.js$/)
   ) {
     delete transformOptions.customTransformOptions.clientBoundaries;
   }

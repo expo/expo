@@ -15,7 +15,7 @@ export {
 
 export { router, Router } from './imperative-api';
 
-export { Link, Redirect, LinkProps, WebAnchorProps } from './link/Link';
+export { Link, Redirect, RedirectProps, LinkProps, WebAnchorProps } from './link/Link';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
@@ -31,7 +31,7 @@ export type { ScreenProps } from './useScreens';
 /**
  * @hidden
  */
-export { SplashScreen } from './views/Splash';
+export * as SplashScreen from './views/Splash';
 
 // React Navigation
 export { useNavigation } from './useNavigation';

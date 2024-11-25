@@ -72,8 +72,8 @@ const dpiValues = exports.dpiValues = {
     scale: 4
   }
 };
-const ICON_BASELINE_PIXEL_SIZE = 48;
-const FOREGROUND_BASELINE_PIXEL_SIZE = 108;
+const LEGACY_BASELINE_PIXEL_SIZE = 48;
+const ADAPTIVE_BASELINE_PIXEL_SIZE = 108;
 const ANDROID_RES_PATH = exports.ANDROID_RES_PATH = 'android/app/src/main/res/';
 const MIPMAP_ANYDPI_V26 = 'mipmap-anydpi-v26';
 const ICON_BACKGROUND = 'iconBackground';
@@ -122,7 +122,7 @@ function setRoundIconManifest(config, manifest) {
 }
 const withAndroidAdaptiveIconColors = (config, backgroundColor) => {
   return (0, _configPlugins().withAndroidColors)(config, config => {
-    config.modResults = setBackgroundColor(backgroundColor ?? '#FFFFFF', config.modResults);
+    config.modResults = setBackgroundColor(backgroundColor ?? '#ffffff', config.modResults);
     return config;
   });
 };
@@ -159,7 +159,7 @@ async function setIconAsync(projectRoot, {
   } else {
     await deleteIconNamedAsync(projectRoot, IC_LAUNCHER_ROUND_WEBP);
   }
-  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, backgroundColor, monochromeImage, isAdaptive);
+  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, monochromeImage, isAdaptive);
   return true;
 }
 
@@ -187,7 +187,8 @@ async function generateRoundIconAsync(projectRoot, icon, backgroundImage, backgr
     backgroundImage,
     backgroundColor,
     imageCacheFolder: 'android-standard-circle',
-    backgroundImageCacheFolder: 'android-standard-round-background'
+    backgroundImageCacheFolder: 'android-standard-round-background',
+    isAdaptive: false
   });
 }
 
@@ -197,7 +198,7 @@ async function generateRoundIconAsync(projectRoot, icon, backgroundImage, backgr
  * - A backgroundImage is provided, or
  * - A backgroundColor was specified
  */
-async function configureAdaptiveIconAsync(projectRoot, foregroundImage, backgroundImage, backgroundColor, monochromeImage, isAdaptive) {
+async function configureAdaptiveIconAsync(projectRoot, foregroundImage, backgroundImage, monochromeImage, isAdaptive) {
   if (monochromeImage) {
     await generateMonochromeImageAsync(projectRoot, {
       icon: monochromeImage,
@@ -206,13 +207,14 @@ async function configureAdaptiveIconAsync(projectRoot, foregroundImage, backgrou
     });
   }
   await generateMultiLayerImageAsync(projectRoot, {
-    backgroundColor,
+    backgroundColor: 'transparent',
     backgroundImage,
     backgroundImageCacheFolder: 'android-adaptive-background',
     outputImageFileName: IC_LAUNCHER_FOREGROUND_WEBP,
     icon: foregroundImage,
     imageCacheFolder: 'android-adaptive-foreground',
-    backgroundImageFileName: IC_LAUNCHER_BACKGROUND_WEBP
+    backgroundImageFileName: IC_LAUNCHER_BACKGROUND_WEBP,
+    isAdaptive: true
   });
 
   // create ic_launcher.xml and ic_launcher_round.xml
@@ -229,7 +231,7 @@ function setBackgroundColor(backgroundColor, colors) {
   });
 }
 const createAdaptiveIconXmlString = (backgroundImage, monochromeImage) => {
-  const background = backgroundImage ? `@drawable/ic_launcher_background` : `@color/iconBackground`;
+  const background = backgroundImage ? `@mipmap/ic_launcher_background` : `@color/iconBackground`;
   const iconElements = [`<background android:drawable="${background}"/>`, '<foreground android:drawable="@mipmap/ic_launcher_foreground"/>'];
   if (monochromeImage) {
     iconElements.push('<monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>');
@@ -264,7 +266,8 @@ async function generateMultiLayerImageAsync(projectRoot, {
   backgroundImageCacheFolder,
   borderRadiusRatio,
   outputImageFileName,
-  backgroundImageFileName
+  backgroundImageFileName,
+  isAdaptive
 }) {
   await iterateDpiValues(projectRoot, async ({
     dpiFolder,
@@ -274,17 +277,19 @@ async function generateMultiLayerImageAsync(projectRoot, {
       cacheType: imageCacheFolder,
       src: icon,
       scale,
-      backgroundColor: backgroundColor ?? 'transparent',
+      // backgroundImage overrides backgroundColor
+      backgroundColor: backgroundImage ? 'transparent' : backgroundColor ?? 'transparent',
       borderRadiusRatio,
-      isForeground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP
+      isAdaptive
     });
     if (backgroundImage) {
       const backgroundLayer = await generateIconAsync(projectRoot, {
         cacheType: backgroundImageCacheFolder,
         src: backgroundImage,
         scale,
-        backgroundColor: backgroundColor ?? 'transparent',
-        borderRadiusRatio
+        backgroundColor: 'transparent',
+        borderRadiusRatio,
+        isAdaptive
       });
       if (backgroundImageFileName) {
         await _fsExtra().default.writeFile(_path().default.resolve(dpiFolder, backgroundImageFileName), backgroundLayer);
@@ -315,7 +320,8 @@ async function generateMonochromeImageAsync(projectRoot, {
       cacheType: imageCacheFolder,
       src: icon,
       scale,
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
+      isAdaptive: true
     });
     await _fsExtra().default.ensureDir(dpiFolder);
     await _fsExtra().default.writeFile(_path().default.resolve(dpiFolder, outputImageFileName), monochromeIcon);
@@ -340,36 +346,19 @@ async function generateIconAsync(projectRoot, {
   scale,
   backgroundColor,
   borderRadiusRatio,
-  isForeground
+  isAdaptive
 }) {
-  const baseline = isForeground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
-  const bgIconSizePx = baseline * scale;
-  const iconSizePx = bgIconSizePx * (isForeground ? 0.4 : 0.65);
-  const {
-    source: foreground
-  } = await (0, _imageUtils().generateImageAsync)({
+  const iconSizePx = (isAdaptive ? ADAPTIVE_BASELINE_PIXEL_SIZE : LEGACY_BASELINE_PIXEL_SIZE) * scale;
+  return (await (0, _imageUtils().generateImageAsync)({
     projectRoot,
     cacheType
   }, {
     src,
-    resizeMode: 'contain',
     width: iconSizePx,
-    height: iconSizePx
-  });
-  const background = await (0, _imageUtils().generateImageBackgroundAsync)({
-    width: bgIconSizePx,
-    height: bgIconSizePx,
-    backgroundColor: isForeground ? 'transparent' : backgroundColor,
+    height: iconSizePx,
     resizeMode: 'cover',
-    borderRadius: borderRadiusRatio ? bgIconSizePx * borderRadiusRatio : undefined
-  });
-  const x = (bgIconSizePx - iconSizePx) / 2;
-  const y = x;
-  return (0, _imageUtils().compositeImagesAsync)({
-    background,
-    foreground,
-    x,
-    y
-  });
+    backgroundColor,
+    borderRadius: borderRadiusRatio ? iconSizePx * borderRadiusRatio : undefined
+  })).source;
 }
 //# sourceMappingURL=withAndroidIcons.js.map

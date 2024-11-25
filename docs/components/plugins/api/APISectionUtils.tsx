@@ -466,7 +466,7 @@ export const resolveTypeName = (
           <span className="text-quaternary">(</span>
           {renderUnion(unionTypes, { sdkVersion })}
           <span className="text-quaternary">)</span>
-          {type === 'array' && '[]'}
+          {type === 'array' && <span className="text-quaternary">[]</span>}
         </>
       );
     } else if (declaration?.signatures) {
@@ -479,11 +479,12 @@ export const resolveTypeName = (
               <span key={`param-${index}-${param.name}`}>
                 {param.name}
                 <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
-                {index + 1 !== baseSignature.parameters?.length && ', '}
+                {index + 1 !== baseSignature.parameters?.length && (
+                  <span className="text-quaternary">, </span>
+                )}
               </span>
             ))}
-            <span className="text-quaternary">)</span>{' '}
-            <span className="text-quaternary">{'=>'}</span>{' '}
+            <span className="text-quaternary">{') =>'}</span>{' '}
             {baseSignature.type ? resolveTypeName(baseSignature.type, sdkVersion) : 'undefined'}
           </>
         );
@@ -636,11 +637,11 @@ export const BoxSectionHeader = ({
   return (
     <CALLOUT
       className={mergeClasses(
-        'flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle',
+        '-mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2',
         'max-lg-gutters:-mx-4',
         className
       )}>
-      <TextWrapper className="text-tertiary flex flex-row gap-2 items-center font-medium">
+      <TextWrapper className="flex flex-row items-center gap-2 font-medium text-tertiary">
         {Icon && <Icon className="icon-sm text-icon-secondary" />}
         {text}
       </TextWrapper>
@@ -862,7 +863,7 @@ export const CommentTextBlock = ({
   const exampleText = examples?.map((example, index) => (
     <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:mb-0')}>
       {inlineHeaders ? (
-        <DEMI className="flex flex-row gap-1.5 items-center mb-1.5 text-secondary">
+        <DEMI className="mb-1.5 flex flex-row items-center gap-1.5 text-secondary">
           <CodeSquare01Icon className="icon-sm" />
           Example
         </DEMI>

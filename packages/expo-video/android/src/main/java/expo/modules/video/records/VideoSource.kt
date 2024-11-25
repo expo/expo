@@ -38,7 +38,8 @@ class VideoSource(
       "NotificationDataArtwork:${this.metadata?.artwork?.path}"
   }
 
-  fun toMediaSource(context: Context): MediaSource {
+  fun toMediaSource(context: Context): MediaSource? {
+    this.uri ?: return null
     return buildMediaSourceWithHeaders(context, this)
   }
 
