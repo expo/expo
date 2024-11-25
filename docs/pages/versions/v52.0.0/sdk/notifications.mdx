@@ -7,9 +7,12 @@ iconUrl: '/static/images/packages/expo-notifications.png'
 platforms: ['android*', 'ios*']
 ---
 
+import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
+
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ConfigReactNative, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -19,7 +22,12 @@ import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
-This page is a reference document for the package. There are also comprehensive [guides available](/push-notifications/overview/).
+<BoxLink
+  title="Notification guides"
+  description="Do not miss our guides on how to set up, send, and handle push notifications."
+  href="/push-notifications/overview/"
+  Icon={Bell03Icon}
+/>
 
 > **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` will be unavailable in Expo Go from SDK 53. A [development build](/develop/development-builds/introduction/) will be required to use push notifications. Local notifications (in-app notifications) will remain available in Expo Go.
 
