@@ -81,7 +81,7 @@ While advancing in a stack is straightforward, moving backward can be more compl
 
 Consider a common mobile experience: when you open an app from a link and press back, you might see unfamiliar screens before exiting the app. This demonstrates how stacks maintain their own history using anchor routes (also called initial routes). This is why `back()` is sometimes called a "pop" (the reverse of "push") or "unwinding the stack".
 
-To handle backwards navigation, Expo Router offers multiple functions: [`back`](/versions/latest/sdk/router/#back) moves you backward in the stack's history. At the same time, [`dismiss`](/versions/latest/sdk/router/#dismiss) only goes back within the current stack.
+To handle backwards navigation, Expo Router offers multiple functions: [`back`](/versions/latest/sdk/router/#router) moves you backward in the stack's history. At the same time, [`dismiss`](/versions/latest/sdk/router/#dismiss) only goes back within the current stack.
 
 The [`dismissTo`](/versions/latest/sdk/router/#dismissto) function is unique—it can move you forward or backward. Calling `dismissTo` for a previously visited route will dismiss screens until that route is reached. If the route isn’t in the history, it will push forward to that route.
 
