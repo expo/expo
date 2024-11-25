@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add minor fixes to nested server actions. ([#32925](https://github.com/expo/expo/pull/32925) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix a build error when running `expo run:ios` consecutively without closing the app.
 
 ### 💡 Others
 
