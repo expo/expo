@@ -79,14 +79,14 @@ Compile and run the app with the following command:
   ]}
 />
 
-You can now use the module in your app. To test it, edit the **App.js** file in your app and render the text message from the `expo-settings` module:
+You can now use the module in your app. To test it, edit the **app/(tabs)/index.tsx** file in your app and render the text message from the `expo-settings` module:
 
-```jsx App.js
+```jsx app/(tabs)/index.tsx
 import React from 'react';
 import { Text, View } from 'react-native';
 import * as Settings from 'expo-settings';
 
-export default function App() {
+export default function TabOneScreen() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>{Settings.hello()}</Text>
@@ -174,14 +174,14 @@ To test the published module in a new project, create a new app and install the 
   cmd={['$ npx create-expo-app my-app', '$ cd my-app', '$ npx expo install expo-settings']}
 />
 
-You can now use the module in your app! To test it, edit **App.js** and render the text message from **expo-settings**.
+You can now use the module in your app! To test it, edit **app/(tabs)/index.tsx** and render the text message from **expo-settings**.
 
-```jsx App.js
+```jsx app/(tabs)/index.tsx
 import React from 'react';
 import * as Settings from 'expo-settings';
 import { Text, View } from 'react-native';
 
-export default function App() {
+export default function TabOneScreen() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>{Settings.hello()}</Text>
