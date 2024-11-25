@@ -75,7 +75,7 @@ For example, navigating from the `/feed` route to the `/profile` route results i
   ]}
 />
 
-In the example above, **app/\_layout** introduces a `<Tabs />` navigator, while the other two layout files render a `<Stack />`. Navigating through each page would result in a history like `[['/apple', '/orange'], ['/carrot', '/potato']]`. Notice that instead of a single stack, there’s a parent stack containing two child stacks.
+In the example above, **app/\_layout** introduces a `<Tabs />` navigator, while the other two layout files render a `<Stack />`. Navigating through each page would result in a history like `[['/apple', '/orange'], ['/carrot', '/potato']]`. Notice that instead of a single stack, there's a parent stack containing two child stacks.
 
 While advancing in a stack is straightforward, moving backward can be more complex due to the non-linear history.
 
@@ -83,7 +83,7 @@ Consider a common mobile experience: when you open an app from a link and press 
 
 To handle backwards navigation, Expo Router offers multiple functions: [`back`](/versions/latest/sdk/router/#router) moves you backward in the stack's history. At the same time, [`dismiss`](/versions/latest/sdk/router/#dismiss) only goes back within the current stack.
 
-The [`dismissTo`](/versions/latest/sdk/router/#dismissto) function is unique—it can move you forward or backward. Calling `dismissTo` for a previously visited route will dismiss screens until that route is reached. If the route isn’t in the history, it will push forward to that route.
+The [`dismissTo`](/versions/latest/sdk/router/#dismissto) function is unique—it can move you forward or backward. Calling `dismissTo` for a previously visited route will dismiss screens until that route is reached. If the route isn't in the history, it will push forward to that route.
 
 Additionally, the [`replace`](/versions/latest/sdk/router/#replace) method allows you to replace the current route in the stack with a new one, without adding to the stack.
 
