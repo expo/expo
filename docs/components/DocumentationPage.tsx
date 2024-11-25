@@ -1,16 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, createRef, type PropsWithChildren } from 'react';
+import { useEffect, useState, createRef, type PropsWithChildren, useRef } from 'react';
 
 import * as RoutesUtils from '~/common/routes';
 import { appendSectionToRoute, isRouteActive } from '~/common/routes';
 import * as WindowUtils from '~/common/window';
+import DocumentationHead from '~/components/DocumentationHead';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
-import DocumentationSidebarRight, {
-  SidebarRightComponentType,
-} from '~/components/DocumentationSidebarRight';
-import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
@@ -22,6 +19,10 @@ import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar';
 import { versionToText } from '~/ui/components/Sidebar/ApiVersionSelect';
+import {
+  TableOfContentsWithManager,
+  TableOfContentsHandles,
+} from '~/ui/components/TableOfContents';
 import { A } from '~/ui/components/Text';
 
 const { LATEST_VERSION } = versions;
@@ -45,12 +46,12 @@ export default function DocumentationPage({
   const router = useRouter();
 
   const layoutRef = createRef<DocumentationNestedScrollLayout>();
-  const sidebarRightRef = createRef<SidebarRightComponentType>();
+  const tableOfContentsRef = useRef<TableOfContentsHandles>(null);
 
   const pathname = router?.pathname ?? '/';
   const routes = RoutesUtils.getRoutes(pathname, version);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
-  const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
+  const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
 
   useEffect(() => {
     router?.events.on('routeChangeStart', url => {
@@ -78,14 +79,14 @@ export default function DocumentationPage({
 
   const handleContentScroll = (contentScrollPosition: number) => {
     window.requestAnimationFrame(() => {
-      if (sidebarRightRef && sidebarRightRef.current) {
-        sidebarRightRef.current.handleContentScroll(contentScrollPosition);
+      if (tableOfContentsRef?.current?.handleContentScroll) {
+        tableOfContentsRef.current.handleContentScroll(contentScrollPosition);
       }
     });
   };
 
   const sidebarElement = <Sidebar routes={routes} />;
-  const sidebarRightElement = <DocumentationSidebarRight ref={sidebarRightRef} />;
+  const tocElement = <TableOfContentsWithManager ref={tableOfContentsRef} />;
   const headerElement = (
     <Header
       sidebar={sidebarElement}
@@ -113,13 +114,13 @@ export default function DocumentationPage({
       ref={layoutRef}
       header={headerElement}
       sidebar={sidebarElement}
-      sidebarRight={sidebarRightElement}
+      sidebarRight={tocElement}
       sidebarActiveGroup={sidebarActiveGroup}
       hideTOC={hideTOC ?? false}
       isMobileMenuVisible={isMobileMenuVisible}
       onContentScroll={handleContentScroll}
       sidebarScrollPosition={sidebarScrollPosition}>
-      <Head
+      <DocumentationHead
         title={title}
         description={description}
         canonicalUrl={
@@ -134,7 +135,7 @@ export default function DocumentationPage({
         {(version === 'unversioned' ||
           RoutesUtils.isPreviewPath(pathname) ||
           RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
-      </Head>
+      </DocumentationHead>
       <div
         className={mergeClasses(
           'mx-auto px-14 py-10',

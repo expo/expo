@@ -1,84 +1,32 @@
-import { spacing } from '@expo/styleguide-base';
-import { render, screen } from '@testing-library/react';
+import GithubSlugger from 'github-slugger';
 
-import { getHeadingIndent, getHeadingInfo } from './TableOfContents';
+import { TableOfContents } from './TableOfContents';
 
-describe(getHeadingIndent, () => {
-  const paddingFactor = spacing[2];
+import { HeadingManager, HeadingType } from '~/common/headingManager';
+import { renderWithHeadings } from '~/common/test-utilities';
+import { HeadingsContext } from '~/common/withHeadingManager';
 
-  // This shouldn't be included in the table of contents, but it's nice to test anyways
-  it('returns no padding for h1 heading', () => {
-    expect(getHeadingIndent(makeHeading('h1'))).toHaveProperty('paddingLeft', 0);
+const prepareHeadingManager = () => {
+  const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });
+  headingManager.addHeading('Base level heading', undefined, {});
+  headingManager.addHeading('Level 3 subheading', 3, {});
+  headingManager.addHeading('Code heading depth 1', 0, {
+    sidebarDepth: 1,
+    sidebarType: HeadingType.InlineCode,
   });
 
-  it('returns no padding for h2 heading', () => {
-    expect(getHeadingIndent(makeHeading('h2'))).toHaveProperty('paddingLeft', 0);
-  });
+  return headingManager;
+};
 
-  it('returns 1x padding for h3 heading', () => {
-    expect(getHeadingIndent(makeHeading('h3'))).toHaveProperty('paddingLeft', paddingFactor);
-  });
+describe('TableOfContents', () => {
+  test('correctly matches snapshot', () => {
+    const headingManager = prepareHeadingManager();
 
-  it('returns 2x padding for h4 heading', () => {
-    expect(getHeadingIndent(makeHeading('h4'))).toHaveProperty('paddingLeft', paddingFactor * 2);
-  });
-
-  it('returns 3x padding for h5 heading', () => {
-    expect(getHeadingIndent(makeHeading('h5'))).toHaveProperty('paddingLeft', paddingFactor * 3);
-  });
-
-  it('returns 4x padding for h6 heading', () => {
-    expect(getHeadingIndent(makeHeading('h6'))).toHaveProperty('paddingLeft', paddingFactor * 4);
-  });
-});
-
-describe(getHeadingInfo, () => {
-  it('returns normal text from h1 heading', () => {
-    expect(getHeadingInfo(makeHeading('h1', 'Hello'))).toMatchObject({
-      type: 'text',
-      text: 'Hello',
-    });
-  });
-
-  it('returns normal text from h2 heading', () => {
-    expect(getHeadingInfo(makeHeading('h2', 'Hello World'))).toMatchObject({
-      type: 'text',
-      text: 'Hello World',
-    });
-  });
-
-  it('returns normal text from h3 heading with platform specification', () => {
-    expect(getHeadingInfo(makeHeading('h3', 'Cool stuff (Android only)'))).toMatchObject({
-      type: 'text',
-      text: 'Cool stuff (Android only)',
-    });
-  });
-
-  it('returns code text from h4 heading with function name', () => {
-    expect(getHeadingInfo(makeHeading('h4', 'getCoolStuffAsync()'))).toMatchObject({
-      type: 'code',
-      text: 'getCoolStuffAsync',
-    });
-  });
-
-  it('returns code text from h5 heading with function name and args', () => {
-    expect(getHeadingInfo(makeHeading('h5', 'getTransformAsync(input: string)'))).toMatchObject({
-      type: 'code',
-      text: 'getTransformAsync',
-    });
-  });
-
-  it('returns code text from h6 heading with function name, args, and return type', () => {
-    expect(
-      getHeadingInfo(makeHeading('h6', 'getTransformAsync(input: string): Promise<string>'))
-    ).toMatchObject({
-      type: 'code',
-      text: 'getTransformAsync',
-    });
+    const { container } = renderWithHeadings(
+      <HeadingsContext.Provider value={headingManager}>
+        <TableOfContents headingManager={headingManager} />
+      </HeadingsContext.Provider>
+    );
+    expect(container).toMatchSnapshot();
   });
 });
-
-function makeHeading(Tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6', text = 'Hello World') {
-  render(<Tag data-testid="heading">{text}</Tag>);
-  return screen.getByTestId('heading') as HTMLHeadingElement;
-}

@@ -3,7 +3,7 @@ import nprogress from 'nprogress';
 import { useEffect } from 'react';
 
 /**
- * Set up nprogress using NextJS Router events.
+ * Set up NProgress using NextJS Router events.
  * This hook listens to these three events:
  *   - routeChangeStart → start
  *   - routeChangeComplete → done
