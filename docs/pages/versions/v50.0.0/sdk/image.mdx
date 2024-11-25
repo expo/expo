@@ -135,7 +135,7 @@ app.post('/blurhash', upload.single('image'), async (req, res) => {
     resolveWithObject: true,
   });
 
-  const blurhash = encode(data, info.width, info.height, componentX, componentY);
+  const blurhash = encode(new Uint8ClampedArray(data), info.width, info.height, componentX, componentY);
   res.json({ blurhash });
 });
 ```
