@@ -256,24 +256,24 @@ Sentry.init({
   // dsn, release, dist, etc...
 });
 
-Sentry.configureScope(scope => {
-  scope.setTag('expo-update-id', Updates.updateId);
-  scope.setTag('expo-is-embedded-update', Updates.isEmbeddedLaunch);
+const scope = Sentry.getGlobalScope();
 
-  if (typeof updateGroup === 'string') {
-    scope.setTag('expo-update-group-id', updateGroup);
+scope.setTag('expo-update-id', Updates.updateId);
+scope.setTag('expo-is-embedded-update', Updates.isEmbeddedLaunch);
 
-    const owner = extra?.expoClient?.owner ?? '[account]';
-    const slug = extra?.expoClient?.slug ?? '[project]';
-    scope.setTag(
-      'expo-update-debug-url',
-      `https://expo.dev/accounts/${owner}/projects/${slug}/updates/${updateGroup}`
-    );
-  } else if (Updates.isEmbeddedLaunch) {
-    // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
-    scope.setTag('expo-update-debug-url', 'not applicable for embedded updates');
-  }
-});
+if (typeof updateGroup === 'string') {
+  scope.setTag('expo-update-group-id', updateGroup);
+
+  const owner = extra?.expoClient?.owner ?? '[account]';
+  const slug = extra?.expoClient?.slug ?? '[project]';
+  scope.setTag(
+    'expo-update-debug-url',
+    `https://expo.dev/accounts/${owner}/projects/${slug}/updates/${updateGroup}`
+  );
+} else if (Updates.isEmbeddedLaunch) {
+  // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
+  scope.setTag('expo-update-debug-url', 'not applicable for embedded updates');
+}
 ```
 
 Once configured, information about the associated update will show up in an error's tag section:
