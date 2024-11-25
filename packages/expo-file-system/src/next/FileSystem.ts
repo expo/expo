@@ -45,7 +45,7 @@ export class FileBlob implements Blob {
   }
 
   get type() {
-    return this.file.type ?? '';
+    return this.file.type ?? 'image/jpeg';
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {

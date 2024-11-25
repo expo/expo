@@ -11,7 +11,7 @@ export declare function convertReadableStreamToUint8ArrayAsync(stream: ReadableS
  * `blob` is not supported for standard FormData.
  */
 export declare function convertFormData(formData: FormData, boundary?: string): {
-    body: string;
+    body: Uint8Array;
     boundary: string;
 };
 /**

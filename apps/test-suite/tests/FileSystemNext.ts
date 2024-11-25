@@ -642,14 +642,16 @@ export async function test({ describe, expect, it, ...t }) {
     only('Supports sending a file using blob', async () => {
       const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
 
-      // const src = new File(asset.localUri);
-      const src = new File(testDirectory, 'test.txt');
-      src.write('Hello world');
+      const src = new File(asset.localUri);
+      // const src = new File(testDirectory, 'test.txt');
+      // src.write('Hello world');
 
       const formData = new FormData();
       const blob = src.blob();
 
-      formData.append('data', blob); // You might want to give your blob a filename
+      expect(blob.size).toBe(src.size);
+
+      formData.append('data', blob);
       await fetch('http://localhost:3000/upload?key=TESTUSER', {
         method: 'POST',
         body: formData,
