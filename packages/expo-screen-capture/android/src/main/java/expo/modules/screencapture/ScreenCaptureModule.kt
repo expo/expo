@@ -31,13 +31,13 @@ class ScreenCaptureModule : Module() {
     get() = safeCurrentActivity ?: throw Exceptions.MissingActivity()
   private var screenCaptureCallback: Activity.ScreenCaptureCallback? = null
   private var screenshotEventEmitter: ScreenshotEventEmitter? = null
+  private var screenRecordingEventEmitter: ScreenRecordingEventEmitter? = null
   private var isRegistered = false
 
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenCapture")
 
-    Events(screenshotEventName)
-    Events(recordingEventName)
+    Events(screenshotEventName, recordingEventName)
 
     OnCreate {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -49,6 +49,16 @@ class ScreenCaptureModule : Module() {
       } else {
         screenshotEventEmitter = ScreenshotEventEmitter(context) {
           sendEvent(screenshotEventName)
+        }
+      }
+
+      // Add recording detection for Android 15+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        safeCurrentActivity?.let { activity ->
+          screenRecordingEventEmitter = ScreenRecordingEventEmitter(activity) {
+            sendEvent(recordingEventName)
+          }
+          screenRecordingEventEmitter?.register()
         }
       }
     }
@@ -89,10 +99,16 @@ class ScreenCaptureModule : Module() {
       // Call registerCallback once more as a fallback if activity wasn't available in onCreate
       registerCallback()
       screenshotEventEmitter?.onHostResume()
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        screenRecordingEventEmitter?.register()
+      }
     }
 
     OnActivityEntersBackground {
       screenshotEventEmitter?.onHostPause()
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        screenRecordingEventEmitter?.unregister()
+      }
     }
 
     OnDestroy {
@@ -101,6 +117,9 @@ class ScreenCaptureModule : Module() {
         screenCaptureCallback?.let {
           safeCurrentActivity?.unregisterScreenCaptureCallback(it)
         }
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        screenRecordingEventEmitter?.unregister()
       }
     }
   }
