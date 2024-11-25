@@ -70,7 +70,7 @@ div:not(#root) > ::-webkit-scrollbar-track {
 }
 
 div:not(#root) > ::-webkit-scrollbar-thumb {
-  @apply bg-palette-gray5 rounded-sm;
+  @apply rounded-sm bg-palette-gray5;
 }
 
 div:not(#root) > ::-webkit-scrollbar-thumb:hover {
@@ -123,7 +123,7 @@ div.tippy-box {
 }
 
 .tippy-box[data-theme~='expo'] .tippy-content {
-  @apply text-sm text-palette-white bg-palette-black rounded-md py-3 px-4;
+  @apply rounded-md bg-palette-black px-4 py-3 text-sm text-palette-white;
   line-height: 1.525;
 }
 
@@ -143,7 +143,8 @@ div.tippy-box {
   white-space: pre-wrap;
   width: 100%;
 
-  td, th {
+  td,
+  th {
     border-bottom: none;
   }
 }
@@ -161,11 +162,11 @@ div.tippy-box {
 }
 
 .diff-gutter-col {
-  @apply bg-element w-10;
+  @apply w-10 bg-element;
 }
 
 .diff-gutter {
-  @apply text-3xs px-2;
+  @apply px-2 text-3xs;
   text-align: right;
   user-select: none;
 }
@@ -201,10 +202,10 @@ div.tippy-box {
   transition: 200ms ease all;
   transition-property: text-shadow, opacity;
   text-shadow:
-    var(--yellow-7) 0 0 10px,
-    var(--yellow-7) 0 0 10px,
-    var(--yellow-7) 0 0 10px,
-    var(--yellow-7) 0 0 10px;
+    var(--amber-6) 0 0 10px,
+    var(--amber-6) 0 0 10px,
+    var(--amber-6) 0 0 10px,
+    var(--amber-6) 0 0 10px;
 }
 
 .code-annotation.with-tooltip:hover {
