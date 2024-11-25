@@ -261,25 +261,23 @@ func createAlbum(with title: String, completion: @escaping (PHAssetCollection?, 
 }
 
 func assetType(for localUri: URL) -> PHAssetMediaType {
-  guard let type = UTType(filenameExtension: localUri.pathExtension) else {
+  let fileUTI = UTType(filenameExtension: localUri.pathExtension)?.identifier as CFString?
+
+  guard let fileUTI else {
     return assetTypeExtension(for: localUri.pathExtension)
   }
-  switch type {
-  case .image:
+
+  if UTTypeConformsTo(fileUTI, kUTTypeImage) {
     return .image
-  case .video:
-    return .video
-  case .audio:
-    return .audio
-  case _ where type.conforms(to: .image):
-    return .image
-  case _ where type.conforms(to: .video):
-    return .video
-  case _ where type.conforms(to: .audio):
-    return .audio
-  default:
-    return .unknown
   }
+  if UTTypeConformsTo(fileUTI, kUTTypeMovie) {
+    return .video
+  }
+  if UTTypeConformsTo(fileUTI, kUTTypeAudio) {
+    return .audio
+  }
+
+  return .unknown
 }
 
 func assetTypeExtension(for fileExtension: String) -> PHAssetMediaType {
