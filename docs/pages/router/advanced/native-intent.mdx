@@ -24,7 +24,7 @@ Expo Router will always evaluate a URL with the assumption that the URL targets 
 
 In such scenarios, the URL needs to be rewritten to correctly target a route.
 
-To facilitate this, create a special file called **+native-intent.tsx** at the top level of your project's **app** directory. This file exports a special [`redirectSystemPath`](/versions/v52.0.0/sdk/router/#nativeintent) method designed to handle URL/path processing. When invoked, it receives an `options` object with two attributes: `path` and `initial`.
+To facilitate this, create a special file called **+native-intent.tsx** at the top level of your project's **app** directory. This file exports a special [`redirectSystemPath`](/versions/latest/sdk/router/#nativeintent) method designed to handle URL/path processing. When invoked, it receives an `options` object with two attributes: `path` and `initial`.
 
 <FileTree files={['app/+native-intent.tsx']} />
 
