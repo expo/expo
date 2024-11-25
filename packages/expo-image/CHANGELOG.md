@@ -2,15 +2,13 @@
 
 ## Unpublished
 
-- Update `ImageProps` so `children` are omitted. ([#33afe30](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017)) ([#33210](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))
+- Update `ImageProps` type so `children` are omitted. ([#33210](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))
 
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-
-### 💡 Others
 
 ### 💡 Others
 
