@@ -25,7 +25,8 @@ function matchGroupName(name) {
 exports.matchGroupName = matchGroupName;
 /** Match `(app)/(page)` -> `page` */
 function matchLastGroupName(name) {
-    return name.match(/.*(?<=\/|^)\(([^\\/\s]+)\)[^\s]*$/)?.[1];
+    const matches = name.match(/.*(?<=\/|^)\(([^\\/\s]+)\)[^\s]*$/);
+    return matches ? matches[matches.length - 1] : undefined;
 }
 exports.matchLastGroupName = matchLastGroupName;
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */

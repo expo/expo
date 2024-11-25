@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove RegExp lookbehind to maintain older browser compatibility
+
 ### 💡 Others
 
 ## 4.0.9 — 2024-11-22
