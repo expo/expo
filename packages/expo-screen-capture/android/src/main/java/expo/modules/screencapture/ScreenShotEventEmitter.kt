@@ -14,7 +14,7 @@ import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import expo.modules.core.interfaces.LifecycleEventListener
 
-class ScreenshotEventEmitter(val context: Context, onScreenShot: () -> Unit) : LifecycleEventListener {
+class ScreenShotEventEmitter(val context: Context, onScreenShot: () -> Unit) : LifecycleEventListener {
   private var isListening: Boolean = true
   private var previousPath: String = ""
 
