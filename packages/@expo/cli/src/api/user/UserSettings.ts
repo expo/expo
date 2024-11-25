@@ -1,13 +1,14 @@
-import { getExpoHomeDirectory, getUserStatePath } from '@expo/config/build/getUserState';
 import JsonFile from '@expo/json-file';
 import crypto from 'crypto';
+import { boolish } from 'getenv';
+import { homedir } from 'os';
+import * as path from 'path';
 
 type SessionData = {
-  sessionSecret: string;
-  // These fields are potentially used by Expo CLI.
-  userId: string;
-  username: string;
-  currentConnection: 'Username-Password-Authentication' | 'Browser-Flow-Authentication';
+  sessionSecret?: string;
+  userId?: string;
+  username?: string;
+  currentConnection?: 'Username-Password-Authentication' | 'Browser-Flow-Authentication';
 };
 
 export type UserSettingsData = {
@@ -20,6 +21,21 @@ export type UserSettingsData = {
   uuid?: string;
 };
 
+// The ~/.expo directory is used to store authentication sessions,
+// which are shared between EAS CLI and Expo CLI.
+export function getExpoHomeDirectory() {
+  const home = homedir();
+
+  if (process.env.__UNSAFE_EXPO_HOME_DIRECTORY) {
+    return process.env.__UNSAFE_EXPO_HOME_DIRECTORY;
+  } else if (boolish('EXPO_STAGING', false)) {
+    return path.join(home, '.expo-staging');
+  } else if (boolish('EXPO_LOCAL', false)) {
+    return path.join(home, '.expo-local');
+  }
+  return path.join(home, '.expo');
+}
+
 /** Return the user cache directory. */
 export function getSettingsDirectory() {
   return getExpoHomeDirectory();
@@ -27,7 +43,7 @@ export function getSettingsDirectory() {
 
 /** Return the file path of the settings file */
 export function getSettingsFilePath(): string {
-  return getUserStatePath();
+  return path.join(getExpoHomeDirectory(), 'state.json');
 }
 
 /** Get a new JsonFile instance pointed towards the settings file */
@@ -35,6 +51,7 @@ export function getSettings(): JsonFile<UserSettingsData> {
   return new JsonFile<UserSettingsData>(getSettingsFilePath(), {
     ensureDir: true,
     jsonParseErrorDefault: {},
+    // This will ensure that an error isn't thrown if the file doesn't exist.
     cantReadFileDefault: {},
   });
 }

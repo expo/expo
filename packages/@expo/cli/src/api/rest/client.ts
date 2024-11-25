@@ -1,4 +1,3 @@
-import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import type { JSONValue } from '@expo/json-file';
 import path from 'path';
 
@@ -13,7 +12,7 @@ import { CommandError } from '../../utils/errors';
 import { fetch } from '../../utils/fetch';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { disableNetwork } from '../settings';
-import { getAccessToken, getSession } from '../user/UserSettings';
+import { getAccessToken, getExpoHomeDirectory, getSession } from '../user/UserSettings';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
