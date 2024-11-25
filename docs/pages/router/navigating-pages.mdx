@@ -9,7 +9,7 @@ Expo Router uses "links" to move between pages in the app. This is conceptually 
 
 <FileTree files={['app/index.tsx', 'app/about.tsx', 'app/user/[id].tsx']} />
 
-In the following example, there are two [`Link`](/versions/v52.0.0/sdk/router/#link) components which navigate to different routes.
+In the following example, there are two [`Link`](/versions/latest/sdk/router/#link) components which navigate to different routes.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx
@@ -35,7 +35,7 @@ export default function Page() {
 
 ## Buttons
 
-The Link component wraps the children in a `<Text>` component by default, this is useful for accessibility but not always desired. You can customize the component by passing the [`asChild` prop](/versions/v52.0.0/sdk/router/#aschild), which will forward all props to the first child of the `Link` component. The child component must support the `onPress` and `onClick` props, `href` and `role` will also be passed down.
+The Link component wraps the children in a `<Text>` component by default, this is useful for accessibility but not always desired. You can customize the component by passing the [`asChild` prop](/versions/latest/sdk/router/#aschild), which will forward all props to the first child of the `Link` component. The child component must support the `onPress` and `onClick` props, `href` and `role` will also be passed down.
 
 {/* prettier-ignore */}
 ```tsx
@@ -57,23 +57,25 @@ export default function Page() {
 
 ## Understanding native navigation
 
-> Expo Router v4 changed `navigate` to be an alias for `push`. To retain the old behavior, please use [`dismissTo`](/versions/v52.0.0/sdk/router/#dismissTo)
+> Expo Router v4 changed `navigate` to be an alias for `push`. To retain the old behavior, use [`dismissTo`](/versions/latest/sdk/router/#dismissTo).
 
 Expo Router uses a stack-based navigation model, where each new route you navigate to is added to a stack.
 
-For example, navigating from /feed to /profile results in the stack being `['/feed', '/profile']`. If you then navigate to /settings, the stack becomes `['/feed', '/profile', '/settings']`. While this may resemble traditional web navigation, a key distinction is that screens can have multiple child stacks, each independently controlled. This is known as parallel routing.
+For example, navigating from the `/feed` route to the `/profile` route results in the stack being `['/feed', '/profile']`. If you then navigate to `/settings`, the stack becomes `['/feed', '/profile', '/settings']`. While this may resemble traditional web navigation, a key distinction is that screens can have multiple child stacks, each independently controlled. This is known as parallel routing.
 
 <FileTree files={[['app/_layout.tsx', '<Tabs />'], ['app/(fruit)/_layout.tsx', '<Stack />'], ['app/(vegetable)/_layout.tsx', '<Stack />'], 'app/(fruit)/apple.tsx', 'app/(fruit)/orange.tsx', 'app/(vegetable)/carrot.tsx', 'app/(vegetable)/potato.tsx']} />
 
-In the example above, app/_layout introduces a `<Tabs />` navigator, while the other two _layout files each render a `<Stack />`. Navigating through each page would result in a history like `[['/apple', '/orange'], ['/carrot', '/potato']]`. Notice that instead of a single stack, there’s a parent stack containing two child stacks.
+In the example above, **app/\_layout** introduces a `<Tabs />` navigator, while the other two layout files render a `<Stack />`. Navigating through each page would result in a history like `[['/apple', '/orange'], ['/carrot', '/potato']]`. Notice that instead of a single stack, there’s a parent stack containing two child stacks.
 
-While advancing in a stack is straightforward, moving backwards can be more complex due to the non-linear history. This behavior is familiar when using your phone: after clicking a link to open an app, pressing back might show you a screen you haven’t visited yet. Only pressing back again exits the app. This is an example of an anchor route (also known as an initial route), demonstrating how stacks manage their own history. This is why `goBack()` is sometimes called a "pop" (the reverse of "push") or "unwinding the stack".
+While advancing in a stack is straightforward, moving backward can be more complex due to the non-linear history. 
 
-To handle backwards navigation, Expo Router offers multiple functions: [`goBack`](/versions/v52.0.0/sdk/router/#goback) moves you backwards in the stack's history, while [`dismiss`](/versions/v52.0.0/sdk/router/#dismiss) only goes back within the current stack.
+Consider a common mobile experience: when you open an app from a link and press back, you might see unfamiliar screens before exiting the app. This demonstrates how stacks maintain their own history using anchor routes (also called initial routes). This is why `goBack()` is sometimes called a "pop" (the reverse of "push") or "unwinding the stack".
 
-The [`dismissTo`](/versions/v52.0.0/sdk/router/#dismissto) function is unique—it can move you forwards or backwards. Calling dismissTo for a previously visited route will dismiss screens until that route is reached. If the route isn’t in the history, it will push forward to that route.
+To handle backwards navigation, Expo Router offers multiple functions: [`goBack`](/versions/latest/sdk/router/#goback) moves you backward in the stack's history. At the same time, [`dismiss`](/versions/latest/sdk/router/#dismiss) only goes back within the current stack.
 
-Additionally, the [`replace`](/versions/v52.0.0/sdk/router/#replace) method allows you to replace the current route in the stack with a new one, without adding to the stack.
+The [`dismissTo`](/versions/latest/sdk/router/#dismissto) function is unique—it can move you forward or backward. Calling `dismissTo` for a previously visited route will dismiss screens until that route is reached. If the route isn’t in the history, it will push forward to that route.
+
+Additionally, the [`replace`](/versions/latest/sdk/router/#replace) method allows you to replace the current route in the stack with a new one, without adding to the stack.
 
 To navigate, you can provide a full path (`/profile/settings`), a relative path (`../settings`), or by passing an object (`{ pathname: 'profile', params: { id: '123' } }`).
 
@@ -186,7 +188,7 @@ export function logout() {
 }
 ```
 
-The `router` object is immutable and contains multiple methods to navigate. See [`Router`](/versions/v52.0.0/sdk/router/#router) for more information about the available methods.
+The `router` object is immutable and contains multiple methods to navigate. See [`Router`](/versions/latest/sdk/router/#router) for more information about the available methods.
 
 ## Autocomplete
 

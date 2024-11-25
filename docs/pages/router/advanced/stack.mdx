@@ -314,11 +314,11 @@ export default function Settings() {
 
 ### `dismissTo` action
 
-> `dismissTo` was added in Expo Router `4.0.8`. It operates similar to the `navigation` function in Expo Router v3
+> `dismissTo` was added in Expo Router `4.0.8`. It operates similarly to the `navigation` function in Expo Router v3.
 
-Dismisses screens in the current `<Stack />` until the specified `Href` is reached. If the `Href` is not present in the history, a `PUSH` action will be performed instead.
+Dismisses screens in the current `<Stack />` until the specified `Href` is reached. If the `Href` is absent in the history, a `push` action will be performed instead.
 
-For example, the given a history of `/one`, `/two`, `/three`, where `/three` is the current route. The action `router.dismissTo('/one')` will cause the history to go back twice, while `router.dismissTo('/four')` will `PUSH` the history forwards to the `/four` route.
+For example, consider the history of `/one`, `/two`, `/three` routes, where `/three` is the current route. The action `router.dismissTo('/one')` will cause the history to go back twice, while `router.dismissTo('/four')` will `push` the history forward to the `/four` route.
 
 {/* prettier-ignore */}
 ```tsx app/settings.tsx
