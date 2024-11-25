@@ -30,7 +30,7 @@ Expo's connections to Apple and Google are encrypted and use HTTPS.
 
 ### Contents of the notification are not stored
 
-Expo doesn't store the contents of push notifications any longer than it takes to deliver the notifications to the push notification services operated by Apple and Google. Notifications are stored only in memory and in message queues and not stored in databases.
+Expo doesn't store the contents of push notifications any longer than it takes to deliver them to the push notification services operated by Google and Apple. Notifications are stored only in memory and in message queues, not in databases.
 
 ### Contents of the notifications may be seen by Expo staff
 
@@ -48,7 +48,7 @@ Finally, the push notification services from Google and Apple follow their polic
 
 The `ExpoPushToken` remains the same across app upgrades. On Android, reinstalling the app may result in the token changing. On iOS, the token also remains the same even after uninstalling the app and reinstalling it.
 
-It also changes if you change your [`applicationId`](/versions/latest/sdk/application.mdx#applicationapplicationid) or `experienceId` (usually `@expoUsername/projectSlug`).
+It also changes if you change your [`applicationId`](/versions/latest/sdk/application/#applicationapplicationid) or `experienceId` (usually `@expoUsername/projectSlug`).
 
 The `ExpoPushToken` never expires. However, if one of your users uninstalls the app, you'll receive a `DeviceNotRegistered` error back from Expo's servers. This means you should stop sending notifications to this token.
 
