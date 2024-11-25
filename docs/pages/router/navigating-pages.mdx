@@ -63,15 +63,25 @@ Expo Router uses a stack-based navigation model, where each new route you naviga
 
 For example, navigating from the `/feed` route to the `/profile` route results in the stack being `['/feed', '/profile']`. If you then navigate to `/settings`, the stack becomes `['/feed', '/profile', '/settings']`. While this may resemble traditional web navigation, a key distinction is that screens can have multiple child stacks, each independently controlled. This is known as parallel routing.
 
-<FileTree files={[['app/_layout.tsx', '<Tabs />'], ['app/(fruit)/_layout.tsx', '<Stack />'], ['app/(vegetable)/_layout.tsx', '<Stack />'], 'app/(fruit)/apple.tsx', 'app/(fruit)/orange.tsx', 'app/(vegetable)/carrot.tsx', 'app/(vegetable)/potato.tsx']} />
+<FileTree
+  files={[
+    ['app/_layout.tsx', '<Tabs />'],
+    ['app/(fruit)/_layout.tsx', '<Stack />'],
+    ['app/(vegetable)/_layout.tsx', '<Stack />'],
+    'app/(fruit)/apple.tsx',
+    'app/(fruit)/orange.tsx',
+    'app/(vegetable)/carrot.tsx',
+    'app/(vegetable)/potato.tsx',
+  ]}
+/>
 
 In the example above, **app/\_layout** introduces a `<Tabs />` navigator, while the other two layout files render a `<Stack />`. Navigating through each page would result in a history like `[['/apple', '/orange'], ['/carrot', '/potato']]`. Notice that instead of a single stack, there’s a parent stack containing two child stacks.
 
-While advancing in a stack is straightforward, moving backward can be more complex due to the non-linear history. 
+While advancing in a stack is straightforward, moving backward can be more complex due to the non-linear history.
 
-Consider a common mobile experience: when you open an app from a link and press back, you might see unfamiliar screens before exiting the app. This demonstrates how stacks maintain their own history using anchor routes (also called initial routes). This is why `goBack()` is sometimes called a "pop" (the reverse of "push") or "unwinding the stack".
+Consider a common mobile experience: when you open an app from a link and press back, you might see unfamiliar screens before exiting the app. This demonstrates how stacks maintain their own history using anchor routes (also called initial routes). This is why `back()` is sometimes called a "pop" (the reverse of "push") or "unwinding the stack".
 
-To handle backwards navigation, Expo Router offers multiple functions: [`goBack`](/versions/latest/sdk/router/#goback) moves you backward in the stack's history. At the same time, [`dismiss`](/versions/latest/sdk/router/#dismiss) only goes back within the current stack.
+To handle backwards navigation, Expo Router offers multiple functions: [`back`](/versions/latest/sdk/router/#back) moves you backward in the stack's history. At the same time, [`dismiss`](/versions/latest/sdk/router/#dismiss) only goes back within the current stack.
 
 The [`dismissTo`](/versions/latest/sdk/router/#dismissto) function is unique—it can move you forward or backward. Calling `dismissTo` for a previously visited route will dismiss screens until that route is reached. If the route isn’t in the history, it will push forward to that route.
 
