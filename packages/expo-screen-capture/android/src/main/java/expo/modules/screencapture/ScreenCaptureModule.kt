@@ -11,10 +11,9 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.util.function.Consumer
 
-const val screenshotEventName = "onScreenshot"
-const val recordingEventName = "onRecording"
+const val eventName = "onScreenshot"
+
 val grantedPermissions = mapOf(
   "canAskAgain" to true,
   "granted" to true,
@@ -30,39 +29,25 @@ class ScreenCaptureModule : Module() {
   private val currentActivity
     get() = safeCurrentActivity ?: throw Exceptions.MissingActivity()
   private var screenCaptureCallback: Activity.ScreenCaptureCallback? = null
-  private var ScreenCaptureEventEmitter: ScreenCaptureEventEmitter? = null
-  private var screenRecordingCallback: Consumer<Int>? = null
+  private var screenshotEventEmitter: ScreenshotEventEmitter? = null
   private var isRegistered = false
 
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenCapture")
 
-    Events(screenshotEventName)
-    Events(recordingEventName)
+    Events(eventName)
 
     OnCreate {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         screenCaptureCallback = Activity.ScreenCaptureCallback {
-          sendEvent(screenshotEventName)
+          sendEvent(eventName)
         }
-        registerScreenshotCallback()
+        // Let's try to register the callback
+        registerCallback()
       } else {
-        ScreenCaptureEventEmitter = ScreenCaptureEventEmitter(context, {
-          sendEvent(screenshotEventName)
-        }, {
-          sendEvent(recordingEventName, mapOf("isRecording" to true))
-        })
-      }
-
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        screenRecordingCallback = Consumer { state ->
-          if (state == WindowManager.SCREEN_RECORDING_STATE_VISIBLE) {
-            sendEvent(recordingEventName, mapOf("isRecording" to true))
-          } else {
-            sendEvent(recordingEventName, mapOf("isRecording" to false))
-          }
+        screenshotEventEmitter = ScreenshotEventEmitter(context) {
+          sendEvent(eventName)
         }
-        registerRecordingCallback()
       }
     }
 
@@ -99,53 +84,32 @@ class ScreenCaptureModule : Module() {
     }.runOnQueue(Queues.MAIN)
 
     OnActivityEntersForeground {
-      // Call register callbacks once more as a fallback if activity wasn't available in onCreate
-      registerScreenshotCallback()
-      registerRecordingCallback()
-      ScreenCaptureEventEmitter?.onHostResume()
+      // Call registerCallback once more as a fallback if activity wasn't available in onCreate
+      registerCallback()
+      screenshotEventEmitter?.onHostResume()
     }
 
     OnActivityEntersBackground {
-      ScreenCaptureEventEmitter?.onHostPause()
+      screenshotEventEmitter?.onHostPause()
     }
 
     OnDestroy {
-      ScreenCaptureEventEmitter?.onHostDestroy()
-      unregisterScreenshotCallback()
-      unregisterRecordingCallback()
+      screenshotEventEmitter?.onHostDestroy()
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        screenCaptureCallback?.let {
+          safeCurrentActivity?.unregisterScreenCaptureCallback(it)
+        }
+      }
     }
   }
 
-  private fun registerScreenshotCallback() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-      safeCurrentActivity?.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!)
-    }
-  }
-
-  private fun unregisterScreenshotCallback() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-      safeCurrentActivity?.unregisterScreenCaptureCallback(screenCaptureCallback!!)
-    }
-  }
-
-  private fun registerRecordingCallback() {
-    if (isRegistered || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+  private fun registerCallback() {
+    if (isRegistered) {
       return
     }
-    val windowManager = currentActivity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    val initialState = windowManager.addScreenRecordingCallback(currentActivity.mainExecutor, screenRecordingCallback!!)
-    screenRecordingCallback?.accept(initialState) // Process the initial state
-    isRegistered = true
-  }
-
-  private fun unregisterRecordingCallback() {
-    if (!isRegistered || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-      return
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      safeCurrentActivity?.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!) ?: return
+      isRegistered = true
     }
-    val windowManager = currentActivity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    screenRecordingCallback?.let {
-      windowManager.removeScreenRecordingCallback(it)
-    }
-    isRegistered = false
   }
 }

@@ -40,11 +40,15 @@ function useScreenCapture({
   }, []);
 }
 
+type Timestamp = {
+  type: 'screenshot' | 'recording';
+  timestamp: Date;
+  isRecording?: boolean;
+};
+
 export default function ScreenCaptureScreen() {
   const [isEnabled, setEnabled] = React.useState(true);
-  const [timestamps, setTimestamps] = React.useState<
-    { type: 'screenshot' | 'recording'; timestamp: Date; isRecording?: boolean }[]
-  >([]);
+  const [timestamps, setTimestamps] = React.useState<Timestamp[]>([]);
 
   React.useEffect(() => {
     if (isEnabled) {

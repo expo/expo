@@ -58,12 +58,13 @@ export declare function addScreenshotListener(listener: () => void): EventSubscr
  * with [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
  *
  * @param listener The function that will be executed when the user takes a screen recording.
- * This function accepts no arguments.
+ * This function accepts a single boolean argument that indicates whether the screen recording
+ * started or stopped.
  *
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
  * `remove()` or passing it to `removeRecordingListener`.
  */
-export declare function addRecordingListener(listener: () => void): EventSubscription;
+export declare function addRecordingListener(listener: (isRecording: boolean) => void): EventSubscription;
 /**
  * Removes the subscription you provide, so that you are no longer listening for screenshots.
  * You can also call `remove()` on that `Subscription` object.
