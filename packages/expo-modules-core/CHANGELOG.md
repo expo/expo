@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default.
+- [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default. ([#33261](https://github.com/expo/expo/pull/33261) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.0.6 — 2024-11-22
 
