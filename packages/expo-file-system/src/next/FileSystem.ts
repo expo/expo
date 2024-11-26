@@ -83,17 +83,10 @@ export class File extends ExpoFileSystem.FileSystemFile {
     super(Paths.join(...uris));
     this.validatePath();
   }
-  // async arrayBuffer(): Promise<ArrayBuffer> {
-  //   return this.bytes().buffer;
-  // }
-  // slice(
-  //   start?: number | undefined,
-  //   end?: number | undefined,
-  //   contentType?: string | undefined
-  // ): Blob {
-  //   throw new Error('Method not implemented.');
-  // }
 
+  /*
+   * Returns the file as a Blob. The blob can be used in `@expo/fetch` to send files over network and for other uses.
+   */
   blob(): Blob {
     return new FileBlob(this);
   }
