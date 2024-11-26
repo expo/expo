@@ -10,8 +10,6 @@ import { Platform } from 'react-native';
 export const name = 'FileSystem@next';
 
 export async function test({ describe, expect, it, ...t }) {
-  const only = it;
-  it = () => {};
   const testDirectory = FS.documentDirectory + 'tests/';
   t.beforeEach(async () => {
     try {
@@ -266,7 +264,6 @@ export async function test({ describe, expect, it, ...t }) {
           src.create();
           const dst = new File(testDirectory, 'file2.txt');
           dst.create();
-          // @ts-expect-error
           expect(() => src.copy(dst)).toThrow();
         });
       });
@@ -345,7 +342,6 @@ export async function test({ describe, expect, it, ...t }) {
           src.create();
           const dst = new File(testDirectory, 'file2.txt');
           dst.create();
-          // @ts-expect-error
           expect(() => src.move(dst)).toThrow();
         });
       });
@@ -659,7 +655,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     // You can also use something like container twostoryrobot/simple-file-upload to test if the file is saved correctly
-    only('Supports sending a file using blob', async () => {
+    it('Supports sending a file using blob', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
       const blob = src.blob();
@@ -673,7 +669,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     // Use something like twostoryrobot/simple-file-upload to test
-    only('Supports sending a file using blob with formdata', async () => {
+    it('Supports sending a file using blob with formdata', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
 
