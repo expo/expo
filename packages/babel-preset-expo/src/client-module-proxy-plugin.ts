@@ -70,9 +70,12 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
                     callback(exportName);
                   }
                 } else if (
-                  !['InterfaceDeclaration', 'TSTypeAliasDeclaration', 'TypeAlias'].includes(
-                    exportPath.node.declaration.type
-                  )
+                  ![
+                    'InterfaceDeclaration',
+                    'TSInterfaceDeclaration',
+                    'TSTypeAliasDeclaration',
+                    'TypeAlias',
+                  ].includes(exportPath.node.declaration.type)
                 ) {
                   // TODO: What is this type?
                   console.warn(
