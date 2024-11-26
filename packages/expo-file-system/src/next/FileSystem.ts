@@ -61,7 +61,7 @@ export class FileBlob implements Blob {
     return this.file.readableStream();
   }
   slice(start?: number, end?: number, contentType?: string): Blob {
-    throw new Error('Method not implemented.');
+    return new Blob([this.file.bytes().slice(start, end)], { type: contentType });
   }
 }
 
