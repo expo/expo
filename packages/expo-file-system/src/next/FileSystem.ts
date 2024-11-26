@@ -28,11 +28,12 @@ export class Paths extends PathUtilities {
   }
 }
 
-export class FileBlob implements Blob {
+export class FileBlob extends Blob {
   file: File;
   key: string = 'FileBlob';
 
   constructor(file: File) {
+    super();
     this.file = file;
   }
 

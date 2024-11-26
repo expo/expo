@@ -656,19 +656,32 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     // Use something like twostoryrobot/simple-file-upload to test
-    it('Supports sending a file using blob', async () => {
-      const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
-      const src = new File(asset.localUri);
+    // it('Supports sending a file using blob', async () => {
+    //   const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
+    //   const src = new File(asset.localUri);
 
-      const formData = new FormData();
-      const blob = src.blob();
+    //   const blob = src.blob();
 
-      formData.append('data', blob);
-      await fetch('http://localhost:3000/upload?key=TESTUSER', {
-        method: 'POST',
-        body: formData,
-      });
-    });
+    //   await fetch('http://localhost:3000/upload?key=TESTUSER', {
+    //     method: 'POST',
+    //     body: blob,
+    //   });
+    // });
+
+    // Use something like twostoryrobot/simple-file-upload to test
+    // it('Supports sending a file using blob with formdata', async () => {
+    //   const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
+    //   const src = new File(asset.localUri);
+
+    //   const formData = new FormData();
+    //   const blob = src.blob();
+
+    //   formData.append('data', blob);
+    //   await fetch('http://localhost:3000/upload?key=TESTUSER', {
+    //     method: 'POST',
+    //     body: formData,
+    //   });
+    // });
   });
 
   addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });

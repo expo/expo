@@ -12,7 +12,7 @@ export declare class Paths extends PathUtilities {
     static get document(): Directory;
     static get appleSharedContainers(): Record<string, Directory>;
 }
-export declare class FileBlob implements Blob {
+export declare class FileBlob extends Blob {
     file: File;
     key: string;
     constructor(file: File);
