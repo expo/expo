@@ -342,53 +342,57 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
   private func handleLivePhoto(asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?], promise: Promise) {
     let livePhotoOptions = PHLivePhotoRequestOptions()
     livePhotoOptions.isNetworkAccessAllowed = shouldDownloadFromNetwork
+    
+    var updatedResult = result
+        updatedResult["pairedVideoAsset"] = nil
 
-    PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) {
-      livePhoto, info in
-
+    
+    PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { livePhoto, info in
       guard let livePhoto = livePhoto,
-        let videoResource = PHAssetResource.assetResources(for: livePhoto)
-        .first(where: { $0.type == .pairedVideo })
-      else {
+            let videoResource = PHAssetResource.assetResources(for: livePhoto)
+        .first(where: { $0.type == .pairedVideo }) else {
+        promise.resolve(updatedResult)
+        return
+      }
+      
+      self.writePairedVideoAsset(videoResource: videoResource, asset: asset, result: updatedResult, promise: promise)
+    }
+  }
+
+  private func writePairedVideoAsset(videoResource: PHAssetResource, asset: PHAsset, result: [String: Any?], promise: Promise) {
+    let fileName = videoResource.originalFilename
+    let tempDir = FileManager.default.temporaryDirectory
+    let fileExt = getFileExtension(from: fileName).replacingOccurrences(of: ".", with: "")
+    let fileUrl = tempDir.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExt)
+    
+    PHAssetResourceManager.default().writeData(for: videoResource, toFile: fileUrl, options: nil) { error in
+      guard error == nil else {
         promise.resolve(result)
         return
       }
-
-      let fileName = videoResource.originalFilename
-      let tempDir = FileManager.default.temporaryDirectory
-      let fileExt = getFileExtension(from: fileName).replacingOccurrences(of: ".", with: "")
-      let fileUrl = tempDir
-        .appendingPathComponent(UUID().uuidString)
-        .appendingPathExtension(fileExt)
-
-      PHAssetResourceManager.default().writeData(for: videoResource, toFile: fileUrl, options: nil) {
-        error in
-
-        guard error == nil else {
-          promise.resolve(result)
-          return
-        }
-
-        let fileSize = getFileSize(from: fileUrl)
-        let mimeType = getMimeType(from: fileUrl.pathExtension)
-
-        let pairedVideoAsset = PairedVideoAssetInfo(
-          assetId: asset.localIdentifier,
-          type: "pairedVideo",
-          uri: fileUrl.absoluteString,
-          width: Double(asset.pixelWidth),
-          height: Double(asset.pixelHeight),
-          fileName: fileName,
-          fileSize: fileSize,
-          mimeType: mimeType,
-          duration: asset.duration
-        )
-
-        var updatedResult = result
-        updatedResult["pairedVideoAsset"] = pairedVideoAsset.toDictionary()
-        promise.resolve(updatedResult)
-      }
+      
+      let pairedVideoAsset = self.getPairedVideoAssetInfo(asset: asset, fileUrl: fileUrl, fileName: fileName)
+      var updatedResult = result
+      updatedResult["pairedVideoAsset"] = pairedVideoAsset.toDictionary()
+      promise.resolve(updatedResult)
     }
+  }
+
+  private func getPairedVideoAssetInfo(asset: PHAsset, fileUrl: URL, fileName: String) -> PairedVideoAssetInfo {
+    let fileSize = getFileSize(from: fileUrl)
+    let mimeType = getMimeType(from: fileUrl.pathExtension)
+    
+    return PairedVideoAssetInfo(
+      assetId: asset.localIdentifier,
+      type: "pairedVideo",
+      uri: fileUrl.absoluteString,
+      width: Double(asset.pixelWidth),
+      height: Double(asset.pixelHeight),
+      fileName: fileName,
+      fileSize: fileSize,
+      mimeType: mimeType,
+      duration: asset.duration
+    )
   }
 
   private func resolveImage(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {
@@ -535,7 +539,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         }
 
         if !changeDetails.hasIncrementalChanges {
-          sendEvent("mediaLibraryDidChange",[
+          sendEvent("mediaLibraryDidChange", [
             "hasIncrementalChanges": false
           ])
         }
