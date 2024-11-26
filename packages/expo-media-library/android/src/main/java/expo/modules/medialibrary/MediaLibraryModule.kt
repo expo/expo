@@ -139,7 +139,7 @@ class MediaLibraryModule : Module() {
               .execute()
           }
         }
-        runActionWithDeletePermissions(assetsId, action)
+        runActionWithPermissions(assetsId, action, true)
       }
     }
 
@@ -421,7 +421,7 @@ class MediaLibraryModule : Module() {
       ?.not() ?: false
   }
 
-  private fun runActionWithPermissions(assetsId: List<String>, action: Action) {
+  private fun runActionWithPermissions(assetsId: List<String>, action: Action, useDeletePermission: Boolean = false) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       val pathsWithoutPermissions = MediaLibraryUtils.getAssetsUris(context, assetsId)
         .filter { uri ->
@@ -433,14 +433,17 @@ class MediaLibraryModule : Module() {
         }
 
       if (pathsWithoutPermissions.isNotEmpty()) {
-        val deleteRequest =
+        val request = if (useDeletePermission) {
+          MediaStore.createDeleteRequest(context.contentResolver, pathsWithoutPermissions)
+        } else {
           MediaStore.createWriteRequest(context.contentResolver, pathsWithoutPermissions)
+        }
 
         try {
           awaitingAction = action
           appContext.throwingActivity.startIntentSenderForResult(
-            deleteRequest.intentSender,
-            WRITE_REQUEST_CODE,
+            request.intentSender,
+            if (useDeletePermission) DELETE_REQUEST_CODE else WRITE_REQUEST_CODE,
             null,
             0,
             0,
@@ -453,31 +456,6 @@ class MediaLibraryModule : Module() {
         // the action will be called when permissions are granted
         return
       }
-    }
-    action.runWithPermissions(true)
-  }
-
-  private fun runActionWithDeletePermissions(assetsId: List<String>, action: Action) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-       val assetUris = MediaLibraryUtils.getAssetsUris(context, assetsId)
-      val deleteRequest =
-        MediaStore.createDeleteRequest(context.contentResolver, assetUris)
-      try {
-        awaitingAction = action
-        appContext.throwingActivity.startIntentSenderForResult(
-          deleteRequest.intentSender,
-          DELETE_REQUEST_CODE,
-          null,
-          0,
-          0,
-          0
-        )
-      } catch (e: SendIntentException) {
-        awaitingAction = null
-        throw e
-      }
-      // the action will be called when permissions are granted
-      return
     }
     action.runWithPermissions(true)
   }
