@@ -216,15 +216,6 @@ export async function exportEmbedBundleAndAssetsAsync(
     const apiRoutesEnabled =
       devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
 
-    if (apiRoutesEnabled) {
-      await exportStandaloneServerAsync(projectRoot, devServer, {
-        exp,
-        pkg,
-        files,
-        options,
-      });
-    }
-
     // TODO: Remove duplicates...
     const expoDomComponentReferences = bundles.artifacts
       .map((artifact) =>
@@ -234,6 +225,9 @@ export async function exportEmbedBundleAndAssetsAsync(
       )
       .flat();
     if (expoDomComponentReferences.length > 0) {
+      const ssrManifests: Record<string, string[]>[] = [];
+      const actionsManifests: Record<string, string[]>[] = [];
+
       await Promise.all(
         // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
         expoDomComponentReferences.map(async (filePath) => {
@@ -246,6 +240,8 @@ export async function exportEmbedBundleAndAssetsAsync(
             includeSourceMaps: !!sourceMapUrl,
             exp,
             files,
+            sourceMapUrl,
+            unstableTransformProfile: options.unstableTransformProfile,
           });
 
           if (options.assetsDest) {
@@ -266,6 +262,35 @@ export async function exportEmbedBundleAndAssetsAsync(
           }
         })
       );
+
+      //
+      // TODO: Replace this with a single pass bundle for DOM components
+      // Overwrite the SSR manifest with the merged manifest.
+      if (ssrManifests.length) {
+        let mergedSsrManifest: Record<string, string[]> = {};
+        ssrManifests.forEach((manifest) => {
+          mergedSsrManifest = { ...mergedSsrManifest, ...manifest };
+        });
+        devServer.exportSsrManifest(files, mergedSsrManifest, 'web');
+      }
+
+      // TODO: Replace this with a single pass bundle for DOM components
+      if (actionsManifests.length) {
+        let mergedSsrManifest: Record<string, string[]> = {};
+        actionsManifests.forEach((manifest) => {
+          mergedSsrManifest = { ...mergedSsrManifest, ...manifest };
+        });
+        devServer.exportServerActionManifest(files, mergedSsrManifest, 'web');
+      }
+    }
+
+    if (apiRoutesEnabled) {
+      await exportStandaloneServerAsync(projectRoot, devServer, {
+        exp,
+        pkg,
+        files,
+        options,
+      });
     }
 
     return {

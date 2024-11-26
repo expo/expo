@@ -18,7 +18,7 @@ export async function exportEagerAsync(
     dev,
     platform,
     // We default to resetting the cache in non-CI environments since prebundling overwrites the cache reset later.
-    resetCache: !env.CI,
+    resetCache: false, //!env.CI,
   });
   debug('Starting eager export: ' + options.bundleOutput);
 

@@ -604,11 +604,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     extraOptions: {
       sourceMapUrl?: string;
       unstable_transformProfile?: TransformProfile;
+      ssrManifest?: Record<string, string[]>;
     } = {}
   ): Promise<{
     artifacts: SerialAsset[];
     assets: readonly BundleAssetWithFileHashes[];
     files?: ExportAssetMap;
+    ssrManifest?: Record<string, string[]>;
+    actionsManifest?: Record<string, string[]>;
   }> {
     if (this.isReactServerComponentsEnabled) {
       return this.singlePageReactServerComponentExportAsync(options, files, extraOptions);
@@ -626,11 +629,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     extraOptions: {
       sourceMapUrl?: string;
       unstable_transformProfile?: TransformProfile;
+      ssrManifest?: Record<string, string[]>;
+      actionsManifest?: Record<string, string[]>;
     } = {}
   ): Promise<{
     artifacts: SerialAsset[];
     assets: readonly BundleAssetWithFileHashes[];
     files: ExportAssetMap;
+    ssrManifest: Record<string, string[]>;
+    actionsManifest: Record<string, string[]>;
   }> {
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
     let {
@@ -678,7 +685,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     debug('React server action boundaries from client:', reactServerReferences);
 
     // When we export the server actions that were imported from the client, we may need to re-bundle the client with the new client boundaries.
-    const { clientBoundaries: nestedClientBoundaries } =
+    const { manifest: actionsManifest, clientBoundaries: nestedClientBoundaries } =
       await this.rscRenderer!.exportServerActionsAsync(
         {
           platform: options.platform,
@@ -705,6 +712,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         },
         extraOptions
       );
+
+      // TODO: Assert if new reactServerReferences is different to the previous one. This can happen if a client imports server actions which import a client that imports new server actions.
     }
 
     // Inject the global CSS that was imported during the server render.
@@ -712,9 +721,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const serverRoot = getMetroServerRoot(this.projectRoot);
 
+    const moduleIdContext = {
+      platform: options.platform,
+      environment: 'client',
+    };
     // HACK: Maybe this should be done in the serializer.
-    const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
-      path.relative(serverRoot, boundary)
+    const clientBoundariesAsOpaqueIds = clientBoundaries.map(
+      (boundary) => this.metro?._createModuleId(boundary, moduleIdContext) as string
     );
     const moduleIdToSplitBundle = (
       bundle.artifacts
@@ -755,23 +768,54 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       files
     );
 
-    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
-    files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
-      targetDomain: 'server',
-      contents:
-        'module.exports = ' +
-        JSON.stringify(
-          // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
-          Object.fromEntries(
-            Array.from(ssrManifest.entries()).map(([key, value]) => [
-              path.join(serverRoot, key),
-              [key, value],
-            ])
-          )
-        ),
-    });
+    // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
+    const finalSsrManifest = Object.fromEntries(
+      Array.from(ssrManifest.entries()).map(([key, chunk]) => {
+        const boundary = path.join(serverRoot, key);
+        // Remove `?platform=...` from the opaque server ID.
+        const lastIndex = boundary.lastIndexOf('?platform=');
+        const opaqueServerId = lastIndex === -1 ? boundary : boundary.slice(0, lastIndex);
 
-    return { ...bundle, files };
+        return [
+          // lookup ID in the server component
+          opaqueServerId,
+          [
+            // opaque Metro module Id
+            key,
+            // split chunk containing the module
+            chunk,
+          ],
+        ];
+      })
+    );
+
+    this.exportSsrManifest(files, finalSsrManifest, options.platform);
+
+    return { ...bundle, files, ssrManifest: finalSsrManifest, actionsManifest };
+  }
+
+  public exportServerActionManifest(
+    files: ExportAssetMap,
+    ssrManifest: Record<string, string[]>,
+    platform: string
+  ) {
+    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+    files.set(`_expo/rsc/${platform}/action-manifest.js`, {
+      targetDomain: 'server',
+      contents: 'module.exports = ' + JSON.stringify(ssrManifest),
+    });
+  }
+
+  public exportSsrManifest(
+    files: ExportAssetMap,
+    ssrManifest: Record<string, string[]>,
+    platform: string
+  ) {
+    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+    files.set(`_expo/rsc/${platform}/ssr-manifest.js`, {
+      targetDomain: 'server',
+      contents: 'module.exports = ' + JSON.stringify(ssrManifest),
+    });
   }
 
   async legacySinglePageExportBundleAsync(
