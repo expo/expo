@@ -20,7 +20,6 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           "photo": "photo",
           "video": "video",
           "unknown": "unknown",
-          "livePhoto": "livePhoto",
           "all": "all"
         ],
         "SortBy": [
