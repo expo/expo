@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `useImage` causing a native crash when uri is unresolvable.
+
 ### 💡 Others
 
 ## 2.0.2 — 2024-11-22
