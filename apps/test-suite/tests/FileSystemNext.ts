@@ -668,7 +668,7 @@ export async function test({ describe, expect, it, ...t }) {
       expect(body.data).toEqual('abcde');
     });
 
-    // Use something like twostoryrobot/simple-file-upload to test
+    // You can also use this docker image: twostoryrobot/simple-file-upload to test e2e blob upload.
     it('Supports sending a file using blob with formdata', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
