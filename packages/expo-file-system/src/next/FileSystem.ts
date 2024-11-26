@@ -52,15 +52,19 @@ export class FileBlob extends Blob {
   async arrayBuffer(): Promise<ArrayBuffer> {
     return this.file.bytes().buffer;
   }
+
   async text(): Promise<string> {
     return this.file.text();
   }
+
   async bytes() {
     return this.file.bytes();
   }
+
   stream(): globalThis.ReadableStream<Uint8Array> {
     return this.file.readableStream();
   }
+
   slice(start?: number, end?: number, contentType?: string): Blob {
     return new Blob([this.file.bytes().slice(start, end)], { type: contentType });
   }
