@@ -22,7 +22,7 @@ describe(convertFormData, () => {
     formData.append('bar', 'bar');
     const boundary = '----ExpoFetchFormBoundary0000000000000000';
     const { body, boundary: resultBoundary } = convertFormData(formData, boundary);
-    expect(body).toMatchInlineSnapshot(`
+    expect(new TextDecoder().decode(body)).toMatchInlineSnapshot(`
       "------ExpoFetchFormBoundary0000000000000000
       content-disposition: form-data; name="foo"
 
