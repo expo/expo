@@ -145,6 +145,63 @@ export type AssetInfo = Asset & {
    * @platform ios
    */
   orientation?: number;
+  /**
+   * This field is available if the type is an image, and the subtype is livePhoto
+   * Whether the asset is stored on the network (iCloud on iOS).
+   * @platform ios
+   */
+  pairedVideoAsset?: PairedVideoAsset | null;
+};
+
+/**
+ * Represents a video component of a Live Photo on iOS. This is the paired video asset that
+ * accompanies a Live Photo's still image, containing the motion content.
+ */
+export type PairedVideoAsset = {
+  /**
+   * Local file URI to the extracted video component of the Live Photo.
+   * Can be used with expo-live-photo
+   */
+  uri: string;
+  /**
+   * The unique identifier of the original Live Photo asset in the iOS Photos library.
+   * Can be used by [expo-media-library](./media-library) to manage the picked asset.
+   * @platform ios
+   */
+  assetId?: string | null;
+  /**
+   * Width of the image or video
+   */
+  width: number;
+  /**
+   * Height of the image or video
+   */
+  height: number;
+  /**
+   * Constant value 'pairedVideo' indicating this is extracted from a Live Photo
+   * @platform ios
+   */
+  type: 'pairedVideo';
+  /**
+   * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
+   * or user gave limited permission to access the media library
+   * @platform ios
+   */
+  fileName?: string | null;
+  /**
+   * File size of the video, in bytes
+   */
+  fileSize?: number;
+  /**
+   * Length of the video in milliseconds or `null` if the asset is not a video
+   * @platform ios
+   */
+  duration?: number;
+  /**
+   * The MIME type of the selected asset or `null` if could not be determined
+   * @platform ios
+   */
+  mimeType?: string | null;
 };
 
 /**

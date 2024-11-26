@@ -20,6 +20,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           "photo": "photo",
           "video": "video",
           "unknown": "unknown",
+          "livePhoto": "livePhoto",
           "all": "all"
         ],
         "SortBy": [
@@ -338,25 +339,98 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       allAssetsFetchResult = nil
     }
   }
-
-  private func resolveImage(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {
-    var result = exportAssetInfo(asset: asset) ?? [:]
-    let imageOptions = PHContentEditingInputRequestOptions()
-    imageOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
-
-    asset.requestContentEditingInput(with: imageOptions) { contentInput, info in
-      result["localUri"] = contentInput?.fullSizeImageURL?.absoluteString
-      result["orientation"] = contentInput?.fullSizeImageOrientation
-      if !options.shouldDownloadFromNetwork {
-        result["isNetworkAsset"] = info[PHContentEditingInputResultIsInCloudKey] ?? false
-      }
-
-      if let url = contentInput?.fullSizeImageURL, let ciImage = CIImage(contentsOf: url) {
-        result["exif"] = ciImage.properties
-      }
-      promise.resolve(result)
+    
+    private func getMimeType(from pathExtension: String) -> String? {
+      return UTType(filenameExtension: pathExtension)?.preferredMIMEType
     }
-  }
+    
+    private func getFileSize(from fileUrl: URL) -> Int? {
+      do {
+        let resources = try fileUrl.resourceValues(forKeys: [.fileSizeKey])
+        return resources.fileSize
+      } catch {
+        log.error("Failed to get file size for \(fileUrl.absoluteString)")
+        return nil
+      }
+    }
+    
+    private func handleLivePhoto(asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?], promise: Promise) {
+        let livePhotoOptions = PHLivePhotoRequestOptions()
+        livePhotoOptions.isNetworkAccessAllowed = shouldDownloadFromNetwork
+        
+        PHImageManager.default().requestLivePhoto(for: asset,targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) {
+            [self] livePhoto, info in
+            
+            guard let livePhoto = livePhoto,
+                  let videoResource = PHAssetResource.assetResources(for: livePhoto)
+                    .first(where: { $0.type == .pairedVideo }) else {
+                promise.resolve(result)
+                return
+            }
+            
+            let fileName = videoResource.originalFilename
+            let tempDir = FileManager.default.temporaryDirectory
+            let fileExt = getFileExtension(from: fileName).replacingOccurrences(of: ".", with: "")
+            let fileUrl = tempDir
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension(fileExt)
+            
+            PHAssetResourceManager.default().writeData(for: videoResource, toFile: fileUrl, options: nil) {
+                [self] error in
+                
+                guard error == nil else {
+                    promise.resolve(result)
+                    return
+                }
+                
+                let fileSize = getFileSize(from: fileUrl)
+                let mimeType = getMimeType(from: fileUrl.pathExtension)
+                
+                let pairedVideoAsset = PairedVideoAssetInfo(
+                    assetId: asset.localIdentifier,
+                    type: "pairedVideo",
+                    uri: fileUrl.absoluteString,
+                    width: Double(asset.pixelWidth),
+                    height: Double(asset.pixelHeight),
+                    fileName: fileName,
+                    fileSize: fileSize,
+                    mimeType: mimeType,
+                    duration: asset.duration
+                )
+                
+                var updatedResult = result
+                updatedResult["pairedVideoAsset"] = pairedVideoAsset.toDictionary()
+                promise.resolve(updatedResult)
+            }
+        }
+    }
+    
+    private func resolveImage(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {
+        var result = exportAssetInfo(asset: asset) ?? [:]
+        let imageOptions = PHContentEditingInputRequestOptions()
+        imageOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
+
+        asset.requestContentEditingInput(with: imageOptions) { contentInput, info in
+            result["localUri"] = contentInput?.fullSizeImageURL?.absoluteString
+            result["orientation"] = contentInput?.fullSizeImageOrientation
+            if !options.shouldDownloadFromNetwork {
+                result["isNetworkAsset"] = info[PHContentEditingInputResultIsInCloudKey] ?? false
+            }
+
+            if let url = contentInput?.fullSizeImageURL, let ciImage = CIImage(contentsOf: url) {
+                result["exif"] = ciImage.properties
+            }
+            
+            result["pairedVideoAsset"] = nil
+            
+            if asset.mediaSubtypes.contains(.photoLive) {
+                self.handleLivePhoto(asset: asset, shouldDownloadFromNetwork: options.shouldDownloadFromNetwork, result: result, promise: promise)
+            } else {
+                promise.resolve(result)
+            }
+        }
+    }
+
 
   private func resolveVideo(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {
     var result = exportAssetInfo(asset: asset) ?? [:]

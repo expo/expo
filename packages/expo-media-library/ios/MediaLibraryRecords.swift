@@ -45,3 +45,15 @@ struct GetAssetsResponse {
   let totalCount: Int
   let hasNextPage: Bool
 }
+
+struct PairedVideoAssetInfo: Record {
+  @Field var assetId: String? = nil
+  @Field var type: String = "pairedVideo"
+  @Field var uri: String = ""
+  @Field var width: Double = 0
+  @Field var height: Double = 0
+  @Field var fileName: String? = nil
+  @Field var fileSize: Int? = nil
+  @Field var mimeType: String? = nil
+  @Field var duration: Double? = nil
+}

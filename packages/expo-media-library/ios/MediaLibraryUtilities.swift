@@ -515,3 +515,31 @@ func requesterClass(_ writeOnly: Bool) -> EXPermissionsRequester.Type {
   }
   return MediaLibraryPermissionRequester.self
 }
+
+func readSizeFrom(url: URL) -> CGSize? {
+  let asset = AVURLAsset(url: url)
+  guard let assetTrack = asset.tracks(withMediaType: .video).first else {
+    return nil
+  }
+  // The video could be rotated and the resulting transform can result in a negative width/height.
+  let size = assetTrack.naturalSize.applying(assetTrack.preferredTransform)
+  return CGSize(width: abs(size.width), height: abs(size.height))
+}
+
+func getFileSize(from fileUrl: URL) -> Int? {
+  do {
+    let resources = try fileUrl.resourceValues(forKeys: [.fileSizeKey])
+    return resources.fileSize
+  } catch {
+    log.error("Failed to get file size for \(fileUrl.absoluteString)")
+    return nil
+  }
+}
+
+func getMimeType(from pathExtension: String) -> String? {
+  return UTType(filenameExtension: pathExtension)?.preferredMIMEType
+}
+
+func getFileExtension(from fileName: String) -> String {
+  return ".\(URL(fileURLWithPath: fileName).pathExtension)"
+}
