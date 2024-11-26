@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default.
+
 ## 2.0.6 — 2024-11-22
 
 ### 🐛 Bug fixes
