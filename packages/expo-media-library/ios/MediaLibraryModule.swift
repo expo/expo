@@ -20,7 +20,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           "photo": "photo",
           "video": "video",
           "unknown": "unknown",
-          "all": "all",
+          "all": "all"
         ],
         "SortBy": [
           "default": "default",
@@ -29,21 +29,20 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           "mediaType": "mediaType",
           "width": "width",
           "height": "height",
-          "duration": "duration",
+          "duration": "duration"
         ],
-        "CHANGE_LISTENER_NAME": "mediaLibraryDidChange",
+        "CHANGE_LISTENER_NAME": "mediaLibraryDidChange"
       ]
     }
 
     OnCreate {
       appContext?.permissions?.register([
         MediaLibraryPermissionRequester(),
-        MediaLibraryWriteOnlyPermissionRequester(),
+        MediaLibraryWriteOnlyPermissionRequester()
       ])
     }
 
-    AsyncFunction("getPermissionsAsync") {
-      (writeOnly: Bool, promise: Promise) in
+    AsyncFunction("getPermissionsAsync") { (writeOnly: Bool, promise: Promise) in
       self.writeOnly = writeOnly
       appContext?
         .permissions?
@@ -54,8 +53,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         )
     }
 
-    AsyncFunction("requestPermissionsAsync") {
-      (writeOnly: Bool, promise: Promise) in
+    AsyncFunction("requestPermissionsAsync") { (writeOnly: Bool, promise: Promise) in
       self.writeOnly = writeOnly
       appContext?
         .permissions?
@@ -85,32 +83,25 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
       let assetType = assetType(for: uri)
       if assetType == .unknown || assetType == .audio {
-        promise.reject(
-          UnsupportedAssetTypeException(uri.absoluteString))
+        promise.reject(UnsupportedAssetTypeException(uri.absoluteString))
         return
       }
 
-      if !FileSystemUtilities.permissions(appContext, for: uri).contains(
-        .read)
-      {
+      if !FileSystemUtilities.permissions(appContext, for: uri).contains(.read) {
         promise.reject(UnreadableAssetException(uri.absoluteString))
         return
       }
 
       var assetPlaceholder: PHObjectPlaceholder?
       PHPhotoLibrary.shared().performChanges {
-        let changeRequest =
-          assetType == .video
-          ? PHAssetChangeRequest.creationRequestForAssetFromVideo(
-            atFileURL: uri)
-          : PHAssetChangeRequest.creationRequestForAssetFromImage(
-            atFileURL: uri)
+        let changeRequest = assetType == .video
+          ? PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: uri)
+          : PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: uri)
 
         assetPlaceholder = changeRequest?.placeholderForCreatedAsset
       } completionHandler: { success, error in
         if success {
-          let asset = getAssetBy(
-            id: assetPlaceholder?.localIdentifier)
+          let asset = getAssetBy(id: assetPlaceholder?.localIdentifier)
           promise.resolve(exportAsset(asset: asset))
         } else {
           promise.reject(SaveAssetException(error))
@@ -118,13 +109,9 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
     }
 
-    AsyncFunction("saveToLibraryAsync") {
-      (localUrl: URL, promise: Promise) in
-      if Bundle.main.infoDictionary?["NSPhotoLibraryAddUsageDescription"]
-        == nil
-      {
-        throw MissingPListKeyException(
-          "NSPhotoLibraryAddUsageDescription")
+    AsyncFunction("saveToLibraryAsync") { (localUrl: URL, promise: Promise) in
+      if Bundle.main.infoDictionary?["NSPhotoLibraryAddUsageDescription"] == nil {
+        throw MissingPListKeyException("NSPhotoLibraryAddUsageDescription")
       }
 
       if localUrl.pathExtension.isEmpty {
@@ -154,10 +141,8 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           return
         }
 
-        guard let image = UIImage(data: try Data(contentsOf: localUrl))
-        else {
-          promise.reject(
-            MissingFileException(localUrl.absoluteString))
+        guard let image = UIImage(data: try Data(contentsOf: localUrl)) else {
+          promise.reject(MissingFileException(localUrl.absoluteString))
           return
         }
         delegate.writeImage(image, withCallback: callback)
@@ -174,8 +159,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       promise.reject(UnsupportedAssetException())
     }
 
-    AsyncFunction("addAssetsToAlbumAsync") {
-      (assetIds: [String], album: String, promise: Promise) in
+    AsyncFunction("addAssetsToAlbumAsync") { (assetIds: [String], album: String, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
         addAssets(ids: assetIds, to: album) { success, error in
           if success {
@@ -187,8 +171,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
     }
 
-    AsyncFunction("removeAssetsFromAlbumAsync") {
-      (assetIds: [String], album: String, promise: Promise) in
+    AsyncFunction("removeAssetsFromAlbumAsync") { (assetIds: [String], album: String, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
         PHPhotoLibrary.shared().performChanges {
           guard let collection = getAlbum(by: album) else {
@@ -196,8 +179,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           }
           let assets = getAssetsBy(assetIds: assetIds)
 
-          let albumChangeRequest = PHAssetCollectionChangeRequest(
-            for: collection, assets: assets)
+          let albumChangeRequest = PHAssetCollectionChangeRequest(for: collection, assets: assets)
           albumChangeRequest?.removeAssets(assets)
         } completionHandler: { success, error in
           if success {
@@ -209,15 +191,13 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
     }
 
-    AsyncFunction("deleteAssetsAsync") {
-      (assetIds: [String], promise: Promise) in
+    AsyncFunction("deleteAssetsAsync") { (assetIds: [String], promise: Promise) in
       if !checkPermissions(promise: promise) {
         return
       }
 
       PHPhotoLibrary.shared().performChanges {
-        let fetched = PHAsset.fetchAssets(
-          withLocalIdentifiers: assetIds, options: nil)
+        let fetched = PHAsset.fetchAssets(withLocalIdentifiers: assetIds, options: nil)
         PHAssetChangeRequest.deleteAssets(fetched)
       } completionHandler: { success, error in
         if success {
@@ -228,32 +208,21 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
     }
 
-    AsyncFunction("getAlbumsAsync") {
-      (options: AlbumOptions, promise: Promise) in
+    AsyncFunction("getAlbumsAsync") { (options: AlbumOptions, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
         var albums = [[String: Any?]?]()
         let fetchOptions = PHFetchOptions()
         fetchOptions.includeHiddenAssets = false
         fetchOptions.includeAllBurstAssets = false
 
-        let useAlbumsfetchResult =
-          PHCollectionList.fetchTopLevelUserCollections(
-            with: fetchOptions)
+        let useAlbumsfetchResult = PHCollectionList.fetchTopLevelUserCollections(with: fetchOptions)
 
-        let collections = exportCollections(
-          collections: useAlbumsfetchResult, with: fetchOptions,
-          in: nil)
+        let collections = exportCollections(collections: useAlbumsfetchResult, with: fetchOptions, in: nil)
         albums.append(contentsOf: collections)
 
         if options.includeSmartAlbums {
-          let smartAlbumsFetchResult =
-            PHAssetCollection.fetchAssetCollections(
-              with: .smartAlbum, subtype: .any,
-              options: fetchOptions)
-          albums.append(
-            contentsOf: exportCollections(
-              collections: smartAlbumsFetchResult,
-              with: fetchOptions, in: nil))
+          let smartAlbumsFetchResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: fetchOptions)
+          albums.append(contentsOf: exportCollections(collections: smartAlbumsFetchResult, with: fetchOptions, in: nil))
         }
 
         promise.resolve(albums)
@@ -270,8 +239,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       options.includeAllBurstAssets = false
 
       let fetchResult = PHAssetCollection.fetchMoments(with: options)
-      let albums = exportCollections(
-        collections: fetchResult, with: options, in: nil)
+      let albums = exportCollections(collections: fetchResult, with: options, in: nil)
 
       promise.resolve(albums)
     }
@@ -283,21 +251,16 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
     }
 
-    AsyncFunction("createAlbumAsync") {
-      (title: String, assetId: String?, promise: Promise) in
+    AsyncFunction("createAlbumAsync") { (title: String, assetId: String?, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
         createAlbum(with: title) { collection, createError in
           if let collection {
             if let assetId {
-              addAssets(
-                ids: [assetId], to: collection.localIdentifier
-              ) { success, addError in
+              addAssets(ids: [assetId], to: collection.localIdentifier) { success, addError in
                 if success {
-                  promise.resolve(
-                    exportCollection(collection))
+                  promise.resolve(exportCollection(collection))
                 } else {
-                  promise.reject(
-                    FailedToAddAssetException(addError))
+                  promise.reject(FailedToAddAssetException(addError))
                 }
               }
             } else {
@@ -310,20 +273,17 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
     }
 
-    AsyncFunction("deleteAlbumsAsync") {
-      (albumIds: [String], removeAsset: Bool, promise: Promise) in
+    AsyncFunction("deleteAlbumsAsync") { (albumIds: [String], removeAsset: Bool, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
         let collections = getAlbums(by: albumIds)
         PHPhotoLibrary.shared().performChanges {
           if removeAsset {
             collections.enumerateObjects { collection, _, _ in
-              let fetch = PHAsset.fetchAssets(
-                in: collection, options: nil)
+              let fetch = PHAsset.fetchAssets(in: collection, options: nil)
               PHAssetChangeRequest.deleteAssets(fetch)
             }
           }
-          PHAssetCollectionChangeRequest.deleteAssetCollections(
-            collections)
+          PHAssetCollectionChangeRequest.deleteAssetCollections(collections)
         } completionHandler: { success, error in
           if success {
             promise.resolve(success)
@@ -334,8 +294,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
     }
 
-    AsyncFunction("getAssetInfoAsync") {
-      (assetId: String?, options: AssetInfoOptions, promise: Promise) in
+    AsyncFunction("getAssetInfoAsync") { (assetId: String?, options: AssetInfoOptions, promise: Promise) in
       if !checkPermissions(promise: promise) {
         return
       }
@@ -352,8 +311,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
     }
 
-    AsyncFunction("getAssetsAsync") {
-      (options: AssetWithOptions, promise: Promise) in
+    AsyncFunction("getAssetsAsync") { (options: AssetWithOptions, promise: Promise) in
       if !checkPermissions(promise: promise) {
         return
       }
@@ -361,13 +319,10 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       if let albumId = options.album {
         runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
           let collection = getAlbum(by: albumId)
-          getAssetsWithAfter(
-            options: options, collection: collection,
-            promise: promise)
+          getAssetsWithAfter(options: options, collection: collection, promise: promise)
         }
       } else {
-        getAssetsWithAfter(
-          options: options, collection: nil, promise: promise)
+        getAssetsWithAfter(options: options, collection: nil, promise: promise)
       }
     }
 
@@ -384,23 +339,15 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     }
   }
 
-  private func handleLivePhoto(
-    asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?],
-    promise: Promise
-  ) {
+  private func handleLivePhoto(asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?], promise: Promise) {
     let livePhotoOptions = PHLivePhotoRequestOptions()
     livePhotoOptions.isNetworkAccessAllowed = shouldDownloadFromNetwork
 
-    PHImageManager.default().requestLivePhoto(
-      for: asset, targetSize: PHImageManagerMaximumSize,
-      contentMode: .aspectFit, options: livePhotoOptions
-    ) {
+    PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) {
       livePhoto, info in
 
       guard let livePhoto = livePhoto,
-        let videoResource = PHAssetResource.assetResources(
-          for: livePhoto
-        )
+        let videoResource = PHAssetResource.assetResources(for: livePhoto)
         .first(where: { $0.type == .pairedVideo })
       else {
         promise.resolve(result)
@@ -409,16 +356,12 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
       let fileName = videoResource.originalFilename
       let tempDir = FileManager.default.temporaryDirectory
-      let fileExt = getFileExtension(from: fileName).replacingOccurrences(
-        of: ".", with: "")
-      let fileUrl =
-        tempDir
+      let fileExt = getFileExtension(from: fileName).replacingOccurrences(of: ".", with: "")
+      let fileUrl = tempDir
         .appendingPathComponent(UUID().uuidString)
         .appendingPathExtension(fileExt)
 
-      PHAssetResourceManager.default().writeData(
-        for: videoResource, toFile: fileUrl, options: nil
-      ) {
+      PHAssetResourceManager.default().writeData(for: videoResource, toFile: fileUrl, options: nil) {
         error in
 
         guard error == nil else {
@@ -442,87 +385,66 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         )
 
         var updatedResult = result
-        updatedResult["pairedVideoAsset"] =
-          pairedVideoAsset.toDictionary()
+        updatedResult["pairedVideoAsset"] = pairedVideoAsset.toDictionary()
         promise.resolve(updatedResult)
       }
     }
   }
 
-  private func resolveImage(
-    asset: PHAsset, options: AssetInfoOptions, promise: Promise
-  ) {
+  private func resolveImage(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {
     var result = exportAssetInfo(asset: asset) ?? [:]
     let imageOptions = PHContentEditingInputRequestOptions()
     imageOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
 
-    asset.requestContentEditingInput(with: imageOptions) {
-      contentInput, info in
+    asset.requestContentEditingInput(with: imageOptions) { contentInput, info in
       result["localUri"] = contentInput?.fullSizeImageURL?.absoluteString
       result["orientation"] = contentInput?.fullSizeImageOrientation
       if !options.shouldDownloadFromNetwork {
-        result["isNetworkAsset"] =
-          info[PHContentEditingInputResultIsInCloudKey] ?? false
+        result["isNetworkAsset"] = info[PHContentEditingInputResultIsInCloudKey] ?? false
       }
 
-      if let url = contentInput?.fullSizeImageURL,
-        let ciImage = CIImage(contentsOf: url)
-      {
+      if let url = contentInput?.fullSizeImageURL, let ciImage = CIImage(contentsOf: url) {
         result["exif"] = ciImage.properties
       }
 
       result["pairedVideoAsset"] = nil
 
       if asset.mediaSubtypes.contains(.photoLive) {
-        self.handleLivePhoto(
-          asset: asset,
-          shouldDownloadFromNetwork: options
-            .shouldDownloadFromNetwork, result: result,
-          promise: promise)
+        self.handleLivePhoto(asset: asset, shouldDownloadFromNetwork: options .shouldDownloadFromNetwork, result: result, promise: promise)
       } else {
         promise.resolve(result)
       }
     }
   }
 
-  private func resolveVideo(
-    asset: PHAsset, options: AssetInfoOptions, promise: Promise
-  ) {
+  private func resolveVideo(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {
     var result = exportAssetInfo(asset: asset) ?? [:]
     let videoOptions = PHVideoRequestOptions()
     videoOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
 
-    PHImageManager.default().requestAVAsset(
-      forVideo: asset, options: videoOptions
-    ) { asset, _, info in
+    PHImageManager.default().requestAVAsset(forVideo: asset, options: videoOptions) { asset, _, info in
       guard let asset = asset as? AVComposition else {
         let urlAsset = asset as? AVURLAsset
         result["localUri"] = urlAsset?.url.absoluteString
         if !options.shouldDownloadFromNetwork {
-          result["isNetworkAsset"] =
-            info?[PHImageResultIsInCloudKey] ?? false
+          result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] ?? false
         }
         promise.resolve(result)
         return
       }
 
-      let directory = self.appContext?.config.cacheDirectory?
-        .appendingPathComponent("MediaLibrary")
+      let directory = self.appContext?.config.cacheDirectory?.appendingPathComponent("MediaLibrary")
       FileSystemUtilities.ensureDirExists(at: directory)
       let videoOutputFileName =
         "slowMoVideo-\(Int.random(in: 0...999)).mov"
-      guard
-        let videoFileOutputPath = directory?.appendingPathComponent(
-          videoOutputFileName)
-      else {
+      guard let videoFileOutputPath = directory?.appendingPathComponent(videoOutputFileName) else {
         promise.reject(InvalidPathException())
         return
       }
 
       let videoFileOutputURL = URL(string: videoFileOutputPath.path)
 
-      let exporter = AVAssetExportSession(
-        asset: asset, presetName: AVAssetExportPresetHighestQuality)
+      let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality)
       exporter?.outputURL = videoFileOutputURL
       exporter?.outputFileType = AVFileType.mov
       exporter?.shouldOptimizeForNetworkUse = true
@@ -532,8 +454,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         case .completed:
           result["localUri"] = videoFileOutputURL?.absoluteString
           if !options.shouldDownloadFromNetwork {
-            result["isNetworkAsset"] =
-              info?[PHImageResultIsInCloudKey] ?? false
+            result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] ?? false
           }
 
           promise.resolve(result)
@@ -553,34 +474,24 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       promise.reject(MediaLibraryPermissionsException())
       return false
     }
-    if !permissions.hasGrantedPermission(
-      usingRequesterClass: requesterClass(self.writeOnly))
-    {
+    if !permissions.hasGrantedPermission(usingRequesterClass: requesterClass(self.writeOnly)) {
       promise.reject(MediaLibraryPermissionsException())
       return false
     }
     return true
   }
 
-  private func runIfAllPermissionsWereGranted(
-    reject: @escaping EXPromiseRejectBlock, block: @escaping () -> Void
-  ) {
+  private func runIfAllPermissionsWereGranted(reject: @escaping EXPromiseRejectBlock, block: @escaping () -> Void) {
     appContext?.permissions?.getPermissionUsingRequesterClass(
       MediaLibraryPermissionRequester.self,
       resolve: { result in
         if let permissions = result as? [String: Any] {
           if permissions["status"] as? String != "granted" {
-            reject(
-              "E_NO_PERMISSIONS",
-              "MEDIA_LIBRARY permission is required to do this operation.",
-              nil)
+            reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
             return
           }
           if permissions["accessPrivileges"] as? String != "all" {
-            reject(
-              "E_NO_PERMISSIONS",
-              "MEDIA_LIBRARY permission is required to do this operation.",
-              nil)
+            reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
             return
           }
           block()
@@ -591,17 +502,12 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
   func didChange(_ changeInstance: PHChange) {
     if let allAssetsFetchResult {
-      let changeDetails = changeInstance.changeDetails(
-        for: allAssetsFetchResult)
+      let changeDetails = changeInstance.changeDetails(for: allAssetsFetchResult)
 
       if let changeDetails {
-        self.allAssetsFetchResult =
-          changeDetails.fetchResultAfterChanges
+        self.allAssetsFetchResult = changeDetails.fetchResultAfterChanges
 
-        if changeDetails.hasIncrementalChanges
-          && !changeDetails.insertedObjects.isEmpty
-          || !changeDetails.removedObjects.isEmpty
-        {
+        if changeDetails.hasIncrementalChanges && !changeDetails.insertedObjects.isEmpty || !changeDetails.removedObjects.isEmpty {
           var insertedAssets = [[String: Any?]?]()
           var deletedAssets = [[String: Any?]?]()
           var updatedAssets = [[String: Any?]?]()
@@ -609,7 +515,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
             "hasIncrementalChanges": true,
             "insertedAssets": insertedAssets,
             "deletedAssets": deletedAssets,
-            "updatedAssets": updatedAssets,
+            "updatedAssets": updatedAssets
           ]
 
           for asset in changeDetails.insertedObjects {
@@ -629,11 +535,9 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         }
 
         if !changeDetails.hasIncrementalChanges {
-          sendEvent(
-            "mediaLibraryDidChange",
-            [
-              "hasIncrementalChanges": false
-            ])
+          sendEvent("mediaLibraryDidChange",[
+            "hasIncrementalChanges": false
+          ])
         }
       }
     }
