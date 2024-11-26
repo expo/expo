@@ -209,7 +209,7 @@ export default function Page({
 }
 ```
 
-To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-prop/#navigate), import the `navigation` prop from [`useNavigation`](/router/reference/hooks/#usenavigation) hook.
+To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-object/#navigate), import the `navigation` prop from [`useNavigation`](/router/reference/hooks/#usenavigation) hook.
 
 ```diff
 + import { useNavigation } from 'expo-router';
@@ -225,7 +225,7 @@ export default function Page({
 
 ### Migrate the Link component
 
-React Navigation and Expo Router both provide Link components. However, Expo's Link component uses `href` instead of [`to`](https://reactnavigation.org/docs/use-link-props#to).
+React Navigation and Expo Router both provide Link components. However, Expo's Link component uses `href` instead of [`to`](https://reactnavigation.org/docs/use-link-props/#to).
 
 ```jsx
 // React Navigation

@@ -114,8 +114,8 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
     } catch (error: any) {
       // When running `expo start`, but wifi or internet has issues
       if (
-        ('code' in error && error.code === 'ENOTFOUND') || // node-fetch error handling
-        ('cause' in error && 'code' in error.cause && error.cause.code === 'ENOTFOUND') // undici error handling
+        isNetworkError(error) || // node-fetch error handling
+        ('cause' in error && isNetworkError(error.cause)) // undici error handling
       ) {
         disableNetwork();
 
@@ -128,6 +128,21 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
       throw error;
     }
   };
+}
+
+/**
+ * Determine if the provided error is related to a network issue.
+ * When this returns true, offline mode should be enabled.
+ *   - `ENOTFOUND` is thrown when the DNS lookup failed
+ *   - `UND_ERR_CONNECT_TIMEOUT` is thrown after DNS is resolved, but server can't be reached
+ *
+ * @see https://nodejs.org/api/errors.html
+ * @see https://github.com/nodejs/undici#network-address-family-autoselection
+ */
+function isNetworkError(error: Error & { code?: string }) {
+  return (
+    'code' in error && error.code && ['ENOTFOUND', 'UND_ERR_CONNECT_TIMEOUT'].includes(error.code)
+  );
 }
 
 const fetchWithOffline = wrapFetchWithOffline(fetch);

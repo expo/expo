@@ -10,11 +10,30 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 52.0.11 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.10 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.9 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.8 — 2024-11-19
+
+### 🐛 Bug fixes
+
 - Fixed type errors when using `ts-jest`. ([#32954](https://github.com/expo/expo/pull/32954) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Started `expo/fetch` streaming lazily. ([#33021](https://github.com/expo/expo/pull/33021) by [@kudo](https://github.com/kudo))
+- Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
 
 ## 52.0.7 — 2024-11-14
 

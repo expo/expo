@@ -55,6 +55,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     }
   }
 
+  var videoBitrate: Int?
+
   var presetCamera = AVCaptureDevice.Position.back {
     didSet {
       updateType()
@@ -358,7 +360,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     var photoSettings = AVCapturePhotoSettings()
 
     if photoOutput.availablePhotoCodecTypes.contains(AVVideoCodecType.hevc) {
-      photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+      photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
     }
 
     let requestedFlashMode = flashMode.toDeviceFlashMode()
@@ -587,10 +589,14 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     if let codec = options.codec {
       let codecType = codec.codecType()
       if videoFileOutput.availableVideoCodecTypes.contains(codecType) {
-        videoFileOutput.setOutputSettings([AVVideoCodecKey: codecType], for: connection)
+        var outputSettings: [String: Any] = [AVVideoCodecKey: codecType]
+        if let videoBitrate {
+          outputSettings[AVVideoCompressionPropertiesKey] = [AVVideoAverageBitRateKey: videoBitrate]
+        }
+        videoFileOutput.setOutputSettings(outputSettings, for: connection)
         self.videoCodecType = codecType
       } else {
-        promise.reject(CameraRecordingException(videoCodecType?.rawValue))
+        promise.reject(CameraRecordingException(options.codec?.rawValue))
         await cleanupMovieFileCapture()
         videoRecordedPromise = nil
         isValidVideoOptions = false

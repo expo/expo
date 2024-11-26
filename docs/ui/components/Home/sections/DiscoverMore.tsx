@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
@@ -14,14 +15,21 @@ export function DiscoverMore() {
         Try out Expo in minutes and learn how to get the most out of Expo.
       </HeaderDescription>
       <GridContainer>
-        <GridCell className="border-palette-orange6 bg-palette-orange3 selection:bg-palette-orange5">
+        <GridCell
+          className={mergeClasses(
+            'border-palette-orange6 bg-palette-orange3 selection:bg-palette-orange5',
+            'dark:border-palette-orange7 dark:bg-palette-orange4 dark:selection:bg-palette-orange6'
+          )}>
           <SnackImage />
           <RawH3 className="!font-bold !text-palette-orange11">Try Expo in your browser</RawH3>
           <P className="max-w-[24ch] !text-xs !text-palette-orange11">
             Expo’s Snack lets you try Expo with zero local setup.
           </P>
           <HomeButton
-            className="border-palette-orange11 bg-palette-orange11 text-palette-orange3 hocus:bg-palette-orange11"
+            className={mergeClasses(
+              'border-palette-orange11 bg-palette-orange11 text-palette-orange3 hocus:bg-palette-orange11',
+              'dark:border-palette-orange10 dark:bg-palette-orange10'
+            )}
             href="https://snack.expo.dev/"
             target="_blank"
             rightSlot={<ArrowUpRightIcon className="icon-md text-palette-orange3" />}>
@@ -41,7 +49,11 @@ export function DiscoverMore() {
             Read FAQ
           </HomeButton>
         </GridCell>
-        <GridCell className="border-palette-yellow7 bg-palette-yellow3 selection:bg-palette-yellow5 dark:border-palette-yellow6">
+        <GridCell
+          className={mergeClasses(
+            'border-palette-yellow6 bg-palette-yellow3 selection:bg-palette-yellow5',
+            'dark:border-palette-yellow7 dark:bg-palette-yellow4'
+          )}>
           <OfficeHoursImage />
           <RawH3 className="!font-bold !text-palette-yellow11">Join us for Office Hours</RawH3>
           <P className="max-w-[28ch] !text-xs !text-palette-yellow11">

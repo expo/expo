@@ -157,6 +157,16 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
       }
 
+      Prop("videoBitrate") { (view, bitrate: Int?) in
+        if let bitrate {
+          view.videoBitrate = bitrate
+          return
+        }
+        if view.videoBitrate != nil {
+          view.videoBitrate = nil
+        }
+      }
+
       OnViewDidUpdateProps { view in
         Task {
           await view.initCamera()

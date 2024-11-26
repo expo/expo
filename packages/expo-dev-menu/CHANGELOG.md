@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 6.0.12 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.11 — 2024-11-22
+
+### 💡 Others
+
+- Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
+
 ## 6.0.10 — 2024-11-15
 
 ### 🐛 Bug fixes

@@ -33,7 +33,7 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '52.0.7'
+version = '52.0.11'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -46,7 +46,7 @@ android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "52.0.7"
+    versionName "52.0.11"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {
@@ -57,11 +57,6 @@ android {
     main {
       java {
         srcDirs += new File(project.buildDir, generatedFilesSrcDir)
-
-        def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
-          srcDirs += "src/reactWrappers"
-        }
       }
     }
   }

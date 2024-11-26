@@ -177,6 +177,7 @@ const general = [
         makePage('distribution/publishing-websites.mdx'),
         makePage('guides/dom-components.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
+        makePage('guides/tailwind.mdx'),
       ],
       { expanded: false }
     ),
@@ -288,7 +289,12 @@ const general = [
     ],
     { expanded: false }
   ),
-  makeSection('EAS', [makePage('eas/index.mdx'), makePage('eas/json.mdx')]),
+  makeSection('EAS', [
+    makePage('eas/index.mdx'),
+    makePage('eas/json.mdx'),
+    makePage('eas/environment-variables.mdx'),
+    makePage('eas/using-environment-variables.mdx'),
+  ]),
   makeSection('Workflows', [
     makePage('workflows/get-started.mdx'),
     makePage('workflows/triggers.mdx'),
@@ -336,7 +342,6 @@ const general = [
         makePage('build-reference/git-submodules.mdx'),
         makePage('build-reference/npm-cache-with-yarn.mdx'),
         makePage('build-reference/build-with-monorepos.mdx'),
-        makePage('build-reference/variables.mdx'),
         makePage('build-reference/apk.mdx'),
         makePage('build-reference/simulators.mdx'),
         makePage('build-reference/app-versions.mdx'),
@@ -389,7 +394,6 @@ const general = [
       makePage('eas-update/error-recovery.mdx'),
     ]),
     makeGroup('Reference', [
-      makePage('eas-update/environment-variables.mdx'),
       makePage('eas-update/code-signing.mdx'),
       makePage('eas-update/asset-selection.mdx'),
       makePage('eas-update/standalone-service.mdx'),

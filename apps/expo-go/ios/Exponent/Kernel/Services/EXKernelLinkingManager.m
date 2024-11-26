@@ -288,6 +288,11 @@ continueUserActivity:(NSUserActivity *)userActivity
 {
   NSURL *initialUrl;
 
+  // Gets the `initialUrl` from `argv` passed to the process.
+  // If `initialUrl` is found in both the process information and the launch options, we will use the one from the launch options.
+  // However, it doesn't appear to be possible to pass it twice.
+  initialUrl = [self initialUrlFromProcessInfo];
+  
   if (launchOptions) {
     if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
       initialUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
@@ -301,6 +306,26 @@ continueUserActivity:(NSUserActivity *)userActivity
   }
 
   return initialUrl;
+}
+
++ (NSURL *)initialUrlFromProcessInfo
+{
+  NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+  NSArray *arguments = [processInfo arguments];
+  BOOL nextIsUrl = NO;
+  
+  for (NSString *arg in arguments) {
+    if (nextIsUrl) {
+      NSURL *url = [NSURL URLWithString:arg];
+      if (url) {
+        return url;
+      }
+    }
+    if ([arg isEqualToString:@"--initialUrl"]) {
+      nextIsUrl = YES;
+    }
+  }
+  return nil;
 }
 
 @end

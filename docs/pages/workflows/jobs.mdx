@@ -47,7 +47,7 @@ This job outputs the following variables:
 
 ## Update
 
-This is a pre-packaged job that publishes an update:
+This is a pre-packaged job that publishes an update. Equivalent to `eas update --auto`. When run from a GitHub event, the EAS Update branch name will correspond to the git branch name. When run manually, a random branch name that includes the git branch name will be supplied to avoid unintentionally unintentional deployment of an update.
 
 ```yaml .eas/workflows/update.yaml
 jobs:
@@ -81,4 +81,22 @@ jobs:
         run: echo "Hello, world!"
 ```
 
-Within custom jobs, you can use our [built-in functions](/custom-builds/schema/#built-in-eas-functions), like `eas/checkout`, `eas/use_npm_token` to interact with the project.
+Within custom jobs, you can use our [built-in functions](/custom-builds/schema/#built-in-eas-functions), like `eas/checkout`, `eas/use_npm_token` to interact with the project. These need to be prefixed with the `uses:` keyword.
+
+```yaml .eas/workflows/custom-job.yaml
+jobs:
+  custom-job:
+    type: custom
+    steps:
+      - uses: eas/checkout
+
+      - uses: eas/install_node_modules
+
+      - name: Say hello!
+        run: echo "Hello world!"
+
+      - name: Multiline script
+        run: |
+          CURRENT_DATE=$(date)
+          echo "It is $CURRENT_DATE"
+```

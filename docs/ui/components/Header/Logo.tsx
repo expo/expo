@@ -13,7 +13,7 @@ export const Logo = ({ subgroup }: Props) => (
       className="flex select-none flex-row items-center gap-2 decoration-0 outline-offset-1"
       href="https://expo.dev">
       <WordMarkLogo
-        className={mergeClasses('my-1 mt-px h-5 w-[72px] text-default', 'max-md-gutters:hidden')}
+        className={mergeClasses('mt-px h-5 w-[72px] text-default', 'max-md-gutters:hidden')}
         title="Expo"
       />
       <LogoIcon

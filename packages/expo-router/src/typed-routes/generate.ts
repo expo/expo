@@ -173,6 +173,8 @@ function groupRouteNodes(
     routeKey = `/${routeKey}`;
   }
 
+  routeKey = routeKey.replace(/\\/g, '/');
+
   if (routeNode.dynamic) {
     groupedContextKeys.dynamic.set(
       routeKey,

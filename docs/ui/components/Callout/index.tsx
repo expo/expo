@@ -86,18 +86,21 @@ function getCalloutColor(type: CalloutType) {
     case 'warning':
       return mergeClasses(
         'border-warning bg-warning',
-        `[&_code]:border-palette-yellow6 [&_code]:bg-palette-yellow4`,
-        `dark:[&_code]:border-palette-yellow7 dark:[&_code]:bg-palette-yellow5`
+        `[&_code]:border-palette-yellow5 [&_code]:bg-palette-yellow4`,
+        `selection:bg-palette-yellow5 dark:selection:bg-palette-yellow6`,
+        `dark:[&_code]:border-palette-yellow6 dark:[&_code]:bg-palette-yellow5`
       );
     case 'error':
       return mergeClasses(
         'border-danger bg-danger',
-        `[&_code]:border-palette-red7 [&_code]:bg-palette-red5`
+        `[&_code]:border-palette-red6 [&_code]:bg-palette-red5`,
+        `selection:bg-palette-red5 dark:selection:bg-palette-red6`
       );
     case 'info':
       return mergeClasses(
         'border-info bg-info',
-        `[&_code]:border-palette-blue6 [&_code]:bg-palette-blue4`
+        `[&_code]:border-palette-blue5 [&_code]:bg-palette-blue4`,
+        `dark:selection:bg-palette-yellow6`
       );
     default:
       return null;

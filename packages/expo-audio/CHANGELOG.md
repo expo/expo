@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Add support for replacing the auido source without recreating the player. ([#32981](https://github.com/expo/expo/pull/32981) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.2.4 — 2024-11-19
+
+### 🎉 New features
+
+- Add support for replacing the auido source without recreating the player. ([#32981](https://github.com/expo/expo/pull/32981) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
