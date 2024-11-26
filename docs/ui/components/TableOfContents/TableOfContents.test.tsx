@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import GithubSlugger from 'github-slugger';
 
 import { TableOfContents } from './TableOfContents';
@@ -5,6 +6,11 @@ import { TableOfContents } from './TableOfContents';
 import { HeadingManager, HeadingType } from '~/common/headingManager';
 import { renderWithHeadings } from '~/common/test-utilities';
 import { HeadingsContext } from '~/common/withHeadingManager';
+
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(() => ({})),
+});
 
 const prepareHeadingManager = () => {
   const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });
