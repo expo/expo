@@ -138,6 +138,16 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   }
 }
 
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  [super mountChildComponentView:childComponentView index:index];
+}
+
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  [super unmountChildComponentView:childComponentView index:index];
+}
+
 #pragma mark - Events
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
