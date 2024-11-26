@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixes adding a blurhash placeholder to `Image` or `ImageBackground` causing blurry version of the image.
+
 ### 💡 Others
 
 ## 2.0.2 — 2024-11-22
