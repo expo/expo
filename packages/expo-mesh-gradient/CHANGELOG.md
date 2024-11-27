@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Allow passing children to render views on top of the gradient. ([#33271](https://github.com/expo/expo/pull/33271) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

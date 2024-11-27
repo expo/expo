@@ -14,6 +14,17 @@ public protocol ExpoSwiftUIView<Props>: SwiftUI.View {
   init()
 }
 
+public extension ExpoSwiftUIView {
+  /**
+   Returns React's children as SwiftUI views.
+   */
+  func Children() -> some View { // swiftlint:disable:this identifier_name
+    ZStack(alignment: .topLeading) {
+      ForEach(props.children ?? []) { $0 }
+    }
+  }
+}
+
 extension ExpoSwiftUI {
   public typealias View = ExpoSwiftUIView
 
