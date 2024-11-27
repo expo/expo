@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `useImage` causing a native crash when uri is unresolvable.
+- [Android] Fixed `useImage` causing a native crash when uri is unresolvable. ([#33268](https://github.com/expo/expo/pull/33268) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
