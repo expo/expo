@@ -80,9 +80,7 @@ export function useLoadedAuthRequest(
 }
 
 /**
- * Create a prompt string from a prompt enum or array of prompt enums.
- * @param prompt prompt from the config
- * @returns valid prompt string or undefined
+ * @returns Prompt type converted to a primitive value to be used as a React hook dependency
  */
 function createPromptString(prompt: Prompt | Prompt[] | undefined): string | undefined {
   if (!prompt) {
