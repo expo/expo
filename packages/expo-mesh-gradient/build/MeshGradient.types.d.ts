@@ -1,6 +1,5 @@
-import type { StyleProp, ViewStyle } from 'react-native';
-export type MeshGradientViewProps = {
-    style?: StyleProp<ViewStyle>;
+import type { ViewProps } from 'react-native';
+export interface MeshGradientViewProps extends ViewProps {
     /**
      * Width of the mesh, i.e. the number of vertices per row.
      * @default 0
@@ -31,5 +30,5 @@ export type MeshGradientViewProps = {
      * @default true
      */
     ignoresSafeArea?: boolean;
-};
+}
 //# sourceMappingURL=MeshGradient.types.d.ts.map
