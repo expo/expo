@@ -68,7 +68,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           const completed = isChapterCompleted(childSlug);
 
           return (
-            <SidebarLink info={child} className="flex flex-1" key={childSlug}>
+            <SidebarLink info={child} className="flex flex-1" key={`${route.name}-${child.name}`}>
               {child.sidebarTitle ?? child.name}
               {completed && <CheckIcon className="icon-sm ml-auto mt-0.5 self-start" />}
             </SidebarLink>
@@ -126,7 +126,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           const completed = isGetStartedChapterCompleted(childSlug);
 
           return (
-            <SidebarLink info={child} className="flex flex-1" key={childSlug}>
+            <SidebarLink info={child} className="flex flex-1" key={`${route.name}-${child.name}`}>
               {child.sidebarTitle ?? child.name}
               {completed && <CheckIcon className="icon-sm ml-auto mt-0.5 self-start" />}
             </SidebarLink>
