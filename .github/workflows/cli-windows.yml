@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, 'sdk-*']
     paths:
-      - .github/workflows/cli.yml
+      - .github/workflows/cli-windows.yml
       - packages/@expo/cli/**
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/src/**
@@ -20,7 +20,7 @@ on:
       - yarn.lock
   pull_request:
     paths:
-      - .github/workflows/cli.yml
+      - .github/workflows/cli-windows.yml
       - packages/@expo/cli/**
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/src/**
@@ -50,18 +50,30 @@ jobs:
         shard: [1, 2, 3]
     steps:
       - name: 🪟 Setup Windows
+        if: runner.os == 'Windows'
+        # Configure Git to use LF line endlings, and Bun to use a faster cache disk on Windows
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
+          echo "BUN_INSTALL_CACHE_DIR=$GITHUB_WORKSPACE\.bun\install\cache" >> $GITHUB_ENV
+        shell: bash
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
 
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
 
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
@@ -71,7 +83,6 @@ jobs:
         id: yarn-cache
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
         shell: bash
-
       - name: ♻️ Restore Yarn Cache
         uses: actions/cache@v4
         with:
@@ -81,30 +92,20 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        # TODO(cedric): expo module scripts is incompatible with Windows, forcing us to manually set up these steps
-        # NOTE(cedric): GitHub Actions on Windows is pretty damn slow with yarn install, so we extend the network timeout a bit
+        # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
         run: yarn install --prefer-offline --frozen-lockfile --ignore-scripts --network-timeout 1000000
-        env:
-          YARN_IGNORE_SCRIPTS: 'true'
 
-      - name: Build Expo CLI
+      - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
-
       - name: 🔎 Type Check CLI
-        # TODO(cedric): expo module scripts is incompatible with Windows, forcing us to manually set up these steps
+        working-directory: packages/@expo/cli
+        # TODO(cedric): expo module scripts is incompatible with Windows, forcing us to manually set up these steps instead of `yarn typecheck`
         run: yarn tsc --noEmit
-        working-directory: packages/@expo/cli
 
-      - name: E2E Test CLI
-        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+      - name: 🧪 E2E Test CLI
         working-directory: packages/@expo/cli
+        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   # web:
   #   runs-on: ubuntu-22.04
