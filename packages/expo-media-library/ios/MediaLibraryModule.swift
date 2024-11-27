@@ -342,57 +342,55 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
   private func handleLivePhoto(asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?], promise: Promise) {
     let livePhotoOptions = PHLivePhotoRequestOptions()
     livePhotoOptions.isNetworkAccessAllowed = shouldDownloadFromNetwork
-    
     var updatedResult = result
-        updatedResult["pairedVideoAsset"] = nil
+      updatedResult["pairedVideoAsset"] = nil
 
-    
-    PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { livePhoto, info in
+    PHImageManager.default()
+      .requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { livePhoto, _ in
       guard let livePhoto = livePhoto,
-            let videoResource = PHAssetResource.assetResources(for: livePhoto)
+        let videoResource = PHAssetResource.assetResources(for: livePhoto)
         .first(where: { $0.type == .pairedVideo }) else {
         promise.resolve(updatedResult)
         return
       }
-      
       self.writePairedVideoAsset(videoResource: videoResource, asset: asset, result: updatedResult, promise: promise)
-    }
+      }
   }
 
   private func writePairedVideoAsset(videoResource: PHAssetResource, asset: PHAsset, result: [String: Any?], promise: Promise) {
     let fileName = videoResource.originalFilename
     let tempDir = FileManager.default.temporaryDirectory
     let fileExt = getFileExtension(from: fileName).replacingOccurrences(of: ".", with: "")
-    let fileUrl = tempDir.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExt)
-    
+    let tempId = UUID().uuidString
+    let fileUrl = tempDir.appendingPathComponent(tempId).appendingPathExtension(fileExt)
     PHAssetResourceManager.default().writeData(for: videoResource, toFile: fileUrl, options: nil) { error in
       guard error == nil else {
         promise.resolve(result)
         return
       }
-      
-      let pairedVideoAsset = self.getPairedVideoAssetInfo(asset: asset, fileUrl: fileUrl, fileName: fileName)
+      let avAsset = AVAsset(url: fileUrl)
+      let duration = avAsset.duration.seconds
+      var pairedVideoAsset: [String: Any?] = [
+        "id": tempId,
+        "filename": fileName,
+        "uri": fileUrl.absoluteString,
+        "mediaType": "video",
+        "mediaSubtypes": [],
+        "width": asset.pixelWidth,
+        "height": asset.pixelHeight,
+        "duration": duration,
+        "creationTime": exportDate(asset.creationDate),
+        "modificationTime": exportDate(asset.modificationDate),
+        "subType": "pairedVideo"
+      ]
+      if #available(iOS 16, *) {
+        pairedVideoAsset["width"] = videoResource.pixelWidth
+        pairedVideoAsset["height"] = videoResource.pixelHeight
+      }
       var updatedResult = result
-      updatedResult["pairedVideoAsset"] = pairedVideoAsset.toDictionary()
+      updatedResult["pairedVideoAsset"] = pairedVideoAsset
       promise.resolve(updatedResult)
     }
-  }
-
-  private func getPairedVideoAssetInfo(asset: PHAsset, fileUrl: URL, fileName: String) -> PairedVideoAssetInfo {
-    let fileSize = getFileSize(from: fileUrl)
-    let mimeType = getMimeType(from: fileUrl.pathExtension)
-    
-    return PairedVideoAssetInfo(
-      assetId: asset.localIdentifier,
-      type: "pairedVideo",
-      uri: fileUrl.absoluteString,
-      width: Double(asset.pixelWidth),
-      height: Double(asset.pixelHeight),
-      fileName: fileName,
-      fileSize: fileSize,
-      mimeType: mimeType,
-      duration: asset.duration
-    )
   }
 
   private func resolveImage(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {

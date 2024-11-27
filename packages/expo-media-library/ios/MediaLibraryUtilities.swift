@@ -80,7 +80,8 @@ func exportAsset(asset: PHAsset?) -> [String: Any?]? {
     "creationTime": exportDate(asset.creationDate),
     // Uses required reason API based on the following reason: 0A2A.1
     "modificationTime": exportDate(asset.modificationDate),
-    "duration": asset.duration
+    "duration": asset.duration,
+    "pairedVideoAsset": nil
   ]
 }
 
