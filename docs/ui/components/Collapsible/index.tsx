@@ -9,9 +9,7 @@ import {
   useEffect,
 } from 'react';
 
-import withHeadingManager, {
-  HeadingManagerProps,
-} from '~/components/page-higher-order/withHeadingManager';
+import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink';
 import { DEMI } from '~/ui/components/Text';
 
