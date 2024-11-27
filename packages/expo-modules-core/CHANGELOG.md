@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed backwards compatibility in the `EventEmitter` constructor.
+- Fixed backwards compatibility in the `EventEmitter` constructor. ([#33294](https://github.com/expo/expo/pull/33294) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
