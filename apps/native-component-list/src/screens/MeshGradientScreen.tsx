@@ -76,14 +76,13 @@ export default function MeshGradientScreen() {
         colors={['red', 'purple', 'indigo', 'orange', 'white', 'blue', 'yellow', 'green', 'cyan']}
         smoothsColors
         ignoresSafeArea
-        animatedProps={animatedProps}
-      />
-
-      <GestureDetector gesture={panGesture}>
-        <View style={styles.container}>
-          <Animated.View style={[styles.button, buttonStyle]} />
-        </View>
-      </GestureDetector>
+        animatedProps={animatedProps}>
+        <GestureDetector gesture={panGesture}>
+          <View style={styles.container}>
+            <Animated.View style={[styles.button, buttonStyle]} />
+          </View>
+        </GestureDetector>
+      </AnimatedMeshGradientView>
     </View>
   );
 }
