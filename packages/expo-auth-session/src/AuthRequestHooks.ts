@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { AuthRequest } from './AuthRequest';
-import { AuthRequestConfig, AuthRequestPromptOptions } from './AuthRequest.types';
+import { AuthRequestConfig, AuthRequestPromptOptions, Prompt } from './AuthRequest.types';
 import { AuthSessionResult } from './AuthSession.types';
 import { DiscoveryDocument, IssuerOrDiscovery, resolveDiscoveryAsync } from './Discovery';
 
@@ -44,8 +44,7 @@ export function useLoadedAuthRequest(
 ): AuthRequest | null {
   const [request, setRequest] = useState<AuthRequest | null>(null);
   const scopeString = config.scopes?.join(' ');
-  const promptArray = config.prompt ? (Array.isArray(config.prompt) ? config.prompt : [config.prompt]) : undefined;
-  const promptString = promptArray?.join(' ');
+  const promptString = createPromptString(config.prompt);
   const extraParamsString = useMemo(
     () => JSON.stringify(config.extraParams || {}),
     [config.extraParams]
@@ -78,6 +77,25 @@ export function useLoadedAuthRequest(
     extraParamsString,
   ]);
   return request;
+}
+
+/**
+ * Create a prompt string from a prompt enum or array of prompt enums.
+ * @param prompt prompt from the config
+ * @returns valid prompt string or undefined
+ */
+function createPromptString(prompt: Prompt | Prompt[] | undefined): string | undefined {
+  if (!prompt) {
+    return;
+  }
+
+  // if prompts are defined as an array (e.g. ['login', 'consent']), join them with a space. it should be valid prompt (e.g. 'login consent')
+  if (Array.isArray(prompt)) {
+    return prompt.join(' ');
+  }
+
+  // if prompt is single enum value, return it as is
+  return prompt;
 }
 
 export type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
