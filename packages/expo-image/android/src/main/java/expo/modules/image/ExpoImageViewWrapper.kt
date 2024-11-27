@@ -540,8 +540,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           }
           newTarget.placeholderContentFit = newPlaceholderContentFit
 
-          thumbnail(requestManager.load(placeholderModel.getGlideModel()))
-            .apply(placeholderSource.createGlideOptions(context))
+          thumbnail(
+            requestManager.load(placeholderModel.getGlideModel())
+              .apply(placeholderSource.createGlideOptions(context))
+          )
         }
         .downsample(downsampleStrategy)
         .addListener(GlideRequestListener(WeakReference(this)))
