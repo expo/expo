@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Allow passing children to render views on top of the gradient.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
