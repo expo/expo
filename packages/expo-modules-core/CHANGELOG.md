@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed backwards compatibility in the `EventEmitter` constructor. ([#33294](https://github.com/expo/expo/pull/33294) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 - Fixed compatibility for React Native 0.77. ([#33277](https://github.com/expo/expo/pull/33277) by [@kudo](https://github.com/kudo))
