@@ -430,6 +430,12 @@ export const Screens: ScreenConfig[] = [
     },
     name: 'LivePhoto',
   },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/MeshGradientScreen'));
+    },
+    name: 'MeshGradient',
+  },
   ...ImageScreens,
   ...VideoScreens,
 ];

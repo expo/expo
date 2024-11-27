@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '2.0.4'
+version = '2.0.6'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -67,7 +67,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "2.0.4"
+    versionName "2.0.6"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -141,6 +141,18 @@ android {
     }
   }
 
+  sourceSets {
+    main {
+      java {
+        if (REACT_NATIVE_TARGET_VERSION >= 77) {
+          srcDirs += 'src/rn77'
+        } else {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += 'src/rn74'
+        }
+      }
+    }
+  }
 
   testOptions {
     unitTests.includeAndroidResources = true

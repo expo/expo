@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 5.0.17 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.16 — 2024-11-22
+
+### 💡 Others
+
+- Fixed compatibility for React Native 0.77. ([#33081](https://github.com/expo/expo/pull/33081) by [@kudo](https://github.com/kudo))
+
 ## 5.0.15 — 2024-11-19
 
 _This version does not introduce any user-facing changes._

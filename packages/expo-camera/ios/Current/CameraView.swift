@@ -360,7 +360,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     var photoSettings = AVCapturePhotoSettings()
 
     if photoOutput.availablePhotoCodecTypes.contains(AVVideoCodecType.hevc) {
-      photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+      photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
     }
 
     let requestedFlashMode = flashMode.toDeviceFlashMode()

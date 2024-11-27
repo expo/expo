@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 16.0.3 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
 ## 16.0.2 — 2024-11-14
 
 _This version does not introduce any user-facing changes._
@@ -97,6 +101,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - On Android `fileSize` was named `filesize` which did not match the docs & typescript definition. ([#27293](https://github.com/expo/expo/pull/27293) by [@WookieFPV](https://github.com/wookieFPV))
+- Fixed cancelled picker dialog not resolving with expected result on web. ([#11847](https://github.com/expo/expo/pull/27454) by [@raqso](https://github.com/raqso))
 
 ### 💡 Others
 

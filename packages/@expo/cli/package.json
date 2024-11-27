@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "0.21.7",
+  "version": "0.21.8",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
@@ -56,7 +56,7 @@
     "@expo/rudder-sdk-node": "^1.1.1",
     "@expo/spawn-async": "^1.7.2",
     "@expo/xcpretty": "^4.3.0",
-    "@react-native/dev-middleware": "0.76.2",
+    "@react-native/dev-middleware": "0.76.3",
     "@urql/core": "^5.0.6",
     "@urql/exchange-retry": "^1.3.0",
     "accepts": "^1.3.8",

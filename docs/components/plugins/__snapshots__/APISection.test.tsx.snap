@@ -232,11 +232,10 @@ not appear on the screen.
         class="mt-1 select-none [table_&]:mt-0.5"
       >
         <svg
-          class="icon-sm text-icon-default"
+          class="translate-z icon-sm text-icon-default"
           fill="currentColor"
           role="img"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="info-circle-solid-icon"
@@ -1063,12 +1062,11 @@ properties.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -1257,11 +1255,10 @@ This should come from the user field of an
         class="select-none [table_&]:mt-0.5 mt-0.5"
       >
         <svg
-          class="icon-sm text-icon-default"
+          class="translate-z icon-sm text-icon-default"
           fill="currentColor"
           role="img"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="info-circle-solid-icon"
@@ -1303,12 +1300,11 @@ This should come from the user field of an
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -1451,12 +1447,11 @@ value depending on the state of the credential.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -1681,12 +1676,11 @@ Calling this method will show the sign in modal before actually refreshing the u
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -1970,12 +1964,11 @@ the user, since this remains the same for apps released by the same developer.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -2246,12 +2239,11 @@ from using
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -2495,12 +2487,11 @@ sign-out operation.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -2674,11 +2665,10 @@ which contains all of the pertinent user and credential information.
         class="mt-1 select-none [table_&]:mt-0.5"
       >
         <svg
-          class="icon-sm text-icon-default"
+          class="translate-z icon-sm text-icon-default"
           fill="currentColor"
           role="img"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="info-circle-solid-icon"
@@ -3554,11 +3544,10 @@ may be
         class="mt-1 select-none [table_&]:mt-0.5"
       >
         <svg
-          class="icon-sm text-icon-default"
+          class="translate-z icon-sm text-icon-default"
           fill="currentColor"
           role="img"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="info-circle-solid-icon"
@@ -3717,11 +3706,10 @@ You must include the ID string of the user whose credentials you'd like to refre
         class="mt-1 select-none [table_&]:mt-0.5"
       >
         <svg
-          class="icon-sm text-icon-default"
+          class="translate-z icon-sm text-icon-default"
           fill="currentColor"
           role="img"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="info-circle-solid-icon"
@@ -4028,11 +4016,10 @@ None of these options are required.
         class="mt-1 select-none [table_&]:mt-0.5"
       >
         <svg
-          class="icon-sm text-icon-default"
+          class="translate-z icon-sm text-icon-default"
           fill="currentColor"
           role="img"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="info-circle-solid-icon"
@@ -4356,11 +4343,10 @@ You must include the ID string of the user to sign out.
         class="mt-1 select-none [table_&]:mt-0.5"
       >
         <svg
-          class="icon-sm text-icon-default"
+          class="translate-z icon-sm text-icon-default"
           fill="currentColor"
           role="img"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="info-circle-solid-icon"
@@ -5181,14 +5167,13 @@ After calling this function, the listener will no longer receive any events from
              
           </span>
           <div
-            class="mr-2 inline-flex select-none items-center gap-1 rounded-full border border-default bg-element px-2 py-1 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 !bg-palette-blue3 !text-palette-blue12 !border-palette-blue4"
+            class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-2 py-1 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
           >
             <svg
-              class="icon-xs mt-[-0.5px] text-palette-blue12 opacity-80"
+              class="translate-z icon-xs mt-[-0.5px] text-palette-blue12 opacity-80"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="apple-custom-icon"
@@ -5345,11 +5330,10 @@ After calling this function, the listener will no longer receive any events from
           class="mt-1 select-none [table_&]:mt-0.5"
         >
           <svg
-            class="icon-sm text-icon-default"
+            class="translate-z icon-sm text-icon-default"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <g
               id="info-circle-solid-icon"
@@ -5993,11 +5977,10 @@ for more details.
           class="select-none [table_&]:mt-0.5 mt-0.5"
         >
           <svg
-            class="icon-sm text-icon-default"
+            class="translate-z icon-sm text-icon-default"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <g
               id="info-circle-solid-icon"
@@ -6035,11 +6018,10 @@ You will still need to handle null values for any fields you request.
           class="mt-1 select-none [table_&]:mt-0.5"
         >
           <svg
-            class="icon-sm text-icon-default"
+            class="translate-z icon-sm text-icon-default"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <g
               id="info-circle-solid-icon"
@@ -6269,11 +6251,10 @@ for more details.
           class="mt-1 select-none [table_&]:mt-0.5"
         >
           <svg
-            class="icon-sm text-icon-default"
+            class="translate-z icon-sm text-icon-default"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <g
               id="info-circle-solid-icon"
@@ -6617,12 +6598,11 @@ exports[`APISection expo-pedometer 1`] = `
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -6692,14 +6672,13 @@ exports[`APISection expo-pedometer 1`] = `
         data-text="true"
       >
         <div
-          class="mr-2 inline-flex select-none items-center gap-1 rounded-full border border-default bg-element px-2 py-1 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 !bg-palette-blue3 !text-palette-blue12 !border-palette-blue4"
+          class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-2 py-1 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
         >
           <svg
-            class="icon-xs mt-[-0.5px] text-palette-blue12 opacity-80"
+            class="translate-z icon-xs mt-[-0.5px] text-palette-blue12 opacity-80"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <g
               id="apple-custom-icon"
@@ -6893,12 +6872,11 @@ exports[`APISection expo-pedometer 1`] = `
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -7004,11 +6982,10 @@ exports[`APISection expo-pedometer 1`] = `
           class="select-none [table_&]:mt-0.5 mt-0.5"
         >
           <svg
-            class="icon-sm text-icon-default"
+            class="translate-z icon-sm text-icon-default"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <g
               id="info-circle-solid-icon"
@@ -7101,12 +7078,11 @@ a start date that is more than seven days in the past returns only the available
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -7239,12 +7215,11 @@ available on this device.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -7450,12 +7425,11 @@ provided with a single argument that is
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"
@@ -7527,11 +7501,10 @@ provided with a single argument that is
           class="select-none [table_&]:mt-0.5 mt-0.5"
         >
           <svg
-            class="icon-sm text-icon-default"
+            class="translate-z icon-sm text-icon-default"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <g
               id="info-circle-solid-icon"
@@ -8150,12 +8123,11 @@ in order to enable/disable the permission.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm inline-block text-icon-secondary"
           fill="none"
           role="img"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <g
             id="corner-down-right-outline-icon"

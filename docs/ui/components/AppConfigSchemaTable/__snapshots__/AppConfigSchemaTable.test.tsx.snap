@@ -74,21 +74,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Name of your app.
       </p>
       <details
-        class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="bare-workflow"
       >
         <summary
-          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -102,19 +101,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Bare Workflow
           </span>
           <a
             aria-label="Permalink"
-            class="ml-auto inline"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#bare-workflow"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -222,21 +221,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Configuration for the bottom navigation bar on Android.
       </p>
       <details
-        class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="expokit"
       >
         <summary
-          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -250,19 +248,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             ExpoKit
           </span>
           <a
             aria-label="Permalink"
-            class="ml-auto inline"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#expokit"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -299,21 +297,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <details
-        class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="bare-workflow-1"
       >
         <summary
-          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -327,19 +324,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Bare Workflow
           </span>
           <a
             aria-label="Permalink"
-            class="ml-auto inline"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#bare-workflow-1"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -460,21 +457,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+          class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
           id="expokit-1"
         >
           <summary
-            class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+            class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
           >
             <div
               class="ml-1.5 mr-2 mt-[5px] self-baseline"
             >
               <svg
-                class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+                class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
                 fill="none"
                 role="img"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <g
                   id="triangle-down-custom-icon"
@@ -488,19 +484,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </div>
             <span
-              class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+              class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
               data-text="true"
             >
               ExpoKit
             </span>
             <a
               aria-label="Permalink"
-              class="ml-auto inline"
+              class="ml-auto inline rounded-md p-1 hocus:bg-element"
               href="#expokit-1"
             >
               <svg
                 aria-label="permalink"
-                class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+                class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -793,21 +789,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Configuration for setting an array of custom intent filters in Android manifest.
       </p>
       <details
-        class="mb-3 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="bare-workflow-2"
       >
         <summary
-          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
             class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -821,19 +816,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="leading-[1.6154] text-default font-medium relative mr-2 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Bare Workflow
           </span>
           <a
             aria-label="Permalink"
-            class="ml-auto inline"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#bare-workflow-2"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"

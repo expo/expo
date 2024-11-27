@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+## 4.0.9 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Fix using style arrays on `expo-router/ui` `<Tab>` components ([#32887](https://github.com/expo/expo/pull/32887) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.8 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Fix typed route using `\` instead of `/` in windows ([#33146](https://github.com/expo/expo/pull/33146) by [@imranbarbhuiya](https://github.com/imranbarbhuiya))
+- Fix hash links causing page reload when there is no history with a starting hash ([#33161](https://github.com/expo/expo/pull/33161) by [@marklawlor](https://github.com/marklawlor))
+- Change `react-native-screens` to have its version managed by the SDK ([#33167](https://github.com/expo/expo/pull/33167) by [@marklawlor](https://github.com/marklawlor))
+- Change CLI doctor integration to only validate `@react-navigation/*` packages ([#33168](https://github.com/expo/expo/pull/33168) by [@marklawlor](https://github.com/marklawlor))
+
 ## 4.0.7 — 2024-11-19
 
 ### 🐛 Bug fixes
@@ -25,6 +40,7 @@
 
 ### 🐛 Bug fixes
 
+- Add missing dependency for React Server environments. ([#33121](https://github.com/expo/expo/pull/33121) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Typed Routes incorrectly collapsing group index routes ([#32890](https://github.com/expo/expo/pull/32890) by [@marklawlor](https://github.com/marklawlor))
 - Fix relative Hrefs not including search params ([#32931](https://github.com/expo/expo/pull/32931) by [@marklawlor](https://github.com/marklawlor))
 

@@ -8,7 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `useImage` causing a native crash when uri is unresolvable. ([#33268](https://github.com/expo/expo/pull/33268) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixes adding a blurhash placeholder to `Image` or `ImageBackground` causing blurry version of the image. ([#33272](https://github.com/expo/expo/pull/33272) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+## 2.0.2 — 2024-11-22
+
+### 💡 Others
+
+- Add a warning when `children` are passed to `Image`. ([#33139](https://github.com/expo/expo/pull/33139) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 2.0.1 — 2024-11-19
 

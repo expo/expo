@@ -117,6 +117,30 @@ it(`parses the server error into an AuthError`, () => {
   expect(results.error.message).toMatch(/The request is missing a required parameter/);
 });
 
+it('allows single prompt', async () => {
+  const request = new AuthRequest({
+    clientId: '',
+    scopes: [],
+    redirectUri: 'foo://bar',
+    prompt: Prompt.Login,
+  });
+
+  const url = await request.makeAuthUrlAsync(mockDiscovery);
+  expect(getQueryParams(url).params.prompt).toBe('login');
+});
+
+it('allows prompt array', async () => {
+  const request = new AuthRequest({
+    clientId: '',
+    scopes: [],
+    redirectUri: 'foo://bar',
+    prompt: [Prompt.Login, Prompt.Consent],
+  });
+
+  const url = await request.makeAuthUrlAsync(mockDiscovery);
+  expect(getQueryParams(url).params.prompt).toBe('login consent');
+});
+
 it(`can override the code_challenge with extraParams`, async () => {
   const request = new AuthRequest({
     clientId: '',

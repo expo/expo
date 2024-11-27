@@ -8,9 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- Add minor fixes to nested server actions. ([#32925](https://github.com/expo/expo/pull/32925) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed DOM Components support on Windows. ([#33114](https://github.com/expo/expo/pull/33114) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 0.21.8 — 2024-11-22
+
+### 💡 Others
+
+- Improve simulators labels when printing usage verbosely ([#30403](https://github.com/expo/expo/pull/30403) by [@germanolira](https://github.com/germanolira))
 
 ## 0.21.7 — 2024-11-20
 

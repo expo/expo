@@ -5,20 +5,20 @@ const withIosSplashScreen_1 = require("@expo/prebuild-config/build/plugins/unver
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-splash-screen/package.json');
 const withSplashScreen = (config, props) => {
+    const resizeMode = props?.resizeMode || 'contain';
     const android = {
         ...props,
         ...props?.android,
-        resizeMode: 'contain',
+        resizeMode,
         dark: {
             ...props?.android?.dark,
             ...props?.dark,
-            resizeMode: 'contain',
         },
     };
     const ios = {
         ...props,
         ...props?.ios,
-        resizeMode: 'contain',
+        resizeMode: resizeMode === 'native' ? 'contain' : resizeMode,
         dark: {
             ...props?.ios?.dark,
             ...props?.dark,
