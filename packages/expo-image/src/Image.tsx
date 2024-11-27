@@ -198,7 +198,14 @@ export class Image extends React.PureComponent<ImageProps> {
       );
       loggedDefaultSourceDeprecationWarning = true;
     }
-
+    // @ts-expect-error
+    if (restProps.children && !loggedRenderingChildrenWarning) {
+      console.warn(
+        'The <Image> component does not support children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.'
+      );
+      loggedRenderingChildrenWarning = true;
+    }
+    
     return (
       <ExpoImage
         {...restProps}
