@@ -19,7 +19,7 @@ Expo modules make it possible to easily use native, external libraries built for
 - [MPAndroidChart by PhilJay](https://github.com/PhilJay/MPAndroidChart)
 - [Charts by Daniel Cohen Gindi](https://github.com/danielgindi/Charts)
 
-The iOS library is inspired by the Android library, so they both have a very similar API and functionality. This makes them a good example for this tutorial.
+The iOS library is inspired by the Android library, so they both have similar API and functionality. This makes them a good example for this tutorial.
 
 <VideoBoxLink
   videoId="M8eNfH1o0eE"
@@ -33,11 +33,11 @@ The iOS library is inspired by the Android library, so they both have a very sim
 
 ## Create a new module
 
-You can start by creating a new empty Expo module. We're creating a separate project for this tutorial. However, you can create a new module inside your existing project.
+The following steps assumes the new module is created inside a new Expo project. However, you can create a new module inside an existing project.
 
 ### Start with a new project
 
-To create an empty Expo module that can be published on npm and utilized in any Expo application, run the following command:
+Create a new empty Expo module that can be published on npm and utilized in any Expo app by running the following command:
 
 <Terminal cmd={['$ npx create-expo-module expo-radial-chart']} />
 
@@ -59,10 +59,9 @@ Now, open the newly created `modules/expo-radial-chart` directory to start editi
 
 ## Run the example project
 
-To verify that everything is functioning correctly, let's run the example project. In the terminal window, start the TypeScript compiler to watch for changes and rebuild the module JavaScript.
+To verify that everything is functioning correctly, let's run the example project. In a terminal window, start the TypeScript compiler to watch for changes and rebuild the module JavaScript:
 
 <Terminal
-  cmdCopy="npm run build"
   cmd={[
     '# Run this in the root of the project to start the TypeScript compiler',
     '$ npm run build',
@@ -72,22 +71,22 @@ To verify that everything is functioning correctly, let's run the example projec
 In another terminal window, compile and run the example app:
 
 <Terminal
-  cmdCopy="cd example && npx expo run:ios"
   cmd={[
     '$ cd example',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
     '# Run the example app on Android',
     '$ npx expo run:android',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
   ]}
 />
 
 </Step>
 
 <Step label="3">
+
 ## Add native dependencies
 
-Now, add the native dependencies to the module by editing the **android/build.gradle** and **ios/ExpoRadialChart.podspec** files:
+Add the native dependencies to the module by editing the **android/build.gradle** and **ios/ExpoRadialChart.podspec** files:
 
 ```diff android/build.gradle
 dependencies {
@@ -98,26 +97,13 @@ dependencies {
 ```
 
 ```diff ios/ExpoRadialChart.podspec
-    s.static_framework = true
+  s.static_framework = true
 
-    s.dependency 'ExpoModulesCore'
-+   s.dependency 'DGCharts', '~> 5.1.0'
+  s.dependency 'ExpoModulesCore'
++ s.dependency 'DGCharts', '~> 5.1.0'
 
-    # Swift/Objective-C compatibility
+  # Swift/Objective-C compatibility
 ```
-
-<Collapsible summary={<>Are you trying to use an <CODE>.xcframework</CODE> or <CODE>.framework</CODE> dependency?</>}>
-
-On iOS, you can also use dependencies bundled as a framework by using the `vendored_framework` config option.
-
-```diff ios/ExpoRadialChart.podspec
-    s.static_framework = true
-    s.dependency 'ExpoModulesCore'
-+   s.vendored_frameworks = 'Frameworks/MyFramework.framework'
-    # Swift/Objective-C compatibility
-```
-
-</Collapsible>
 
 <Collapsible summary={<>Are you trying to use a <CODE>.aar</CODE> dependency?</>}>
 
@@ -174,12 +160,25 @@ dependencies {
 
 </Collapsible>
 
+<Collapsible summary={<>Are you trying to use an <CODE>.xcframework</CODE> or <CODE>.framework</CODE> dependency?</>}>
+
+On iOS, you can also use dependencies bundled as a framework by using the `vendored_framework` config option.
+
+```diff ios/ExpoRadialChart.podspec
+    s.static_framework = true
+    s.dependency 'ExpoModulesCore'
++   s.vendored_frameworks = 'Frameworks/MyFramework.framework'
+    # Swift/Objective-C compatibility
+```
+
+</Collapsible>
+
 </Step>
 
 <Step label="4">
 ## Define an API
 
-To use the module in the app without mistakes, define the types for the props. This module accepts a list of series &mdash; each with a color and a percentage value.
+To use the module in the app, define the types for the props. It accepts a list of series &mdash; each with a color and a percentage value.
 
 ```ts src/ExpoRadialChart.types.ts
 import { ViewStyle } from 'react-native/types';
@@ -199,7 +198,7 @@ export type ExpoRadialChartViewProps = {
 };
 ```
 
-Since we won't implement the module on the web in this example, let's replace the **src/ExpoRadialChartView.web.tsx** file:
+Since the module isn't implemented for web in this example, let's replace the **src/ExpoRadialChartView.web.tsx** file:
 
 ```tsx src/ExpoRadialChartView.web.tsx
 import * as React from 'react';
@@ -212,6 +211,7 @@ export default function ExpoRadialChartView() {
 </Step>
 
 <Step label="5">
+
 ## Implement the module on Android
 
 Now you can implement the native functionality by editing the placeholder files with the following changes:
@@ -290,6 +290,7 @@ class ExpoRadialChartModule : Module() {
 </Step>
 
 <Step label="6">
+
 ## Implement the module on iOS
 
 Now you can implement the native functionality by editing the placeholder files with the following changes:
@@ -395,11 +396,12 @@ const styles = StyleSheet.create({
 });
 ```
 
-> **info** **Tip**: If you created the module inside an existing application, make sure to import it directly from your **modules** directory by using a relative import: `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
+> **info** **Tip**: If you created the module inside an existing app, make sure to import it directly from your **modules** directory by using a relative import: `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
 
 </Step>
 
 <Step label="8">
+
 ## Rebuild and launch your application
 
 To make sure your app builds successfully on both platforms, rerun the build commands from step 2. After the app is successfully built on any of the platform you'll see a pie chart with three slices:
@@ -411,13 +413,13 @@ To make sure your app builds successfully on both platforms, rerun the build com
 
 </Step>
 
-Congratulations! You have created your first simple wrapper around two separate third-party native libraries using Expo Modules.
+Congratulations! You have created your first simple wrapper around two separate third-party native libraries using Expo Modules API.
 
 ## Next step
 
 <BoxLink
   title="Expo Modules API Reference"
-  description="A reference to create native modules using Swift and Kotlin."
+  description="A reference to create native modules using Kotlin and Swift."
   href="/modules/module-api/"
   Icon={Grid01Icon}
 />
