@@ -146,8 +146,8 @@ export type AssetInfo = Asset & {
    */
   orientation?: number;
   /**
-   * This field is available if the type is an image, and the subtype is livePhoto
-   * Whether the asset is stored on the network (iCloud on iOS).
+   * Contains information about the video paired with the image file.
+   * This field is available if the `mediaType` is `"photo"`, and the `mediaSubtypes` includes `"livePhoto"`.
    * @platform ios
    */
   pairedVideoAsset?: PairedVideoAsset | null;
@@ -157,7 +157,7 @@ export type AssetInfo = Asset & {
  * Represents a video component of a Live Photo on iOS. This is the paired video asset that
  * accompanies a Live Photo's still image, containing the motion content.
  */
-export type PairedVideoAsset = {
+export type PairedVideoAsset = Asset & {
   /**
    * Local file URI to the extracted video component of the Live Photo.
    * Can be used with expo-live-photo
