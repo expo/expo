@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed compatibility for React Native 0.77. ([#33277](https://github.com/expo/expo/pull/33277) by [@kudo](https://github.com/kudo))
+
 ## 2.0.6 — 2024-11-22
 
 ### 🐛 Bug fixes
