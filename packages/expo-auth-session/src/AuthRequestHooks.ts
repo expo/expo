@@ -94,7 +94,6 @@ function createPromptString(prompt: Prompt | Prompt[] | undefined): string | und
     return prompt.join(' ');
   }
 
-  // if prompt is single enum value, return it as is
   return prompt;
 }
 
