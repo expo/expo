@@ -11,4 +11,7 @@ module.exports = {
   displayName: require('../package').name,
   roots: ['../__mocks__', '.'],
   setupFilesAfterEnv: [path.resolve(__dirname, './setup.ts')],
+  // Set the global timeout (2m) to allow for setting up Expo projects, and exporting them
+  // Windows IO is very slow, so we need to increase this timeout (5m) for Windows
+  testTimeout: process.platform === 'win32' ? 600_000 : 120_000,
 };

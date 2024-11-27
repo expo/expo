@@ -13,22 +13,18 @@ describe('exports static without sourcemaps', () => {
   const outputName = 'dist-static-rendering-no-map';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
-        cwd: projectRoot,
-        env: {
-          NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_SRC: 'url-polyfill',
-          E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
-        },
-      });
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_SRC: 'url-polyfill',
+        E2E_ROUTER_ASYNC: 'development',
+        EXPO_USE_FAST_RESOLVER: 'true',
+      },
+    });
+  });
 
   it('has no reference to source maps', async () => {
     const files = findProjectFiles(outputDir);

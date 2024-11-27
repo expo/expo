@@ -32,67 +32,62 @@ function ensureTesterReady(fixtureName: string): string {
   return root;
 }
 
-it(
-  'runs `npx expo export:embed --platform ios --eager`',
-  async () => {
-    const projectRoot = ensureTesterReady('static-rendering');
-    const output = 'dist-export-embed-eager-source-maps';
-    await fs.remove(path.join(projectRoot, output));
-    await fs.ensureDir(path.join(projectRoot, output));
+it('runs `npx expo export:embed --platform ios --eager`', async () => {
+  const projectRoot = ensureTesterReady('static-rendering');
+  const output = 'dist-export-embed-eager-source-maps';
+  await fs.remove(path.join(projectRoot, output));
+  await fs.ensureDir(path.join(projectRoot, output));
 
-    await execa(
-      'node',
-      [
-        bin,
-        'export:embed',
-        '--eager',
-        '--bundle-output',
-        `./${output}/output.js`,
-        '--assets-dest',
-        output,
-        '--platform',
-        'ios',
-      ],
-      {
-        cwd: projectRoot,
-        stdio: 'inherit',
-        env: {
-          NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_SRC: 'static-rendering',
-          E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: '1',
-        },
-      }
-    );
+  await execa(
+    'node',
+    [
+      bin,
+      'export:embed',
+      '--eager',
+      '--bundle-output',
+      `./${output}/output.js`,
+      '--assets-dest',
+      output,
+      '--platform',
+      'ios',
+    ],
+    {
+      cwd: projectRoot,
+      stdio: 'inherit',
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_ASYNC: 'development',
+        EXPO_USE_FAST_RESOLVER: '1',
+      },
+    }
+  );
 
-    const outputDir = path.join(projectRoot, output);
-    const files = findProjectFiles(outputDir);
+  const outputDir = path.join(projectRoot, output);
+  const files = findProjectFiles(outputDir);
 
-    // Ensure output.js is a utf8 encoded file
-    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
-    expect(outputJS.slice(0, 5)).toBe('var _');
-    // Ensure no `//# sourceURL=` comment
-    expect(outputJS).toContain('//# sourceURL=');
-    // Ensure `//# sourceMappingURL=output.js.map`
-    expect(outputJS).not.toContain('//# sourceMappingURL=output.js.map');
+  // Ensure output.js is a utf8 encoded file
+  const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+  expect(outputJS.slice(0, 5)).toBe('var _');
+  // Ensure no `//# sourceURL=` comment
+  expect(outputJS).toContain('//# sourceURL=');
+  // Ensure `//# sourceMappingURL=output.js.map`
+  expect(outputJS).not.toContain('//# sourceMappingURL=output.js.map');
 
-    // If this changes then everything else probably changed as well.
-    expect(files).toEqual([
-      'assets/__e2e__/static-rendering/sweet.ttf',
-      'assets/__packages/@expo/metro-runtime/assets/alert-triangle.png',
-      'assets/__packages/@expo/metro-runtime/assets/loader.png',
-      'assets/__packages/expo-router/assets/error.png',
-      'assets/__packages/expo-router/assets/file.png',
-      'assets/__packages/expo-router/assets/forward.png',
-      'assets/__packages/expo-router/assets/logotype.png',
-      'assets/__packages/expo-router/assets/pkg.png',
-      'assets/__packages/expo-router/assets/sitemap.png',
-      'assets/__packages/expo-router/assets/unmatched.png',
-      'assets/assets/icon.png',
-      'output.js',
-    ]);
-  },
-  // Could take 45s depending on how fast npm installs
-  120 * 1000
-);
+  // If this changes then everything else probably changed as well.
+  expect(files).toEqual([
+    'assets/__e2e__/static-rendering/sweet.ttf',
+    'assets/__packages/@expo/metro-runtime/assets/alert-triangle.png',
+    'assets/__packages/@expo/metro-runtime/assets/loader.png',
+    'assets/__packages/expo-router/assets/error.png',
+    'assets/__packages/expo-router/assets/file.png',
+    'assets/__packages/expo-router/assets/forward.png',
+    'assets/__packages/expo-router/assets/logotype.png',
+    'assets/__packages/expo-router/assets/pkg.png',
+    'assets/__packages/expo-router/assets/sitemap.png',
+    'assets/__packages/expo-router/assets/unmatched.png',
+    'assets/assets/icon.png',
+    'output.js',
+  ]);
+});

@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
-import * as fs from 'fs';
+import fs from 'fs';
 import { remove } from 'fs-extra';
 import path from 'path';
 
@@ -17,56 +17,52 @@ describe('export embed for RSC iOS', () => {
   const outputName = 'dist-export-embed-rsc';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      await remove(outputDir);
-      await remove(path.join(projectRoot, '.expo/server/ios'));
+  beforeAll(async () => {
+    await remove(outputDir);
+    await remove(path.join(projectRoot, '.expo/server/ios'));
 
-      const res = await execaLog(
-        bin,
-        [
-          'export:embed',
-          //
-          '--entry-file',
-          resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
-          //
-          '--bundle-output',
-          `./${outputName}/index.js`,
-          '--assets-dest',
-          outputName,
-          '--platform',
-          'ios',
-          '--dev',
-          'false',
+    await execaLog(
+      bin,
+      [
+        'export:embed',
+        //
+        '--entry-file',
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+        //
+        '--bundle-output',
+        `./${outputName}/index.js`,
+        '--assets-dest',
+        outputName,
+        '--platform',
+        'ios',
+        '--dev',
+        'false',
 
-          '--sourcemap-output',
-          path.join(projectRoot, `./${outputName}/index.js.map`),
+        '--sourcemap-output',
+        path.join(projectRoot, `./${outputName}/index.js.map`),
 
-          '--sourcemap-sources-root',
-          projectRoot,
-        ],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
+        '--sourcemap-sources-root',
+        projectRoot,
+      ],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
 
-            E2E_ROUTER_SRC: '01-rsc',
-            E2E_ROUTER_ASYNC: 'development',
+          E2E_ROUTER_SRC: '01-rsc',
+          E2E_ROUTER_ASYNC: 'development',
 
-            EXPO_USE_STATIC: 'single',
-            E2E_ROUTER_JS_ENGINE: 'hermes',
+          EXPO_USE_STATIC: 'single',
+          E2E_ROUTER_JS_ENGINE: 'hermes',
 
-            E2E_RSC_ENABLED: '1',
-            E2E_CANARY_ENABLED: '1',
-            EXPO_USE_METRO_REQUIRE: '1',
-            TEST_SECRET_VALUE: 'test-secret',
-          },
-        }
-      );
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+          E2E_RSC_ENABLED: '1',
+          E2E_CANARY_ENABLED: '1',
+          EXPO_USE_METRO_REQUIRE: '1',
+          TEST_SECRET_VALUE: 'test-secret',
+        },
+      }
+    );
+  });
 
   it('has expected files', async () => {
     // Ensure the standard files are included.

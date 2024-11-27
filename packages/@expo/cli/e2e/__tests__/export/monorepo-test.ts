@@ -13,37 +13,32 @@ const configTypes = ['package.json', 'pnpm-workspace.yaml'] as const;
 
 describe.each(configTypes)('exports monorepo using "%s"', (configType) => {
   // See: https://github.com/expo/expo/issues/29700#issuecomment-2165348259
-  it(
-    'exports identical projects with cache invalidation',
-    async () => {
-      // Create a project from the monorepo fixture
-      const projectRoot = await setupTestProjectWithOptionsAsync(
-        `basic-export-monorepo-${configType.replace('.', '-')}`,
-        'with-monorepo'
-      );
+  it('exports identical projects with cache invalidation', async () => {
+    // Create a project from the monorepo fixture
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      `basic-export-monorepo-${configType.replace('.', '-')}`,
+      'with-monorepo'
+    );
 
-      // Ensure our fixture uses the correct monorepo configuration
-      await configureMonorepo(configType, projectRoot);
+    // Ensure our fixture uses the correct monorepo configuration
+    await configureMonorepo(configType, projectRoot);
 
-      // Export both apps, in order of A then B
-      const appAExportDir = await exportApp(projectRoot, 'apps/app-a');
-      const appBExportDir = await exportApp(projectRoot, 'apps/app-b');
+    // Export both apps, in order of A then B
+    const appAExportDir = await exportApp(projectRoot, 'apps/app-a');
+    const appBExportDir = await exportApp(projectRoot, 'apps/app-b');
 
-      // Find all relative files on both exports
-      const appAFiles = findProjectFiles(appAExportDir);
-      const appBFiles = findProjectFiles(appBExportDir);
+    // Find all relative files on both exports
+    const appAFiles = findProjectFiles(appAExportDir);
+    const appBFiles = findProjectFiles(appBExportDir);
 
-      // Ensure app A only have files related to app A
-      expect(appAFiles).toContain('page-a.html');
-      expect(appAFiles).not.toContain('page-b.html');
+    // Ensure app A only have files related to app A
+    expect(appAFiles).toContain('page-a.html');
+    expect(appAFiles).not.toContain('page-b.html');
 
-      // Ensure app B only have files related to app B
-      expect(appBFiles).toContain('page-b.html');
-      expect(appBFiles).not.toContain('page-a.html');
-    },
-    // 1x App export could take 45s depending on how fast the bundler resolves
-    560 * 1000 * 2
-  );
+    // Ensure app B only have files related to app B
+    expect(appBFiles).toContain('page-b.html');
+    expect(appBFiles).not.toContain('page-a.html');
+  });
 });
 
 async function exportApp(monorepoRoot: string, workspacePath: string) {

@@ -25,42 +25,37 @@ afterAll(() => {
   process.env.CI = originalCI;
 });
 
-it(
-  'runs `npx expo export -p web`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync(
-      'expo-28016-export-async-imports',
-      'with-circular-async-imports'
-    );
-    // `npx expo export:web`
-    await execa('node', [bin, 'export', '-p', 'web', '--no-minify'], {
-      cwd: projectRoot,
-    });
+it('runs `npx expo export -p web`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'expo-28016-export-async-imports',
+    'with-circular-async-imports'
+  );
+  // `npx expo export:web`
+  await execa('node', [bin, 'export', '-p', 'web', '--no-minify'], {
+    cwd: projectRoot,
+  });
 
-    const outputDir = path.join(projectRoot, 'dist');
-    const files = findProjectFiles(outputDir);
+  const outputDir = path.join(projectRoot, 'dist');
+  const files = findProjectFiles(outputDir);
 
-    // If this changes then everything else probably changed as well.
-    expect(files).toEqual(
-      expect.arrayContaining([
-        expectChunkPathMatching('AppEntry'),
-        expectChunkPathMatching('a'),
-        expectChunkPathMatching('b'),
-        expectChunkPathMatching('c'),
-      ])
-    );
+  // If this changes then everything else probably changed as well.
+  expect(files).toEqual(
+    expect.arrayContaining([
+      expectChunkPathMatching('AppEntry'),
+      expectChunkPathMatching('a'),
+      expectChunkPathMatching('b'),
+      expectChunkPathMatching('c'),
+    ])
+  );
 
-    const appEntryFile = files.find((name) => name?.startsWith('_expo/static/js/web/AppEntry-'))!;
-    expect(appEntryFile).toEqual(expectChunkPathMatching('AppEntry'));
+  const appEntryFile = files.find((name) => name?.startsWith('_expo/static/js/web/AppEntry-'))!;
+  expect(appEntryFile).toEqual(expectChunkPathMatching('AppEntry'));
 
-    // NOTE: We don't expect an async import depending on the entrypoint
-    // Hence, we shouldn't see the entrypoint path any output chunk
-    for (const file of files) {
-      if (!file?.startsWith('_expo/static/js/web/') || !file.endsWith('.js')) continue;
-      const contents = fs.readFileSync(path.join(outputDir, file), { encoding: 'utf8' });
-      expect(contents).not.toMatch(new RegExp(appEntryFile.replace(/-\/\\\./g, '\\$&')));
-    }
-  },
-  // Could take 45s depending on how fast npm installs
-  120 * 1000
-);
+  // NOTE: We don't expect an async import depending on the entrypoint
+  // Hence, we shouldn't see the entrypoint path any output chunk
+  for (const file of files) {
+    if (!file?.startsWith('_expo/static/js/web/') || !file.endsWith('.js')) continue;
+    const contents = fs.readFileSync(path.join(outputDir, file), { encoding: 'utf8' });
+    expect(contents).not.toMatch(new RegExp(appEntryFile.replace(/-\/\\\./g, '\\$&')));
+  }
+});

@@ -64,14 +64,13 @@ it('runs `npx expo whoami`', async () => {
   }
 });
 
-if (process.env.CI) {
-  it('runs `npx expo whoami` and throws logged out error', async () => {
-    expect.assertions(1);
-    try {
-      console.log(await execute('whoami'));
-    } catch (e) {
-      const error = e as ExecaError;
-      expect(error.stderr).toMatch(/Not logged in/);
-    }
-  });
-}
+// Only run this test in CI
+(process.env.CI ? it : it.skip)('runs `npx expo whoami` and throws logged out error', async () => {
+  expect.assertions(1);
+  try {
+    console.log(await execute('whoami'));
+  } catch (e) {
+    const error = e as ExecaError;
+    expect(error.stderr).toMatch(/Not logged in/);
+  }
+});

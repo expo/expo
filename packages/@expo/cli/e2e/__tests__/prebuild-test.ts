@@ -176,117 +176,102 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
 }
 
 // This tests contains assertions related to ios files, making it incompatible with Windows
-itNotWindows(
-  'runs `npx expo prebuild`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
+itNotWindows('runs `npx expo prebuild`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
 
-    const templateFolder = await ensureTemplatePathAsync();
-    console.log('Using local template:', templateFolder);
+  const templateFolder = await ensureTemplatePathAsync();
+  console.log('Using local template:', templateFolder);
 
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
-      cwd: projectRoot,
-    });
+  await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
+    cwd: projectRoot,
+  });
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+  await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
 
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
+  // Added new packages
+  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+    'expo',
+    'react',
+    'react-native',
+  ]);
 
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
+  // Updated scripts
+  expect(pkg.scripts).toStrictEqual({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
 
-    // If this changes then everything else probably changed as well.
-    expect(findProjectFiles(projectRoot)).toMatchSnapshot();
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+});
 
 // This tests contains assertions related to ios files, making it incompatible with Windows
-itNotWindows(
-  'runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
+itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
 
-    const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', npmTemplatePackage], {
-      cwd: projectRoot,
-    });
+  const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
+  await execa('node', [bin, 'prebuild', '--no-install', '--template', npmTemplatePackage], {
+    cwd: projectRoot,
+  });
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+  await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
 
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
+  // Added new packages
+  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+    'expo',
+    'react',
+    'react-native',
+  ]);
 
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
+  // Updated scripts
+  expect(pkg.scripts).toStrictEqual({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
 
-    // If this changes then everything else probably changed as well.
-    expect(findProjectFiles(projectRoot)).toMatchSnapshot();
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+});
 
 // This tests contains assertions related to ios files, making it incompatible with Windows
-itNotWindows(
-  'runs `npx expo prebuild --template <github-url>`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync(
-      'github-template-prebuild',
-      'with-blank'
-    );
+itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'github-template-prebuild',
+    'with-blank'
+  );
 
-    const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
-    const expoSdkVersion = semver.minVersion(expoPackage)?.major;
-    if (!expoSdkVersion) {
-      throw new Error('Could not determine Expo SDK major version from template');
-    }
+  const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
+  const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+  if (!expoSdkVersion) {
+    throw new Error('Could not determine Expo SDK major version from template');
+  }
 
-    const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
-    console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
+  const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
+  console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
 
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateUrl], {
-      cwd: projectRoot,
-    });
+  await execa('node', [bin, 'prebuild', '--no-install', '--template', templateUrl], {
+    cwd: projectRoot,
+  });
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
+  // Added new packages
+  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+    'expo',
+    'react',
+    'react-native',
+  ]);
 
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
+  // Updated scripts
+  expect(pkg.scripts).toStrictEqual({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
 
-    // If this changes then everything else probably changed as well.
-    expect(findProjectFiles(projectRoot)).toMatchSnapshot();
-  },
-  // Could take 1-2m depending on how fast github returns the tarball of expo/expo
-  2 * 60 * 1000
-);
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+});

@@ -15,27 +15,19 @@ describe('exports for hermes with no bytecode', () => {
   const outputName = 'dist-no-bytecode';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      await execa(
-        'node',
-        [bin, 'export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode'],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
-            E2E_ROUTER_JS_ENGINE: 'hermes',
-            E2E_ROUTER_SRC: 'url-polyfill',
-            E2E_ROUTER_ASYNC: 'development',
-            EXPO_USE_FAST_RESOLVER: 'true',
-          },
-        }
-      );
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    await execa('node', [bin, 'export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode'], {
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_JS_ENGINE: 'hermes',
+        E2E_ROUTER_SRC: 'url-polyfill',
+        E2E_ROUTER_ASYNC: 'development',
+        EXPO_USE_FAST_RESOLVER: 'true',
+      },
+    });
+  });
 
   it('has expected files', async () => {
     const files = findProjectFiles(outputDir);
@@ -76,27 +68,23 @@ describe('exports for hermes with no bytecode and no minification', () => {
   const outputName = 'dist-no-bytecode-no-minify';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      await execa(
-        'node',
-        [bin, 'export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode', '--no-minify'],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
-            E2E_ROUTER_JS_ENGINE: 'hermes',
-            E2E_ROUTER_SRC: 'url-polyfill',
-            E2E_ROUTER_ASYNC: 'development',
-            EXPO_USE_FAST_RESOLVER: 'true',
-          },
-        }
-      );
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    await execa(
+      'node',
+      [bin, 'export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode', '--no-minify'],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_JS_ENGINE: 'hermes',
+          E2E_ROUTER_SRC: 'url-polyfill',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: 'true',
+        },
+      }
+    );
+  });
 
   it('has expected files', async () => {
     const files = findProjectFiles(outputDir);

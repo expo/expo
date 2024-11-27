@@ -13,28 +13,20 @@ describe('exports with serializer plugins', () => {
   const outputName = 'dist-splitting-plugins';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      // E2E_USE_MOCK_SERIALIZER_PLUGIN=1 NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting-plugins
-      await execa(
-        'node',
-        [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            E2E_USE_MOCK_SERIALIZER_PLUGINS: '1',
-            EXPO_USE_STATIC: 'static',
-            E2E_ROUTER_SRC: 'modal-splitting',
-            E2E_ROUTER_ASYNC: 'production',
-            EXPO_USE_FAST_RESOLVER: '1',
-          },
-        }
-      );
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    // E2E_USE_MOCK_SERIALIZER_PLUGIN=1 NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting-plugins
+    await execa('node', [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName], {
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        E2E_USE_MOCK_SERIALIZER_PLUGINS: '1',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_SRC: 'modal-splitting',
+        E2E_ROUTER_ASYNC: 'production',
+        EXPO_USE_FAST_RESOLVER: '1',
+      },
+    });
+  });
 
   it('has source maps', async () => {
     const files = findProjectFiles(outputDir);

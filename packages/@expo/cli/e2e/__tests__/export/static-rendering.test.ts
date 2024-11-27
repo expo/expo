@@ -4,7 +4,14 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, ensurePortFreeAsync, findProjectFiles, getPageHtml, getRouterE2ERoot, killChildProcess } from '../utils';
+import {
+  bin,
+  ensurePortFreeAsync,
+  findProjectFiles,
+  getPageHtml,
+  getRouterE2ERoot,
+  killChildProcess,
+} from '../utils';
 
 runExportSideEffects();
 
@@ -13,58 +20,46 @@ describe('exports static', () => {
   const outputName = 'dist-static-rendering';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      await execa(
-        'node',
-        [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
-            E2E_ROUTER_SRC: 'static-rendering',
-            E2E_ROUTER_ASYNC: '',
-            EXPO_USE_FAST_RESOLVER: 'true',
-          },
-        }
-      );
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    await execa('node', [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName], {
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_ASYNC: '',
+        EXPO_USE_FAST_RESOLVER: 'true',
+      },
+    });
+  });
 
   xdescribe('server', () => {
     let server: execa.ExecaChildProcess<string> | undefined;
     const serverUrl = 'http://localhost:3000';
 
-    beforeAll(
-      async () => {
-        await ensurePortFreeAsync(3000);
-        // Start a server instance that we can test against then kill it.
-        server = execa('npx', ['serve', outputName, '-l', '3000'], {
-          cwd: projectRoot,
+    beforeAll(async () => {
+      await ensurePortFreeAsync(3000);
+      // Start a server instance that we can test against then kill it.
+      server = execa('npx', ['serve', outputName, '-l', '3000'], {
+        cwd: projectRoot,
 
-          stderr: 'inherit',
+        stderr: 'inherit',
 
-          env: {
-            NODE_ENV: 'production',
-            TEST_SECRET_KEY: 'test-secret-key',
-          },
+        env: {
+          NODE_ENV: 'production',
+          TEST_SECRET_KEY: 'test-secret-key',
+        },
+      });
+      // Wait for the server to start
+      await new Promise((resolve) => {
+        const listener = server!.stdout?.on('data', (data) => {
+          if (data.toString().includes('Accepting connections at')) {
+            resolve(null);
+            listener?.removeAllListeners();
+          }
         });
-        // Wait for the server to start
-        await new Promise((resolve) => {
-          const listener = server!.stdout?.on('data', (data) => {
-            if (data.toString().includes('Accepting connections at')) {
-              resolve(null);
-              listener?.removeAllListeners();
-            }
-          });
-        });
-      },
-      // 5 seconds to drop a port and start a server.
-      5 * 1000
-    );
+      });
+    });
 
     afterAll(async () => {
       await killChildProcess(server);

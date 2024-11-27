@@ -23,4 +23,4 @@ it(`asserts the server env isn't correct`, async () => {
   ).rejects.toThrow(
     /NODE_OPTIONS="--no-experimental-fetch" is not supported with Expo server. Node.js built-in Request\/Response APIs are required to continue./
   );
-}, 10000);
+});
