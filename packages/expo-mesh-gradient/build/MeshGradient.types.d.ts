@@ -12,6 +12,7 @@ export interface MeshGradientViewProps extends ViewProps {
     rows?: number;
     /**
      * An array of two-dimensional points on the mesh. Must contain `columns * rows` elements.
+     * @default []
      */
     points?: number[][];
     /**
