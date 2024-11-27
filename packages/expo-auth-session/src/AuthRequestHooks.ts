@@ -43,13 +43,9 @@ export function useLoadedAuthRequest(
   AuthRequestInstance: typeof AuthRequest
 ): AuthRequest | null {
   const [request, setRequest] = useState<AuthRequest | null>(null);
-  const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
-  const promptString = useMemo(() => {
-    if (config.prompt) {
-      return typeof config.prompt === 'string' ? config.prompt : config.prompt.join(',');
-    }
-    return undefined;
-  }, [config.prompt]);
+  const scopeString = config.scopes?.join(' ');
+  const promptArray = config.prompt ? (Array.isArray(config.prompt) ? config.prompt : [config.prompt]) : undefined;
+  const promptString = promptArray?.join(' ');
   const extraParamsString = useMemo(
     () => JSON.stringify(config.extraParams || {}),
     [config.extraParams]
