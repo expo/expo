@@ -164,22 +164,9 @@ Now you can tap around your app and test it out. For most non-trivial apps, you'
 
 ## Disable the New Architecture in an existing project
 
-To disable New Architecture in your project, set `newArchEnabled` to `false` in your app config. You can also selectively disable it for a single platform by setting, for example, `"android": { "newArchEnabled": false }`.
+Starting SDK 52, Expo Go will only support the New Architecture since all Expo libraries and third-party libraries included in Expo Go support the New Architecture.
 
-```json app.json
-{
-  "expo": {
-    "newArchEnabled": false
-  }
-}
-```
-
-<Collapsible summary="Are you disabling the New Architecture in a bare React Native app?">
-
-- **Android**: Set `newArchEnabled=false` in the **gradle.properties** file.
-- **iOS**: If your project has a **Podfile.properties.json** file (which is created by `npx create-expo-app` or `npx expo prebuild`), you can enable the New Architecture by setting the `newArchEnabled` property to `"false"` in the **Podfile.properties.json** file. Otherwise, refer to the ["Enable the New Architecture for Apps"](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) section of the React Native New Architecture working group.
-
-</Collapsible>
+If you want to opt out of using the New Architecture, whether you are using Expo Go or a development build, remove the `newArchEnabled` property from app config and create a [development build](/develop/development-builds/introduction/).
 
 ## Troubleshooting
 
