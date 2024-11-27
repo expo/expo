@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed backwards compatibility in the `EventEmitter` constructor.
+
 ### 💡 Others
 
 - [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default. ([#33261](https://github.com/expo/expo/pull/33261) by [@lukmccall](https://github.com/lukmccall))
