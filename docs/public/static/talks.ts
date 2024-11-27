@@ -91,6 +91,20 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'What to do without App Center',
+    event: 'React Native Radio #315',
+    description: 'Quinlan Jung',
+    videoId: 'KBYxOy0g-rk',
+    link: 'https://reactnativeradio.com/episodes/rnr-315-what-to-do-without-app-center',
+  },
+  {
+    title: 'Expo Workflows with Jon Samp',
+    event: 'React Native Radio #314',
+    description: 'Jon Samp',
+    videoId: 'wA4sBIoGaVc',
+    link: 'https://reactnativeradio.com/episodes/rnr-314-announcing-expo-workflows-with-jon-samp',
+  },
+  {
     title: 'How to Handle App Center Retirement',
     event: 'React Universe On Air #43',
     description: 'Quinlan Jung',
@@ -169,6 +183,21 @@ export const PODCASTS = [
 ] as Talk[];
 
 export const LIVE_STREAMS = [
+  {
+    title: 'Launch Week AMA: SDK 52, CI/CD, environment variables, expo-video, DOM components',
+    event: 'Expo Live Stream',
+    videoId: 'NHpS9JaL7jA',
+  },
+  {
+    title: 'Expo DOM component live demo: Because maybe your website should be an app',
+    event: 'Expo Live Stream',
+    videoId: 'jU4_1vpjahw',
+  },
+  {
+    title: 'RNL Conf Fireside Interview: Charlie Cheever & Mo Javad',
+    event: 'Expo Live Stream',
+    videoId: 'ZBEkeRy3wjk',
+  },
   {
     title: 'How to migrate a React website to native with Expo DOM components',
     event: 'Expo Live Stream',
