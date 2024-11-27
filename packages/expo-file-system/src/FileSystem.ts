@@ -659,6 +659,7 @@ export namespace StorageAccessFramework {
    * `StorageAccessFramework.requestDirectoryPermissionsAsync()` when you trying to migrate an album. In that case, the name of the album is the folder name.
    * @param folderName The name of the folder which is located in the Android root directory.
    * @return Returns a [SAF URI](#saf-uri) to a folder.
+   * @platform Android
    */
   export function getUriForDirectoryInRoot(folderName: string) {
     return `content://com.android.externalstorage.documents/tree/primary:${folderName}/document/primary:${folderName}`;
@@ -688,6 +689,7 @@ export namespace StorageAccessFramework {
    * Enumerate the contents of a directory.
    * @param dirUri [SAF](#saf-uri) URI to the directory.
    * @return A Promise that resolves to an array of strings, each containing the full [SAF URI](#saf-uri) of a file or directory contained in the directory at `fileUri`.
+   * @platform Android
    */
   export async function readDirectoryAsync(dirUri: string): Promise<string[]> {
     if (!ExponentFileSystem.readSAFDirectoryAsync) {
@@ -704,6 +706,7 @@ export namespace StorageAccessFramework {
    * @param parentUri The [SAF](#saf-uri) URI to the parent directory.
    * @param dirName The name of new directory.
    * @return A Promise that resolves to a [SAF URI](#saf-uri) to the created directory.
+   * @platform Android
    */
   export async function makeDirectoryAsync(parentUri: string, dirName: string): Promise<string> {
     if (!ExponentFileSystem.makeSAFDirectoryAsync) {
@@ -721,6 +724,7 @@ export namespace StorageAccessFramework {
    * @param fileName The name of new file **without the extension**.
    * @param mimeType The MIME type of new file.
    * @return A Promise that resolves to a [SAF URI](#saf-uri) to the created file.
+   * @platform Android
    */
   export async function createFileAsync(
     parentUri: string,
