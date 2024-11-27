@@ -31,13 +31,8 @@ export function useAutoDiscovery(issuerOrDiscovery) {
 }
 export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
     const [request, setRequest] = useState(null);
-    const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
-    const promptString = useMemo(() => {
-        if (config.prompt) {
-            return typeof config.prompt === 'string' ? config.prompt : config.prompt.join(',');
-        }
-        return undefined;
-    }, [config.prompt]);
+    const scopeString = config.scopes?.join(' ');
+    const promptString = createPromptString(config.prompt);
     const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [config.extraParams]);
     useEffect(() => {
         let isMounted = true;
@@ -66,6 +61,18 @@ export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
         extraParamsString,
     ]);
     return request;
+}
+/**
+ * @returns Prompt type converted to a primitive value to be used as a React hook dependency
+ */
+function createPromptString(prompt) {
+    if (!prompt) {
+        return;
+    }
+    if (Array.isArray(prompt)) {
+        return prompt.join(' ');
+    }
+    return prompt;
 }
 export function useAuthRequestResult(request, discovery, customOptions = {}) {
     const [result, setResult] = useState(null);
