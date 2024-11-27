@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Allow `prompt` parameter of `AuthRequest` to accept multiple values as an array ([#32373](https://github.com/expo/expo/pull/32373) by [@Nkzn](https://github.com/Nkzn))
+
 ## 6.0.0 — 2024-10-22
 
 ### 🐛 Bug fixes
