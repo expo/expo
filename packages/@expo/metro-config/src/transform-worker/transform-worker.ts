@@ -23,6 +23,7 @@ import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput } from '../serializer/jsOutput';
+import { toPosixPath } from '../utils/filePath';
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 
@@ -49,9 +50,10 @@ export async function transform(
   options: JsTransformOptions
 ): Promise<TransformResponse> {
   const reactServer = options.customTransformOptions?.environment === 'react-server';
+  const posixFilename = toPosixPath(filename);
   if (
     typeof options.customTransformOptions?.dom === 'string' &&
-    filename.match(/expo\/dom\/entry\.js/)
+    posixFilename.match(/expo\/dom\/entry\.js/)
   ) {
     // TODO: Find some method to do this without invalidating the cache between different DOM components.
     // Inject source for DOM component entry.
