@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for `TSInterfaceDeclaration` in server component plugin. ([#33121](https://github.com/expo/expo/pull/33121) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 12.0.2 — 2024-11-22
