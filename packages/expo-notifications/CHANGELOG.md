@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix event subscription type export name ([#33295](https://github.com/expo/expo/pull/33295) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 0.29.8 — 2024-11-14
