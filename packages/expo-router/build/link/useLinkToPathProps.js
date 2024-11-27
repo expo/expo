@@ -38,7 +38,7 @@ function useLinkToPathProps({ href, ...options }) {
     };
     let strippedHref = (0, matchers_1.stripGroupSegmentsFromPath)(href) || '/';
     // Append base url only if needed.
-    if ((0, url_1.shouldLinkExternally)(strippedHref)) {
+    if (!(0, url_1.shouldLinkExternally)(strippedHref)) {
         strippedHref = (0, getPathFromState_forks_1.appendBaseUrl)(strippedHref);
     }
     return {
