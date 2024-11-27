@@ -159,49 +159,9 @@ export type AssetInfo = Asset & {
  */
 export type PairedVideoAsset = Asset & {
   /**
-   * Local file URI to the extracted video component of the Live Photo.
-   * Can be used with expo-live-photo
-   */
-  uri: string;
-  /**
-   * The unique identifier of the original Live Photo asset in the iOS Photos library.
-   * Can be used by [expo-media-library](./media-library) to manage the picked asset.
-   * @platform ios
-   */
-  assetId?: string | null;
-  /**
-   * Width of the image or video
-   */
-  width: number;
-  /**
-   * Height of the image or video
-   */
-  height: number;
-  /**
    * Constant value 'pairedVideo' indicating this is extracted from a Live Photo
-   * @platform ios
    */
-  type: 'pairedVideo';
-  /**
-   * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
-   * or user gave limited permission to access the media library
-   * @platform ios
-   */
-  fileName?: string | null;
-  /**
-   * File size of the video, in bytes
-   */
-  fileSize?: number;
-  /**
-   * Length of the video in milliseconds or `null` if the asset is not a video
-   * @platform ios
-   */
-  duration?: number;
-  /**
-   * The MIME type of the selected asset or `null` if could not be determined
-   * @platform ios
-   */
-  mimeType?: string | null;
+  subType: 'pairedVideo';
 };
 
 /**
