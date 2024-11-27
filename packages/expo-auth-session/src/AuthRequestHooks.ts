@@ -89,7 +89,6 @@ function createPromptString(prompt: Prompt | Prompt[] | undefined): string | und
     return;
   }
 
-  // if prompts are defined as an array (e.g. ['login', 'consent']), join them with a space. it should be valid prompt (e.g. 'login consent')
   if (Array.isArray(prompt)) {
     return prompt.join(' ');
   }
