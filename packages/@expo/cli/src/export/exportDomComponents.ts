@@ -3,6 +3,7 @@ import assert from 'assert';
 import crypto from 'crypto';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import url from 'url';
 
 import { type PlatformMetadata } from './createMetadataJson';
 import { type BundleOutput, type ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
@@ -13,7 +14,7 @@ import {
   DOM_COMPONENTS_BUNDLE_DIR,
 } from '../start/server/middleware/DomComponentsMiddleware';
 import { env } from '../utils/env';
-import { resolveRealEntryFilePath } from '../utils/filePath';
+import { resolveRealEntryFilePath, toPosixPath } from '../utils/filePath';
 
 const debug = require('debug')('expo:export:exportDomComponents') as typeof console.log;
 
@@ -40,14 +41,17 @@ export async function exportDomComponentAsync({
   bundle: BundleOutput;
   htmlOutputName: string;
 }> {
-  const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
+  const virtualEntry = toPosixPath(resolveFrom(projectRoot, 'expo/dom/entry.js'));
   debug('Bundle DOM Component:', filePath);
   // MUST MATCH THE BABEL PLUGIN!
   const hash = crypto.createHash('sha1').update(filePath).digest('hex');
   const outputName = `${DOM_COMPONENTS_BUNDLE_DIR}/${hash}.html`;
-  const generatedEntryPath = filePath.startsWith('file://') ? filePath.slice(7) : filePath;
+  const generatedEntryPath = toPosixPath(
+    filePath.startsWith('file://') ? url.fileURLToPath(filePath) : filePath
+  );
   const baseUrl = `/${DOM_COMPONENTS_BUNDLE_DIR}`;
-  const relativeImport = './' + path.relative(path.dirname(virtualEntry), generatedEntryPath);
+  // The relative import path will be used like URI so it must be POSIX.
+  const relativeImport = './' + path.posix.relative(path.dirname(virtualEntry), generatedEntryPath);
   // Run metro bundler and create the JS bundles/source maps.
   const bundle = await devServer.legacySinglePageExportBundleAsync({
     platform: 'web',
