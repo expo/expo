@@ -216,8 +216,9 @@ export default function ExpoRadialChartView() {
 
 Now you can implement the native functionality by editing the placeholder files with the following changes:
 
-- Create a `PieChart` instance and set its `layoutParams` to match the parent view. Then, add it to the view hierarchy using the `addView` function.
-- Define a `setChartData` function that accepts a list of `Series` objects. You can iterate over the list, create a `PieEntry` for each series and store the colors in a separate list. Then, create a `PieDataSet`, use it to create a `PieData` object, and set it as data on the `PieChart` instance.
+1. Create a `PieChart` instance and set its `layoutParams` to match the parent view. Then, add it to the view hierarchy using the `addView` function.
+2. Define a `setChartData` function that accepts a list of `Series` objects. You can iterate over the list, create a `PieEntry` for each series and store the colors in a separate list.
+3. Create a `PieDataSet`, use it to create a `PieData` object, and set it as data on the `PieChart` instance.
 
 ```kotlin android/src/main/java/expo/modules/radialchart/ExpoRadialChartView.kt
 package expo.modules.radialchart
@@ -295,9 +296,9 @@ class ExpoRadialChartModule : Module() {
 
 Now you can implement the native functionality by editing the placeholder files with the following changes:
 
-- Create a new `PieChartView` instance and use the `addSubview` function to add it to the view hierarchy.
-- Set the `clipsToBounds` property and override the `layoutSubviews` function to make sure the chart view is always the same size as the parent view.
-- Finally, create a `setChartData` function that accepts a list of series, creates a `PieChartDataSet` instance with the data, and assigns it to the `data` property of the `PieChartView` instance.
+1. Create a new `PieChartView` instance and use the `addSubview` function to add it to the view hierarchy.
+2. Set the `clipsToBounds` property and override the `layoutSubviews` function to make sure the chart view is always the same size as the parent view.
+3. Create a `setChartData` function that accepts a list of series, creates a `PieChartDataSet` instance with the data, and assigns it to the `data` property of the `PieChartView` instance.
 
 ```swift ios/ExpoRadialChartView.swift
 import ExpoModulesCore
