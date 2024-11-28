@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed compatibility for React Native 0.78 nightlies. ([#33306](https://github.com/expo/expo/pull/33306) by [@kudo](https://github.com/kudo))
+
 ## 8.0.20 — 2024-11-22
 
 _This version does not introduce any user-facing changes._
