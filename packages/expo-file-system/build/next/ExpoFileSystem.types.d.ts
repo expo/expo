@@ -1,3 +1,15 @@
+type CreateOptions = {
+    /**
+     * Whether to create intermediate directories if they do not exist.
+     * @default false
+     */
+    intermediates?: boolean;
+    /**
+     * Whether to overwrite the file or directory if it exists.
+     * @default false
+     */
+    overwrite?: boolean;
+};
 export declare class Directory {
     /**
      * Creates an instance of a directory.
@@ -33,7 +45,7 @@ export declare class Directory {
      *
      * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists.
      */
-    create(): void;
+    create(options?: CreateOptions): void;
     /**
      * Copies a directory.
      */
@@ -111,7 +123,7 @@ export declare class File {
      *
      * @throws Error if the containing folder doesn't exist, the application has no read access to it or the file (or directory with the same path) already exists.
      */
-    create(): void;
+    create(options?: CreateOptions): void;
     /**
      * Copies a file.
      */
@@ -152,4 +164,5 @@ export declare class FileHandle {
     offset: number | null;
     size: number | null;
 }
+export {};
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map
