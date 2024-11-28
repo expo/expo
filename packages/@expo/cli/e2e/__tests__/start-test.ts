@@ -1,27 +1,20 @@
 /* eslint-env jest */
-import {
-  isMultipartPartWithName,
-  parseMultipartMixedResponseAsync,
-} from '@expo/multipart-body-parser';
-import execa from 'execa';
-import fs from 'fs-extra';
-import nullthrows from 'nullthrows';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import {
   execute,
   projectRoot,
   getLoadedModulesAsync,
-  bin,
-  ensurePortFreeAsync,
   setupTestProjectWithOptionsAsync,
+  ExpoSourceStartCommand,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
 beforeAll(async () => {
-  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.promises.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
 });
@@ -91,79 +84,33 @@ for (const args of [
   ['-m', 'localhost', '--lan', '--offline'],
 ]) {
   it(`asserts invalid URL arguments on \`expo start ${args.join(' ')}\``, async () => {
-    await expect(execa('node', [bin, 'start', ...args], { cwd: projectRoot })).rejects.toThrowError(
-      /Specify at most one of/
-    );
+    await expect(execute('start', ...args)).rejects.toThrow(/Specify at most one of/);
   });
 }
 
 describe('server', () => {
-  // Kill port
-  const kill = () => ensurePortFreeAsync(8081);
+  let expo: ExpoSourceStartCommand;
 
-  beforeEach(async () => {
-    await kill();
+  beforeAll(async () => {
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
+    await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
+    expo = new ExpoSourceStartCommand(projectRoot);
+    await expo.startAsync();
   });
 
   afterAll(async () => {
-    await kill();
+    await expo.stopAsync();
   });
+
   it('runs `npx expo start`', async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
-
-    await fs.remove(path.join(projectRoot, '.expo'));
-
-    const promise = execa('node', [bin, 'start'], {
-      cwd: projectRoot,
-      env: {
-        ...process.env,
-        EXPO_USE_FAST_RESOLVER: 'true',
-      },
-    });
-
-    console.log('Starting server');
-
-    await new Promise<void>((resolve, reject) => {
-      promise.on('close', (code: number) => {
-        reject(
-          code === 0
-            ? 'Server closed too early. Run `kill -9 $(lsof -ti:8081)` to kill the orphaned process.'
-            : code
-        );
-      });
-
-      promise.stdout?.on('data', (data) => {
-        const stdout = data.toString();
-        console.log('output:', stdout);
-        if (stdout.includes('Logs for your project')) {
-          resolve();
-        }
-      });
-    });
-
     console.log('Fetching manifest');
-    const response = await fetch('http://localhost:8081/', {
-      headers: {
-        'expo-platform': 'ios',
-        Accept: 'multipart/mixed',
-      },
-    });
-
-    const multipartParts = await parseMultipartMixedResponseAsync(
-      response.headers.get('content-type') as string,
-      Buffer.from(await response.arrayBuffer())
-    );
-    const manifestPart = nullthrows(
-      multipartParts.find((part) => isMultipartPartWithName(part, 'manifest'))
-    );
-
-    const manifest = JSON.parse(manifestPart.body);
+    const manifest = await expo.fetchExpoGoManifestAsync();
 
     // Required for Expo Go
-    expect(manifest.extra.expoGo.packagerOpts).toStrictEqual({
+    expect(manifest.extra.expoGo?.packagerOpts).toStrictEqual({
       dev: true,
     });
-    expect(manifest.extra.expoGo.developer).toStrictEqual({
+    expect(manifest.extra.expoGo?.developer).toStrictEqual({
       projectRoot: expect.anything(),
       tool: 'expo-cli',
     });
@@ -172,18 +119,18 @@ describe('server', () => {
     expect(manifest.launchAsset.url).toBe(
       'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable'
     );
-    expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:8081');
-    expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
-    expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:8081');
+    expect(manifest.extra.expoGo?.debuggerHost).toBe('127.0.0.1:8081');
+    expect(manifest.extra.expoGo?.mainModuleName).toBe('node_modules/expo/AppEntry');
+    expect(manifest.extra.expoClient?.hostUri).toBe('127.0.0.1:8081');
 
     // Manifest
     expect(manifest.runtimeVersion).toBe('1.0');
-    expect(manifest.extra.expoClient.sdkVersion).toBe('52.0.0');
-    expect(manifest.extra.expoClient.slug).toBe('basic-start');
-    expect(manifest.extra.expoClient.name).toBe('basic-start');
+    expect(manifest.extra.expoClient?.sdkVersion).toBe('52.0.0');
+    expect(manifest.extra.expoClient?.slug).toBe('basic-start');
+    expect(manifest.extra.expoClient?.name).toBe('basic-start');
 
     // Custom
-    expect(manifest.extra.expoGo.__flipperHack).toBe('React Native packager is running');
+    expect(manifest.extra.expoGo?.__flipperHack).toBe('React Native packager is running');
 
     console.log('Fetching bundle');
     const bundleRequest = await fetch(manifest.launchAsset.url);
@@ -215,10 +162,5 @@ describe('server', () => {
       ]),
       mappings: expect.any(String),
     });
-
-    // Kill process.
-    promise.kill('SIGTERM');
-
-    await promise;
   });
 });

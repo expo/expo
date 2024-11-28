@@ -4,11 +4,11 @@ import {
   isMultipartPartWithName,
   parseMultipartMixedResponseAsync,
 } from '@expo/multipart-body-parser';
-import assert from 'assert';
 import spawn from 'cross-spawn';
-import { ChildProcess } from 'child_process';
-import { once } from 'events';
 import { EventEmitter } from 'fbemitter';
+import assert from 'node:assert';
+import { ChildProcess } from 'node:child_process';
+import { once } from 'node:events';
 import stripAnsi from 'strip-ansi';
 import treeKill from 'tree-kill';
 
@@ -16,6 +16,7 @@ export const bin = require.resolve('../../build/bin/cli');
 
 export class ExpoStartCommand extends EventEmitter {
   protected cliOutput: string = '';
+  protected cliBinary: string[] = ['yarn', 'expo'];
 
   url: string | undefined;
 
@@ -133,7 +134,7 @@ export class ExpoStartCommand extends EventEmitter {
     }
     this.cliOutput = '';
 
-    const cmdArgs = ['yarn', 'expo', 'start', ...args].filter(Boolean) as string[];
+    const cmdArgs = [...this.cliBinary, 'start', ...args].filter(Boolean) as string[];
 
     console.log('$', cmdArgs.join(' '));
     await new Promise<void>((resolve, reject) => {

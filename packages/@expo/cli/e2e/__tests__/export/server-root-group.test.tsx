@@ -62,7 +62,7 @@ describe('server-root-group', () => {
     let server: execa.ExecaChildProcess<string> | undefined;
 
     afterAll(async () => {
-      if (server) await killChildProcess(server);
+      await killChildProcess(server);
     });
 
     it(`can serve up group routes`, async () => {
