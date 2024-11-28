@@ -6,7 +6,6 @@ description: In this tutorial, learn the basics of how to configure a status bar
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
-import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
@@ -99,9 +98,7 @@ In **app.json**, the `expo-splash-screen` plugin is already configured to use th
 
 <Collapsible summary="Is the app loading too quickly for you to get a good look at the splash screen?">
 
-You can display the splash screen for longer intervals. Run the following command to install `expo-splash-screen`, a library that provides a `preventAutoHideAsync()` method to delay hiding the splash screen:
-
-<Terminal cmd={['$ npx expo install expo-splash-screen']} />
+You can display the splash screen for longer intervals by using `preventAutoHideAsync()` method from `expo-splash-screen` library. This method delays hiding the splash screen until you call `hideAsync()`.
 
 Add the following code in **app/\_layout.tsx** to delay hiding the splash screen for five seconds.
 
