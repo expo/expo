@@ -117,7 +117,7 @@ open class ExpoNotificationBuilder(
       builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE)
     } else if (shouldPlayDefaultSound) {
       builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
-    } else {
+    } else if (!shouldPlaySound()) {
       // Notification will not vibrate or play sound, regardless of channel
       builder.setSilent(true)
     }
