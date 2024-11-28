@@ -51,20 +51,11 @@ static NSDictionary *_requestedPermissions;
     status[@"allowsAlert"] = [self notificationSettingToNumber:settings.alertSetting] ?: [NSNull null];
     status[@"allowsBadge"] = [self notificationSettingToNumber:settings.badgeSetting] ?: [NSNull null];
     status[@"allowsSound"] = [self notificationSettingToNumber:settings.soundSetting] ?: [NSNull null];
-
-    if (@available(iOS 12.0, *)) {
-      status[@"allowsCriticalAlerts"] = [self notificationSettingToNumber:settings.criticalAlertSetting] ?: [NSNull null];
-    }
-
+    status[@"allowsCriticalAlerts"] = [self notificationSettingToNumber:settings.criticalAlertSetting] ?: [NSNull null];
     status[@"alertStyle"] = [self alertStyleToEnum:settings.alertStyle];
     status[@"allowsPreviews"] = [self showPreviewsSettingToEnum:settings.showPreviewsSetting];
-    if (@available(iOS 12.0, *)) {
-      status[@"providesAppNotificationSettings"] = @(settings.providesAppNotificationSettings);
-    }
-
-    if (@available(iOS 13.0, *)) {
-      status[@"allowsAnnouncements"] = [self notificationSettingToNumber:settings.announcementSetting] ?: [NSNull null];
-    }
+    status[@"providesAppNotificationSettings"] = @(settings.providesAppNotificationSettings);
+    status[@"allowsAnnouncements"] = [self notificationSettingToNumber:settings.announcementSetting] ?: [NSNull null];
 
     dispatch_semaphore_signal(sem);
   }];
@@ -104,21 +95,14 @@ static NSDictionary *_requestedPermissions;
   if ([permissions[@"allowDisplayInCarPlay"] boolValue]) {
     options |= UNAuthorizationOptionCarPlay;
   }
-  if (@available(iOS 12.0, *)) {
-    if ([permissions[@"allowCriticalAlerts"] boolValue]) {
-        options |= UNAuthorizationOptionCriticalAlert;
-    }
-    if ([permissions[@"provideAppNotificationSettings"] boolValue]) {
-        options |= UNAuthorizationOptionProvidesAppNotificationSettings;
-    }
-    if ([permissions[@"allowProvisional"] boolValue]) {
-        options |= UNAuthorizationOptionProvisional;
-    }
+  if ([permissions[@"allowCriticalAlerts"] boolValue]) {
+      options |= UNAuthorizationOptionCriticalAlert;
   }
-  if (@available(iOS 13.0, *)) {
-    if ([permissions[@"allowAnnouncements"] boolValue]) {
-      options |= UNAuthorizationOptionAnnouncement;
-    }
+  if ([permissions[@"provideAppNotificationSettings"] boolValue]) {
+      options |= UNAuthorizationOptionProvidesAppNotificationSettings;
+  }
+  if ([permissions[@"allowProvisional"] boolValue]) {
+      options |= UNAuthorizationOptionProvisional;
   }
   [self requestAuthorizationOptions:options withResolver:resolve rejecter:reject];
 }
@@ -127,7 +111,7 @@ static NSDictionary *_requestedPermissions;
 {
   EX_WEAKIFY(self);
   [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
-    EX_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     // getPermissions blocks method queue on which this callback is being executed
     // so we have to dispatch to another queue.
     dispatch_async(self.methodQueue, ^{

@@ -8,12 +8,13 @@ import ExpoModulesTestCore
 final class DynamicTypeSpec: ExpoSpec {
   override class func spec() {
     let appContext = AppContext.create()
+    let runtime = try! appContext.runtime
 
     // MARK: - DynamicRawType
 
     describe("DynamicRawType") {
       it("is created") {
-        expect(~String.self).to(beAKindOf(DynamicRawType<String>.self))
+        expect(~Any.self).to(beAKindOf(DynamicRawType<Any>.self))
         expect(~Bool.self).to(beAKindOf(DynamicRawType<Bool>.self))
         expect(~ExpoSpec.self).to(beAKindOf(DynamicRawType<ExpoSpec>.self))
       }
@@ -24,11 +25,10 @@ final class DynamicTypeSpec: ExpoSpec {
           expect(try (~Bool.self).cast(false, appContext: appContext) as? Bool) == false
         }
         it("throws NullCastException") {
-          let value: Double? = nil
-          let anyValue = value as Any
+          let value: Bool? = nil
 
-          expect { try (~Double.self).cast(anyValue, appContext: appContext) }.to(
-            throwError(errorType: Conversions.NullCastException<Double>.self)
+          expect { try (~Bool.self).cast(value as Any, appContext: appContext) }.to(
+            throwError(errorType: Conversions.NullCastException<Bool>.self)
           )
         }
         it("throws CastingException") {
@@ -61,6 +61,54 @@ final class DynamicTypeSpec: ExpoSpec {
           expect(~String.self != ~CGSize.self) == true
           expect(~Bool.self != ~Promise.self) == true
         }
+      }
+    }
+
+    // MARK: - DynamicNumberType
+
+    describe("DynamicNumberType") {
+      it("is created") {
+        expect(~Double.self).to(beAKindOf(DynamicNumberType<Double>.self))
+        expect(~Int32.self).to(beAKindOf(DynamicNumberType<Int32>.self))
+        expect(~CGFloat.self).to(beAKindOf(DynamicNumberType<CGFloat>.self))
+      }
+      it("casts from the same numeric type") {
+        // integer literal (Int) -> Int
+        expect(try (~Int.self).cast(7, appContext: appContext) as? Int) == 7
+        // Int16 -> Int16
+        expect(try (~Int16.self).cast(Int16(5), appContext: appContext) as? Int16) == Int16(5)
+        // float literal (Double) -> Double
+        expect(try (~Double.self).cast(3.14, appContext: appContext) as? Double) == 3.14
+        // Float64 -> Float64
+        expect(try (~Float64.self).cast(Float64(1.61), appContext: appContext) as? Float64) == Float64(1.61)
+      }
+      it("casts from different numeric type") {
+        // integer literal (Int) -> Int64
+        expect(try (~Int64.self).cast(11, appContext: appContext) as? Int64) == Int64(11)
+        // integer literal (Int) -> Double
+        expect(try (~Double.self).cast(37, appContext: appContext) as? Double) == 37.0
+        // float literal (Double) -> Int (schoolbook rounding)
+        expect(try (~Int.self).cast(21.8, appContext: appContext) as? Int) == 22
+        // float literal (Double) -> Float64
+        expect(try (~Float64.self).cast(6.6, appContext: appContext) as? Float64) == Float64(6.6)
+      }
+      it("casts from JS value") {
+        expect(try (~Double.self).cast(jsValue: .number(12.34), appContext: appContext) as? Double) == 12.34
+        expect(try (~Int.self).cast(jsValue: .number(0.8), appContext: appContext) as? Int) == 1
+      }
+    }
+
+    // MARK: - DynamicStringType
+
+    describe("DynamicStringType") {
+      it("is created") {
+        expect(~String.self).to(beAKindOf(DynamicStringType.self))
+      }
+      it("casts") {
+        expect(try (~String.self).cast("foo", appContext: appContext) as? String) == "foo"
+      }
+      it("casts from JS value") {
+        expect(try (~String.self).cast(jsValue: .string("bar", runtime: runtime), appContext: appContext) as? String) == "bar"
       }
     }
 
@@ -331,6 +379,24 @@ final class DynamicTypeSpec: ExpoSpec {
           expect(~TestSharedObject.self != ~TestSharedObject?.self) == true
           expect(~TestSharedObject.self != ~[String: Any].self) == true
           expect(~TestSharedObject.self != ~[TestSharedObject].self) == true
+        }
+      }
+    }
+
+    // MARK: - DynamicEitherType
+
+    describe("DynamicEitherType") {
+      it("is created") {
+        expect(~Either<Int, String>.self).to(beAKindOf(DynamicEitherType<Either<Int, String>>.self))
+      }
+
+      describe("casts") {
+        it("succeeds") {
+          let either1 = try (~Either<Int, String>.self).cast(123, appContext: appContext) as! Either<Int, String>
+          expect(try either1.as(Int.self)) == 123
+
+          let either2 = try (~Either<Int, String>.self).cast("expo", appContext: appContext) as! Either<Int, String>
+          expect(try either2.as(String.self)) == "expo"
         }
       }
     }

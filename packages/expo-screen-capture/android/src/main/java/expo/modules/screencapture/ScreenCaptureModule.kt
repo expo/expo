@@ -14,6 +14,13 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 const val eventName = "onScreenshot"
 
+val grantedPermissions = mapOf(
+  "canAskAgain" to true,
+  "granted" to true,
+  "expires" to "never",
+  "status" to "granted"
+)
+
 class ScreenCaptureModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
@@ -35,6 +42,8 @@ class ScreenCaptureModule : Module() {
         screenCaptureCallback = Activity.ScreenCaptureCallback {
           sendEvent(eventName)
         }
+        // Let's try to register the callback
+        registerCallback()
       } else {
         screenshotEventEmitter = ScreenshotEventEmitter(context) {
           sendEvent(eventName)
@@ -43,6 +52,10 @@ class ScreenCaptureModule : Module() {
     }
 
     AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        promise.resolve(grantedPermissions)
+        return@AsyncFunction
+      }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_MEDIA_IMAGES)
       } else {
@@ -51,6 +64,10 @@ class ScreenCaptureModule : Module() {
     }
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        promise.resolve(grantedPermissions)
+        return@AsyncFunction
+      }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_MEDIA_IMAGES)
       } else {
@@ -59,16 +76,16 @@ class ScreenCaptureModule : Module() {
     }
 
     AsyncFunction<Unit>("preventScreenCapture") {
-      registerCallback()
       currentActivity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction<Unit>("allowScreenCapture") {
-      registerCallback()
       currentActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }.runOnQueue(Queues.MAIN)
 
     OnActivityEntersForeground {
+      // Call registerCallback once more as a fallback if activity wasn't available in onCreate
+      registerCallback()
       screenshotEventEmitter?.onHostResume()
     }
 
@@ -91,7 +108,7 @@ class ScreenCaptureModule : Module() {
       return
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-      currentActivity.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!)
+      safeCurrentActivity?.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!) ?: return
       isRegistered = true
     }
   }

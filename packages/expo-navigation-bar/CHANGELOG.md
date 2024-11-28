@@ -8,11 +8,43 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 4.0.4 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.3 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2024-10-22
+
+### 🐛 Bug fixes
+
 - Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+- Replaced the config-plugins deprecated `getAppThemeLightNoActionBarGroup` method with the new `getAppThemeGroup`. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.0.7 - 2024-07-03
+
+_This version does not introduce any user-facing changes._
 
 ## 3.0.6 - 2024-06-06
 

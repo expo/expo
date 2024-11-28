@@ -30,9 +30,20 @@ export type JsOutput = {
     hasCjsExports?: boolean;
 
     readonly reconcile?: ReconcileTransformSettings;
+    readonly reactServerReference?: string;
     readonly reactClientReference?: string;
+    readonly expoDomComponentReference?: string;
   };
   type: JSFileType;
+};
+
+export type CSSMetadata = {
+  code: string;
+  lineCount: number;
+  map: unknown[];
+  functionMap: null;
+  skipCache?: boolean;
+  externalImports: { url: string; supports: string | null; media: string | null }[];
 };
 
 export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
@@ -42,13 +53,7 @@ export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
       end: number;
       duration: number;
     };
-    css?: {
-      code: string;
-      lineCount: number;
-      map: unknown[];
-      functionMap: null;
-      skipCache?: boolean;
-    };
+    css?: CSSMetadata;
   };
 };
 
@@ -65,7 +70,7 @@ export type ReconcileTransformSettings = {
   };
   collectDependenciesOptions: CollectDependenciesOptions;
 
-  unstable_dependencyMapReservedName?: string;
+  unstable_dependencyMapReservedName?: string | null;
   optimizationSizeLimit?: number;
   unstable_disableNormalizePseudoGlobals?: boolean;
 

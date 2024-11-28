@@ -4,12 +4,20 @@ import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import ExpoImage, { ExpoImageModule } from './ExpoImage';
-import { ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
+import ExpoImage from './ExpoImage';
+import {
+  ImageLoadOptions,
+  ImagePrefetchOptions,
+  ImageProps,
+  ImageRef,
+  ImageSource,
+} from './Image.types';
+import ImageModule from './ImageModule';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
-import { resolveSources } from './utils/resolveSources';
+import { resolveSource, resolveSources } from './utils/resolveSources';
 
 let loggedDefaultSourceDeprecationWarning = false;
+let loggedRenderingChildrenWarning = false;
 
 export class Image extends React.PureComponent<ImageProps> {
   nativeViewRef;
@@ -32,7 +40,7 @@ export class Image extends React.PureComponent<ImageProps> {
   /**
    * @hidden
    */
-  static Image = ExpoImageModule.Image;
+  static Image = ImageModule.Image;
 
   /**
    * Preloads images at the given URLs that can be later used in the image view.
@@ -77,7 +85,7 @@ export class Image extends React.PureComponent<ImageProps> {
         break;
     }
 
-    return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy, headers);
+    return ImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy, headers);
   }
 
   /**
@@ -89,7 +97,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * Resolves to `false` on Web.
    */
   static async clearMemoryCache(): Promise<boolean> {
-    return await ExpoImageModule.clearMemoryCache();
+    return await ImageModule.clearMemoryCache();
   }
 
   /**
@@ -101,7 +109,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * Resolves to `false` on Web.
    */
   static async clearDiskCache(): Promise<boolean> {
-    return await ExpoImageModule.clearDiskCache();
+    return await ImageModule.clearDiskCache();
   }
 
   /**
@@ -115,7 +123,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * to `null` if the image does not exist in the cache.
    */
   static async getCachePathAsync(cacheKey: string): Promise<string | null> {
-    return await ExpoImageModule.getCachePathAsync(cacheKey);
+    return await ImageModule.getCachePathAsync(cacheKey);
   }
 
   /**
@@ -130,7 +138,7 @@ export class Image extends React.PureComponent<ImageProps> {
     url: string,
     numberOfComponents: [number, number] | { width: number; height: number }
   ): Promise<string | null> {
-    return await ExpoImageModule.generateBlurhashAsync(url, numberOfComponents);
+    return await ImageModule.generateBlurhashAsync(url, numberOfComponents);
   }
 
   /**
@@ -154,10 +162,16 @@ export class Image extends React.PureComponent<ImageProps> {
   /**
    * Loads an image from the given source to memory and resolves to
    * an object that references the native image instance.
+   * @platform android
    * @platform ios
+   * @platform web
    */
-  static loadAsync(source: ImageSource): Promise<ImageRef> {
-    return ExpoImageModule.loadAsync(source);
+  static async loadAsync(
+    source: ImageSource | string,
+    options?: ImageLoadOptions
+  ): Promise<ImageRef> {
+    const resolvedSource = resolveSource(source) as ImageSource;
+    return await ImageModule.loadAsync(resolvedSource, options);
   }
 
   render() {
@@ -183,6 +197,13 @@ export class Image extends React.PureComponent<ImageProps> {
         '[expo-image]: `defaultSource` and `loadingIndicatorSource` props are deprecated, use `placeholder` instead'
       );
       loggedDefaultSourceDeprecationWarning = true;
+    }
+
+    if (restProps.children && !loggedRenderingChildrenWarning) {
+      console.warn(
+        'The <Image> component does not support children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.'
+      );
+      loggedRenderingChildrenWarning = true;
     }
 
     return (

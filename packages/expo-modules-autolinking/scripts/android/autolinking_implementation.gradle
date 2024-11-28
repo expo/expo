@@ -27,10 +27,31 @@ class ExpoModuleGradlePlugin {
   // Path to the plugin folder
   String sourceDir
 
+  Boolean applyToRootProject
+
   ExpoModuleGradlePlugin(Object data) {
     this.id = data.id
     this.group = data.group
     this.sourceDir = data.sourceDir
+    this.applyToRootProject = data.applyToRootProject
+  }
+}
+
+// Object representing an gradle project containing AAR file
+class ExpoModuleGradleAarProject {
+  // Name of the project
+  String name
+
+  // Path to the AAR file
+  String aarFilePath
+
+  // Project directory
+  String projectDir
+
+  ExpoModuleGradleAarProject(Object data) {
+    this.name = data.name
+    this.aarFilePath = data.aarFilePath
+    this.projectDir = data.projectDir
   }
 }
 
@@ -48,11 +69,15 @@ class ExpoModule {
   // Gradle plugins
   ExpoModuleGradlePlugin[] plugins
 
+  // Gradle projects containing AAR files
+  ExpoModuleGradleAarProject[] aarProjects
+
   ExpoModule(Object data) {
     this.name = data.packageName
     this.version = data.packageVersion
     this.projects = data.projects.collect { new ExpoModuleGradleProject(it) }
     this.plugins = data.plugins.collect { new ExpoModuleGradlePlugin(it) }
+    this.aarProjects = data.aarProjects.collect { new ExpoModuleGradleAarProject(it) }
   }
 }
 
@@ -221,9 +246,28 @@ if (rootProject instanceof ProjectDescriptor) {
       for (modulePlugin in module.plugins) {
         includeBuild(new File(modulePlugin.sourceDir))
       }
+      for (moduleAarProject in module.aarProjects) {
+        include(":${moduleAarProject.name}")
+        def projectDir = new File(moduleAarProject.projectDir)
+        if (!projectDir.exists()) {
+          projectDir.mkdirs()
+        }
+        project(":${moduleAarProject.name}").projectDir = projectDir
+      }
     }
 
     gradle.beforeProject { project ->
+      // Setup AAR projects
+      for (module in modules) {
+        for (moduleAarProject in module.aarProjects) {
+          if (project.name == moduleAarProject.name) {
+            project.configurations.maybeCreate('default')
+            project.artifacts.add('default', file(moduleAarProject.aarFilePath))
+          }
+        }
+      }
+
+      // Setup autolinking from the root project
       if (project !== project.rootProject) {
         return
       }
@@ -288,6 +332,9 @@ if (rootProject instanceof ProjectDescriptor) {
       }
       for (module in modules) {
         for (modulePlugin in module.plugins) {
+          if (!modulePlugin.applyToRootProject) {
+            continue
+          }
           println " ${Emojis.INFORMATION}  ${Colors.YELLOW}Applying gradle plugin${Colors.RESET} '${Colors.GREEN}${modulePlugin.id}${Colors.RESET}' (${module.name}@${module.version})"
           project.plugins.apply(modulePlugin.id)
         }

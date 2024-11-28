@@ -1,24 +1,26 @@
 import { Platform, UnavailabilityError, uuid } from 'expo-modules-core';
 
 import NotificationScheduler from './NotificationScheduler';
-import { NotificationTriggerInput as NativeNotificationTriggerInput } from './NotificationScheduler.types';
+import {
+  NativeCalendarTriggerInput,
+  NativeDailyTriggerInput,
+  NativeDateTriggerInput,
+  NativeNotificationTriggerInput,
+  NativeTimeIntervalTriggerInput,
+  NativeWeeklyTriggerInput,
+  NativeMonthlyTriggerInput,
+  NativeYearlyTriggerInput,
+} from './NotificationScheduler.types';
 import {
   NotificationRequestInput,
   NotificationTriggerInput,
-  DailyTriggerInput,
-  WeeklyTriggerInput,
-  YearlyTriggerInput,
-  CalendarTriggerInput,
-  TimeIntervalTriggerInput,
-  DateTriggerInput,
-  ChannelAwareTriggerInput,
-  SchedulableNotificationTriggerInput,
+  SchedulableTriggerInputTypes,
 } from './Notifications.types';
 
 /**
  * Schedules a notification to be triggered in the future.
  * > **Note:** Please note that this does not mean that the notification will be presented when it is triggered.
- * For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#notificationssetnotificationhandlerhandler)
+ * For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler)
  * that will return an appropriate notification behavior. For more information see the example below.
  * @param request An object describing the notification to be triggered.
  * @return Returns a Promise resolving to a string which is a notification identifier you can later use to cancel the notification or to identify an incoming notification.
@@ -33,6 +35,7 @@ import {
  *     body: 'Change sides!',
  *   },
  *   trigger: {
+ *     type: SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60,
  *   },
  * });
@@ -47,6 +50,7 @@ import {
  *     title: 'Remember to drink water!',
  *   },
  *   trigger: {
+ *     type: SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60 * 20,
  *     repeats: true,
  *   },
@@ -86,22 +90,6 @@ export default async function scheduleNotificationAsync(
 
 type ValidTriggerDateComponents = 'month' | 'day' | 'weekday' | 'hour' | 'minute';
 
-const DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS: readonly ValidTriggerDateComponents[] = [
-  'hour',
-  'minute',
-];
-const WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS: readonly ValidTriggerDateComponents[] = [
-  'weekday',
-  'hour',
-  'minute',
-];
-const YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS: readonly ValidTriggerDateComponents[] = [
-  'day',
-  'month',
-  'hour',
-  'minute',
-];
-
 export function parseTrigger(
   userFacingTrigger: NotificationTriggerInput
 ): NativeNotificationTriggerInput {
@@ -115,84 +103,85 @@ export function parseTrigger(
     );
   }
 
-  if (isDateTrigger(userFacingTrigger)) {
-    return parseDateTrigger(userFacingTrigger);
-  } else if (isDailyTriggerInput(userFacingTrigger)) {
-    validateDateComponentsInTrigger(userFacingTrigger, DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS);
-    return {
-      type: 'daily',
-      channelId: userFacingTrigger.channelId,
-      hour: userFacingTrigger.hour,
-      minute: userFacingTrigger.minute,
-    };
-  } else if (isWeeklyTriggerInput(userFacingTrigger)) {
-    validateDateComponentsInTrigger(userFacingTrigger, WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS);
-    return {
-      type: 'weekly',
-      channelId: userFacingTrigger.channelId,
-      weekday: userFacingTrigger.weekday,
-      hour: userFacingTrigger.hour,
-      minute: userFacingTrigger.minute,
-    };
-  } else if (isYearlyTriggerInput(userFacingTrigger)) {
-    validateDateComponentsInTrigger(userFacingTrigger, YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS);
-    return {
-      type: 'yearly',
-      channelId: userFacingTrigger.channelId,
-      day: userFacingTrigger.day,
-      month: userFacingTrigger.month,
-      hour: userFacingTrigger.hour,
-      minute: userFacingTrigger.minute,
-    };
-  } else if (isSecondsPropertyMisusedInCalendarTriggerInput(userFacingTrigger)) {
-    throw new TypeError(
-      'Could not have inferred the notification trigger type: if you want to use a time interval trigger, pass in only `seconds` with or without `repeats` property; if you want to use calendar-based trigger, pass in `second`.'
-    );
-  } else if ('seconds' in userFacingTrigger) {
-    return {
-      type: 'timeInterval',
-      channelId: userFacingTrigger.channelId,
-      seconds: userFacingTrigger.seconds,
-      repeats: userFacingTrigger.repeats ?? false,
-    };
-  } else if (isCalendarTrigger(userFacingTrigger)) {
-    const { repeats, ...calendarTrigger } = userFacingTrigger;
-    return { type: 'calendar', value: calendarTrigger, repeats };
-  } else {
-    return Platform.select({
-      default: null, // There's no notion of channels on platforms other than Android.
-      android: { type: 'channel', channelId: userFacingTrigger.channelId },
-    });
+  const dateTrigger = parseDateTrigger(userFacingTrigger);
+  if (dateTrigger) {
+    return dateTrigger;
   }
+  const calendarTrigger = parseCalendarTrigger(userFacingTrigger);
+  if (calendarTrigger) {
+    return calendarTrigger;
+  }
+  const dailyTrigger = parseDailyTrigger(userFacingTrigger);
+  if (dailyTrigger) {
+    return dailyTrigger;
+  }
+  const weeklyTrigger = parseWeeklyTrigger(userFacingTrigger);
+  if (weeklyTrigger) {
+    return weeklyTrigger;
+  }
+  const monthlyTrigger = parseMonthlyTrigger(userFacingTrigger);
+  if (monthlyTrigger) {
+    return monthlyTrigger;
+  }
+  const yearlyTrigger = parseYearlyTrigger(userFacingTrigger);
+  if (yearlyTrigger) {
+    return yearlyTrigger;
+  }
+  const timeIntervalTrigger = parseTimeIntervalTrigger(userFacingTrigger);
+  if (timeIntervalTrigger) {
+    return timeIntervalTrigger;
+  }
+  return Platform.select({
+    default: null, // There's no notion of channels on platforms other than Android.
+    android: {
+      type: 'channel',
+      channelId:
+        typeof userFacingTrigger === 'object' &&
+        userFacingTrigger !== null &&
+        !(userFacingTrigger instanceof Date)
+          ? userFacingTrigger?.channelId
+          : undefined,
+    },
+  });
 }
 
-function isCalendarTrigger(
-  trigger: CalendarTriggerInput | ChannelAwareTriggerInput
-): trigger is CalendarTriggerInput {
-  const { channelId, ...triggerWithoutChannelId } = trigger;
-  return Object.keys(triggerWithoutChannelId).length > 0;
+function parseCalendarTrigger(
+  trigger: NotificationTriggerInput
+): NativeCalendarTriggerInput | undefined {
+  if (
+    trigger !== null &&
+    typeof trigger === 'object' &&
+    'type' in trigger &&
+    trigger.type === SchedulableTriggerInputTypes.CALENDAR
+  ) {
+    const { repeats, ...calendarTrigger } = trigger;
+    return { type: 'calendar', value: calendarTrigger, repeats };
+  }
+  return undefined;
 }
 
-function isDateTrigger(
-  trigger:
-    | DateTriggerInput
-    | WeeklyTriggerInput
-    | DailyTriggerInput
-    | CalendarTriggerInput
-    | TimeIntervalTriggerInput
-): trigger is DateTriggerInput {
-  return (
-    trigger instanceof Date ||
-    typeof trigger === 'number' ||
-    (typeof trigger === 'object' && 'date' in trigger)
-  );
-}
-
-function parseDateTrigger(trigger: DateTriggerInput): NativeNotificationTriggerInput {
+function parseDateTrigger(trigger: NotificationTriggerInput): NativeDateTriggerInput | undefined {
   if (trigger instanceof Date || typeof trigger === 'number') {
     return { type: 'date', timestamp: toTimestamp(trigger) };
+  } else if (
+    typeof trigger === 'object' &&
+    trigger !== null &&
+    'type' in trigger &&
+    trigger.type === SchedulableTriggerInputTypes.DATE &&
+    'date' in trigger &&
+    trigger.date instanceof Date
+  ) {
+    const result: NativeDateTriggerInput = {
+      type: 'date',
+      timestamp: toTimestamp(trigger.date),
+    };
+    if (trigger.channelId) {
+      result.channelId = trigger.channelId;
+    }
+    return result;
+  } else {
+    return undefined;
   }
-  return { type: 'date', timestamp: toTimestamp(trigger.date), channelId: trigger.channelId };
 }
 
 function toTimestamp(date: number | Date) {
@@ -202,69 +191,126 @@ function toTimestamp(date: number | Date) {
   return date;
 }
 
-function isDailyTriggerInput(
-  trigger: SchedulableNotificationTriggerInput
-): trigger is DailyTriggerInput {
-  if (typeof trigger !== 'object') return false;
-  const { channelId, ...triggerWithoutChannelId } = trigger as DailyTriggerInput;
-  return (
-    Object.keys(triggerWithoutChannelId).length ===
-      DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
-    DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(
-      (component) => component in triggerWithoutChannelId
-    ) &&
-    'repeats' in triggerWithoutChannelId &&
-    triggerWithoutChannelId.repeats === true
-  );
+function parseDailyTrigger(trigger: NotificationTriggerInput): NativeDailyTriggerInput | undefined {
+  if (
+    trigger !== null &&
+    typeof trigger === 'object' &&
+    'type' in trigger &&
+    trigger.type === SchedulableTriggerInputTypes.DAILY
+  ) {
+    validateDateComponentsInTrigger(trigger, ['hour', 'minute']);
+    const result: NativeDailyTriggerInput = {
+      type: 'daily',
+      hour: trigger.hour ?? placeholderDateComponentValue,
+      minute: trigger.minute ?? placeholderDateComponentValue,
+    };
+    if (trigger.channelId) {
+      result.channelId = trigger.channelId;
+    }
+    return result;
+  }
+  return undefined;
 }
 
-function isWeeklyTriggerInput(
-  trigger: SchedulableNotificationTriggerInput
-): trigger is WeeklyTriggerInput {
-  if (typeof trigger !== 'object') return false;
-  const { channelId, ...triggerWithoutChannelId } = trigger as WeeklyTriggerInput;
-  return (
-    Object.keys(triggerWithoutChannelId).length ===
-      WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
-    WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(
-      (component) => component in triggerWithoutChannelId
-    ) &&
-    'repeats' in triggerWithoutChannelId &&
-    triggerWithoutChannelId.repeats === true
-  );
+function parseWeeklyTrigger(
+  trigger: NotificationTriggerInput
+): NativeWeeklyTriggerInput | undefined {
+  if (
+    trigger !== null &&
+    typeof trigger === 'object' &&
+    'type' in trigger &&
+    trigger.type === SchedulableTriggerInputTypes.WEEKLY
+  ) {
+    validateDateComponentsInTrigger(trigger, ['weekday', 'hour', 'minute']);
+    const result: NativeWeeklyTriggerInput = {
+      type: 'weekly',
+      weekday: trigger.weekday ?? placeholderDateComponentValue,
+      hour: trigger.hour ?? placeholderDateComponentValue,
+      minute: trigger.minute ?? placeholderDateComponentValue,
+    };
+    if (trigger.channelId) {
+      result.channelId = trigger.channelId;
+    }
+    return result;
+  }
+  return undefined;
 }
 
-function isYearlyTriggerInput(
-  trigger: SchedulableNotificationTriggerInput
-): trigger is YearlyTriggerInput {
-  if (typeof trigger !== 'object') return false;
-  const { channelId, ...triggerWithoutChannelId } = trigger as YearlyTriggerInput;
-  return (
-    Object.keys(triggerWithoutChannelId).length ===
-      YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
-    YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(
-      (component) => component in triggerWithoutChannelId
-    ) &&
-    'repeats' in triggerWithoutChannelId &&
-    triggerWithoutChannelId.repeats === true
-  );
+function parseMonthlyTrigger(
+  trigger: NotificationTriggerInput
+): NativeMonthlyTriggerInput | undefined {
+  if (
+    trigger !== null &&
+    typeof trigger === 'object' &&
+    'type' in trigger &&
+    trigger.type === SchedulableTriggerInputTypes.MONTHLY
+  ) {
+    validateDateComponentsInTrigger(trigger, ['day', 'hour', 'minute']);
+    const result: NativeMonthlyTriggerInput = {
+      type: 'monthly',
+      day: trigger.day ?? placeholderDateComponentValue,
+      hour: trigger.hour ?? placeholderDateComponentValue,
+      minute: trigger.minute ?? placeholderDateComponentValue,
+    };
+    if (trigger.channelId) {
+      result.channelId = trigger.channelId;
+    }
+    return result;
+  }
+  return undefined;
 }
 
-function isSecondsPropertyMisusedInCalendarTriggerInput(
-  trigger: TimeIntervalTriggerInput | CalendarTriggerInput
-) {
-  const { channelId, ...triggerWithoutChannelId } = trigger;
-  return (
-    // eg. { seconds: ..., repeats: ..., hour: ... }
-    ('seconds' in triggerWithoutChannelId &&
-      'repeats' in triggerWithoutChannelId &&
-      Object.keys(triggerWithoutChannelId).length > 2) ||
-    // eg. { seconds: ..., hour: ... }
-    ('seconds' in triggerWithoutChannelId &&
-      !('repeats' in triggerWithoutChannelId) &&
-      Object.keys(triggerWithoutChannelId).length > 1)
-  );
+function parseYearlyTrigger(
+  trigger: NotificationTriggerInput
+): NativeYearlyTriggerInput | undefined {
+  if (
+    trigger !== null &&
+    typeof trigger === 'object' &&
+    'type' in trigger &&
+    trigger.type === SchedulableTriggerInputTypes.YEARLY
+  ) {
+    validateDateComponentsInTrigger(trigger, ['month', 'day', 'hour', 'minute']);
+    const result: NativeYearlyTriggerInput = {
+      type: 'yearly',
+      month: trigger.month ?? placeholderDateComponentValue,
+      day: trigger.day ?? placeholderDateComponentValue,
+      hour: trigger.hour ?? placeholderDateComponentValue,
+      minute: trigger.minute ?? placeholderDateComponentValue,
+    };
+    if (trigger.channelId) {
+      result.channelId = trigger.channelId;
+    }
+    return result;
+  }
+  return undefined;
 }
+
+function parseTimeIntervalTrigger(
+  trigger: NotificationTriggerInput
+): NativeTimeIntervalTriggerInput | undefined {
+  if (
+    trigger !== null &&
+    typeof trigger === 'object' &&
+    'type' in trigger &&
+    trigger.type === SchedulableTriggerInputTypes.TIME_INTERVAL &&
+    'seconds' in trigger &&
+    typeof trigger.seconds === 'number'
+  ) {
+    const result: NativeTimeIntervalTriggerInput = {
+      type: 'timeInterval',
+      seconds: trigger.seconds,
+      repeats: trigger.repeats ?? false,
+    };
+    if (trigger.channelId) {
+      result.channelId = trigger.channelId;
+    }
+    return result;
+  }
+  return undefined;
+}
+
+// Needed only to satisfy Typescript types for validated date components
+const placeholderDateComponentValue = -9999;
 
 function validateDateComponentsInTrigger(
   trigger: NonNullable<NotificationTriggerInput>,
@@ -287,7 +333,9 @@ function validateDateComponentsInTrigger(
         break;
       }
       case 'day': {
-        const { day, month } = anyTriggerType;
+        const day = anyTriggerType.day;
+        const month =
+          anyTriggerType.month !== undefined ? anyTriggerType.month : new Date().getMonth();
         const daysInGivenMonth = daysInMonth(month);
         if (day < 1 || day > daysInGivenMonth) {
           throw new RangeError(

@@ -1,18 +1,18 @@
 'use client';
 
 import { LinkingOptions, NavigationAction } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
-import { Platform } from 'react-native';
+import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import UpstreamNavigationContainer from './fork/NavigationContainer';
+import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import { ExpoLinkingOptions } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
-import ServerContext, { ServerContextType } from './global-state/serverContext';
+import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
+import { useDomComponentNavigation } from './link/useDomComponentNavigation';
 import { RequireContext } from './types';
-import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
-import { SplashScreen } from './views/Splash';
+import { canOverrideStatusBarBehavior } from './utils/statusbar';
+import * as SplashScreen from './views/Splash';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -38,6 +38,9 @@ const INITIAL_METRICS =
       }
     : undefined;
 
+/**
+ * @hidden
+ */
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
   /*
    * Due to static rendering we need to wrap these top level views in second wrapper
@@ -50,15 +53,19 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
         <SafeAreaProvider
           // SSR support
           initialMetrics={INITIAL_METRICS}>
-          {children}
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
+          {canOverrideStatusBarBehavior && <AutoStatusBar />}
+          {children}
         </SafeAreaProvider>
       </ParentWrapper>
     );
   };
 
   return <ContextNavigator {...props} wrapper={wrapper} />;
+}
+
+function AutoStatusBar() {
+  return <StatusBar barStyle={useColorScheme() === 'light' ? 'dark-content' : 'light-content'} />;
 }
 
 const initialUrl =
@@ -111,6 +118,8 @@ function ContextNavigator({
     ...linking,
     serverUrl,
   });
+
+  useDomComponentNavigation(store);
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();

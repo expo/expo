@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadConfigAsync = void 0;
+exports.normalizeSourceSkips = exports.loadConfigAsync = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const SourceSkips_1 = require("./sourcer/SourceSkips");
 const CONFIG_FILES = ['fingerprint.config.js', 'fingerprint.config.cjs'];
 const debug = require('debug')('expo:fingerprint:Config');
 /**
@@ -36,20 +37,53 @@ async function loadConfigAsync(projectRoot, silent = false) {
     const supportedConfigKeys = [
         'concurrentIoLimit',
         'hashAlgorithm',
+        'ignorePaths',
         'extraSources',
         'sourceSkips',
         'enableReactImportsPatcher',
+        'useRNCoreAutolinkingFromExpo',
         'debug',
     ];
     const config = {};
     for (const key of supportedConfigKeys) {
         if (key in rawConfig) {
-            config[key] = rawConfig[key];
+            if (key === 'sourceSkips') {
+                config[key] = normalizeSourceSkips(rawConfig[key]);
+            }
+            else {
+                config[key] = rawConfig[key];
+            }
         }
     }
     return config;
 }
 exports.loadConfigAsync = loadConfigAsync;
+/**
+ * Normalize the sourceSkips from enum number or string array to a valid enum number.
+ */
+function normalizeSourceSkips(sourceSkips) {
+    if (sourceSkips == null) {
+        return SourceSkips_1.SourceSkips.None;
+    }
+    if (typeof sourceSkips === 'number') {
+        return sourceSkips;
+    }
+    if (Array.isArray(sourceSkips)) {
+        let result = SourceSkips_1.SourceSkips.None;
+        for (const value of sourceSkips) {
+            if (typeof value !== 'string') {
+                continue;
+            }
+            const skipValue = SourceSkips_1.SourceSkips[value];
+            if (skipValue != null) {
+                result |= skipValue;
+            }
+        }
+        return result;
+    }
+    throw new Error(`Invalid sourceSkips type: ${sourceSkips}`);
+}
+exports.normalizeSourceSkips = normalizeSourceSkips;
 /**
  * Resolve the config file path from the project root.
  */

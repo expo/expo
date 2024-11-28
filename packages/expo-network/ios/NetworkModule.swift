@@ -68,7 +68,7 @@ public final class NetworkModule: Module {
 
       if family == UInt8(AF_INET) {
         let name = String(cString: temp.ifa_name)
-        if name == "en0" || name == "en1" {
+        if name.starts(with: "en") {
           var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
           getnameinfo(
             temp.ifa_addr,
@@ -87,9 +87,38 @@ public final class NetworkModule: Module {
     return address
   }
 
+  private func getNetworkPathAsync() -> NWPath? {
+    // create a temporary monitor to avoid interfering with the module's monitor
+    // since we want to wait for the result to be updated once:
+    let tempMonitor = NWPathMonitor()
+    var tempPath: NWPath?
+
+    let semaphore = DispatchSemaphore(value: 0)
+
+    tempMonitor.pathUpdateHandler = { updatedPath in
+      tempPath = updatedPath
+      semaphore.signal() // Notify that we got the path
+    }
+
+    tempMonitor.start(queue: monitorQueue)
+
+    // Wait max 5 seconds to avoid any locking issues if the monitor
+    // doesn't get an update in time.
+    let result = semaphore.wait(timeout: .now() + 5)
+    tempMonitor.cancel()
+
+    if result == .timedOut {
+      // Handle the timeout case
+      print("Timeout waiting for network path.")
+      return nil
+    }
+
+    return tempPath
+  }
+
   private func getNetworkStateAsync(path: NWPath? = nil) -> [String: Any] {
-    let currentPath = path ?? monitor.currentPath
-    let isConnected = currentPath.status == .satisfied
+    let currentPath = path ?? getNetworkPathAsync()
+    let isConnected = currentPath?.status == .satisfied
 
     if !isConnected {
       return [
@@ -102,7 +131,7 @@ public final class NetworkModule: Module {
     let connectionType = NWInterface
       .InterfaceType
       .allCases
-      .filter { currentPath.usesInterfaceType($0) }
+      .filter { currentPath?.usesInterfaceType($0) == true }
       .first
 
     var currentNetworkType = NetworkType.unknown

@@ -76,6 +76,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <GridItem title="Slack" protocol={['OAuth 2']} image={ASSETS.slack} />
   <GridItem title="Spotify" protocol={['OAuth 2']} image={ASSETS.spotify} />
   <GridItem title="Strava" protocol={['OAuth 2']} image={ASSETS.strava} />
+  <GridItem title="Strivacity" protocol={['OAuth 2']} image={ASSETS.strivacity} />
   <GridItem title="Twitch" protocol={['OAuth 2']} image={ASSETS.twitch} />
   <GridItem title="Twitter" protocol={['OAuth 2']} image={ASSETS.twitter} />
   <GridItem title="Uber" protocol={['OAuth 2']} image={ASSETS.uber} />
@@ -97,7 +98,6 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 {/* prettier-ignore */}
 ```tsx IdentityServer 4 Example
-import * as React from 'react';
 import { Button, Text, View } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
@@ -115,7 +115,7 @@ export default function App() {
   const [request, result, promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: 'native.code',
-      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../guides/linking/">linking here</a>. */
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../linking/overview/">linking here</a>. */
       redirectUri,
       /* @end */
       scopes: ['openid', 'profile', 'email', 'offline_access'],
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
 
 {/* prettier-ignore */}
 ```tsx Azure Example
-import * as React from 'react';
+import { useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import {
   exchangeCodeAsync,
@@ -297,7 +297,7 @@ export default function App() {
   const clientId = '<CLIENT_ID>';
 
   // We store the JWT in here
-  const [token, setToken] = React.useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   // Request
   const [request, , promptAsync] = useAuthRequest(
@@ -441,7 +441,6 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```jsx Auth Code
-import React from 'react';
 import { Button } from 'react-native';
 /* @info Import the Beyond Identity Embedded SDK.*/
 import { Embedded } from '@beyondidentity/bi-sdk-react-native';
@@ -509,7 +508,7 @@ import {
   useAuthRequest,
   exchangeCodeAsync,
 } from "expo-auth-session";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native, this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -618,7 +617,7 @@ extraParams: {
 
 {/* prettier-ignore */}
 ```tsx Cognito Auth Example
-import * as React from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { useAuthRequest, exchangeCodeAsync, revokeAsync, ResponseType } from 'expo-auth-session';
 import { Button, Alert } from 'react-native';
@@ -631,8 +630,8 @@ const userPoolUrl =
 const redirectUri = 'your-redirect-uri';
 
 export default function App() {
-  const [authTokens, setAuthTokens] = React.useState(null);
-  const discoveryDocument = React.useMemo(() => ({
+  const [authTokens, setAuthTokens] = useState(null);
+  const discoveryDocument = useMemo(() => ({
     authorizationEndpoint: userPoolUrl + '/oauth2/authorize',
     tokenEndpoint: userPoolUrl + '/oauth2/token',
     revocationEndpoint: userPoolUrl + '/oauth2/revoke',
@@ -648,7 +647,7 @@ export default function App() {
     discoveryDocument
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const exchangeFn = async (exchangeTokenReq) => {
       try {
         const exchangeTokenResponse = await exchangeCodeAsync(
@@ -744,7 +743,7 @@ import {
   useAuthRequest,
 } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
-import * as React from "react";
+import { useEffect, useMemo, useReducer, useRef } from "react";
 import { Button } from "react-native";
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
@@ -782,7 +781,7 @@ export default function App() {
     /* @end */
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (token) {
       /* @info The access token is now ready to be used to make authenticated requests. */
       console.log("My Token:", token.accessToken);
@@ -814,13 +813,13 @@ type State = {
 // this should be performed in a server and not here in the application.
 // For educational purposes only:
 function useAutoExchange(code?: string): State {
-  const [state, setState] = React.useReducer(
+  const [state, setState] = useReducer(
     (state: State, action: Partial<State>) => ({ ...state, ...action }),
     { token: null, exchangeError: null }
   );
   const isMounted = useMounted();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!code) {
       setState({ token: null, exchangeError: null });
       return;
@@ -855,8 +854,8 @@ function useAutoExchange(code?: string): State {
 }
 
 function useMounted() {
-  const isMounted = React.useRef(true);
-  React.useEffect(() => {
+  const isMounted = useRef(true);
+  useEffect(() => {
     return () => {
       isMounted.current = false;
     };
@@ -885,7 +884,7 @@ function useMounted() {
 
 {/* prettier-ignore */}
 ```tsx Descope Auth Example
-import * as React from 'react';
+import { useState, useEffect } React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import { Button, View } from 'react-native';
@@ -897,7 +896,7 @@ const descopeUrl = `https://api.descope.com/${descopeProjectId}`;
 const redirectUri = AuthSession.makeRedirectUri();
 
 export default function App() {
-  const [authTokens, setAuthTokens] = React.useState(null);
+  const [authTokens, setAuthTokens] = useState(null);
   const discovery = AuthSession.useAutoDiscovery(descopeUrl);
 
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
@@ -911,7 +910,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response) {
       if (response.error) {
         console.error(
@@ -1000,7 +999,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx Dropbox Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
@@ -1030,7 +1029,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1076,7 +1075,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx Fitbit Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
@@ -1106,7 +1105,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1153,7 +1152,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx GitHub Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
@@ -1183,7 +1182,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1225,7 +1224,7 @@ export default function App() {
 - Learn more here: [imgur.com/oauth2](https://api.imgur.com/oauth2)
 
 ```tsx Imgur Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
@@ -1256,7 +1255,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1294,7 +1293,6 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx Keycloak Auth Example
-import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import { Button, Text, View } from 'react-native';
@@ -1310,7 +1308,7 @@ export default function App() {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'YOUR_CLIENT_NAME',
-      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../guides/linking/">linking here</a>. */
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../linking/overview/">linking here</a>. */
       redirectUri: makeRedirectUri({
         scheme: 'YOUR_SCHEME'
       }),
@@ -1397,7 +1395,7 @@ const App = () => {
 
 {/* prettier-ignore */}
 ```tsx Okta Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
@@ -1421,7 +1419,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1467,7 +1465,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx Reddit Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
@@ -1494,7 +1492,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1542,7 +1540,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx Slack Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
@@ -1571,7 +1569,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1629,7 +1627,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx Spotify Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
@@ -1661,7 +1659,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1706,7 +1704,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx Strava Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
@@ -1735,7 +1733,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1783,6 +1781,71 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 {/* End Strava */}
 
 <Box
+  name="Strivacity"
+  createUrl="https://www.strivacity.com/learn-support/developer-hub"
+  image={ASSETS.strivacity}
+>
+
+| Website                                                                      | Provider | PKCE      | Auto Discovery |
+| ---------------------------------------------------------------------------- | -------- | --------- | -------------- |
+| [Get Your Config](https://docs.strivacity.com/docs/setting-up-your-instance) | OpenID   | Supported | Available      |
+
+{/* prettier-ignore */}
+```tsx Strivacity Auth Example
+import { useEffect } from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web. It will ensure that authentication is completed properly. On native platforms, this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://<instance>.strivacity.com/oauth2/auth',
+  tokenEndpoint: 'https://<instance>.strivacity.com/oauth2/token',
+  revocationEndpoint: 'https://<instance>.strivacity.com/oauth2/revoke',
+};
+
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['openid', 'profile'],
+      redirectUri: makeRedirectUri();
+    },
+    discovery
+  );
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync();
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</Box>
+{/* End Strivacity */}
+
+<Box
   name="Twitch"
   createUrl="https://dev.twitch.tv/console/apps/create"
   image={ASSETS.twitch}
@@ -1799,7 +1862,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 {/* prettier-ignore */}
 ```tsx Twitch Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
@@ -1829,7 +1892,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1878,7 +1941,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx Twitter Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
@@ -1911,7 +1974,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -1955,7 +2018,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```tsx Uber Auth Example
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
@@ -1985,7 +2048,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
@@ -2054,11 +2117,11 @@ On Android you can optionally warm up the web browser before it's used. This all
 
 {/* prettier-ignore */}
 ```tsx
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 
 function App() {
-  React.useEffect(() => {
+  useEffect(() => {
     /* @info <strong>Android only:</strong> Start loading the default browser app in the background to improve transition time. */
     WebBrowser.warmUpAsync();
     /* @end */
@@ -2082,7 +2145,7 @@ Because there was no secure way to do this to store client secrets in your app b
 
 {/* prettier-ignore */}
 ```tsx
-import * as React from 'react';
+import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, ResponseType } from 'expo-auth-session';
 
@@ -2112,7 +2175,7 @@ function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response && response.type === 'success') {
       /* @info You can use this access token to make calls into the Spotify API. */
       const token = response.params.access_token;
@@ -2139,7 +2202,7 @@ const MY_SECURE_AUTH_STATE_KEY = 'MySecureAuthStateKey';
 function App() {
   const [, response] = useAuthRequest({});
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response && response.type === 'success') {
       const auth = response.params;
       const storageValue = JSON.stringify(auth);

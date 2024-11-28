@@ -8,14 +8,17 @@
  * Based on this but with web support:
  * https://github.com/facebook/react-native/blob/086714b02b0fb838dee5a66c5bcefe73b53cf3df/Libraries/Utilities/HMRClient.js
  */
+import MetroHMRClient from 'metro-runtime/src/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
 
 import LoadingView from './LoadingView';
 import LogBox from './error-overlay/LogBox';
 import getDevServer from './getDevServer';
 
-const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const pendingEntryPoints: string[] = [];
+
+// @ts-expect-error: Account for multiple versions of pretty-format inside of a monorepo.
+const prettyFormatFunc = typeof prettyFormat === 'function' ? prettyFormat : prettyFormat.default;
 
 type HMRClientType = {
   send: (msg: string) => void;
@@ -125,7 +128,7 @@ const HMRClient: HMRClientNativeInterface = {
           data: data.map((item) =>
             typeof item === 'string'
               ? item
-              : prettyFormat(item, {
+              : prettyFormatFunc(item, {
                   escapeString: true,
                   highlight: true,
                   maxDepth: 3,

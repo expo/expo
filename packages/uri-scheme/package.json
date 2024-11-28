@@ -1,6 +1,6 @@
 {
   "name": "uri-scheme",
-  "version": "1.2.1",
+  "version": "1.3.1",
   "description": "Interact with native URI schemes",
   "main": "build/index.js",
   "keywords": [
@@ -37,13 +37,13 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config-plugins": "^8.0.0",
-    "@expo/plist": "^0.1.0",
+    "@expo/config-plugins": "~9.0.10",
+    "@expo/plist": "^0.2.0",
     "@expo/spawn-async": "^1.7.2",
     "@types/prompts": "^2.0.6",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
-    "expo-module-scripts": "^3.3.0",
+    "expo-module-scripts": "^4.0.0",
     "glob": "^10.4.2",
     "prompts": "^2.3.2",
     "update-check": "^1.5.4"

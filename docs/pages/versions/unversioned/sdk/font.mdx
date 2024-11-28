@@ -8,12 +8,12 @@ platforms: ['android', 'ios', 'tvos', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-font` allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Fonts](/develop/user-interface/fonts/) guide.
@@ -24,7 +24,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ## Configuration in app.json/app.config.js
 
-You can configure `expo-font` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+The recommended way to add fonts to your app is through `expo-font` built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run: [android|ios]`). The plugin allows you to embed font files at build time which is more efficient than using [`loadAsync`](#loadasyncfontfamilyorfontmap-source). See the [Fonts](/develop/user-interface/fonts/#with-expo-font-config-plugin) guide on how to use it.
 
 <ConfigPluginExample>
 
@@ -50,7 +50,7 @@ You can configure `expo-font` using its built-in [config plugin](/config-plugins
     {
       name: 'fonts',
       description:
-        'An array of font files to link to the native project. The paths should be relative to the project root, and the file names will become the font family names.',
+        'An array of font files to link to the native project. The paths should be relative to the project root. The file names will become the font family names on Android. On iOS, the font family name may not be the same as the file name &mdash; use [`getLoadedFonts`](#getloadedfonts) to see what fonts are available.',
       default: '[]',
     },
   ]}

@@ -4,12 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getMetroServerRoot } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 import requireString from 'require-from-string';
 
 import { logMetroError } from './metro/metroErrorInterface';
-import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
@@ -87,7 +87,8 @@ export async function createMetroEndpointAsync(
 export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
-  filename: string
+  filename: string,
+  isExporting: boolean
 ): T {
   // TODO: Add back stack trace logic that hides traces from metro-runtime and other internal modules.
   const contents = evalMetroNoHandling(projectRoot, script, filename);
@@ -111,7 +112,11 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
         return await fn.apply(this, props);
       } catch (error: any) {
         await logMetroError(projectRoot, { error });
-        throw new SilentError(error);
+        if (isExporting) {
+          throw error;
+        } else {
+          throw new SilentError(error);
+        }
       }
     };
     return acc;

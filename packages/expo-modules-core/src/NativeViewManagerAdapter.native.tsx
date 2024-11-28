@@ -3,7 +3,7 @@
 'use client';
 
 import React from 'react';
-import { findNodeHandle, NativeModules, HostComponent } from 'react-native';
+import { NativeModules, NativeMethods, HostComponent, findNodeHandle } from 'react-native';
 import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
 import { requireNativeModule } from './requireNativeModule';
@@ -71,24 +71,28 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
     );
   }
 
+  const appIdentifier = globalThis.expo?.['__expo_app_identifier__'] ?? '';
+  const viewNameSuffix = appIdentifier ? `_${appIdentifier}` : '';
   // Set up the React Native native component, which is an adapter to the universal module's view
   // manager
-  const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
+  const reactNativeViewName = `ViewManagerAdapter_${viewName}${viewNameSuffix}`;
   const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
 
   class NativeComponent extends React.PureComponent<P> {
     static displayName = viewName;
+
+    nativeRef = React.createRef<React.Component & NativeMethods>();
 
     // This will be accessed from native when the prototype functions are called,
     // in order to find the associated native view.
     nativeTag: number | null = null;
 
     componentDidMount(): void {
-      this.nativeTag = findNodeHandle(this);
+      this.nativeTag = findNodeHandle(this.nativeRef.current);
     }
 
     render(): React.ReactNode {
-      return <ReactNativeComponent {...this.props} />;
+      return <ReactNativeComponent {...this.props} ref={this.nativeRef} />;
     }
   }
 

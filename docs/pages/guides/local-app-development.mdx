@@ -1,6 +1,7 @@
 ---
 title: Local app development
-description: Learn how to compile and build your app locally when using Expo.
+sidebar_title: Development
+description: Learn how to compile and build your Expo app locally.
 ---
 
 import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
@@ -36,7 +37,7 @@ The above commands compile your project, using your locally installed Android SD
 
 - These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building, if they do not exist yet. If they already exist, this will be skipped.
 - You can also add the `--device` flag to select a device to run the app on — you can select a physically connected device or emulator/simulator.
-- You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a [production version of your app](/deploy/build-project/#production-builds-locally).
+- You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a [production build of your app](/deploy/build-project/#production-builds-locally). Note that these builds are not signed and you cannot submit them to app stores. To sign your production build, see [Local app production](/guides/local-app-production/).
 
 To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on top of existing files. It may also produce different results after the build.
 
@@ -70,6 +71,28 @@ If you install [`expo-dev-client`](/develop/development-builds/introduction/#wha
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 
 To create a development build, you can use [local app compilation](#local-app-compilation) commands (`npx expo run:[android|ios]`) which will create a debug build and start the development server.
+
+## Local builds using Android product flavors
+
+> **warning** This feature is only available for SDK 52 and above.
+
+If you have a custom Android project with multiple product flavors using different application IDs, you can configure `npx expo run:android` to use the correct flavor and build type. Expo supports both `--variant` and `--app-id` to customize the build and launch behavior.
+
+The `--variant` flag can switch the Android build type from **debug** to **release**. This flag can also configure a product flavor and build type, when formatted in camelCase. For example, if you have both [**free** and **paid** product flavors](https://developer.android.com/build/build-variants#change-app-id), you can build a development version of your app with:
+
+<Terminal
+  cmd={[
+    '$ npx expo run:android --variant freeDebug',
+    '',
+    '$ npx expo run:android --variant paidDebug',
+  ]}
+/>
+
+The `--app-id` flag can be used to launch the app after building using a customized application id. For example, if your product flavor **free** is using `applicationIdSuffix ".free"` or `applicationId "dev.expo.myapp.free"` you can run build and launch the app with:
+
+<Terminal cmd={['$ npx expo run:android --variant freeDebug --app-id dev.expo.myapp.free']} />
+
+> **info** Customizing the Android build type is also possible, but that would break Expo's assumption that the build type **release** is used for production. You might build unoptimized code in your app using a different build type instead of **release**.
 
 ## Local builds with EAS
 

@@ -5,9 +5,9 @@ hideTOC: true
 description: A guide on installing and configuring Sentry for crash reporting.
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -79,7 +79,10 @@ Configuring `@sentry/react-native` can be done through the config plugin. Add th
         "@sentry/react-native/expo",
         {
           "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
-          "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
+          "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable",
+          // If you are using a self-hosted instance, update the value of the url property
+          // to point towards your self-hosted instance. For example, https://self-hosted.example.com/.
+          "url": "https://sentry.io/"
         }
       ]
     ]
@@ -91,32 +94,9 @@ Next, in an environment where you want to create releases and upload sourcemaps 
 
 > **warning** The Sentry auth token should be stored securely. Do not commit it to a public repository, and treat it as you would any other sensitive API key.
 
-<Collapsible summary={<>When to add <CODE>url</CODE> to <CODE>@sentry/react-native/expo</CODE> config plugin?</>}>
-
-If you are using a self-hosted instance, you need to add the `url` property to the `@sentry/react-native/expo` config plugin.
-
-{/* prettier-ignore */}
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "@sentry/react-native/expo",
-        {
-          /*@hide ...*/ /*@end*/
-          "url": "https://self-hosted.example.com"
-        }
-      ]
-    ]
-  }
-}
-```
-
-</Collapsible>
-
 <ConfigReactNative>
 
-If you do not use [Continuous Native Generation (CNG)](https://docs.expo.dev/workflow/continuous-native-generation/), then you should use the [`@sentry/wizard`](https://docs.sentry.io/platforms/react-native/#install).
+If you do not use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), then you should use the [`@sentry/wizard`](https://docs.sentry.io/platforms/react-native/#install).
 
 </ConfigReactNative>
 
@@ -185,39 +165,39 @@ import { Button } from 'react-native';
 
 ## Usage with Expo Router
 
-If your app uses [Expo Router](/router/introduction), then you can configure Sentry to automatically capture the current route and pass it along with your error reports. To set this up, configure Sentry in the [Root Layout route](/router/advanced/root-layout) and add routing instrumentation.
+If your app uses [Expo Router](/router/introduction), then you can configure Sentry to automatically capture the current route and pass it along with your error reports. To set this up, configure Sentry in the [Root Layout route](/router/advanced/root-layout) and add the navigation integration.
 
 <Collapsible summary="Example configuration that instruments Sentry for Expo Router">
 
 ```tsx app/_layout.tsx
 import { Slot, useNavigationContainerRef } from 'expo-router';
-import React from 'react';
+import { useEffect } from 'react';
 import * as Sentry from '@sentry/react-native';
 import { isRunningInExpoGo } from 'expo';
 
-// Construct a new instrumentation instance. This is needed to communicate between the integration and React
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
+// Construct a new integration instance. This is needed to communicate between the integration and React
+const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: !isRunningInExpoGo(),
+});
 
 Sentry.init({
   dsn: 'YOUR DSN HERE',
   debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+  tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
   integrations: [
-    new Sentry.ReactNativeTracing({
-      // Pass instrumentation to be used as `routingInstrumentation`
-      routingInstrumentation,
-      enableNativeFramesTracking: !isRunningInExpoGo(),
-      // ...
-    }),
+    // Pass integration
+    navigationIntegration,
   ],
+  enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
 });
 
 function RootLayout() {
-  // Capture the NavigationContainer ref and register it with the instrumentation.
+  // Capture the NavigationContainer ref and register it with the integration.
   const ref = useNavigationContainerRef();
 
-  React.useEffect(() => {
-    if (ref) {
-      routingInstrumentation.registerNavigationContainer(ref);
+  useEffect(() => {
+    if (ref?.current) {
+      navigationIntegration.registerNavigationContainer(ref);
     }
   }, [ref]);
 
@@ -276,24 +256,24 @@ Sentry.init({
   // dsn, release, dist, etc...
 });
 
-Sentry.configureScope(scope => {
-  scope.setTag('expo-update-id', Updates.updateId);
-  scope.setTag('expo-is-embedded-update', Updates.isEmbeddedLaunch);
+const scope = Sentry.getGlobalScope();
 
-  if (typeof updateGroup === 'string') {
-    scope.setTag('expo-update-group-id', updateGroup);
+scope.setTag('expo-update-id', Updates.updateId);
+scope.setTag('expo-is-embedded-update', Updates.isEmbeddedLaunch);
 
-    const owner = extra?.expoClient?.owner ?? '[account]';
-    const slug = extra?.expoClient?.slug ?? '[project]';
-    scope.setTag(
-      'expo-update-debug-url',
-      `https://expo.dev/accounts/${owner}/projects/${slug}/updates/${updateGroup}`
-    );
-  } else if (Updates.isEmbeddedLaunch) {
-    // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
-    scope.setTag('expo-update-debug-url', 'not applicable for embedded updates');
-  }
-});
+if (typeof updateGroup === 'string') {
+  scope.setTag('expo-update-group-id', updateGroup);
+
+  const owner = extra?.expoClient?.owner ?? '[account]';
+  const slug = extra?.expoClient?.slug ?? '[project]';
+  scope.setTag(
+    'expo-update-debug-url',
+    `https://expo.dev/accounts/${owner}/projects/${slug}/updates/${updateGroup}`
+  );
+} else if (Updates.isEmbeddedLaunch) {
+  // This will be `true` if the update is the one embedded in the build, and not one downloaded from the updates server.
+  scope.setTag('expo-update-debug-url', 'not applicable for embedded updates');
+}
 ```
 
 Once configured, information about the associated update will show up in an error's tag section:
@@ -405,7 +385,7 @@ Configuring `sentry-expo` is done through the config plugin in your [app config]
 
 <ConfigReactNative>
 
-If you use bare workflow, **you should not use the `plugins` property in app config**. Instead, run `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra import statement and `Sentry.init` to your project's root file (usually **App.js**) as shown below. Make sure you remove it, however, keep the `sentry-expo` import and original `Sentry.init` call.
+If you are in a bare React Native app, **you should not use the `plugins` property in app config**. Instead, run `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra import statement and `Sentry.init` to your project's root file (usually **App.js**) as shown below. Make sure you remove it, however, keep the `sentry-expo` import and original `Sentry.init` call.
 
 ```js
 import * as Sentry from '@sentry/react-native';
@@ -424,7 +404,7 @@ Add `expo.hooks` property to your project's **app.json** or **app.config.js** fi
 ```json app.json
 {
   "expo": {
-    /* @hide ... your existing configuration */ /* @end */
+    /* @hide ...*/ /* @end */
     "hooks": {
       "postPublish": [
         {
@@ -478,7 +458,7 @@ Add the following to your project's **app.json** or **app.config.js** file:
 {
   "expo": {
     "plugins": ["sentry-expo"]
-    /* @hide ... your existing configuration */ /* @end */
+    /* @hide ... */ /* @end */
   }
 }
 ```

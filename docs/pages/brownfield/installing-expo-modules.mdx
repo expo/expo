@@ -37,7 +37,7 @@ index 20e2a01..e98ad88 100644
 --- a/android/gradle.properties
 +++ b/android/gradle.properties
 @@ -20,4 +20,8 @@ kotlin.code.style=official
-+newArchEnabled=false
++newArchEnabled=true
 +
 +hermesEnabled=true`}
 />
@@ -222,13 +222,13 @@ index ff83531..bd8651d 100644
 
 - func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-* override func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
++override func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
 - return true
 
-* super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-  `}
-  />
++super.application(application, didFinishLaunchingWithOptions: launchOptions)
+}
+`}
+/>
 
 </Step>

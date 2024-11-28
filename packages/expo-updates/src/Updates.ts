@@ -1,6 +1,7 @@
 import { CodedError } from 'expo-modules-core';
 
 import ExpoUpdates from './ExpoUpdates';
+import { UpdatesCheckAutomaticallyNativeValue } from './ExpoUpdatesModule.types';
 import {
   LocalAssets,
   Manifest,
@@ -8,7 +9,6 @@ import {
   UpdateFetchResult,
   UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
-  UpdatesNativeStateMachineContext,
 } from './Updates.types';
 
 /**
@@ -46,11 +46,14 @@ export const channel: string | null = ExpoUpdates.channel ?? null;
  */
 export const runtimeVersion: string | null = ExpoUpdates.runtimeVersion ?? null;
 
-const _checkAutomaticallyMapNativeToJS = {
-  ALWAYS: 'ON_LOAD',
-  ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
-  NEVER: 'NEVER',
-  WIFI_ONLY: 'WIFI_ONLY',
+const _checkAutomaticallyMapNativeToJS: Record<
+  UpdatesCheckAutomaticallyNativeValue,
+  UpdatesCheckAutomaticallyValue
+> = {
+  ALWAYS: UpdatesCheckAutomaticallyValue.ON_LOAD,
+  ERROR_RECOVERY_ONLY: UpdatesCheckAutomaticallyValue.ON_ERROR_RECOVERY,
+  NEVER: UpdatesCheckAutomaticallyValue.NEVER,
+  WIFI_ONLY: UpdatesCheckAutomaticallyValue.WIFI_ONLY,
 };
 
 /**
@@ -81,6 +84,11 @@ export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch;
  * what failed during initialization.
  */
 export const emergencyLaunchReason = ExpoUpdates.emergencyLaunchReason;
+
+/**
+ * Number of milliseconds it took to launch.
+ */
+export const launchDuration = ExpoUpdates.launchDuration;
 
 /**
  * This will be true if the currently running update is the one embedded in the build,
@@ -296,52 +304,4 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
     };
   }
   return result;
-}
-
-/**
- * @hidden
- */
-export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
-  console.warn(
-    "This method is no longer necessary. `expo-updates` now automatically deletes your app's old bundle files!"
-  );
-}
-
-/**
- * @hidden
- */
-export function transformNativeStateMachineContext(
-  originalNativeContext: UpdatesNativeStateMachineContext & {
-    latestManifestString?: string;
-    downloadedManifestString?: string;
-    lastCheckForUpdateTimeString?: string;
-    rollbackString?: string;
-  }
-): UpdatesNativeStateMachineContext {
-  const nativeContext = { ...originalNativeContext };
-  if (nativeContext.latestManifestString) {
-    nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
-    delete nativeContext.latestManifestString;
-  }
-  if (nativeContext.downloadedManifestString) {
-    nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
-    delete nativeContext.downloadedManifestString;
-  }
-  if (nativeContext.lastCheckForUpdateTimeString) {
-    nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
-    delete nativeContext.lastCheckForUpdateTimeString;
-  }
-  if (nativeContext.rollbackString) {
-    nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
-    delete nativeContext.rollbackString;
-  }
-  return nativeContext;
-}
-
-/**
- * @hidden
- */
-export async function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext> {
-  const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
-  return transformNativeStateMachineContext(nativeContext);
 }

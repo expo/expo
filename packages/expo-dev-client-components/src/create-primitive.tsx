@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { StyleSheet, type ViewStyle, type ImageStyle, type TextStyle } from 'react-native';
+import { ComponentType, PropsWithChildren, createElement, forwardRef } from 'react';
+import { type ImageStyle, StyleSheet, type TextStyle, type ViewStyle } from 'react-native';
 
 import { useTheme } from './useExpoTheme';
 
@@ -33,34 +33,33 @@ type SelectorProps = {
 };
 
 export function create<T extends object, O extends Options>(
-  component: React.ComponentType<T>,
+  component: ComponentType<T>,
   config: O & { selectors?: Selectors<O['variants']>; props?: T }
 ) {
   config.selectors = config.selectors ?? {};
   config.variants = config.variants ?? {};
 
-  const Component = React.forwardRef<
+  return forwardRef<
     T,
-    React.PropsWithChildren<T> & Nested<(typeof config)['variants']> & { selectors?: SelectorProps }
+    PropsWithChildren<T> & Nested<(typeof config)['variants']> & { selectors?: SelectorProps }
   >((props, ref) => {
     const theme = useTheme();
 
+    const variantFreeProps: any = { ...props };
+
     const variantStyles = stylesForVariants(props, config.variants);
     const selectorStyles = stylesForSelectors(props, config.selectors, { theme });
-    const selectorPropsStyles = stylesForSelectorProps(props.selectors, { theme });
-
-    const variantFreeProps: any = { ...props };
+    const selectorPropsStyles = stylesForSelectorProps(variantFreeProps.selectors, { theme });
 
     // @ts-ignore
     // there could be a conflict between the primitive prop and the variant name
     // for example - variant name "width" and prop "width"
     // in these cases, favor the variant because it is under the users control (e.g they can update the conflicting name)
-
     Object.keys(config.variants).forEach((variant) => {
       delete variantFreeProps[variant];
     });
 
-    return React.createElement(component, {
+    return createElement(component, {
       ...config.props,
       ...variantFreeProps,
       style: StyleSheet.flatten([
@@ -68,14 +67,11 @@ export function create<T extends object, O extends Options>(
         variantStyles,
         selectorStyles,
         selectorPropsStyles,
-        // @ts-ignore
-        props.style || {},
+        variantFreeProps.style ?? {},
       ]),
       ref,
     });
   });
-
-  return Component;
 }
 
 function stylesForVariants(props: any, variants: any = {}) {

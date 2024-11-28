@@ -26,7 +26,7 @@ export class AtlasPrerequisite extends ProjectPrerequisite<
         warningMessage:
           'Expo Atlas is not installed in this project, unable to gather bundle information.',
         requiredPackages: [
-          { version: '^0.3.11', pkg: 'expo-atlas', file: 'expo-atlas/package.json', dev: true },
+          { version: '^0.4.0', pkg: 'expo-atlas', file: 'expo-atlas/package.json', dev: true },
         ],
       });
     } catch (error) {

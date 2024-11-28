@@ -1,0 +1,61 @@
+def DEFAULT_COMPILE_SDK_VERSION = 34
+def DEFAULT_TARGET_SDK_VERSION = 34
+
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+def isNewArchitectureEnabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
+apply plugin: 'com.android.library'
+if (isNewArchitectureEnabled()) {
+  apply plugin: 'com.facebook.react'
+}
+
+
+android {
+  compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
+
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  // Check the AGP version, add namespace if the AGP version is above 7.
+  // Once we have fully moved on, we can remove it from the AndroidManifest.xml of the package
+  if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+    namespace "fr.greweb.reactnativeviewshot"
+  }
+
+  defaultConfig {
+    minSdkVersion safeExtGet('minSdkVersion', 21)
+    targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
+    versionCode 1
+    versionName "1.0"
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString())
+  }
+
+  buildFeatures {
+    buildConfig true
+  }
+
+  sourceSets.main {
+    java {
+      if (!isNewArchitectureEnabled()) {
+        srcDirs += ["src/paper/java"]
+      }
+    }
+  }
+}
+
+repositories {
+  maven {
+    // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+    url "$projectDir/../node_modules/react-native/android"
+  }
+  google()
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-native:+'
+  implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
+}

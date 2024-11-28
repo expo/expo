@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 4.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ## 3.8.0 — 2024-04-18
 
 ### 💡 Others

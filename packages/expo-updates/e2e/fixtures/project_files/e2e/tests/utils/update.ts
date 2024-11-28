@@ -1,8 +1,11 @@
+import spawnAsync from '@expo/spawn-async';
 import * as crypto from 'crypto';
 import { createReadStream } from 'fs';
 import type { PathLike } from 'fs';
 import * as fs from 'fs/promises';
+import nullthrows from 'nullthrows';
 import * as path from 'path';
+import resolveFrom, { silent as silentResolveFrom } from 'resolve-from';
 import { pipeline } from 'stream/promises';
 
 const STATIC_FOLDER_PATH = path.resolve(__dirname, '..', '.static');
@@ -123,6 +126,38 @@ function getUpdateManifestForBundleFilename(
 }
 
 /**
+ * Method used in the fingerprint test to get the fingerprint to serve the update.
+ */
+async function getUpdateManifestForBundleFilenameWithFingerprintRuntimeVersionAsync(
+  date: { toISOString: () => string },
+  hash: string,
+  key: string,
+  bundleFilename: string,
+  assets: any[],
+  projectRoot: string,
+  platform: 'ios' | 'android'
+) {
+  const runtimeVersion = await getResolvedRuntimeVersionAsync(projectRoot, platform);
+  const appJson = require(`${projectRoot}/app.json`);
+  return {
+    id: crypto.randomUUID(),
+    createdAt: date.toISOString(),
+    runtimeVersion,
+    launchAsset: {
+      hash,
+      key,
+      contentType: 'application/javascript',
+      url: urlForBundleFilename(bundleFilename),
+    },
+    assets,
+    metadata: {},
+    extra: {
+      expoConfig: appJson.expo,
+    },
+  };
+}
+
+/**
  * Common method used in all the tests to create valid rollback directives
  */
 function getRollbackDirective(date: Date) {
@@ -143,11 +178,38 @@ function getNoUpdateAvailableDirective() {
   };
 }
 
+async function getResolvedRuntimeVersionAsync(projectDir: string, platform: 'ios' | 'android') {
+  // change to true to get more detailed github output
+  const printDebug = false;
+
+  const resolvedRuntimeVersionJSONResult = await expoUpdatesCommandAsync(projectDir, [
+    'runtimeversion:resolve',
+    '--platform',
+    platform,
+    '--workflow',
+    'generic',
+    ...(printDebug ? ['--debug'] : []),
+  ]);
+  const runtimeVersionResult = JSON.parse(resolvedRuntimeVersionJSONResult);
+  if (printDebug) {
+    console.log('Resolved runtime version', resolvedRuntimeVersionJSONResult);
+  }
+  return nullthrows(runtimeVersionResult.runtimeVersion);
+}
+
+async function expoUpdatesCommandAsync(projectDir: string, args: string[]): Promise<string> {
+  const expoUpdatesCli =
+    silentResolveFrom(projectDir, 'expo-updates/bin/cli') ??
+    resolveFrom(projectDir, 'expo-updates/bin/cli.js');
+  return (await spawnAsync(expoUpdatesCli, args, { stdio: 'pipe' })).stdout;
+}
+
 export default {
   copyBundleToStaticFolder,
   copyAssetToStaticFolder,
   findAssets,
   getUpdateManifestForBundleFilename,
+  getUpdateManifestForBundleFilenameWithFingerprintRuntimeVersionAsync,
   getRollbackDirective,
   getNoUpdateAvailableDirective,
   serverHost,

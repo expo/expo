@@ -48,6 +48,6 @@ export declare function Route({ children, node, route, }: {
     route?: {
         params: Record<string, string | undefined>;
     };
-}): JSX.Element;
+}): React.JSX.Element;
 export { sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.d.ts.map

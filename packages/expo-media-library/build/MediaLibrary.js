@@ -135,7 +135,7 @@ export const usePermissions = createPermissionHook({
  * If `hasIncrementalChanges` is `false`, the user changed their permissions.
  *
  * @platform android 14+
- * @platform ios 14+
+ * @platform ios
  */
 export async function presentPermissionsPickerAsync(mediaTypes = ['photo', 'video']) {
     if (Platform.OS === 'android' && Platform.Version >= 34) {

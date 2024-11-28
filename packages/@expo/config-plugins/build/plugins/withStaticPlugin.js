@@ -32,7 +32,7 @@ function _pluginResolver() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
 
 // Show all error info related to plugin resolution.
@@ -127,7 +127,19 @@ const withStaticPlugin = (config, props) => {
       }
     }
   } else {
-    throw new (_errors().PluginError)(`Plugin is an unexpected type: ${typeof pluginResolve}`, 'INVALID_PLUGIN_TYPE');
+    if (typeof pluginResolve === 'object') {
+      throw new (_errors().PluginError)(`Plugin is an unexpected object, with keys: "${Object.keys(pluginResolve).join(', ')}".\n
+If you tried to provide parameters to a config plugin, make sure the plugin configuration is wrapped by square brackets. Ex:\n
+[
+  "some-config-plugin",
+  {
+    "someParam": "someValue"
+  }
+]
+\n
+See the package documentation on how to correctly configure the plugin.`, 'INVALID_PLUGIN_TYPE');
+    }
+    throw new (_errors().PluginError)(`Plugin is an unexpected type: ${typeof pluginResolve}. See the package documentation on how to correctly configure the plugin.`, 'INVALID_PLUGIN_TYPE');
   }
 
   // Execute the plugin.

@@ -8,8 +8,8 @@ platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
 `expo-dev-client` adds various useful development tools to your debug builds:
 
@@ -21,7 +21,9 @@ Expo documentation refers to debug builds that include `expo-dev-client` as [dev
 
 ## Installation
 
-<APIInstallSection />
+<APIInstallSection hideBareInstructions />
+
+If you are installing this in an [existing React Native app](/bare/overview/), start by installing [`expo`](/bare/installing-expo-modules/) in your project. Then, follow the instructions from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
 
 ## Configuration in app.json/app.config.js
 
@@ -57,6 +59,13 @@ You can configure development client launcher using its built-in [config plugin]
       ].join('\n'),
       default: '"most-recent"',
     },
+    {
+      name: 'addGeneratedScheme',
+      description: [
+        'By default, `expo-dev-client` will register a custom URL scheme to open a project. Set this property to `false` to disable this scheme.',
+      ].join('\n'),
+      default: 'true',
+    },
   ]}
 />
 
@@ -66,4 +75,4 @@ You can configure development client launcher using its built-in [config plugin]
 import * as DevClient from 'expo-dev-client';
 ```
 
-<APISection packageName={['expo-dev-menu', 'expo-dev-launcher']} apiName="DevClient" />
+<APISection packageName={['expo-dev-client']} apiName="DevClient" />

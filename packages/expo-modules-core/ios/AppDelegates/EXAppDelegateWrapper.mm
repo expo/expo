@@ -4,17 +4,13 @@
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
 #import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
-#if __has_include(<React-RCTAppDelegate/RCTRootViewFactory.h>)
-#import <React-RCTAppDelegate/RCTRootViewFactory.h>
-#elif __has_include(<React_RCTAppDelegate/RCTRootViewFactory.h>)
-// for importing the header from framework, the dash will be transformed to underscore
-#import <React_RCTAppDelegate/RCTRootViewFactory.h>
-#endif
+#import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
+#import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
 
-#import <ReactCommon/RCTTurboModuleManager.h>
 
-@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate>
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
 @end
 
 @interface RCTRootViewFactoryConfiguration ()
@@ -32,9 +28,6 @@
 @implementation EXAppDelegateWrapper {
   EXExpoAppDelegate *_expoAppDelegate;
 }
-
-// Synthesize window, so the AppDelegate can synthesize it too.
-@synthesize window = _window;
 
 - (instancetype)init
 {
@@ -87,9 +80,9 @@
 
   RCTRootViewFactoryConfiguration *configuration =
       [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
-                                                       newArchEnabled:self.fabricEnabled
-                                                   turboModuleEnabled:self.turboModuleEnabled
-                                                    bridgelessEnabled:self.bridgelessEnabled];
+                                                       newArchEnabled:self.newArchEnabled
+                                                   turboModuleEnabled:self.newArchEnabled
+                                                    bridgelessEnabled:self.newArchEnabled];
 
   configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
   {
@@ -101,18 +94,62 @@
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
   };
 
-  // TODO(kudo,20240706): Remove respondsToSelector and set the property directly when we upgrade to react-native 0.75
-  if ([configuration respondsToSelector:@selector(setCustomizeRootView:)]) {
-    [configuration setCustomizeRootView:^(UIView *_Nonnull rootView) {
-      [weakSelf customizeRootView:(RCTRootView *)rootView];
-    }];
+  configuration.customizeRootView = ^(UIView *_Nonnull rootView) {
+    [weakSelf customizeRootView:(RCTRootView *)rootView];
+  };
+
+  // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
+  configuration.sourceURLForBridge = nil;
+
+  if ([self respondsToSelector:@selector(extraModulesForBridge:)]) {
+    configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
+    {
+      return [weakSelf extraModulesForBridge:bridge];
+    };
+  }
+
+  if ([self respondsToSelector:@selector(extraLazyModuleClassesForBridge:)]) {
+    configuration.extraLazyModuleClassesForBridge =
+        ^NSDictionary<NSString *, Class> *_Nonnull(RCTBridge *_Nonnull bridge)
+    {
+      return [weakSelf extraLazyModuleClassesForBridge:bridge];
+    };
+  }
+
+  if ([self respondsToSelector:@selector(bridge:didNotFindModule:)]) {
+    configuration.bridgeDidNotFindModule = ^BOOL(RCTBridge *_Nonnull bridge, NSString *_Nonnull moduleName) {
+      return [weakSelf bridge:bridge didNotFindModule:moduleName];
+    };
   }
 
   return [[EXReactRootViewFactory alloc] initWithReactDelegate:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
 }
 
+#if !TARGET_OS_OSX
 - (void)customizeRootView:(UIView *)rootView {
   [_expoAppDelegate customizeRootView:rootView];
+}
+#endif // !TARGET_OS_OSX
+
+#pragma mark - RCTComponentViewFactoryComponentProvider
+
+- (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
+{
+  return @{};
+}
+
+#pragma mark - RCTHostDelegate
+
+- (void)hostDidStart:(RCTHost *)host
+{
+}
+
+- (void)host:(RCTHost *)host
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
+{
 }
 
 @end

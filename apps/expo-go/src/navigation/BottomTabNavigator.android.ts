@@ -1,7 +1,7 @@
 import { darkTheme, lightTheme } from '@expo/styleguide-native';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { ComponentProps } from 'react';
 import { StyleSheet } from 'react-native';
+import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
 
 import Colors, { ColorTheme } from '../constants/Colors';
 

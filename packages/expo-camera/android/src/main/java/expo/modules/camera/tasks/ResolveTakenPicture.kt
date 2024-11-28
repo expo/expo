@@ -9,10 +9,10 @@ import android.os.Bundle
 import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.camera.PictureOptions
-import expo.modules.camera.legacy.CameraViewHelper.addExifData
-import expo.modules.camera.legacy.CameraViewHelper.getExifData
-import expo.modules.camera.legacy.CameraViewHelper.setExifData
-import expo.modules.camera.legacy.utils.FileSystemUtils
+import expo.modules.camera.utils.CameraViewHelper.addExifData
+import expo.modules.camera.utils.CameraViewHelper.getExifData
+import expo.modules.camera.utils.CameraViewHelper.setExifData
+import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.kotlin.Promise
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -92,7 +92,7 @@ class ResolveTakenPicture(
           ExifInterface.TAG_ORIENTATION,
           ExifInterface.ORIENTATION_NORMAL
         )
-        if (options.mirror) {
+        if (mirror) {
           exifInterface.setAttribute(ExifInterface.TAG_ORIENTATION, getMirroredOrientation(orientation).toString())
         }
 

@@ -1,34 +1,35 @@
 import { ExpoConfig, getConfig } from '@expo/config';
+import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
-import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
+import { ReadOnlyGraph } from 'metro';
 import Bundler from 'metro/src/Bundler';
+import hmrJSBundle from 'metro/src/DeltaBundler/Serializers/hmrJSBundle';
+import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
+import MetroHmrServer from 'metro/src/HmrServer';
+import RevisionNotFoundError from 'metro/src/IncrementalBundler/RevisionNotFoundError';
+import formatBundlingError from 'metro/src/lib/formatBundlingError';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
-import semver from 'semver';
-import { URL } from 'url';
+import path from 'path';
 
+import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
+import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { Log } from '../../../log';
-import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
-import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { logEventAsync } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
-import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
-import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
-import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
+import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
 
 // From expo/dev-server but with ability to use custom logger.
@@ -36,34 +37,16 @@ type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 
-function gteSdkVersion(exp: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string): boolean {
-  if (!exp.sdkVersion) {
-    return false;
-  }
-
-  if (exp.sdkVersion === 'UNVERSIONED') {
-    return true;
-  }
-
-  try {
-    return semver.gte(exp.sdkVersion, sdkVersion);
-  } catch {
-    throw new Error(`${exp.sdkVersion} is not a valid version. Must be in the form of x.y.z`);
-  }
-}
-
 // Wrap terminal and polyfill console.log so we can log during bundling without breaking the indicator.
 class LogRespectingTerminal extends Terminal {
   constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
     super(stream);
 
     const sendLog = (...args: any[]) => {
-      // @ts-expect-error
       this._logLines.push(
         // format args like console.log
         util.format(...args)
       );
-      // @ts-expect-error
       this._scheduleUpdate();
 
       // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
@@ -88,6 +71,20 @@ export async function loadMetroConfigAsync(
   }: { exp: ExpoConfig; isExporting: boolean; getMetroBundler: () => Bundler }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
+
+  const serverActionsEnabled =
+    exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
+
+  if (serverActionsEnabled) {
+    process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS = '1';
+  }
+
+  // NOTE: Enable all the experimental Metro flags when RSC is enabled.
+  if (exp.experiments?.reactServerComponentRoutes || serverActionsEnabled) {
+    process.env.EXPO_USE_METRO_REQUIRE = '1';
+    process.env.EXPO_USE_FAST_RESOLVER = '1';
+  }
+
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
@@ -108,27 +105,18 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  if (
-    // Requires SDK 50 for expo-assets hashAssetPlugin change.
-    !exp.sdkVersion ||
-    gteSdkVersion(exp, '50.0.0')
-  ) {
-    if (isExporting) {
-      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-      // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = `/assets?export_path=${
-        (exp.experiments?.baseUrl ?? '') + '/assets'
-      }`;
-    } else {
-      // @ts-expect-error: typed as readonly
-      config.transformer.publicPath = '/assets/?unstable_path=.';
-    }
+  // @ts-expect-error: Set the global require cycle ignore patterns for SSR bundles. This won't work with custom global prefixes, but we don't use those.
+  globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
+
+  if (isExporting) {
+    // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+    // @ts-expect-error: typed as readonly.
+    config.transformer.publicPath = `/assets?export_path=${
+      (exp.experiments?.baseUrl ?? '') + '/assets'
+    }`;
   } else {
-    if (isExporting && exp.experiments?.baseUrl) {
-      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-      // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = exp.experiments?.baseUrl;
-    }
+    // @ts-expect-error: typed as readonly
+    config.transformer.publicPath = '/assets/?unstable_path=.';
   }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
@@ -150,21 +138,33 @@ export async function loadMetroConfigAsync(
     Log.warn(`Experimental tree shaking is enabled.`);
   }
 
+  if (serverActionsEnabled) {
+    Log.warn(
+      `Experimental React Server Functions are enabled. Production exports are not supported yet.`
+    );
+    if (!exp.experiments?.reactServerComponentRoutes) {
+      Log.warn(
+        `- React Server Component routes are NOT enabled. Routes will render in client mode.`
+      );
+    }
+  }
+
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
     exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
-    webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled: exp.experiments?.reactCanary ?? false,
+    isReactCanaryEnabled:
+      (exp.experiments?.reactServerComponentRoutes ||
+        serverActionsEnabled ||
+        exp.experiments?.reactCanary) ??
+      false,
+    isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
+    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
   });
-
-  if (process.env.NODE_ENV !== 'test') {
-    logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
-  }
 
   return {
     config,
@@ -185,6 +185,7 @@ export async function instantiateMetroAsync(
   }: { isExporting: boolean; exp?: ExpoConfig }
 ): Promise<{
   metro: Metro.Server;
+  hmrServer: MetroHmrServer | null;
   server: http.Server;
   middleware: any;
   messageSocket: MessageSocket;
@@ -203,30 +204,23 @@ export async function instantiateMetroAsync(
     }
   );
 
-  const { createDevServerMiddleware, securityHeadersMiddleware } =
-    require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
-
-  const { middleware, messageSocketEndpoint, eventsSocketEndpoint, websocketEndpoints } =
-    createDevServerMiddleware({
-      port: metroConfig.server.port,
-      watchFolders: metroConfig.watchFolders,
-    });
-
-  let debugWebsocketEndpoints: {
-    [path: string]: import('ws').WebSocketServer;
-  } = {};
+  // Create the core middleware stack for Metro, including websocket listeners
+  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
+    createMetroMiddleware(metroConfig);
 
   if (!isExporting) {
-    // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
-    replaceMiddlewareWith(
-      middleware as ConnectServer,
-      securityHeadersMiddleware,
-      createCorsMiddleware(exp)
-    );
+    // Enable correct CORS headers for Expo Router features
+    prependMiddleware(middleware, createCorsMiddleware(exp));
 
-    prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
+    // Enable debug middleware for CDP-related debugging
+    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+    Object.assign(websocketEndpoints, debugWebsocketEndpoints);
+    middleware.use(debugMiddleware);
+    middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
-    // TODO: We can probably drop this now.
+    // TODO(cedric): `enhanceMiddleware` is deprecated, but is currently used to unify the middleware stacks
+    // See: https://github.com/facebook/metro/commit/22e85fde85ec454792a1b70eba4253747a2587a9
+    // See: https://github.com/facebook/metro/commit/d0d554381f119bb80ab09dbd6a1d310b54737e52
     const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
     // @ts-expect-error: can't mutate readonly config
     metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
@@ -235,14 +229,6 @@ export async function instantiateMetroAsync(
       }
       return middleware.use(metroMiddleware);
     };
-
-    middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
-
-    // Initialize all React Native debug features
-    const { debugMiddleware, ...options } = createDebugMiddleware(metroBundler);
-    debugWebsocketEndpoints = options.debugWebsocketEndpoints;
-    prependMiddleware(middleware, debugMiddleware);
-    middleware.use('/_expo/debugger', createJsInspectorMiddleware());
   }
 
   // Attach Expo Atlas if enabled
@@ -256,14 +242,13 @@ export async function instantiateMetroAsync(
     resetAtlasFile: isExporting,
   });
 
-  const { server, metro } = await runServer(
+  const { server, hmrServer, metro } = await runServer(
     metroBundler,
     metroConfig,
     {
-      // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
       websocketEndpoints: {
         ...websocketEndpoints,
-        ...debugWebsocketEndpoints,
+        ...createDevToolsPluginWebsocketEndpoint(),
       },
       watch: !isExporting && isWatchEnabled(),
     },
@@ -272,27 +257,175 @@ export async function instantiateMetroAsync(
     }
   );
 
-  prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-    // If the URL is a Metro asset request, then we need to skip all other middleware to prevent
-    // the community CLI's serve-static from hosting `/assets/index.html` in place of all assets if it exists.
-    // /assets/?unstable_path=.
-    if (req.url) {
-      const url = new URL(req.url!, 'http://localhost:8000');
-      if (url.pathname.match(/^\/assets\/?/) && url.searchParams.get('unstable_path') != null) {
-        return metro.processRequest(req, res, next);
-      }
-    }
-    return next();
-  });
+  // Patch transform file to remove inconvenient customTransformOptions which are only used in single well-known files.
+  const originalTransformFile = metro
+    .getBundler()
+    .getBundler()
+    .transformFile.bind(metro.getBundler().getBundler());
 
-  setEventReporter(eventsSocketEndpoint.reportEvent);
+  metro.getBundler().getBundler().transformFile = async function (
+    filePath: string,
+    transformOptions: TransformOptions,
+    fileBuffer?: Buffer
+  ) {
+    return originalTransformFile(
+      filePath,
+      pruneCustomTransformOptions(
+        filePath,
+        // Clone the options so we don't mutate the original.
+        {
+          ...transformOptions,
+          customTransformOptions: {
+            __proto__: null,
+            ...transformOptions.customTransformOptions,
+          },
+        }
+      ),
+      fileBuffer
+    );
+  };
+
+  setEventReporter(eventsSocket.reportMetroEvent);
+
+  // This function ensures that modules in source maps are sorted in the same
+  // order as in a plain JS bundle.
+  metro._getSortedModules = function (this: Metro.Server, graph: ReadOnlyGraph) {
+    const modules = [...graph.dependencies.values()];
+
+    const ctx = {
+      platform: graph.transformOptions.platform,
+      environment: graph.transformOptions.customTransformOptions?.environment,
+    };
+    // Assign IDs to modules in a consistent order
+    for (const module of modules) {
+      // @ts-expect-error
+      this._createModuleId(module.path, ctx);
+    }
+    // Sort by IDs
+    return modules.sort(
+      // @ts-expect-error
+      (a, b) => this._createModuleId(a.path, ctx) - this._createModuleId(b.path, ctx)
+    );
+  };
+
+  if (hmrServer) {
+    // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs.
+    hmrServer._prepareMessage = async function (this: MetroHmrServer, group, options, changeEvent) {
+      // Fork of https://github.com/facebook/metro/blob/3b3e0aaf725cfa6907bf2c8b5fbc0da352d29efe/packages/metro/src/HmrServer.js#L327-L393
+      // with patch for `_createModuleId`.
+      const logger = !options.isInitialUpdate ? changeEvent?.logger : null;
+      try {
+        const revPromise = this._bundler.getRevision(group.revisionId);
+        if (!revPromise) {
+          return {
+            type: 'error',
+            body: formatBundlingError(new RevisionNotFoundError(group.revisionId)),
+          };
+        }
+        logger?.point('updateGraph_start');
+        const { revision, delta } = await this._bundler.updateGraph(await revPromise, false);
+        logger?.point('updateGraph_end');
+        this._clientGroups.delete(group.revisionId);
+        group.revisionId = revision.id;
+        for (const client of group.clients) {
+          client.revisionIds = client.revisionIds.filter(
+            (revisionId) => revisionId !== group.revisionId
+          );
+          client.revisionIds.push(revision.id);
+        }
+        this._clientGroups.set(group.revisionId, group);
+        logger?.point('serialize_start');
+        // NOTE(EvanBacon): This is the patch
+        const moduleIdContext = {
+          platform: revision.graph.transformOptions.platform,
+          environment: revision.graph.transformOptions.customTransformOptions?.environment,
+        };
+        const hmrUpdate = hmrJSBundle(delta, revision.graph, {
+          clientUrl: group.clientUrl,
+          // NOTE(EvanBacon): This is also the patch
+          createModuleId: (moduleId: string) => {
+            // @ts-expect-error
+            return this._createModuleId(moduleId, moduleIdContext);
+          },
+          includeAsyncPaths: group.graphOptions.lazy,
+          projectRoot: this._config.projectRoot,
+          serverRoot: this._config.server.unstable_serverRoot ?? this._config.projectRoot,
+        });
+        logger?.point('serialize_end');
+        return {
+          type: 'update',
+          body: {
+            revisionId: revision.id,
+            isInitialUpdate: options.isInitialUpdate,
+            ...hmrUpdate,
+          },
+        };
+      } catch (error: any) {
+        const formattedError = formatBundlingError(error);
+        this._config.reporter.update({
+          type: 'bundling_error',
+          error,
+        });
+        return {
+          type: 'error',
+          body: formattedError,
+        };
+      }
+    };
+  }
 
   return {
     metro,
+    hmrServer,
     server,
     middleware,
-    messageSocket: messageSocketEndpoint,
+    messageSocket: messagesSocket,
   };
+}
+
+// TODO: Fork the entire transform function so we can simply regex the file contents for keywords instead.
+function pruneCustomTransformOptions(
+  filePath: string,
+  transformOptions: TransformOptions
+): TransformOptions {
+  // Normalize the filepath for cross platform checking.
+  filePath = filePath.split(path.sep).join('/');
+
+  if (
+    transformOptions.customTransformOptions?.dom &&
+    // The only generated file that needs the dom root is `expo/dom/entry.js`
+    !filePath.match(/expo\/dom\/entry\.js$/)
+  ) {
+    // Clear the dom root option if we aren't transforming the magic entry file, this ensures
+    // that cached artifacts from other DOM component bundles can be reused.
+    transformOptions.customTransformOptions.dom = 'true';
+  }
+
+  if (
+    transformOptions.customTransformOptions?.routerRoot &&
+    // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
+    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
+  ) {
+    // Set to the default value.
+    transformOptions.customTransformOptions.routerRoot = 'app';
+  }
+  if (
+    transformOptions.customTransformOptions?.asyncRoutes &&
+    // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
+    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
+  ) {
+    delete transformOptions.customTransformOptions.asyncRoutes;
+  }
+
+  if (
+    transformOptions.customTransformOptions?.clientBoundaries &&
+    // The client boundaries are only used in `@expo/metro-runtime/src/virtual.js` for production RSC exports.
+    !filePath.match(/\/@expo\/metro-runtime\/rsc\/virtual\.js$/)
+  ) {
+    delete transformOptions.customTransformOptions.clientBoundaries;
+  }
+
+  return transformOptions;
 }
 
 /**

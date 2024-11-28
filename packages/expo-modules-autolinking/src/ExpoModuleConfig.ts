@@ -1,4 +1,5 @@
 import {
+  AndroidGradleAarProjectDescriptor,
   AndroidGradlePluginDescriptor,
   RawExpoModuleConfig,
   RawModuleConfigApple,
@@ -107,6 +108,13 @@ export class ExpoModuleConfig {
    */
   androidGradlePlugins(): AndroidGradlePluginDescriptor[] {
     return arrayize(this.rawConfig.android?.gradlePlugins ?? []);
+  }
+
+  /**
+   * Returns gradle projects containing AAR files defined by the module author.
+   */
+  androidGradleAarProjects(): AndroidGradleAarProjectDescriptor[] {
+    return arrayize(this.rawConfig.android?.gradleAarProjects ?? []);
   }
 
   /**

@@ -1,6 +1,5 @@
 import assert from 'assert';
 import chalk from 'chalk';
-import fetch from 'node-fetch';
 
 import { env } from './env';
 import { memoize } from './fn';
@@ -188,7 +187,7 @@ export async function getBundleIdWarningInternalAsync(bundleId: string): Promise
   try {
     debug(`Checking iOS bundle ID '${bundleId}' at: ${url}`);
     const response = await fetch(url);
-    const json = await response.json();
+    const json: any = await response.json();
     if (json.resultCount > 0) {
       const firstApp = json.results[0];
       return formatInUseWarning(firstApp.trackName, firstApp.sellerName, bundleId);

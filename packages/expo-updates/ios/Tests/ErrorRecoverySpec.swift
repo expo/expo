@@ -546,35 +546,37 @@ class ErrorRecoverySpec : ExpoSpec {
     
     describe("error log") {
       it("consume") {
+        let logger = UpdatesLogger()
         let (testQueue, _) = setUp()
         // start with a clean slate
-        _ = ErrorRecovery.consumeErrorLog()
-        
+        _ = ErrorRecovery.consumeErrorLog(logger: logger)
+
         let error = NSError(domain: "TestDomain", code: 47, userInfo: [NSLocalizedDescriptionKey: "TestLocalizedDescription"])
-        ErrorRecovery.writeErrorOrExceptionToLog(error, dispatchQueue: testQueue)
+        ErrorRecovery.writeErrorOrExceptionToLog(error, logger, dispatchQueue: testQueue)
         testQueue.flush()
         DispatchQueue.global().flush()
 
-        let errorLog = ErrorRecovery.consumeErrorLog()
+        let errorLog = ErrorRecovery.consumeErrorLog(logger: logger)
         expect(errorLog?.contains("TestDomain")) == true
         expect(errorLog?.contains("47")) == true
         expect(errorLog?.contains("TestLocalizedDescription")) == true
       }
       
       it("consume multiple errors") {
+        let logger = UpdatesLogger()
         let (testQueue, _) = setUp()
         // start with a clean slate
-        _ = ErrorRecovery.consumeErrorLog()
-        
+        _ = ErrorRecovery.consumeErrorLog(logger: logger)
+
         let error = NSError(domain: "TestDomain", code: 47, userInfo: [NSLocalizedDescriptionKey: "TestLocalizedDescription"])
-        ErrorRecovery.writeErrorOrExceptionToLog(error, dispatchQueue: testQueue)
+        ErrorRecovery.writeErrorOrExceptionToLog(error, logger, dispatchQueue: testQueue)
 
         let exception = NSException(name: NSExceptionName(rawValue: "TestName"), reason: "TestReason")
-        ErrorRecovery.writeErrorOrExceptionToLog(exception, dispatchQueue: testQueue)
+        ErrorRecovery.writeErrorOrExceptionToLog(exception, logger, dispatchQueue: testQueue)
         testQueue.flush()
         DispatchQueue.global().flush()
 
-        let errorLog = ErrorRecovery.consumeErrorLog()
+        let errorLog = ErrorRecovery.consumeErrorLog(logger: logger)
         expect(errorLog?.contains("TestDomain")) == true
         expect(errorLog?.contains("47")) == true
         expect(errorLog?.contains("TestLocalizedDescription")) == true

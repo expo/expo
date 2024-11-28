@@ -8,13 +8,13 @@ platforms: ['android', 'ios', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTag } from '~/ui/components/Tag';
@@ -126,7 +126,7 @@ If you're using the Android Emulator or iOS Simulator, ensure that [Location is 
 <SnackInline label='Location' dependencies={['expo-location', 'expo-constants']}>
 
 ```jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Platform, Text, View, StyleSheet } from 'react-native';
 /* @hide */
 import * as Device from 'expo-device';

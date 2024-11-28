@@ -1,15 +1,10 @@
 package expo.modules.devmenu
 
 import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.JSIModulePackage
 
 const val DEV_MENU_TAG = "ExpoDevMenu"
 
 fun getVendoredPackage(className: String): ReactPackage {
-  return getVendoredClass(className, emptyArray(), emptyArray())
-}
-
-fun getVendoredJNIPackage(className: String): JSIModulePackage {
   return getVendoredClass(className, emptyArray(), emptyArray())
 }
 

@@ -28,7 +28,7 @@ class PropertyComponent(
   fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject) {
     val jniGetter = if (getter != null) {
       JNIFunctionBody { args ->
-        val result = getter.call(args, appContext)
+        val result = getter.callUserImplementation(args, appContext)
         return@JNIFunctionBody JSTypeConverter.convertToJSValue(result)
       }
     } else {
@@ -37,7 +37,7 @@ class PropertyComponent(
 
     val jniSetter = if (setter != null) {
       JNIFunctionBody { args ->
-        setter.call(args, appContext)
+        setter.callUserImplementation(args, appContext)
         return@JNIFunctionBody null
       }
     } else {
@@ -46,10 +46,10 @@ class PropertyComponent(
 
     jsObject.registerProperty(
       name,
-      getter?.takesOwner ?: false,
+      getter?.takesOwner == true,
       getter?.getCppRequiredTypes()?.toTypedArray() ?: emptyArray(),
       jniGetter,
-      setter?.takesOwner ?: false,
+      setter?.takesOwner == true,
       setter?.getCppRequiredTypes()?.toTypedArray() ?: emptyArray(),
       jniSetter
     )

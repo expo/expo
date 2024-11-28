@@ -9,7 +9,7 @@
 'use client';
 
 import * as React from 'react';
-import { NativeEventEmitter } from 'react-native-web';
+import { NativeEventEmitter } from 'react-native';
 
 import { LogBoxLog, StackType } from './LogBoxLog';
 import type { LogLevel } from './LogBoxLog';
@@ -419,7 +419,11 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
 
     componentDidMount(): void {
       this._subscription = observe((data) => {
-        this.setState(data);
+        // Ignore the initial empty log
+        if (data.selectedLogIndex === -1) return;
+        React.startTransition(() => {
+          this.setState(data);
+        });
       });
     }
 

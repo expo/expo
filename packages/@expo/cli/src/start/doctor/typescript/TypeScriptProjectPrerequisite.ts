@@ -113,8 +113,8 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
         requiredPackages: [
           // use typescript/package.json to skip node module cache issues when the user installs
           // the package and attempts to resolve the module in the same process.
-          { file: 'typescript/package.json', pkg: 'typescript' },
-          { file: '@types/react/package.json', pkg: '@types/react' },
+          { file: 'typescript/package.json', pkg: 'typescript', dev: true },
+          { file: '@types/react/package.json', pkg: '@types/react', dev: true },
         ],
       });
     } catch (error) {

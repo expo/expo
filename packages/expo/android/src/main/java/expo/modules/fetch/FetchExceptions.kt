@@ -9,3 +9,6 @@ internal class FetchUnknownException :
 
 internal class FetchRequestCancelledException :
   CodedException("Cancelled request")
+
+internal class FetchAndroidContextLostException :
+  CodedException("The Android context has been lost")

@@ -9,7 +9,9 @@ export function wrapFetchWithOffline(fetchFunction: FetchLike): FetchLike {
   return function fetchWithOffline(url, options = {}) {
     if (env.EXPO_OFFLINE) {
       debug('Skipping network request: ' + url);
-      options.timeout = 1;
+      const abortController = new AbortController();
+      abortController.abort();
+      options.signal = abortController.signal;
     }
     return fetchFunction(url, options);
   };

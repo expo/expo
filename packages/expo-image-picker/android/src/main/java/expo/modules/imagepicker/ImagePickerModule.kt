@@ -1,8 +1,6 @@
 package expo.modules.imagepicker
 
 import android.Manifest
-import android.Manifest.permission.READ_MEDIA_IMAGES
-import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -72,7 +70,7 @@ class ImagePickerModule : Module() {
       ensureTargetActivityIsAvailable(options)
       ensureCameraPermissionsAreGranted()
 
-      val mediaFile = createOutputFile(cacheDirectory, options.mediaTypes.toFileExtension())
+      val mediaFile = createOutputFile(cacheDirectory, options.nativeMediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
       val contractOptions = options.toCameraContractOptions(uri.toString())
 
@@ -112,9 +110,6 @@ class ImagePickerModule : Module() {
   // TODO (@bbarthec): generalize it as almost every module re-declares this approach
   val context: Context
     get() = requireNotNull(appContext.reactContext) { "React Application Context is null" }
-
-  private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw MissingCurrentActivityException()
 
   private val mediaHandler = MediaHandler(this)
 
@@ -253,10 +248,7 @@ class ImagePickerModule : Module() {
 
   private fun getMediaLibraryPermissions(writeOnly: Boolean): Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      listOfNotNull(
-        READ_MEDIA_IMAGES,
-        READ_MEDIA_VIDEO
-      ).toTypedArray()
+      emptyArray<String>()
     } else {
       listOfNotNull(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -265,8 +257,8 @@ class ImagePickerModule : Module() {
     }
 
   private fun ensureTargetActivityIsAvailable(options: ImagePickerOptions) {
-    val cameraIntent = Intent(options.mediaTypes.toCameraIntentAction())
-    if (cameraIntent.resolveActivity(currentActivity.application.packageManager) == null) {
+    val cameraIntent = Intent(options.nativeMediaTypes.toCameraIntentAction())
+    if (cameraIntent.resolveActivity(appContext.throwingActivity.application.packageManager) == null) {
       throw MissingActivityToHandleIntent(cameraIntent.type)
     }
   }
@@ -276,7 +268,7 @@ class ImagePickerModule : Module() {
 
     permissions.askForPermissions(
       { permissionsResponse ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           if (permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
             continuation.resume(Unit)
           } else {
@@ -292,7 +284,7 @@ class ImagePickerModule : Module() {
         }
       },
       *listOfNotNull(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU },
+        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.Q },
         Manifest.permission.CAMERA
       ).toTypedArray()
     )

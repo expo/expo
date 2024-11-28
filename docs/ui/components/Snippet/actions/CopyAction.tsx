@@ -20,6 +20,7 @@ export const CopyAction = ({ text, ...rest }: CopyActionProps) => {
       leftSlot={<ClipboardIcon className="icon-sm text-icon-default" />}
       onClick={onCopyClick}
       disabled={copyDone}
+      aria-label="Copy content"
       {...rest}>
       {copyDone ? 'Copied!' : 'Copy'}
     </SnippetAction>

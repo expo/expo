@@ -1,7 +1,0 @@
-mutation SendSMSOTPToSecondFactorDeviceMutation($userSecondFactorDeviceId: ID!) {
-  me {
-    sendSMSOTPToSecondFactorDevice(userSecondFactorDeviceId: $userSecondFactorDeviceId) {
-      success
-    }
-  }
-}

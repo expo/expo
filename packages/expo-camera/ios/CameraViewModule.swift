@@ -150,8 +150,35 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         view.mirror = false
       }
 
+      Prop("active") { (view, active: Bool?) in
+        if let active {
+          view.active = active
+          return
+        }
+      }
+
+      Prop("videoBitrate") { (view, bitrate: Int?) in
+        if let bitrate {
+          view.videoBitrate = bitrate
+          return
+        }
+        if view.videoBitrate != nil {
+          view.videoBitrate = nil
+        }
+      }
+
       OnViewDidUpdateProps { view in
-        view.initCamera()
+        Task {
+          await view.initCamera()
+        }
+      }
+
+      AsyncFunction("resumePreview") { view in
+        view.resumePreview()
+      }
+
+      AsyncFunction("pausePreview") { view in
+        view.pausePreview()
       }
 
       AsyncFunction("getAvailablePictureSizes") { (_: String?) in
@@ -164,17 +191,21 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         #if targetEnvironment(simulator) // simulator
         try takePictureForSimulator(self.appContext, view, options, promise)
         #else // not simulator
-        view.takePicture(options: options, promise: promise)
+        Task {
+          await view.takePicture(options: options, promise: promise)
+        }
         #endif
-      }.runOnQueue(.main)
+      }
 
       AsyncFunction("record") { (view, options: CameraRecordingOptions, promise: Promise) in
         #if targetEnvironment(simulator)
         throw Exceptions.SimulatorNotSupported()
         #else
-        view.record(options: options, promise: promise)
+        Task {
+          await view.record(options: options, promise: promise)
+        }
         #endif
-      }.runOnQueue(.main)
+      }
 
       AsyncFunction("stopRecording") { view in
         #if targetEnvironment(simulator)
@@ -182,7 +213,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         #else
         view.stopRecording()
         #endif
-      }.runOnQueue(.main)
+      }
     }
 
     AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in

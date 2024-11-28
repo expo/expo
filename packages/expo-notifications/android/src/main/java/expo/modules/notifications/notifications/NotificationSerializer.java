@@ -1,6 +1,8 @@
 package expo.modules.notifications.notifications;
 
-import android.os.Build;
+import static expo.modules.notifications.UtilsKt.filteredBundleForJSTypeConverter;
+import static expo.modules.notifications.UtilsKt.isValidJSONString;
+
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -9,7 +11,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import expo.modules.core.arguments.MapArguments;
 
@@ -20,9 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import expo.modules.notifications.notifications.interfaces.INotificationContent;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
-import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
@@ -30,6 +32,7 @@ import expo.modules.notifications.notifications.model.triggers.FirebaseNotificat
 
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
+import expo.modules.notifications.notifications.triggers.MonthlyTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
 import expo.modules.notifications.notifications.triggers.YearlyTrigger;
@@ -48,30 +51,41 @@ public class NotificationSerializer {
   public static Bundle toBundle(Notification notification) {
     Bundle serializedNotification = new Bundle();
     serializedNotification.putBundle("request", toBundle(notification.getNotificationRequest()));
-    serializedNotification.putLong("date", notification.getDate().getTime());
+    serializedNotification.putLong("date", notification.getOriginDate().getTime());
     return serializedNotification;
   }
 
   public static Bundle toBundle(NotificationRequest request) {
     Bundle serializedRequest = new Bundle();
     serializedRequest.putString("identifier", request.getIdentifier());
-    serializedRequest.putBundle("trigger", toBundle(request.getTrigger()));
+    NotificationTrigger requestTrigger = request.getTrigger();
+    serializedRequest.putBundle("trigger", requestTrigger == null ? null : requestTrigger.toBundle());
     Bundle content = toBundle(request.getContent());
     Bundle existingContentData = content.getBundle("data");
     if (existingContentData == null) {
-      FirebaseNotificationTrigger trigger = (FirebaseNotificationTrigger) request.getTrigger();
-      RemoteMessage message = trigger.getRemoteMessage();
-      RemoteMessage.Notification notification = message.getNotification();
-      Map<String, String> data = message.getData();
-      String dataBody = data.get("body");
-      String notificationBody = notification != null ? notification.getBody() : null;
-      if (isValidJSONString(dataBody) && notificationBody != null && notificationBody.equals(data.get("message"))) {
-        // Expo sends notification.body as data.message, and JSON stringifies data.body
-        content.putString("dataString", dataBody);
-      } else {
-        // The message was sent directly from Firebase or some other service,
-        // and we copy the data as is
-        content.putBundle("data", toBundle(data));
+      if(requestTrigger instanceof FirebaseNotificationTrigger trigger) {
+        RemoteMessage message = trigger.getRemoteMessage();
+        RemoteMessage.Notification notification = message.getNotification();
+        Map<String, String> data = message.getData();
+        String dataBody = data.get("body");
+        String notificationBody = notification != null ? notification.getBody() : null;
+        if (isValidJSONString(dataBody) && notificationBody != null && notificationBody.equals(data.get("message"))) {
+          // Expo sends notification.body as data.message, and JSON stringifies data.body
+          content.putString("dataString", dataBody);
+        } else {
+          // The message was sent directly from Firebase or some other service,
+          // and we copy the data as is
+          content.putBundle("data", toBundle(data));
+        }
+      } else if(
+        requestTrigger instanceof SchedulableNotificationTrigger ||
+          requestTrigger == null
+      ) {
+        JSONObject body = request.getContent().getBody();
+        if (body != null) {
+          // Expo sends notification.body as data.message, and JSON stringifies data.body
+          content.putString("dataString", body.toString());
+        }
       }
     }
     serializedRequest.putBundle("content", content);
@@ -86,10 +100,10 @@ public class NotificationSerializer {
     return result;
   }
 
-  public static Bundle toBundle(NotificationContent content) {
+  public static Bundle toBundle(INotificationContent content) {
     Bundle serializedContent = new Bundle();
     serializedContent.putString("title", content.getTitle());
-    serializedContent.putString("subtitle", content.getSubtitle());
+    serializedContent.putString("subtitle", content.getSubText());
     serializedContent.putString("body", content.getText());
     if (content.getColor() != null) {
       serializedContent.putString("color", String.format("#%08X", content.getColor().intValue()));
@@ -100,9 +114,9 @@ public class NotificationSerializer {
     } else {
       serializedContent.putString("badge", null);
     }
-    if (content.shouldPlayDefaultSound()) {
+    if (content.getShouldPlayDefaultSound()) {
       serializedContent.putString("sound", "default");
-    } else if (content.getSound() != null) {
+    } else if (content.getSoundName() != null) {
       serializedContent.putString("sound", "custom");
     } else {
       serializedContent.putString("sound", null);
@@ -174,69 +188,22 @@ public class NotificationSerializer {
     return result;
   }
 
-  private static Bundle toBundle(@Nullable NotificationTrigger trigger) {
-    if (trigger == null) {
-      return null;
-    }
-    Bundle bundle = new Bundle();
-    if (trigger instanceof FirebaseNotificationTrigger) {
-      bundle.putString("type", "push");
-      bundle.putBundle("remoteMessage", RemoteMessageSerializer.toBundle(((FirebaseNotificationTrigger) trigger).getRemoteMessage()));
-    } else if (trigger instanceof TimeIntervalTrigger) {
-      bundle.putString("type", "timeInterval");
-      bundle.putBoolean("repeats", ((TimeIntervalTrigger) trigger).isRepeating());
-      bundle.putLong("seconds", ((TimeIntervalTrigger) trigger).getTimeInterval());
-    } else if (trigger instanceof DateTrigger) {
-      bundle.putString("type", "date");
-      bundle.putBoolean("repeats", false);
-      bundle.putLong("value", ((DateTrigger) trigger).getTriggerDate().getTime());
-    } else if (trigger instanceof DailyTrigger) {
-      bundle.putString("type", "daily");
-      bundle.putInt("hour", ((DailyTrigger) trigger).getHour());
-      bundle.putInt("minute", ((DailyTrigger) trigger).getMinute());
-    } else if (trigger instanceof WeeklyTrigger) {
-      bundle.putString("type", "weekly");
-      bundle.putInt("weekday", ((WeeklyTrigger) trigger).getWeekday());
-      bundle.putInt("hour", ((WeeklyTrigger) trigger).getHour());
-      bundle.putInt("minute", ((WeeklyTrigger) trigger).getMinute());
-    } else if (trigger instanceof YearlyTrigger) {
-      bundle.putString("type", "yearly");
-      bundle.putInt("day", ((YearlyTrigger) trigger).getDay());
-      bundle.putInt("month", ((YearlyTrigger) trigger).getMonth());
-      bundle.putInt("hour", ((YearlyTrigger) trigger).getHour());
-      bundle.putInt("minute", ((YearlyTrigger) trigger).getMinute());
-    } else {
-      bundle.putString("type", "unknown");
-    }
-    bundle.putString("channelId", getChannelId(trigger));
-
-    return bundle;
-  }
-
-  @Nullable
-  private static String getChannelId(NotificationTrigger trigger) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      return trigger.getNotificationChannel();
-    }
-    return null;
-  }
-
   @NotNull
   public static Bundle toResponseBundleFromExtras(Bundle extras) {
     Bundle serializedContent = new Bundle();
     serializedContent.putString("title", extras.getString("title"));
     String body = extras.getString("body");
-    String projectId = extras.getString("projectId");
-    if (projectId != null && isValidJSONString(body) ) {
-      // If projectId is set in the bundle, and the body is a JSON string,
+    if (isValidJSONString(body) ) {
+      // If the body is a JSON string,
       // the notification was sent by the Expo notification service,
       // so we do the expected remapping of fields
       serializedContent.putString("dataString", body);
       serializedContent.putString("body", extras.getString("message"));
     } else {
       // The notification came directly from Firebase or some other service,
-      // so we copy the data as is from the extras bundle
-      serializedContent.putBundle("data", extras);
+      // so we copy the data as is from the extras bundle, after
+      // ensuring it can be converted for emitting to JS
+      serializedContent.putBundle("data", filteredBundleForJSTypeConverter(extras));
     }
 
     Bundle serializedTrigger = new Bundle();
@@ -257,19 +224,6 @@ public class NotificationSerializer {
     serializedResponse.putBundle("notification", serializedNotification);
 
     return serializedResponse;
-  }
-
-  public static boolean isValidJSONString(String test) {
-    try {
-      new JSONObject(test);
-    } catch (JSONException objectEx) {
-      try {
-        new JSONArray(test);
-      } catch (JSONException arrayEx) {
-        return false;
-      }
-    }
-    return true;
   }
 
 }

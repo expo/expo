@@ -21,6 +21,7 @@ import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger
 import expo.modules.notifications.notifications.triggers.DailyTrigger
 import expo.modules.notifications.notifications.triggers.DateTrigger
+import expo.modules.notifications.notifications.triggers.MonthlyTrigger
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger
 import expo.modules.notifications.notifications.triggers.WeeklyTrigger
 import expo.modules.notifications.notifications.triggers.YearlyTrigger
@@ -156,14 +157,14 @@ open class NotificationScheduler : Module() {
         val seconds = params["seconds"] as? Number
           ?: throw InvalidArgumentException("Invalid value provided as interval of trigger.")
 
-        TimeIntervalTrigger(seconds.toLong(), params.getBoolean("repeats"), channelId)
+        TimeIntervalTrigger(channelId, seconds.toLong(), params.getBoolean("repeats"))
       }
 
       "date" -> {
         val timestamp = params["timestamp"] as? Number
           ?: throw InvalidArgumentException("Invalid value provided as date of trigger.")
 
-        DateTrigger(timestamp.toLong(), channelId)
+        DateTrigger(channelId, timestamp.toLong())
       }
 
       "daily" -> {
@@ -175,9 +176,9 @@ open class NotificationScheduler : Module() {
         }
 
         DailyTrigger(
+          channelId,
           hour.toInt(),
-          minute.toInt(),
-          channelId
+          minute.toInt()
         )
       }
 
@@ -190,10 +191,27 @@ open class NotificationScheduler : Module() {
           throw InvalidArgumentException("Invalid value(s) provided for weekly trigger.")
         }
         WeeklyTrigger(
+          channelId,
           weekday.toInt(),
           hour.toInt(),
-          minute.toInt(),
-          channelId
+          minute.toInt()
+        )
+      }
+
+      "monthly" -> {
+        val day = params["day"] as? Number
+        val hour = params["hour"] as? Number
+        val minute = params["minute"] as? Number
+
+        if (day == null || hour == null || minute == null) {
+          throw InvalidArgumentException("Invalid value(s) provided for yearly trigger.")
+        }
+
+        MonthlyTrigger(
+          channelId,
+          day.toInt(),
+          hour.toInt(),
+          minute.toInt()
         )
       }
 
@@ -208,11 +226,11 @@ open class NotificationScheduler : Module() {
         }
 
         YearlyTrigger(
+          channelId,
           day.toInt(),
           month.toInt(),
           hour.toInt(),
-          minute.toInt(),
-          channelId
+          minute.toInt()
         )
       }
 

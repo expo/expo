@@ -17,6 +17,9 @@ public class AssetModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoAsset")
 
+    // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoAsset.downloadAsync
+    // and potentially consumed outside of Expo (e.g. RN vector icons)
+    // do NOT change the function signature as it'll break consumers!
     AsyncFunction("downloadAsync") { (url: URL, md5Hash: String?, type: String, promise: Promise) in
       if url.isFileURL {
         promise.resolve(url.standardizedFileURL.absoluteString)

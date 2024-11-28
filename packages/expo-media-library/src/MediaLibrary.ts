@@ -283,7 +283,7 @@ export type AssetsOptions = {
    */
   sortBy?: SortByValue[] | SortByValue;
   /**
-   * An array of [MediaTypeValue](#expomedialibrarymediatypevalue)s or a single `MediaTypeValue`.
+   * An array of [MediaTypeValue](#mediatypevalue)s or a single `MediaTypeValue`.
    * @default MediaType.photo
    */
   mediaType?: MediaTypeValue[] | MediaTypeValue;
@@ -492,7 +492,7 @@ export const usePermissions = createPermissionHook<
  * If `hasIncrementalChanges` is `false`, the user changed their permissions.
  *
  * @platform android 14+
- * @platform ios 14+
+ * @platform ios
  */
 export async function presentPermissionsPickerAsync(
   mediaTypes: MediaTypeFilter[] = ['photo', 'video']

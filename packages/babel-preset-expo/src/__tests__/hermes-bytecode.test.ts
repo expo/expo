@@ -1,7 +1,7 @@
 import * as babel from '@babel/core';
 
-import { compileToHermesBytecodeAsync } from './hermes-util';
 import preset from '..';
+import { compileToHermesBytecodeAsync } from './hermes-util';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
@@ -50,7 +50,7 @@ const LANGUAGE_SAMPLES: {
         constructor(name) {
           this.name = name;
         }
-      
+
         logger() {
           console.log("Hello", this.name);
         }
@@ -59,7 +59,7 @@ const LANGUAGE_SAMPLES: {
       if (platform === 'web') {
         return 'class Test{constructor(name){this.name=name;}logger(){console.log("Hello",this.name);}}';
       }
-      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var Test=function(){function Test(name){(0,_classCallCheck2.default)(this,Test);this.name=name;}(0,_createClass2.default)(Test,[{key:"logger",value:function logger(){console.log("Hello",this.name);}}]);return Test;}();';
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var Test=function(){function Test(name){(0,_classCallCheck2.default)(this,Test);this.name=name;}return(0,_createClass2.default)(Test,[{key:"logger",value:function logger(){console.log("Hello",this.name);}}]);}();';
     },
     hermesError: /invalid statement encountered\./,
   },
@@ -84,7 +84,7 @@ const LANGUAGE_SAMPLES: {
     name: `private-methods`,
     code: `class Counter {
         #foo() {}
-      
+
       }`,
     getCompiledCode({ platform }) {
       if (platform === 'web') {
@@ -99,7 +99,7 @@ const LANGUAGE_SAMPLES: {
     name: `private-property-in-object`,
     code: `class Foo {
         #bar = "bar";
-      
+
         test(obj) {
           return #bar in obj;
         }
@@ -108,7 +108,7 @@ const LANGUAGE_SAMPLES: {
       if (platform === 'web') {
         return `function _checkInRHS(e){if(Object(e)!==e)throw TypeError("right-hand side of 'in' should be an object, got "+(null!==e?typeof e:"null"));return e;}var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),"bar");test(obj){return _barBrandCheck.has(_checkInRHS(obj));}}`;
       }
-      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));function _checkInRHS(e){if(Object(e)!==e)throw TypeError("right-hand side of 'in' should be an object, got "+(null!==e?typeof e:"null"));return e;}var _bar=(0,_classPrivateFieldLooseKey2.default)("bar");var Foo=function(){function Foo(){(0,_classCallCheck2.default)(this,Foo);Object.defineProperty(this,_bar,{writable:true,value:"bar"});}(0,_createClass2.default)(Foo,[{key:"test",value:function test(obj){return Object.prototype.hasOwnProperty.call(_checkInRHS(obj),_bar);}}]);return Foo;}();`;
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));function _checkInRHS(e){if(Object(e)!==e)throw TypeError("right-hand side of \'in\' should be an object, got "+(null!==e?typeof e:"null"));return e;}var _bar=(0,_classPrivateFieldLooseKey2.default)("bar");var Foo=function(){function Foo(){(0,_classCallCheck2.default)(this,Foo);Object.defineProperty(this,_bar,{writable:true,value:"bar"});}return(0,_createClass2.default)(Foo,[{key:"test",value:function test(obj){return Object.prototype.hasOwnProperty.call(_checkInRHS(obj),_bar);}}]);}();';
     },
     hermesError: /private properties are not supported/,
   },
@@ -130,20 +130,22 @@ const LANGUAGE_SAMPLES: {
     name: `export-namespace-from`,
     code: `export * as ns from "mod";`,
     getCompiledCode() {
-      return `Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&Object.prototype.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}`;
+      return `Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&{}.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}`;
     },
     hermesError: /error: 'export' statement requires module mode/,
   },
-  {
-    // https://babeljs.io/docs/babel-plugin-proposal-export-default-from
-    // Web preset doesn't transform this
-    name: `export-default-from`,
-    code: `export v from "mod";`,
-    getCompiledCode() {
-      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});Object.defineProperty(exports,"v",{enumerable:true,get:function(){return _mod.default;}});var _mod=_interopRequireDefault(require("mod"));`;
-    },
-    hermesError: /error: expected declaration in export/,
-  },
+  // This is broken as of RN 76 / SDK 52 due to this upstream change:
+  // https://github.com/facebook/react-native/commit/1387f521fdd8f187eab7a4a6a05d4d75a96b4f88#diff-23432c49a1b0fbaa32ac0db0694a712f12f58619619948137f2cccf282fa61ceL28
+  // {
+  //   // https://babeljs.io/docs/babel-plugin-proposal-export-default-from
+  //   // Web preset doesn't transform this
+  //   name: `export-default-from`,
+  //   code: `export v from "mod";`,
+  //   getCompiledCode() {
+  //     return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});Object.defineProperty(exports,"v",{enumerable:true,get:function(){return _mod.default;}});var _mod=_interopRequireDefault(require("mod"));`;
+  //   },
+  //   hermesError: /error: expected declaration in export/,
+  // },
   {
     // https://babeljs.io/docs/babel-plugin-syntax-dynamic-import
     name: `dynamic-import`,
@@ -235,7 +237,7 @@ const LANGUAGE_SAMPLES: {
     code: `var h = ["a", "b", "c"];
 
     var i = [...h, "foo"];
-    
+
     var j = foo(...h);`,
     getCompiledCode() {
       return `var h=["a","b","c"];var i=[...h,"foo"];var j=foo(...h);`;
@@ -289,7 +291,7 @@ const LANGUAGE_SAMPLES: {
       if (platform === 'web') {
         return 'var re=/(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;console.log(re.exec("1999-02-29").groups.year);';
       }
-      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _setPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/setPrototypeOf"));function _wrapRegExp(){_wrapRegExp=function(e,r){return new BabelRegExp(e,void 0,r);};var e=RegExp.prototype,r=new WeakMap();function BabelRegExp(e,t,p){var o=new RegExp(e,t);return r.set(o,p||r.get(e)),(0,_setPrototypeOf2.default)(o,BabelRegExp.prototype);}function buildGroups(e,t){var p=r.get(t);return Object.keys(p).reduce(function(r,t){var o=p[t];if("number"==typeof o)r[t]=e[o];else{for(var i=0;void 0===e[o[i]]&&i+1<o.length;)i++;r[t]=e[o[i]];}return r;},Object.create(null));}return(0,_inherits2.default)(BabelRegExp,RegExp),BabelRegExp.prototype.exec=function(r){var t=e.exec.call(this,r);if(t){t.groups=buildGroups(t,this);var p=t.indices;p&&(p.groups=buildGroups(p,this));}return t;},BabelRegExp.prototype[Symbol.replace]=function(t,p){if("string"==typeof p){var o=r.get(this);return e[Symbol.replace].call(this,t,p.replace(/\\$<([^>]+)>/g,function(e,r){var t=o[r];return"$"+(Array.isArray(t)?t.join("$"):t);}));}if("function"==typeof p){var i=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return"object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(buildGroups(e,i)),p.apply(this,e);});}return e[Symbol.replace].call(this,t,p);},_wrapRegExp.apply(this,arguments);}var re=_wrapRegExp(/(\\d{4})\\x2D(\\d{2})\\x2D(\\d{2})/,{year:1,month:2,day:3});console.log(re.exec("1999-02-29").groups.year);';
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _setPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/setPrototypeOf"));function _wrapRegExp(){_wrapRegExp=function(e,r){return new BabelRegExp(e,void 0,r);};var e=RegExp.prototype,r=new WeakMap();function BabelRegExp(e,t,p){var o=RegExp(e,t);return r.set(o,p||r.get(e)),(0,_setPrototypeOf2.default)(o,BabelRegExp.prototype);}function buildGroups(e,t){var p=r.get(t);return Object.keys(p).reduce(function(r,t){var o=p[t];if("number"==typeof o)r[t]=e[o];else{for(var i=0;void 0===e[o[i]]&&i+1<o.length;)i++;r[t]=e[o[i]];}return r;},Object.create(null));}return(0,_inherits2.default)(BabelRegExp,RegExp),BabelRegExp.prototype.exec=function(r){var t=e.exec.call(this,r);if(t){t.groups=buildGroups(t,this);var p=t.indices;p&&(p.groups=buildGroups(p,this));}return t;},BabelRegExp.prototype[Symbol.replace]=function(t,p){if("string"==typeof p){var o=r.get(this);return e[Symbol.replace].call(this,t,p.replace(/\\$<([^>]+)>/g,function(e,r){var t=o[r];return"$"+(Array.isArray(t)?t.join("$"):t);}));}if("function"==typeof p){var i=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return"object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(buildGroups(e,i)),p.apply(this,e);});}return e[Symbol.replace].call(this,t,p);},_wrapRegExp.apply(this,arguments);}var re=_wrapRegExp(/(\\d{4})\\x2D(\\d{2})\\x2D(\\d{2})/,{year:1,month:2,day:3});console.log(re.exec("1999-02-29").groups.year);';
     },
   },
 

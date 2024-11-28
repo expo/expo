@@ -11,6 +11,7 @@ open class ExpoReactDelegateHandler: NSObject {
    If this module wants to handle React instance and the root view creation, it can return the instance.
    Otherwise return nil.
    */
+  #if os(iOS) || os(tvOS)
   @objc
   open func createReactRootView(
     reactDelegate: ExpoReactDelegate,
@@ -20,6 +21,7 @@ open class ExpoReactDelegateHandler: NSObject {
   ) -> UIView? {
     return nil
   }
+  #endif
 
   /**
    Clients could override this getter to serve the latest bundleURL for React instance.

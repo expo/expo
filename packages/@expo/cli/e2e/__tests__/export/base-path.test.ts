@@ -50,7 +50,7 @@ describe('static-rendering with a custom base path', () => {
         .filter(Boolean);
 
       expect(
-        files.find((file) => file?.match(/\_expo\/static\/js\/web\/index-.*\.js/))
+        files.find((file) => file?.match(/\_expo\/static\/js\/web\/entry-.*\.js/))
       ).toBeDefined();
 
       // The wrapper should not be included as a route.
@@ -80,9 +80,12 @@ describe('static-rendering with a custom base path', () => {
     async () => {
       const indexHtml = await getPageHtml(outputDir, 'index.html');
 
-      const jsFiles = indexHtml.querySelectorAll('script').map((script) => script.attributes.src);
+      const jsFiles = indexHtml
+        .querySelectorAll('script')
+        .filter((script) => !!script.attributes.src)
+        .map((script) => script.attributes.src);
       expect(jsFiles).toEqual([
-        expect.stringMatching(/\/one\/two\/_expo\/static\/js\/web\/index-.*\.js/),
+        expect.stringMatching(/\/one\/two\/_expo\/static\/js\/web\/entry-.*\.js/),
       ]);
 
       const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {

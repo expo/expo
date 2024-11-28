@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getNativeStateMachineContextAsync } from './Updates';
-import { addUpdatesStateChangeListener } from './UpdatesEmitter';
-import { currentlyRunning, defaultUseUpdatesState, reduceUpdatesStateFromContext, } from './UseUpdatesUtils';
+import { addUpdatesStateChangeListener, latestContext } from './UpdatesEmitter';
+import { currentlyRunning, updatesStateFromContext } from './UseUpdatesUtils';
 /**
  * Hook that obtains information on available updates and on the currently running update.
  *
@@ -51,19 +50,11 @@ import { currentlyRunning, defaultUseUpdatesState, reduceUpdatesStateFromContext
  * ```
  */
 export const useUpdates = () => {
-    const [updatesState, setUpdatesState] = useState(defaultUseUpdatesState);
+    const [updatesState, setUpdatesState] = useState(latestContext);
     // Change the state based on native state machine context changes
     useEffect(() => {
-        getNativeStateMachineContextAsync()
-            .then((context) => {
-            setUpdatesState((updatesState) => reduceUpdatesStateFromContext(updatesState, context));
-        })
-            .catch((error) => {
-            // Native call can fail (e.g. if in development mode), so catch the promise rejection and surface the error
-            setUpdatesState((updatesState) => ({ ...updatesState, initializationError: error }));
-        });
         const subscription = addUpdatesStateChangeListener((event) => {
-            setUpdatesState((updatesState) => reduceUpdatesStateFromContext(updatesState, event.context));
+            setUpdatesState(updatesStateFromContext(event.context));
         });
         return () => subscription.remove();
     }, []);

@@ -23,3 +23,6 @@
 **/kotlin/providers/**
 **/vendored/**
 /docs/public/static/**
+
+!packages/@expo/config-plugins/src/android/**
+!packages/@expo/config-plugins/src/ios/**

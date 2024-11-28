@@ -5,9 +5,9 @@ description: Learn how to integrate custom fonts in your app using local files o
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
@@ -37,18 +37,18 @@ If the font you're using have both OTF and TTF versions, prefer OTF. The **.otf*
 
 Copy the file into your project's **assets/fonts** directory.
 
-> **info** **assets/fonts** directory path is a common convention in React Native apps to put font files. You can place these files if elsewhere if you follow a custom convention.
+> **info** **assets/fonts** directory path is a common convention in React Native apps to put font files. You can place these files elsewhere if you follow a custom convention.
 
-Two ways to use the local font file your project:
+Two ways to use the local font file in your project:
 
 - Embed the font file with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-appjsonappconfigjs).
 - Loading the font file with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime asynchronously.
 
 ### With `expo-font` config plugin
 
-The `expo-font` config plugin allows embedding one or more font files in your project's native code. This method has a few benefits:
+The `expo-font` config plugin allows embedding one or more font files in your project's native code. This is the recommended method for adding fonts to your app due to its benefits:
 
-- Available immediately when the app starts on a device.
+- Fonts are available immediately when the app starts on a device.
 - No additional code required to load fonts in a project asynchronously when the app starts.
 - Fonts are consistently available across all devices where the app is installed because they're bundled within the app.
 
@@ -94,13 +94,22 @@ Add the config plugin to your [app config](/versions/latest/config/app/#plugins)
 
 After embedding the font with the config plugin, create a [new development build](/develop/development-builds/create-a-build/) and install it on your device or Android Emulator or iOS Simulator.
 
-You can use that font on `<Text>` by using `fontFamily` style prop. For example, the `<Text>` uses the `Inter-Black` as the font family:
+You can use the font with `<Text>` by specifying the `fontFamily` style prop. See the [next section](#how-to-determine-which-font-family-name-to-use) on how to determine the font family name.
+
+In the example below, the `<Text>` uses the `Inter-Black` as the font family name:
 
 ```tsx
 <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black.</Text>
 ```
 
 </Step>
+
+<ConfigReactNative title="Using this method in a bare React Native project?">
+
+- **Android:** Copy font files to **android/app/src/main/assets/fonts**.
+- **iOS:** See [Adding a Custom Font to Your App](https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app) in the Apple Developer documentation.
+
+</ConfigReactNative>
 
 #### How to determine which font family name to use
 
@@ -117,13 +126,6 @@ For example, Inter Black font file's PostScript name is `Inter-Black`.
 <ContentSpotlight src="/static/images/postscript-name.png" />
 
 </Collapsible>
-
-<ConfigReactNative title="Using this method in a bare React Native project?">
-
-- **Android:** Copy font files to **android/app/src/main/assets/fonts**.
-- **iOS:** See [Adding a Custom Font to Your App](https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app) in the Apple Developer documentation.
-
-</ConfigReactNative>
 
 ### With `useFonts` hook
 
@@ -281,8 +283,12 @@ After installing the font package, map the font using the `useFonts` hook in a t
 
 ```tsx app/_layout.tsx
 // Rest of the import statements
-/* @info Import <CODE>Inter_900Black</CODE> and <CODE>useFonts</CODE> hook from <CODE>@expo-google-fonts/inter</CODE>*/ import { Inter_900Black, useFonts } from '@expo-google-fonts/inter';
-/* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
+/* @info Import <CODE>Inter_900Black</CODE> and <CODE>useFonts</CODE> hook from <CODE>@expo-google-fonts/inter</CODE>*/
+import { Inter_900Black, useFonts } from '@expo-google-fonts/inter';
+/* @end */
+/* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */
+import * as SplashScreen from 'expo-splash-screen';
+/* @end */
 import {useEffect} from 'react';
 
 /* @info This prevents <CODE>SplashScreen</CODE> from auto hiding while the fonts are in loading state. */
@@ -298,7 +304,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded || error) {
+      /* @info After the custom fonts have loaded, we can hide the splash screen and display the app screen. */
       SplashScreen.hideAsync();
+      /* @end */
     }
   }, [loaded, error]);
 
@@ -374,7 +382,7 @@ import { useFonts } from 'expo-font';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function RootLayout() {
-  useFonts([require('./assets/fonts/Inter-Black.otf', FontAwesome.font)]);
+  useFonts([require('./assets/fonts/Inter-Black.otf', Ionicons.font)]);
 
   return (
     /* @hide ... */ /* @end */
@@ -382,7 +390,7 @@ export default function RootLayout() {
 }
 ```
 
-Now, you can any icon from the `Ionicons` library in a React component:
+Now, you can use any icon from the `Ionicons` library in a React component:
 
 ```tsx
 <Ionicons name="checkmark-circle" size={32} color="green" />
@@ -399,7 +407,7 @@ Now, you can any icon from the `Ionicons` library in a React component:
 
 > **warning** **If you're loading remote fonts, make sure they are being served from an origin with CORS properly configured**. If you don't do this, your remote font might not load properly on the web platform.
 
-Loading fronts from a local asset is the safest way to load a font in your app. When including fonts as local assets, after you submit your app to the app stores, these fonts are bundled with the app download and will be available immediately. You don't have to worry about CORS or other potential issues.
+Loading fonts from a local asset is the safest way to load a font in your app. When including fonts as local assets, after you submit your app to the app stores, these fonts are bundled with the app download and will be available immediately. You don't have to worry about CORS or other potential issues.
 
 However, loading a font file directly from web is done by replacing the `require('./assets/fonts/FontName.otf')` with the URL of your font as shown in the example below.
 

@@ -47,7 +47,7 @@ function _environment() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Transpile and evaluate the dynamic config object.
  * This method is shared between the standard reading method in getConfig, and the headless script.

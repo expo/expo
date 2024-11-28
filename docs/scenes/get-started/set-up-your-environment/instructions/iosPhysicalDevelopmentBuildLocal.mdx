@@ -18,7 +18,7 @@ import { Step } from '~/ui/components/Step';
 
 ### Install expo-dev-client
 
-Run the following command in your Expo project's root directory:
+Run the following command in your project's root directory:
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 
@@ -26,9 +26,17 @@ Run the following command in your Expo project's root directory:
 
 <Step label="2">
 
-### Plug in your device via USB
+### Plug in your device via USB and enable developer mode
 
-Connect your iOS device to your Mac using a USB to Lightning cable. Unlock the device and tap **Trust** if prompted.
+1. Connect your iOS device to your Mac using a USB to Lightning cable. Unlock the device and tap **Trust** if prompted.
+
+2. Open Xcode. From the menu bar, select **Window** > **Devices and Simulators**. You will see a warning in Xcode to enable developer mode.
+
+3. On your iOS device, open **Settings** > **Privacy & Security**, scroll down to the **Developer Mode** list item and navigate into it.
+
+4. Tap the switch to enable **Developer Mode**. After you do so, Settings presents an alert to warn you that Developer Mode reduces your device's security. To continue enabling **Developer Mode**, tap the alert's **Restart** button.
+
+5. After the device restarts and you unlock it, the device shows an alert confirming that you want to enable Developer Mode. Tap **Turn On**, and enter your device passcode when prompted.
 
 </Step>
 

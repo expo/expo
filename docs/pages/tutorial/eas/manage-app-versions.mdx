@@ -4,9 +4,16 @@ sidebar_title: Manage app versions
 description: Learn about developer-facing and user-facing app versions and how to manage them automatically.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll configure our example app to auto-increment the developer-facing app version. Learning about it will be useful before we dive into production build in the next two chapters.
+
+<VideoBoxLink videoId="Gk7RHDWsLsQ" title="Watch: Automatic App Version Management" />
+
+---
 
 ## Understanding developer-facing and user-facing app versions
 
@@ -70,6 +77,22 @@ In **eas.json**:
 ```
 
 When we create a new production build in the next two chapters, the `versionCode` for Android and `buildNumber` for iOS will increment automatically.
+
+<Collapsible summary="Syncing developer-facing app versions for already published apps to EAS">
+
+If your app is already published in the app stores, the developer-facing app versions are already set. When migrating this app to use EAS Build, follow the steps below to sync those app versions:
+
+- In the terminal window, run the `eas build:version:set` command:
+
+<Terminal cmd={['eas build:version:set']} />
+
+- Select the platform (Android or iOS) when prompted.
+- When prompted **Do you want to set app version source to remote now?**, select **yes**. This will set the `cli.appVersionSource` to `remote` in **eas.json**.
+- When prompted **What version would you like to initialize it with?**, enter the last version number that you have set in the app stores.
+
+After these steps, the app versions will be synced to EAS Build remotely. You can set `build.production.autoIncrement` to `true` in **eas.json**. When you create a new production build, the `versionCode` and `buildNumber` will be automatically incremented from now on.
+
+</Collapsible>
 
 ## Summary
 

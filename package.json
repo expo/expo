@@ -19,18 +19,25 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.75.0-rc.5",
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
-    "@react-navigation/native": "^6.1.6",
-    "@react-navigation/core": "^6.4.9",
+    "react-native": "0.76.3",
+    "react": "18.3.1",
+    "@react-navigation/bottom-tabs": "7.0.0",
+    "@react-navigation/core": "7.0.0",
+    "@react-navigation/drawer": "7.0.0",
+    "@react-navigation/elements": "2.0.0",
+    "@react-navigation/native": "7.0.0",
+    "@react-navigation/native-stack": "7.0.0",
+    "@react-navigation/routers": "7.0.0",
+    "@react-navigation/stack": "7.0.0",
+    "react-native-screens": "~4.1.0",
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
     "patch-package": "^8.0.0",
-    "prettier": "^3.1.1",
+    "prettier": "^3.3.3",
     "yarn-deduplicate": "^6.0.2"
   },
   "volta": {

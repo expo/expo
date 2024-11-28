@@ -1,8 +1,8 @@
 import { SharedObject } from 'expo';
 
 import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
-import { crop, extent, flip, resize, rotate } from './actions/index.web';
 import { ActionCrop, ActionExtent, FlipType } from '../ImageManipulator.types';
+import { crop, extent, flip, resize, rotate } from './actions/index.web';
 
 type ContextLoader = () => HTMLCanvasElement | Promise<HTMLCanvasElement>;
 
@@ -43,7 +43,14 @@ export default class ImageManipulatorContext extends SharedObject {
 
   async renderAsync(): Promise<ImageManipulatorImageRef> {
     const canvas = await this.currentTask;
-    return new ImageManipulatorImageRef(canvas);
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        const url = blob ? URL.createObjectURL(blob) : canvas.toDataURL();
+
+        resolve(new ImageManipulatorImageRef(url, canvas.width, canvas.height));
+      });
+    });
   }
 
   private addTask(

@@ -3,114 +3,151 @@ title: App version management
 description: Learn about different version types and how to manage them remotely or locally.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-Android and iOS each expose two values that identify the version of an application; one that is visible in stores, and another that is visible only to developers.
+Android and iOS each expose two values to identify the version of an app: the version visible in stores (user-facing version) and the version visible only to developers (developer-facing build version). This guide explains how you can manage those versions remotely or locally.
 
-In managed projects, we use fields `version`/`android.versionCode`/`ios.buildNumber` in **app.json** to define versions, where `android.versionCode`/`ios.buildNumber` represents the developer-facing build version and `version` is the user-facing value visible in stores. For bare projects, each of those values maps to specific parts of the native configuration:
+<VideoBoxLink
+  videoId="Gk7RHDWsLsQ"
+  title="Automatic App Version Management"
+  description="In this Expo feature focus video you'll learn about automatic app version management in Expo EAS Build."
+/>
 
-- [`version`][config-version] field in **app.json** on iOS represents `CFBundleShortVersionString` in **Info.plist**.
-- [`version`][config-version] field in **app.json** on Android represents `versionName` in **android/app/build.gradle**.
-- [`ios.buildNumber`][config-ios-buildnumber] field in **app.json** represents `CFBundleVersion` in **Info.plist**.
-- [`android.versionCode`][config-android-versioncode] field in **app.json** represents `versionCode` in **android/app/build.gradle**.
+## App versions
 
-One of the most frequent causes of app store rejections is submitting a build with a duplicate version number. This happens when a developer forgets to increment the version number before running a build.
+In Expo projects, the following properties can be used to define app versions in the [app config](/workflow/configuration/) file.
 
-EAS Build can manage automatically incrementing these versions for you if you opt into using the "remote" app version source. The default behavior is to use a "local" app version source, which means you control versions manually in their respective config files.
+| Property                                                          | Description                                                                                                                                                                                    |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`version` ](/versions/latest/config/app/#version)                | The user-facing version visible in stores. On Android, it represents `versionName` name in **android/app/build.gradle**. On iOS, it represents `CFBundleShortVersionString` in **Info.plist**. |
+| [`android.versionCode`](/versions/latest/config/app/#versioncode) | The developer-facing build version for Android. It represents `versionCode` in **android/app/build.gradle**.                                                                                   |
+| [`ios.buildNumber`](/versions/latest/config/app/#buildnumber)     | The developer-facing build version for iOS. It represents `CFBundleVersion` in **Info.plist**.                                                                                                 |
 
-To simplify the descriptions, we will use **app.json** terminology (`version`/`versionCode`/`buildNumber`) for the rest of this page, but unless stated otherwise, the same applies to bare projects.
+### Using app versions in your app
 
-<ContentSpotlight url="https://www.youtube.com/embed/Gk7RHDWsLsQ" />
+To show the user-facing version inside your app, you can use [`Application.nativeApplicationVersion`](/versions/latest/sdk/application/#applicationnativeapplicationversion) from the `expo-application` library.
 
-## Examples
+To show the developer-facing build version inside your app, you can use [`Application.nativeBuildVersion`](/versions/latest/sdk/application/#applicationnativebuildversion) from the `expo-application` library.
 
-<Collapsible summary="Remote version source">
+## Recommended workflow
 
-With this **eas.json**, the version for all builds will be based on the value stored on EAS servers, and the version will be incremented remotely and only when building with `production` profile.
+### User-facing version
 
-```json
-{
-  "cli": {
-    "appVersionSource": "remote"
-  },
-  "build": {
-    "staging": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
-    },
-    "production": {
-      "autoIncrement": true
-    }
-  }
-}
-```
+When you are doing a production release, the user-facing version should be explicitly set and updated by you. You can update the `version` property in app config when production build is submitted to the app stores. This also applies if your project uses `expo-updates` with an automatic runtime version policy. This marks the beginning of a new development cycle for a new version of your app. Learn more about [deployment patterns](/eas-update/deployment-patterns).
 
-</Collapsible>
+### Developer-facing build version
 
-<Collapsible summary="Local version source">
+For developer-facing build version, you can set them to autoincrement on every build. This will help you avoid making manual changes to the project every time you upload a new archive on Play Store testing channels or TestFlight. One common cause for app store rejections is submitting a build with a duplicate version number. It happens when a developer forgets to increment the developer-facing build version number before creating a new build.
 
-With this **eas.json**, the version for all builds will be based on the value from **app.json** or native code. When you build using `production` profile, the version will be incremented in the local code before the build.
-
-```json
-{
-  "cli": {
-    "appVersionSource": "local"
-  },
-  "build": {
-    "staging": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
-    },
-    "production": {
-      "autoIncrement": true
-    }
-  }
-}
-```
-
-</Collapsible>
+EAS Build can help manage developer-facing build versions automatically by incrementing these versions for you if you opt into using the [`remote` version source](#remote-version-source), which is the recommended behaviour. Optionally, you can choose to use a `local` app version source, which means you control versions manually in their respective config files.
 
 ## Remote version source
 
-You can configure your project to rely on EAS servers to store and manage the version of your app. Add `{ "cli": { "appVersionSource": "remote" } }` in your **eas.json**. The remote version will be initialized with the value from the local project. If you would like to explicitly set the value directly, or EAS CLI is not able to detect what version the app is on, you can use the `eas build:version:set` command. EAS stores version information scoped by account, slug, platform, and application ID/bundle identifier — so, for example, if you are building variants with different application IDs or bundle identifiers, versioning will be independent for each of them.
+> **warning** The `remote` version source is the recommended behavior from EAS CLI version `12.0.0`. If you are using an older version of the EAS CLI, `local` is the default.
 
-If you want to build your project locally in Android Studio or Xcode using the same version stored remotely on EAS, you can update your local project with the remote versions using `eas build:version:sync`.
+EAS servers can store and manage your app's developer-facing build version (`android.versionCode` and `ios.buildNumber`) remotely. To enable it, you need to set `cli.appVersionSource` to `remote` in **eas.json**. Then, under the `production` build profile, you can set the `autoIncrement` property to `true`.
 
-Enabling the `autoIncrement` option in the remote app version source mode is currently only available for `versionCode`/`buildNumber`.
+```json eas.json
+{
+  "cli": {
+    /* @info The app version source is set to <CODE>remote</CODE> to store and manage the version of your app. */
+    "appVersionSource": "remote"
+    /* @end */
+  },
+  "build": {
+    "development": {
+      /* @hide ... */
+      /* @end */
+    },
+    "preview": {
+      /* @hide ... */
+      /* @end */
+    },
+    "production": {
+      /* @info The <CODE>autoIncrement</CODE> property is set to <CODE>true</CODE> to automatically increment the <CODE>android.versionCode</CODE> and <CODE>ios.buildNumber</CODE> values. */
+      "autoIncrement": true
+      /* @end */
+    }
+  }
+  /* @hide ... */ /* @end */
+}
+```
 
-When using a remote app version source, the values in **app.json** will not be updated when the version is incremented remotely, and so the local and remote values will fall out of sync. The remote source values will be set on the native project when running a build, and they are the source of truth — however, the values specified in your **app.json** will be present in `Constants.expoConfig` exposed by `expo-constants`. Use `expo-application` to determine your application version at runtime instead, and remove `versionCode`/`buildNumber` from your **app.json**.
+The remote version is initialized with the value from the local project. For example, if you have `android.versionCode` set to `1` in app config, when you create a new build using the remote version source, it will auto increment to `2`. However, if you do not have build versions set in your app config, the remote version will initialize with `1` when the first build is created.
+
+When the `remote` version property is enabled inside **eas.json**, the build version values stored in app config are ignored and not updated when the version is incremented remotely. The remote version source values are set on the native project when running a build, which is considered the source of truth for these values. You can safely remove these values from your app config.
+
+### Syncing already defined versions to remote
+
+There are different scenarios where you already have versions set up for your project and want to increment from those versions when you create a new EAS Build. However, these existing versions might not be synced remotely with EAS. Some of these scenarios are:
+
+- You have already published your app in the app stores and want to continue using the same version numbers.
+- EAS CLI is not able to detect what version the app is on.
+- For any other reason, you have versions explicitly set, such as inside your app config.
+
+In these scenarios, you can sync the current version to EAS Build using the EAS CLI using the following steps:
+
+- In the terminal window, run the following command:
+
+  <Terminal cmd={['$ eas build:version:set']} />
+
+- Select the platform (Android or iOS) when prompted.
+- When prompted **Do you want to set app version source to remote now?**, select **yes**. This will set the `cli.appVersionSource` to `remote` in **eas.json**.
+- When prompted **What version would you like to initialize it with?**, enter the last version number that you have set in the app stores.
+
+After these steps, the app versions will be synced to EAS Build remotely. You can now set `build.production.autoIncrement` to `true` in **eas.json**. When you create a new production build, the `versionCode` and `buildNumber` will be automatically incremented.
+
+### Syncing versions from remote to local
+
+To build your project locally in Android Studio or Xcode using the same version stored remotely on EAS, update your local project with the remote versions using the following command:
+
+<Terminal cmd={['$ eas build:version:sync']} />
 
 ### Limitations
 
-- `eas build:version:sync` command on Android does not support bare projects with multiple flavors, but the rest of the remote versioning functionality should work with all projects.
+- `eas build:version:sync` command on Android does not support bare projects with multiple flavors. However, the rest of the remote versioning functionality should work with all projects.
 - `autoIncrement` does not support the `version` option.
 - It's not supported if you are using EAS Update and runtime policy set to `"runtimeVersion": { "policy": "nativeVersion" }`. For similar behavior, use the `"appVersion"` policy instead.
 
-### Recommended workflow
-
-The main goal of this feature is to avoid manual changes to the project every time you are uploading a new archive to run it on TestFlight/Play Store testing channels. When you are doing a production release, the user-facing version change should be explicit.
-
-We recommend updating `version` field after a new build goes live in the store, especially if you are using `expo-updates` with an automatic runtime version policy. This marks the beginning of a new development cycle for a new version of your app. [Learn more about deployment patterns](/eas-update/deployment-patterns.mdx).
-
 ## Local version source
 
-By default, the source of truth for project versions is the local project source code itself. In this case, EAS does not write to the project, it reads the values and builds projects as they are.
+> **warning** The `remote` version source as a recommended behavior has been introduced in `eas-cli` version `12.0.0`. If you are using an older version of the CLI, you **don't need to specify the version source explicitly to `local`**.
 
-You may opt in to auto incrementing versions locally with the `autoIncrement` option on a build profile, but it comes with some limitations.
+You can configure your project so that the source of truth for project versions is the local project source code itself. To do this, set `cli.appVersionSource` to `local` in your **eas.json**.
 
-In the case of bare React Native projects, values in native code take precedence, and `expo-constants` and `expo-updates` read values from **app.json**. If you rely on version values from a manifest, you should keep them in sync with native code. Keeping these values in sync is especially important if you are using EAS Update with the runtime policy set to `"runtimeVersion": { "policy": "nativeVersion" }`, because mismatched versions may result in the delivery of updates to the wrong version of an application. We recommend using `expo-application` to read the version instead of depending on values from **app.json**.
+With this setup, EAS reads app version values and builds projects as they are. It doesn't write to the project. You can also enable auto incrementing versions locally by setting the `autoIncrement` option on a build profile.
+
+```json eas.json
+{
+  "cli": {
+    /* @info The app version source is set to <CODE>local</CODE> for you to manage the version of your app manually. */
+    "appVersionSource": "local"
+    /* @end */
+  },
+  "build": {
+    "development": {
+      /* @hide ... */
+      /* @end */
+    },
+    "preview": {
+      /* @hide ... */
+      /* @end */
+    },
+    "production": {
+      /* @info The <CODE>autoIncrement</CODE> property is set to <CODE>true</CODE> to automatically increment the <CODE>android.versionCode</CODE> and <CODE>ios.buildNumber</CODE> values. */
+      "autoIncrement": true
+      /* @end */
+    }
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+In the case of [existing React Native projects](/bare/overview/), the values in native code take precedence. The libraries `expo-constants` and `expo-updates` read values from the app config file. If you rely on version values from a manifest, you should keep them in sync with native code. Keeping these values in sync is especially important if you are using EAS Update with the runtime policy set to `"runtimeVersion": { "policy": "nativeVersion" }`, because mismatched versions may result in the delivery of updates to the wrong version of an application. We recommend using [`expo-application`](/versions/latest/sdk/application/#constants) to read the version instead of depending on values from app config.
 
 ### Limitations
 
 - With `autoIncrement`, you need to commit your changes on every build if you want the version change to persist. This can be difficult to coordinate when building on CI.
-- `autoIncrement` is not supported if you are using a dynamic config (**app.config.js**).
-- For bare React Native projects with Gradle configuration that supports multiple flavors, EAS CLI is not able to read or modify the version, so `autoIncrement` option is not supported and versions will not be listed in the build details page on [expo.dev](https://expo.dev).
-
-[config-version]: /versions/latest/config/app/#version
-[config-android-versioncode]: /versions/latest/config/app/#versioncode
-[config-ios-buildnumber]: /versions/latest/config/app/#buildnumber
+- `autoIncrement` is not supported if you are using a dynamic config file (such as **app.config.js**).
+- For existing React Native projects with Gradle configuration that supports multiple flavors, EAS CLI is not able to read or modify the version, so `autoIncrement` option is not supported, and versions will not be listed in the build details page on [expo.dev](https://expo.dev).

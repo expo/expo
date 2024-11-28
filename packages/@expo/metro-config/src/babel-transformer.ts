@@ -34,7 +34,7 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
 
 function isCustomTruthy(value: any): boolean {
-  return value === true || value === 'true';
+  return String(value) === 'true';
 }
 
 function memoize<T extends (...args: any[]) => any>(fn: T): T {
@@ -183,6 +183,7 @@ const transform: BabelTransformer['transform'] = ({
     if (!result) {
       // BabelTransformer specifies that the `ast` can never be null but
       // the function returns here. Discovered when typing `BabelNode`.
+      // @ts-expect-error: see https://github.com/facebook/react-native/blob/401991c3f073bf734ee04f9220751c227d2abd31/packages/react-native-babel-transformer/src/index.js#L220-L224
       return { ast: null };
     }
 

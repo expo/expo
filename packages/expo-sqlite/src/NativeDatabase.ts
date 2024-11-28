@@ -4,7 +4,7 @@ import { NativeStatement } from './NativeStatement';
  * A class that represents an instance of the SQLite database.
  */
 export declare class NativeDatabase {
-  constructor(databaseName: string, options?: SQLiteOpenOptions, serializedData?: Uint8Array);
+  constructor(databasePath: string, options?: SQLiteOpenOptions, serializedData?: Uint8Array);
 
   //#region Asynchronous API
 
@@ -36,6 +36,7 @@ export interface SQLiteOpenOptions {
   /**
    * Whether to enable the CR-SQLite extension.
    * @default false
+   * @deprecated CR-SQLite is no longer actively maintained. Its support is deprecated in SDK 52, and the option will be removed in SDK 53.
    */
   enableCRSQLite?: boolean;
 

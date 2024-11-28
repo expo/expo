@@ -23,7 +23,7 @@ export declare function setStylesItem({ item, xml, parent, }: {
     xml: ResourceXML;
     parent: {
         name: string;
-        parent: string;
+        parent?: string;
     };
 }): ResourceXML;
 export declare function removeStylesItem({ name, xml, parent, }: {
@@ -31,12 +31,20 @@ export declare function removeStylesItem({ name, xml, parent, }: {
     xml: ResourceXML;
     parent: {
         name: string;
-        parent: string;
+        parent?: string;
     };
 }): ResourceXML;
+/**
+ * @deprecated Use `getAppThemeGroup` instead.
+ * Matching on both style name and parent leads to prebuild issues, as `AppTheme`
+ * style parent might be changed (when edge-to-edge is enabled, for example).
+ */
 export declare function getAppThemeLightNoActionBarGroup(): {
     name: string;
     parent: string;
+};
+export declare function getAppThemeGroup(): {
+    name: string;
 };
 export declare function assignStylesValue(xml: ResourceXML, { add, value, targetApi, name, parent, }: {
     add: boolean;
@@ -45,7 +53,7 @@ export declare function assignStylesValue(xml: ResourceXML, { add, value, target
     name: string;
     parent: {
         name: string;
-        parent: string;
+        parent?: string;
     };
 }): ResourceXML;
 /**

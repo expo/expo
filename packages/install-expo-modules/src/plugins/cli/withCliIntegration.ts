@@ -65,14 +65,48 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      const babelConfigPath = path.join(config.modRequest.projectRoot, 'babel.config.js');
-      let contents = await fs.promises.readFile(babelConfigPath, 'utf8');
-      contents = updateBabelConfig(contents);
-      await fs.promises.writeFile(babelConfigPath, contents);
+      try {
+        const babelConfigPath = await findBabelConfigPathAsync(config.modRequest.projectRoot);
+        let contents = await fs.promises.readFile(babelConfigPath, 'utf8');
+        contents = updateBabelConfig(contents);
+        await fs.promises.writeFile(babelConfigPath, contents);
+      } catch {
+        console.warn(
+          '⚠️ Could not find Babel config file in the project root. Please manually update the Babel config to use `babel-preset-expo`.'
+        );
+      }
+
       return config;
     },
   ]);
 };
+
+async function findBabelConfigPathAsync(projectRoot: string): Promise<string> {
+  const babelConfigFiles = [
+    'babel.config.json',
+    'babel.config.js',
+    'babel.config.cjs',
+    'babel.config.mjs',
+    'babel.config.cts',
+    '.babelrc.json',
+    '.babelrc.js',
+    '.babelrc.cjs',
+    '.babelrc.mjs',
+    '.babelrc.cts',
+    '.babelrc',
+  ];
+
+  return Promise.any(
+    babelConfigFiles.map(async (filename) => {
+      const configPath = path.join(projectRoot, filename);
+      const stat = await fs.promises.stat(configPath);
+      if (!stat.isFile()) {
+        throw new Error(`Config file is not a file: ${configPath}`);
+      }
+      return configPath;
+    })
+  );
+}
 
 const withCliMetroConfig: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
@@ -114,7 +148,10 @@ export function updateAndroidGradleFile(contents: string): string {
 }
 
 export function updateBabelConfig(contents: string): string {
-  return contents.replace(/['"]module:metro-react-native-babel-preset['"]/g, `'babel-preset-expo'`);
+  return contents.replace(
+    /(['"])module:(metro-react-native-babel-preset|@react-native\/babel-preset)(['"])/g,
+    `$1babel-preset-expo$3`
+  );
 }
 
 export function updateMetroConfig(contents: string): string {

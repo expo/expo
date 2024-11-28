@@ -2,7 +2,7 @@ import JsonFile from '@expo/json-file';
 import path from 'path';
 
 import { EXPO_DIR, EXPO_GO_DIR } from './Constants';
-import { Package } from './Packages';
+import { DependencyKind, getPackageByName, Package } from './Packages';
 import { spawnAsync, spawnJSONCommandAsync } from './Utils';
 
 const NATIVE_APPS_PATHS = [EXPO_GO_DIR, path.join(EXPO_DIR, 'apps/bare-expo')];
@@ -11,9 +11,16 @@ const NATIVE_APPS_PATHS = [EXPO_GO_DIR, path.join(EXPO_DIR, 'apps/bare-expo')];
  * Workspace info for the single project.
  */
 export type WorkspaceProjectInfo = {
+  /** The relative location of the workspace within this monorepo */
   location: string;
-  workspaceDependencies: string[];
+  /** All `dependencies` or `devDependencies` that points to workspaces, but use a different version which is downloaded from npm */
   mismatchedWorkspaceDependencies: string[];
+  /** All `dependencies` or `devDependencies` that points to other workspaces in this monorepo */
+  workspaceDependencies: string[];
+  /** All `peerDependencies` that points to other workspaces in this monorepo */
+  workspacePeerDependencies: string[];
+  /** All `optionalDependencies` that points to other workspaces in this monorepo */
+  workspaceOptionalDependencies: string[];
 };
 
 /**
@@ -25,12 +32,39 @@ export type WorkspacesInfo = Record<string, WorkspaceProjectInfo>;
  * Returns an object containing info for all projects in the workspace.
  */
 export async function getInfoAsync(): Promise<WorkspacesInfo> {
+  // This only lists workspace dependencies from `dependencies` and `devDependencies`.
   const info = await spawnJSONCommandAsync<{ data: string }>('yarn', [
     '--json',
     'workspaces',
     'info',
   ]);
-  return JSON.parse(info.data);
+
+  const workspaces = JSON.parse(info.data) as WorkspacesInfo;
+
+  for (const workspaceName in workspaces) {
+    const workspace = workspaces[workspaceName];
+    const workspacePackage = getPackageByName(workspaceName);
+
+    if (!workspacePackage) {
+      workspace.workspacePeerDependencies = [];
+      workspace.workspaceOptionalDependencies = [];
+      continue;
+    }
+
+    // Load all `peerDependencies` of the workspace
+    workspace.workspacePeerDependencies = workspacePackage
+      .getDependencies([DependencyKind.Peer])
+      .filter((dependency) => !!workspaces[dependency.name])
+      .map((dependency) => dependency.name);
+
+    // Load all `optionalDependencies` of the workspace
+    workspace.workspaceOptionalDependencies = workspacePackage
+      .getDependencies([DependencyKind.Optional])
+      .filter((dependency) => !!workspaces[dependency.name])
+      .map((dependency) => dependency.name);
+  }
+
+  return workspaces;
 }
 
 /**

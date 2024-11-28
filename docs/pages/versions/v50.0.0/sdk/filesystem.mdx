@@ -7,11 +7,11 @@ iconUrl: '/static/images/packages/expo-file-system.png'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 
@@ -253,7 +253,7 @@ In this table, you can see what type of URI can be handled by each method. For e
 
 ### Android
 
-The following permissions are added automatically through this library's `AndroidManifest.xml`.
+The following permissions are added automatically through this library's **AndroidManifest.xml**:
 
 <AndroidPermissions permissions={['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE', 'INTERNET']} />
 

@@ -78,13 +78,13 @@ For more information, see [Working with monorepos](/guides/monorepos).
 
 <Collapsible summary="Out-of-memory (OOM) errors">
 
-If your build fails with "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)" in your Gradle logs, this may be because the Node process responsible for bundling your app JavaScript was killed.
+If your build fails with "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)" in your Gradle logs, this is because the Node process responsible for bundling your app JavaScript was killed.
 
 This can often be a sign that your app bundle is extremely large, which will make your overall app binary larger and lead to slow boot up times, especially on low-end Android devices. Sometimes the error can occur when large text files are treated as source code, for example, if you have a JavaScript file that contains a string of 1MB+ of HTML to load into a webview, or a similarly sized JSON file.
 
-To determine how large your bundle is and to see a breakdown of where the size comes from, use [react-native-bundle-visualizer](https://github.com/IjzerenHein/react-native-bundle-visualizer).
+To determine how large your bundle is and to see a breakdown of where the size comes from, use [Expo Atlas](/guides/analyzing-bundles/).
 
-To increase memory limits on your EAS Build builders, you can use [`large` resource class](/eas/json/#resourceclass) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
+To increase memory limits on your EAS Build builders, use [`large` resource class](/eas/json/#resourceclass) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
 
 </Collapsible>
 
@@ -130,7 +130,7 @@ You can verify that your project builds on your local machine with the `npx expo
   ]}
 />
 
-> If use [CNG](/workflow/continuous-native-generation.mdx), these commands will run `npx expo prebuild` to generate native projects to compile them.You likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, unless you want to start managing these projects directly instead of generating them on demand.
+> If use [CNG](/workflow/continuous-native-generation/), these commands will run `npx expo prebuild` to generate native projects to compile them.You likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, unless you want to start managing these projects directly instead of generating them on demand.
 >
 > <br />
 > You can alternatively run a local build with `eas build --local` &mdash; this command will run a

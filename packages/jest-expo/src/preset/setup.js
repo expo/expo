@@ -241,6 +241,23 @@ try {
         }
       }
     }
+
+    function requireMockModule(name) {
+      // Support auto-mocking of expo-modules that:
+      // 1. have a mock in the `mocks` directory
+      // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
+      const nativeModuleMock = attemptLookup(name) ?? ExpoModulesCore.requireNativeModule(name);
+      if (!nativeModuleMock) {
+        return null;
+      }
+
+      const nativeModule = new NativeModule();
+      for (const [key, value] of Object.entries(nativeModuleMock)) {
+        nativeModule[key] = typeof value === 'function' ? jest.fn(value) : value;
+      }
+      return nativeModule;
+    }
+
     return {
       ...ExpoModulesCore,
 
@@ -249,17 +266,13 @@ try {
       NativeModule,
       SharedObject,
 
-      requireNativeModule(name) {
-        // Support auto-mocking of expo-modules that:
-        // 1. have a mock in the `mocks` directory
-        // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
-        const nativeModuleMock = attemptLookup(name) ?? ExpoModulesCore.requireNativeModule(name);
-        const nativeModule = new NativeModule();
-
-        for (const [key, value] of Object.entries(nativeModuleMock)) {
-          nativeModule[key] = typeof value === 'function' ? jest.fn(value) : value;
+      requireOptionalNativeModule: requireMockModule,
+      requireNativeModule(moduleName) {
+        const module = requireMockModule(moduleName);
+        if (!module) {
+          throw new Error(`Cannot find native module '${moduleName}'`);
         }
-        return nativeModule;
+        return module;
       },
       requireNativeViewManager: (name) => {
         const nativeModuleMock = attemptLookup(name);

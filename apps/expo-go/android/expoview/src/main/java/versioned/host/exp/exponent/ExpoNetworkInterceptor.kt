@@ -2,78 +2,65 @@
 
 package versioned.host.exp.exponent
 
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.bridge.Inspector
-import com.facebook.react.devsupport.DevServerHelper
-import com.facebook.react.devsupport.DevSupportManagerBase
-import com.facebook.react.devsupport.InspectorPackagerConnection
+import android.net.Uri
+import android.util.Log
+import com.facebook.react.packagerconnection.ReconnectingWebSocket
 import expo.modules.kotlin.devtools.ExpoRequestCdpInterceptor
-import expo.modules.manifests.core.Manifest
 import java.io.Closeable
+import java.io.IOException
 
-@Suppress("unused")
-class ExpoNetworkInterceptor : Closeable, ExpoRequestCdpInterceptor.Delegate {
-  private var isStarted = false
-  private val inspectorPackagerConnection = InspectorPackagerConnectionWrapper()
-  private var reactInstanceManager: ReactInstanceManager? = null
+class ExpoNetworkInterceptor(private val appUrl: Uri) : Closeable, ExpoRequestCdpInterceptor.Delegate {
+  private var metroConnection: ReconnectingWebSocket? = null
 
-  fun start(manifest: Manifest, reactInstanceManager: ReactInstanceManager) {
-    val buildProps = (manifest?.getPluginProperties("expo-build-properties")?.get("android") as? Map<*, *>)
-      ?.mapKeys { it.key.toString() }
-    val enableNetworkInspector = buildProps?.get("networkInspector") as? Boolean ?: true
-    isStarted = enableNetworkInspector
-
-    this.onResume(reactInstanceManager)
+  init {
+    onResume()
   }
 
-  fun onResume(reactInstanceManager: ReactInstanceManager) {
-    if (!isStarted || !reactInstanceManager.devSupportManager.devSupportEnabled) {
-      return
-    }
-    this.reactInstanceManager = reactInstanceManager
+  fun onResume() {
+    metroConnection = createMetroConnection(appUrl)
     ExpoRequestCdpInterceptor.setDelegate(this)
   }
 
   fun onPause() {
-    if (!isStarted) {
-      return
-    }
     ExpoRequestCdpInterceptor.setDelegate(null)
-    this.reactInstanceManager = null
+    metroConnection?.closeQuietly()
+    metroConnection = null
   }
 
+  //region Closeable implementations
   override fun close() {
-    this.onPause()
+    onPause()
   }
+  //endregion Closeable implementations
 
+  //region ExpoRequestCdpInterceptor.Delegate implementations
   override fun dispatch(event: String) {
-    reactInstanceManager?.let {
-      inspectorPackagerConnection.sendWrappedEventToAllPages(it, event)
+    try {
+      metroConnection?.sendMessage(event)
+    } catch (_: IOException) {
+      Log.w(TAG, "Failed to send CDP network event")
     }
+  }
+  //endregion ExpoRequestCdpInterceptor.Delegate implementations
+
+  companion object {
+    private val TAG = ExpoNetworkInterceptor::class.java.simpleName
   }
 }
 
-/**
- * A `InspectorPackagerConnection` wrapper to expose private members with reflection
- */
-internal class InspectorPackagerConnectionWrapper {
-  private val devServerHelperField = DevSupportManagerBase::class.java.getDeclaredField("mDevServerHelper")
-  private val inspectorPackagerConnectionField = DevServerHelper::class.java.getDeclaredField("mInspectorPackagerConnection")
-  private val sendWrappedEventMethod = InspectorPackagerConnection::class.java.getDeclaredMethod("sendWrappedEvent", String::class.java, String::class.java)
+private fun createMetroConnection(appUrl: Uri): ReconnectingWebSocket {
+  val connection = ReconnectingWebSocket(
+    createNetworkInspectorUrl(appUrl),
+    null,
+    null
+  )
+  connection.connect()
+  return connection
+}
 
-  init {
-    devServerHelperField.isAccessible = true
-    inspectorPackagerConnectionField.isAccessible = true
-    sendWrappedEventMethod.isAccessible = true
-  }
-
-  fun sendWrappedEventToAllPages(reactInstanceManager: ReactInstanceManager, event: String) {
-    val devServerHelper = devServerHelperField[reactInstanceManager.devSupportManager]
-    val inspectorPackagerConnection = inspectorPackagerConnectionField[devServerHelper] as? InspectorPackagerConnection ?: return
-    for (page in Inspector.getPages()) {
-      if (!page.title.contains("Reanimated")) {
-        sendWrappedEventMethod.invoke(inspectorPackagerConnection, page.id.toString(), event)
-      }
-    }
-  }
+private fun createNetworkInspectorUrl(appUrl: Uri): String {
+  val host = appUrl.host ?: "localhost"
+  val port = if (appUrl.port > 0) appUrl.port else 8081
+  val scheme = if (appUrl.scheme == "https") "wss" else "ws"
+  return "$scheme://$host:$port/inspector/network"
 }

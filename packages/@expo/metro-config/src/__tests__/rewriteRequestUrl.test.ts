@@ -33,7 +33,7 @@ describe(getRewriteRequestUrl, () => {
         '/.expo/.virtual-metro-entry.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry'
       )
     ).toBe(
-      '/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=true'
+      '/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable'
     );
   });
   it(`rewrites expo request without changing preset transform options`, () => {
@@ -108,7 +108,7 @@ describe(getRewriteRequestUrl, () => {
     const rewrite = getRewriteRequestUrl('/');
 
     expect(rewrite('/.expo/.virtual-metro-entry.bundle?platform=ios')).toBe(
-      '/index.bundle?platform=ios&transform.routerRoot=foobar&transform.engine=hermes&transform.bytecode=true'
+      '/index.bundle?platform=ios&transform.routerRoot=foobar&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable'
     );
   });
 
@@ -128,7 +128,7 @@ describe(getRewriteRequestUrl, () => {
         'http://127.0.0.1:8081/.expo/.virtual-metro-entry.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry'
       )
     ).toBe(
-      'http://127.0.0.1:8081/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=true'
+      'http://127.0.0.1:8081/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable'
     );
   });
 });

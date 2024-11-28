@@ -156,35 +156,27 @@ public struct Conversions {
     appContext: AppContext? = nil,
     dynamicType: AnyDynamicType? = nil
   ) -> Any {
+    if let appContext, let result = try? dynamicType?.convertResult(value as Any, appContext: appContext) {
+      return result
+    }
+    return convertFunctionResultInRuntime(value, appContext: appContext)
+  }
+
+  /**
+   Converts the function result to the type that can later be converted to a JS value.
+   As opposed to `convertFunctionResult`, it has no information about the dynamic type,
+   so it is quite limited, e.g. it does not handle shared objects.
+   Currently it is required to handle results of the promise.
+   */
+  static func convertFunctionResultInRuntime<ValueType>(_ value: ValueType?, appContext: AppContext? = nil) -> Any {
     if let value = value as? Record {
-      return value.toDictionary()
+      return value.toDictionary(appContext: appContext)
     }
     if let value = value as? [Record] {
-      return value.map { $0.toDictionary() }
+      return value.map { $0.toDictionary(appContext: appContext) }
     }
     if let value = value as? any Enumerable {
       return value.anyRawValue
-    }
-    if let appContext {
-      if let value = value as? JavaScriptObjectBuilder {
-        // TODO: Handle errors
-        let object = try? value.build(appContext: appContext)
-        return object as Any
-      }
-
-      // If the returned value is a native shared object, create its JS representation and add the pair to the registry of shared objects.
-      if let value = value as? SharedObject, let dynamicType = asDynamicSharedObjectType(dynamicType) {
-        // If the JS object already exists, just return it.
-        if let object = value.getJavaScriptObject() {
-          return object
-        }
-        guard let object = try? appContext.newObject(nativeClassId: dynamicType.typeIdentifier) else {
-          log.warn("Unable to create a JS object for \(dynamicType.description)")
-          return Optional<Any>.none as Any
-        }
-        appContext.sharedObjectRegistry.add(native: value, javaScript: object)
-        return object
-      }
     }
     return value as Any
   }
@@ -197,6 +189,30 @@ public struct Conversions {
   internal class TooManyArgumentsException: GenericException<(count: Int, limit: Int)> {
     override var reason: String {
       "Native function expects \(formatPlural(param.limit, "argument")), but received \(param.count)"
+    }
+  }
+
+  /**
+   An exception thrown when the native value cannot be converted to JavaScript value.
+   */
+  internal final class ConversionToJSFailedException: GenericException<(kind: JavaScriptValueKind, nativeType: Any.Type)> {
+    override var code: String {
+      "ERR_CONVERTING_TO_JS_FAILED"
+    }
+    override var reason: String {
+      "Conversion from native '\(param.nativeType)' to JavaScript value of type '\(param.kind.rawValue)' failed"
+    }
+  }
+
+  /**
+   An exception thrown when the JavaScript value cannot be converted to native value.
+   */
+  internal final class ConversionToNativeFailedException: GenericException<(kind: JavaScriptValueKind, nativeType: Any.Type)> {
+    override var code: String {
+      "ERR_CONVERTING_TO_NATIVE_FAILED"
+    }
+    override var reason: String {
+      "Conversion from JavaScript value of type '\(param.kind.rawValue)' to native '\(param.nativeType)' failed"
     }
   }
 
@@ -273,14 +289,4 @@ public struct Conversions {
       "Provided hex color '\(param)' would result in an overflow"
     }
   }
-}
-
-/**
- Unwraps the dynamic optional type and returns as a dynamic shared object type if possible.
- */
-private func asDynamicSharedObjectType(_ dynamicType: AnyDynamicType?) -> DynamicSharedObjectType? {
-  if let dynamicType = dynamicType as? DynamicOptionalType {
-    return dynamicType.wrappedType as? DynamicSharedObjectType
-  }
-  return dynamicType as? DynamicSharedObjectType
 }

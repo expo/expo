@@ -3,10 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatArrayOfReactDelegateHandler = exports.generatePackageListAsync = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.getSwiftModuleNames = void 0;
+exports.formatArrayOfReactDelegateHandler = exports.generateModulesProviderAsync = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.getSwiftModuleNames = void 0;
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
+const fileUtils_1 = require("../fileUtils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
 const indent = '  ';
@@ -72,16 +74,17 @@ exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
-async function generatePackageListAsync(modules, targetPath) {
+async function generateModulesProviderAsync(modules, targetPath, entitlementPath) {
     const className = path_1.default.basename(targetPath, path_1.default.extname(targetPath));
-    const generatedFileContent = await generatePackageListFileContentAsync(modules, className);
+    const entitlements = await parseEntitlementsAsync(entitlementPath);
+    const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements);
     await fs_extra_1.default.outputFile(targetPath, generatedFileContent);
 }
-exports.generatePackageListAsync = generatePackageListAsync;
+exports.generateModulesProviderAsync = generateModulesProviderAsync;
 /**
  * Generates the string to put into the generated package list.
  */
-async function generatePackageListFileContentAsync(modules, className) {
+async function generatePackageListFileContentAsync(modules, className, entitlements) {
     const iosModules = modules.filter((module) => module.modules.length ||
         module.appDelegateSubscribers.length ||
         module.reactDelegateHandlers.length);
@@ -125,6 +128,10 @@ ${generateModuleClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)
 
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
 ${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDelegateHandlerModules)}
+  }
+
+  public override func getAppCodeSignEntitlements() -> AppCodeSignEntitlements {
+    return AppCodeSignEntitlements.from(json: #"${JSON.stringify(entitlements)}"#)
   }
 }
 `;
@@ -182,5 +189,15 @@ function wrapInDebugConfigurationCheck(indentationLevel, debugBlock, releaseBloc
         return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(indentationLevel)}${debugBlock}\n${indent.repeat(indentationLevel)}#else\n${indent.repeat(indentationLevel)}${releaseBlock}\n${indent.repeat(indentationLevel)}#endif`;
     }
     return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(indentationLevel)}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
+}
+async function parseEntitlementsAsync(entitlementPath) {
+    if (!(await (0, fileUtils_1.fileExistsAsync)(entitlementPath))) {
+        return {};
+    }
+    const { stdout } = await (0, spawn_async_1.default)('plutil', ['-convert', 'json', '-o', '-', entitlementPath]);
+    const entitlementsJson = JSON.parse(stdout);
+    return {
+        appGroups: entitlementsJson['com.apple.security.application-groups'] || undefined,
+    };
 }
 //# sourceMappingURL=apple.js.map

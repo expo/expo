@@ -51,7 +51,7 @@ describe(installExpoPackageAsync, () => {
       followUpCommandArgs: [],
     });
     expect(packageManager.addAsync).toHaveBeenCalledWith(['expo@latest']);
-    expect(spawnAsync).not.toBeCalled();
+    expect(spawnAsync).not.toHaveBeenCalled();
   });
 
   it(`Does not run follow-up command if first command fails`, async () => {
@@ -65,13 +65,12 @@ describe(installExpoPackageAsync, () => {
         expoPackageToInstall: 'expo@latest',
         followUpCommandArgs: ['--fix'],
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {}
+    } catch {}
     expect(packageManager.addAsync).toHaveBeenCalledWith(['expo@latest']);
     expect(Log.error).toHaveBeenCalledWith(
       expect.stringContaining('Cannot install the latest Expo package')
     );
-    expect(spawnAsync).not.toBeCalled();
+    expect(spawnAsync).not.toHaveBeenCalled();
   });
 
   it(`Installs dev dependencies`, async () => {
@@ -83,6 +82,6 @@ describe(installExpoPackageAsync, () => {
       followUpCommandArgs: [],
     });
     expect(packageManager.addAsync).toHaveBeenCalledWith(['expo@latest']);
-    expect(spawnAsync).not.toBeCalled();
+    expect(spawnAsync).not.toHaveBeenCalled();
   });
 });

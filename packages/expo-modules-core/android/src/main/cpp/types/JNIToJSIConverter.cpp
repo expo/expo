@@ -44,33 +44,48 @@ std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, 
 jsi::Value convert(
   JNIEnv *env,
   jsi::Runtime &rt,
-  jni::local_ref<jobject> value
+  const jni::local_ref<jobject> &value
 ) {
   if (value == nullptr) {
-    return jsi::Value::undefined();
+    return jsi::Value::null();
   }
   auto unpackedValue = value.get();
-  auto cache = JavaReferencesCache::instance();
+  auto &cache = JCacheHolder::get();
 
-#define CAST_AND_RETURN(type, classId) \
-  if (env->IsInstanceOf(unpackedValue, cache->getJClass(#classId).clazz)) { \
-    return convertToJS(rt, jni::static_ref_cast<type>(value)); \
+  // We could use jni::static_ref_cast here. It will lead to the creation of a new local reference.
+  // Which is actually slow. We can use some pointer magic to avoid it.
+#define CAST_AND_RETURN(type, clazz) \
+  if (env->IsInstanceOf(unpackedValue, clazz)) { \
+    return convertToJS(env, rt, *((jni::local_ref<type>*)((void*)&value))); \
   }
+#define COMMA ,
 
-  CAST_AND_RETURN(jni::JDouble, java/lang/Double)
-  CAST_AND_RETURN(jni::JInteger, java/lang/Integer)
-  CAST_AND_RETURN(jni::JLong, java/lang/Long)
-  CAST_AND_RETURN(jni::JString, java/lang/String)
-  CAST_AND_RETURN(jni::JBoolean, java/lang/Boolean)
-  CAST_AND_RETURN(jni::JFloat, java/lang/Float)
-  CAST_AND_RETURN(react::WritableNativeArray::javaobject, com/facebook/react/bridge/WritableNativeArray)
-  CAST_AND_RETURN(react::WritableNativeMap::javaobject, com/facebook/react/bridge/WritableNativeMap)
-  CAST_AND_RETURN(JavaScriptModuleObject::javaobject, expo/modules/kotlin/jni/JavaScriptModuleObject)
-  CAST_AND_RETURN(JSharedObject::javaobject, expo/modules/kotlin/sharedobjects/SharedObject)
-  CAST_AND_RETURN(JavaScriptTypedArray::javaobject, expo/modules/kotlin/jni/JavaScriptTypedArray)
+  CAST_AND_RETURN(jni::JDouble, cache.jDouble.clazz)
+  CAST_AND_RETURN(jni::JInteger, cache.jInteger.clazz)
+  CAST_AND_RETURN(jni::JLong, cache.jLong.clazz)
+  CAST_AND_RETURN(jni::JString, cache.jString)
+  CAST_AND_RETURN(jni::JBoolean, cache.jBoolean.clazz)
+  CAST_AND_RETURN(jni::JFloat, cache.jFloat.clazz)
+  CAST_AND_RETURN(react::WritableNativeArray::javaobject, cache.jWritableNativeArray)
+  CAST_AND_RETURN(react::WritableNativeMap::javaobject, cache.jWritableNativeMap)
+  CAST_AND_RETURN(JavaScriptModuleObject::javaobject, cache.jJavaScriptModuleObject)
+  CAST_AND_RETURN(JSharedObject::javaobject, cache.jSharedObject)
+  CAST_AND_RETURN(JavaScriptTypedArray::javaobject, cache.jJavaScriptTypedArray)
+
+  CAST_AND_RETURN(jni::JMap<jstring COMMA jobject>, cache.jMap)
+  CAST_AND_RETURN(jni::JCollection<jobject>, cache.jCollection)
+
+  // Primitives arrays
+  CAST_AND_RETURN(jni::JArrayDouble, cache.jDoubleArray)
+  CAST_AND_RETURN(jni::JArrayBoolean, cache.jBooleanArray)
+  CAST_AND_RETURN(jni::JArrayInt, cache.jIntegerArray)
+  CAST_AND_RETURN(jni::JArrayLong, cache.jLongArray)
+  CAST_AND_RETURN(jni::JArrayFloat, cache.jFloatArray)
+
+#undef COMMA
+#undef CAST_AND_RETURN
 
   return jsi::Value::undefined();
-#undef CAST_AND_RETURN
 }
 
 std::optional<jsi::Value> decorateValueForDynamicExtension(jsi::Runtime &rt, const jsi::Value &value) {

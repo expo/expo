@@ -1,11 +1,21 @@
+import { mkdirSync } from 'fs';
+import { join } from 'path';
+
 import spawnAsync from '@expo/spawn-async';
-import temporary from 'tempy';
+import tempDir from 'temp-dir';
+import uniqueString from 'unique-string';
+
+function temporaryDirectory() {
+  const directory = join(tempDir, uniqueString());
+  mkdirSync(directory);
+  return directory;
+}
 
 jest.setTimeout(1000 * 60 * 5);
 
 describe('findSharpInstanceAsync', () => {
   beforeEach(async () => {
-    await spawnAsync('yarn', ['config', 'set', 'global-folder', temporary.directory()]);
+    await spawnAsync('yarn', ['config', 'set', 'global-folder', temporaryDirectory()]);
   });
 
   afterEach(async () => {

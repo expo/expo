@@ -8,7 +8,7 @@
     android:largeScreens="true"
     android:normalScreens="true"
     android:smallScreens="true"
-    android:xlargeScreens="true"></supports-screens>
+    android:xlargeScreens="true"/>
   <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
 
   <uses-permission android:name="android.permission.INTERNET" />
@@ -17,7 +17,6 @@
   <uses-permission android:name="host.exp.exponent.permission.C2D_MESSAGE" />
   <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-  <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
   <uses-permission android:name="android.permission.USE_FINGERPRINT" />
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
   <!-- Used by react-native-netinfo module -->
@@ -36,6 +35,8 @@
   <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
 
+  <!-- Remove permission required for pedometer to avoid incorrectly being classified as a health app -->
+  <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" tools:node="remove"/>
 
   <uses-feature
     android:name="android.hardware.camera"
@@ -65,7 +66,7 @@
     android:name="android.hardware.bluetooth"
     android:required="false" />
 
-  <application>
+  <application android:theme="@style/AppTheme">
 
     <!-- WHEN_VERSIONING_REMOVE_FROM_HERE -->
     <!-- Scheduled notifications -->

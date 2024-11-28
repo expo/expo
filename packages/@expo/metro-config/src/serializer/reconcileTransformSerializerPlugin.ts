@@ -8,7 +8,6 @@ import generate from '@babel/generator';
 import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import countLines from 'metro/src/lib/countLines';
 import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
@@ -19,6 +18,7 @@ import collectDependencies, {
   Dependency,
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from '../transform-worker/collect-dependencies';
+import { countLinesAndTerminateMap } from '../transform-worker/count-lines';
 import {
   applyImportSupport,
   InvalidRequireCallError,
@@ -95,7 +95,11 @@ export async function reconcileTransformSerializerPlugin(
     value: Module<MixedOutput>,
     outputItem: ExpoJsOutput
   ): Promise<ExpoJsOutput> {
-    if (outputItem.type !== 'js/module' || value.path.endsWith('.json')) {
+    if (
+      outputItem.type !== 'js/module' ||
+      value.path.endsWith('.json') ||
+      value.path.match(/\.(s?css|sass)$/)
+    ) {
       debug('Skipping post transform for non-js/module: ' + value.path);
       return outputItem;
     }
@@ -103,6 +107,7 @@ export async function reconcileTransformSerializerPlugin(
     // This should be cached by the transform worker for use here to ensure close to consistent
     // results between the tree-shake and the final transform.
     const reconcile = outputItem.data.reconcile;
+
     assert(reconcile, 'reconcile settings are required in the module graph for post transform.');
 
     let ast = outputItem.data.ast;
@@ -171,7 +176,6 @@ export async function reconcileTransformSerializerPlugin(
       reconcile.importAll,
       dependencyMapName,
       reconcile.globalPrefix,
-      // @ts-expect-error: not on type yet...
       reconcile.unstable_renameRequire === false
     );
 
@@ -219,13 +223,16 @@ export async function reconcileTransformSerializerPlugin(
       ));
     }
 
+    let lineCount;
+    ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+
     return {
       ...outputItem,
       data: {
         ...outputItem.data,
         code,
         map,
-        lineCount: countLines(code),
+        lineCount,
         functionMap:
           // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
           ast.metadata?.metro?.functionMap ??

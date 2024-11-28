@@ -44,7 +44,6 @@ const template_1 = __importDefault(require("@babel/template"));
 const t = __importStar(require("@babel/types"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
 const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_cache_1 = require("metro-cache");
 const metro_cache_key_1 = __importDefault(require("metro-cache-key"));
 const metro_source_map_1 = require("metro-source-map");
@@ -53,6 +52,7 @@ const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
+const count_lines_1 = require("./count-lines");
 const resolveOptions_1 = require("./resolveOptions");
 class InvalidRequireCallError extends Error {
     innerError;
@@ -238,7 +238,7 @@ async function transformJS(file, { config, options }) {
     file.type === 'js/module' &&
         String(options.customTransformOptions?.optimize) === 'true' &&
         // Disable tree shaking on JSON files.
-        !file.filename.endsWith('.json');
+        !file.filename.match(/\.(json|s?css|sass)$/);
     const unstable_disableModuleWrapping = optimize || config.unstable_disableModuleWrapping;
     if (optimize && !options.experimentalImportSupport) {
         // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
@@ -252,7 +252,6 @@ async function transformJS(file, { config, options }) {
     // Add "use strict" if the file was parsed as a module, and the directive did
     // not exist yet.
     applyUseStrictDirective(ast);
-    // @ts-expect-error: Not on types yet (Metro 0.80).
     const unstable_renameRequire = config.unstable_renameRequire;
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
     if (!optimize) {
@@ -320,7 +319,6 @@ async function transformJS(file, { config, options }) {
             // TODO: This config is optional to allow its introduction in a minor
             // release. It should be made non-optional in ConfigT or removed in
             // future.
-            // @ts-expect-error: Not on types yet (Metro 0.80.9).
             unstable_renameRequire === false));
         }
     }
@@ -376,15 +374,19 @@ async function transformJS(file, { config, options }) {
             unstable_renameRequire,
         }
         : undefined;
+    let lineCount;
+    ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
     const output = [
         {
             data: {
                 code,
-                lineCount: (0, countLines_1.default)(code),
+                lineCount,
                 map,
                 functionMap: file.functionMap,
                 hasCjsExports: file.hasCjsExports,
+                reactServerReference: file.reactServerReference,
                 reactClientReference: file.reactClientReference,
+                expoDomComponentReference: file.expoDomComponentReference,
                 ...(possibleReconcile
                     ? {
                         ast: wrappedAst,
@@ -446,7 +448,9 @@ async function transformJSWithBabel(file, context) {
             transformResult.functionMap ??
             null,
         hasCjsExports: transformResult.metadata?.hasCjsExports,
+        reactServerReference: transformResult.metadata?.reactServerReference,
         reactClientReference: transformResult.metadata?.reactClientReference,
+        expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
     };
     return await transformJS(jsFile, context);
 }
@@ -469,9 +473,11 @@ async function transformJSON(file, { options, config }) {
     else {
         jsType = 'js/module';
     }
+    let lineCount;
+    ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
     const output = [
         {
-            data: { code, lineCount: (0, countLines_1.default)(code), map, functionMap: null },
+            data: { code, lineCount, map, functionMap: null },
             type: jsType,
         },
     ];
@@ -571,6 +577,7 @@ exports.getCacheKey = getCacheKey;
 const makeShimAsyncRequireTemplate = template_1.default.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
 const disabledDependencyTransformer = {
     transformSyncRequire: (path) => { },
+    transformImportMaybeSyncCall: () => { },
     transformImportCall: (path, dependency, state) => {
         // HACK: Ensure the async import code is included in the bundle when an import() call is found.
         let topParent = path;

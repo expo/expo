@@ -47,7 +47,7 @@ private:
   friend HybridBase;
   friend NativeDatabaseBinding;
 
-  sqlite3_stmt *stmt;
+  exsqlite3_stmt *stmt;
 };
 
 /**

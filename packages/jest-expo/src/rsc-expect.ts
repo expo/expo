@@ -1,49 +1,56 @@
 import 'server-only';
 
-import matchers from 'expect/build/matchers';
+import { expect } from '@jest/globals';
 import { toMatchSnapshot } from 'jest-snapshot';
-import React from 'react';
+import type { ReadableStream } from 'node:stream/web';
+import type { ReactNode } from 'react';
 
 import { streamToString, renderJsxToFlightStringAsync } from './rsc-utils';
 
-matchers.customTesters = [];
-
-async function resolveFlightInputAsync(data: React.ReactNode | ReadableStream) {
-  if ('getReader' in data) {
-    return (await streamToString(data)).trim();
-  }
-  const resolved = await renderJsxToFlightStringAsync(data);
-  return resolved.trim();
+/** Resolve the JSX data source to string, from either streaming or JSX flight rendering */
+async function resolveFlightInputAsync(data: ReactNode | ReadableStream): Promise<string> {
+  return data && typeof data === 'object' && 'getReader' in data
+    ? (await streamToString(data)).trim()
+    : (await renderJsxToFlightStringAsync(data)).trim();
 }
 
-function flightInputAsStringOrPromise(data: any) {
-  if (typeof data === 'string') {
-    return data;
-  }
-  return new Promise(async (res, rej) => {
-    resolveFlightInputAsync(data).then(res).catch(rej);
-  });
+/** Return the resolved JSX flight input as string, or string promise */
+function flightInputAsStringOrPromise(data: ReactNode | ReadableStream): string | Promise<string> {
+  return typeof data === 'string' ? data : resolveFlightInputAsync(data);
 }
 
 expect.extend({
-  toMatchFlight(data: string | React.ReactNode | ReadableStream, input: string) {
-    const resolved = flightInputAsStringOrPromise(data);
+  // Types and jsdocs are defined in ./index.d.ts
+  toMatchFlight(data: ReactNode | ReadableStream, expectedInput: string) {
+    const inputStringOrPromise = flightInputAsStringOrPromise(data);
 
-    if (typeof resolved === 'string') {
-      return matchers.toEqual(resolved, input);
-    }
+    const createTestResult = (receivedInput: string) => {
+      return {
+        // Only pass when the resolvedInput "equals" the input string
+        pass: this.equals(receivedInput, expectedInput),
+        message: () => {
+          const received = this.utils.printReceived(receivedInput);
+          const expected = this.utils.printExpected(expectedInput);
+          return this.isNot
+            ? `expected RSC flight ${received} NOT to equal ${expected}`
+            : `expected RSC flight ${received} to equal ${expected}`;
+        },
+      };
+    };
 
-    return new Promise(async (res, rej) => {
-      try {
-        const resolvedString = await resolved;
-        res(matchers.toEqual(resolvedString, input));
-      } catch (e) {
-        rej(e);
-      }
-    });
+    // Handle both sync and async input data
+    return typeof inputStringOrPromise === 'string'
+      ? createTestResult(inputStringOrPromise)
+      : inputStringOrPromise.then(createTestResult);
   },
-  async toMatchFlightSnapshot(this: any, data: string | React.ReactNode | ReadableStream) {
-    const resolved = await flightInputAsStringOrPromise(data);
-    return toMatchSnapshot.call(this, resolved);
+
+  // Types and jsdocs are defined in ./index.d.ts
+  async toMatchFlightSnapshot(data: ReactNode | ReadableStream) {
+    // See: https://jestjs.io/docs/expect#async
+    Object.defineProperty(this, 'error', { value: new Error() });
+
+    const resolvedString = await flightInputAsStringOrPromise(data);
+    // @ts-expect-error - Snapshot contexts have an additional snapshotState, which is handled by Jest
+    return toMatchSnapshot.call(this, resolvedString);
   },
 });

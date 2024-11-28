@@ -15,6 +15,7 @@
     "privacy": "unlisted",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
+    "userInterfaceStyle": "automatic",
     "android": {
       "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
       "adaptiveIcon": {
@@ -30,7 +31,10 @@
       ],
       "bundleIdentifier": "dev.expo.Payments",
       "supportsTablet": true,
-      "requireFullScreen": false
+      "requireFullScreen": false,
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.dev.expo.Payments"]
+      }
     },
     "web": {
       "bundler": "metro"
@@ -44,9 +48,7 @@
         "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
     },
@@ -62,7 +64,8 @@
       [
         "expo-location",
         {
-          "isAndroidBackgroundLocationEnabled": true
+          "isAndroidBackgroundLocationEnabled": true,
+          "isIosBackgroundLocationEnabled": true
         }
       ],
       [
@@ -79,7 +82,16 @@
           "userTrackingPermission": "Allow Expo projects to use data for tracking the user or the device"
         }
       ],
-      "./plugins/withAndroidNetworkSecurityConfig"
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true
+          }
+        }
+      ],
+      "./plugins/withAndroidNetworkSecurityConfig",
+      "./plugins/withBenchmarkModules"
     ]
   }
 }

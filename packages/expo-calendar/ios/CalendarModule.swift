@@ -5,7 +5,10 @@ import EventKitUI
 
 public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
-  private var eventStore = EKEventStore()
+  private static let sharedEventStore = EKEventStore()
+  private var eventStore: EKEventStore {
+    return CalendarModule.sharedEventStore
+  }
   private var calendarDialogDelegate: CalendarDialogDelegate?
 
   // swiftlint:disable:next cyclomatic_complexity
@@ -393,6 +396,13 @@ public class CalendarModule: Module {
     }
     if let endDate = event.endDate {
       calendarEvent.endDate = parse(date: endDate)
+    }
+
+    if let calendarId = event.calendarId {
+      guard let calendar = eventStore.calendar(withIdentifier: calendarId) else {
+        throw CalendarIdNotFoundException(calendarId)
+      }
+      calendarEvent.calendar = calendar
     }
 
     calendarEvent.title = event.title

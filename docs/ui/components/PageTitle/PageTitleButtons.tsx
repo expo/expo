@@ -19,12 +19,12 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
       {!sourceCodeUrl && !packageName && router?.pathname && (
         <Button
           theme="quaternary"
-          className="px-2 justify-center"
+          className="justify-center px-2"
           openInNewTab
           href={githubUrl(router.pathname)}
           title="Edit content of this page on GitHub">
           <div className="flex flex-row items-center gap-2">
-            <Edit05Icon className="text-icon-secondary icon-sm" />
+            <Edit05Icon className="icon-sm text-icon-secondary" />
             <CALLOUT crawlable={false} theme="secondary">
               Edit this page
             </CALLOUT>
@@ -34,7 +34,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
       {sourceCodeUrl && (
         <Button
           theme="quaternary"
-          className="min-h-[48px] min-w-[60px] px-2 justify-center max-xl-gutters:min-h-[unset]"
+          className="min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset]"
           openInNewTab
           href={sourceCodeUrl}
           title={`View source code of ${packageName} on GitHub`}>
@@ -54,7 +54,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
         <Button
           theme="quaternary"
           openInNewTab
-          className="min-h-[48px] min-w-[60px] px-2 justify-center max-xl-gutters:min-h-[unset]"
+          className="min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset]"
           href={`https://www.npmjs.com/package/${packageName}`}
           title="View package in npm Registry">
           <div

@@ -3,7 +3,6 @@ import invariant from 'invariant';
 import * as CapabilityUtils from './WebCapabilityUtils';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
 import { requestUserMediaAsync } from './WebUserMediaManager';
-import { CameraType, ImageType, } from '../legacy/Camera.types';
 export function getImageSize(videoWidth, videoHeight, scale) {
     const width = videoWidth * scale;
     const ratio = videoWidth / width;
@@ -14,9 +13,10 @@ export function getImageSize(videoWidth, videoHeight, scale) {
     };
 }
 export function toDataURL(canvas, imageType, quality) {
-    invariant(Object.values(ImageType).includes(imageType), `expo-camera: ${imageType} is not a valid ImageType. Expected a string from: ${Object.values(ImageType).join(', ')}`);
+    const types = ['png', 'jpg'];
+    invariant(types.includes(imageType), `expo-camera: ${imageType} is not a valid ImageType. Expected a string from: ${types.join(', ')}`);
     const format = ImageTypeFormat[imageType];
-    if (imageType === ImageType.jpg) {
+    if (imageType === 'jpg') {
         invariant(quality <= 1 && quality >= 0, `expo-camera: ${quality} is not a valid image quality. Expected a number from 0...1`);
         return canvas.toDataURL(format, quality);
     }
@@ -30,7 +30,7 @@ export function hasValidConstraints(preferredCameraType, width, height) {
 function ensureCameraPictureOptions(config) {
     const captureOptions = {
         scale: 1,
-        imageType: ImageType.png,
+        imageType: 'png',
         isImageMirror: false,
     };
     for (const key in config) {
@@ -99,7 +99,8 @@ export function getIdealConstraints(preferredCameraType, width, height) {
     if (!supports || !supports.facingMode || !supports.width || !supports.height) {
         return MinimumConstraints;
     }
-    if (preferredCameraType && Object.values(CameraType).includes(preferredCameraType)) {
+    const types = ['front', 'back'];
+    if (preferredCameraType && types.includes(preferredCameraType)) {
         const facingMode = CameraTypeToFacingMode[preferredCameraType];
         if (isWebKit()) {
             const key = facingMode === 'user' ? 'exact' : 'ideal';
@@ -137,7 +138,7 @@ export async function getPreferredStreamDevice(preferredCameraType, preferredWid
         // A hack on desktop browsers to ensure any camera is used.
         // eslint-disable-next-line no-undef
         if (error instanceof OverconstrainedError && error.constraint === 'facingMode') {
-            const nextCameraType = preferredCameraType === CameraType.back ? CameraType.front : CameraType.back;
+            const nextCameraType = preferredCameraType === 'back' ? 'front' : 'back';
             return await getStreamDevice(nextCameraType, preferredWidth, preferredHeight);
         }
         throw error;

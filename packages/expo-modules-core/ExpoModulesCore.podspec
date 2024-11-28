@@ -1,5 +1,11 @@
 require 'json'
 
+unless defined?(install_modules_dependencies)
+  # `install_modules_dependencies` and `add_dependency` are defined in react_native_pods.rb.
+  # When running with `pod ipc spec`, these methods are not defined and we have to require manually.
+  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+end
+
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 reactNativeVersion = '0.0.0'
@@ -11,10 +17,17 @@ end
 
 reactNativeTargetVersion = reactNativeVersion.split('.')[1].to_i
 
-fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-fabric_compiler_flags = '-DRN_FABRIC_ENABLED -DRCT_NEW_ARCH_ENABLED'
-folly_version = '2022.05.16.00'
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
+use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+new_arch_compiler_flags = '-DRCT_NEW_ARCH_ENABLED'
+compiler_flags = get_folly_config()[:compiler_flags] + ' ' + "-DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
+
+if use_hermes
+  compiler_flags << ' -DUSE_HERMES'
+end
+if new_arch_enabled
+  compiler_flags << ' ' << new_arch_compiler_flags
+end
 
 Pod::Spec.new do |s|
   s.name           = 'ExpoModulesCore'
@@ -25,9 +38,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms       = {
-    :ios => '13.4',
+    :ios => '15.1',
     :osx => '10.15',
-    :tvos => '13.4'
+    :tvos => '15.1'
   }
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -35,28 +48,38 @@ Pod::Spec.new do |s|
   s.header_dir     = 'ExpoModulesCore'
 
   header_search_paths = [
+    '"$(PODS_ROOT)/Headers/Private/React-Core"', # as React-RCTAppDelegate.podspec to access JSCExecutorFactory.h
   ]
-
+  if ENV['USE_FRAMEWORKS']
+    header_search_paths.concat([
+      # [begin] transitive dependencies of React-RCTAppDelegate that are not defined modules
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeApple/React_RuntimeApple.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeCore/React_RuntimeCore.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspector/jsinspector_modern.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererconsistency/React_rendererconsistency.framework/Headers"',
+      # [end] transitive dependencies of React-RCTAppDelegate that are not defined modules
+    ])
+  end
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
+    'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''}",
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
-    'OTHER_SWIFT_FLAGS' => "$(inherited) #{fabric_enabled ? fabric_compiler_flags : ''}"
   }
-  user_header_search_paths = [
-    '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
-    '"$(PODS_ROOT)/Headers/Private/Yoga"', # Expo.h -> ExpoModulesCore-umbrella.h -> Fabric ViewProps.h -> Private Yoga headers
-  ]
   s.user_target_xcconfig = {
-    "HEADER_SEARCH_PATHS" => user_header_search_paths,
+    "HEADER_SEARCH_PATHS" => [
+      '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
+      '"$(PODS_ROOT)/Headers/Private/Yoga"', # Expo.h -> ExpoModulesCore-umbrella.h -> Fabric ViewProps.h -> Private Yoga headers
+    ],
   }
 
-  compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
-  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
-    compiler_flags += ' -DUSE_HERMES'
+  if use_hermes
     s.dependency 'hermes-engine'
     add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   else
@@ -67,35 +90,12 @@ Pod::Spec.new do |s|
   s.dependency 'ReactCommon/turbomodule/core'
   s.dependency 'React-RCTAppDelegate'
   s.dependency 'React-NativeModulesApple'
+  s.dependency 'React-RCTFabric'
 
-  if fabric_enabled
-    compiler_flags << ' ' << fabric_compiler_flags
-
-    s.dependency 'React-RCTFabric'
-    s.dependency 'RCT-Folly', folly_version
-  end
-
-  unless defined?(install_modules_dependencies)
-    # `install_modules_dependencies` is defined from react_native_pods.rb.
-    # when running with `pod ipc spec`, this method is not defined and we have to require manually.
-    require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
-  end
   install_modules_dependencies(s)
 
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("ios/#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-    s.source_files = 'ios/**/*.h', 'common/cpp/**/*.h'
-    s.vendored_frameworks = "ios/#{s.name}.xcframework"
-  else
-    s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-  end
-
-  exclude_files = ['ios/Tests/']
-  if !fabric_enabled
-    exclude_files.append('ios/Fabric/')
-    exclude_files.append('common/cpp/fabric/')
-  end
-
-  s.exclude_files = exclude_files
+  s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
+  s.exclude_files = ['ios/Tests/']
   s.compiler_flags = compiler_flags
   s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
 

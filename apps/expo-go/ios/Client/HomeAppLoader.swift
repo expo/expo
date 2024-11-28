@@ -21,6 +21,7 @@ final class HomeAppLoader: AppLoader {
   required init(
     manifestAndAssetRequestHeaders: ManifestAndAssetRequestHeaders,
     config: UpdatesConfig,
+    logger: UpdatesLogger,
     database: UpdatesDatabase,
     directory: URL,
     launchedUpdate: Update?,
@@ -29,7 +30,7 @@ final class HomeAppLoader: AppLoader {
     self.manifestAndAssetRequestHeaders = manifestAndAssetRequestHeaders
     self.downloader = FileDownloader(config: config)
     self.completionQueue = completionQueue
-    super.init(config: config, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
+    super.init(config: config, logger: logger, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
   }
 
   func loadHome(
@@ -82,13 +83,7 @@ final class HomeAppLoader: AppLoader {
       } else {
         guard let assetUrl = asset.url else {
           self.handleAssetDownload(
-            withError: NSError(
-              domain: HomeAppLoader.ErrorDomain,
-              code: 1006,
-              userInfo: [
-                NSLocalizedDescriptionKey: "Failed to download asset with no URL provided"
-              ]
-            ),
+            withError: UpdatesError.remoteAppLoaderAssetMissingUrl,
             asset: asset
           )
           return

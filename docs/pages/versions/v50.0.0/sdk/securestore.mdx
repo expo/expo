@@ -7,13 +7,13 @@ iconUrl: '/static/images/packages/expo-secure-store.png'
 ---
 
 import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import {
   ConfigPluginExample,
   ConfigReactNative,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-secure-store` provides a way to encrypt and securely store key-value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.
@@ -114,7 +114,7 @@ Setting this property automatically handles the compliance information prompt.
 <SnackInline label='SecureStore' dependencies={['expo-secure-store']} platforms={['ios', 'android']}>
 
 ```jsx
-import * as React from 'react';
+import { useState } from 'react';
 import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
@@ -132,8 +132,8 @@ async function getValueFor(key) {
 }
 
 export default function App() {
-  const [key, onChangeKey] = React.useState('Your key here');
-  const [value, onChangeValue] = React.useState('Your value here');
+  const [key, onChangeKey] = useState('Your key here');
+  const [value, onChangeValue] = useState('Your value here');
 
   return (
     <View style={styles.container}>

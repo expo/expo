@@ -10,8 +10,6 @@
 #define EX_EXTERN_C_END
 #endif
 
-EX_EXTERN_C_BEGIN
-
 #define EX_EXPORTED_METHODS_PREFIX __ex_export__
 #define EX_PROPSETTERS_PREFIX __ex_set__
 
@@ -110,5 +108,3 @@ EX_EXTERN NSApplication *EXSharedApplication(void);
 #else
 EX_EXTERN UIApplication *EXSharedApplication(void);
 #endif
-
-EX_EXTERN_C_END

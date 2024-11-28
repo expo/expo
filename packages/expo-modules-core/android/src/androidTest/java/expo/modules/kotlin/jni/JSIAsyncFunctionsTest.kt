@@ -259,6 +259,22 @@ class JSIAsyncFunctionsTest {
     Truth.assertThat(e4).isEqualTo(4)
   }
 
+  @Test
+  fun long_array_should_be_convertible() = withSingleModule({
+    AsyncFunction("longArray") { a: LongArray -> a }
+  }) {
+    val array = callAsync("longArray", "[1, 2, 3]").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getDouble()
+    val e2 = array[1].getDouble()
+    val e3 = array[2].getDouble()
+
+    Truth.assertThat(e1).isEqualTo(1.0)
+    Truth.assertThat(e2).isEqualTo(2.0)
+    Truth.assertThat(e3).isEqualTo(3.0)
+  }
+
   private class MySharedRef(value: Int, runtimeContext: RuntimeContext) : SharedRef<Int>(value, runtimeContext)
 
   @Test

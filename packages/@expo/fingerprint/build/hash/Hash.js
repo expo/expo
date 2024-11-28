@@ -67,7 +67,7 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
     // Backup code for faster hashing
     /*
     return limiter(async () => {
-      if (isIgnoredPath(filePath, options.ignorePaths)) {
+      if (isIgnoredPathWithMatchObjects(filePath, options.ignorePathMatchObjects)) {
         return null;
       }
   
@@ -87,7 +87,7 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
     */
     return limiter(() => {
         return new Promise((resolve, reject) => {
-            if ((0, Path_1.isIgnoredPath)(filePath, options.ignorePaths)) {
+            if ((0, Path_1.isIgnoredPathWithMatchObjects)(filePath, options.ignorePathMatchObjects)) {
                 return resolve(null);
             }
             let resolved = false;
@@ -132,7 +132,7 @@ exports.createFileHashResultsAsync = createFileHashResultsAsync;
  * If the dir is excluded, returns null rather than a HashResult
  */
 async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options, depth = 0) {
-    if ((0, Path_1.isIgnoredPath)(dirPath, options.ignorePaths)) {
+    if ((0, Path_1.isIgnoredPathWithMatchObjects)(dirPath, options.ignorePathMatchObjects)) {
         return null;
     }
     const dirents = (await promises_1.default.readdir(path_1.default.join(projectRoot, dirPath), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));

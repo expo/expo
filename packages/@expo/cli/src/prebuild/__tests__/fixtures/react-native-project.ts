@@ -1069,7 +1069,6 @@ export default {
           }
           repositories {
               google()
-              jcenter()
           }
           dependencies {
               classpath("com.android.tools.build:gradle:3.5.3")
@@ -1092,7 +1091,6 @@ export default {
               }
       
               google()
-              jcenter()
               maven { url 'https://www.jitpack.io' }
           }
       }`,

@@ -3,42 +3,1300 @@
 exports[`normalizeOptionsAsync should return the default options if no options are provided 1`] = `
 {
   "concurrentIoLimit": 1,
-  "enableReactImportsPatcher": true,
+  "enableReactImportsPatcher": false,
   "hashAlgorithm": "sha1",
-  "ignorePaths": [
-    ".fingerprintignore",
-    "**/android/build/**/*",
-    "**/android/.cxx/**/*",
-    "**/android/.gradle/**/*",
-    "**/android/app/build/**/*",
-    "**/android/app/.cxx/**/*",
-    "**/android/app/.gradle/**/*",
-    "**/android-annotation/build/**/*",
-    "**/android-annotation/.cxx/**/*",
-    "**/android-annotation/.gradle/**/*",
-    "**/android-annotation-processor/build/**/*",
-    "**/android-annotation-processor/.cxx/**/*",
-    "**/android-annotation-processor/.gradle/**/*",
-    "**/android/gradlew.bat",
-    "**/*-gradle-plugin/build/**/*",
-    "**/*-gradle-plugin/.cxx/**/*",
-    "**/*-gradle-plugin/.gradle/**/*",
-    "**/ios/Pods/**/*",
-    "**/ios/build/**/*",
-    "**/ios/.xcode.env.local",
-    "**/ios/**/project.xcworkspace",
-    "**/ios/*.xcworkspace/xcuserdata/**/*",
-    "**/.DS_Store",
-    "app.config.ts",
-    "app.config.js",
-    "app.config.json",
-    "app.json",
-    "**/node_modules/@babel/**/*",
-    "**/node_modules/@expo/**/*",
-    "**/node_modules/@jridgewell/**/*",
-    "**/node_modules/expo/config.js",
-    "**/node_modules/expo/config-plugins.js",
-    "**/node_modules/{chalk,debug,escape-string-regexp,getenv,graceful-fs,has-flag,imurmurhash,js-tokens,json5,picocolors,lines-and-columns,require-from-string,resolve-from,signal-exit,sucrase,supports-color,ts-interface-checker,write-file-atomic}/**/*",
+  "ignorePathMatchObjects": [
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          ".fingerprintignore",
+        ],
+      ],
+      "globSet": [
+        ".fingerprintignore",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": ".fingerprintignore",
+      "regexp": null,
+      "set": [
+        [
+          ".fingerprintignore",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android",
+          "build",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android/build/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android/build/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android",
+          "build",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android",
+          ".cxx",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android/.cxx/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android/.cxx/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android",
+          ".cxx",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android",
+          ".gradle",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android/.gradle/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android/.gradle/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android",
+          ".gradle",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android",
+          "app",
+          "build",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android/app/build/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android/app/build/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android",
+          "app",
+          "build",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android",
+          "app",
+          ".cxx",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android/app/.cxx/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android/app/.cxx/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android",
+          "app",
+          ".cxx",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android",
+          "app",
+          ".gradle",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android/app/.gradle/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android/app/.gradle/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android",
+          "app",
+          ".gradle",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android-annotation",
+          "build",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android-annotation/build/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android-annotation/build/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android-annotation",
+          "build",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android-annotation",
+          ".cxx",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android-annotation/.cxx/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android-annotation/.cxx/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android-annotation",
+          ".cxx",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android-annotation",
+          ".gradle",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android-annotation/.gradle/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android-annotation/.gradle/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android-annotation",
+          ".gradle",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android-annotation-processor",
+          "build",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android-annotation-processor/build/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android-annotation-processor/build/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android-annotation-processor",
+          "build",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android-annotation-processor",
+          ".cxx",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android-annotation-processor/.cxx/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android-annotation-processor/.cxx/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android-annotation-processor",
+          ".cxx",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android-annotation-processor",
+          ".gradle",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/android-annotation-processor/.gradle/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android-annotation-processor/.gradle/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android-annotation-processor",
+          ".gradle",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "android",
+          "gradlew.bat",
+        ],
+      ],
+      "globSet": [
+        "**/android/gradlew.bat",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/android/gradlew.bat",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "android",
+          "gradlew.bat",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "*-gradle-plugin",
+          "build",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/*-gradle-plugin/build/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/*-gradle-plugin/build/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?-gradle-plugin\\$/,
+          "build",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "*-gradle-plugin",
+          ".cxx",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/*-gradle-plugin/.cxx/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/*-gradle-plugin/.cxx/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?-gradle-plugin\\$/,
+          ".cxx",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "*-gradle-plugin",
+          ".gradle",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/*-gradle-plugin/.gradle/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/*-gradle-plugin/.gradle/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?-gradle-plugin\\$/,
+          ".gradle",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "ios",
+          "Pods",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/ios/Pods/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/ios/Pods/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "ios",
+          "Pods",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "ios",
+          "build",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/ios/build/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/ios/build/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "ios",
+          "build",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "ios",
+          ".xcode.env.local",
+        ],
+      ],
+      "globSet": [
+        "**/ios/.xcode.env.local",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/ios/.xcode.env.local",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "ios",
+          ".xcode.env.local",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "ios",
+          "**",
+          "project.xcworkspace",
+        ],
+      ],
+      "globSet": [
+        "**/ios/**/project.xcworkspace",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/ios/**/project.xcworkspace",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "ios",
+          {},
+          "project.xcworkspace",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "ios",
+          "*.xcworkspace",
+          "xcuserdata",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/ios/*.xcworkspace/xcuserdata/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/ios/*.xcworkspace/xcuserdata/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "ios",
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\\\\\.xcworkspace\\$/,
+          "xcuserdata",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          ".DS_Store",
+        ],
+      ],
+      "globSet": [
+        "**/.DS_Store",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/.DS_Store",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          ".DS_Store",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "app.config.ts",
+        ],
+      ],
+      "globSet": [
+        "app.config.ts",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "app.config.ts",
+      "regexp": null,
+      "set": [
+        [
+          "app.config.ts",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "app.config.js",
+        ],
+      ],
+      "globSet": [
+        "app.config.js",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "app.config.js",
+      "regexp": null,
+      "set": [
+        [
+          "app.config.js",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "app.config.json",
+        ],
+      ],
+      "globSet": [
+        "app.config.json",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "app.config.json",
+      "regexp": null,
+      "set": [
+        [
+          "app.config.json",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "app.json",
+        ],
+      ],
+      "globSet": [
+        "app.json",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "app.json",
+      "regexp": null,
+      "set": [
+        [
+          "app.json",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "node_modules",
+          "**",
+          "node_modules",
+          "**",
+        ],
+      ],
+      "globSet": [
+        "**/node_modules/**/node_modules/**",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/node_modules/**/node_modules/**",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "node_modules",
+          {},
+          "node_modules",
+          {},
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "node_modules",
+          "@babel",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/node_modules/@babel/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/node_modules/@babel/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "node_modules",
+          "@babel",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "node_modules",
+          "@expo",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/node_modules/@expo/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/node_modules/@expo/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "node_modules",
+          "@expo",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "node_modules",
+          "@jridgewell",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/node_modules/@jridgewell/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/node_modules/@jridgewell/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "node_modules",
+          "@jridgewell",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "node_modules",
+          "expo",
+          "config.js",
+        ],
+      ],
+      "globSet": [
+        "**/node_modules/expo/config.js",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/node_modules/expo/config.js",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "node_modules",
+          "expo",
+          "config.js",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "node_modules",
+          "expo",
+          "config-plugins.js",
+        ],
+      ],
+      "globSet": [
+        "**/node_modules/expo/config-plugins.js",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/node_modules/expo/config-plugins.js",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "node_modules",
+          "expo",
+          "config-plugins.js",
+        ],
+      ],
+    },
+    Minimatch {
+      "comment": false,
+      "empty": false,
+      "globParts": [
+        [
+          "**",
+          "node_modules",
+          "chalk",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "debug",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "escape-string-regexp",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "getenv",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "graceful-fs",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "has-flag",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "imurmurhash",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "js-tokens",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "json5",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "picocolors",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "lines-and-columns",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "require-from-string",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "resolve-from",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "signal-exit",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "sucrase",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "supports-color",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "ts-interface-checker",
+          "**",
+          "*",
+        ],
+        [
+          "**",
+          "node_modules",
+          "write-file-atomic",
+          "**",
+          "*",
+        ],
+      ],
+      "globSet": [
+        "**/node_modules/chalk/**/*",
+        "**/node_modules/debug/**/*",
+        "**/node_modules/escape-string-regexp/**/*",
+        "**/node_modules/getenv/**/*",
+        "**/node_modules/graceful-fs/**/*",
+        "**/node_modules/has-flag/**/*",
+        "**/node_modules/imurmurhash/**/*",
+        "**/node_modules/js-tokens/**/*",
+        "**/node_modules/json5/**/*",
+        "**/node_modules/picocolors/**/*",
+        "**/node_modules/lines-and-columns/**/*",
+        "**/node_modules/require-from-string/**/*",
+        "**/node_modules/resolve-from/**/*",
+        "**/node_modules/signal-exit/**/*",
+        "**/node_modules/sucrase/**/*",
+        "**/node_modules/supports-color/**/*",
+        "**/node_modules/ts-interface-checker/**/*",
+        "**/node_modules/write-file-atomic/**/*",
+      ],
+      "negate": false,
+      "options": {
+        "dot": true,
+      },
+      "partial": false,
+      "pattern": "**/node_modules/{chalk,debug,escape-string-regexp,getenv,graceful-fs,has-flag,imurmurhash,js-tokens,json5,picocolors,lines-and-columns,require-from-string,resolve-from,signal-exit,sucrase,supports-color,ts-interface-checker,write-file-atomic}/**/*",
+      "regexp": null,
+      "set": [
+        [
+          {},
+          "node_modules",
+          "chalk",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "debug",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "escape-string-regexp",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "getenv",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "graceful-fs",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "has-flag",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "imurmurhash",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "js-tokens",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "json5",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "picocolors",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "lines-and-columns",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "require-from-string",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "resolve-from",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "signal-exit",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "sucrase",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "supports-color",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "ts-interface-checker",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+        [
+          {},
+          "node_modules",
+          "write-file-atomic",
+          {},
+          /\\^\\(\\?!\\(\\?:\\^\\|\\\\/\\)\\\\\\.\\{1,2\\}\\(\\?:\\$\\|\\\\/\\)\\)\\(\\?=\\.\\)\\[\\^/\\]\\*\\?\\$/,
+        ],
+      ],
+    },
   ],
   "platforms": [
     "android",

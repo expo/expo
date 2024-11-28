@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.*
 import android.util.Log
 import androidx.core.app.RemoteInput
+import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.notifications.BuildConfig
 import expo.modules.notifications.notifications.model.*
 import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
@@ -23,7 +24,7 @@ import expo.modules.notifications.service.interfaces.SchedulingDelegate
 import kotlin.concurrent.thread
 
 /**
- * Subclass of FirebaseMessagingService, central dispatcher for all the notifications-related actions.
+ * Central dispatcher for all the notifications-related actions.
  */
 open class NotificationsService : BroadcastReceiver() {
   companion object {
@@ -86,9 +87,9 @@ open class NotificationsService : BroadcastReceiver() {
     fun getAllPresented(context: Context, receiver: ResultReceiver? = null) {
       doWork(
         context,
-        Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().build()).also {
-          it.putExtra(EVENT_TYPE_KEY, GET_ALL_DISPLAYED_TYPE)
-          it.putExtra(RECEIVER_KEY, receiver)
+        Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().build()).apply {
+          putExtra(EVENT_TYPE_KEY, GET_ALL_DISPLAYED_TYPE)
+          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -105,11 +106,11 @@ open class NotificationsService : BroadcastReceiver() {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("present").build()
       doWork(
         context,
-        Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-          intent.putExtra(EVENT_TYPE_KEY, PRESENT_TYPE)
-          intent.putExtra(NOTIFICATION_KEY, notification)
-          intent.putExtra(NOTIFICATION_BEHAVIOR_KEY, behavior)
-          intent.putExtra(RECEIVER_KEY, receiver)
+        Intent(NOTIFICATION_EVENT_ACTION, data).apply {
+          putExtra(EVENT_TYPE_KEY, PRESENT_TYPE)
+          putExtra(NOTIFICATION_KEY, notification)
+          putExtra(NOTIFICATION_BEHAVIOR_KEY, behavior)
+          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -125,10 +126,10 @@ open class NotificationsService : BroadcastReceiver() {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("receive").build()
       doWork(
         context,
-        Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-          intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
-          intent.putExtra(NOTIFICATION_KEY, notification)
-          intent.putExtra(RECEIVER_KEY, receiver)
+        Intent(NOTIFICATION_EVENT_ACTION, data).apply {
+          putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
+          putExtra(NOTIFICATION_KEY, notification)
+          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -144,10 +145,10 @@ open class NotificationsService : BroadcastReceiver() {
       val data = getUriBuilder().appendPath("dismiss").build()
       doWork(
         context,
-        Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-          intent.putExtra(EVENT_TYPE_KEY, DISMISS_SELECTED_TYPE)
-          intent.putExtra(IDENTIFIERS_KEY, identifiers)
-          intent.putExtra(RECEIVER_KEY, receiver)
+        Intent(NOTIFICATION_EVENT_ACTION, data).apply {
+          putExtra(EVENT_TYPE_KEY, DISMISS_SELECTED_TYPE)
+          putExtra(IDENTIFIERS_KEY, identifiers)
+          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -162,9 +163,9 @@ open class NotificationsService : BroadcastReceiver() {
       val data = getUriBuilder().appendPath("dismiss").build()
       doWork(
         context,
-        Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-          intent.putExtra(EVENT_TYPE_KEY, DISMISS_ALL_TYPE)
-          intent.putExtra(RECEIVER_KEY, receiver)
+        Intent(NOTIFICATION_EVENT_ACTION, data).apply {
+          putExtra(EVENT_TYPE_KEY, DISMISS_ALL_TYPE)
+          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -177,8 +178,8 @@ open class NotificationsService : BroadcastReceiver() {
     fun handleDropped(context: Context) {
       doWork(
         context,
-        Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
-          intent.putExtra(EVENT_TYPE_KEY, DROPPED_TYPE)
+        Intent(NOTIFICATION_EVENT_ACTION).apply {
+          putExtra(EVENT_TYPE_KEY, DROPPED_TYPE)
         }
       )
     }
@@ -196,9 +197,9 @@ open class NotificationsService : BroadcastReceiver() {
           getUriBuilder()
             .appendPath("categories")
             .build()
-        ).also {
-          it.putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE)
-          it.putExtra(RECEIVER_KEY, receiver)
+        ).apply {
+          putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE)
+          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -218,10 +219,10 @@ open class NotificationsService : BroadcastReceiver() {
             .appendPath("categories")
             .appendPath(category.identifier)
             .build()
-        ).also {
-          it.putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE)
-          it.putExtra(NOTIFICATION_CATEGORY_KEY, category as Parcelable)
-          it.putExtra(RECEIVER_KEY, receiver)
+        ).apply {
+          putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE)
+          putExtra(NOTIFICATION_CATEGORY_KEY, category as Parcelable)
+          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -241,10 +242,10 @@ open class NotificationsService : BroadcastReceiver() {
             .appendPath("categories")
             .appendPath(identifier)
             .build()
-        ).also {
-          it.putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE)
-          it.putExtra(IDENTIFIER_KEY, identifier)
-          it.putExtra(RECEIVER_KEY, receiver)
+        ).apply {
+          putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE)
+          putExtra(IDENTIFIER_KEY, identifier)
+          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -266,12 +267,13 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     /**
-     * Fetches scheduled notification asynchronously.
+     * Fetches scheduled notification asynchronously. Used in Expo Go's ScopedNotificationScheduler.kt
      *
      * @param context Context this is being called from
      * @param identifier Identifier of the notification to be fetched
      * @param resultReceiver Receiver to be called with the results
      */
+    @DoNotStrip
     fun getScheduledNotification(context: Context, identifier: String, resultReceiver: ResultReceiver? = null) {
       doWork(
         context,
@@ -305,10 +307,10 @@ open class NotificationsService : BroadcastReceiver() {
             .appendPath("scheduled")
             .appendPath(notificationRequest.identifier)
             .build()
-        ).also { intent ->
-          intent.putExtra(EVENT_TYPE_KEY, SCHEDULE_TYPE)
-          intent.putExtra(NOTIFICATION_REQUEST_KEY, notificationRequest as Parcelable)
-          intent.putExtra(RECEIVER_KEY, resultReceiver)
+        ).apply {
+          putExtra(EVENT_TYPE_KEY, SCHEDULE_TYPE)
+          putExtra(NOTIFICATION_REQUEST_KEY, notificationRequest as Parcelable)
+          putExtra(RECEIVER_KEY, resultReceiver)
         }
       )
     }
@@ -338,10 +340,10 @@ open class NotificationsService : BroadcastReceiver() {
           getUriBuilder()
             .appendPath("scheduled")
             .build()
-        ).also { intent ->
-          intent.putExtra(EVENT_TYPE_KEY, REMOVE_SELECTED_TYPE)
-          intent.putExtra(IDENTIFIERS_KEY, identifiers.toTypedArray())
-          intent.putExtra(RECEIVER_KEY, resultReceiver)
+        ).apply {
+          putExtra(EVENT_TYPE_KEY, REMOVE_SELECTED_TYPE)
+          putExtra(IDENTIFIERS_KEY, identifiers.toTypedArray())
+          putExtra(RECEIVER_KEY, resultReceiver)
         }
       )
     }
@@ -355,9 +357,9 @@ open class NotificationsService : BroadcastReceiver() {
     fun removeAllScheduledNotifications(context: Context, resultReceiver: ResultReceiver? = null) {
       doWork(
         context,
-        Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
-          intent.putExtra(EVENT_TYPE_KEY, REMOVE_ALL_TYPE)
-          intent.putExtra(RECEIVER_KEY, resultReceiver)
+        Intent(NOTIFICATION_EVENT_ACTION).apply {
+          putExtra(EVENT_TYPE_KEY, REMOVE_ALL_TYPE)
+          putExtra(RECEIVER_KEY, resultReceiver)
         }
       )
     }
@@ -511,6 +513,8 @@ open class NotificationsService : BroadcastReceiver() {
       return response
     }
 
+    // this is used by Expo Go's Kernel.kt
+    @DoNotStrip
     fun getNotificationResponseFromOpenIntent(intent: Intent): NotificationResponse? {
       intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(NotificationResponse.CREATOR, it) }
       intent.getByteArrayExtra(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(TextInputNotificationResponse.CREATOR, it) }
@@ -582,21 +586,26 @@ open class NotificationsService : BroadcastReceiver() {
   protected open fun getSchedulingDelegate(context: Context): SchedulingDelegate =
     ExpoSchedulingDelegate(context)
 
+  /*
+   * All of the doWork calls are dispatched to this method.
+   * Pretty much everything from presenting a notification to handling a response
+   * to a notification button press is handled through here.
+   * */
   override fun onReceive(context: Context, intent: Intent?) {
     val pendingIntent = goAsync()
     thread {
       try {
-        handleIntent(context, intent)
+        intent?.run { handleIntent(context, intent) }
       } finally {
         pendingIntent.finish()
       }
     }
   }
 
-  open fun handleIntent(context: Context, intent: Intent?) {
-    if (intent != null && SETUP_ACTIONS.contains(intent.action)) {
+  open fun handleIntent(context: Context, intent: Intent) {
+    if (SETUP_ACTIONS.contains(intent.action)) {
       onSetupScheduledNotifications(context, intent)
-    } else if (intent?.action === NOTIFICATION_EVENT_ACTION) {
+    } else if (intent.action === NOTIFICATION_EVENT_ACTION) {
       val receiver: ResultReceiver? = intent.extras?.get(RECEIVER_KEY) as? ResultReceiver
       try {
         var resultData: Bundle? = null
@@ -656,7 +665,7 @@ open class NotificationsService : BroadcastReceiver() {
         receiver?.send(ERROR_CODE, Bundle().also { it.putSerializable(EXCEPTION_KEY, e) })
       }
     } else {
-      throw IllegalArgumentException("Received intent of unrecognized action: ${intent?.action}. Ignoring.")
+      throw IllegalArgumentException("Received intent of unrecognized action: ${intent.action}. Ignoring.")
     }
   }
 

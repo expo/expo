@@ -9,7 +9,7 @@ Expo Router uses "links" to move between pages in the app. This is conceptually 
 
 <FileTree files={['app/index.tsx', 'app/about.tsx', 'app/user/[id].tsx']} />
 
-In the following example, there are two `<Link />` components which navigate to different routes.
+In the following example, there are two [`Link`](/versions/v52.0.0//sdk/router/#link) components which navigate to different routes.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx
@@ -35,7 +35,7 @@ export default function Page() {
 
 ## Buttons
 
-The Link component wraps the children in a `<Text>` component by default, this is useful for accessibility but not always desired. You can customize the component by passing the `asChild` prop, which will forward all props to the first child of the `Link` component. The child component must support the `onPress` and `onClick` props, `href` and `role` will also be passed down.
+The Link component wraps the children in a `<Text>` component by default, this is useful for accessibility but not always desired. You can customize the component by passing the [`asChild` prop](/versions/v52.0.0//sdk/router/#aschild), which will forward all props to the first child of the `Link` component. The child component must support the `onPress` and `onClick` props, `href` and `role` will also be passed down.
 
 {/* prettier-ignore */}
 ```tsx
@@ -57,21 +57,42 @@ export default function Page() {
 
 ## Understanding native navigation
 
-Expo Router uses a stack-based navigation approach. Each new route you navigate to gets added to a stack. If you navigate to a route already in the stack, the stack unwinds back to that existing route.
+Expo Router uses a stack-based navigation approach. Each new route you navigate to get added to a stack. If you navigate to a route already in the stack, the stack unwinds back to that existing route.
 
 For example, when you navigate from `/feed` to `/profile`, the stack contains `/feed` and `/profile`. If you then navigate to `/settings`, the stack contains `/feed`, `/profile`, and `/settings`. If you then navigate back to `/feed`, the stack unwinds back to `/feed`.
 
-To navigate to a route without the stack unwinding, you can use the `push` prop on the `<Link>` component. This always pushes the route onto the stack, even if it already exists.
+To navigate to a route without the stack unwinding, you can use the [`push`](/versions/v52.0.0//sdk/router/#push) prop on the `Link` component. This always pushes the route onto the stack, even if it already exists.
 
-In contrast, the `replace` method substitutes the current route in the navigation stack with a new one, effectively replacing the current screen with the new one without adding to the stack.
+In contrast, the [`replace`](/versions/v52.0.0//sdk/router/#replace) method substitutes the current route in the navigation stack with a new one, effectively replacing the current screen with the new one without adding to the stack.
 
 To navigate, you can provide a full path (`/profile/settings`), a relative path (`../settings`), or by passing an object (`{ pathname: 'profile', params: { id: '123' } }`).
 
-| Name       | Description                                                                                                                                                                                                                                                                                                                               |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `navigate` | Navigate to the nearest route in the navigation state. `navigate` only pushes a new screen if the new route is different (not including search parameters or the hash). Otherwise, the current screen rerenders with the new parameters. If you navigate to a route that is in the history, the stack will dismiss screens to that route. |
-| `push`     | Always pushes a new route, and never pops or replaces to existing routes. You can push the current route multiple times or with new parameters.                                                                                                                                                                                           |
-| `replace`  | Remove the current route from the history and replace it with the specified URL. This is useful for redirects.                                                                                                                                                                                                                            |
+## Relative navigation
+
+> **warning** [`relativeToDirectory`](/versions/v52.0.0//sdk/router/#relativetodirectory) will be released in the next version of `expo-router`.
+
+A relative URL is a URL prefix with `./`, such as `./article`, or `./article/`. Relative URLs are resolved relative to the current rendered screen.
+
+The URL of the current screen is a document URL (a URL without a trailing slash), so relative URLs will be resolved relative to the directory. This can be confusing when the current screen is rendered by an `index` file as the relative URL is resolved from the URL's directory, not the file system. By using the `relativeToDirectory` option, Expo Router will instead treat the current URL as a directory URL.
+
+| Href         | Current URL | `relativeToDirectory` | Result              |
+| ------------ | ----------- | --------------------- | ------------------- |
+| `./article`  | `/route/v1` |                       | `/route/article`    |
+| `./article`  | `/route/v1` | `true`                | `/route/v1/article` |
+| `../article` | `/route/v1` |                       | `/article`          |
+| `../article` | `/route/v1` | `true`                | `/route/article`    |
+
+```ts
+// Using `relativeToDirectory` with Link
+<Link href="./article" relativeToDirectory>Go to article</Link>
+
+// Using `relativeToDirectory` with the imperative API
+router.push("./article", { relativeToDirectory: true })
+router.navigate("./article", { relativeToDirectory: true })
+router.replace("./article", { relativeToDirectory: true })
+```
+
+> **info** Relative URLs without a `./` prefix, such as `article`, are not supported.
 
 ## Linking to dynamic routes
 
@@ -157,22 +178,15 @@ export function logout() {
 }
 ```
 
-The `router` object is immutable and contains the following functions:
-
-- **navigate**: `(href: Href) => void`. Perform a `navigate` action.
-- **push**: `(href: Href) => void`. Perform a `push` action.
-- **replace**: `(href: Href) => void`. Perform a `replace` action.
-- **back**: `() => void`. Navigate back to previous route.
-- **canGoBack**: `() => boolean` Returns `true` if a valid history stack exists and the `back()` function can pop back.
-- **setParams**: `(params: Record<string, string>) => void` Update the query params for the currently selected route.
+The `router` object is immutable and contains multiple methods to navigate. See [`Router`](/versions/v52.0.0//sdk/router/#router) for more information about the available methods.
 
 ## Autocomplete
 
-Expo Router can automatically generate static TypeScript types for all routes in your app. This allows you to use autocomplete for `href`s and get warnings when invalid links are used. Learn more: [Statically Typed Routes](/router/reference/typed-routes).
+Expo Router can automatically generate static TypeScript types for all routes in your app. This allows you to use autocomplete for `href`s and get warnings when invalid links are used. See [Statically Typed Routes](/router/reference/typed-routes) for more information.
 
 ## Web behavior
 
-Expo Router supports the standard `<a>` element when running on web, however this will perform a full-page server-navigation. This is slower and doesn't take full advantage of React. Instead, the Expo Router `<Link>` component will perform client-side navigation, which will preserve the state of the website and navigate faster.
+Expo Router supports the standard `<a>` element when running on web, however this will perform a full-page server-navigation. This is slower and doesn't take full advantage of React. Instead, the Expo Router `Link` component will perform client-side navigation, which will preserve the state of the website and navigate faster.
 
 The web-only attributes `target`, `rel`, and `download` are also supported. These will be passed to the `<a>` element when running on web.
 
@@ -180,4 +194,4 @@ Client-side navigation works with both single-page apps, and [static rendering](
 
 ## Usage in simulators
 
-See the [testing URLs](/guides/linking#testing-urls) guide to learn how you can emulate deep links in Android Emulators and iOS Simulators.
+See [Test the deep link](/linking/into-your-app/#test-the-deep-link) to learn how to emulate deep links in Android Emulators and iOS Simulators.

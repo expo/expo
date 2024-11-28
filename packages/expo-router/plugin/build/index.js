@@ -30,7 +30,10 @@ const withRouter = (config, _props) => {
         extra: {
             ...config.extra,
             router: {
-                origin: false,
+                // RSC enables location origin by default because it's required for requests.
+                origin: config.experiments?.reactServerComponentRoutes || config.experiments?.reactServerFunctions
+                    ? undefined
+                    : false,
                 ...config.extra?.router,
                 ...props,
             },

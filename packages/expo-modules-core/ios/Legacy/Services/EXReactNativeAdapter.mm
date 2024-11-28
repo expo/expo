@@ -2,21 +2,9 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import <React/RCTUIManager.h>
-#import <React/RCTBridge+Private.h>
-#import <React/RCTAppState.h>
-#import <React/RCTImageLoader.h>
-#import <React/RCTUIManagerUtils.h>
-
+#import <React/React-Core-umbrella.h>
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
-
-#if RN_FABRIC_ENABLED
-#import <React/RCTComponentViewRegistry.h>
-#import <React/RCTSurfacePresenter.h>
-#import <React/RCTMountingManager.h>
-
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
-#endif
 
 @interface EXReactNativeAdapter ()
 

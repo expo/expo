@@ -9,12 +9,18 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const jimp_compact_1 = __importDefault(require("jimp-compact"));
 const path_1 = __importDefault(require("path"));
 const stream_1 = __importDefault(require("stream"));
-const tempy_1 = __importDefault(require("tempy"));
+const temp_dir_1 = __importDefault(require("temp-dir"));
+const unique_string_1 = __importDefault(require("unique-string"));
 const util_1 = __importDefault(require("util"));
 // cache downloaded images into memory
 const cacheDownloadedKeys = {};
 function stripQueryParams(url) {
     return url.split('?')[0].split('#')[0];
+}
+function temporaryDirectory() {
+    const directory = path_1.default.join(temp_dir_1.default, (0, unique_string_1.default)());
+    fs_extra_1.default.mkdirSync(directory);
+    return directory;
 }
 async function downloadOrUseCachedImage(url) {
     if (url in cacheDownloadedKeys) {
@@ -30,7 +36,7 @@ async function downloadOrUseCachedImage(url) {
 }
 exports.downloadOrUseCachedImage = downloadOrUseCachedImage;
 async function downloadImage(url) {
-    const outputPath = tempy_1.default.directory();
+    const outputPath = temporaryDirectory();
     const response = await fetch(url);
     if (!response.ok) {
         throw new Error(`It was not possible to download image from '${url}'`);

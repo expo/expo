@@ -3,23 +3,30 @@ title: Handle platform differences
 description: In this tutorial, learn how to handle platform differences between native and web when creating a universal app.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-Android, iOS, and the web have different capabilities. In our case, both Android and iOS can capture a screenshot with the `react-native-view-shot` library, however, web browsers cannot.
+Android, iOS, and the web have different capabilities. In our case, both Android and iOS can capture a screenshot with the `react-native-view-shot` library. However, web browsers cannot.
 
-In this chapter, let's learn how to make an exception for web browsers to get the same functionality on all platforms.
+In this chapter, we'll learn how to handle capturing screenshots for web browsers so our app has the same functionality on all platforms.
+
+<VideoBoxLink
+  videoId="mEKQvF4irBM"
+  title="Watch: Handling platform differences in your universal Expo app"
+/>
+
+---
 
 <Step label="1">
 
 ## Install and import dom-to-image
 
-To capture a screenshot on the web and save it as an image , we'll use a third-party library called [dom-to-image](https://github.com/tsayen/dom-to-image#readme).
-It allows taking a screenshot of any DOM node and turning it into a vector (SVG) or raster (PNG or JPEG) image.
+To capture a screenshot on the web and save it as an image, we'll use a third-party library called [`dom-to-image`](https://github.com/tsayen/dom-to-image#readme). It takes a screenshot of any DOM node and turns it into a vector (SVG) or raster (PNG or JPEG) image.
 
 Stop the development server and run the following command to install the library:
 
@@ -27,89 +34,177 @@ Stop the development server and run the following command to install the library
 
 After installing it, make sure to restart the development server and press <kbd>w</kbd> in the terminal.
 
-To use it, let's import it into **App.js**:
-
-```jsx App.js
-import domtoimage from 'dom-to-image';
-```
-
 </Step>
 
 <Step label="2">
 
 ## Add platform-specific code
 
-React Native provides a `Platform` module that gives us access to information about the platform on which the app is currently running.
-You can use it to implement platform-specific behavior.
+Using `Platform` module from React Native, we can implement platform-specific behavior. Inside **app/(tabs)/index.tsx**:
 
-Import the `Platform` module in **App.js**:
-
-{/* prettier-ignore */}
-```jsx App.js
-import { StyleSheet, View, /* @info Import the Platform module from react-native. */ Platform /* @end */ } from 'react-native';
-```
-
-Inside the `onSaveImageAsync()` function in the `<App>` component, we'll use `Platform.OS` to check whether the platform is `'web'`.
-If it is not `'web'`, we'll run the logic added previously to take and save the screenshot. If it is `'web'`,
-we'll use the `domtoimage.toJpeg()` method to convert and capture the current `<View>` as a JPEG image.
-
-<SnackInline
-label="Take a screenshot"
-templateId="tutorial/08-run-on-web/App"
-dependencies={['expo-image-picker', '@expo/vector-icons/FontAwesome', '@expo/vector-icons', 'expo-status-bar', '@expo/vector-icons/MaterialIcons', 'react-native-gesture-handler', 'react-native-reanimated', 'react-native-view-shot', 'expo-media-library', 'dom-to-image@2.6.0']}
-files={{
-  'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910',
-  'assets/images/emoji1.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/be9751678c0b3f9c6bf55f60de815d30',
-  'assets/images/emoji2.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/7c0d14b79e134d528c5e0801699d6ccf',
-  'assets/images/emoji3.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/d713e2de164764c2ab3db0ab4e40c577',
-  'assets/images/emoji4.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ac2163b98a973cb50bfb716cc4438f9a',
-  'assets/images/emoji5.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/9cc0e2ff664bae3af766b9750331c3ad',
-  'assets/images/emoji6.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ce614cf0928157b3f7daa3cb8e7bd486',
-  'components/ImageViewer.js': 'tutorial/02-image-picker/ImageViewer.js',
-  'components/Button.js': 'tutorial/03-button-options/Button.js',
-  'components/CircleButton.js': 'tutorial/03-button-options/CircleButton.js',
-  'components/IconButton.js': 'tutorial/03-button-options/IconButton.js',
-  'components/EmojiPicker.js': 'tutorial/04-modal/EmojiPicker.js',
-  'components/EmojiList.js': 'tutorial/05-emoji-list/EmojiList.js',
-  'components/EmojiSticker.js': 'tutorial/06-gestures/CompleteEmojiSticker.js',
-}}>
+1. Import the `Platform` module from `react-native`.
+2. Import the `domtoimage` library from `dom-to-image`.
+3. Update the `onSaveImageAsync()` function to check whether the current platform is `'web'` with the `Platform.OS` property. If it is `'web'`, we'll use the `domtoimage.toJpeg()` method to convert and capture the current `<View>` as a JPEG image. Otherwise, we'll keep using the same logic added for native platforms.
 
 {/* prettier-ignore */}
-```jsx
-const onSaveImageAsync = async () => {
-  /* @info Add the if condition here to check whether the current platform is web or not. */ if (Platform.OS !== 'web') { /* @end */
-    try {
-      const localUri = await captureRef(imageRef, {
-        height: 440,
-        quality: 1,
-      });
-      await MediaLibrary.saveToLibraryAsync(localUri);
-      if (localUri) {
-        alert('Saved!');
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet, /* @tutinfo */Platform/* @end */ } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useState, useRef } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as MediaLibrary from 'expo-media-library';
+import { type ImageSource } from "expo-image";
+import { captureRef } from 'react-native-view-shot';
+/* @tutinfo Import <CODE>domtoimage</CODE> library. */import domtoimage from 'dom-to-image';/* @end */
+
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+import IconButton from '@/components/IconButton';
+import CircleButton from '@/components/CircleButton';
+import EmojiPicker from '@/components/EmojiPicker';
+import EmojiList from '@/components/EmojiList';
+import EmojiSticker from '@/components/EmojiSticker';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
+  const [status, requestPermission] = MediaLibrary.usePermissions();
+  const imageRef = useRef<View>(null);
+
+  if (status === null) {
+    requestPermission();
+  }
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  const onReset = () => {
+    setShowAppOptions(false);
+  };
+
+  const onAddSticker = () => {
+    setIsModalVisible(true);
+  };
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const onSaveImageAsync = async () => {
+    /* @tutinfo Add the if condition here to check whether the current platform is web or not. */
+    if (Platform.OS !== 'web') {
+    /* @end */
+      try {
+        const localUri = await captureRef(imageRef, {
+          height: 440,
+          quality: 1,
+        });
+
+        await MediaLibrary.saveToLibraryAsync(localUri);
+        if (localUri) {
+          alert('Saved!');
+        }
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      console.log(e);
-    }
-  } /* @info Add an else condition to run the logic when the current platform is the web. */else {
-    try {
-      const dataUrl = await domtoimage.toJpeg(imageRef.current, {
-        quality: 0.95,
-        width: 320,
-        height: 440,
-      });
+    /* @tutinfo Add an else condition to run the logic when the current platform is the web. */
+    } else {
+      try {
+        const dataUrl = await domtoimage.toJpeg(imageRef.current, {
+          quality: 0.95,
+          width: 320,
+          height: 440,
+        });
 
-      let link = document.createElement('a');
-      link.download = 'sticker-smash.jpeg';
-      link.href = dataUrl;
-      link.click();
-    } catch (e) {
-      console.log(e);
+        let link = document.createElement('a');
+        link.download = 'sticker-smash.jpeg';
+        link.href = dataUrl;
+        link.click();
+      } catch (e) {
+        console.log(e);
+      }
     }
-  } /* @end */
-};
+    /* @end */
+  };
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <View style={styles.imageContainer}>
+        <View ref={imageRef} collapsable={false}>
+          <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+          {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
+        </View>
+      </View>
+      {showAppOptions ? (
+        <View style={styles.optionsContainer}>
+          <View style={styles.optionsRow}>
+            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <CircleButton onPress={onAddSticker} />
+            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+          </View>
+        </View>
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+        </View>
+      )}
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
+        <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
+      </EmojiPicker>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 80,
+  },
+  optionsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
 ```
 
-</SnackInline>
+<Collapsible summary={<>Fix <CODE>dom-to-image</CODE> TypeScript module error</>}>
+
+We need to add a type definition after importing the `domtoimage` library since we're using TypeScript. We can do this by creating a file **types.d.ts** in the root of our project directory and adding the declaration statement:
+
+```tsx types.d.ts
+declare module 'dom-to-image';
+```
+
+</Collapsible>
 
 On running the app in a web browser, we can now save a screenshot:
 
@@ -117,13 +212,13 @@ On running the app in a web browser, we can now save a screenshot:
 
 </Step>
 
-## Next step
+## Summary
 
-The app does everything we set out for it to do, so it's time to shift our focus toward the purely aesthetic.
-
-<BoxLink
-  title="Configure status bar, splash screen and app icon"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we will customize the app's status bar, splash screen, and app icon."
-  href="/tutorial/configuration"
+<ProgressTracker
+  currentChapterIndex={7}
+  name="GET_STARTED"
+  summary="The app does everything we set out for it to do, so it's time to shift our focus toward the purely aesthetic.."
+  nextChapterDescription="In the next chapter, we will customize the app's status bar, splash screen, and app icon."
+  nextChapterTitle="Configure status bar, splash screen and app icon"
+  nextChapterLink="/tutorial/configuration"
 />

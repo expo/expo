@@ -18,6 +18,8 @@ final class RelaunchProcedure: StateMachineProcedure {
   private let successBlock: () -> Void
   private let errorBlock: (_ error: Exception) -> Void
 
+  private let launcherWithDatabase: AppLauncherWithDatabase
+
   init(
     database: UpdatesDatabase,
     config: UpdatesConfig,
@@ -46,6 +48,13 @@ final class RelaunchProcedure: StateMachineProcedure {
     self.requestStartErrorMonitoring = requestStartErrorMonitoring
     self.successBlock = successBlock
     self.errorBlock = errorBlock
+
+    self.launcherWithDatabase = AppLauncherWithDatabase(
+      config: config,
+      database: database,
+      directory: updatesDirectory,
+      completionQueue: controllerQueue
+    )
   }
 
   func getLoggerTimerLabel() -> String {
@@ -54,36 +63,32 @@ final class RelaunchProcedure: StateMachineProcedure {
 
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEventRestart())
-    let launcherWithDatabase = AppLauncherWithDatabase(
-      config: config,
-      database: database,
-      directory: updatesDirectory,
-      completionQueue: controllerQueue
-    )
     launcherWithDatabase.launchUpdate(withSelectionPolicy: selectionPolicy) { error, success in
-      if success {
-        self.setLauncher(launcherWithDatabase)
-        self.requestStartErrorMonitoring()
-        RCTReloadCommandSetBundleURL(launcherWithDatabase.launchAssetUrl)
-        RCTTriggerReloadCommandListeners(self.triggerReloadCommandListenersReason)
+      DispatchQueue.main.async {
+        if success {
+          self.setLauncher(self.launcherWithDatabase)
+          self.requestStartErrorMonitoring()
+          RCTReloadCommandSetBundleURL(self.launcherWithDatabase.launchAssetUrl)
+          RCTTriggerReloadCommandListeners(self.triggerReloadCommandListenersReason)
 
-        // TODO(wschurman): this was moved to after the RCT calls to unify reload
-        // code between JS API call and error recovery handler. double check that
-        // this is okay
-        self.successBlock()
+          // TODO(wschurman): this was moved to after the RCT calls to unify reload
+          // code between JS API call and error recovery handler. double check that
+          // this is okay
+          self.successBlock()
 
-        if self.shouldRunReaper {
-          self.runReaper()
+          if self.shouldRunReaper {
+            self.runReaper()
+          }
+
+          // Reset the state machine
+          procedureContext.resetState()
+          procedureContext.onComplete()
+        } else {
+          // swiftlint:disable:next force_unwrapping
+          self.logger.error(cause: UpdatesError.relaunchProcedureFailedToRelaunch(cause: error!))
+          self.errorBlock(UpdatesReloadException())
+          procedureContext.onComplete()
         }
-
-        // Reset the state machine
-        procedureContext.resetState()
-        procedureContext.onComplete()
-      } else {
-        // swiftlint:disable:next force_unwrapping
-        NSLog("Failed to relaunch: %@", error!.localizedDescription)
-        self.errorBlock(UpdatesReloadException())
-        procedureContext.onComplete()
       }
     }
   }

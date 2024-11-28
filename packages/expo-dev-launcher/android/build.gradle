@@ -17,7 +17,7 @@ android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "4.0.15"
+    versionName "5.0.17"
   }
 
   buildTypes {
@@ -35,15 +35,21 @@ android {
     def rnVersion = getRNVersion()
     main {
       java {
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
-          srcDirs += "src/react-native-74/main"
+        if (rnVersion >= versionToNumber(0, 77, 0)) {
+          srcDirs += "src/rn77/main"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += "src/rn74/main"
         }
       }
     }
     debug {
       java {
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
-          srcDirs += "src/react-native-74/debug"
+        if (rnVersion >= versionToNumber(0, 77, 0)) {
+          srcDirs += "src/rn77/debug"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += "src/rn74/debug"
         }
       }
     }
@@ -96,16 +102,15 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
 
-  def koinVersion = "3.4.0"
-
-  api "io.insert-koin:koin-core:${koinVersion}"
+  api project.dependencies.platform("io.insert-koin:koin-bom:3.5.6")
+  api "io.insert-koin:koin-core"
 
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'androidx.test:core-ktx:1.4.0'
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
-  testImplementation "io.insert-koin:koin-test:${koinVersion}"
-  testImplementation "io.insert-koin:koin-test-junit4:${koinVersion}"
+  testImplementation "io.insert-koin:koin-test"
+  testImplementation "io.insert-koin:koin-test-junit4"
   testImplementation 'io.mockk:mockk:1.12.3'
   testImplementation "org.robolectric:robolectric:4.10"
 }

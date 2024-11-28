@@ -10,7 +10,30 @@
 
 ### 💡 Others
 
+## 0.13.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
 - Export missing types. ([#29401](https://github.com/expo/expo/pull/29401) by [@Simek](https://github.com/Simek))
+- Deprecate `android.newArchEnabled` and `ios.newArchEnabled` in favor of app config `newArchEnabled`. ([#31963](https://github.com/expo/expo/pull/31963) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.12.5 - 2024-08-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.4 - 2024-07-30
+
+### 🎉 New features
+
+- Add `android.enablePngCrunchInReleaseBuilds` to enable toggling PNG crunching in release builds. ([#30699](https://github.com/expo/expo/pull/30699) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.12.3 - 2024-06-06
 

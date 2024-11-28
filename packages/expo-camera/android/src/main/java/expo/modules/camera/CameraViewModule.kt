@@ -192,10 +192,8 @@ class CameraViewModule : Module() {
       }
 
       Prop("ratio") { view, ratio: CameraRatio? ->
-        ratio?.let {
-          if (view.ratio != ratio) {
-            view.ratio = it
-          }
+        if (view.ratio != ratio) {
+          view.ratio = ratio
         }
       }
 
@@ -205,6 +203,16 @@ class CameraViewModule : Module() {
           return@Prop
         }
         view.mirror = false
+      }
+
+      Prop("videoBitrate") { view, bitrate: Int? ->
+        bitrate?.let {
+          view.videoEncodingBitrate = it
+          return@Prop
+        }
+        if (view.videoEncodingBitrate != null) {
+          view.videoEncodingBitrate = null
+        }
       }
 
       OnViewDidUpdateProps { view ->
@@ -239,6 +247,14 @@ class CameraViewModule : Module() {
       AsyncFunction("stopRecording") { view: ExpoCameraView ->
         view.activeRecording?.close()
       }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("resumePreview") { view: ExpoCameraView ->
+        view.resumePreview()
+      }
+
+      AsyncFunction("pausePreview") { view: ExpoCameraView ->
+        view.pausePreview()
+      }
 
       OnViewDestroys { view ->
         view.orientationEventListener.disable()

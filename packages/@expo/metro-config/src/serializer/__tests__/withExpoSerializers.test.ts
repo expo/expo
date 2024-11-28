@@ -22,6 +22,7 @@ describe(withSerializerPlugins, () => {
     );
 
     const options = {
+      createModuleId: expect.any(Function),
       sourceUrl: 'https://localhost:8081/index.bundle?platform=ios&dev=true&minify=false',
     };
     // @ts-expect-error
@@ -604,6 +605,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/index-0b3b05dfd72525874c3b666ed3231144.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
@@ -614,6 +616,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -626,12 +629,14 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/foo.js",
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -656,7 +661,9 @@ describe('serializes', () => {
       modulePaths: ['/app/foo.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -682,6 +689,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/index-8cc83f2e616cdd8e531ae27d9127c263.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
@@ -693,6 +701,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -708,12 +717,14 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/foo.js",
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -738,7 +749,9 @@ describe('serializes', () => {
       modulePaths: ['/app/foo.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -773,7 +786,9 @@ describe('serializes', () => {
       modulePaths: ['/app/(foo)/index.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -802,6 +817,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/index-2f681759ccdffed0c24df6bd62adc744.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
@@ -814,6 +830,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -834,12 +851,14 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/foo.js",
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -864,7 +883,9 @@ describe('serializes', () => {
       modulePaths: ['/app/foo.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -901,6 +922,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/index-6deb415e9765e2f7033a805e8c5f20ee.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
@@ -914,6 +936,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -939,12 +962,14 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/math-751c65eacf161e04a1cff839cdf43b51.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/math.js",
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "math.js",
@@ -963,12 +988,14 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/shapes-3d697f5eb8b842d8141b9a849a473086.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/shapes.js",
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "shapes.js",
@@ -994,14 +1021,18 @@ describe('serializes', () => {
       modulePaths: ['/app/math.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
     expect(artifacts[2].metadata).toEqual({
       isAsync: true,
       modulePaths: ['/app/shapes.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
 
     // // The shared sync import is deduped and added to a common chunk.
@@ -1109,7 +1140,9 @@ describe('serializes', () => {
         isAsync: false,
         modulePaths: ['/app/index.js', '/app/other.js', '/app/react-server-dom-webpack/server'],
         paths: {},
+        expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js'],
+        reactServerReferences: [],
         requires: [],
       });
 
@@ -1161,7 +1194,78 @@ describe('serializes', () => {
           '/app/second.js',
         ],
         paths: {},
+        expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js', 'file:///app/second.js'],
+        reactServerReferences: [],
+        requires: [],
+      });
+    });
+  });
+  describe('server references', () => {
+    it(`collects server references from client modules when bundling in client mode`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `
+            import './server-actions.js'
+          `,
+          'server-actions.js': '"use server"; export async function foo() {}',
+        },
+        {
+          isReactServer: false,
+        }
+      );
+
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata).toEqual({
+        isAsync: false,
+        modulePaths: [
+          '/app/index.js',
+          '/app/server-actions.js',
+          '/app/react-server-dom-webpack/client',
+          '/app/expo-router/rsc/internal',
+        ],
+        paths: {},
+        expoDomComponentReferences: [],
+        reactClientReferences: [],
+        reactServerReferences: ['file:///app/server-actions.js'],
+        requires: [],
+      });
+    });
+    it(`collects server references from server action functions when bundling in react-server mode`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `
+            import './server-actions.js';
+
+            async function funky() {
+              "use server";
+
+            }
+          `,
+          'server-actions.js': '"use server"; export async function foo() {}',
+        },
+        {
+          isReactServer: true,
+        }
+      );
+
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata).toEqual({
+        isAsync: false,
+        modulePaths: [
+          '/app/index.js',
+          '/app/react-server-dom-webpack/server',
+          '/app/server-actions.js',
+        ],
+        paths: {},
+        expoDomComponentReferences: [],
+        reactClientReferences: [],
+        reactServerReferences: [
+          // This appears because we include a server action in the file.
+          'file:///app/index.js',
+          // This is here because the module is marked with "use server".
+          'file:///app/server-actions.js',
+        ],
         requires: [],
       });
     });

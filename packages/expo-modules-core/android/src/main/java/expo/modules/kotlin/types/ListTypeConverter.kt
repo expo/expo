@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.ExpectedType
@@ -19,6 +20,21 @@ class ListTypeConverter(
   )
 
   override fun convertFromDynamic(value: Dynamic): List<*> {
+    if (value.type != ReadableType.Array) {
+      return listOf(
+        exceptionDecorator({ cause ->
+          CollectionElementCastException(
+            listType,
+            listType.arguments.first().type!!,
+            value::class,
+            cause
+          )
+        }) {
+          elementConverter.convert(value)
+        }
+      )
+    }
+
     val jsArray = value.asArray()
     return convertFromReadableArray(jsArray)
   }

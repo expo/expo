@@ -133,6 +133,7 @@ exceptions:
   - '.*Keychain.*'
   - '.*Kotlin.*'
   - '.*layout.*'
+  - '.*Legend-State.*'
   - '.*Library.*'
   - '.*Link.*'
   - '.*Linking.*'
@@ -252,3 +253,4 @@ exceptions:
   - (experimental support)
   - How can I implement a custom
   - Drizzle ORM
+  - architecture?

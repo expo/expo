@@ -48,12 +48,14 @@ describe('exports with tailwind and postcss', () => {
     expect(files).toEqual([
       '+not-found.html',
       expect.stringMatching(/_expo\/static\/css\/global-.*\.css/),
-      expect.stringMatching(/_expo\/static\/js\/web\/index-.*\.js/),
+      expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/),
       '_sitemap.html',
-      'assets/__packages/expo-router/assets/error.563d5e3294b67811d0a1aede6f601e30.png',
-      'assets/__packages/expo-router/assets/file.b6c297a501e289394b0bc5dc69c265e6.png',
-      'assets/__packages/expo-router/assets/forward.9d9c5644f55c2f6e4b7f247c378b2fe9.png',
-      'assets/__packages/expo-router/assets/pkg.5974eb3e1c5314e8d5a822702d7d0740.png',
+      'assets/__packages/expo-router/assets/error.d1ea1496f9057eb392d5bbf3732a61b7.png',
+      'assets/__packages/expo-router/assets/file.19eeb73b9593a38f8e9f418337fc7d10.png',
+      'assets/__packages/expo-router/assets/forward.d8b800c443b8972542883e0b9de2bdc6.png',
+      'assets/__packages/expo-router/assets/pkg.ab19f4cbc543357183a20571f68380a3.png',
+      'assets/__packages/expo-router/assets/sitemap.412dd9275b6b48ad28f5e3d81bb1f626.png',
+      'assets/__packages/expo-router/assets/unmatched.20e71bdf79e3a97bf55fd9e164041578.png',
       'index.html',
     ]);
   });

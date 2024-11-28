@@ -1,9 +1,10 @@
+'use client';
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+exports.routeToScreen = exports.screenOptionsFactory = exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -146,6 +147,11 @@ function createGetIdForRoute(route) {
         }
     }
     return ({ params = {} } = {}) => {
+        if (params.__EXPO_ROUTER_key) {
+            const key = params.__EXPO_ROUTER_key;
+            delete params.__EXPO_ROUTER_key;
+            return key;
+        }
         const segments = [];
         for (const dynamic of include.values()) {
             const value = params?.[dynamic.name];
@@ -168,25 +174,31 @@ function createGetIdForRoute(route) {
     };
 }
 exports.createGetIdForRoute = createGetIdForRoute;
+function screenOptionsFactory(route, options) {
+    return (args) => {
+        // Only eager load generated components
+        const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
+        const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
+        const dynamicResult = typeof options === 'function' ? options?.(args) : options;
+        const output = {
+            ...staticResult,
+            ...dynamicResult,
+        };
+        // Prevent generated screens from showing up in the tab bar.
+        if (route.generated) {
+            output.tabBarItemStyle = { display: 'none' };
+            output.tabBarButton = () => null;
+            // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
+            output.drawerItemStyle = { height: 0, display: 'none' };
+        }
+        return output;
+    };
+}
+exports.screenOptionsFactory = screenOptionsFactory;
 function routeToScreen(route, { options, ...props } = {}) {
     return (<primitives_1.Screen 
     // Users can override the screen getId function.
-    getId={createGetIdForRoute(route)} {...props} name={route.route} key={route.route} options={(args) => {
-            // Only eager load generated components
-            const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
-            const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
-            const dynamicResult = typeof options === 'function' ? options?.(args) : options;
-            const output = {
-                ...staticResult,
-                ...dynamicResult,
-            };
-            // Prevent generated screens from showing up in the tab bar.
-            if (route.generated) {
-                output.tabBarButton = () => null;
-                // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
-                output.drawerItemStyle = { height: 0, display: 'none' };
-            }
-            return output;
-        }} getComponent={() => getQualifiedRouteComponent(route)}/>);
+    getId={createGetIdForRoute(route)} {...props} name={route.route} key={route.route} options={screenOptionsFactory(route, options)} getComponent={() => getQualifiedRouteComponent(route)}/>);
 }
+exports.routeToScreen = routeToScreen;
 //# sourceMappingURL=useScreens.js.map

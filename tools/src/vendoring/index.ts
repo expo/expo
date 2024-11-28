@@ -3,38 +3,12 @@ import chalk from 'chalk';
 import Table from 'cli-table3';
 import semver from 'semver';
 
-import {
-  VendoringModulePlatformConfig,
-  VendoringProvider,
-  VendoringTargetModulesConfig,
-} from './types';
+import { VendoringTargetModulesConfig } from './types';
 import { EXPO_GO_DIR } from '../Constants';
 import { link } from '../Formatter';
 import logger from '../Logger';
 import * as Npm from '../Npm';
 import { getBundledVersionsAsync } from '../ProjectVersions';
-
-const VENDORING_PROVIDERS: Record<string, () => VendoringProvider> = {
-  ios: () => require('../vendoring/IosVendoring'),
-  android: () => require('../vendoring/AndroidVendoring'),
-};
-
-/**
- * Delegates vendoring process to platform's provider.
- */
-export async function vendorPlatformAsync(
-  platform: string,
-  sourceDirectory: string,
-  targetDirectory: string,
-  modulePlatformConfig?: VendoringModulePlatformConfig
-) {
-  const provider = VENDORING_PROVIDERS[platform]?.();
-
-  if (!provider) {
-    throw new Error(`No vendoring provider for platform "${platform}".`);
-  }
-  await provider.vendorAsync(sourceDirectory, targetDirectory, modulePlatformConfig);
-}
 
 /**
  * Outputs a table with modules, their versions and status.
@@ -45,7 +19,11 @@ export async function listAvailableVendoredModulesAsync(
 ) {
   const autolinkedModules = await listExpoGoAutoLinkingModulesAsync();
   const bundledNativeModules = { ...(await getBundledVersionsAsync()), ...autolinkedModules };
-  const vendoredPackageNames = [...Object.keys(modules), ...Object.keys(autolinkedModules)];
+  const vendoredPackageNameSet = new Set([
+    ...Object.keys(modules),
+    ...Object.keys(autolinkedModules),
+  ]);
+  const vendoredPackageNames = Array.from(vendoredPackageNameSet);
   const packageViews: Npm.PackageViewType[] = await Promise.all(
     vendoredPackageNames.map((packageName: string) => Npm.getPackageViewAsync(packageName))
   );
@@ -91,9 +69,13 @@ export async function listAvailableVendoredModulesAsync(
  * @returns Object with module names as keys and their versions as values.
  */
 async function listExpoGoAutoLinkingModulesAsync(): Promise<Record<string, string>> {
-  const { stdout } = await spawnAsync('npx', ['react-native', 'config'], {
-    cwd: EXPO_GO_DIR,
-  });
+  const { stdout } = await spawnAsync(
+    'npx',
+    ['expo-modules-autolinking', 'react-native-config', '--json'],
+    {
+      cwd: EXPO_GO_DIR,
+    }
+  );
   const { dependencies } = JSON.parse(stdout);
   const result = {};
   for (const [moduleName, moduleInfo] of Object.entries<Record<string, any>>(dependencies)) {
@@ -106,11 +88,4 @@ async function listExpoGoAutoLinkingModulesAsync(): Promise<Record<string, strin
     result[moduleName] = version;
   }
   return result;
-}
-
-/**
- * Returns an array of platforms that vendoring process is available for.
- */
-export function getVendoringAvailablePlatforms(): string[] {
-  return Object.keys(VENDORING_PROVIDERS);
 }

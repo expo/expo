@@ -6,6 +6,53 @@ public final class FileSystemNextModule: Module {
   public func definition() -> ModuleDefinition {
     Name("FileSystemNext")
 
+    Constants {
+      return [
+        "documentDirectory": appContext?.config.documentDirectory?.absoluteString,
+        "cacheDirectory": appContext?.config.cacheDirectory?.absoluteString,
+        "bundleDirectory": Bundle.main.bundlePath,
+        "appleSharedContainers": getAppleSharedContainers()
+      ]
+    }
+
+    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, promise: Promise) in
+      try to.validatePermission(.write)
+
+      let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, responseOrNil, errorOrNil in
+        guard errorOrNil == nil else {
+          return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
+        }
+        guard let httpResponse = responseOrNil as? HTTPURLResponse else {
+          return promise.reject(UnableToDownloadException("no response"))
+        }
+        guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 else {
+          return promise.reject(UnableToDownloadException("response has status \(httpResponse.statusCode)"))
+        }
+        guard let fileURL = urlOrNil else {
+          return promise.reject(UnableToDownloadException("no file url"))
+        }
+
+        do {
+          let destination: URL
+          if let to = to as? FileSystemDirectory {
+            let filename = httpResponse.suggestedFilename ?? url.lastPathComponent
+            destination = to.url.appendingPathComponent(filename)
+          } else {
+            destination = to.url
+          }
+          if FileManager.default.fileExists(atPath: destination.path) {
+            throw DestinationAlreadyExistsException()
+          }
+          try FileManager.default.moveItem(at: fileURL, to: destination)
+          // TODO: Remove .url.absoluteString once returning shared objects works
+          promise.resolve(destination.absoluteString)
+        } catch {
+          promise.reject(error)
+        }
+      }
+      downloadTask.resume()
+    }
+
     Class(FileSystemFile.self) {
       Constructor { (url: URL) in
         return FileSystemFile(url: url.standardizedFileURL)
@@ -21,6 +68,18 @@ public final class FileSystemNextModule: Module {
         return try file.text()
       }
 
+      Function("base64") { file in
+        return try file.base64()
+      }
+
+      Function("bytes") { file in
+        return try file.bytes()
+      }
+
+      Function("open") { file in
+        return try FileSystemFileHandle(file: file)
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)
@@ -30,20 +89,60 @@ public final class FileSystemNextModule: Module {
         }
       }
 
+      Property("size") { file in
+        try? file.size
+      }
+
+      Property("md5") { file in
+        try? file.md5
+      }
+
       Function("delete") { file in
         try file.delete()
       }
 
-      Function("exists") { file in
-        return file.exists()
+      Property("exists") { file in
+        return (try? file.exists) ?? false
       }
 
-      Function("create") { file in
-        file.create()
+      Function("create") { (file, options: CreateOptions?) in
+        try file.create(options ?? CreateOptions())
       }
 
-      Property("path") { file in
+      Function("copy") { (file, to: FileSystemPath) in
+        try file.copy(to: to)
+      }
+
+      Function("move") { (file, to: FileSystemPath) in
+        try file.move(to: to)
+      }
+
+      Property("uri") { file in
         return file.url.absoluteString
+      }
+    }
+
+    Class(FileSystemFileHandle.self) {
+      Function("readBytes") { (fileHandle, bytes: Int) in
+        try fileHandle.read(bytes)
+      }
+
+      Function("writeBytes") { (fileHandle, bytes: Data) in
+        try fileHandle.write(bytes)
+      }
+
+      Function("close") { fileHandle in
+        try fileHandle.close()
+      }
+
+      Property("offset") { fileHandle in
+        fileHandle.offset
+      }.set { (fileHandle, volume: UInt64) in
+        fileHandle.offset = volume
+      }
+
+      Property("size") { fileHandle in
+        fileHandle.size
       }
     }
 
@@ -61,17 +160,43 @@ public final class FileSystemNextModule: Module {
         try directory.delete()
       }
 
-      Function("exists") { directory in
-        return directory.exists()
+      Property("exists") { directory in
+        return directory.exists
       }
 
-      Function("create") { directory in
-        try directory.create()
+      Function("create") { (directory, options: CreateOptions?) in
+        try directory.create(options ?? CreateOptions())
       }
 
-      Property("path") { directory in
+      Function("copy") { (directory, to: FileSystemPath) in
+        try directory.copy(to: to)
+      }
+
+      Function("move") { (directory, to: FileSystemPath) in
+        try directory.move(to: to)
+      }
+
+      // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
+      Function("listAsRecords") { directory in
+        try directory.listAsRecords()
+      }
+
+      Property("uri") { directory in
         return directory.url.absoluteString
       }
     }
+  }
+
+  private func getAppleSharedContainers() -> [String: String] {
+    guard let appContext else {
+      return [:]
+    }
+    var result: [String: String] = [:]
+    for appGroup in appContext.appCodeSignEntitlements.appGroups ?? [] {
+      if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+        result[appGroup] = directory.standardizedFileURL.path
+      }
+    }
+    return result
   }
 }

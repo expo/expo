@@ -22,70 +22,28 @@ module.exports = {
   ],
   ...getExpoTheme(
     {
-      backgroundImage: theme => ({
-        'default-fade': `linear-gradient(to bottom, ${theme('backgroundColor.default')}, transparent)`,
-        'default-fade-down': `linear-gradient(to bottom, transparent, ${theme('backgroundColor.default')})`,
-        'cell-quickstart-fade': `linear-gradient(${theme('backgroundColor.subtle')} 15%, #21262d00 100%)`,
+      backgroundColor: {
+        'launch-party-red': '#D22323',
+        'launch-party-blue': '#006CFF',
+        'launch-party-yellow': '#F3AD0D',
+      },
+      borderColor: {
+        'palette-orange3.5': 'hsl(from var(--orange-4) h calc(s - 5) calc(l + 5));',
+      },
+      backgroundImage: () => ({
         'cell-quickstart-pattern': "url('/static/images/home/QuickStartPattern.svg')",
-        'cell-tutorial-fade': `linear-gradient(var(--blue3) 15%, #201d5200 100%)`,
         'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
         appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
+        'launch-party-banner': "url('/static/images/launch-party-banner-bg.svg')",
+        'launch-party-banner-mobile': "url('/static/images/launch-party-banner-bg.svg') 200px",
       }),
       keyframes: {
-        fadeIn: {
-          '0%': {
-            opacity: 0,
+        wave: {
+          '0%, 100%': {
+            transform: 'rotate(0deg)',
           },
-          '100%': {
-            opacity: 1,
-          },
-        },
-        fadeOut: {
-          '0%': {
-            opacity: 1,
-          },
-          '100%': {
-            opacity: 0,
-          },
-        },
-        slideDownAndFade: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateY(8px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateY(0)',
-          },
-        },
-        slideRightAndFade: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateX(8px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateX(0)',
-          },
-        },
-        slideLeftAndFade: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateX(-8px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateX(0)',
-          },
-        },
-        slideUpAndFade: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateY(-8px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateY(0)',
+          '50%': {
+            transform: 'rotate(20deg)',
           },
         },
         slideUpAndFadeIn: {
@@ -98,24 +56,13 @@ module.exports = {
             transform: 'translateY(0)',
           },
         },
-        wave: {
-          '0%, 100%': {
-            transform: 'rotate(0deg)',
-          },
-          '50%': {
-            transform: 'rotate(20deg)',
-          },
-        },
       },
       animation: {
-        fadeIn: 'fadeIn 0.25s ease-out',
-        fadeOut: 'fadeOut 0.15s ease-in',
-        slideDownAndFade: 'slideDownAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        slideRightAndFade: 'slideRightAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        slideLeftAndFade: 'slideLeftAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        slideUpAndFade: 'slideUpAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         slideUpAndFadeIn: 'slideUpAndFadeIn 0.25s ease-out',
         wave: 'wave 0.25s ease-in-out 4',
+      },
+      boxShadow: {
+        kbd: '0 .1rem 0 1px var(--expo-theme-border-default)',
       },
     },
     [
@@ -123,14 +70,7 @@ module.exports = {
         addUtilities({
           '.asset-shadow': {
             filter:
-              'drop-shadow(0 3px 10px rgba(0, 0, 0, 0.12)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.07))',
-          },
-          '.asset-sm-shadow': {
-            filter:
-              'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.03))',
-          },
-          '.wrap-anywhere': {
-            'overflow-wrap': 'anywhere',
+              'drop-shadow(0 3px 8px rgba(0, 0, 0, 0.12)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.07))',
           },
         });
       }),

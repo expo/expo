@@ -1,6 +1,7 @@
 /* eslint-env jest */
 import execa from 'execa';
 import klawSync from 'klaw-sync';
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { runExportSideEffects } from './export-side-effects';
@@ -8,16 +9,22 @@ import { bin, setupTestProjectWithOptionsAsync } from '../utils';
 
 runExportSideEffects();
 
-describe('exports monorepos', () => {
+/** The monorepo configuration types, e.g. where `workspaces` are defined */
+const configTypes = ['package.json', 'pnpm-workspace.yaml'] as const;
+
+describe.each(configTypes)('exports monorepo using "%s"', (configType) => {
   // See: https://github.com/expo/expo/issues/29700#issuecomment-2165348259
   it(
     'exports identical projects with cache invalidation',
     async () => {
       // Create a project from the monorepo fixture
       const projectRoot = await setupTestProjectWithOptionsAsync(
-        'basic-export-monorepo',
+        `basic-export-monorepo-${configType}`,
         'with-monorepo'
       );
+
+      // Ensure our fixture uses the correct monorepo configuration
+      await configureMonorepo(configType, projectRoot);
 
       // Export both apps, in order of A then B
       const appAExportDir = await exportApp(projectRoot, 'apps/app-a');
@@ -46,7 +53,6 @@ async function exportApp(monorepoRoot: string, workspacePath: string) {
     env: {
       NODE_ENV: 'production',
       EXPO_USE_FAST_RESOLVER: 'true',
-      EXPO_USE_METRO_WORKSPACE_ROOT: 'true',
     },
   });
 
@@ -61,4 +67,27 @@ function findFilesInPath(outputDir: string) {
         : path.posix.relative(outputDir, entry.path)
     )
     .filter(Boolean);
+}
+
+async function configureMonorepo(configType: (typeof configTypes)[number], projectRoot: string) {
+  // Do not configure monorepo when using `package.json` configuration setup, the fixture uses this already
+  if (configType === 'package.json') return;
+
+  // Create the file path references
+  const packageFile = path.join(projectRoot, 'package.json');
+  const pnpmWorkspacesFile = path.join(projectRoot, 'pnpm-workspace.yaml');
+
+  // Get the `package.json` config to modify the monorepo and support `pnpm-workspaces.yaml`
+  const packageContent = await fs.promises.readFile(packageFile, 'utf8');
+  const packageJson = JSON.parse(packageContent);
+  // see: https://pnpm.io/pnpm-workspace_yaml
+  const workspacesConfig = packageJson.workspaces.map((glob: string) => `  - '${glob}'`);
+  const pnpmWorkspacesContent = [`packages:`, ...workspacesConfig].join('\n');
+
+  await Promise.all([
+    // Delete the original `package.json` workspaces config
+    fs.promises.writeFile(packageFile, JSON.stringify({ ...packageJson, workspaces: undefined })),
+    // Create the new `pnpm-workspaces.yaml` config
+    fs.promises.writeFile(pnpmWorkspacesFile, pnpmWorkspacesContent),
+  ]);
 }

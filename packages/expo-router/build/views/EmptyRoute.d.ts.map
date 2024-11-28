@@ -1,1 +1,1 @@
-{"version":3,"file":"EmptyRoute.d.ts","sourceRoot":"","sources":["../../src/views/EmptyRoute.tsx"],"names":[],"mappings":";AAKA,wBAAgB,UAAU,gBAUzB"}
+{"version":3,"file":"EmptyRoute.d.ts","sourceRoot":"","sources":["../../src/views/EmptyRoute.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,MAAM,OAAO,CAAC;AAK1B,wBAAgB,UAAU,sBAUzB"}

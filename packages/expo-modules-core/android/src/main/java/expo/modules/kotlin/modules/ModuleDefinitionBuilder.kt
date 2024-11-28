@@ -17,8 +17,10 @@ import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.LazyKType
+import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
+import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
 
@@ -64,6 +66,9 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   inline fun <reified T : View> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
     val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
+
+    viewDefinitionBuilder.UseCSSProps()
+
     body.invoke(viewDefinitionBuilder)
     viewManagerDefinition = viewDefinitionBuilder.build()
   }
@@ -104,6 +109,13 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   /**
+   * Creates module's lifecycle listener that is called right before user leaves the activity.
+   */
+  inline fun OnUserLeavesActivity(crossinline body: () -> Unit) {
+    eventListeners[EventName.ON_USER_LEAVES_ACTIVITY] = BasicEventListener(EventName.ON_USER_LEAVES_ACTIVITY) { body() }
+  }
+
+  /**
    * Creates module's lifecycle listener that is called right after the activity is destroyed.
    */
   inline fun OnActivityDestroys(crossinline body: () -> Unit) {
@@ -126,7 +138,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   inline fun Class(name: String, body: ClassComponentBuilder<Unit>.() -> Unit = {}) {
-    val clazzBuilder = ClassComponentBuilder(name, Unit::class, typeOf<Unit>())
+    val clazzBuilder = ClassComponentBuilder(name, Unit::class, toAnyType<Unit>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
@@ -136,7 +148,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(name, sharedObjectClass, typeOf<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(name, sharedObjectClass, toAnyType<SharedObjectType>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
@@ -145,7 +157,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, typeOf<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, toAnyType<SharedObjectType>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }

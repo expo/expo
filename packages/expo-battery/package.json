@@ -1,6 +1,6 @@
 {
   "name": "expo-battery",
-  "version": "8.0.1",
+  "version": "9.0.1",
   "description": "Provides battery information for the physical device, as well as corresponding event listeners.",
   "main": "build/Battery.js",
   "types": "build/Battery.d.ts",
@@ -31,7 +31,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/battery/",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*",

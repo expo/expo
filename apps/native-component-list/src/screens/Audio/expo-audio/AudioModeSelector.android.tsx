@@ -1,9 +1,8 @@
-import { Audio, AudioMode, InterruptionModeAndroid } from 'expo-av';
+import { AudioMode, setAudioModeAsync, InterruptionMode } from 'expo-audio';
 import React from 'react';
 import { PixelRatio, Switch, Text, View } from 'react-native';
 
 import Button from '../../../components/Button';
-import ListButton from '../../../components/ListButton';
 
 interface State {
   modeToSet: Partial<AudioMode>;
@@ -13,22 +12,20 @@ interface State {
 export default class AudioModeSelector extends React.Component<object, State> {
   readonly state: State = {
     modeToSet: {
-      interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-      shouldDuckAndroid: true,
-      playThroughEarpieceAndroid: false,
-      staysActiveInBackground: false,
+      interruptionMode: 'duckOthers',
+      shouldRouteThroughEarpiece: false,
+      shouldPlayInBackground: false,
     },
     setMode: {
-      interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-      shouldDuckAndroid: true,
-      playThroughEarpieceAndroid: false,
-      staysActiveInBackground: false,
+      interruptionMode: 'duckOthers',
+      shouldRouteThroughEarpiece: false,
+      shouldPlayInBackground: false,
     },
   };
 
   _applyMode = async () => {
     try {
-      await Audio.setAudioModeAsync({ ...this.state.modeToSet });
+      await setAudioModeAsync({ ...this.state.modeToSet });
       const { modeToSet } = this.state;
       this.setState({ setMode: modeToSet });
     } catch (error) {
@@ -37,12 +34,11 @@ export default class AudioModeSelector extends React.Component<object, State> {
   };
 
   _modesEqual = (modeA: Partial<AudioMode>, modeB: Partial<AudioMode>) =>
-    modeA.interruptionModeAndroid === modeB.interruptionModeAndroid &&
-    modeA.playThroughEarpieceAndroid === modeB.playThroughEarpieceAndroid &&
-    modeA.shouldDuckAndroid === modeB.shouldDuckAndroid &&
-    modeA.staysActiveInBackground === modeB.staysActiveInBackground;
+    modeA.interruptionMode === modeB.interruptionMode &&
+    modeA.shouldRouteThroughEarpiece === modeB.shouldRouteThroughEarpiece &&
+    modeA.shouldPlayInBackground === modeB.shouldPlayInBackground;
 
-  _setMode = (interruptionModeAndroid: number) => () =>
+  _setMode = (interruptionModeAndroid: InterruptionMode) => () =>
     this.setState((state) => ({ modeToSet: { ...state.modeToSet, interruptionModeAndroid } }));
 
   _renderToggle = ({
@@ -78,44 +74,16 @@ export default class AudioModeSelector extends React.Component<object, State> {
     </View>
   );
 
-  _renderModeSelector = ({
-    title,
-    disabled,
-    value,
-  }: {
-    title: string;
-    disabled?: boolean;
-    value: number;
-  }) => (
-    <ListButton
-      disabled={disabled}
-      title={`${this.state.modeToSet.interruptionModeAndroid === value ? '✓ ' : ''}${title}`}
-      onPress={this._setMode(value)}
-    />
-  );
-
   render() {
     return (
       <View style={{ marginTop: 5 }}>
         {this._renderToggle({
-          title: 'Should be ducked',
-          valueName: 'shouldDuckAndroid',
-        })}
-        {this._renderToggle({
           title: 'Play through earpiece',
-          valueName: 'playThroughEarpieceAndroid',
+          valueName: 'shouldRouteThroughEarpiece',
         })}
         {this._renderToggle({
           title: 'Stay active in background',
-          valueName: 'staysActiveInBackground',
-        })}
-        {this._renderModeSelector({
-          title: 'Do not mix',
-          value: InterruptionModeAndroid.DoNotMix,
-        })}
-        {this._renderModeSelector({
-          title: 'Duck others',
-          value: InterruptionModeAndroid.DuckOthers,
+          valueName: 'shouldPlayInBackground',
         })}
         <Button
           title="Apply changes"

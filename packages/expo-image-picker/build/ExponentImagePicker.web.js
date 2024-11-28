@@ -1,12 +1,13 @@
 import { PermissionStatus, Platform } from 'expo-modules-core';
 import { MediaTypeOptions, } from './ImagePicker.types';
+import { parseMediaTypes } from './utils';
 const MediaTypeInput = {
-    [MediaTypeOptions.All]: 'video/mp4,video/quicktime,video/x-m4v,video/*,image/*',
-    [MediaTypeOptions.Images]: 'image/*',
-    [MediaTypeOptions.Videos]: 'video/mp4,video/quicktime,video/x-m4v,video/*',
+    images: 'image/*',
+    videos: 'video/mp4,video/quicktime,video/x-m4v,video/*',
+    livePhotos: '',
 };
 export default {
-    async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, base64 = false, }) {
+    async launchImageLibraryAsync({ mediaTypes = ['images'], allowsMultipleSelection = false, base64 = false, }) {
         // SSR guard
         if (!Platform.isDOMAvailable) {
             return { canceled: true, assets: null };
@@ -58,12 +59,14 @@ function permissionGrantedResponse() {
     };
 }
 function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelection = false, base64, }) {
-    const mediaTypeFormat = MediaTypeInput[mediaTypes];
+    const parsedMediaTypes = parseMediaTypes(mediaTypes);
+    const mediaTypeFormat = createMediaTypeFormat(parsedMediaTypes);
     const input = document.createElement('input');
     input.style.display = 'none';
     input.setAttribute('type', 'file');
     input.setAttribute('accept', mediaTypeFormat);
     input.setAttribute('id', String(Math.random()));
+    input.setAttribute('data-testid', 'file-input');
     if (allowsMultipleSelection) {
         input.setAttribute('multiple', 'multiple');
     }
@@ -73,7 +76,7 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
     document.body.appendChild(input);
     return new Promise((resolve) => {
         input.addEventListener('change', async () => {
-            if (input.files) {
+            if (input.files?.length) {
                 const files = allowsMultipleSelection ? input.files : [input.files[0]];
                 const assets = await Promise.all(Array.from(files).map((file) => readFile(file, { base64 })));
                 resolve({ canceled: false, assets });
@@ -82,6 +85,9 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
                 resolve({ canceled: true, assets: null });
             }
             document.body.removeChild(input);
+        });
+        input.addEventListener('cancel', () => {
+            input.dispatchEvent(new Event('change'));
         });
         const event = new MouseEvent('click');
         input.dispatchEvent(event);
@@ -96,25 +102,51 @@ function readFile(targetFile, options) {
         reader.onload = ({ target }) => {
             const uri = target.result;
             const returnRaw = () => resolve({ uri, width: 0, height: 0 });
+            const returnMediaData = (data) => {
+                resolve({
+                    ...data,
+                    ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
+                    file: targetFile,
+                });
+            };
             if (typeof uri === 'string') {
-                const image = new Image();
-                image.src = uri;
-                image.onload = () => {
-                    resolve({
-                        uri,
-                        width: image.naturalWidth ?? image.width,
-                        height: image.naturalHeight ?? image.height,
-                        mimeType: targetFile.type,
-                        fileName: targetFile.name,
-                        // The blob's result cannot be directly decoded as Base64 without
-                        // first removing the Data-URL declaration preceding the
-                        // Base64-encoded data. To retrieve only the Base64 encoded string,
-                        // first remove data:*/*;base64, from the result.
-                        // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
-                        ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
-                    });
-                };
-                image.onerror = () => returnRaw();
+                if (targetFile.type.startsWith('image/')) {
+                    const image = new Image();
+                    image.src = uri;
+                    image.onload = () => {
+                        returnMediaData({
+                            uri,
+                            width: image.naturalWidth ?? image.width,
+                            height: image.naturalHeight ?? image.height,
+                            type: 'image',
+                            mimeType: targetFile.type,
+                            fileName: targetFile.name,
+                            fileSize: targetFile.size,
+                        });
+                    };
+                    image.onerror = () => returnRaw();
+                }
+                else if (targetFile.type.startsWith('video/')) {
+                    const video = document.createElement('video');
+                    video.preload = 'metadata';
+                    video.src = uri;
+                    video.onloadedmetadata = () => {
+                        returnMediaData({
+                            uri,
+                            width: video.videoWidth,
+                            height: video.videoHeight,
+                            type: 'video',
+                            mimeType: targetFile.type,
+                            fileName: targetFile.name,
+                            fileSize: targetFile.size,
+                            duration: video.duration,
+                        });
+                    };
+                    video.onerror = () => returnRaw();
+                }
+                else {
+                    returnRaw();
+                }
             }
             else {
                 returnRaw();
@@ -122,5 +154,19 @@ function readFile(targetFile, options) {
         };
         reader.readAsDataURL(targetFile);
     });
+}
+function createMediaTypeFormat(mediaTypes) {
+    const filteredMediaTypes = mediaTypes.filter((mediaType) => mediaType !== 'livePhotos');
+    if (filteredMediaTypes.length === 0) {
+        return 'image/*';
+    }
+    let result = '';
+    for (const mediaType of filteredMediaTypes) {
+        // Make sure the types don't repeat
+        if (!result.includes(MediaTypeInput[mediaType])) {
+            result = result.concat(',', MediaTypeInput[mediaType]);
+        }
+    }
+    return result;
 }
 //# sourceMappingURL=ExponentImagePicker.web.js.map

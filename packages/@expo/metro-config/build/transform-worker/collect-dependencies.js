@@ -41,6 +41,8 @@ const types_1 = require("@babel/types");
 const t = __importStar(require("@babel/types"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const crypto = __importStar(require("node:crypto"));
+const debug = require('debug')('expo:metro:collect-dependencies');
+const MAGIC_IMPORT_COMMENT = '@metro-ignore';
 // asserts non-null
 function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
@@ -101,6 +103,24 @@ function collectDependencies(ast, options) {
                 !callee.computed &&
                 !path.scope.getBinding('require')) {
                 processResolveWeakCall(path, state);
+                visited.add(path.node);
+                return;
+            }
+            // Match `require.unstable_importMaybeSync`
+            if (callee.type === 'MemberExpression' &&
+                // `require`
+                callee.object.type === 'Identifier' &&
+                callee.object.name === 'require' &&
+                // `unstable_importMaybeSync`
+                callee.property.type === 'Identifier' &&
+                callee.property.name === 'unstable_importMaybeSync' &&
+                !callee.computed &&
+                // Ensure `require` refers to the global and not something else.
+                !path.scope.getBinding('require')) {
+                processImportCall(path, state, {
+                    dynamicRequires: options.dynamicRequires,
+                    asyncType: 'maybeSync',
+                });
                 visited.add(path.node);
                 return;
             }
@@ -281,7 +301,25 @@ function collectImports(path, state) {
         }, path);
     }
 }
+/**
+ * @returns `true` if the import contains the magic comment for opting-out of bundling.
+ */
+function hasMagicImportComment(path) {
+    // Get first argument of import()
+    const [firstArg] = path.node.arguments;
+    // Check comments before the argument
+    return !!(firstArg?.leadingComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)) ||
+        path.node.leadingComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)) ||
+        // Get the inner comments between import and its argument
+        path.node.innerComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)));
+}
 function processImportCall(path, state, options) {
+    // Check both leading and inner comments
+    if (hasMagicImportComment(path)) {
+        const line = path.node.loc && path.node.loc.start && path.node.loc.start.line;
+        debug(`Magic comment at line ${line || '<unknown>'}: Ignoring import: ${(0, generator_1.default)(path.node).code}`);
+        return;
+    }
     const name = getModuleNameFromCallArgs(path);
     if (name == null) {
         if (options.dynamicRequires === 'warn') {
@@ -297,11 +335,18 @@ function processImportCall(path, state, options) {
         exportNames: ['*'],
     }, path);
     const transformer = state.dependencyTransformer;
-    if (options.asyncType === 'async') {
-        transformer.transformImportCall(path, dep, state);
-    }
-    else {
-        transformer.transformPrefetch(path, dep, state);
+    switch (options.asyncType) {
+        case 'async':
+            transformer.transformImportCall(path, dep, state);
+            break;
+        case 'maybeSync':
+            transformer.transformImportMaybeSyncCall(path, dep, state);
+            break;
+        case 'prefetch':
+            transformer.transformPrefetch(path, dep, state);
+            break;
+        default:
+            throw new Error('Unreachable');
     }
 }
 function warnDynamicRequire({ node }, message = '') {
@@ -401,6 +446,12 @@ const makeAsyncPrefetchTemplate = template_1.default.expression(`
 const makeAsyncPrefetchTemplateWithName = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).prefetch(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
 `);
+const makeAsyncImportMaybeSyncTemplate = template_1.default.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+const makeAsyncImportMaybeSyncTemplateWithName = template_1.default.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
+`);
 const makeResolveWeakTemplate = template_1.default.expression(`
   MODULE_ID
 `);
@@ -416,6 +467,18 @@ const DefaultDependencyTransformer = {
         const makeNode = state.keepRequireNames
             ? makeAsyncRequireTemplateWithName
             : makeAsyncRequireTemplate;
+        const opts = {
+            ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+            MODULE_ID: createModuleIDExpression(dependency, state),
+            DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+            ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+        };
+        path.replaceWith(makeNode(opts));
+    },
+    transformImportMaybeSyncCall(path, dependency, state) {
+        const makeNode = state.keepRequireNames
+            ? makeAsyncImportMaybeSyncTemplateWithName
+            : makeAsyncImportMaybeSyncTemplate;
         const opts = {
             ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
             MODULE_ID: createModuleIDExpression(dependency, state),

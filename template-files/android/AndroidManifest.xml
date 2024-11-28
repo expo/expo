@@ -135,7 +135,8 @@
       android:exported="true"
       android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:theme="@style/Theme.Exponent.Light"
-      android:windowSoftInputMode="adjustResize">
+      android:windowSoftInputMode="adjustResize"
+      android:supportsPictureInPicture="true">
     </activity>
 
     <activity
@@ -235,14 +236,6 @@
       android:exported="false" />
 
     <!-- Analytics -->
-    <receiver
-      android:name="host.exp.exponent.referrer.InstallReferrerReceiver"
-      android:exported="true">
-      <intent-filter>
-        <action android:name="com.android.vending.INSTALL_REFERRER" />
-      </intent-filter>
-    </receiver>
-
     <!--
     This crashes: https://code.google.com/p/analytics-issues/issues/detail?id=667
     TODO: turn it back on when it's fixed

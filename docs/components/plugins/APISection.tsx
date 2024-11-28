@@ -49,10 +49,16 @@ const isHook = ({ name }: { name: string }) =>
 const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
 
-const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
+const isProp = ({ name }: GeneratedData) =>
+  name.includes('Props') &&
+  name !== 'ErrorRecoveryProps' &&
+  name !== 'WebAnchorProps' &&
+  name !== 'ScreenProps';
+
+const componentTypeNames = ['React.FC', 'ForwardRefExoticComponent', 'ComponentType'];
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
-  if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {
+  if (type?.name && componentTypeNames.includes(type?.name)) {
     return true;
   } else if (extendedTypes && extendedTypes.length) {
     return extendedTypes[0].name === 'Component' || extendedTypes[0].name === 'PureComponent';
@@ -70,7 +76,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 
 const isConstant = ({ name, type }: GeneratedData) =>
   !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
-  !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
+  !(type?.name && componentTypeNames.includes(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
   (signatures &&

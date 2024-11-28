@@ -1,7 +1,10 @@
+'use client';
+
 import type {
   EventMapBase,
   NavigationState,
   ParamListBase,
+  RouteConfig,
   RouteProp,
   ScreenListeners,
 } from '@react-navigation/native';
@@ -23,14 +26,14 @@ import { Try } from './views/Try';
 
 export type ScreenProps<
   TOptions extends Record<string, any> = Record<string, any>,
-  State extends NavigationState = NavigationState,
-  EventMap extends EventMapBase = EventMapBase,
+  TState extends NavigationState = NavigationState,
+  TEventMap extends EventMapBase = EventMapBase,
 > = {
   /** Name is required when used inside a Layout component. */
   name?: string;
   /**
    * Redirect to the nearest sibling route.
-   * If all children are redirect={true}, the layout will render `null` as there are no children to render.
+   * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
    */
   redirect?: boolean;
   initialParams?: Record<string, any>;
@@ -39,11 +42,11 @@ export type ScreenProps<
     | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
 
   listeners?:
-    | ScreenListeners<State, EventMap>
+    | ScreenListeners<TState, TEventMap>
     | ((prop: {
         route: RouteProp<ParamListBase, string>;
         navigation: any;
-      }) => ScreenListeners<State, EventMap>);
+      }) => ScreenListeners<TState, TEventMap>);
 
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 };
@@ -237,6 +240,12 @@ export function createGetIdForRoute(
   }
 
   return ({ params = {} } = {} as { params?: Record<string, any> }) => {
+    if (params.__EXPO_ROUTER_key) {
+      const key = params.__EXPO_ROUTER_key;
+      delete params.__EXPO_ROUTER_key;
+      return key;
+    }
+
     const segments: string[] = [];
 
     for (const dynamic of include.values()) {
@@ -258,7 +267,33 @@ export function createGetIdForRoute(
   };
 }
 
-function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenProps> = {}) {
+export function screenOptionsFactory(
+  route: RouteNode,
+  options?: ScreenProps['options']
+): RouteConfig<any, any, any, any, any, any>['options'] {
+  return (args) => {
+    // Only eager load generated components
+    const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
+    const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
+    const dynamicResult = typeof options === 'function' ? options?.(args) : options;
+    const output = {
+      ...staticResult,
+      ...dynamicResult,
+    };
+
+    // Prevent generated screens from showing up in the tab bar.
+    if (route.generated) {
+      output.tabBarItemStyle = { display: 'none' };
+      output.tabBarButton = () => null;
+      // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
+      output.drawerItemStyle = { height: 0, display: 'none' };
+    }
+
+    return output;
+  };
+}
+
+export function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenProps> = {}) {
   return (
     <Screen
       // Users can override the screen getId function.
@@ -266,26 +301,7 @@ function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenPr
       {...props}
       name={route.route}
       key={route.route}
-      options={(args) => {
-        // Only eager load generated components
-        const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
-        const staticResult =
-          typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
-        const dynamicResult = typeof options === 'function' ? options?.(args) : options;
-        const output = {
-          ...staticResult,
-          ...dynamicResult,
-        };
-
-        // Prevent generated screens from showing up in the tab bar.
-        if (route.generated) {
-          output.tabBarButton = () => null;
-          // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
-          output.drawerItemStyle = { height: 0, display: 'none' };
-        }
-
-        return output;
-      }}
+      options={screenOptionsFactory(route, options)}
       getComponent={() => getQualifiedRouteComponent(route)}
     />
   );

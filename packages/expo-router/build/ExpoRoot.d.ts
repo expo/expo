@@ -1,4 +1,4 @@
-import { type PropsWithChildren, type ComponentType } from 'react';
+import React, { type PropsWithChildren, type ComponentType } from 'react';
 import { ExpoLinkingOptions } from './getLinkingConfig';
 import { RequireContext } from './types';
 export type ExpoRootProps = {
@@ -13,5 +13,8 @@ export type NativeIntent = {
         initial: boolean;
     }) => Promise<string | null | undefined> | string | null | undefined;
 };
-export declare function ExpoRoot({ wrapper: ParentWrapper, ...props }: ExpoRootProps): JSX.Element;
+/**
+ * @hidden
+ */
+export declare function ExpoRoot({ wrapper: ParentWrapper, ...props }: ExpoRootProps): React.JSX.Element;
 //# sourceMappingURL=ExpoRoot.d.ts.map

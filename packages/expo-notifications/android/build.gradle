@@ -1,7 +1,8 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-parcelize'
 
 group = 'host.exp.exponent'
-version = '0.28.3'
+version = '0.29.8'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,26 +15,40 @@ android {
   namespace "expo.modules.notifications"
   defaultConfig {
     versionCode 21
-    versionName '0.28.3'
+    versionName '0.29.8'
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
   buildFeatures {
     buildConfig true
   }
+  testOptions {
+    unitTests.all { test ->
+      testLogging {
+        outputs.upToDateWhen { false }
+        events "passed", "failed", "skipped", "standardError"
+        showCauses true
+        showExceptions true
+        showStandardStreams true
+      }
+    }
+  }
 }
 
 dependencies {
-  api 'androidx.core:core:1.5.0'
-  api 'androidx.lifecycle:lifecycle-runtime:2.2.0'
-  api 'androidx.lifecycle:lifecycle-process:2.2.0'
-  api 'androidx.lifecycle:lifecycle-common-java8:2.2.0'
+  implementation 'androidx.core:core:1.6.0'
+  implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0'
+  implementation 'androidx.lifecycle:lifecycle-process:2.2.0'
+  implementation 'androidx.lifecycle:lifecycle-common-java8:2.2.0'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 
+  // release notes in https://firebase.google.com/support/release-notes/android - cmd + f "Cloud Messaging version"
+  implementation 'com.google.firebase:firebase-messaging:24.0.1'
 
-  api 'com.google.firebase:firebase-messaging:22.0.0'
-
-  api 'me.leolin:ShortcutBadger:1.1.22@aar'
+  implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
 
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
+    androidTestImplementation project(':expo-modules-test-core')
   }
 }

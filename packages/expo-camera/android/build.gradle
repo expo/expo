@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '15.0.9'
+version = '16.0.7'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,13 +14,7 @@ android {
   namespace "expo.modules.camera"
   defaultConfig {
     versionCode 32
-    versionName "15.0.9"
-  }
-}
-
-repositories {
-  maven {
-    url "$projectDir/maven"
+    versionName "16.0.7"
   }
 }
 
@@ -39,8 +33,4 @@ dependencies {
   implementation "androidx.camera:camera-extensions:${camerax_version}"
   implementation "com.google.mlkit:barcode-scanning:17.2.0"
   implementation "androidx.camera:camera-mlkit-vision:${camerax_version}"
-
-  api("com.google.android:cameraview:1.0.0") {
-    exclude group: 'com.android.support'
-  }
 }

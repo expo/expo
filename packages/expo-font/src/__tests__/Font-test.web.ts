@@ -6,6 +6,7 @@ import * as Font from '../index';
 jest.mock('../ExpoFontLoader.web', () => {
   const mod = jest.requireActual('../ExpoFontLoader.web');
   return {
+    ...mod.default,
     loadAsync: jest.fn(mod.loadAsync),
     unloadAllAsync: jest.fn(mod.unloadAllAsync),
     isLoaded: jest.fn(mod.isLoaded),
@@ -49,13 +50,13 @@ if (typeof window === 'undefined') {
     const name = 'foobar';
 
     // Load font in sync
-    Font.loadAsync(name, { uri: 'foo.ttf' });
+    const loadPromise = Font.loadAsync(name, { uri: 'foo.ttf' });
     // Check to ensure it's loading
     expect(Font.isLoading(name)).toBe(true);
     // Attempting to unload all should throw an error
     await expect(Font.unloadAllAsync()).rejects.toThrow('still loading');
     // Wait until the font finished loading
-    await new Promise((resolve) => setTimeout(resolve, 6));
+    await loadPromise;
     // Should still be loaded because unloadAll was invoked too early.
     expect(Font.isLoaded(name)).toBe(true);
     expect(Font.isLoading(name)).toBe(false);
@@ -103,5 +104,9 @@ if (typeof window === 'undefined') {
       display: Font.FontDisplay.OPTIONAL,
       uri: 'foobar.ttf',
     });
+  });
+
+  it('getLoadedFonts is available', () => {
+    expect(Font.getLoadedFonts()).toHaveLength(0);
   });
 }

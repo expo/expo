@@ -6,13 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PnpmPackageManager = void 0;
 const BasePackageManager_1 = require("./BasePackageManager");
 const env_1 = __importDefault(require("../utils/env"));
-const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
+const nodeManagers_1 = require("../utils/nodeManagers");
 class PnpmPackageManager extends BasePackageManager_1.BasePackageManager {
     name = 'pnpm';
     bin = 'pnpm';
-    lockFile = nodeWorkspaces_1.PNPM_LOCK_FILE;
+    lockFile = nodeManagers_1.PNPM_LOCK_FILE;
     workspaceRoot() {
-        const root = (0, nodeWorkspaces_1.findPnpmWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
+        const root = (0, nodeManagers_1.resolveWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
         if (root) {
             return new PnpmPackageManager({
                 ...this.options,

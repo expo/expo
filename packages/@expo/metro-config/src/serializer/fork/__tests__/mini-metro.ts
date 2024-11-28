@@ -40,17 +40,19 @@ export async function microBundle({
         }
       }
     }
-    if (id === 'expo-mock/async-require' && !fullFs['expo-mock/async-require']) {
-      fullFs['expo-mock/async-require'] = `
+
+    for (const mid of [
+      'expo-mock/async-require',
+      'react-server-dom-webpack/server',
+      'react-server-dom-webpack/client',
+      'expo-router/rsc/internal',
+    ]) {
+      if (id === mid && !fullFs[mid]) {
+        fullFs[mid] = `
                 module.exports = () => 'MOCK'
             `;
-      return 'expo-mock/async-require';
-    }
-    if (id === 'react-server-dom-webpack/server' && !fullFs['react-server-dom-webpack/server']) {
-      fullFs['react-server-dom-webpack/server'] = `
-                module.exports = () => 'MOCK'
-            `;
-      return 'react-server-dom-webpack/server';
+        return mid;
+      }
     }
 
     throw new Error(
@@ -91,7 +93,10 @@ export async function microBundle({
   ]
 > {
   const fullFs = {
+    'expo-router/rsc/internal': ``,
     'react-server-dom-webpack/server': ``,
+    'react-server-dom-webpack/client': ``,
+
     'expo-mock/async-require': `
     module.exports = () => 'MOCK'
 `,

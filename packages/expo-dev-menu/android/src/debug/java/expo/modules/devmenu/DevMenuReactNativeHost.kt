@@ -6,7 +6,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.defaults.DefaultReactNativeHost
-import com.facebook.react.devsupport.DevMenuReactInternalSettings
+import com.facebook.react.devsupport.DevMenuReactSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
 import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
@@ -60,7 +60,7 @@ class DevMenuReactNativeHost(application: Application, private val useDeveloperS
 
   override fun getJSMainModuleName() = "index"
 
-  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
+  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory {
     return createNonDebuggableJavaScriptExecutorFactory(application)
   }
 
@@ -76,7 +76,7 @@ class DevMenuReactNativeHost(application: Application, private val useDeveloperS
           it.readLine()
         }
 
-        val devMenuInternalReactSettings = DevMenuReactInternalSettings(serverIp, super.getApplication())
+        val devMenuInternalReactSettings = DevMenuReactSettings(super.getApplication(), serverIp)
 
         val devSupportManager = reactInstanceManager.devSupportManager
         val devSupportManagerBaseClass = devSupportManager.javaClass.superclass!!

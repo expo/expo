@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import type { IMinimatch } from 'minimatch';
 import type { SourceSkips } from './sourcer/SourceSkips';
 export type FingerprintSource = HashSource & {
     /**
@@ -22,19 +23,38 @@ export interface Fingerprint {
      */
     hash: string;
 }
-export interface FingerprintDiffItem {
+export type FingerprintDiffItem = {
     /**
      * The operation type of the diff item.
      */
-    op: 'added' | 'removed' | 'changed';
+    op: 'added';
     /**
-     * The source of the diff item.
-     *   - When type is 'added', the source is the new source.
-     *   - When type is 'removed', the source is the old source.
-     *   - When type is 'changed', the source is the new source.
+     * The added source.
      */
-    source: FingerprintSource;
-}
+    addedSource: FingerprintSource;
+} | {
+    /**
+     * The operation type of the diff item.
+     */
+    op: 'removed';
+    /**
+     * The removed source.
+     */
+    removedSource: FingerprintSource;
+} | {
+    /**
+     * The operation type of the diff item.
+     */
+    op: 'changed';
+    /**
+     * The source before.
+     */
+    beforeSource: FingerprintSource;
+    /**
+     * The source after.
+     */
+    afterSource: FingerprintSource;
+};
 export type Platform = 'android' | 'ios';
 export interface Options {
     /**
@@ -78,9 +98,14 @@ export interface Options {
      * Enable ReactImportsPatcher to transform imports from React of the form `#import "RCTBridge.h"` to `#import <React/RCTBridge.h>`.
      * This is useful when you want to have a stable fingerprint for Expo projects,
      * since expo-modules-autolinking will change the import style on iOS.
-     * @default true
+     * @default true for Expo SDK 51 and lower.
      */
     enableReactImportsPatcher?: boolean;
+    /**
+     * Use the react-native core autolinking sources from expo-modules-autolinking rather than @react-native-community/cli.
+     * @default true for Expo SDK 52 and higher.
+     */
+    useRNCoreAutolinkingFromExpo?: boolean;
     /**
      * Whether running the functions should mute all console output. This is useful when fingerprinting is being done as
      * part of a CLI that outputs a fingerprint and outputting anything else pollutes the results.
@@ -91,18 +116,21 @@ export interface Options {
      */
     debug?: boolean;
 }
+type SourceSkipsKeys = keyof typeof SourceSkips;
 /**
  * Supported options from fingerprint.config.js
  */
-export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'sourceSkips' | 'enableReactImportsPatcher' | 'debug'>;
-export interface NormalizedOptions extends Options {
+export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'ignorePaths' | 'extraSources' | 'enableReactImportsPatcher' | 'useRNCoreAutolinkingFromExpo' | 'debug'> & {
+    sourceSkips?: SourceSkips | SourceSkipsKeys[];
+};
+export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
     platforms: NonNullable<Options['platforms']>;
     concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
     hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
-    ignorePaths: NonNullable<Options['ignorePaths']>;
     sourceSkips: NonNullable<Options['sourceSkips']>;
     enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
-}
+    ignorePathMatchObjects: IMinimatch[];
+};
 export interface HashSourceFile {
     type: 'file';
     filePath: string;
@@ -161,3 +189,4 @@ export interface HashResultContents {
     debugInfo?: DebugInfoContents;
 }
 export type HashResult = HashResultFile | HashResultDir | HashResultContents;
+export {};

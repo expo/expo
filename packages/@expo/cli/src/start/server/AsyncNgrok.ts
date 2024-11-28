@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import * as path from 'path';
 import slugify from 'slugify';
 
-import UserSettings from '../../api/user/UserSettings';
+import { getSettingsDirectory } from '../../api/user/UserSettings';
 import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { delayAsync, resolveWithTimeout } from '../../utils/delay';
@@ -158,7 +158,7 @@ export class AsyncNgrok {
   ): Promise<string | false> {
     try {
       // Global config path.
-      const configPath = path.join(UserSettings.getDirectory(), 'ngrok.yml');
+      const configPath = path.join(getSettingsDirectory(), 'ngrok.yml');
       debug('Global config path:', configPath);
       const urlProps = await this._getConnectionPropsAsync();
 
@@ -224,14 +224,18 @@ export class AsyncNgrok {
 
   private async getProjectRandomnessAsync() {
     const { urlRandomness: randomness } = await ProjectSettings.readAsync(this.projectRoot);
-    if (randomness) {
+    if (randomness && /^[A-Za-z0-9]/.test(randomness)) {
       return randomness;
     }
     return await this._resetProjectRandomnessAsync();
   }
 
   async _resetProjectRandomnessAsync() {
-    const randomness = crypto.randomBytes(5).toString('base64url');
+    let randomness: string;
+    do {
+      randomness = crypto.randomBytes(5).toString('base64url');
+    } while (randomness.startsWith('_')); // _ is an invalid character for a hostname
+
     await ProjectSettings.setAsync(this.projectRoot, { urlRandomness: randomness });
     debug('Resetting project randomness:', randomness);
     return randomness;

@@ -1,6 +1,6 @@
 package expo.modules.updatesinterface
 
-import android.content.Context
+import android.net.Uri
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 
@@ -30,6 +30,9 @@ interface UpdatesInterface {
   var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>?
 
   fun reset()
-  fun fetchUpdateWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: UpdateCallback)
-  fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean
+  fun fetchUpdateWithConfiguration(configuration: HashMap<String, Any>, callback: UpdateCallback)
+  fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>): Boolean
+
+  val runtimeVersion: String?
+  val updateUrl: Uri?
 }

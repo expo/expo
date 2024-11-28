@@ -50,7 +50,7 @@ it('initialURL overrides initialRouteName', async () => {
   expect(screen).toHavePathname('/apple');
 });
 
-it.only('render the initial route with local params', async () => {
+it('render the initial route with local params', async () => {
   // Issue #26908
   // Expo Router matches the behavior of React Navigation, but this behavior is slightly not correct
   // In this example, the initialRoute should not have 'id' as a param, but React Navigation passes the same params

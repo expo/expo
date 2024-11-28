@@ -10,7 +10,7 @@ function ensurePictureOptions(options) {
     if (!options || typeof options !== 'object') {
         return {};
     }
-    if (!options.quality) {
+    if (options.quality === undefined) {
         options.quality = 1;
     }
     if (options.mirror) {
@@ -78,6 +78,18 @@ export default class CameraView extends Component {
     async getAvailablePictureSizesAsync() {
         return (await this._cameraRef.current?.getAvailablePictureSizes()) ?? [];
     }
+    /**
+     * Resumes the camera preview.
+     */
+    async resumePreview() {
+        return this._cameraRef.current?.resumePreview();
+    }
+    /**
+     * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
+     */
+    async pausePreview() {
+        return this._cameraRef.current?.pausePreview();
+    }
     // Values under keys from this object will be transformed to native options
     static ConversionTables = ConversionTables;
     static defaultProps = {
@@ -110,6 +122,8 @@ export default class CameraView extends Component {
      *
      * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
+     *
+     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
      */
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);

@@ -21,6 +21,13 @@ internal struct DynamicConvertibleType: AnyDynamicType {
     return try innerType.convert(from: value, appContext: appContext)
   }
 
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    if let record = result as? Record {
+      return record.toDictionary(appContext: appContext)
+    }
+    return result
+  }
+
   var description: String {
     String(describing: innerType.self)
   }

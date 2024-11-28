@@ -4,16 +4,16 @@ description: A library that provides a way to encrypt and securely store key-val
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-secure-store'
 packageName: 'expo-secure-store'
 iconUrl: '/static/images/packages/expo-secure-store.png'
-platforms: ['android', 'ios']
+platforms: ['android', 'ios', 'tvos']
 ---
 
 import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import {
   ConfigPluginExample,
   ConfigReactNative,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-secure-store` provides a way to encrypt and securely store key-value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.
@@ -93,6 +93,11 @@ On Android, values are stored in [`SharedPreferences`](https://developer.android
 
 On iOS, values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
 
+## Data persistence
+
+`expo-secure-store` is designed to provide a persistent data storage solution across app restarts and updates. However, it is important not to rely on it as a single source of truth for irreplaceable, critical data. Data saved using `expo-secure-store` will not be preserved upon app uninstallation.
+Additionally, any data protected with the `requireAuthentication` option set to `true` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint.
+
 #### Exempting encryption prompt
 
 Apple App Store Connect prompts you to select the type of encryption algorithm your app implements. This is known as **Export Compliance Information**. It is asked when publishing the app or submitting for TestFlight.
@@ -152,7 +157,7 @@ If you are using your own Auto Backup configuration, you should exclude the `Sec
 <SnackInline label='SecureStore' dependencies={['expo-secure-store']} platforms={['ios', 'android']}>
 
 ```jsx
-import * as React from 'react';
+import { useState } from 'react';
 import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
@@ -170,8 +175,8 @@ async function getValueFor(key) {
 }
 
 export default function App() {
-  const [key, onChangeKey] = React.useState('Your key here');
-  const [value, onChangeValue] = React.useState('Your value here');
+  const [key, onChangeKey] = useState('Your key here');
+  const [value, onChangeValue] = useState('Your value here');
 
   return (
     <View style={styles.container}>

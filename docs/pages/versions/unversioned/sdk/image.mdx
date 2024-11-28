@@ -9,7 +9,7 @@ platforms: ['android', 'ios', 'tvos', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
 `expo-image` is a cross-platform React component that loads and renders images.
@@ -26,17 +26,17 @@ import { Terminal } from '~/ui/components/Snippet';
 
 #### Supported image formats
 
-|   Format   |   Android   |     iOS     |                            Web                            |
-| :--------: | :---------: | :---------: | :-------------------------------------------------------: |
-|    WebP    | <YesIcon /> | <YesIcon /> |                        <YesIcon />                        |
-| PNG / APNG | <YesIcon /> | <YesIcon /> |                        <YesIcon />                        |
-|    AVIF    | <YesIcon /> | <YesIcon /> | <PendingIcon /> [~87% adoption](https://caniuse.com/avif) |
-|    HEIC    | <YesIcon /> | <YesIcon /> |  <NoIcon /> [not adopted yet](https://caniuse.com/heif)   |
-|    JPEG    | <YesIcon /> | <YesIcon /> |                        <YesIcon />                        |
-|    GIF     | <YesIcon /> | <YesIcon /> |                        <YesIcon />                        |
-|    SVG     | <YesIcon /> | <YesIcon /> |                        <YesIcon />                        |
-|    ICO     | <YesIcon /> | <YesIcon /> |                        <YesIcon />                        |
-|    ICNS    | <NoIcon />  | <YesIcon /> |                        <NoIcon />                         |
+|   Format   |   Android   |     iOS     |                          Web                           |
+| :--------: | :---------: | :---------: | :----------------------------------------------------: |
+|    WebP    | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
+| PNG / APNG | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
+|    AVIF    | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
+|    HEIC    | <YesIcon /> | <YesIcon /> | <NoIcon /> [not adopted yet](https://caniuse.com/heif) |
+|    JPEG    | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
+|    GIF     | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
+|    SVG     | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
+|    ICO     | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
+|    ICNS    | <NoIcon />  | <YesIcon /> |                       <NoIcon />                       |
 
 ## Installation
 
@@ -133,7 +133,13 @@ app.post('/blurhash', upload.single('image'), async (req, res) => {
     resolveWithObject: true,
   });
 
-  const blurhash = encode(data, info.width, info.height, componentX, componentY);
+  const blurhash = encode(
+    new Uint8ClampedArray(data),
+    info.width,
+    info.height,
+    componentX,
+    componentY
+  );
   res.json({ blurhash });
 });
 ```

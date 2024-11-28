@@ -58,7 +58,7 @@ export enum LocationActivityType {
   /**
    * Intended for airborne activities. Fall backs to `ActivityType.Other` if
    * unsupported.
-   * @platform ios 12+
+   * @platform ios
    */
   Airborne = 5,
 }
@@ -106,6 +106,8 @@ export type LocationOptions = {
    * Location manager accuracy. Pass one of `Accuracy` enum values.
    * For low-accuracies the implementation can avoid geolocation providers
    * that consume a significant amount of power (such as GPS).
+   *
+   * @default LocationAccuracy.Balanced
    */
   accuracy?: LocationAccuracy;
   /**
@@ -154,7 +156,7 @@ export type LocationTaskOptions = LocationOptions & {
    * A boolean indicating whether the status bar changes its appearance when
    * location services are used in the background.
    * @default false
-   * @platform ios 11+
+   * @platform ios
    */
   showsBackgroundLocationIndicator?: boolean;
   /**

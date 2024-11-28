@@ -49,9 +49,21 @@ To use EAS CLI, you need to install it globally on your local machine by running
 
 You can use `eas --help` in your terminal window to learn more about the available commands. For a complete reference, see [`eas-cli` npm page](https://www.npmjs.com/package/eas-cli).
 
+## Expo Doctor
+
+Expo Doctor is a command line tool used to diagnose issues in your Expo project. To use it, run the following command in your project's root directory:
+
+<Terminal cmd={['$ npx expo-doctor']} />
+
+This command performs checks and analyzes your project's codebase for common issues in [app config](/workflow/configuration/) and **package.json** files, dependency compatibility, configuration files, and the overall health of the project. Once the check is complete, Expo Doctor outputs the results.
+
+If Expo Doctor finds an issue, it provides a description of the problem along with advice on how to fix it or where to find help.
+
+You can also use `npx expo-doctor --help` to display usage information.
+
 ## Orbit
 
-Orbit is a macOS and Windows app that enables
+Orbit is a macOS and Windows app that enables:
 
 - Install and launch builds from EAS on physical devices and emulators.
 - Install and launch updates from EAS on Android Emulators or iOS Simulators.

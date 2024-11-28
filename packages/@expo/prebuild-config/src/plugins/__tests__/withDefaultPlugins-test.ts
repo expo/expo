@@ -26,6 +26,8 @@ const { withOrientation } = IOSConfig.Orientation;
 const { readXMLAsync } = XML;
 const fsReal = jest.requireActual('fs') as typeof fs;
 
+jest.setTimeout(30 * 1000);
+
 jest.mock('fs');
 // Weird issues with Android Icon module make it hard to mock test.
 jest.mock('../icons/withAndroidIcons', () => {
@@ -122,6 +124,7 @@ function getLargeConfig(): ExportedConfig {
       associatedDomains: ['applinks:https://pillarvalley.netlify.app'],
       usesIcloudStorage: true,
       usesAppleSignIn: true,
+      usesBroadcastPushNotifications: true,
       accessesContactNotes: true,
     },
     android: {
@@ -348,8 +351,7 @@ describe('built-in plugins', () => {
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png',
         'ios/HelloWorld/Images.xcassets/Contents.json',
-        'ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/image.png',
-        'ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json',
+        'ios/HelloWorld/Images.xcassets/SplashScreenBackground.colorset/Contents.json',
         'ios/HelloWorld/Info.plist',
         'ios/HelloWorld/SplashScreen.storyboard',
         'ios/HelloWorld/Supporting/Expo.plist',
@@ -376,8 +378,18 @@ describe('built-in plugins', () => {
         'android/app/src/main/AndroidManifest.xml',
         'android/app/src/main/java/com/bacon/todo/MainActivity.kt',
         'android/app/src/main/java/com/bacon/todo/MainApplication.kt',
+        'android/app/src/main/res/drawable/ic_launcher_background.xml',
         'android/app/src/main/res/drawable/rn_edit_text_material.xml',
-        'android/app/src/main/res/drawable/splashscreen.xml',
+        'android/app/src/main/res/mipmap-hdpi/ic_launcher.webp',
+        'android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp',
+        'android/app/src/main/res/mipmap-mdpi/ic_launcher.webp',
+        'android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp',
+        'android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp',
+        'android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp',
+        'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp',
+        'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp',
+        'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp',
+        'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp',
         'android/app/src/main/res/values/colors.xml',
         'android/app/src/main/res/values/strings.xml',
         'android/app/src/main/res/values/styles.xml',
@@ -509,8 +521,6 @@ describe('built-in plugins', () => {
       'ios/HelloWorld/AppDelegate.mm',
       'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
       'ios/HelloWorld/Images.xcassets/Contents.json',
-      'ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json',
-      'ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json',
       'ios/HelloWorld/Info.plist',
       'ios/HelloWorld/SplashScreen.storyboard',
       'ios/HelloWorld/Supporting/Expo.plist',
@@ -532,8 +542,18 @@ describe('built-in plugins', () => {
       'android/app/src/main/AndroidManifest.xml',
       'android/app/src/main/java/com/helloworld/MainActivity.kt',
       'android/app/src/main/java/com/helloworld/MainApplication.kt',
+      'android/app/src/main/res/drawable/ic_launcher_background.xml',
       'android/app/src/main/res/drawable/rn_edit_text_material.xml',
-      'android/app/src/main/res/drawable/splashscreen.xml',
+      'android/app/src/main/res/mipmap-hdpi/ic_launcher.webp',
+      'android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp',
+      'android/app/src/main/res/mipmap-mdpi/ic_launcher.webp',
+      'android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp',
+      'android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp',
+      'android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp',
+      'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp',
+      'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp',
+      'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp',
+      'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp',
       'android/app/src/main/res/values/colors.xml',
       'android/app/src/main/res/values/strings.xml',
       'android/app/src/main/res/values/styles.xml',

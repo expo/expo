@@ -1,6 +1,6 @@
 {
   "name": "@expo/schemer",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Centralized scheme validation library for Expo",
   "license": "MIT",
   "main": "./build/index.js",
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/probe-image-size": "^7.2.4",
-    "expo-module-scripts": "^3.3.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"

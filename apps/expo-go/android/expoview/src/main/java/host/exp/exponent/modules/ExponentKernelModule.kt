@@ -33,7 +33,7 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(
-      "sdkVersions" to Constants.SDK_VERSIONS
+      "sdkVersions" to listOf(Constants.SDK_VERSION)
     )
   }
 
@@ -86,8 +86,10 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   fun setSessionAsync(session: ReadableMap, promise: Promise) {
     try {
-      val sessionJsonObject = JSONObject(session.toHashMap())
-      exponentSharedPreferences.updateSession(sessionJsonObject)
+      val sessionJsonObject = (session.toHashMap() as Map<*, *>?)?.let { JSONObject(it) }
+      sessionJsonObject?.let {
+        exponentSharedPreferences.updateSession(it)
+      }
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("ERR_SESSION_NOT_SAVED", "Could not save session secret", e)

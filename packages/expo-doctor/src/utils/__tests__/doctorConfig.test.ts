@@ -2,7 +2,14 @@ import {
   getReactNativeDirectoryCheckExcludes,
   getReactNativeDirectoryCheckEnabled,
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
+  getAppConfigFieldsNotSyncedCheckStatus,
 } from '../doctorConfig';
+
+const exp = {
+  name: 'App',
+  slug: 'app',
+  sdkVersion: '51.0.0',
+};
 
 describe('getReactNativeDirectoryCheckExcludes', () => {
   it('returns an empty array if no config is present', () => {
@@ -14,7 +21,9 @@ describe('getReactNativeDirectoryCheckExcludes', () => {
   });
 
   it('returns an empty array if the config has no excludes', () => {
-    expect(getReactNativeDirectoryCheckExcludes({ expo: { doctor: { reactNativeDirectoryCheck: {} } } })).toEqual([]);
+    expect(
+      getReactNativeDirectoryCheckExcludes({ expo: { doctor: { reactNativeDirectoryCheck: {} } } })
+    ).toEqual([]);
   });
 
   it('parses strings that begin and end with / as regexes', () => {
@@ -36,18 +45,20 @@ describe('getReactNativeDirectoryCheckExcludes', () => {
 
 describe('getReactNativeDirectoryCheckEnabled', () => {
   it('returns false if the config is empty', () => {
-    expect(getReactNativeDirectoryCheckEnabled({ expo: { doctor: {} } })).toBe(false);
+    expect(getReactNativeDirectoryCheckEnabled(exp, { expo: { doctor: {} } })).toBe(false);
   });
 
   it('returns true if the config is enabled', () => {
     expect(
-      getReactNativeDirectoryCheckEnabled({ expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } } })
+      getReactNativeDirectoryCheckEnabled(exp, {
+        expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } },
+      })
     ).toBe(true);
   });
 
   it('reads from env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK', () => {
     process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK = '1';
-    expect(getReactNativeDirectoryCheckEnabled({ expo: { doctor: {} } })).toBe(true);
+    expect(getReactNativeDirectoryCheckEnabled(exp, { expo: { doctor: {} } })).toBe(true);
     delete process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK;
   });
 
@@ -57,7 +68,9 @@ describe('getReactNativeDirectoryCheckEnabled', () => {
 
     process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK = '0';
     expect(
-      getReactNativeDirectoryCheckEnabled({ expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } } })
+      getReactNativeDirectoryCheckEnabled(exp, {
+        expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } },
+      })
     ).toBe(false);
     delete process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK;
 
@@ -67,11 +80,47 @@ describe('getReactNativeDirectoryCheckEnabled', () => {
 
     console.warn = originalConsoleWarn;
   });
+
+  it('defaults to disabled if sdk version is < 52.0.0', () => {
+    expect(
+      getReactNativeDirectoryCheckEnabled(
+        {
+          ...exp,
+          sdkVersion: '51.0.0',
+        },
+        { expo: { doctor: {} } }
+      )
+    ).toBe(false);
+  });
+
+  it('defaults to enabled if sdk version is >= 52.0.0', () => {
+    expect(
+      getReactNativeDirectoryCheckEnabled(
+        {
+          ...exp,
+          sdkVersion: '52.0.0',
+        },
+        { expo: { doctor: {} } }
+      )
+    ).toBe(true);
+
+    expect(
+      getReactNativeDirectoryCheckEnabled(
+        {
+          ...exp,
+          sdkVersion: 'UNVERSIONED',
+        },
+        { expo: { doctor: {} } }
+      )
+    ).toBe(true);
+  });
 });
 
 describe('getReactNativeDirectoryCheckListUnknownPackagesEnabled', () => {
   it('returns true if the config is empty', () => {
-    expect(getReactNativeDirectoryCheckListUnknownPackagesEnabled({ expo: { doctor: {} } })).toBe(true);
+    expect(getReactNativeDirectoryCheckListUnknownPackagesEnabled({ expo: { doctor: {} } })).toBe(
+      true
+    );
   });
 
   it('returns true if the config is enabled', () => {
@@ -88,5 +137,34 @@ describe('getReactNativeDirectoryCheckListUnknownPackagesEnabled', () => {
         expo: { doctor: { reactNativeDirectoryCheck: { listUnknownPackages: false } } },
       })
     ).toBe(false);
+  });
+});
+
+describe('appConfigFieldsNotSyncedCheck', () => {
+  const mockPackageJson = {
+    expo: {
+      doctor: {
+        appConfigFieldsNotSyncedCheck: {
+          enabled: false,
+        },
+      },
+    },
+  };
+
+  it('returns true if appConfigFieldsNotSyncedCheckEnabled is not set', () => {
+    expect(getAppConfigFieldsNotSyncedCheckStatus({ ...mockPackageJson, expo: {} })).toBe(true);
+  });
+
+  it('returns false if appConfigFieldsNotSyncedCheckEnabled is set to false', () => {
+    expect(getAppConfigFieldsNotSyncedCheckStatus(mockPackageJson)).toBe(false);
+  });
+
+  it('returns true if appConfigFieldsNotSyncedCheckEnabled is set to true', () => {
+    expect(
+      getAppConfigFieldsNotSyncedCheckStatus({
+        ...mockPackageJson,
+        expo: { doctor: { appConfigFieldsNotSyncedCheck: { enabled: true } } },
+      })
+    ).toBe(true);
   });
 });

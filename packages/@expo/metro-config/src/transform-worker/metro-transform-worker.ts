@@ -17,7 +17,6 @@ import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
-import countLines from 'metro/src/lib/countLines';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
 import { stableHash } from 'metro-cache';
 import getMetroCacheKey from 'metro-cache-key';
@@ -43,6 +42,7 @@ import collectDependencies, {
   Options as CollectDependenciesOptions,
   State,
 } from './collect-dependencies';
+import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 
@@ -61,10 +61,12 @@ interface AssetFile extends BaseFile {
 type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
 
 interface JSFile extends BaseFile {
-  readonly ast?: ParseResult | null;
+  readonly ast?: ParseResult | t.File | null;
   readonly type: JSFileType;
   readonly functionMap: FBSourceFunctionMap | null;
+  readonly reactServerReference?: string;
   readonly reactClientReference?: string;
+  readonly expoDomComponentReference?: string;
   readonly hasCjsExports?: boolean;
 }
 
@@ -175,7 +177,7 @@ function renameTopLevelModuleVariables() {
   };
 }
 
-function applyUseStrictDirective(ast: babylon.ParseResult<t.File>) {
+function applyUseStrictDirective(ast: t.File | babylon.ParseResult<t.File>) {
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
   const { directives } = ast.program;
@@ -273,7 +275,7 @@ export function applyImportSupport<TFile extends t.File>(
 }
 
 function performConstantFolding(
-  ast: babylon.ParseResult<t.File>,
+  ast: t.File | babylon.ParseResult<t.File>,
   { filename }: { filename: string }
 ) {
   // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
@@ -326,7 +328,8 @@ async function transformJS(
     file.type === 'js/module' &&
     String(options.customTransformOptions?.optimize) === 'true' &&
     // Disable tree shaking on JSON files.
-    !file.filename.endsWith('.json');
+    !file.filename.match(/\.(json|s?css|sass)$/);
+
   const unstable_disableModuleWrapping = optimize || config.unstable_disableModuleWrapping;
 
   if (optimize && !options.experimentalImportSupport) {
@@ -338,7 +341,7 @@ async function transformJS(
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
-  let ast: babylon.ParseResult<t.File> =
+  let ast: t.File | babylon.ParseResult<t.File> =
     file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
 
   // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
@@ -348,7 +351,6 @@ async function transformJS(
   // not exist yet.
   applyUseStrictDirective(ast);
 
-  // @ts-expect-error: Not on types yet (Metro 0.80).
   const unstable_renameRequire = config.unstable_renameRequire;
 
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
@@ -427,7 +429,6 @@ async function transformJS(
         // TODO: This config is optional to allow its introduction in a minor
         // release. It should be made non-optional in ConfigT or removed in
         // future.
-        // @ts-expect-error: Not on types yet (Metro 0.80.9).
         unstable_renameRequire === false
       ));
     }
@@ -509,15 +510,20 @@ async function transformJS(
         }
       : undefined;
 
+  let lineCount;
+  ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+
   const output: ExpoJsOutput[] = [
     {
       data: {
         code,
-        lineCount: countLines(code),
+        lineCount,
         map,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
+        reactServerReference: file.reactServerReference,
         reactClientReference: file.reactClientReference,
+        expoDomComponentReference: file.expoDomComponentReference,
         ...(possibleReconcile
           ? {
               ast: wrappedAst,
@@ -600,7 +606,9 @@ async function transformJSWithBabel(
       transformResult.functionMap ??
       null,
     hasCjsExports: transformResult.metadata?.hasCjsExports,
+    reactServerReference: transformResult.metadata?.reactServerReference,
     reactClientReference: transformResult.metadata?.reactClientReference,
+    expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
   };
 
   return await transformJS(jsFile, context);
@@ -632,9 +640,12 @@ async function transformJSON(
     jsType = 'js/module';
   }
 
+  let lineCount;
+  ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+
   const output: ExpoJsOutput[] = [
     {
-      data: { code, lineCount: countLines(code), map, functionMap: null },
+      data: { code, lineCount, map, functionMap: null },
       type: jsType,
     },
   ];
@@ -761,6 +772,7 @@ type InternalDependency = any;
 
 const disabledDependencyTransformer: DependencyTransformer = {
   transformSyncRequire: (path) => {},
+  transformImportMaybeSyncCall: () => {},
   transformImportCall: (path: NodePath, dependency: InternalDependency, state: State) => {
     // HACK: Ensure the async import code is included in the bundle when an import() call is found.
     let topParent = path;

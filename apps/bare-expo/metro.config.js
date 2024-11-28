@@ -28,6 +28,7 @@ config.watchFolders = [
   __dirname, // Allow Metro to resolve all files within this project
   path.join(monorepoRoot, 'apps/native-component-list'), // Allow Metro to resolve all files within NCL
   path.join(monorepoRoot, 'apps/test-suite'), // Allow Metro to resolve all files within test-suite
+  path.join(monorepoRoot, 'apps/common'), // Allow Metro to resolve common ThemeProvider
   path.join(monorepoRoot, 'packages'), // Allow Metro to resolve all workspace files of the monorepo
   path.join(monorepoRoot, 'node_modules'), // Allow Metro to resolve "shared" `node_modules` of the monorepo
 ];

@@ -2,10 +2,15 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import type { Config } from './Fingerprint.types';
+import { SourceSkips } from './sourcer/SourceSkips';
 
 const CONFIG_FILES = ['fingerprint.config.js', 'fingerprint.config.cjs'];
 
 const debug = require('debug')('expo:fingerprint:Config');
+
+type NormalizedConfig = Config & {
+  sourceSkips?: SourceSkips;
+};
 
 /**
  * Load the fingerprint.config.js from project root.
@@ -16,7 +21,7 @@ const debug = require('debug')('expo:fingerprint:Config');
 export async function loadConfigAsync(
   projectRoot: string,
   silent: boolean = false
-): Promise<Config | null> {
+): Promise<NormalizedConfig | null> {
   let configFile: string;
   try {
     configFile = await resolveConfigFileAsync(projectRoot);
@@ -38,18 +43,50 @@ export async function loadConfigAsync(
   const supportedConfigKeys: (keyof Config)[] = [
     'concurrentIoLimit',
     'hashAlgorithm',
+    'ignorePaths',
     'extraSources',
     'sourceSkips',
     'enableReactImportsPatcher',
+    'useRNCoreAutolinkingFromExpo',
     'debug',
   ];
-  const config: Config = {};
+  const config: NormalizedConfig = {};
   for (const key of supportedConfigKeys) {
     if (key in rawConfig) {
-      config[key] = rawConfig[key];
+      if (key === 'sourceSkips') {
+        config[key] = normalizeSourceSkips(rawConfig[key]);
+      } else {
+        config[key] = rawConfig[key];
+      }
     }
   }
   return config;
+}
+
+/**
+ * Normalize the sourceSkips from enum number or string array to a valid enum number.
+ */
+export function normalizeSourceSkips(sourceSkips: Config['sourceSkips']): SourceSkips {
+  if (sourceSkips == null) {
+    return SourceSkips.None;
+  }
+  if (typeof sourceSkips === 'number') {
+    return sourceSkips;
+  }
+  if (Array.isArray(sourceSkips)) {
+    let result: SourceSkips = SourceSkips.None;
+    for (const value of sourceSkips) {
+      if (typeof value !== 'string') {
+        continue;
+      }
+      const skipValue = SourceSkips[value];
+      if (skipValue != null) {
+        result |= skipValue;
+      }
+    }
+    return result;
+  }
+  throw new Error(`Invalid sourceSkips type: ${sourceSkips}`);
 }
 
 /**

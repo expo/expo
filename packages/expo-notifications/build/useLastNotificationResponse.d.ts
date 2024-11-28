@@ -1,7 +1,9 @@
-import { NotificationResponse } from './Notifications.types';
+import { MaybeNotificationResponse } from './Notifications.types';
 /**
- * A React hook always returns the notification response that was received most recently
+ * A React hook which returns the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
+ *
+ * To clear the last notification response, use [`clearLastNotificationResponseAsync()`](#notificationsclearlastnotificationresponseasync).
  *
  * > If you don't want to use a hook, you can use `Notifications.getLastNotificationResponseAsync()` instead.
  *
@@ -35,5 +37,5 @@ import { NotificationResponse } from './Notifications.types';
  * ```
  * @header listen
  */
-export default function useLastNotificationResponse(): NotificationResponse | null | undefined;
+export default function useLastNotificationResponse(): MaybeNotificationResponse;
 //# sourceMappingURL=useLastNotificationResponse.d.ts.map
