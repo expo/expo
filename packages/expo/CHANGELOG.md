@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `AssertionError` from `ReactActivityDelegateWrapper.onPause`. ([#33309](https://github.com/expo/expo/pull/33309) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 52.0.11 — 2024-11-22
