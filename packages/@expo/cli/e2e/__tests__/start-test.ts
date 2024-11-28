@@ -56,15 +56,15 @@ it('runs `npx expo start --help`', async () => {
         -a, --android                   Open on a connected Android device
         -i, --ios                       Open in an iOS simulator
         -w, --web                       Open in a web browser
-
+        
         -d, --dev-client                Launch in a custom native app
         -g, --go                        Launch in Expo Go
-
+        
         -c, --clear                     Clear the bundler cache
         --max-workers <number>          Maximum number of tasks to allow Metro to spawn
         --no-dev                        Bundle in production mode
         --minify                        Minify JavaScript
-
+        
         -m, --host <string>             Dev server hosting type. Default: lan
                                         lan: Use the local network
                                         tunnel: Use any network by tunnel through ngrok
@@ -72,12 +72,12 @@ it('runs `npx expo start --help`', async () => {
         --tunnel                        Same as --host tunnel
         --lan                           Same as --host lan
         --localhost                     Same as --host localhost
-
+        
         --offline                       Skip network requests and use anonymous manifest signatures
         --https                         Start the dev server with https protocol
         --scheme <scheme>               Custom URI protocol to use when launching an app
         -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
-
+        
         --private-key-path <path>       Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
         -h, --help                      Usage info
     "
