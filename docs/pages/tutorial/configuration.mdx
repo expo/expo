@@ -93,26 +93,7 @@ A splash screen is visible before the app's content is loaded. It uses a smaller
 
 The `expo-splash-screen` plugin already comes pre-installed in every project created using `create-expo-app`. This library provides a config plugin to configure the splash screen.
 
-In **app.json**, the `expo-splash-screen` plugin object is already configured to use the app's icon as the splash screen image. We can replace the placeholder image with our own splash screen image. We need to replace `app-icon` in the `image` property with the `icon`:
-
-```json app.json
-{
-  "plugins": [
-    [
-      "expo-splash-screen",
-      {
-        /* @tutinfo */
-        "image": "./assets/images/icon.png",
-        /* @end */
-        "imageWidth": 200,
-        "resizeMode": "contain"
-      }
-    ]
-  ]
-}
-```
-
-Let's take a look at our app now on Android and iOS:
+In **app.json**, the `expo-splash-screen` plugin is already configured to use the app's icon as the splash screen image with the following snippet so we don't have to change anything. Let's take a look at our app now on Android and iOS:
 
 <ContentSpotlight file="tutorial/splash-screen.mp4" />
 
