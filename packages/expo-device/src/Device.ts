@@ -53,7 +53,7 @@ export const modelId = ExpoDevice ? ExpoDevice.modelId || null : null;
  *
  * @example
  * ```js
- * Device.modelName; // Android: "Pixel 2"; iOS: "iPhone XS Max"; web: "iPhone", null
+ * Device.modelName; // Android: "Pixel 2"; iOS: "iPhone XS Max"; web: null
  * ```
  */
 export const modelName: string | null = ExpoDevice ? ExpoDevice.modelName : null;
