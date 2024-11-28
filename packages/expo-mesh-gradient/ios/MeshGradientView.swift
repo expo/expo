@@ -8,18 +8,31 @@ struct MeshGradientView: ExpoSwiftUI.View {
 
   var body: some View {
     ZStack(alignment: .topLeading) {
-      if #available(iOS 18.0, *) {
-        MeshGradient(
-          width: props.columns,
-          height: props.rows,
-          points: props.points,
-          colors: props.colors,
-          smoothsColors: props.smoothsColors
+      let gradient = if #available(iOS 18.0, *) {
+        AnyView(
+          MeshGradient(
+            width: props.columns,
+            height: props.rows,
+            points: props.points,
+            colors: props.colors,
+            smoothsColors: props.smoothsColors
+          )
+          .ignoresSafeArea(edges: props.ignoresSafeArea ? .all : [])
         )
-        .ignoresSafeArea(edges: props.ignoresSafeArea ? .all : [])
+      } else {
+        AnyView(EmptyView())
       }
 
-      Children()
+      if props.mask {
+        gradient.mask(alignment: .topLeading) {
+          Children()
+        }
+      } else {
+        Group {
+          gradient
+          Children()
+        }
+      }
     }
   }
 }
