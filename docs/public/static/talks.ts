@@ -58,7 +58,7 @@ export const TALKS = [
     videoId: 'Ca4SNa6kL_M',
   },
   {
-    title: 'Not your grandparents’ Expo',
+    title: "Not your grandparents' Expo",
     event: 'Chain React 2023',
     description: 'Keith Kurak',
     videoId: 'YufZFVL-BJc',
