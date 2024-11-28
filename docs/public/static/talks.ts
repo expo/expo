@@ -95,14 +95,14 @@ export const PODCASTS = [
     event: 'React Native Radio #315',
     description: 'Quinlan Jung',
     videoId: 'KBYxOy0g-rk',
-    link: 'https://reactnativeradio.com/episodes/rnr-315-what-to-do-without-app-center',
+    link: 'https://www.youtube.com/watch?v=KBYxOy0g-rk',
   },
   {
     title: 'Expo Workflows with Jon Samp',
     event: 'React Native Radio #314',
     description: 'Jon Samp',
     videoId: 'wA4sBIoGaVc',
-    link: 'https://reactnativeradio.com/episodes/rnr-314-announcing-expo-workflows-with-jon-samp',
+    link: 'https://www.youtube.com/watch?v=wA4sBIoGaVc',
   },
   {
     title: 'How to Handle App Center Retirement',
@@ -184,12 +184,12 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
-    title: 'Launch Week AMA: SDK 52, CI/CD, environment variables, expo-video, DOM components',
+    title: 'Launch Week 2024 AMA',
     event: 'Expo Live Stream',
     videoId: 'NHpS9JaL7jA',
   },
   {
-    title: 'Expo DOM component live demo: Because maybe your website should be an app',
+    title: 'Expo DOM component live demo',
     event: 'Expo Live Stream',
     videoId: 'jU4_1vpjahw',
   },
