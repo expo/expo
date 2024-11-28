@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- fix event subscription type export name ([#33295](https://github.com/expo/expo/pull/33295) by [@vonovak](https://github.com/vonovak))
+- fix event subscription type export names ([#33295](https://github.com/expo/expo/pull/33295) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 

@@ -4,9 +4,6 @@
  * On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed.
  * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), for example [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html).
  */
-/**
- * @deprecated use the `EventSubscription` type instead
- * */
 import type { EventSubscription } from 'expo-modules-core';
 export type PushNotificationTrigger = {
     type: 'push';
