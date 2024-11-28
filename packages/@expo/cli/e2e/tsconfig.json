@@ -1,5 +1,5 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["./__tests__", "./playwright", "./utils", "./setup.ts"],
+  "include": ["./__tests__", "./playwright", "./utils", "./jest.setup.ts"],
   "exclude": []
 }
