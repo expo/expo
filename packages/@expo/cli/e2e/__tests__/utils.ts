@@ -7,6 +7,7 @@ import findProcess from 'find-process';
 import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
 import assert from 'node:assert';
+import { once } from 'node:events';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -15,6 +16,7 @@ import { promisify } from 'node:util';
 import treeKill from 'tree-kill';
 
 import { copySync } from '../../src/utils/dir';
+import { ExpoStartCommand } from '../utils/command-instance';
 
 export const bin = require.resolve('../../build/bin/cli');
 
@@ -33,6 +35,11 @@ export function execute(...args: string[]) {
 export function execaLog(command: string, args: string[], options: execa.Options) {
   //   console.log(`Running: ${command} ${args.join(' ')}`);
   return execa(command, args, options);
+}
+
+/** Start the Expo development server with controlled interactions, similar to {@link ExpoStartCommand} - except running from source */
+export class ExpoSourceStartCommand extends ExpoStartCommand {
+  protected cliBinary = ['node', bin];
 }
 
 export function getRoot(...args: string[]) {
@@ -155,14 +162,14 @@ export async function createFromFixtureAsync(
 
       if (linkExpoPackages) {
         for (const pkg of linkExpoPackages) {
-          const tarball = await createPackageTarball(projectRoot, pkg);
+          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
           dependencies[pkg] = tarball.packageReference;
         }
       }
 
       if (linkExpoPackagesDev) {
         for (const pkg of linkExpoPackagesDev) {
-          const tarball = await createPackageTarball(projectRoot, pkg);
+          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
           devDependencies[pkg] = tarball.packageReference;
         }
       }
@@ -283,7 +290,10 @@ export async function killChildProcess(child?: execa.ExecaChildProcess | null) {
     throw new Error('Child process has no PID, cannot kill process');
   }
 
+  const exitPromise = once(child, 'exit');
   await pTreeKill(child.pid!);
+  child.kill('SIGKILL');
+  await exitPromise;
 }
 
 export async function getPage(output: string, route: string): Promise<string> {
@@ -359,11 +369,11 @@ export function findProjectFiles(projectRoot: string) {
  * This creates the tarball from source, and moves it within the fixture directory using `_tarball`.
  * It can be used to test any of our packages directly from source, without publishing or leaking other dependencies.
  */
-export async function createPackageTarball(fixtureRoot: string, packageName: string) {
+export async function createPackageTarball(fixtureRoot: string, packagePath: string) {
   // Resolve the package directory in the monorepo
-  const packageDir = path.join(EXPO_MONOREPO_ROOT, 'packages', packageName);
+  const packageDir = path.join(EXPO_MONOREPO_ROOT, packagePath);
   if (!fs.existsSync(packageDir)) {
-    throw new Error(`Cannot find package "${packageName}" in the Expo monorepo`);
+    throw new Error(`Cannot find package "${packagePath}" in the Expo monorepo`);
   }
 
   // Prepare the destination of the tarball within the fixture
@@ -395,4 +405,12 @@ export async function createPackageTarball(fixtureRoot: string, packageName: str
     absolutePath,
     packageReference: `file:./${convertPathToPosix(relativePath)}`,
   };
+}
+
+/**
+ * Get the timeout for a Jest test, depending on the current platform.
+ * Node on Windows is considerably slower than Linux and macOS, on Windows we multiply the timeout by 4.
+ */
+export function jestPlatformTimeout(timeoutMs: number) {
+  return process.platform === 'win32' ? timeoutMs * 4 : timeoutMs;
 }
