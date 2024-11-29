@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update docs and api so all units of time should be in milliseconds, not seconds.
+
 ### 💡 Others
 
 ## 0.2.4 — 2024-11-19

@@ -72,12 +72,12 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   isBuffering: boolean;
 
   /**
-   * The current position through the audio item, in seconds.
+   * The current position through the audio item in milliseconds.
    */
   currentTime: number;
 
   /**
-   * The total duration of the audio in seconds.
+   * The total duration of the audio in milliseconds.
    */
   duration: number;
 
@@ -118,10 +118,10 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   replace(source: AudioSource): void;
 
   /**
-   * Seeks the playback by the given number of seconds.
-   * @param seconds The number of seconds to seek by.
+   * Seeks the playback by the given number of milliseconds.
+   * @param milliseconds The number of milliseconds to seek by.
    */
-  seekTo(seconds: number): Promise<void>;
+  seekTo(milliseconds: number): Promise<void>;
 
   /**
    * Sets the current playback rate of the audio.

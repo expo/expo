@@ -91,7 +91,7 @@ public class AudioModule: Module {
       }
 
       Property("currentTime") { player in
-        player.ref.currentItem?.currentTime().seconds
+        (player.ref.currentItem?.currentTime().seconds ?? 0.0) * 1000
       }
 
       Property("duration") { player in
@@ -156,10 +156,10 @@ public class AudioModule: Module {
         player.setSamplingEnabled(enabled: enabled)
       }
 
-      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
+      AsyncFunction("seekTo") { (player: AudioPlayer, milliseconds: Double) in
         await player.ref.currentItem?.seek(
           to: CMTime(
-            seconds: seconds / 1000,
+            seconds: milliseconds / 1000,
             preferredTimescale: CMTimeScale(NSEC_PER_SEC)
           )
         )
