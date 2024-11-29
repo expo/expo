@@ -22,7 +22,7 @@ export declare class FileBlob extends Blob {
     arrayBuffer(): Promise<ArrayBuffer>;
     text(): Promise<string>;
     bytes(): Promise<Uint8Array>;
-    stream(): globalThis.ReadableStream<Uint8Array>;
+    stream(): ReadableStream<Uint8Array>;
     slice(start?: number, end?: number, contentType?: string): Blob;
 }
 export declare class File extends ExpoFileSystem.FileSystemFile {

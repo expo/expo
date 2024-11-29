@@ -182,7 +182,7 @@ export function overrideHeaders(
   return result;
 }
 
-function joinUint8Arrays(arrays: Uint8Array[]): Uint8Array {
+export function joinUint8Arrays(arrays: Uint8Array[]): Uint8Array {
   const totalLength: number = arrays.reduce((acc: number, arr: Uint8Array) => acc + arr.length, 0);
   const result: Uint8Array = new Uint8Array(totalLength);
 

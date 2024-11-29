@@ -37,16 +37,16 @@ export class FileBlob extends Blob {
     this.file = file;
   }
 
-  get size() {
+  get size(): number {
     return this.file.size ?? 0;
   }
 
-  get name() {
+  get name(): string {
     return this.file.name;
   }
 
-  get type() {
-    return this.file.type ?? 'image/jpeg';
+  get type(): string {
+    return this.file.type ?? '';
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {
@@ -57,11 +57,11 @@ export class FileBlob extends Blob {
     return this.file.text();
   }
 
-  async bytes() {
+  async bytes(): Promise<Uint8Array> {
     return this.file.bytes();
   }
 
-  stream(): globalThis.ReadableStream<Uint8Array> {
+  stream(): ReadableStream<Uint8Array> {
     return this.file.readableStream();
   }
 

@@ -13,6 +13,7 @@ import {
   normalizeBodyInitAsync,
   normalizeHeadersInit,
   overrideHeaders,
+  joinUint8Arrays,
 } from '../RequestUtils';
 
 describe(convertFormData, () => {
@@ -56,6 +57,28 @@ describe(convertFormData, () => {
     expect(() => {
       convertFormData(formData);
     }).toThrow(/Unsupported FormData implementation/);
+  });
+
+  it(`should convert blob FormData`, () => {
+    const formData = new RNFormData();
+    const mockFileBlob = {
+      file: {
+        bytes: () => new Uint8Array([65, 66, 67]),
+      },
+    };
+    // @ts-ignore
+    formData.append('blob', mockFileBlob);
+    const boundary = '----ExpoFetchFormBoundary0000000000000000';
+    const { body, boundary: resultBoundary } = convertFormData(formData, boundary);
+    expect(new TextDecoder().decode(body)).toMatchInlineSnapshot(`
+      "------ExpoFetchFormBoundary0000000000000000
+      content-disposition: form-data; name="blob"
+
+      ABC
+      ------ExpoFetchFormBoundary0000000000000000--
+      "
+    `);
+    expect(resultBoundary).toBe(boundary);
   });
 });
 
@@ -287,6 +310,25 @@ describe(overrideHeaders, () => {
       ['Authorization', 'Bearer token'],
       ['Content-Type', 'text/plain'],
     ];
+    expect(result).toEqual(expected);
+  });
+});
+
+describe(joinUint8Arrays, () => {
+  it(`should join multiple uint8 arrays`, () => {
+    const array1 = new Uint8Array([1, 2]);
+    const array2 = new Uint8Array([3, 4]);
+    const result = joinUint8Arrays([array1, array2]);
+    const expected = new Uint8Array([1, 2, 3, 4]);
+    expect(result).toEqual(expected);
+  });
+
+  it(`should join 0 size arrays correctly`, () => {
+    const array1 = new Uint8Array([1, 2]);
+    const array2 = new Uint8Array([]);
+    const array3 = new Uint8Array([3, 4]);
+    const result = joinUint8Arrays([array1, array2, array3]);
+    const expected = new Uint8Array([1, 2, 3, 4]);
     expect(result).toEqual(expected);
   });
 });

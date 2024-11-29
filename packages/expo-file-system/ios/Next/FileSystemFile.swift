@@ -70,10 +70,9 @@ internal final class FileSystemFile: FileSystemPath {
 
   var type: String? {
     let pathExtension = url.pathExtension
-    if let utType = UTType(filenameExtension: pathExtension) {
-      if let mimeType = utType.preferredMIMEType {
-        return mimeType
-      }
+    if let utType = UTType(filenameExtension: pathExtension),
+      let mimeType = utType.preferredMIMEType {
+      return mimeType
     }
     return nil
   }
