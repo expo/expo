@@ -1,58 +1,52 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 import ExpoModulesCore
-import BackgroundTasks
 
 let ModuleName = "ExpoBackgroundTask"
 
 public class BackgroundTaskModule: Module {
+  private var taskManager: EXTaskManagerInterface?
   
   public func definition() -> ModuleDefinition {
     Name(ModuleName)
-    Events(BackgroundTaskConstants.EVENT_PERFORM_WORK,
-           BackgroundTaskConstants.EVENT_WORK_DONE)
-    
-    Constants(["EVENT_PERFORM_WORK": BackgroundTaskConstants.EVENT_PERFORM_WORK,
-               "EVENT_WORK_DONE": BackgroundTaskConstants.EVENT_WORK_DONE])
-    
+  
     OnCreate {
-      BackgroundTaskService.setRunTasksHandler {
-        self.sendEvent(BackgroundTaskConstants.EVENT_PERFORM_WORK)
+      taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
+    }
+    
+    AsyncFunction("registerTaskAsync") { (name: String, options: [String: Any]) in
+      guard let taskManager else {
+        throw TaskManagerNotFound()
       }
-    }
-    
-    OnDestroy {
-      BackgroundTaskService.clearRunTasksHandler()
-    }
-    
-    AsyncFunction("startWorkerAsync") {
-      try BackgroundTaskScheduler.tryScheduleWorker()
-    }
-    
-    AsyncFunction("stopWorkerAsync") {
-      BackgroundTaskScheduler.stopWorker()
-    }
-    
-    AsyncFunction("isWorkerRunningAsync") { () async -> Bool in
-      return await BackgroundTaskScheduler.isWorkerRunning()
-    }
-    
-    AsyncFunction("initialiseFromJS") {
-      await BackgroundTaskService.checkForPendingTaskWorkerRequests()
-    }
-    
-    AsyncFunction("workFinished") {
-      // Mark as done
-      try BackgroundTaskService.markTaskAsFinished()
       
-      // Send event
-      self.sendEvent(BackgroundTaskConstants.EVENT_WORK_DONE)
+      if (!BackgroundTaskService.supportsBackgroundTasks()) {
+        throw BackgroundTasksRestricted()
+      }
+
+      if !taskManager.hasBackgroundModeEnabled("processing") {
+        throw BackgroundTasksNotConfigured()
+      }
+
+      taskManager.registerTask(withName: name, consumer: BackgroundTaskConsumer.self, options: options)
+    }
+    
+    AsyncFunction("unregisterTaskAsync") { (name: String) in
+      guard let taskManager else {
+        throw TaskManagerNotFound()
+      }
       
-      // Re-schedule task
-      try BackgroundTaskScheduler.tryScheduleWorker()
+      if (!BackgroundTaskService.supportsBackgroundTasks()) {
+        throw BackgroundTasksRestricted()
+      }
+      
+      if !taskManager.hasBackgroundModeEnabled("processing") {
+        throw BackgroundTasksNotConfigured()
+      }
+
+      taskManager.unregisterTask(withName: name, consumerClass: BackgroundTaskConsumer.self)      
     }
     
     AsyncFunction("getStatusAsync") {
-      return BackgroundTaskService.isBackgroundTaskSupported() ?
+      return BackgroundTaskService.supportsBackgroundTasks() ?
         BackgroundTaskStatus.available : .restricted
     }
   }
