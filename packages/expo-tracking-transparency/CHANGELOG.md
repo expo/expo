@@ -5,11 +5,16 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-- Added support for tvOS. ([#33157](https://github.com/expo/expo/pull/33157) by [@msynowski](https://github.com/msynowski))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 5.1.0 — 2024-11-29
+
+### 🎉 New features
+
+- Added support for tvOS. ([#33157](https://github.com/expo/expo/pull/33157) by [@msynowski](https://github.com/msynowski))
 
 ## 5.0.0 — 2024-10-22
 

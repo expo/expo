@@ -1,6 +1,6 @@
 {
   "name": "expo-location",
-  "version": "18.0.2",
+  "version": "18.0.3",
   "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

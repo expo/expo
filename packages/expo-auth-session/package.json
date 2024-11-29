@@ -1,6 +1,6 @@
 {
   "name": "expo-auth-session",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "Expo module for browser-based authentication",
   "main": "build/index.js",
   "types": "build/index.d.ts",

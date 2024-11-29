@@ -1,7 +1,7 @@
 {
   "name": "expo-image",
   "title": "Expo Image",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A cross-platform, performant image component for React Native and Expo with Web support",
   "main": "src/index.ts",
   "types": "build/index.d.ts",

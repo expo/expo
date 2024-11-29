@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.1.0 — 2024-11-29
+
+### 🎉 New features
+
 - Added support for rendering children components in SwiftUI views. ([#33271](https://github.com/expo/expo/pull/33271) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
