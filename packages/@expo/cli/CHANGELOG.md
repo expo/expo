@@ -6,14 +6,21 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Add minor fixes to nested server actions. ([#32925](https://github.com/expo/expo/pull/32925) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+## 0.22.0 - 2024-11-29
+
+### 🎉 New features
+
 - Support making templates for React Native macOS, and rename project name inside `contents.xcworkspacedata` files ([#30309](https://github.com/expo/expo/pull/30309) by [@shirakaba](https://github.com/shirakaba))
 
 ### 🐛 Bug fixes
 
-- Add minor fixes to nested server actions. ([#32925](https://github.com/expo/expo/pull/32925) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed DOM Components support on Windows. ([#33114](https://github.com/expo/expo/pull/33114) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.21.8 — 2024-11-22
 
