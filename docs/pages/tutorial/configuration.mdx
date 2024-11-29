@@ -1,16 +1,15 @@
 ---
 title: Configure status bar, splash screen and app icon
-description: In this tutorial, learn the basics of how to configure a status bar, splash screen and app icon.
+description: In this tutorial, learn the basics of how to configure a status bar, app icon, and splash screen.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
-import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we'll address some app details before deploying our app to an app store, such as theming the status bar, add a splash screen, and customizing the app icon.
+In this chapter, we'll address some app details before deploying our app to an app store, such as theming the status bar, customizing the app icon, and splash screen.
 
 <VideoBoxLink
   videoId="OgGCYdElcZo"
@@ -23,34 +22,32 @@ In this chapter, we'll address some app details before deploying our app to an a
 
 ## Configure the status bar
 
-[`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `setStatusBarStyle()` method to configure the app's status bar text color.
+[`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `StatusBar` component to configure the app's status bar style.
 
 Inside **app/\_layout.tsx**:
 
-1. Import `setStatusBarStyle` from `expo-status-bar` and `useEffect` from React.
-2. Add the `useEffect` hook to set the status bar style to `light` when the app loads.
+1. Import `StatusBar` from `expo-status-bar`.
+2. Group the `StatusBar` and existing `Stack` components with [React's Fragment component](https://react.dev/reference/react/Fragment).
 
 {/* prettier-ignore */}
 ```tsx app/_layout.tsx
 import { Stack } from "expo-router";
 /* @tutinfo */
-import { setStatusBarStyle } from "expo-status-bar";
-import { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
 /* @end */
 
 export default function RootLayout() {
-  /* @tutinfo Add the <CODE>useEffect</CODE> hook to set the status bar style to <CODE>light</CODE> when the app loads. */
-  useEffect(() => {
-    setTimeout(() => {
-      setStatusBarStyle("light");
-    }, 0);
-  }, []);
-  /* @end */
-
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    /* @tutinfo Group the `StatusBar` and existing `Stack` components with React's Fragment component. */
+    <>
+    /* @end */
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+      /* @tutinfo */<StatusBar style="light" />
+    </>
+    /* @end */
   );
 }
 ```
@@ -66,61 +63,6 @@ Let's take a look at our app now on Android, and iOS:
 </Step>
 
 <Step label="2">
-
-## Splash screen
-
-A splash screen is visible before the app's content is loaded. It hides once the app's content is ready to be displayed.
-
-Setting the `"splash.image"` property with a valid file path in the [**app.json**](/workflow/configuration/) file configures a splash screen. By default, a new Expo project already sets this property to a placeholder splash image. We already have **splash.png** in the **assets/images** directory. It looks as shown below:
-
-<ContentSpotlight
-  src="/static/images/tutorial/splash.png"
-  alt="Custom splash screen used in example app."
-  className="max-w-[250px]"
-/>
-
-Add the following `splash` object in **app.json** to configure the splash screen:
-
-```json app.json
-{
-  "splash": {
-    "image": "./assets/images/splash.png",
-    "resizeMode": "contain",
-    "backgroundColor": "#25292e"
-  }
-}
-```
-
-Depending on the device's resolution, a white bar may be visible on the edges of an Android device's screen but the `backgroundColor` will resolve this by matching the background in the splash image.
-
-Let's take a look at our app now on Android and iOS:
-
-<ContentSpotlight file="tutorial/splash-screen.mp4" />
-
-<Collapsible summary="Is the app loading too quickly for you to get a good look at the splash screen?">
-
-You can display the splash screen for longer intervals. Run the following command to install `expo-splash-screen`, a library that provides a `preventAutoHideAsync()` method to delay hiding the splash screen:
-
-<Terminal cmd={['$ npx expo install expo-splash-screen']} />
-
-Add the following code in **app/\_layout.tsx** to delay hiding the splash screen for five seconds.
-
-```tsx app/_layout.tsx
-import * as SplashScreen from 'expo-splash-screen';
-
-SplashScreen.preventAutoHideAsync();
-setTimeout(SplashScreen.hideAsync, 5000);
-```
-
-Don't forget to remove this code when you are done testing your splash screen.
-
-</Collapsible>
-
-The `backgroundColor` value in the above snippet matches the background of the splash screen image.
-
-</Step>
-
-<Step label="3">
 
 ## App icon
 
@@ -139,6 +81,37 @@ You can see the icon in various places in Expo Go. Here is an example of the app
   src="/static/images/tutorial/app-icon-visible.png"
   className="max-w-[250px]"
 />
+
+</Step>
+
+<Step label="3">
+
+## Splash screen
+
+A splash screen is visible before the app's content is loaded. It uses a smaller image, such as an app's icon, which is centered. It hides once the app's content is ready to be displayed.
+
+The `expo-splash-screen` plugin already comes pre-installed in every project created using `create-expo-app`. This library provides a config plugin to configure the splash screen.
+
+In **app.json**, the `expo-splash-screen` plugin is already configured to use the app's icon as the splash screen image with the following snippet so we don't have to change anything. Let's take a look at our app now on Android and iOS:
+
+<ContentSpotlight file="tutorial/splash-screen.mp4" />
+
+<Collapsible summary="Is the app loading too quickly for you to get a good look at the splash screen?">
+
+You can display the splash screen for longer intervals by using `preventAutoHideAsync()` method from `expo-splash-screen` library. This method delays hiding the splash screen until you call `hideAsync()`.
+
+Add the following code in **app/\_layout.tsx** to delay hiding the splash screen for five seconds.
+
+```tsx app/_layout.tsx
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
+setTimeout(SplashScreen.hideAsync, 5000);
+```
+
+Don't forget to remove this code when you are done testing your splash screen.
+
+</Collapsible>
 
 </Step>
 

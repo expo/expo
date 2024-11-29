@@ -6,8 +6,6 @@ import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManage
 import { MONOSPACE, CALLOUT, FOOTNOTE } from '~/ui/components/Text';
 import * as Tooltip from '~/ui/components/Tooltip';
 
-const NESTING_OFFSET = 12;
-
 type SidebarLinkProps = {
   heading: Heading;
   isActive: boolean;
@@ -15,30 +13,26 @@ type SidebarLinkProps = {
   onClick: (event: MouseEvent<HTMLAnchorElement>) => void;
 };
 
-const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkProps>(
-  ({ heading, isActive, shortenCode, onClick }, ref) => {
-    const { slug, level, title, type, tags } = heading;
+export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProps>(
+  ({ heading: { slug, level, title, type, tags }, isActive, shortenCode, onClick }, ref) => {
+    const [tooltipVisible, setTooltipVisible] = useState(false);
 
     // preset for monospace, tail ellipsis, and removing extra bits like details of function signatures
     const isCode = type === HeadingType.InlineCode;
     // preset for monospace, tail ellipsis, don't touch the title otherwise
     const isCodeOrFilePath = isCode || type === HeadingType.CodeFilePath;
 
-    const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL);
-    const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
-
-    const [tooltipVisible, setTooltipVisible] = useState(false);
-
-    const onMouseOver = (event: MouseEvent<HTMLAnchorElement>) => {
-      setTooltipVisible(isOverflowing(event.currentTarget));
-    };
-
-    const onMouseOut = () => {
-      setTooltipVisible(false);
-    };
-
     const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
+    const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
     const isDeprecated = tags && tags.length > 0 ? tags.find(tag => tag === 'deprecated') : null;
+
+    function onMouseOver(event: MouseEvent<HTMLAnchorElement>) {
+      setTooltipVisible(isOverflowing(event.currentTarget));
+    }
+
+    function onMouseOut() {
+      setTooltipVisible(false);
+    }
 
     return (
       <Tooltip.Root open={tooltipVisible}>
@@ -51,7 +45,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
             onClick={onClick}
             className={mergeClasses(
               'mb-1.5 flex items-center justify-between truncate !text-pretty',
-              convertToIndentClass(paddingLeft),
+              convertToIndentClass(level - BASE_HEADING_LEVEL),
               'focus-visible:relative focus-visible:z-10'
             )}>
             <TitleElement
@@ -81,7 +75,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
 /**
  * Replaces `Module.someFunction<T>(arguments: argType)` with `someFunction()`
  */
-const trimCodedTitle = (str: string) => {
+function trimCodedTitle(str: string) {
   if (!str.includes('...')) {
     const dotIdx = str.indexOf('.');
     if (dotIdx > 0) str = str.substring(dotIdx + 1);
@@ -93,13 +87,13 @@ const trimCodedTitle = (str: string) => {
   if (parIdx > 0) str = str.substring(0, parIdx + 1) + ')';
 
   return str;
-};
+}
 
 /**
  * Determines if element is overflowing (children width exceeds container width).
  * @param {HTMLElement} el HTML element to check
  */
-const isOverflowing = (el: HTMLElement) => {
+function isOverflowing(el: HTMLElement) {
   if (!el || !el.children) {
     return false;
   }
@@ -107,23 +101,21 @@ const isOverflowing = (el: HTMLElement) => {
   const childrenWidth = Array.from(el.children).reduce((sum, child) => sum + child.scrollWidth, 0);
   const indent = parseInt(window.getComputedStyle(el).paddingLeft, 10);
   return childrenWidth > 220 && childrenWidth >= el.scrollWidth - indent;
-};
+}
 
 function convertToIndentClass(spacing: number) {
   switch (spacing) {
-    case 12:
+    case 1:
       return 'pl-3';
-    case 24:
+    case 2:
       return 'pl-6';
-    case 36:
+    case 3:
       return 'pl-9';
-    case 48:
+    case 4:
       return 'pl-12';
-    case 60:
+    case 5:
       return 'pl-15';
     default:
       return '';
   }
 }
-
-export default DocumentationSidebarRightLink;

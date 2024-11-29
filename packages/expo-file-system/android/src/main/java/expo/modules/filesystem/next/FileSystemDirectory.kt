@@ -20,10 +20,21 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     return file.isDirectory
   }
 
-  fun create() {
+  fun create(options: CreateOptions = CreateOptions()) {
     validateType()
     validatePermission(Permission.WRITE)
-    file.mkdir()
+    validateCanCreate(options)
+    if (options.overwrite && file.exists()) {
+      file.delete()
+    }
+    val created = if (options.intermediates) {
+      file.mkdirs()
+    } else {
+      file.mkdir()
+    }
+    if (!created) {
+      throw UnableToCreateException("directory already exists or could not be created")
+    }
   }
 
   // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)

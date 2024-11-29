@@ -3,7 +3,7 @@ import { captureMessage } from '@sentry/browser';
 import { useEffect, useState } from 'react';
 
 import { getRedirectPath } from '~/common/error-utilities';
-import Head from '~/components/Head';
+import DocumentationHead from '~/components/DocumentationHead';
 import { NotFoundImage, RedirectImage, ServerErrorImage } from '~/ui/components/ErrorPage';
 import { Layout } from '~/ui/components/Layout';
 import { H1, P } from '~/ui/components/Text';
@@ -54,7 +54,7 @@ const Error = () => {
     <Layout className="flex flex-col items-center justify-center !pb-20">
       {redirectPath && (
         <>
-          <Head title="Redirecting" />
+          <DocumentationHead title="Redirecting" />
           <RedirectImage />
           <H1 className="!mt-8">Redirecting</H1>
           {/* note(simek): "redirect-link" ID is needed for test-links script */}
@@ -65,7 +65,7 @@ const Error = () => {
       )}
       {(redirectFailed || notFound) && (
         <>
-          <Head title="Not Found" />
+          <DocumentationHead title="Not Found" />
           {redirectFailed ? <ServerErrorImage /> : <NotFoundImage />}
           <H1 className="!mt-8">404: Not Found</H1>
           {redirectFailed ? (

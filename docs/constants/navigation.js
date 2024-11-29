@@ -177,6 +177,7 @@ const general = [
         makePage('distribution/publishing-websites.mdx'),
         makePage('guides/dom-components.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
+        makePage('guides/tailwind.mdx'),
       ],
       { expanded: false }
     ),

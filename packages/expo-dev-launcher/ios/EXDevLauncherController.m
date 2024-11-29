@@ -274,20 +274,28 @@
     return;
   }
 
+  void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      typeof(self) self = weakSelf;
+      if (!self) {
+        return;
+      }
+      
+      [self navigateToLauncher];
+    });
+  };
+  
+  NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
+  if (initialUrl) {
+    [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
+    return;
+  }
+
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
-    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
-       __weak typeof(self) weakSelf = self;
-       dispatch_async(dispatch_get_main_queue(), ^{
-         typeof(self) self = weakSelf;
-         if (!self) {
-           return;
-         }
-
-         [self navigateToLauncher];
-       });
-    }];
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
     return;
   }
   [self navigateToLauncher];
@@ -806,6 +814,26 @@
     return;
   }
   [self loadApp:appUrl onSuccess:nil onError:nil];
+}
+
++ (NSURL *)initialUrlFromProcessInfo
+{
+  NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+  NSArray *arguments = [processInfo arguments];
+  BOOL nextIsUrl = NO;
+  
+  for (NSString *arg in arguments) {
+    if (nextIsUrl) {
+      NSURL *url = [NSURL URLWithString:arg];
+      if (url) {
+        return url;
+      }
+    }
+    if ([arg isEqualToString:@"--initialUrl"]) {
+      nextIsUrl = YES;
+    }
+  }
+  return nil;
 }
 
 @end

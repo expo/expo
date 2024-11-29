@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo';
+import { EventEmitter, requireNativeModule } from 'expo';
 
 export const name = 'ModulesCore';
 
@@ -27,6 +27,13 @@ export function test({ describe, expect, it }) {
       emitter.emit('test');
 
       expect(subsequentListenerWasCalled).toBe(true);
+    });
+
+    it('is backwards compatible when a native module is passed', () => {
+      const anyModule = requireNativeModule('ExpoImage');
+      const emitter = new EventEmitter(anyModule);
+
+      expect(emitter).toBe(anyModule);
     });
   });
 }

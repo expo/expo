@@ -4,8 +4,8 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios"
+    "android": "expo start --android",
+    "ios": "expo start --ios"
   },
   "dependencies": {
     "expo": "~52.0.0",

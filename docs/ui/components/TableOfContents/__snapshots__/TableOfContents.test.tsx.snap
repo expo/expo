@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
+exports[`TableOfContents correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="w-[280px] px-6 pb-12 pt-14"
+    class="w-[280px] px-6 pb-10 pt-14"
     data-sidebar="true"
   >
     <p

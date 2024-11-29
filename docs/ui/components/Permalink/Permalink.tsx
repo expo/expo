@@ -1,12 +1,10 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
-import type { ComponentType, PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import { PermalinkBase } from './PermalinkBase';
 
 import { AdditionalProps } from '~/common/headingManager';
-import withHeadingManager, {
-  HeadingManagerProps,
-} from '~/components/page-higher-order/withHeadingManager';
+import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink/PermalinkIcon';
 
 type Props = PropsWithChildren<{
@@ -16,7 +14,7 @@ type Props = PropsWithChildren<{
   id?: string;
 }>;
 
-const Permalink: ComponentType<Props> = withHeadingManager((props: Props & HeadingManagerProps) => {
+const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
   const component = props.children as JSX.Element;
