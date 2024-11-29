@@ -7,15 +7,15 @@ class BackgroundTaskScheduler {
    */
   public static func tryScheduleWorker() throws {
     let request = BGProcessingTaskRequest(identifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
-    
+
     // We'll require network but accept running on battery power.
     request.requiresNetworkConnectivity = true
     request.requiresExternalPower = false
     // TODO: request.earliestBeginDate =
-    
+
     do {
       try BGTaskScheduler.shared.submit(request)
-      
+
     } catch let error as BGTaskScheduler.Error {
       switch error.code {
       case .unavailable:
@@ -33,14 +33,14 @@ class BackgroundTaskScheduler {
       throw CouldNotRegisterWorkerTask("Unknown error occurred.")
     }
   }
-  
+
   /**
    Cancels the worker task
    */
   public static func stopWorker() {
     BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
   }
-  
+
   /**
    Returns true if the worker task is pending
    */

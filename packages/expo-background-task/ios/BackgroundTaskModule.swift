@@ -5,20 +5,20 @@ let ModuleName = "ExpoBackgroundTask"
 
 public class BackgroundTaskModule: Module {
   private var taskManager: EXTaskManagerInterface?
-  
+
   public func definition() -> ModuleDefinition {
     Name(ModuleName)
-  
+
     OnCreate {
       taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
     }
-    
+
     AsyncFunction("registerTaskAsync") { (name: String, options: [String: Any]) in
       guard let taskManager else {
         throw TaskManagerNotFound()
       }
-      
-      if (!BackgroundTaskService.supportsBackgroundTasks()) {
+
+      if !BackgroundTaskService.supportsBackgroundTasks() {
         throw BackgroundTasksRestricted()
       }
 
@@ -28,27 +28,26 @@ public class BackgroundTaskModule: Module {
 
       taskManager.registerTask(withName: name, consumer: BackgroundTaskConsumer.self, options: options)
     }
-    
+
     AsyncFunction("unregisterTaskAsync") { (name: String) in
       guard let taskManager else {
         throw TaskManagerNotFound()
       }
-      
-      if (!BackgroundTaskService.supportsBackgroundTasks()) {
+
+      if !BackgroundTaskService.supportsBackgroundTasks() {
         throw BackgroundTasksRestricted()
       }
-      
+
       if !taskManager.hasBackgroundModeEnabled("processing") {
         throw BackgroundTasksNotConfigured()
       }
 
-      taskManager.unregisterTask(withName: name, consumerClass: BackgroundTaskConsumer.self)      
+      taskManager.unregisterTask(withName: name, consumerClass: BackgroundTaskConsumer.self)
     }
-    
+
     AsyncFunction("getStatusAsync") {
       return BackgroundTaskService.supportsBackgroundTasks() ?
         BackgroundTaskStatus.available : .restricted
     }
   }
 }
-

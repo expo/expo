@@ -41,7 +41,6 @@ internal final class ErrorInvokingTaskHandler: Exception {
   }
 }
 
-
 internal final class InvalidFinishTaskRun: Exception {
   override var reason: String {
     "Expo BackgroundTasks: Tried to mark task run as finished when there are no task runs active"
