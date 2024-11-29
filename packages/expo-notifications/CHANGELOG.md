@@ -8,7 +8,8 @@
 
 ### 🐛 Bug fixes
 
-- [android] Notifications with custom sounds were mistakenly treated as silent, preventing them from appearing when the app was in the foreground ([#33311](https://github.com/expo/expo/pull/33311) by [@pennersr](https://github.com/pennersr))
+- [android] fix notifications with custom sounds mistakenly treated as silent ([#33311](https://github.com/expo/expo/pull/33311) by [@pennersr](https://github.com/pennersr))
+- fix event subscription type export names ([#33295](https://github.com/expo/expo/pull/33295) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
