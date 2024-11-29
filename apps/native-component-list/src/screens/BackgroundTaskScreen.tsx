@@ -6,6 +6,7 @@ import {
   unregisterTaskAsync,
   getStatusAsync,
   BackgroundTaskStatus,
+  BackgroundTaskResult,
 } from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
@@ -113,6 +114,8 @@ TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
     value: Date.now().toString(),
   });
   await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
+
+  return BackgroundTaskResult.Success;
 });
 
 const styles = StyleSheet.create({
