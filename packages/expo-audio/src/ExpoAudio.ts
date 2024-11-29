@@ -81,6 +81,20 @@ export function useAudioRecorderState(recorder: AudioRecorder, interval: number 
   return state;
 }
 
+/**
+ * Creates an instance of an `AudioPlayer` that doesn't release automatically.
+ *
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-updateinterval) hook instead. See the [Using the AudioPlayer Directly](#using-the-audioplayer-directly) section for more details.
+ * @param source
+ */
+export function createAudioPlayer(
+  source: AudioSource | string | number | null = null,
+  updateInterval: number = 500
+): AudioPlayer {
+  const parsedSource = resolveSource(source);
+  return new AudioModule.AudioPlayer(parsedSource, updateInterval);
+}
+
 export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
   return await AudioModule.setIsAudioActiveAsync(active);
 }
