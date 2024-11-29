@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `zoom` on android and adjust the magnitude on iOS.
+- Fix `zoom` on android and adjust the magnitude on iOS. ([#33319](https://github.com/expo/expo/pull/33319) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
