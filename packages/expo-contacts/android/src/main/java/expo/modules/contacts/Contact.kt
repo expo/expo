@@ -31,7 +31,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
 // TODO: MaidenName Nickname
 class Contact(var contactId: String, val context: Context) {
   private var rawContactId: String? = null
