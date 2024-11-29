@@ -91,12 +91,12 @@ public class AudioModule: Module {
       }
 
       Property("currentTime") { player in
-        (player.ref.currentItem?.currentTime().seconds ?? 0.0) * 1000
+        player.currentTime
       }
 
       Property("duration") { player in
         if player.ref.status == .readyToPlay {
-          (player.ref.currentItem?.duration.seconds ?? 0.0) * 1000
+          player.duration
         } else {
           0.0
         }
@@ -156,10 +156,10 @@ public class AudioModule: Module {
         player.setSamplingEnabled(enabled: enabled)
       }
 
-      AsyncFunction("seekTo") { (player: AudioPlayer, milliseconds: Double) in
+      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
         await player.ref.currentItem?.seek(
           to: CMTime(
-            seconds: milliseconds / 1000,
+            seconds: seconds,
             preferredTimescale: CMTimeScale(NSEC_PER_SEC)
           )
         )
