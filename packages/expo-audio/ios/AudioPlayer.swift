@@ -29,7 +29,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var duration: Double {
     ref.currentItem?.duration.seconds ?? 0.0
   }
-  
+
   var currentTime: Double {
     ref.currentItem?.currentTime().seconds ?? 0.0
   }
