@@ -128,7 +128,7 @@ class AudioPlayer(
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
       "reasonForWaitingToPlay" to null,
       "mute" to isMuted,
-      "duration" to player.duration,
+      "duration" to duration,
       "playing" to player.isPlaying,
       "loop" to isLooping,
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,

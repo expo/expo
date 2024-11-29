@@ -77,9 +77,9 @@ export default function Player(props: Props) {
   const _toggleShouldCorrectPitch = () =>
     props.setRate(props.playbackRate, !props.shouldCorrectPitch);
 
-  const _seekForward = () => props.setPosition(props.currentTime + 5000);
+  const _seekForward = () => props.setPosition(props.currentTime + 5);
 
-  const _seekBackward = () => props.setPosition(Math.max(0, props.currentTime - 5000));
+  const _seekBackward = () => props.setPosition(Math.max(0, props.currentTime - 5));
 
   const _renderReplayButton = () => {
     return (
@@ -193,7 +193,7 @@ export default function Player(props: Props) {
           }}
         />
         <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
-          {_formatTime(props.currentTime / 1000)} / {_formatTime(props.duration / 1000)}
+          {_formatTime(props.currentTime)} / {_formatTime(props.duration)}
         </Text>
         {_renderReplayButton()}
       </View>
