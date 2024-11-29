@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix event emitters not working on web.
+
 ### 💡 Others
 
 ## 7.0.2 — 2024-11-22

@@ -1,6 +1,5 @@
-import { EventEmitter } from 'expo-modules-core';
+import { NativeModule, registerWebModule } from 'expo-modules-core';
 import { NetworkStateType } from './Network.types';
-const emitter = new EventEmitter();
 const onNetworkStateEventName = 'onNetworkStateChanged';
 function getNetworkState() {
     const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
@@ -10,11 +9,13 @@ function getNetworkState() {
         isInternetReachable: isOnline,
     };
 }
-function updateNetworkState() {
-    const state = getNetworkState();
-    emitter.emit(onNetworkStateEventName, state);
-}
-export default {
+class ExpoNetworkModule extends NativeModule {
+    eventListener;
+    updateNetworkState() {
+        const state = getNetworkState();
+        console.log(this.emit);
+        this.emit(onNetworkStateEventName, state);
+    }
     async getIpAddressAsync() {
         try {
             const resp = await fetch('https://api.ipify.org?format=json');
@@ -24,17 +25,24 @@ export default {
         catch (e) {
             throw e;
         }
-    },
+    }
     async getNetworkStateAsync() {
         return getNetworkState();
-    },
+    }
+    async isAirplaneModeEnabledAsync() {
+        return false;
+    }
     startObserving() {
-        window.addEventListener('online', updateNetworkState);
-        window.addEventListener('offline', updateNetworkState);
-    },
+        this.eventListener = () => this.updateNetworkState();
+        window.addEventListener('online', this.eventListener);
+        window.addEventListener('offline', this.eventListener);
+    }
     stopObserving() {
-        window.removeEventListener('online', updateNetworkState);
-        window.removeEventListener('offline', updateNetworkState);
-    },
-};
+        if (this.eventListener) {
+            window.removeEventListener('online', this.eventListener);
+            window.removeEventListener('offline', this.eventListener);
+        }
+    }
+}
+export default registerWebModule(ExpoNetworkModule);
 //# sourceMappingURL=ExpoNetwork.web.js.map
