@@ -205,7 +205,6 @@ export class Image extends React.PureComponent<ImageProps> {
       );
       loggedRenderingChildrenWarning = true;
     }
-    
     return (
       <ExpoImage
         {...restProps}
