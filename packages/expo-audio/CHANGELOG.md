@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Update docs and api so all units of time should be in milliseconds, not seconds.
+- Update docs and api so all units of time should be in milliseconds, not seconds. ([#33320](https://github.com/expo/expo/pull/33320) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
