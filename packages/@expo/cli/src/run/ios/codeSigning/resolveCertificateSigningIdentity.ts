@@ -57,14 +57,6 @@ export async function resolveCertificateSigningIdentityAsync(
     assertCodeSigningSetup();
   }
 
-  // Read the config to interact with the `ios.appleTeamId` property
-  const { exp } = getConfig(projectRoot, {
-    // We don't need very many fields here, just use the lightest possible read.
-    skipSDKVersionRequirement: true,
-    skipPlugins: true,
-  });
-  const configuredTeamId = exp.ios?.appleTeamId;
-
   //  One ID available 🤝 Program is not interactive
   //
   //     using the the first available option
@@ -78,6 +70,14 @@ export async function resolveCertificateSigningIdentityAsync(
   const [identities, preferred] = await sortDefaultIdToBeginningAsync(
     await Security.resolveIdentitiesAsync(ids)
   );
+
+  // Read the config to interact with the `ios.appleTeamId` property
+  const { exp } = getConfig(projectRoot, {
+    // We don't need very many fields here, just use the lightest possible read.
+    skipSDKVersionRequirement: true,
+    skipPlugins: true,
+  });
+  const configuredTeamId = exp.ios?.appleTeamId;
 
   const configuredIdentity = configuredTeamId
     ? identities.find((identity) => identity.appleTeamId === configuredTeamId)

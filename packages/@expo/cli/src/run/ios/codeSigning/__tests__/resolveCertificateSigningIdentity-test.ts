@@ -72,8 +72,6 @@ describe(resolveCertificateSigningIdentityAsync, () => {
   });
 
   it(`auto selects the first ID when there is only one`, async () => {
-    jest.mocked(getConfig).mockReturnValue({ exp: { name: 'test', slug: 'test' } } as any);
-
     jest.mocked(Security.resolveCertificateSigningInfoAsync).mockResolvedValue({
       signingCertificateId: 'XXX',
     });
