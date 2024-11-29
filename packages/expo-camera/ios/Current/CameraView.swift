@@ -286,7 +286,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
     do {
       try device.lockForConfiguration()
-      device.videoZoomFactor = (device.activeFormat.videoMaxZoomFactor - 1.0) * zoom + 1.0
+      let minZoom = 1.0
+      device.videoZoomFactor = minZoom * pow(device.activeFormat.videoMaxZoomFactor / minZoom, zoom)
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
     }
