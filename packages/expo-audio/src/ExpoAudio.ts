@@ -84,7 +84,7 @@ export function useAudioRecorderState(recorder: AudioRecorder, interval: number 
 /**
  * Creates an instance of an `AudioPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-updateinterval) hook instead. See the [Using the AudioPlayer Directly](#using-the-audioplayer-directly) section for more details.
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-updateinterval) hook instead. See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
  * @param source
  */
 export function createAudioPlayer(
