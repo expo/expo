@@ -9,3 +9,14 @@ export enum BackgroundTaskStatus {
    */
   Available = 2,
 }
+
+export enum BackgroundTaskResult {
+  /**
+   * The task finished successfully.
+   */
+  Success = 1,
+  /**
+   * The task failed.
+   */
+  Failed = 3,
+}

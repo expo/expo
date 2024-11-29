@@ -57,5 +57,5 @@ export async function unregisterTaskAsync(taskName) {
     await ExpoBackgroundTaskModule.unregisterTaskAsync(taskName);
 }
 // Export types
-export { BackgroundTaskStatus } from './BackgroundTask.types';
+export { BackgroundTaskStatus, BackgroundTaskResult } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.js.map
