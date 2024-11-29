@@ -20,6 +20,10 @@ export function getSourceUri(source) {
     }
     return source?.uri ?? null;
 }
+export function createVideoPlayer(source) {
+    const parsedSource = typeof source === 'string' ? { uri: source } : source;
+    return new VideoPlayerWeb(parsedSource);
+}
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     constructor(source) {
         super();
@@ -39,6 +43,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     _error = null;
     _timeUpdateLoop = null;
     _timeUpdateEventInterval = 0;
+    audioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
     allowsExternalPlayback = false; // Not supported on web. Dummy to match the interface.
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     showNowPlayingNotification = false; // Not supported on web. Dummy to match the interface.
@@ -46,6 +51,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     currentOffsetFromLive = null; // Not supported on web. Dummy to match the interface.
     targetOffsetFromLive = 0; // Not supported on web. Dummy to match the interface.
     bufferOptions = {}; // Not supported on web. Dummy to match the interface.
+    subtitleTrack = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
+    availableSubtitleTracks = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
     set muted(value) {
         this._mountedVideos.forEach((video) => {
             video.muted = value;
@@ -151,10 +158,17 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         if (this._status === value)
             return;
         if (value === 'error' && this._error) {
-            this.emit('statusChange', value, this._status, this._error);
+            this.emit('statusChange', {
+                status: value,
+                oldStatus: this._status,
+                error: this._error,
+            });
         }
         else {
-            this.emit('statusChange', value, this._status);
+            this.emit('statusChange', {
+                status: value,
+                oldStatus: this._status,
+            });
             this._error = null;
         }
         this._status = value;
@@ -270,21 +284,28 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     }
     _addListeners(video) {
         video.onplay = () => {
-            this._emitOnce(video, 'playingChange', true, this.playing);
+            this._emitOnce(video, 'playingChange', {
+                isPlaying: true,
+                oldIsPlaying: this.playing,
+            });
             this.playing = true;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.play();
             });
         };
         video.onpause = () => {
-            this._emitOnce(video, 'playingChange', false, this.playing);
+            this._emitOnce(video, 'playingChange', {
+                isPlaying: false,
+                oldIsPlaying: this.playing,
+            });
             this.playing = false;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.pause();
             });
         };
         video.onvolumechange = () => {
-            this._emitOnce(video, 'volumeChange', { volume: video.volume, isMuted: video.muted }, { volume: this.volume, isMuted: this.muted });
+            this._emitOnce(video, 'volumeChange', { volume: video.volume, oldVolume: this.volume });
+            this._emitOnce(video, 'mutedChange', { muted: video.muted, oldMuted: this.muted });
             this.volume = video.volume;
             this.muted = video.muted;
         };
@@ -303,7 +324,10 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             });
         };
         video.onratechange = () => {
-            this._emitOnce(video, 'playbackRateChange', video.playbackRate, this.playbackRate);
+            this._emitOnce(video, 'playbackRateChange', {
+                playbackRate: video.playbackRate,
+                oldPlaybackRate: this.playbackRate,
+            });
             this._mountedVideos.forEach((mountedVideo) => {
                 if (mountedVideo.playbackRate === video.playbackRate)
                     return;
@@ -335,7 +359,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             this._emitOnce(video, 'playToEnd');
         };
         video.onloadstart = () => {
-            this._emitOnce(video, 'sourceChange', this.src, this.previousSrc);
+            this._emitOnce(video, 'sourceChange', { source: this.src, oldSource: this.previousSrc });
         };
     }
 }

@@ -1,13 +1,14 @@
-import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionHookOptions,
-  createPermissionHook,
-  UnavailabilityError,
-} from 'expo-modules-core';
+import { PermissionResponse, createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
 import ExpoCalendar from './ExpoCalendar';
+
+export {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+  PermissionExpiration,
+} from 'expo-modules-core';
 
 // @needsAudit
 /**
@@ -137,7 +138,7 @@ export type Source = {
    * Type of the account that owns this calendar and was used to sync it to the device.
    * If `isLocalAccount` is falsy then this must be defined, and must match an account on the device
    * along with `name`, or the OS will delete the calendar.
-   * On iOS, one of [`SourceType`](#calendarsourcetype)s.
+   * On iOS, one of [`SourceType`](#sourcetype)s.
    */
   type: string | SourceType;
   /**
@@ -549,8 +550,6 @@ export type DaysOfTheWeek = {
    */
   weekNumber?: number;
 };
-
-export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
 /**
  * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.

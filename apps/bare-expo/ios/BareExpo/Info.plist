@@ -91,6 +91,7 @@
     <array>
       <string>fetch</string>
       <string>audio</string>
+      <string>location</string>
     </array>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>

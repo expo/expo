@@ -1,14 +1,12 @@
-import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import {
-  CommentTextBlock,
-  getTagNamesList,
-  STYLES_APIBOX,
-  H3Code,
-  BoxSectionHeader,
-} from '~/components/plugins/api/APISectionUtils';
-import { H2, H4, CODE, MONOSPACE } from '~/ui/components/Text';
+import { mergeClasses } from '@expo/styleguide';
+
+import { EnumDefinitionData, EnumValueData } from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
+import { CommentTextBlock, getTagNamesList, H3Code, BoxSectionHeader } from './APISectionUtils';
+import { STYLES_APIBOX } from './styles';
+
+import { H2, H4, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -26,11 +24,11 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
 };
 
 const renderEnumValue = (value: any, fallback?: string) =>
-  typeof value === 'string' ? `"${value}"` : value ?? fallback;
+  typeof value === 'string' ? `"${value}"` : (value ?? fallback);
 
 function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefinitionData }) {
   return (
-    <div key={`enum-definition-${name}`} css={STYLES_APIBOX} className="!p-0">
+    <div key={`enum-definition-${name}`} className={mergeClasses(STYLES_APIBOX, '!p-0')}>
       <div className="px-5 pt-4">
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} />
@@ -46,15 +44,15 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
         <div className="border-t border-t-secondary p-5 pb-0 pt-4" key={enumValue.name}>
           <APISectionDeprecationNote comment={enumValue.comment} />
           <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" disableFallback />
-          <H4 className="!mt-0" hideInSidebar>
+          <H4 hideInSidebar>
             <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
           </H4>
-          <CODE theme="secondary" className="mb-3">
+          <MONOSPACE theme="secondary" className="mb-3 inline-flex text-xs">
             {`${name}.${enumValue.name} ＝ ${renderEnumValue(
               enumValue.type.value,
               enumValue.type.name
             )}`}
-          </CODE>
+          </MONOSPACE>
           <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
         </div>
       ))}

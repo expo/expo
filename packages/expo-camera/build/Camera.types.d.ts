@@ -261,7 +261,7 @@ export type BarcodeScanningResult = {
     bounds: BarcodeBounds;
 };
 export type ScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
-export type CameraProps = ViewProps & {
+export type CameraViewProps = ViewProps & {
     /**
      * Camera facing. Use one of `CameraType`. When `front`, use the front-facing camera.
      * When `back`, use the back-facing camera.
@@ -313,6 +313,12 @@ export type CameraProps = ViewProps & {
      * If the chosen quality is not available for a device, the highest available is chosen.
      */
     videoQuality?: VideoQuality;
+    /**
+     * The bitrate of the video recording in bits per second.
+     * Note: On iOS, you must specify the video codec when calling `recordAsync` to use this option.
+     * @example 10_000_000
+     */
+    videoBitrate?: number;
     /**
      * A boolean that determines whether the camera shutter animation should be enabled.
      * @default true

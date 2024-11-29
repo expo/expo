@@ -4,9 +4,37 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 7.1.2 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- Fix `formatFullName` not specifying a return type. ([#33068](https://github.com/expo/expo/pull/33068) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 7.1.1 — 2024-11-15
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.0 — 2024-11-14
 
 ### 🎉 New features
+
+- Add `formatFullName` method to format tokenized full name object into a local-aware string representation ([#32567](https://github.com/expo/expo/pull/32567) by [@Armster15](https://github.com/Armster15))
+
+## 7.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

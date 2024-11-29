@@ -15,6 +15,8 @@ const bigBuckBunnySource: VideoSource = {
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
+    artwork:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/1200px-Big_buck_bunny_poster_big.jpg',
   },
 };
 
@@ -23,6 +25,24 @@ const elephantsDreamSource: VideoSource = {
   metadata: {
     title: 'Elephants Dream',
     artist: 'Blender Foundation',
+    artwork: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/ElephantsDreamPoster.jpg',
+  },
+};
+
+export const hlsSource: VideoSource = {
+  uri: 'https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+  metadata: {
+    title: 'Sintel',
+    artist: 'Blender Foundation',
+    artwork:
+      'https://bookshow.blurb.com/bookshow/cache/P14464689/md/cover_2.jpeg?access_key=a096a6a606efe615ac87edc04766c661',
+  },
+};
+
+export const nullSource: VideoSource = {
+  metadata: {
+    title: 'Null Source',
+    artist: '-',
   },
 };
 
@@ -31,28 +51,24 @@ const forBiggerBlazesSource: VideoSource =
 
 // source: https://reference.dashif.org/dash.js/latest/samples/drm/widevine.html
 const androidDrmSource: VideoSource = {
-  uri: 'https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest.mpd',
-  drm: {
-    type: 'widevine',
-    headers: {
-      'X-AxDRM-Message':
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJzaW9uIjoxLCJjb21fa2V5X2lkIjoiYjMzNjRlYjUtNTFmNi00YWUzLThjOTgtMzNjZWQ1ZTMxYzc4IiwibWVzc2FnZSI6eyJ0eXBlIjoiZW50aXRsZW1lbnRfbWVzc2FnZSIsImtleXMiOlt7ImlkIjoiOWViNDA1MGQtZTQ0Yi00ODAyLTkzMmUtMjdkNzUwODNlMjY2IiwiZW5jcnlwdGVkX2tleSI6ImxLM09qSExZVzI0Y3Iya3RSNzRmbnc9PSJ9XX19.4lWwW46k-oWcah8oN18LPj5OLS5ZU-_AQv7fe0JhNjA',
-    },
-    licenseServer: 'https://drm-widevine-licensing.axtest.net/AcquireLicense',
-  },
+  uri: 'https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
 };
 
 const videoLabels: string[] = [
   'Big Buck Bunny',
   'Elephants Dream',
   'For Bigger Blazes',
+  'Sintel (HLS)',
   'Cute Doggo (local video)',
+  'Null Source',
 ];
 const videoSources: VideoSource[] = [
   bigBuckBunnySource,
   elephantsDreamSource,
   forBiggerBlazesSource,
+  hlsSource,
   localVideoSource,
+  nullSource,
 ];
 
 export {

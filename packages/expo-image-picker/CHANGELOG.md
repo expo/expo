@@ -4,6 +4,30 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 16.0.3 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.2 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2024-11-04
+
+### 🐛 Bug fixes
+
+- Fix incorrect width/height reported with EXIF tags 5 and 7 ([#32534](https://github.com/expo/expo/pull/32534) by [@gaearon](https://github.com/gaearon))
+
+## 16.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Remove `READ_MEDIA_IMAGES` and `READ_MEDIA_VIDEO` permissions. ([#31902](https://github.com/expo/expo/pull/31902) by [@aleqsio](https://github.com/aleqsio))
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 - The default value for `quality` option has been changed from `0.2` to `1.0` for better performance and to match the most common expectation. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))
@@ -77,6 +101,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - On Android `fileSize` was named `filesize` which did not match the docs & typescript definition. ([#27293](https://github.com/expo/expo/pull/27293) by [@WookieFPV](https://github.com/wookieFPV))
+- Fixed cancelled picker dialog not resolving with expected result on web. ([#11847](https://github.com/expo/expo/pull/27454) by [@raqso](https://github.com/raqso))
 
 ### 💡 Others
 

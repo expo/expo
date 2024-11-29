@@ -1,4 +1,4 @@
-import { css } from '@emotion/react';
+import { mergeClasses } from '@expo/styleguide';
 import { useMemo } from 'react';
 
 import { androidPermissions, AndroidPermission, PermissionReference } from './data';
@@ -10,12 +10,11 @@ import { CODE, P, createPermalinkedComponent } from '~/ui/components/Text';
 // TODO(cedric): all commented code is related to the "granter" column.
 // This column defines if the permission is granted by the system or user (requires notification).
 // We have to clearly communicate what it means before showing it to the user.
+// const grantedByInfo = 'Some permissions are granted by the system without user approval';
 
 type AndroidPermissionsProps = {
   permissions: PermissionReference<AndroidPermission>[];
 };
-
-// const grantedByInfo = 'Some permissions are granted by the system without user approval';
 
 export function AndroidPermissions({ permissions }: AndroidPermissionsProps) {
   const list = useMemo(() => getPermissions(permissions), [permissions]);
@@ -25,11 +24,7 @@ export function AndroidPermissions({ permissions }: AndroidPermissionsProps) {
       <TableHead>
         <Row>
           <HeaderCell>Android Permission</HeaderCell>
-          {/* <HeaderCell>
-            <span css={grantedByInfoStyle} title={grantedByInfo}>
-              Granted by <QuestionIcon size={12} title={grantedByInfo} />
-            </span>
-          </HeaderCell> */}
+          {/* <HeaderCell>Granted by <QuestionIcon size={12} title={grantedByInfo} /></HeaderCell> */}
           <HeaderCell>Description</HeaderCell>
         </Row>
       </TableHead>
@@ -62,20 +57,18 @@ function AndroidPermissionRow({
           <CODE>{name}</CODE>
         </PermissionPermalink>
       </Cell>
-      {/* <Cell>
-        <i>{getPermissionGranter(permission)}</i>
-      </Cell> */}
+      {/* <Cell>{getPermissionGranter(permission)}</Cell> */}
       <Cell>
         {!!description && (
-          <P css={(warning || explanation) && descriptionSpaceStyle}>{description}</P>
+          <P className={mergeClasses((warning || explanation) && '!mb-4')}>{description}</P>
         )}
         {!!warning && (
-          <Callout css={quoteStyle} type="warning">
+          <Callout className="mb-0 mt-1.5" type="warning">
             {warning}
           </Callout>
         )}
         {explanation && !warning && (
-          <Callout css={quoteStyle}>
+          <Callout className="mb-0 mt-1.5">
             <span dangerouslySetInnerHTML={{ __html: explanation }} />
           </Callout>
         )}
@@ -93,18 +86,6 @@ function getPermissions(permissions: AndroidPermissionsProps['permissions']) {
     )
     .filter(Boolean);
 }
-
-// const grantedByInfoStyle = css`
-//   white-space: nowrap;
-// `;
-
-const descriptionSpaceStyle = css`
-  margin-bottom: 1rem;
-`;
-
-const quoteStyle = css`
-  margin-bottom: 0;
-`;
 
 // function getPermissionGranter(permission: AndroidPermission): 'user' | 'system' | 'none' {
 //   if (!permission.protection) return 'none';

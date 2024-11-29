@@ -4,38 +4,25 @@ import android.app.Activity
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
-import android.graphics.Rect
 import android.os.Build
-import android.util.Log
 import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
-import androidx.media3.common.Format
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.Tracks
 import androidx.media3.ui.PlayerView
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.modules.i18nmanager.I18nUtil
-import com.facebook.react.uimanager.LengthPercentage
-import com.facebook.react.uimanager.LengthPercentageType
-import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.Spacing
-import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
-import com.facebook.react.uimanager.style.BorderRadiusProp
-import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import expo.modules.video.delegates.IgnoreSameSet
-import expo.modules.video.drawing.OutlineProvider
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.player.VideoPlayerListener
-import expo.modules.video.utils.ifYogaDefinedUse
+import expo.modules.video.utils.applyAutoEnterPiP
+import expo.modules.video.utils.applyRectHint
+import expo.modules.video.utils.calculateRectHint
 import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -49,6 +36,10 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   val onFullscreenExit by EventDispatcher<Unit>()
 
   var willEnterPiP: Boolean = false
+
+  // In some situations we can't detect if the view will enter PiP, in that case the playback will be paused
+  // We can get an event after PiP has started, that's when we should resume playback
+  var wasAutoPaused: Boolean = false
   var isInFullscreen: Boolean = false
     private set
   var showsSubtitlesButton = false
@@ -58,39 +49,11 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val decorView = currentActivity.window.decorView
   private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
 
-  private val rectHint: Rect = Rect()
   private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
-
   private var pictureInPictureHelperTag: String? = null
 
-  private var shouldInvalided = false
-
-  private val outlineProvider = OutlineProvider(context)
-
-  @UnstableReactNativeAPI
-  private val borderDrawableLazyHolder = lazy {
-    CSSBackgroundDrawable(context).apply {
-      callback = this@VideoView
-
-      outlineProvider.borderRadiiConfig
-        .map { it.ifYogaDefinedUse(PixelUtil::toPixelFromDIP) }
-        .withIndex()
-        .forEach { (i, radius) ->
-          if (i == 0) {
-            setBorderRadius(BorderRadiusProp.BORDER_RADIUS, LengthPercentage(radius, LengthPercentageType.POINT))
-          } else {
-            setBorderRadius(BorderRadiusProp.entries[i - 1], LengthPercentage(radius, LengthPercentageType.POINT))
-          }
-        }
-    }
-  }
-
-  @UnstableReactNativeAPI
-  private val borderDrawable
-    get() = borderDrawableLazyHolder.value
-
   var autoEnterPiP: Boolean by IgnoreSameSet(false) { new, _ ->
-    applyAutoEnterPiP(new)
+    applyAutoEnterPiP(currentActivity, new)
   }
 
   var contentFit: ContentFit = ContentFit.CONTAIN
@@ -144,6 +107,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   init {
     VideoManager.registerVideoView(this)
     playerView.setFullscreenButtonClickListener { enterFullscreen() }
+    // The prop `useNativeControls` prop is sometimes applied after the view is created, and sometimes there is a visible
+    // flash of controls event when they are set to off. Initially we set it to `false` and apply it in `onAttachedToWindow` to avoid this.
+    this.playerView.useController = false
     addView(
       playerView,
       ViewGroup.LayoutParams(
@@ -156,6 +122,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   fun enterFullscreen() {
     val intent = Intent(context, FullscreenPlayerActivity::class.java)
     intent.putExtra(VideoManager.INTENT_PLAYER_KEY, id)
+    // Set before starting the activity to avoid entering PiP unintentionally
+    isInFullscreen = true
     currentActivity.startActivity(intent)
 
     // Disable the enter transition
@@ -166,16 +134,21 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       currentActivity.overridePendingTransition(0, 0)
     }
     onFullscreenEnter(Unit)
-    isInFullscreen = true
+    applyAutoEnterPiP(currentActivity, false)
+  }
+
+  fun attachPlayer() {
+    videoPlayer?.changePlayerView(playerView)
   }
 
   fun exitFullscreen() {
     // Fullscreen uses a different PlayerView instance, because of that we need to manually update the non-fullscreen player icon after exiting
     val fullScreenButton: ImageButton = playerView.findViewById(androidx.media3.ui.R.id.exo_fullscreen)
     fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_icon_fullscreen_enter)
-    videoPlayer?.changePlayerView(playerView)
+    attachPlayer()
     onFullscreenExit(Unit)
     isInFullscreen = false
+    applyAutoEnterPiP(currentActivity, autoEnterPiP)
   }
 
   fun enterPictureInPicture() {
@@ -193,23 +166,24 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       } else {
         Rational(width, height)
       }
-      // Android PiP doesn't support aspect ratios lower than 0.4184 or higher than 2.39
-      if (aspectRatio.toFloat() > 2.39) {
-        aspectRatio = Rational(239, 100)
-      } else if (aspectRatio.toFloat() < 0.4184) {
-        aspectRatio = Rational(10000, 4184)
+      // AspectRatio for the activity in picture-in-picture, must be between 2.39:1 and 1:2.39 (inclusive).
+      // https://developer.android.com/reference/android/app/PictureInPictureParams.Builder#setAspectRatio(android.util.Rational)
+      val maximumRatio = Rational(239, 100)
+      val minimumRatio = Rational(100, 239)
+      if (aspectRatio.toFloat() > maximumRatio.toFloat()) {
+        aspectRatio = maximumRatio
+      } else if (aspectRatio.toFloat() < minimumRatio.toFloat()) {
+        aspectRatio = minimumRatio
       }
 
       currentActivity.setPictureInPictureParams(
         PictureInPictureParams
           .Builder()
-          .setSourceRectHint(rectHint)
           .setAspectRatio(aspectRatio)
           .build()
       )
     }
 
-    calculateRectHint()
     willEnterPiP = true
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       currentActivity.enterPictureInPictureMode(PictureInPictureParams.Builder().build())
@@ -246,53 +220,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
-    showsSubtitlesButton = hasSubtitles(tracks)
+    showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
-  }
-
-  private fun hasSubtitles(tracks: Tracks): Boolean {
-    for (group in tracks.groups) {
-      for (i in 0..<group.length) {
-        val format: Format = group.getTrackFormat(i)
-
-        if (MimeTypes.isText(format.sampleMimeType)) {
-          return true
-        }
-      }
-    }
-    return false
-  }
-
-  private fun calculateRectHint() {
-    getGlobalVisibleRect(rectHint)
-
-    // For `contain` contentFit we need to calculate where the video content is in the view and set the rectHint to that area
-    if (contentFit == ContentFit.CONTAIN) {
-      val player = playerView.player ?: return
-      val width = playerView.width
-      val height = playerView.height
-      val videoWidth = player.videoSize.width
-      val videoHeight = player.videoSize.height
-      val videoRatio = videoWidth.toFloat() / videoHeight.toFloat()
-      val viewRatio = width.toFloat() / height.toFloat()
-
-      if (videoRatio > viewRatio) {
-        val newHeight = (width.toFloat() / videoRatio).toInt()
-        rectHint.set(rectHint.left, rectHint.top + (height - newHeight) / 2, rectHint.right, rectHint.bottom - (height - newHeight) / 2)
-      } else {
-        val newWidth = (height.toFloat() * videoRatio).toInt()
-        rectHint.set(rectHint.left + (width - newWidth) / 2, rectHint.top, rectHint.right - (width - newWidth) / 2, rectHint.bottom)
-      }
-    }
-  }
-
-  private fun applyRectHint() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isPictureInPictureSupported(currentActivity)) {
-      runWithPiPMisconfigurationSoftHandling(ignore = true) {
-        currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setSourceRectHint(rectHint).build())
-      }
-    }
   }
 
   override fun requestLayout() {
@@ -309,34 +239,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     // On every re-layout ExoPlayer resets the timeBar to be enabled.
     // We need to disable it to keep scrubbing impossible.
     playerView.setTimeBarInteractive(videoPlayer?.requiresLinearPlayback ?: true)
-
-    calculateRectHint()
-    applyRectHint()
-  }
-
-  @UnstableReactNativeAPI
-  override fun draw(canvas: Canvas) {
-    // When the border-radii are not all the same, a convex-path
-    // is used for the Outline. Unfortunately clipping is not supported
-    // for convex-paths and we fallback to Canvas clipping.
-    outlineProvider.clipCanvasIfNeeded(canvas, this)
-
-    super.draw(canvas)
-
-    // Draw borders on top of the video
-    if (borderDrawableLazyHolder.isInitialized()) {
-      val newLayoutDirection = if (I18nUtil.instance.isRTL(context)) {
-        LAYOUT_DIRECTION_RTL
-      } else {
-        LAYOUT_DIRECTION_LTR
-      }
-
-      borderDrawable.apply {
-        layoutDirection = newLayoutDirection
-        setBounds(0, 0, width, height)
-        draw(canvas)
-      }
-    }
+    applyRectHint(currentActivity, calculateRectHint(playerView))
   }
 
   override fun onAttachedToWindow() {
@@ -348,7 +251,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .add(fragment, fragment.id)
         .commitAllowingStateLoss()
     }
-    applyAutoEnterPiP(autoEnterPiP)
+    applyAutoEnterPiP(currentActivity, autoEnterPiP)
   }
 
   override fun onDetachedFromWindow() {
@@ -360,102 +263,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .remove(fragment)
         .commitAllowingStateLoss()
     }
-    applyAutoEnterPiP(false)
-  }
-
-  @UnstableReactNativeAPI
-  internal fun setBorderRadius(position: Int, borderRadius: Float) {
-    val isInvalidated = outlineProvider.setBorderRadius(borderRadius, position)
-    if (isInvalidated) {
-      invalidateOutline()
-      if (!outlineProvider.hasEqualCorners()) {
-        shouldInvalided = true
-      }
-    }
-
-    // Setting the border-radius doesn't necessarily mean that a border
-    // should to be drawn. Only update the border-drawable when needed.
-    if (borderDrawableLazyHolder.isInitialized()) {
-      shouldInvalided = true
-      val radius = borderRadius.ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-      borderDrawableLazyHolder.value.apply {
-        if (position == 0) {
-          setBorderRadius(BorderRadiusProp.BORDER_RADIUS, LengthPercentage(radius, LengthPercentageType.POINT))
-        } else {
-          setBorderRadius(BorderRadiusProp.entries[position - 1], LengthPercentage(radius, LengthPercentageType.POINT))
-        }
-      }
-    }
-  }
-
-  @UnstableReactNativeAPI
-  internal fun setBorderWidth(position: Int, width: Float) {
-    borderDrawable.setBorderWidth(position, width)
-    shouldInvalided = true
-  }
-
-  @UnstableReactNativeAPI
-  internal fun setBorderColor(position: Int, rgb: Int) {
-    borderDrawable.setBorderColor(position, rgb)
-    shouldInvalided = true
-  }
-
-  @UnstableReactNativeAPI
-  internal fun setBorderStyle(style: String?) {
-    borderDrawable.setBorderStyle(style)
-    shouldInvalided = true
-  }
-
-  @UnstableReactNativeAPI
-  fun didUpdateProps() {
-    val hasBorder = if (borderDrawableLazyHolder.isInitialized()) {
-      val spacings = listOf(
-        Spacing.ALL,
-        Spacing.LEFT,
-        Spacing.RIGHT,
-        Spacing.TOP,
-        Spacing.BOTTOM,
-        Spacing.START,
-        Spacing.END
-      )
-      spacings
-        .any {
-          val boarderWidth = borderDrawable.getBorderWidthOrDefaultTo(YogaConstants.UNDEFINED, it)
-          boarderWidth != YogaConstants.UNDEFINED && boarderWidth > 0f
-        }
-    } else {
-      false
-    }
-
-    // We need to enable drawing on the view to draw the border or background
-    setWillNotDraw(!isOpaque && !hasBorder)
-    if (shouldInvalided) {
-      shouldInvalided = false
-      invalidate()
-    }
-  }
-
-  // We can't check if AndroidManifest.xml is configured properly, so we have to handle the exceptions ourselves to prevent crashes
-  internal fun runWithPiPMisconfigurationSoftHandling(shouldThrow: Boolean = false, ignore: Boolean = false, block: () -> Any?) {
-    try {
-      block()
-    } catch (e: IllegalStateException) {
-      if (ignore) {
-        return
-      }
-      Log.e("ExpoVideo", "Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
-      if (shouldThrow) {
-        throw PictureInPictureConfigurationException()
-      }
-    }
-  }
-
-  private fun applyAutoEnterPiP(autoEnterPiP: Boolean) {
-    if (Build.VERSION.SDK_INT >= 31 && isPictureInPictureSupported(currentActivity)) {
-      runWithPiPMisconfigurationSoftHandling {
-        currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(autoEnterPiP).build())
-      }
-    }
+    applyAutoEnterPiP(currentActivity, false)
   }
 
   companion object {

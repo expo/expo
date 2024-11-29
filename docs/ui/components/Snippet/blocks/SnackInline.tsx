@@ -24,7 +24,6 @@ type Props = PropsWithChildren<{
   templateId?: string;
   files?: Record<string, string>;
   platforms?: string[];
-  buttonTitle?: string;
   contentHidden?: boolean;
 }>;
 
@@ -35,7 +34,6 @@ export const SnackInline = ({
   templateId,
   files,
   platforms,
-  buttonTitle,
   contentHidden,
   children,
 }: Props) => {
@@ -78,7 +76,7 @@ export const SnackInline = ({
   const codeLanguage = prismBlockClassName ? prismBlockClassName.split('-')[1] : 'jsx';
 
   return (
-    <Snippet className="flex flex-col mb-3 prose-pre:!m-0 prose-pre:!border-0">
+    <Snippet className="mb-3 flex flex-col prose-pre:!m-0 prose-pre:!border-0">
       <SnippetHeader title={label || 'Example'} Icon={SnackLogo}>
         <form action={SNACK_URL} method="POST" target="_blank" className="contents">
           <input type="hidden" name="platform" value={defaultPlatform || DEFAULT_PLATFORM} />
@@ -108,7 +106,7 @@ export const SnackInline = ({
             disabled={!isReady}
             rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}
             type="submit">
-            {buttonTitle || 'Open in Snack'}
+            <span className="max-md-gutters:hidden">Open in </span>Snack
           </SnippetAction>
           <SettingsAction />
         </form>

@@ -4,6 +4,69 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.29.9 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- fix event subscription type export names ([#33295](https://github.com/expo/expo/pull/33295) by [@vonovak](https://github.com/vonovak))
+
+## 0.29.8 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.7 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.6 — 2024-11-10
+
+### 🎉 New features
+
+- [android] run notification tasks from killed state ([#32531](https://github.com/expo/expo/pull/32531) by [@vonovak](https://github.com/vonovak))
+- add `enableBackgroundRemoteNotifications` option to config plugin ([#32716](https://github.com/expo/expo/pull/32716) by [@vonovak](https://github.com/vonovak))
+
+## 0.29.5 — 2024-11-07
+
+### 🛠 Breaking changes
+
+- remove two deprecated exports ([#32660](https://github.com/expo/expo/pull/32660) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- fix `NotificationTrigger` type ([#32659](https://github.com/expo/expo/pull/32659) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [docs] minor improvements to TS docs ([#32658](https://github.com/expo/expo/pull/32658) by [@vonovak](https://github.com/vonovak))
+
+## 0.29.4 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.3 — 2024-10-25
+
+### 💡 Others
+
+- remove unused deps ([#32272](https://github.com/expo/expo/pull/32272) by [@vonovak](https://github.com/vonovak))
+
+## 0.29.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30862](https://github.com/expo/expo/pull/30862) by [@tsapeta](https://github.com/tsapeta))
 - Simplify calendar trigger input types. ([#31598](https://github.com/expo/expo/pull/31598) by [@douglowder](https://github.com/douglowder))
 
@@ -14,6 +77,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] fix: allow data message to control notification appearance ([#32162](https://github.com/expo/expo/pull/32162) by [@vonovak](https://github.com/vonovak))
+- [ios] fix crash if expo-update reload happens while Notifications.requestPermissionsAsync() is showing native dialog ([#32096](https://github.com/expo/expo/pull/32096) by [@mfazekas](https://github.com/mfazekas))
 - [android] `createNotificationChannel` could return incorrect channel information ([#32000](https://github.com/expo/expo/pull/32000) by [@vonovak](https://github.com/vonovak))
 - [android] fix notifications with `ChannelAwareTrigger` not being presented ([#31999](https://github.com/expo/expo/pull/31999) by [@vonovak](https://github.com/vonovak))
 - export `PermissionStatus` as value, not as type ([#31968](https://github.com/expo/expo/pull/31968) by [@vonovak](https://github.com/vonovak))
@@ -24,6 +89,7 @@
 
 ### 💡 Others
 
+- warn when using push tokens in Expo Go ([#32122](https://github.com/expo/expo/pull/32122) by [@vonovak](https://github.com/vonovak))
 - [android] refactor trigger serialization ([#32032](https://github.com/expo/expo/pull/32032) by [@vonovak](https://github.com/vonovak))
 - [android] simplify DateTrigger ([#32002](https://github.com/expo/expo/pull/32002) by [@vonovak](https://github.com/vonovak))
 - [android] refactor ExpoNotificationBuilder ([#31838](https://github.com/expo/expo/pull/31838) by [@vonovak](https://github.com/vonovak))

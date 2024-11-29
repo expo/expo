@@ -4,6 +4,36 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.0.4 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- [Android] Fix expo-calendar isPrimary on Android always returns false ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva) & [@sanchaz](https://github.com/sanchaz)) ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva), [@sanchaz](https://github.com/sanchaz))
+
+## 14.0.3 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed missing deserialization of calendarId field when calling createEventInCalendarAsync ([#33142](https://github.com/expo/expo/pull/33142) by [@chrfalch](https://github.com/chrfalch))
+
+## 14.0.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -15,9 +45,6 @@
 - Standardize `getEventsAsync` to return events sorted by start date ([#28353](https://github.com/expo/expo/pull/28353) by [@demfabris](https://github.com/demfabris))
 - Add missing `react-native` peer dependencies for isolated modules. ([#30461](https://github.com/expo/expo/pull/30461) by [@byCedric](https://github.com/byCedric))
 - Initialize EKEventStore as a singleton ([#31847](https://github.com/expo/expo/pull/31847) by [@JacquesLeupin](https://github.com/JacquesLeupin))
-
-
-### 💡 Others
 
 ## 13.0.5 — 2024-05-14
 

@@ -29,13 +29,19 @@ describe(setSplashScreenLegacyMainActivity, () => {
     };
     const mainActivity = await AndroidConfig.Paths.getMainActivityAsync('/app');
     let contents = fs.readFileSync(mainActivity.path).toString();
-    contents = await setSplashScreenLegacyMainActivity(exp, contents, mainActivity.language);
+    contents = await setSplashScreenLegacyMainActivity(
+      exp,
+      { backgroundColor: '#000020', resizeMode: 'native' },
+      contents,
+      mainActivity.language
+    );
     expect(contents).toMatch(
       /SplashScreen\.show\(this, SplashScreenImageResizeMode\.NATIVE, ReactRootView::class\.java, false\)/
     );
     // Try it twice...
     const nextContents = await setSplashScreenLegacyMainActivity(
       exp,
+      { backgroundColor: '#000020', resizeMode: 'native' },
       contents,
       mainActivity.language
     );

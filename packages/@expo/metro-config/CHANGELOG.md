@@ -4,6 +4,67 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.19.5 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- Fixed DOM Components support on Windows. ([#33114](https://github.com/expo/expo/pull/33114) by [@kudo](https://github.com/kudo))
+
+## 0.19.4 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.3 — 2024-11-13
+
+### 🐛 Bug fixes
+
+- Fix Expo Router root path on Windows. ([#32792](https://github.com/expo/expo/pull/32792) by [@marklawlor](https://github.com/marklawlor))
+
+## 0.19.2 — 2024-11-13
+
+### 🎉 New features
+
+- Add scoped module IDs for Metro SSR. ([#32737](https://github.com/expo/expo/pull/32737) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.1 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- Fixed `npx expo export` to support Hermes bytecode bundling. ([#32770](https://github.com/expo/expo/pull/32770) by [@kudo](https://github.com/kudo))
+
+## 0.19.0 — 2024-11-10
+
+### 💡 Others
+
+- Remove clientBoundaries warning. ([#32735](https://github.com/expo/expo/pull/32735) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.0-preview.3 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.0-preview.2 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fix CSS `url()` support for DOM IDs, public files, and data URIs. ([#32332](https://github.com/expo/expo/pull/32332) by [@EvanBacon](https://github.com/EvanBacon))
+- Disable `hermesParser` and conditionally enable for files with `@flow` pragma. ([#32325](https://github.com/expo/expo/pull/32325) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.0-preview.1 — 2024-10-22
+
+### 💡 Others
+
+- Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
+
+## 0.19.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Emit assets as strings instead of numeric lookups when bundling for web and server environments. ([#31955](https://github.com/expo/expo/pull/31955) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features

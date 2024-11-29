@@ -1,3 +1,4 @@
+'use client';
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -146,6 +147,11 @@ function createGetIdForRoute(route) {
         }
     }
     return ({ params = {} } = {}) => {
+        if (params.__EXPO_ROUTER_key) {
+            const key = params.__EXPO_ROUTER_key;
+            delete params.__EXPO_ROUTER_key;
+            return key;
+        }
         const segments = [];
         for (const dynamic of include.values()) {
             const value = params?.[dynamic.name];
@@ -180,6 +186,7 @@ function screenOptionsFactory(route, options) {
         };
         // Prevent generated screens from showing up in the tab bar.
         if (route.generated) {
+            output.tabBarItemStyle = { display: 'none' };
             output.tabBarButton = () => null;
             // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
             output.drawerItemStyle = { height: 0, display: 'none' };

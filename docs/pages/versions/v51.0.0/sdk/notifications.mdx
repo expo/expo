@@ -19,7 +19,7 @@ import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
-> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` will be unavailable in Expo Go from SDK 52. Instead, use a [development build](/develop/development-builds/introduction/). Scheduled notifications (local notifications) will remain available in Expo Go.
+> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` will be unavailable in Expo Go from SDK 53. Instead, use a [development build](/develop/development-builds/introduction/). Scheduled notifications (local notifications) will remain available in Expo Go.
 
 ## Features
 
@@ -589,7 +589,6 @@ export interface FirebaseData {
   subtitle?: string;
   sound?: boolean | string;
   vibrate?: boolean | number[];
-  priority?: AndroidNotificationPriority;
   badge?: number;
 }
 ```

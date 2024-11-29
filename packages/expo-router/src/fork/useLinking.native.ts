@@ -1,14 +1,11 @@
-// Forked from react-navigation with a custom `extractPathFromURL` that automatically
-// allows any prefix and parses Expo Go URLs.
-// For simplicity the following are disabled: enabled, prefixes, independent
-// https://github.com/react-navigation/react-navigation/blob/main/packages/native/src/useLinking.native.tsx
 import {
   getActionFromState as getActionFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
-  NavigationContainerRef,
-  ParamListBase,
-} from '@react-navigation/core';
-import type { LinkingOptions } from '@react-navigation/native';
+  type NavigationContainerRef,
+  type ParamListBase,
+  useNavigationIndependentTree,
+} from '@react-navigation/native';
+import { LinkingOptions } from '@react-navigation/native';
 import * as React from 'react';
 import { Linking, Platform } from 'react-native';
 
@@ -20,21 +17,21 @@ type Options = LinkingOptions<ParamListBase>;
 
 const linkingHandlers: symbol[] = [];
 
-export default function useLinking(
+export function useLinking(
   ref: React.RefObject<NavigationContainerRef<ParamListBase>>,
   {
-    // enabled = true,
-    // prefixes,
+    enabled = true,
+    prefixes,
     filter,
     config,
     getInitialURL = () =>
       Promise.race([
         Linking.getInitialURL(),
-        new Promise<undefined>((resolve) =>
+        new Promise<undefined>((resolve) => {
           // Timeout in 150ms if `getInitialState` doesn't resolve
           // Workaround for https://github.com/facebook/react-native/issues/25675
-          setTimeout(resolve, 150)
-        ),
+          setTimeout(resolve, 150);
+        }),
       ]),
     subscribe = (listener) => {
       const callback = ({ url }: { url: string }) => listener(url);
@@ -43,69 +40,70 @@ export default function useLinking(
         | { remove(): void }
         | undefined;
 
+      // Storing this in a local variable stops Jest from complaining about import after teardown
+      // @ts-expect-error: removeEventListener is not present in newer RN versions
+      const removeEventListener = Linking.removeEventListener?.bind(Linking);
+
       return () => {
-        subscription?.remove();
+        // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
+        if (subscription?.remove) {
+          subscription.remove();
+        } else {
+          removeEventListener?.('url', callback);
+        }
       };
     },
     getStateFromPath = getStateFromPathDefault,
     getActionFromState = getActionFromStateDefault,
-  }: Options
+  }: Options,
+  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
 ) {
-  //   const independent = useNavigationIndependentTree();
+  const independent = useNavigationIndependentTree();
 
-  React.useEffect(
-    () => {
-      if (process.env.NODE_ENV === 'production') {
-        return undefined;
-      }
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      return undefined;
+    }
 
-      // if (independent) {
-      //   return undefined;
-      // }
+    if (independent) {
+      return undefined;
+    }
 
-      if (
-        // enabled !== false &&
-        linkingHandlers.length
-      ) {
-        console.error(
-          [
-            'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
-            "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
-            '- Only a single instance of the root component is rendered',
-            Platform.OS === 'android'
-              ? "- You have set 'android:launchMode=singleTask' in the '<activity />' section of the 'AndroidManifest.xml' file to avoid launching multiple instances"
-              : '',
-          ]
-            .join('\n')
-            .trim()
-        );
-      }
+    if (enabled !== false && linkingHandlers.length) {
+      console.error(
+        [
+          'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
+          "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
+          '- Only a single instance of the root component is rendered',
+          Platform.OS === 'android'
+            ? "- You have set 'android:launchMode=singleTask' in the '<activity />' section of the 'AndroidManifest.xml' file to avoid launching multiple instances"
+            : '',
+        ]
+          .join('\n')
+          .trim()
+      );
+    }
 
-      const handler = Symbol();
+    const handler = Symbol();
 
-      // if (enabled !== false) {
+    if (enabled !== false) {
       linkingHandlers.push(handler);
-      // }
+    }
 
-      return () => {
-        const index = linkingHandlers.indexOf(handler);
+    return () => {
+      const index = linkingHandlers.indexOf(handler);
 
-        if (index > -1) {
-          linkingHandlers.splice(index, 1);
-        }
-      };
-    },
-    [
-      // enabled,
-      // independent
-    ]
-  );
+      if (index > -1) {
+        linkingHandlers.splice(index, 1);
+      }
+    };
+  }, [enabled, independent]);
 
   // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
   // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
   // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-  //   const enabledRef = React.useRef(enabled);
-  //   const prefixesRef = React.useRef(prefixes);
+  const enabledRef = React.useRef(enabled);
+  const prefixesRef = React.useRef(prefixes);
   const filterRef = React.useRef(filter);
   const configRef = React.useRef(config);
   const getInitialURLRef = React.useRef(getInitialURL);
@@ -113,8 +111,8 @@ export default function useLinking(
   const getActionFromStateRef = React.useRef(getActionFromState);
 
   React.useEffect(() => {
-    // enabledRef.current = enabled;
-    // prefixesRef.current = prefixes;
+    enabledRef.current = enabled;
+    prefixesRef.current = prefixes;
     filterRef.current = filter;
     configRef.current = config;
     getInitialURLRef.current = getInitialURL;
@@ -122,37 +120,49 @@ export default function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const getStateFromURL = React.useCallback((url?: string | null) => {
-    if (!url || (filterRef.current && !filterRef.current(url))) {
-      return undefined;
-    }
+  const getStateFromURL = React.useCallback(
+    (url: string | null | undefined) => {
+      if (!url || (filterRef.current && !filterRef.current(url))) {
+        return undefined;
+      }
 
-    // NOTE(EvanBacon): This is the important part.
-    const path = extractExpoPathFromURL(url);
+      const path = extractExpoPathFromURL(prefixesRef.current, url);
 
-    return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
-  }, []);
+      return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
+    },
+
+    []
+  );
 
   const getInitialState = React.useCallback(() => {
-    // let state: ResultState | undefined;
-    // if (enabledRef.current) {
-    const url = getInitialURLRef.current();
+    let state: ResultState | undefined;
 
-    if (url != null && typeof url !== 'string') {
-      return url.then((url) => {
-        const state = getStateFromURL(url);
+    if (enabledRef.current) {
+      const url = getInitialURLRef.current();
 
-        return state;
-      });
+      if (url != null) {
+        if (typeof url !== 'string') {
+          return url.then((url) => {
+            const state = getStateFromURL(url);
+
+            if (typeof url === 'string') {
+              // If the link were handled, it gets cleared in NavigationContainer
+              onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
+            }
+
+            return state;
+          });
+        } else {
+          onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
+        }
+      }
+
+      state = getStateFromURL(url);
     }
 
-    const state = getStateFromURL(url);
-    // }
-
     const thenable = {
-      then(onfulfilled?: (state?: ResultState) => void) {
-        onfulfilled?.(state);
-        return thenable;
+      then(onfulfilled?: (state: ResultState | undefined) => void) {
+        return Promise.resolve(onfulfilled ? onfulfilled(state) : state);
       },
       catch() {
         return thenable;
@@ -160,26 +170,22 @@ export default function useLinking(
     };
 
     return thenable as PromiseLike<ResultState | undefined>;
-  }, [getStateFromURL]);
+  }, [getStateFromURL, onUnhandledLinking, prefixes]);
 
   React.useEffect(() => {
     const listener = (url: string) => {
-      //   if (!enabled) {
-      //     return;
-      //   }
+      if (!enabled) {
+        return;
+      }
 
       const navigation = ref.current;
       const state = navigation ? getStateFromURL(url) : undefined;
 
       if (navigation && state) {
-        // Make sure that the routes in the state exist in the root navigator
-        // Otherwise there's an error in the linking configuration
+        // If the link were handled, it gets cleared in NavigationContainer
+        onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
         const rootState = navigation.getRootState();
-
         if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
-          console.warn(
-            "The navigation state parsed from the URL contains routes not present in the root navigator. This usually means that the linking configuration doesn't match the navigation structure. See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
-          );
           return;
         }
 
@@ -204,12 +210,7 @@ export default function useLinking(
     };
 
     return subscribe(listener);
-  }, [
-    // enabled,
-    getStateFromURL,
-    ref,
-    subscribe,
-  ]);
+  }, [enabled, getStateFromURL, onUnhandledLinking, prefixes, ref, subscribe]);
 
   return {
     getInitialState,

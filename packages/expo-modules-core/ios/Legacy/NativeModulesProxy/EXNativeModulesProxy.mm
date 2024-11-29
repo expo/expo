@@ -325,7 +325,11 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     }
   }
 
-  [bridge registerAdditionalModuleClasses:moduleClasses];
+  if (bridge.isLoading) {
+    [bridge registerModulesForClasses:moduleClasses];
+  } else {
+    [bridge registerAdditionalModuleClasses:moduleClasses];
+  }
 }
 
 - (Class)registerComponentData:(ViewModuleWrapper *)viewModule inBridge:(RCTBridge *)bridge forAppId:(NSString *)appId

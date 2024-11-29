@@ -17,18 +17,18 @@ export const PlatformIcon = ({ platform }: PlatformIconProps) => {
       return (
         <AppleIcon
           className={mergeClasses(
-            'opacity-80 icon-xs text-palette-blue12',
+            'icon-xs mt-[-0.5px] text-palette-blue12 opacity-80',
             platform === 'macos' && 'text-palette-purple12',
             platform === 'tvos' && 'text-palette-pink12'
           )}
         />
       );
     case 'android':
-      return <AndroidIcon className="opacity-80 icon-xs text-palette-green12" />;
+      return <AndroidIcon className="icon-xs mt-[-0.5px] text-palette-green12 opacity-80" />;
     case 'web':
-      return <AtSignIcon className="opacity-80 icon-xs text-palette-orange12" />;
+      return <AtSignIcon className="icon-2xs text-palette-orange12 opacity-80" />;
     case 'expo':
-      return <ExpoGoLogo className="opacity-80 icon-xs text-palette-purple12" />;
+      return <ExpoGoLogo className="icon-xs text-palette-purple12 opacity-80" />;
     default:
       return null;
   }

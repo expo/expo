@@ -30,7 +30,7 @@ final class VersionManager: EXVersionManagerObjC {
     self.manifest = manifest
 
     configureReact(
-      enableTurboModules: manifest.experiments()?["turboModules"] as? Bool ?? false,
+      enableTurboModules: true,
       fatalHandler: fatalHandler,
       logFunction: logFunction,
       logThreshold: logThreshold
@@ -50,7 +50,7 @@ final class VersionManager: EXVersionManagerObjC {
    Returns a list of bridge modules to register when the bridge initializes.
    */
   @objc
-  override func extraModules(forBridge bridge: Any) -> [Any] {
+  override func extraModules() -> [Any] {
     // Ideally if we don't initialize the app context here, but unfortunately there is no better place in bridge lifecycle
     // that would work well for us (especially properly invalidating existing app context on reload).
     let legacyModuleRegistry = createLegacyModuleRegistry(params: params, manifest: manifest)
@@ -81,7 +81,7 @@ final class VersionManager: EXVersionManagerObjC {
     // Register additional Expo modules, specific to Expo Go.
     registerExpoModules()
 
-    return modules + super.extraModules(forBridge: bridge)
+    return modules + super.extraModules()
   }
 
   /**

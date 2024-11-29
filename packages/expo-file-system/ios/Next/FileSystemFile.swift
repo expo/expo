@@ -16,16 +16,22 @@ internal final class FileSystemFile: FileSystemPath {
     }
   }
 
-  func create() throws {
+  func create(_ options: CreateOptions) throws {
     try validatePermission(.write)
     try validateType()
-    guard !(try exists) else {
-      throw UnableToCreateFileException("file already exists")
+    try validateCanCreate(options)
+    do {
+      if options.intermediates {
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+      }
+      try? FileManager.default.removeItem(atPath: url.path)
+      FileManager.default.createFile(atPath: url.path, contents: nil)
+    } catch {
+      throw UnableToCreateException(error.localizedDescription)
     }
-    FileManager.default.createFile(atPath: url.path, contents: nil)
   }
 
-  var exists: Bool {
+  override var exists: Bool {
     get throws {
       try validatePermission(.read)
 
@@ -73,14 +79,23 @@ internal final class FileSystemFile: FileSystemPath {
     try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
   }
 
-  // TODO: typedarray, blobs, others support
+  // TODO: blob support
   func write(_ content: TypedArray) throws {
+    try validateType()
+    try validatePermission(.write)
+    try Data(bytes: content.rawPointer, count: content.byteLength).write(to: url)
   }
 
   func text() throws -> String {
     try validateType()
     try validatePermission(.read)
     return try String(contentsOf: url)
+  }
+
+  func bytes() throws -> Data {
+    try validateType()
+    try validatePermission(.read)
+    return try Data(contentsOf: url)
   }
 
   func base64() throws -> String {

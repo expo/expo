@@ -1,10 +1,10 @@
-import type { NavigationState } from '@react-navigation/core';
+import type { NavigationState } from '@react-navigation/native';
 type HistoryRecord = {
     id: string;
     state: NavigationState;
     path: string;
 };
-export default function createMemoryHistory(): {
+export declare function createMemoryHistory(): {
     readonly index: number;
     get(index: number): HistoryRecord;
     backIndex({ path }: {

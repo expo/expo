@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+// swiftlint:disable function_parameter_count
+
 import Foundation
 import os.log
 
@@ -8,8 +10,10 @@ import ExpoModulesCore
 /**
  Class that implements logging for expo-updates in its own os.log category
  */
-internal final class UpdatesLogger {
+public final class UpdatesLogger {
   static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
+
+  public init() {}
 
   private let logger = Logger(logHandlers: [
     createOSLogHandler(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY),
@@ -103,37 +107,37 @@ internal final class UpdatesLogger {
   }
 
   func error(
-    message: String,
+    cause: UpdatesError,
     code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .error, duration: nil, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(message: cause.localizedDescription, code: code, level: .error, duration: nil, updateId: updateId, assetId: assetId)
     logger.error(entry)
   }
 
   func error(
-    message: String,
+    cause: UpdatesError,
     code: UpdatesErrorCode = .none
   ) {
-    error(message: message, code: code, updateId: nil, assetId: nil)
+    error(cause: cause, code: code, updateId: nil, assetId: nil)
   }
 
   func fatal(
-    message: String,
+    cause: UpdatesError,
     code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .fatal, duration: nil, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(message: cause.localizedDescription, code: code, level: .fatal, duration: nil, updateId: updateId, assetId: assetId)
     logger.fatal(entry)
   }
 
   func fatal(
-    message: String,
+    cause: UpdatesError,
     code: UpdatesErrorCode = .none
   ) {
-    fatal(message: message, code: code, updateId: nil, assetId: nil)
+    fatal(cause: cause, code: code, updateId: nil, assetId: nil)
   }
 
   func startTimer(label: String) -> LoggerTimer {
@@ -168,3 +172,5 @@ internal final class UpdatesLogger {
     return "\(logEntry.asString() ?? logEntry.message)"
   }
 }
+
+// swiftlint:enable function_parameter_count

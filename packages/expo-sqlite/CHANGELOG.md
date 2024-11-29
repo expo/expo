@@ -4,8 +4,37 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.0.3 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- Include the plugin under the `exports` in the package.json. ([#32780](https://github.com/expo/expo/pull/32780) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.2 — 2024-11-07
+
+### 💡 Others
+
+- Renamed `expo-sqlite/async-storage` to `expo-sqlite/kv-store`. ([#32699](https://github.com/expo/expo/pull/32699) by [@kudo](https://github.com/kudo))
+
+## 15.0.1 — 2024-10-25
+
+### 🎉 New features
+
+- Added macOS support in expo-sqlite. ([#32181](https://github.com/expo/expo/pull/32181) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+
+## 15.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 - Removed deprecated legacy expo-sqlite. ([#31766](https://github.com/expo/expo/pull/31766) by [@kudo](https://github.com/kudo))
+- Removed `next` export. ([#32184](https://github.com/expo/expo/pull/32184) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🎉 New features
 
@@ -26,6 +55,7 @@
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
 - Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
+- Deprecated `enableCRSQLite` and show a warning if using this option. ([#32117](https://github.com/expo/expo/pull/32117) by [@kudo](https://github.com/kudo))
 
 ## 14.0.6 - 2024-07-31
 

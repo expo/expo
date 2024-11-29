@@ -13,7 +13,8 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1'
+    :ios => '15.1',
+    :osx => '11.0'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -59,5 +60,5 @@ Pod::Spec.new do |s|
   }
 
   s.source_files = "**/*.{c,h,m,swift}"
-  s.vendored_frameworks = 'crsqlite.xcframework'
+  s.ios.vendored_frameworks = 'crsqlite.xcframework'
 end

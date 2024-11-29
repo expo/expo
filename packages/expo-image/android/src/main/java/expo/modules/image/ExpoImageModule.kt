@@ -16,10 +16,6 @@ import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.Spacing
-import com.facebook.react.uimanager.ViewProps
-import com.facebook.yoga.YogaConstants
 import com.github.penfeizhou.animation.apng.APNGDrawable
 import com.github.penfeizhou.animation.gif.GifDrawable
 import com.github.penfeizhou.animation.webp.WebPDrawable
@@ -29,20 +25,19 @@ import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.DecodedSource
+import expo.modules.image.records.ImageLoadOptions
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.toKClass
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -113,10 +108,8 @@ class ExpoImageModule : Module() {
       }
     }
 
-    AsyncFunction("loadAsync") { source: SourceMap, promise: Promise ->
-      CoroutineScope(Dispatchers.Main).launch {
-        ImageLoadTask(appContext, source).load(promise)
-      }
+    AsyncFunction("loadAsync") Coroutine { source: SourceMap, options: ImageLoadOptions? ->
+      ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
     }
 
     Class(Image::class) {
@@ -173,7 +166,7 @@ class ExpoImageModule : Module() {
       return@AsyncFunction try {
         val file = target.get()
         file.absolutePath
-      } catch (e: Exception) {
+      } catch (_: Exception) {
         null
       }
     }
@@ -230,57 +223,6 @@ class ExpoImageModule : Module() {
         view.transition = transition
       }
 
-      PropGroup(
-        ViewProps.BORDER_RADIUS to 0,
-        ViewProps.BORDER_TOP_LEFT_RADIUS to 1,
-        ViewProps.BORDER_TOP_RIGHT_RADIUS to 2,
-        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS to 3,
-        ViewProps.BORDER_BOTTOM_LEFT_RADIUS to 4,
-        ViewProps.BORDER_TOP_START_RADIUS to 5,
-        ViewProps.BORDER_TOP_END_RADIUS to 6,
-        ViewProps.BORDER_BOTTOM_START_RADIUS to 7,
-        ViewProps.BORDER_BOTTOM_END_RADIUS to 8
-      ) { view: ExpoImageViewWrapper, index: Int, borderRadius: Float? ->
-        val radius = makeYogaUndefinedIfNegative(borderRadius ?: YogaConstants.UNDEFINED)
-        view.setBorderRadius(index, radius)
-      }
-
-      PropGroup(
-        ViewProps.BORDER_WIDTH to Spacing.ALL,
-        ViewProps.BORDER_LEFT_WIDTH to Spacing.LEFT,
-        ViewProps.BORDER_RIGHT_WIDTH to Spacing.RIGHT,
-        ViewProps.BORDER_TOP_WIDTH to Spacing.TOP,
-        ViewProps.BORDER_BOTTOM_WIDTH to Spacing.BOTTOM,
-        ViewProps.BORDER_START_WIDTH to Spacing.START,
-        ViewProps.BORDER_END_WIDTH to Spacing.END
-      ) { view: ExpoImageViewWrapper, index: Int, width: Float? ->
-        val pixelWidth = makeYogaUndefinedIfNegative(width ?: YogaConstants.UNDEFINED)
-          .ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-        view.setBorderWidth(index, pixelWidth)
-      }
-
-      PropGroup(
-        ViewProps.BORDER_COLOR to Spacing.ALL,
-        ViewProps.BORDER_LEFT_COLOR to Spacing.LEFT,
-        ViewProps.BORDER_RIGHT_COLOR to Spacing.RIGHT,
-        ViewProps.BORDER_TOP_COLOR to Spacing.TOP,
-        ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
-        ViewProps.BORDER_START_COLOR to Spacing.START,
-        ViewProps.BORDER_END_COLOR to Spacing.END
-      ) { view: ExpoImageViewWrapper, index: Int, color: Int? ->
-        val rgbComponent = if (color == null) YogaConstants.UNDEFINED.toInt() else (color and 0x00FFFFFF)
-        val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.setBorderColor(index, rgbComponent, alphaComponent)
-      }
-
-      Prop("borderStyle") { view: ExpoImageViewWrapper, borderStyle: String? ->
-        view.borderStyle = borderStyle
-      }
-
-      Prop("backgroundColor") { view: ExpoImageViewWrapper, color: Int? ->
-        view.backgroundColor = color
-      }
-
       Prop("tintColor") { view: ExpoImageViewWrapper, color: Int? ->
         view.tintColor = color
       }
@@ -290,7 +232,7 @@ class ExpoImageModule : Module() {
       }
 
       Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean? ->
-        view.accessible = accessible ?: false
+        view.accessible = accessible == true
       }
 
       Prop("accessibilityLabel") { view: ExpoImageViewWrapper, accessibilityLabel: String? ->
@@ -298,7 +240,7 @@ class ExpoImageModule : Module() {
       }
 
       Prop("focusable") { view: ExpoImageViewWrapper, isFocusable: Boolean? ->
-        view.isFocusableProp = isFocusable ?: false
+        view.isFocusableProp = isFocusable == true
       }
 
       Prop("priority") { view: ExpoImageViewWrapper, priority: Priority? ->
@@ -314,11 +256,11 @@ class ExpoImageModule : Module() {
       }
 
       Prop("allowDownscaling") { view: ExpoImageViewWrapper, allowDownscaling: Boolean? ->
-        view.allowDownscaling = allowDownscaling ?: true
+        view.allowDownscaling = allowDownscaling != false
       }
 
       Prop("autoplay") { view: ExpoImageViewWrapper, autoplay: Boolean? ->
-        view.autoplay = autoplay ?: true
+        view.autoplay = autoplay != false
       }
 
       Prop("decodeFormat") { view: ExpoImageViewWrapper, format: DecodeFormat? ->

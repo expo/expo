@@ -69,7 +69,6 @@ useExpoModules([
         'expo-dev-client',
         'expo-maps',
         'expo-network-addons',
+        'expo-splash-screen'
     ]
 ])
-
-useVendoredModulesForSettingsGradle('unversioned')

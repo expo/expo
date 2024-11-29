@@ -5,6 +5,14 @@ import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
 export const VideoScreens = [
   {
+    name: 'Audio Options',
+    route: 'video/audio',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoAudioScreen'));
+    },
+  },
+  {
     name: 'DRM',
     route: 'video/drm',
     options: {},
@@ -50,6 +58,14 @@ export const VideoScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./VideoSourcesScreen'));
+    },
+  },
+  {
+    name: 'Subtitles',
+    route: 'video/subtitles',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoSubtitlesScreen'));
     },
   },
   {

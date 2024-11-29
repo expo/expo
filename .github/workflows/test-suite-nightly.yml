@@ -20,14 +20,14 @@ concurrency:
 
 jobs:
   ios-build:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 15.2
-        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
+      - name: 🔨 Switch to Xcode 16.0
+        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -80,14 +80,14 @@ jobs:
   ios-test:
     needs: ios-build
     runs-on: macos-12
-    # runs-on: macos-14
+    # runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
-      # - name: 🔨 Switch to Xcode 15.2
-      #   run: sudo xcode-select --switch /Applications/Xcode_15.2.app
+      # - name: 🔨 Switch to Xcode 16.0
+      #   run: sudo xcode-select --switch /Applications/Xcode_16.0.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
@@ -196,7 +196,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        api-level: [33]
+        api-level: [34]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4

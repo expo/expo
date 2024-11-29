@@ -10,6 +10,7 @@ import {
   RecordingOptions,
 } from './Audio.types';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
+import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { RecordingPresets } from './RecordingConstants';
 
 const nextId = (() => {
@@ -180,6 +181,11 @@ export class AudioPlayerWeb
     this.isPlaying = false;
   }
 
+  replace(source: AudioSource): void {
+    this.src = source;
+    this.media = this._createMediaElement();
+  }
+
   async seekTo(seconds: number): Promise<void> {
     this.media.currentTime = seconds / 1000;
   }
@@ -207,12 +213,12 @@ export class AudioPlayerWeb
     const media = new Audio(newSource);
 
     media.ontimeupdate = () => {
-      this.emit('onPlaybackStatusUpdate', getStatusFromMedia(media, this.id));
+      this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
     };
 
     media.onloadeddata = () => {
       this.loaded = true;
-      this.emit('onPlaybackStatusUpdate', {
+      this.emit(PLAYBACK_STATUS_UPDATE, {
         ...getStatusFromMedia(media, this.id),
         isLoaded: this.loaded,
       });
@@ -338,7 +344,7 @@ export class AudioRecorderWeb
 
     this.uri = url;
 
-    this.emit('onRecordingStatusUpdate', {
+    this.emit(RECORDING_STATUS_UPDATE, {
       id: this.id,
       isFinished: true,
       hasError: false,

@@ -19,7 +19,7 @@ export default function PossibleRedirectNotification({ newUrl }: Props) {
 
   if (targetId) {
     return (
-      <div className="bg-warning border border-solid border-warning p-4 mt-1 rounded-sm">
+      <div className="mt-1 rounded-sm border border-solid border-warning bg-warning p-4">
         <P className="mb-0">
           ⚠️ The information you are looking for (addressed by <em>"{targetId}"</em>) has moved.{' '}
           <A href={`${newUrl}#${targetId}`}>Continue to the new location.</A>

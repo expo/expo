@@ -1,11 +1,12 @@
 /* eslint-env jest */
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import execa from 'execa';
 import * as fs from 'fs';
 import { remove } from 'fs-extra';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { ServeLocalCommand } from '../../utils/command-instance';
+import { ExpoServeLocalCommand } from '../../utils/command-instance';
 import { bin, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
@@ -14,6 +15,8 @@ function execaLog(command: string, args: string[], options: execa.Options) {
   //   console.log(`Running: ${command} ${args.join(' ')}`);
   return execa(command, args, options);
 }
+
+jest.unmock('resolve-from');
 
 describe('export embed for RSC iOS', () => {
   const projectRoot = getRouterE2ERoot();
@@ -31,7 +34,7 @@ describe('export embed for RSC iOS', () => {
           'export:embed',
           //
           '--entry-file',
-          path.join(projectRoot, './index.js'),
+          resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
           //
           '--bundle-output',
           `./${outputName}/index.js`,
@@ -88,7 +91,7 @@ describe('export embed for RSC iOS', () => {
   });
 
   describe('server', () => {
-    let serveCmd: ServeLocalCommand;
+    let serveCmd: ExpoServeLocalCommand;
     const inputDir = '.expo/server/ios';
 
     const serverOutput = path.resolve(projectRoot, '.expo/server/ios');
@@ -96,17 +99,13 @@ describe('export embed for RSC iOS', () => {
     const tempStaticLocation = path.join(serverOutput, 'client/_flight/ios/other.txt');
 
     beforeAll(async () => {
-      serveCmd = new ServeLocalCommand(projectRoot, {
+      serveCmd = new ExpoServeLocalCommand(projectRoot, {
         NODE_ENV: 'production',
         TEST_SECRET_VALUE: 'test-secret-dynamic',
       });
 
       console.time('npx serve');
-      await serveCmd.startAsync([
-        '__e2e__/01-rsc/server.js',
-        '--port=' + 3035,
-        '--dist=' + inputDir,
-      ]);
+      await serveCmd.startAsync([inputDir, '--port=' + 3035]);
 
       // Move the static file to a temporary location so we can test both static and dynamic RSC payloads.
       if (fs.existsSync(staticLocation)) {

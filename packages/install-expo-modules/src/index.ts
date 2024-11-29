@@ -28,8 +28,8 @@ const packageJSON = require('../package.json');
 
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
-  .arguments('<project-directory>')
-  .usage(`${chalk.green('<project-directory>')} [options]`)
+  .arguments('[project-directory]')
+  .usage(`${chalk.green('[project-directory]')} [options]`)
   .description('Install expo-modules into your project')
   .option('-s, --sdk-version <version>', 'Install specified expo-modules sdk version')
   .option('--non-interactive', 'Disable interactive prompts')
@@ -119,7 +119,7 @@ Install the Expo CLI integration?`;
 
 async function runAsync() {
   const { projectRoot, platformAndroid, platformIos } = await normalizeProjectRootAsync(
-    process.cwd()
+    program.args[0] || process.cwd()
   );
 
   const {

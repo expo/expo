@@ -83,7 +83,6 @@ it(`compiles samples with Metro targeting Hermes`, () => {
 
   // All of this code should remain intact.
   const sourceCode = `
-// @babel/plugin-transform-computed-properties
 var obj = {
   ["x" + foo]: "heh",
   ["y" + bar]: "noo",
@@ -91,46 +90,37 @@ var obj = {
   bar: "bar"
 };
 
-// @babel/plugin-transform-shorthand-properties
 var a1 = 0;
 var c = { a1 };
 
-// @babel/plugin-proposal-optional-catch-binding
 try {
   throw 0;
 } catch {
 }
 
-// @babel/plugin-transform-literals
-var d = 0b11; // binary integer literal
-var e = 0o7; // octal integer literal
-var f = "Hello\\u{000A}\\u{0009}!"; // unicode string literals, newline and tab
+var d = 0b11;
+var e = 0o7;
+var f = "Hello\\u{000A}\\u{0009}!";
 
-// @babel/plugin-proposal-numeric-separator
 var budget = 1_000_000_000_000;
 var nibbles = 0b1010_0001_1000_0101;
 var message = 0xa0_b0_c0;
 
-// @babel/plugin-transform-sticky-regex
 var g = /o+/y;
 
-// @babel/plugin-transform-spread
 var h = ["a", "b", "c"];
 
 var i = [...h, "foo"];
 
 var j = foo(...h);
 
-// @babel/plugin-transform-object-rest-spread
 var y = {};
 var x = 1;
 var k = { x, ...y };
 
 
-// @babel/plugin-proposal-optional-chaining
 var m = {}?.x;
 
-// @babel/plugin-proposal-nullish-coalescing-operator
 var obj2 = {};
 var foo = obj2.foo ?? "default";`;
   const withHermes = babel.transform(sourceCode, options)!;

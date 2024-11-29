@@ -18,6 +18,8 @@ import java.io.IOException
 import java.util.UUID
 import kotlin.math.ln
 
+private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
+
 class AudioRecorder(
   private val context: Context,
   appContext: AppContext,
@@ -63,12 +65,8 @@ class AudioRecorder(
   }
 
   fun record() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      if (isPaused) {
-        recorder.resume()
-      } else {
-        recorder.start()
-      }
+    if (isPaused) {
+      recorder.resume()
     } else {
       recorder.start()
     }
@@ -78,14 +76,10 @@ class AudioRecorder(
   }
 
   fun pauseRecording() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      recorder.pause()
-      durationAlreadyRecorded = getAudioRecorderDurationMillis()
-      isRecording = false
-      isPaused = true
-    } else {
-      stopRecording()
-    }
+    recorder.pause()
+    durationAlreadyRecorded = getAudioRecorderDurationMillis()
+    isRecording = false
+    isPaused = true
   }
 
   fun stopRecording(): Bundle {
@@ -183,7 +177,7 @@ class AudioRecorder(
       else -> "An unknown recording error occurred"
     }
     emit(
-      "onRecordingStatusUpdate",
+      RECORDING_STATUS_UPDATE,
       mapOf(
         "isFinished" to true,
         "hasError" to true,

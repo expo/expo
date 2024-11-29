@@ -4,9 +4,27 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.0.2 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- Converted the native view from Objective-C to Swift to fix support for the New Architecture. ([#32675](https://github.com/expo/expo/pull/32675) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

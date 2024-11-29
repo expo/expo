@@ -232,7 +232,7 @@ If we aren't using EAS Build, this section will walk through debugging the state
 
 #### Verify build configuration
 
-Follow the [Building Locally guide](/eas-update/build-locally) to configure our app's channel and runtime version. We'll also need to make sure our [general configuration](/eas-update/debug-advanced/#expo-updates-configuration) is correct.
+Follow the [Building Locally guide](/eas-update/standalone-service/) to configure our app's channel and runtime version. We'll also need to make sure our [general configuration](/eas-update/debug-advanced/#expo-updates-configuration) is correct.
 
 #### Verify the channel
 
@@ -369,19 +369,19 @@ By default, we need to make a release build for `expo-updates` to be enabled and
 
 To make it easier to test and debug native code in an environment that is closer to production, follow the steps below to create a debug build of the app with `expo-updates` enabled.
 
-We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update/build-locally) in a local development environment using Android Studio or Xcode, with either release or debug builds of the app.
+We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update/standalone-service/) in a local development environment using Android Studio or Xcode, with either release or debug builds of the app.
 
 #### Android local builds
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
-- [Ensure the desired channel is set in your **AndroidManifest.xml**](/eas-update/updating-your-app/#configuring-the-channel-manually)
+- [Ensure the desired channel is set in your **AndroidManifest.xml**](/eas-update/getting-started/#configure-the-update-channel)
 - Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Android Studio or from the command line.
 
 #### iOS local builds
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
 - Reinstall pods with `npx pod-install`. The `expo-updates` podspec now detects this environment variable, and makes changes so that the debug code that would normally load from the Metro packager is bypassed, and the app is built with the EXUpdates bundle and other dependencies needed to load updates from EAS.
-- [Ensure the desired channel is set in our **Expo.plist**](/eas-update/updating-your-app/#configuring-the-channel-manually)
+- [Ensure the desired channel is set in our **Expo.plist**](/eas-update/getting-started/#configure-the-update-channel)
 - Modify the application Xcode project file to force bundling of the application JavaScript for both release and debug builds:
   <Terminal
     cmd={[

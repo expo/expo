@@ -7,9 +7,9 @@ import android.media.AudioManager
 import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
+import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.player.VideoPlayerListener
-import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
@@ -23,19 +23,37 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
 
   private var players: MutableList<WeakReference<VideoPlayer>> = mutableListOf()
   private var currentFocusRequest: AudioFocusRequest? = null
+  private var currentMixingMode: AudioMixingMode = AudioMixingMode.MIX_WITH_OTHERS
   private val anyPlayerRequiresFocus: Boolean
     get() = players.any {
       playerRequiresFocus(it)
     }
 
   private fun requestAudioFocus() {
+    val audioMixingMode = findAudioMixingMode()
+
+    // We don't request AudioFocus if we want to mix the audio with others
+    if (audioMixingMode == AudioMixingMode.MIX_WITH_OTHERS || !anyPlayerRequiresFocus) {
+      abandonAudioFocus()
+      currentMixingMode = audioMixingMode
+      return
+    }
+    val audioFocusType = when (audioMixingMode) {
+      AudioMixingMode.DUCK_OTHERS -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
+      AudioMixingMode.AUTO -> AudioManager.AUDIOFOCUS_GAIN
+      AudioMixingMode.DO_NOT_MIX -> AudioManager.AUDIOFOCUS_GAIN
+      else -> AudioManager.AUDIOFOCUS_GAIN
+    }
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       // We already have audio focus
-      if (currentFocusRequest != null) {
-        return
+      currentFocusRequest?.let {
+        if (it.focusGain == audioFocusType) {
+          return
+        }
       }
 
-      val newFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).run {
+      val newFocusRequest = AudioFocusRequest.Builder(audioFocusType).run {
         setAudioAttributes(
           AudioAttributes.Builder().run {
             setUsage(AudioAttributes.USAGE_MEDIA)
@@ -45,16 +63,17 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
           }
         ).build()
       }
-      this.currentFocusRequest = newFocusRequest
+      currentFocusRequest = newFocusRequest
       audioManager.requestAudioFocus(newFocusRequest)
     } else {
       @Suppress("DEPRECATION")
       audioManager.requestAudioFocus(
         this,
         AudioManager.STREAM_MUSIC,
-        AudioManager.AUDIOFOCUS_GAIN
+        audioFocusType
       )
     }
+    currentMixingMode = audioMixingMode
   }
 
   private fun abandonAudioFocus() {
@@ -85,6 +104,11 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
 
   // VideoPlayerListener
 
+  override fun onAudioMixingModeChanged(player: VideoPlayer, audioMixingMode: AudioMixingMode, oldAudioMixingMode: AudioMixingMode?) {
+    requestAudioFocus()
+    super.onAudioMixingModeChanged(player, audioMixingMode, oldAudioMixingMode)
+  }
+
   override fun onIsPlayingChanged(player: VideoPlayer, isPlaying: Boolean, oldIsPlaying: Boolean?) {
     // we can't use `updateAudioFocus`, because when losing focus the videos are paused sequentially,
     // which can lead to unexpected results.
@@ -95,7 +119,11 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
     }
   }
 
-  override fun onVolumeChanged(player: VideoPlayer, newValue: VolumeEvent, oldVolume: VolumeEvent?) {
+  override fun onVolumeChanged(player: VideoPlayer, volume: Float, oldVolume: Float?) {
+    updateAudioFocus()
+  }
+
+  override fun onMutedChanged(player: VideoPlayer, muted: Boolean, oldMuted: Boolean?) {
     updateAudioFocus()
   }
 
@@ -113,6 +141,12 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
       }
 
       AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+        // W could pause/mix the players here individually, but we will keep the behaviour in line with iOS,
+        // find the dominant audioMixingMode and apply it to all players.
+        val audioMixingMode = findAudioMixingMode()
+        if (audioMixingMode == AudioMixingMode.MIX_WITH_OTHERS) {
+          return
+        }
         appContext.mainQueue.launch {
           players.forEach {
             pausePlayerIfUnmuted(it)
@@ -122,9 +156,15 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
       }
 
       AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+        val audioMixingMode = findAudioMixingMode()
+
         appContext.mainQueue.launch {
           players.forEach {
-            duckPlayer(it)
+            if (audioMixingMode == AudioMixingMode.DO_NOT_MIX) {
+              pausePlayerIfUnmuted(it)
+            } else {
+              duckPlayer(it)
+            }
           }
         }
       }
@@ -145,10 +185,8 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
 
   private fun playerRequiresFocus(weakPlayer: WeakReference<VideoPlayer>): Boolean {
     return weakPlayer.get()?.let {
-      !it.muted && it.playing && it.volume > 0
-    } ?: run {
-      false
-    }
+      (!it.muted && it.playing && it.volume > 0) || it.audioMixingMode == AudioMixingMode.DO_NOT_MIX
+    } ?: false
   }
 
   private fun pausePlayerIfUnmuted(weakPlayer: WeakReference<VideoPlayer>) {
@@ -180,10 +218,23 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   }
 
   private fun updateAudioFocus() {
-    if (anyPlayerRequiresFocus) {
+    if (anyPlayerRequiresFocus || findAudioMixingMode() != currentMixingMode) {
       requestAudioFocus()
     } else {
       abandonAudioFocus()
+    }
+  }
+
+  private fun findAudioMixingMode(): AudioMixingMode {
+    val mixingModes = players.mapNotNull { player ->
+      player.get()?.takeIf { it.playing }?.audioMixingMode
+    }
+    if (mixingModes.isEmpty()) {
+      return AudioMixingMode.MIX_WITH_OTHERS
+    }
+
+    return mixingModes.reduce { currentAudioMixingMode, next ->
+      next.takeIf { it.priority > currentAudioMixingMode.priority } ?: currentAudioMixingMode
     }
   }
 }

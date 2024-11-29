@@ -1,3 +1,4 @@
+import { ReadableStream, WritableStream } from 'web-streams-polyfill';
 import ExpoFileSystem from './ExpoFileSystem';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
@@ -31,6 +32,8 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
      * File name. Includes the extension.
      */
     get name(): string;
+    readableStream(): ReadableStream<Uint8Array>;
+    writableStream(): WritableStream<Uint8Array>;
 }
 /**
  * Represents a directory on the filesystem.

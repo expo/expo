@@ -29,10 +29,20 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     return file.isFile
   }
 
-  fun create() {
+  fun create(options: CreateOptions = CreateOptions()) {
     validateType()
     validatePermission(Permission.WRITE)
-    file.createNewFile()
+    validateCanCreate(options)
+    if (options.overwrite && file.exists()) {
+      file.delete()
+    }
+    if (options.intermediates) {
+      file.parentFile?.mkdirs()
+    }
+    val created = file.createNewFile()
+    if (!created) {
+      throw UnableToCreateException("file already exists or could not be created")
+    }
   }
 
   fun write(content: String) {
@@ -53,7 +63,7 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
       create()
     }
     FileOutputStream(file).use {
-      it.write(content.toDirectBuffer().array())
+      it.channel.write(content.toDirectBuffer())
     }
   }
 
@@ -72,6 +82,12 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     validateType()
     validatePermission(Permission.READ)
     return Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
+  }
+
+  fun bytes(): ByteArray {
+    validateType()
+    validatePermission(Permission.READ)
+    return file.readBytes()
   }
 
   @OptIn(ExperimentalStdlibApi::class)

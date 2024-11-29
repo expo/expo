@@ -33,7 +33,7 @@ function useSideEffectMayThrow() {var t0;try {
 `;
 
 exports[`supports memoizing 1`] = `
-"var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));var _reactCompilerRuntime = require("babel-preset-expo/react-compiler-runtime.js");var _vectorIcons = require("@expo/vector-icons");
+"var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));var _reactCompilerRuntime = require("react-compiler-runtime");var _vectorIcons = require("@expo/vector-icons");
 var _expoAppLoading = _interopRequireDefault(require("expo-app-loading"));
 var _expoAsset = require("expo-asset");
 var _react = _interopRequireWildcard(require("react"));

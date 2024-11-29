@@ -9,7 +9,25 @@ const getPathFromState_1 = require("../fork/getPathFromState");
 const imperative_api_1 = require("../imperative-api");
 const useLinkToPathProps_1 = require("../link/useLinkToPathProps");
 const matchers_1 = require("../matchers");
+const Navigator_1 = require("../views/Navigator");
 const TabTriggerSlot = react_slot_1.Slot;
+/**
+ * Creates a trigger to navigate to a tab. When used as child of `TabList`, its
+ * functionality slightly changes since the `href` prop is required,
+ * and the trigger also defines what routes are present in the `Tabs`.
+ *
+ * When used outside of `TabList`, this component no longer requires an `href`.
+ *
+ * @example
+ * ```tsx
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
 function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
     const { trigger, triggerProps } = useTabTrigger({
         name,
@@ -31,14 +49,20 @@ function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
     }
 }
 exports.TabTrigger = TabTrigger;
+/**
+ * @hidden
+ */
 function isTabTrigger(child) {
     return child.type === TabTrigger;
 }
 exports.isTabTrigger = isTabTrigger;
-function useTabTrigger({ name, reset, onPress, onLongPress }) {
-    const navigation = (0, react_1.useContext)(TabContext_1.TabsNavigatorContext);
+/**
+ * Utility hook creating custom `TabTrigger`.
+ */
+function useTabTrigger(options) {
+    const { state, navigation } = (0, Navigator_1.useNavigatorContext)();
+    const { name, reset, onPress, onLongPress } = options;
     const triggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
-    const state = (0, react_1.useContext)(TabContext_1.TabsStateContext);
     const getTrigger = (0, react_1.useCallback)((name) => {
         const config = triggerMap[name];
         if (!config) {

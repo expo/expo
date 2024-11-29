@@ -125,6 +125,7 @@ class ExpoCameraView(
   private var imageAnalysisUseCase: ImageAnalysis? = null
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
+  private var glSurface: SurfaceTexture? = null
 
   private var previewView = PreviewView(context).apply {
     elevation = 0f
@@ -145,6 +146,12 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
+  var zoom: Float = 0f
+    set(value) {
+      field = value
+      camera?.cameraControl?.setLinearZoom(value.coerceIn(0f, 1f))
+    }
+
   var autoFocus: FocusMode = FocusMode.OFF
     set(value) {
       field = value
@@ -158,6 +165,12 @@ class ExpoCameraView(
     }
 
   var videoQuality: VideoQuality = VideoQuality.VIDEO1080P
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var videoEncodingBitrate: Int? = null
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -304,6 +317,7 @@ class ExpoCameraView(
       .setFileSizeLimit(options.maxFileSize.toLong())
       .setDurationLimitMillis(options.maxDuration.toLong() * 1000)
       .build()
+
     recorder?.let {
       if (!mute && ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
         promise.reject(Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO))
@@ -367,6 +381,15 @@ class ExpoCameraView(
             it.surfaceProvider = previewView.surfaceProvider
           }
 
+        glSurface?.let {
+          preview.setSurfaceProvider { request ->
+            val surface = Surface(it)
+            request.provideSurface(surface, ContextCompat.getMainExecutor(context)) {
+              surface.release()
+            }
+          }
+        }
+
         val cameraSelector = CameraSelector.Builder()
           .requireLensFacing(lensFacing.mapToCharacteristic())
           .build()
@@ -398,6 +421,8 @@ class ExpoCameraView(
           camera?.let {
             observeCameraState(it.cameraInfo)
           }
+          // Set the previous zoom level after recreating the camera
+          camera?.cameraControl?.setLinearZoom(zoom.coerceIn(0f, 1f))
           this.cameraProvider = cameraProvider
         } catch (e: Exception) {
           onMountError(
@@ -458,7 +483,11 @@ class ExpoCameraView(
     val fallbackStrategy = FallbackStrategy.higherQualityOrLowerThan(preferredQuality)
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
-    val recorder = Recorder.Builder()
+    val recorder = Recorder.Builder().apply {
+      videoEncodingBitrate?.let {
+        setTargetVideoEncodingBitRate(it)
+      }
+    }
       .setExecutor(ContextCompat.getMainExecutor(context))
       .setQualitySelector(qualitySelector)
       .build()
@@ -536,6 +565,7 @@ class ExpoCameraView(
   }
 
   fun releaseCamera() = appContext.mainQueue.launch {
+    shouldCreateCamera = true
     cameraProvider?.unbindAll()
   }
 
@@ -618,7 +648,11 @@ class ExpoCameraView(
     }
   }
 
-  override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) = Unit
+  override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) {
+    glSurface = surfaceTexture
+    shouldCreateCamera = true
+    createCamera()
+  }
 
   override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
 

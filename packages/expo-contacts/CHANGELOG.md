@@ -4,13 +4,31 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-
 - Fixed a null pointer on android when calling updateContactAsync on a contact with an image ([#32097](https://github.com/expo/expo/pull/32097) by [@freeboub](https://github.com/freeboub))
+
+### 💡 Others
+
+## 14.0.2 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fix `ContactQuery` `id` field not accepting arrays. ([#32651](https://github.com/expo/expo/pull/32651) by [@behenate](https://github.com/behenate))
+
+## 14.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
 - Fixed an issue on iOS with presentFormAsync where dates were not displayed. ([#31780](https://github.com/expo/expo/pull/31780) by [@mlecoq](https://github.com/mlecoq))
 - Fixed an iOS issue where the contact's birthday isn't displayed when the year is set. ([#31948](https://github.com/expo/expo/pull/31948) by [@chrfalch](https://github.com/chrfalch))
 - Fixed an Android issue where creating a contact with a birthday was not saved. ([#30131](https://github.com/expo/expo/issues/30131) by [@Eric013](https://github.com/Eric013))
@@ -21,8 +39,6 @@
 - Fixed an issue where only paths of urls were stored in contacts and social profiles were only stored when all fields were filled. ([#29199](https://github.com/expo/expo/pull/29199) by [@mlecoq](https://github.com/mlecoq))
 - Fixed an iOS issue where the Cancel button is not visible on the unknown contact form. ([#29555](https://github.com/expo/expo/pull/29555) by [@Tug](https://github.com/Tug))
 - Add missing `react-native` peer dependencies for isolated modules. ([#30465](https://github.com/expo/expo/pull/30465) by [@byCedric](https://github.com/byCedric))
-
-### 💡 Others
 
 ## 13.0.5 - 2024-07-22
 

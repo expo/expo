@@ -6,6 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.0.2 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2024-10-22
+
+### 🎉 New features
+
 - Add `DOM.Iterable` to TypeScript libs to support `FormData`. ([#31117](https://github.com/expo/expo/pull/31117) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for passing `platform` and `isServer` to the Babel caller to support `process.env.EXPO_OS` and other standard Expo CLI transforms in Jest. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
 

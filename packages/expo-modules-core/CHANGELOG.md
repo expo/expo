@@ -4,6 +4,160 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default. ([#33261](https://github.com/expo/expo/pull/33261) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.1.0 - 2024-11-29
+
+### 🎉 New features
+
+- Added support for rendering children components in SwiftUI views. ([#33271](https://github.com/expo/expo/pull/33271) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed backwards compatibility in the `EventEmitter` constructor. ([#33294](https://github.com/expo/expo/pull/33294) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Fixed compatibility for React Native 0.77. ([#33277](https://github.com/expo/expo/pull/33277) by [@kudo](https://github.com/kudo))
+- [Android] Bump KSP version for Kotlin 2.0.21. ([#33306](https://github.com/expo/expo/pull/33306) by [@kudo](https://github.com/kudo))
+
+## 2.0.6 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [Android] Fixed issue with RNHeadlessAppLoader destroying the reactHost instance in the new architecture. ([#33176](https://github.com/expo/expo/pull/33176) by [@chrfalch](https://github.com/chrfalch))
+
+## 2.0.5 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed build error when using jsEngine=jsc. ([#33130](https://github.com/expo/expo/pull/33130) by [@kudo](https://github.com/kudo))
+- Fixed TypeScript incompatible `process` type error when including `@types/node`. ([#33155](https://github.com/expo/expo/pull/33155) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [Android] Introduced `applyKspJvmToolchain()` gradle helper to enforce JVM Toolchain version for KSP. ([#33148](https://github.com/expo/expo/pull/33148) by [@kudo](https://github.com/kudo))
+
+## 2.0.4 — 2024-11-19
+
+### 🎉 New features
+
+- [Android] Supported css properties (border, background and shadow) by default. ([#33074](https://github.com/expo/expo/pull/33074) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Fixed type errors when using `ts-jest`. ([#32954](https://github.com/expo/expo/pull/32954) by [@kudo](https://github.com/kudo))
+- [Android] Fixed `no non-static method "SharedObject.getSharedObjectId()" when proguard is enabled. ([#33011](https://github.com/expo/expo/pull/33011) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Use `findNodeHandle` with a native ref instead of a class component instance to avoid expensive calls to `findCurrentFiberUsingSlowPath`. ([#33016](https://github.com/expo/expo/pull/33016) by [@tsapeta](https://github.com/tsapeta))
+- Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
+- Fixed compatibility for React Native 0.77. ([#33079](https://github.com/expo/expo/pull/33079) by [@kudo](https://github.com/kudo))
+
+## 2.0.3 — 2024-11-14
+
+### 🐛 Bug fixes
+
+- Fixed requests from `expo/fetch` being stuck on iOS. ([#32894](https://github.com/expo/expo/pull/32894) by [@kudo](https://github.com/kudo))
+- [Android] Fixed sending event containing `ByteArray` from the Kotlin module results in string ID instead of `Uint8Array`. ([#32945](https://github.com/expo/expo/pull/32945) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.2 — 2024-11-13
+
+### 💡 Others
+
+- [Android] Added `executeTask` method to `TaskManagerUtilsInterface` ([#32849](https://github.com/expo/expo/pull/32849) by [@chrfalch](https://github.com/chrfalch))
+
+## 2.0.1 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- [Android] Added `@DoNotStrip` annotation to new `Either` types. ([#32783](https://github.com/expo/expo/pull/32783) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.0.0 — 2024-11-10
+
+### 🐛 Bug fixes
+
+- [Android] Ensure that the headless app loader is started on the main thread. ([#32705](https://github.com/expo/expo/pull/32705) by [@chrfalch](https://github.com/chrfalch))
+
+## 2.0.0-preview.10 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed broken self-signed connections from network inspector. ([#32670](https://github.com/expo/expo/pull/32670) by [@kudo](https://github.com/kudo))
+- [macOS] Fix UIKit import ([#32727](https://github.com/expo/expo/pull/32727) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 2.0.0-preview.9 — 2024-10-31
+
+### 💡 Others
+
+- [Android] Fix `ClassCastException` in headless app loader under the old architecture. ([#32390](https://github.com/expo/expo/pull/32390) by [@robertying](https://github.com/robertying))
+
+## 2.0.0-preview.8 — 2024-10-31
+
+### 🛠 Breaking changes
+
+- Remove expo barcode scanner interface. ([#32198](https://github.com/expo/expo/pull/32198) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- [android] Added helper for looking up TaskService instance used by expo-task-manager ([#32300](https://github.com/expo/expo/pull/32300) by [@chrfalch](https://github.com/chrfalch))
+- Made TypeScript declaration for `process` an interface. ([#32464](https://github.com/expo/expo/pull/32464) by [@tsapeta](https://github.com/tsapeta))
+
+## 2.0.0-preview.7 — 2024-10-29
+
+### 💡 Others
+
+- [Android] Added `shouldUseAndroidLayout` flag to `ExpoView`. ([#32446](https://github.com/expo/expo/pull/32446) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.0-preview.6 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0-preview.5 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- Fixed updating props on SwiftUI views on the New Architecture. ([#32381](https://github.com/expo/expo/pull/32381) by [@tsapeta](https://github.com/tsapeta))
+- Fixed build error when `use_frameworks!`. ([#32358](https://github.com/expo/expo/pull/32358) by [@kudo](https://github.com/kudo))
+
+## 2.0.0-preview.4 — 2024-10-25
+
+### 💡 Others
+
+- Added a new dynamic type dedicated for Either types. ([#32328](https://github.com/expo/expo/pull/32328) by [@tsapeta](https://github.com/tsapeta))
+
+## 2.0.0-preview.3 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0-preview.2 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- [iOS] Fix optionals conversion. ([#32239](https://github.com/expo/expo/pull/32239) by [@aleqsio](https://github.com/aleqsio))
+- Fixed retain cycle for `ExpoRequestCdpInterceptor`. ([#32289](https://github.com/expo/expo/pull/32289) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [android] Add enum event support to OnStartObserving and OnStopObserving. ([#32251](https://github.com/expo/expo/pull/32251), [#32287](https://github.com/expo/expo/pull/32287) by [@wschurman](https://github.com/wschurman))
+
+## 2.0.0-preview.1 — 2024-10-22
+
+### 🐛 Bug fixes
+
+- [iOS] Removed window synthesis in `EXAppDelegateWrapper` to fix crashes caused by deallocated `RCTFabricSurface`. ([#32233](https://github.com/expo/expo/pull/32233) by [@tsapeta](https://github.com/tsapeta))
+
+## 2.0.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -40,6 +194,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `RNHeadlessAppLoader` class for New Architecture support. ([#32146](https://github.com/expo/expo/pull/32146) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix using enums as optional arguments. ([#32147](https://github.com/expo/expo/pull/32147) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Change JS return type for kotlin `null` to be `null` instead of `undefined`. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Swift `Enumerable`s did not correctly convert to JS values. ([#30191](https://github.com/expo/expo/pull/30191) by [@vonovak](https://github.com/vonovak))
 - [jest] Fix `uuid` mock in `jest-expo`. ([#29840](https://github.com/expo/expo/pull/29840) by [@EvanBacon](https://github.com/EvanBacon))
@@ -65,6 +221,7 @@
 - Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
 - [iOS] Fixed views using the incorrect `AppContext` instance. ([#31897](https://github.com/expo/expo/pull/31897) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fixed crashes on the New Architecture when dispatching events during the props update. ([#31971](https://github.com/expo/expo/pull/31971) by [@tsapeta](https://github.com/tsapeta))
+- Fixed `registerAdditionalModuleClasses` deadlock issue on old architecture mode. ([#32209](https://github.com/expo/expo/pull/32209) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -108,6 +265,7 @@
 - [Android] Renamed `SharedObject.deallocate` to `SharedObject.sharedObjectDidRelease`. ([#31921](https://github.com/expo/expo/pull/31921) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Throws a descriptive error when trying to use a released `SharedObject`. ([#31922](https://github.com/expo/expo/pull/31922) by [@lukmccall](https://github.com/lukmccall))
 - Include error cause message in logger ([#31929](https://github.com/expo/expo/pull/31929), [#31953](https://github.com/expo/expo/pull/31953) by [@wschurman](https://github.com/wschurman))
+- [Android] Started using view's event dispatchers with the `surfaceId`. ([#32227](https://github.com/expo/expo/pull/32227) by [@lukmccall](https://github.com/lukmccall))
 
 ### ⚠️ Notices
 

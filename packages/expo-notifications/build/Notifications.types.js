@@ -14,6 +14,7 @@ export var SchedulableTriggerInputTypes;
 })(SchedulableTriggerInputTypes || (SchedulableTriggerInputTypes = {}));
 /**
  * An enum corresponding to values appropriate for Android's [`Notification#priority`](https://developer.android.com/reference/android/app/Notification#priority) field.
+ * @platform android
  */
 export var AndroidNotificationPriority;
 (function (AndroidNotificationPriority) {

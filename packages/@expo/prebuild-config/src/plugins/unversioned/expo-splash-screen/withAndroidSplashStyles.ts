@@ -8,18 +8,25 @@ import {
 import { Colors } from '@expo/config-plugins/build/android';
 import { ExpoConfig } from '@expo/config-types';
 
-import { getAndroidDarkSplashConfig, getAndroidSplashConfig } from './getAndroidSplashConfig';
+import {
+  AndroidSplashConfig,
+  getAndroidDarkSplashConfig,
+  getAndroidSplashConfig,
+} from './getAndroidSplashConfig';
 
 const styleResourceGroup = {
   name: 'Theme.App.SplashScreen',
-  parent: 'AppTheme',
+  parent: 'Theme.SplashScreen',
 };
 
 const SPLASH_COLOR_NAME = 'splashscreen_background';
 
-export const withAndroidSplashStyles: ConfigPlugin = (config) => {
+export const withAndroidSplashStyles: ConfigPlugin<{
+  splashConfig: AndroidSplashConfig | null;
+  isLegacyConfig: boolean;
+}> = (config, { splashConfig, isLegacyConfig }) => {
   config = withAndroidColors(config, (config) => {
-    const backgroundColor = getSplashBackgroundColor(config);
+    const backgroundColor = getSplashBackgroundColor(config, splashConfig);
     if (!backgroundColor) {
       return config;
     }
@@ -27,7 +34,7 @@ export const withAndroidSplashStyles: ConfigPlugin = (config) => {
     return config;
   });
   config = withAndroidColorsNight(config, (config) => {
-    const backgroundColor = getSplashDarkBackgroundColor(config);
+    const backgroundColor = getSplashDarkBackgroundColor(config, splashConfig);
     if (!backgroundColor) {
       return config;
     }
@@ -36,11 +43,58 @@ export const withAndroidSplashStyles: ConfigPlugin = (config) => {
   });
   config = withAndroidStyles(config, (config) => {
     config.modResults = removeOldSplashStyleGroup(config.modResults);
-    config.modResults = setSplashStylesForTheme(config.modResults);
+    config.modResults = addSplashScreenStyle(config.modResults, isLegacyConfig);
     return config;
   });
   return config;
 };
+
+// Add the style that extends Theme.SplashScreen
+function addSplashScreenStyle(
+  styles: AndroidConfig.Resources.ResourceXML,
+  isLegacyConfig: boolean
+) {
+  const { resources } = styles;
+  const { style = [] } = resources;
+
+  let item;
+  if (isLegacyConfig) {
+    item = [
+      {
+        $: { name: 'android:windowBackground' },
+        _: '@drawable/ic_launcher_background',
+      },
+    ];
+  } else {
+    item = [
+      {
+        $: { name: 'windowSplashScreenBackground' },
+        _: '@color/splashscreen_background',
+      },
+      {
+        $: { name: 'windowSplashScreenAnimatedIcon' },
+        _: '@drawable/splashscreen_logo',
+      },
+      {
+        $: { name: 'postSplashScreenTheme' },
+        _: '@style/AppTheme',
+      },
+    ];
+  }
+
+  styles.resources.style = [
+    ...style.filter(({ $ }) => $.name !== 'Theme.App.SplashScreen'),
+    {
+      $: {
+        ...styleResourceGroup,
+        parent: isLegacyConfig ? 'AppTheme' : 'Theme.SplashScreen',
+      },
+      item,
+    },
+  ];
+
+  return styles;
+}
 
 // Remove the old style group which didn't extend the base theme properly.
 export function removeOldSplashStyleGroup(styles: AndroidConfig.Resources.ResourceXML) {
@@ -60,20 +114,26 @@ export function removeOldSplashStyleGroup(styles: AndroidConfig.Resources.Resour
   return styles;
 }
 
-export function getSplashBackgroundColor(config: ExpoConfig): string | null {
-  return getAndroidSplashConfig(config)?.backgroundColor ?? null;
+export function getSplashBackgroundColor(
+  config: ExpoConfig,
+  props: AndroidSplashConfig | null
+): string | null {
+  return getAndroidSplashConfig(config, props)?.backgroundColor ?? null;
 }
 
-export function getSplashDarkBackgroundColor(config: ExpoConfig): string | null {
-  return getAndroidDarkSplashConfig(config)?.backgroundColor ?? null;
+export function getSplashDarkBackgroundColor(
+  config: ExpoConfig,
+  props: AndroidSplashConfig | null
+): string | null {
+  return getAndroidDarkSplashConfig(config, props)?.backgroundColor ?? null;
 }
 
 export function setSplashStylesForTheme(styles: AndroidConfig.Resources.ResourceXML) {
   // Add splash screen image
   return AndroidConfig.Styles.assignStylesValue(styles, {
     add: true,
-    value: '@drawable/splashscreen',
-    name: 'android:windowBackground',
+    value: '@drawable/splashscreen_logo',
+    name: 'android:windowSplashScreenBackground',
     parent: styleResourceGroup,
   });
 }

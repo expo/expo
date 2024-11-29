@@ -1,24 +1,8 @@
-import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
-import semver from 'semver';
 
-import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from './checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
-import { DirectPackageInstallCheck } from './checks/DirectPackageInstallCheck';
-import { ExpoConfigCommonIssueCheck } from './checks/ExpoConfigCommonIssueCheck';
-import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
-import { GlobalPackageInstalledLocallyCheck } from './checks/GlobalPackageInstalledLocallyCheck';
-import { IllegalPackageCheck } from './checks/IllegalPackageCheck';
-import { InstalledDependencyVersionCheck } from './checks/InstalledDependencyVersionCheck';
-import { MetroConfigCheck } from './checks/MetroConfigCheck';
-import { NativeToolingVersionCheck } from './checks/NativeToolingVersionCheck';
-import { PackageJsonCheck } from './checks/PackageJsonCheck';
-import { PackageManagerVersionCheck } from './checks/PackageManagerVersionCheck';
-import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
-import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
-import { StoreCompatibilityCheck } from './checks/StoreCompatibilityCheck';
-import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
-import { getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
+import { resolveChecksInScope } from './utils/checkResolver';
 import { env } from './utils/env';
 import { isNetworkError } from './utils/errors';
 import { isInteractive } from './utils/interactive';
@@ -129,97 +113,62 @@ export async function runChecksAsync(
   );
 }
 
-export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConfig) {
-  // add additional checks here
-  const checks = [
-    new PackageManagerVersionCheck(),
-    new IllegalPackageCheck(),
-    new GlobalPackageInstalledLocallyCheck(),
-    new SupportPackageVersionCheck(),
-    new ExpoConfigSchemaCheck(),
-    new ExpoConfigCommonIssueCheck(),
-    new DirectPackageInstallCheck(),
-    new PackageJsonCheck(),
-    new ProjectSetupCheck(),
-    new MetroConfigCheck(),
-    new NativeToolingVersionCheck(),
-    new AppConfigFieldsNotSyncedToNativeProjectsCheck(),
-    new StoreCompatibilityCheck(),
-  ];
-
-  if (getReactNativeDirectoryCheckEnabled(pkg)) {
-    chalk.yellow(
-      'Enabled experimental React Native Directory checks. Unset the EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK environment variable to disable this check.'
-    );
-    checks.push(new ReactNativeDirectoryCheck());
-  }
-
-  if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
-    Log.log(
-      chalk.yellow(
-        'Checking dependencies for compatibility with the installed Expo SDK version is disabled. Unset the EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK environment variable to re-enable this check.'
-      )
-    );
-  } else {
-    checks.push(new InstalledDependencyVersionCheck());
-  }
-  return checks.filter(
-    (check) =>
-      exp.sdkVersion === 'UNVERSIONED' || semver.satisfies(exp.sdkVersion!, check.sdkVersionRange)
-  );
-}
-
 export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
-  const projectConfig = getConfig(projectRoot);
-
-  // expo-doctor relies on versioned CLI, which is only available for 44+
   try {
+    const projectConfig = getConfig(projectRoot);
+
+    // expo-doctor relies on versioned CLI, which is only available for 44+
     if (ltSdkVersion(projectConfig.exp, '46.0.0')) {
       Log.exit(
         chalk.red(`expo-doctor supports Expo SDK 46+. Use 'expo-cli doctor' for SDK 45 and lower.`)
       );
       return;
     }
-  } catch (e: any) {
-    Log.exit(e);
-    return;
-  }
 
-  const filteredChecks = getChecksInScopeForProject(projectConfig.exp, projectConfig.pkg);
+    const checksInScope = resolveChecksInScope(projectConfig.exp, projectConfig.pkg);
 
-  const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
+    const spinner = startSpinner(`Running ${checksInScope.length} checks on your project...`);
 
-  const checkParams = { projectRoot, ...projectConfig };
+    const checkParams = { projectRoot, ...projectConfig };
 
-  const jobs = await runChecksAsync(filteredChecks, checkParams, printCheckResultSummaryOnComplete);
+    const jobs = await runChecksAsync(
+      checksInScope,
+      checkParams,
+      printCheckResultSummaryOnComplete
+    );
 
-  spinner.stop();
+    spinner.stop();
 
-  const failedJobs = jobs.filter((job) => !job.result.isSuccessful);
+    const failedJobs = jobs.filter((job) => !job.result.isSuccessful);
 
-  if (failedJobs.length) {
-    if (failedJobs.some((job) => job.result.issues?.length)) {
-      Log.log();
-      Log.log(chalk.underline('Detailed check results:'));
-      Log.log();
-      // actual issues will output in order of the sequence of tests, due to rules of Promise.all()
-      failedJobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
-    }
-    // check if all checks failed due to a network error if the flag to override network errors is enabled
-    if (env.EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS) {
-      const failedJobsDueToNetworkError = failedJobs.filter((job) => isNetworkError(job.error));
-      if (failedJobsDueToNetworkError.length === failedJobs.length) {
-        Log.warn(
-          'One or more checks failed due to network errors, but EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS is enabled, so these errors will not fail Doctor. Run Doctor to retry these checks once the network is available.'
-        );
-        return;
+    if (failedJobs.length) {
+      if (failedJobs.some((job) => job.result.issues?.length)) {
+        Log.log();
+        Log.log(chalk.underline('Detailed check results:'));
+        Log.log();
+        // actual issues will output in order of the sequence of tests, due to rules of Promise.all()
+        failedJobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
       }
+      // check if all checks failed due to a network error if the flag to override network errors is enabled
+      if (env.EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS) {
+        const failedJobsDueToNetworkError = failedJobs.filter((job) => isNetworkError(job.error));
+        if (failedJobsDueToNetworkError.length === failedJobs.length) {
+          Log.warn(
+            'One or more checks failed due to network errors, but EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS is enabled, so these errors will not fail Doctor. Run Doctor to retry these checks once the network is available.'
+          );
+          return;
+        }
+      }
+      Log.exit(
+        chalk.red('One or more checks failed, indicating possible issues with the project.')
+      );
+    } else {
+      Log.log();
+      Log.log(chalk.green(`Didn't find any issues with the project!`));
     }
-    Log.exit(chalk.red('One or more checks failed, indicating possible issues with the project.'));
-  } else {
-    Log.log();
-    Log.log(chalk.green(`Didn't find any issues with the project!`));
+  } catch (e: any) {
+    Log.exception(e);
   }
 }

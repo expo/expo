@@ -25,9 +25,9 @@ type InferEventParameter<TEventListener extends AnyEventListener, TInitialValue>
  * import { VideoPlayer } from 'expo-video';
  *
  * export function PlayerStatus({ videoPlayer }: { videoPlayer: VideoPlayer }) {
- *   const playerStatus = useEvent(videoPlayer, 'statusChange', videoPlayer.status);
+ *   const { status } = useEvent(videoPlayer, 'statusChange', { status: videoPlayer.status });
  *
- *   return <Text>{`Player status: ${playerStatus}`}</Text>;
+ *   return <Text>{`Player status: ${status}`}</Text>;
  * }
  * ```
  */
@@ -46,7 +46,7 @@ export declare function useEvent<TEventsMap extends Record<string, AnyEventListe
  * export function VideoPlayerView() {
  *   const player = useVideoPlayer(videoSource);
  *
- *   useEventListener(player, 'playingChange', isPlaying => {
+ *   useEventListener(player, 'playingChange', ({ isPlaying }) => {
  *     console.log('Player is playing:', isPlaying);
  *   });
  *

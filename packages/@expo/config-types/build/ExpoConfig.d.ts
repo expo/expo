@@ -157,12 +157,6 @@ export interface ExpoConfig {
         [k: string]: any;
     };
     /**
-     * @deprecated Use a `metro.config.js` file instead. [Learn more](https://docs.expo.dev/guides/customizing-metro/)
-     */
-    packagerOpts?: {
-        [k: string]: any;
-    };
-    /**
      * Configuration for the expo-updates library
      */
     updates?: {
@@ -235,6 +229,10 @@ export interface ExpoConfig {
      * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
+    /**
+     * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
+     */
+    newArchEnabled?: boolean;
     ios?: IOS;
     android?: Android;
     web?: Web;
@@ -271,9 +269,13 @@ export interface ExpoConfig {
          */
         reactCompiler?: boolean;
         /**
-         * Experimentally enable React Server Components support in Expo CLI and Expo Router.
+         * Experimentally enable React Server Components by default in Expo Router and concurrent routing for transitions.
          */
-        reactServerComponents?: boolean;
+        reactServerComponentRoutes?: boolean;
+        /**
+         * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
+         */
+        reactServerFunctions?: boolean;
     };
     /**
      * Internal properties for developer tools
@@ -458,6 +460,10 @@ export interface IOS {
      */
     usesAppleSignIn?: boolean;
     /**
+     *  A boolean indicating if the app uses Push Notifications Broadcast option for Push Notifications capability. If true, EAS CLI will use the value during capability syncing. If EAS CLI is not used, this configuration will not have any effect unless another tool is used to operate on it, so enable the capability manually on the Apple Developer Portal in that case.
+     */
+    usesBroadcastPushNotifications?: boolean;
+    /**
      * A Boolean value that indicates whether the app may access the notes stored in contacts. You must [receive permission from Apple](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) before you can submit your app for review with this capability.
      */
     accessesContactNotes?: boolean;
@@ -510,6 +516,10 @@ export interface IOS {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
+     * A Boolean value that indicates whether the iOS app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
+    /**
      * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
      */
     runtimeVersion?: string | {
@@ -521,15 +531,15 @@ export interface IOS {
  */
 export interface IOSIcons {
     /**
-     * The icon that will appear for the app regardless of the user's current system appearance.
+     * The light icon. It will appear when neither dark nor tinted icons are used, or if they are not provided.
      */
-    any?: string;
+    light?: string;
     /**
-     * The icon that will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     * The dark icon. It will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
      */
     dark?: string;
     /**
-     * The icon that will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     * The tinted icon. It will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
      */
     tinted?: string;
 }
@@ -753,6 +763,10 @@ export interface Android {
      * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
+    /**
+     * A Boolean value that indicates whether the Android app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
     /**
      * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
      */

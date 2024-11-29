@@ -1,0 +1,542 @@
+---
+title: Using React Server Components in Expo Router apps
+sidebar_title: React Server Components
+description: Learn about rendering React components on the server in Expo.
+---
+
+> Experimentally available in **SDK 52 and above**. This is a very early preview and not ready for production or wide use yet. This initial version is meant to help library authors understand universal React Server Components and add support in their libraries.
+
+React Server Components enable a number of exciting capabilities, including:
+
+- Data fetching with async components and React Suspense.
+- Working with secrets and server-side APIs.
+- Server-side rendering (SSR) for SEO and performance.
+- Build-time rendering to remove unused JS code.
+
+Expo Router enables support for [React Server Components](https://react.dev/reference/rsc/server-components) on all platforms. This is an early preview of a feature that will be enabled by default in Expo Router.
+
+## Prerequisites
+
+Your project must use Expo Router and React Native new architecture (default in SDK 52).
+
+## Usage
+
+To use React Server Components in your Expo app, you need to:
+
+1. Ensure the entry module is `expo-router/entry` (default) in **package.json**.
+2. Enable the flag in the project app config:
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "reactServerFunctions": true
+    }
+  }
+}
+```
+
+3. Create an initial route **app/index.tsx**:
+
+```tsx app/index.tsx (Client Component)
+/// <reference types="react/canary" />
+
+import React from 'react';
+import { ActivityIndicator } from 'react-native';
+import renderInfo from '../actions/render-info';
+
+export default function Index() {
+  return (
+    <React.Suspense
+      fallback={
+        // The view that will render while the Server Function is awaiting data.
+        <ActivityIndicator />
+      }>
+      {renderInfo({ name: 'World' })}
+    </React.Suspense>
+  );
+}
+```
+
+4. Create a Server Function **actions/render-info.tsx**:
+
+```tsx actions/render-info.tsx (Server Function)
+'use server';
+
+import { Text } from 'react-native';
+
+export default async function renderInfo({ name }) {
+  // Securely fetch data from an API, and read environment variables...
+  return <Text>Hello, {name}!</Text>;
+}
+```
+
+The views return value of the Server Function is a React Server Component payload that will be streamed to the client.
+
+> `web.output` must be `single` in the app config during the developer preview. Support for more output modes is coming soon.
+
+## Server Components
+
+Server Components run in the server, meaning they can access server APIs and Node.js built-ins (when running locally). They can also use async components.
+
+Consider the following component which fetches data and renders it:
+
+```tsx components/pokemon.tsx
+import 'server-only';
+
+import { Image, Text, View } from 'react-native';
+
+export async function Pokemon() {
+  const res = await fetch('https://pokeapi.co/api/v2/pokemon/2');
+  const json = await res.json();
+  return (
+    <View style={{ padding: 8, borderWidth: 1 }}>
+      <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{json.name}</Text>
+      <Image source={{ uri: json.sprites.front_default }} style={{ width: 100, height: 100 }} />
+
+      {json.abilities.map(ability => (
+        <Text key={ability.ability.name}>- {ability.ability.name}</Text>
+      ))}
+    </View>
+  );
+}
+```
+
+To render this as a server component, you'll need to return it from a Server Function.
+
+### Key points
+
+- You cannot use hooks like `useState`, `useEffect`, or `useContext` in Server Components.
+- You cannot use browser or native APIs in Server Components.
+- `"use server"` is not meant to mark a file as a server component. It's used to mark a file as having React Server Functions exported from it.
+- Server components have access to all environment variables as they run securely off the client.
+
+## Client Components
+
+Since Server Components cannot access native APIs or React Context, you can create a Client Component to use these features. They are created by marking files with the `"use client"` directive at the top.
+
+```tsx components/button.tsx
+'use client';
+import { Text } from 'react-native';
+
+export default function Button({ title }) {
+  return <Text onPress={() => {}}>{title}</Text>;
+}
+```
+
+This module can be imported and used in a Server Function or Server Component.
+
+### Key point
+
+You cannot pass functions as props to Server Components. You can only pass serializable data.
+
+## React Server Functions
+
+Server Functions are functions that run on the server and can be called from Client Components. Think of them like fully-typed API routes that are easier to write.
+
+They must always be an async function and are marked with `"use server"` at the top of the function.
+
+```tsx app/index.tsx
+export default function Index() {
+  return (
+    <Button
+      title="Press me"
+      onPress={async () => {
+        'use server';
+        // This code runs on the server.
+        console.log('Button pressed');
+        return '...';
+      }}
+    />
+  );
+}
+```
+
+You can create a Client Component to invoke the Server Function:
+
+```tsx components/button.tsx
+'use client';
+import { Text } from 'react-native';
+
+export default function Button({ title, onPress }) {
+  return <Text onPress={() => onPress()}>{title}</Text>;
+}
+```
+
+Server Functions can also be defined in a standalone file (with `"use server"` at the top) and imported from Client Components:
+
+```tsx components/server-actions.tsx
+'use server';
+
+export async function callAction() {
+  // ...
+}
+```
+
+These can be used in a Client Component:
+
+```tsx components/button.tsx
+import { Text } from 'react-native';
+import { callAction } from './server-actions';
+
+export default function Button({ title }) {
+  return <Text onPress={() => callAction()}>{title}</Text>;
+}
+```
+
+### Key points
+
+- You can only pass serializable data to Server Functions as arguments.
+- Server Functions can only return serializable data.
+- Server Functions run on the server and are a good place to put logic that should not be exposed to the client.
+- Server Functions currently cannot be used inside of DOM components
+
+### Rendering in Server Functions
+
+React Server Functions in Expo Router can render React components on the server and stream back an **RSC payload** (a custom JSON-like format that's maintained by the React team) for rendering on the client. This is similar to server-side rendering (SSR) on the web.
+
+For example, the following Server Function will render some text:
+
+```tsx components/server-actions.tsx
+'use server';
+
+// Optional: Import "server-only" for sanity.
+import 'server-only';
+
+import { View, Image, Text } from 'react-native';
+
+export async function renderProfile({
+  username,
+  accessToken,
+}: {
+  username: string;
+  accessToken: string;
+}) {
+  // NOTE: Rate limits, GDPR, and other server-side operations can be done here.
+
+  // Fetch some data securely from an API.
+  const { name, image } = await fetch(`https://api.example.com/profile/${username}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      // Use secret environment variables securely as this code will live on the server.
+      // The EXPO_PUBLIC_ prefix is not required here.
+      'X-Secret': process.env.SECRET,
+    },
+  }).then(res => res.json());
+
+  // Render
+  return (
+    <View>
+      <Image source={{ uri: image }} />
+      <Text>{name}</Text>
+    </View>
+  );
+}
+```
+
+This Server Function can be invoked from a Client Component and the contents will be streamed back to the client:
+
+```tsx components/profile.tsx
+'use client';
+
+import { useLocalSearchParams } from 'expo-router';
+import * as React from 'react';
+import { Text } from 'react-native';
+
+import { renderProfile } from '@/components/server-actions';
+
+// Loading state that renders while data is being fetched.
+function Fallback() {
+  return <Text>Loading...</Text>;
+}
+
+export default function Profile() {
+  const { username } = useLocalSearchParams();
+  const { accessToken } = useCustomAuthProvider();
+
+  // Call the Server Function with the username and access token.
+  const profile = React.useMemo(
+    () => renderProfile({ username, accessToken }),
+    [username, accessToken]
+  );
+
+  // Render the profile asynchronously with React Suspense and a custom loading state.
+  return <React.Suspense fallback={<Fallback />}>{profile}</React.Suspense>;
+}
+```
+
+## Library compatibility
+
+Not all libraries are optimized for React Server Components yet. You can use the `"use client"` directive to mark a file as a Client Component and use it in a Server Component. This can be used to temporarily workaround compatibility issues.
+
+For example, consider a library `react-native-unoptimized` that does not ship with `"use client"` directives yet. You can workaround this by creating a module and re-exporting each module:
+
+```tsx lib/react-native-unoptimized.tsx
+// This directive opts the module into client-side rendering.
+'use client';
+
+// Re-exporting the imports from the library.
+export { One, Two, Three } from 'react-native-unoptimized';
+```
+
+Avoid using `export * from '...'` as this breaks some of the internals of interopting between the server and client.
+
+Modules marked with `"use client"` cannot be dot-accessed from Server Components. This means operations like `StyleSheet.create` or `Platform.OS` will not work on the server without further optimization in the `react-native` package.
+
+## Suspense
+
+You can stream back partial UI from the server while waiting for data to load by using React Suspense.
+
+In the following example, a `Loading...` text is returned instantly on the client, and when the `<MediumTask>` finishes rendering one second later, it will replace the text with `Medium task done!`. The `<ExpensiveTask>` will take three seconds to load, and when it finishes, it will replace the text with `Expensive task done!`.
+
+```tsx app/index.tsx (Client Component)
+import { Suspense } from 'react';
+import { renderMediumTask, renderExpensiveTask } from '@/actions/tasks';
+
+export default function App() {
+  return <Suspense fallback={<Text>Loading...</Text>}>{renderTasks()}</Suspense>;
+}
+```
+
+```tsx actions/tasks.tsx (Server Functions)
+'use server';
+
+export async function renderTasks() {
+  return (
+    <Suspense fallback={<Text>Loading...</Text>}>
+      <>
+        <MediumTask />
+        <Suspense fallback={<Text>Loading...</Text>}>
+          <ExpensiveTask />
+        </Suspense>
+      </>
+    </Suspense>
+  );
+}
+
+async function MediumTask() {
+  // Wait one second before resolving.
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return <Text>Medium task done!</Text>;
+}
+
+async function ExpensiveTask() {
+  // Wait three seconds before resolving.
+  await new Promise(resolve => setTimeout(resolve, 3000));
+  return <Text>Expensive task done!</Text>;
+}
+```
+
+If you remove the `Suspense` wrapper around `<ExpensiveTask>`, you'll see that the `Loading...` waits for both components to finish rendering before updating the UI. This enables you to control the loading state incrementally. Sometimes, it makes sense to wait for everything to load at once (most of the time), while other times, it is beneficial to stream back UI as soon as you have (like the text response in ChatGPT).
+
+## Secrets
+
+Server Components can access secrets and server-side APIs. You can use the `process.env` object to access environment variables. You can ensure a module never runs on the client by importing the `server-only` module in your project.
+
+```tsx actions/renderData.tsx
+// This will assert if the module runs on the client.
+import 'server-only';
+
+import { Text } from 'react-native';
+
+export async function renderData() {
+  // This code only runs on the server.
+  const data = await fetch('https://my-endpoint/', {
+    headers: {
+      Authorization: `Bearer ${process.env.SECRET}`,
+    },
+  });
+
+  // ...
+  return <div />;
+}
+```
+
+You can define the secret in your **.env** file:
+
+```text .env
+SECRET=123
+```
+
+> You do not need to restart the dev server to update environment variables. They are automatically reloaded on every request.
+
+## Platform detection
+
+To detect which platform your code is bundled for, use the `process.env.EXPO_OS` environment variable. For example, `process.env.EXPO_OS === 'ios'`. Prefer this to `Platform.OS` as `react-native` is not fully optimized for React Server Components yet and won't work as expected.
+
+You can detect if code is running on the server by performing a `typeof window === 'undefined'` check. This will always return `true` on client devices and `false` on the server.
+
+## Testing with jest
+
+Library authors can test their modules support Server Components by using `jest-expo`. Learn more in the [Testing React Server Components](/guides/testing-rsc) guide.
+
+## Metadata
+
+React Server Components are a feature of React 19. To enable them, Expo CLI automatically uses a special canary build of React on all platforms. In the future, it will be removed when React 19 is enabled by default in React Native.
+
+As a result, you can use React 19 features such as placing `<meta>` tags anywhere in your app (web-only).
+
+```tsx app/index.tsx
+export default function Index() {
+  return (
+    <>
+      {process.env.EXPO_OS === 'web' && (
+        <>
+          <meta name="description" content="Hello, world!" />
+          <meta property="og:image" content="/og-image.png" />
+        </>
+      )}
+      <MyComponent />
+    </>
+  );
+}
+```
+
+You can use this instead of the `Head` component from `expo-router/head`, but it only works on web for now.
+
+## Request headers
+
+You can access the request headers used to make the request to the Server Component using the `expo-router/rsc/headers` module.
+
+```tsx actions/renderHome.tsx
+import { unstable_headers } from 'expo-router/rsc/headers';
+
+export async function renderHome() {
+  const authorization = (await unstable_headers()).get('authorization');
+
+  return <Text>{authorization}</Text>;
+}
+```
+
+The `unstable_headers` function returns a promise that resolves to a read-only `Headers` object.
+
+### Key points
+
+- This API cannot be used with build-time rendering (`render: 'static'`) because the headers dynamically change based on the request. In the future, this API will assert if the output mode is `static`.
+- `unstable_headers` is server-only and cannot be used on the client.
+
+## Full React Server Components mode
+
+> This mode is even more experimental!
+
+Enabling full React Server Components support allows you to leverage even more features. In this mode, the default rendering mode for routes is server components instead of client components. It is still in development, as the Router and React Navigation need to be rewritten to support concurrency.
+
+To enable full Server Components mode, you need to enable the `reactServerComponentRoutes` flag in the app config:
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "reactServerFunctions": true,
+      "reactServerComponentRoutes": true
+    }
+  }
+}
+```
+
+With this enabled, all routes will render as Server Components by default. In the future this will reduce server/client waterfalls and enable build-time rendering to provide better offline support.
+
+- There is currently no stack routing. The custom layouts, `Stack`, `Tabs`, and `Drawer`, do not support Server Components yet.
+- Most `Link` component props are not supported yet.
+
+### Reloading Server Components
+
+> This is limited to full React Server Components mode.
+
+Server Components are reloaded on every request in development. This means that you can make changes to your server components and see them reflected immediately in the client runtime. You may want to manually trigger a reload event programmatically to refetch data or re-render the component. This can be done using the `router.reload()` function from the `useRouter` hook.
+
+```tsx components/button.tsx
+'use client';
+import { useRouter } from 'expo-router';
+import { Text } from 'react-native';
+
+export function Button() {
+  const router = useRouter();
+  return (
+    <Text
+      onPress={() => {
+        // Reload the current route.
+        router.reload();
+      }}>
+      Reload current route
+    </Text>
+  );
+}
+```
+
+If the route was rendered at build-time, it will not be re-rendered on the client. This is because the rendering code is not included in the production server.
+
+### Build-time rendering
+
+> This is limited to full React Server Components mode.
+
+Expo Router supports two different modes of rendering Server Components: build-time rendering and request-time rendering. These modes can be indicated on a per-route basis by using the `unstable_settings` export:
+
+```tsx app/index.tsx
+import { Text, View } from 'react-native';
+
+export const unstable_settings = {
+  // This component will be rendered at build-time and never re-rendered in production.
+  render: 'static',
+};
+
+export default function Index() {
+  return (
+    <View>
+      <Text>Hello, world!</Text>
+    </View>
+  );
+}
+```
+
+- `render: 'static'` will render the component at build-time and never re-render it in production. This is similar to how classic static site generators work.
+- `render: 'dynamic'` will render the component at request-time and re-render it on every request. This is similar to how server-side rendering works.
+
+If you want client-side rendering, move your data fetching to a Client Component and control the rendering locally.
+
+Routes marked with `static` output will be rendered at build-time and embedded in the native binary. This enables rendering routes without making a server request (because the server request was made when the app was downloaded).
+
+The current default is `dynamic` rendering. In the future, we'll change the caching and optimizations to be smarter and more automatic.
+
+### CSS
+
+> This is limited to full React Server Components mode.
+
+Expo Router supports importing global CSS and CSS modules in Server Components.
+
+```tsx app/index.tsx
+import './styles.css';
+import styles from './styles.module.css';
+
+export default function Index() {
+  return <div className={styles.container}>Hello, world!</div>;
+}
+```
+
+The CSS will be hoisted into the client bundle from the server.
+
+## Deployment
+
+> Avoid using universal Server Components in production as they are not stable yet. We'll streamline all of this to a single command in the future.
+
+### Web
+
+To deploy your website to production, run: `npx expo export -p web`. You can host the website locally with the [Express server adapter](/router/reference/api-routes/#express).
+
+### Native
+
+Production exports for React Server Components on native are not yet supported. This is planned for Expo SDK 53.
+
+## Known limitations
+
+> This is a very early technical preview that we're actively developing.
+
+- Expo Snack does not support bundling Server Components.
+- EAS Update does not work with Server Components yet.
+- DOM components cannot use Server Functions yet.
+- Production deployment is very limited and not recommended yet.
+- Server Rendering RSC payloads to HTML is not supported yet. This means static and server output doesn't fully work yet.
+- [`generateStaticParams`](/router/reference/static-rendering/#generatestaticparams) is not yet supported.
+- HTML `form` integration with Server Functions is not supported yet (this partially works automatically, but data is not encrypted).
+- `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
+- Server Functions that invoke other Server Functions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.

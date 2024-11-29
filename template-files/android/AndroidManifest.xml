@@ -135,7 +135,8 @@
       android:exported="true"
       android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:theme="@style/Theme.Exponent.Light"
-      android:windowSoftInputMode="adjustResize">
+      android:windowSoftInputMode="adjustResize"
+      android:supportsPictureInPicture="true">
     </activity>
 
     <activity

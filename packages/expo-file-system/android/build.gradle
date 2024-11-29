@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '17.0.1'
+version = '18.0.4'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.filesystem"
   defaultConfig {
     versionCode 30
-    versionName "17.0.1"
+    versionName "18.0.4"
   }
 }
 

@@ -6,6 +6,52 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 52.0.2 — 2024-11-15
+
+### 🐛 Bug fixes
+
+- Fixed error when `babel.config.js` is not existed. ([#32942](https://github.com/expo/expo/pull/32942) by [@kudo](https://github.com/kudo))
+
+## 52.0.1 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0 — 2024-11-11
+
+### 🐛 Bug fixes
+
+- Update transform ignore patterns to replace deprecated Sentry SDK with current one. ([#32528](https://github.com/expo/expo/pull/32528) by [@KoenCa](https://github.com/KoenCa))
+
+## 52.0.0-preview.4 — 2024-11-05
+
+### 💡 Others
+
+- Add mocks for internal native methods in splash screen ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+
+## 52.0.0-preview.3 — 2024-10-31
+
+### 💡 Others
+
+- Update SplashScreen api to add `hide` method. ([#32484](https://github.com/expo/expo/pull/32484) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 52.0.0-preview.2 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix mocking for requireOptionalNativeModule. ([#32412](https://github.com/expo/expo/pull/32412) by [@aleqsio](https://github.com/aleqsio))
+
+## 52.0.0-preview.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.0 — 2024-10-22
+
+### 🎉 New features
+
 - Add experimental `jest-expo/rsc` preset for testing React Server Components. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))
 - Load view mocks included in packages. ([#28157](https://github.com/expo/expo/pull/28157) by [@aleqsio](https://github.com/aleqsio))
 

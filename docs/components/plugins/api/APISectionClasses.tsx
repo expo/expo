@@ -1,15 +1,12 @@
+import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import ReactMarkdown from 'react-markdown';
 
-import {
-  ClassDefinitionData,
-  GeneratedData,
-  PropData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { renderMethod } from '~/components/plugins/api/APISectionMethods';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import { renderProp } from '~/components/plugins/api/APISectionProps';
+import { ClassDefinitionData, GeneratedData, PropData } from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { renderMethod } from './APISectionMethods';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
+import { renderProp } from './APISectionProps';
 import {
   CommentTextBlock,
   H3Code,
@@ -17,14 +14,14 @@ import {
   getTagNamesList,
   mdComponents,
   resolveTypeName,
-  STYLES_APIBOX,
-  STYLES_APIBOX_NESTED,
   TypeDocKind,
   getCommentContent,
   BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
   extractDefaultPropValue,
-} from '~/components/plugins/api/APISectionUtils';
+} from './APISectionUtils';
+import { STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
+
 import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
@@ -96,7 +93,9 @@ const renderClass = (
   const linksNestingLevel = DEFAULT_BASE_NESTING_LEVEL + 2;
 
   return (
-    <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
+    <div
+      key={`class-definition-${name}`}
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
       <APISectionDeprecationNote comment={comment} sticky />
       <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
@@ -141,9 +140,9 @@ const renderClass = (
         includePlatforms={false}
         afterContent={
           returnComment && (
-            <div className="flex flex-col gap-2 items-start">
-              <div className="flex flex-row gap-2 items-center">
-                <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
+            <div className="flex flex-col items-start gap-2">
+              <div className="flex flex-row items-center gap-2">
+                <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
                 <CALLOUT tag="span" theme="secondary" weight="medium">
                   Returns
                 </CALLOUT>
@@ -159,7 +158,6 @@ const renderClass = (
         <>
           <BoxSectionHeader
             text={`${name} Properties`}
-            className="!text-secondary !font-medium"
             exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
           />
@@ -182,7 +180,6 @@ const renderClass = (
         <>
           <BoxSectionHeader
             text={`${name} Methods`}
-            className="!text-secondary !font-medium !text-sm"
             exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
           />

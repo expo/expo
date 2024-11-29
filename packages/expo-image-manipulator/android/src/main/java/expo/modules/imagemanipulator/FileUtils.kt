@@ -10,7 +10,7 @@ internal object FileUtils {
   fun generateRandomOutputPath(context: Context, imageFormat: ImageFormat): String {
     val directory = File("${context.cacheDir}${File.separator}ImageManipulator")
     ensureDirExists(directory)
-    return "${directory}${File.separator}${UUID.randomUUID()}${imageFormat.fileExtension})}"
+    return "${directory}${File.separator}${UUID.randomUUID()}${imageFormat.fileExtension}"
   }
 
   @Throws(IOException::class)

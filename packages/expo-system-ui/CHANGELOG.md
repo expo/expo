@@ -4,9 +4,37 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.0.5 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.4 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.3 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

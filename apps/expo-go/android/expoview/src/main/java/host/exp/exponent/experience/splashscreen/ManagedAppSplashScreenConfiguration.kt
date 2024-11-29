@@ -3,7 +3,7 @@ package host.exp.exponent.experience.splashscreen
 import android.graphics.Color
 import androidx.annotation.ColorInt
 import expo.modules.jsonutils.getNullable
-import expo.modules.splashscreen.SplashScreenImageResizeMode
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.utils.ColorParser
@@ -66,6 +66,12 @@ class ManagedAppSplashScreenConfiguration private constructor() {
      * - generic splash imageUrl
      */
     private fun parseImageUrl(manifest: Manifest): String? {
+      // Because of the changes to splashscreen we are going to default to the app icon in expo go
+      val iconUrl = manifest.getIconUrl()
+      if (iconUrl != null) {
+        return iconUrl
+      }
+
       val androidSplash = manifest.getAndroidSplashInfo()
       if (androidSplash != null) {
         val dpiRelatedImageUrl = getStringFromJSONObject(

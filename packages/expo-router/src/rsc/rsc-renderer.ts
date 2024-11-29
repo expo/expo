@@ -11,7 +11,7 @@
 // This file must remain platform agnostic for production exports.
 
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
-import './runtime';
+import '@expo/metro-runtime/rsc/runtime';
 
 import type { ReactNode } from 'react';
 import { renderToReadableStream, decodeReply } from 'react-server-dom-webpack/server';
@@ -196,9 +196,9 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     if (
       !opts.isExporting &&
       // @ts-ignore
-      !process.env.EXPO_UNSTABLE_SERVER_ACTIONS
+      !process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS
     ) {
-      throw new Error('Experimental support for React Server Actions is not enabled');
+      throw new Error('Experimental support for React Server Functions is not enabled');
     }
 
     const args = Array.isArray(decodedBody) ? decodedBody : [];

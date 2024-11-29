@@ -1,7 +1,11 @@
 package expo.modules.audio
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.audiofx.Visualizer
+import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -17,6 +21,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
+
+private const val PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate"
+private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
 
 @UnstableApi
 class AudioPlayer(
@@ -42,29 +49,7 @@ class AudioPlayer(
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
-
-  private val visualizer = Visualizer(player.audioSessionId).apply {
-    captureSize = Visualizer.getCaptureSizeRange()[1]
-    setDataCaptureListener(
-      object : Visualizer.OnDataCaptureListener {
-        override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
-          waveform?.let {
-            if (samplingEnabled) {
-              val data = extractAmplitudes(it)
-              sendAudioSampleUpdate(data)
-            }
-          }
-        }
-
-        override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
-        }
-      },
-      Visualizer.getMaxCaptureRate() / 2,
-      true,
-      false
-    )
-    enabled = true
-  }
+  private var visualizer: Visualizer? = null
 
   init {
     addPlayerListeners()
@@ -101,6 +86,12 @@ class AudioPlayer(
 
   fun setSamplingEnabled(enabled: Boolean) {
     samplingEnabled = enabled
+    if (enabled) {
+      createVisualizer()
+    } else {
+      visualizer?.release()
+      visualizer = null
+    }
   }
 
   private fun extractAmplitudes(chunk: ByteArray): List<Float> = chunk.map { byte ->
@@ -135,7 +126,7 @@ class AudioPlayer(
     withContext(Dispatchers.Main) {
       val data = currentStatus()
       val body = map?.let { data + it } ?: data
-      emit("onPlaybackStatusUpdate", body)
+      emit(PLAYBACK_STATUS_UPDATE, body)
     }
 
   private fun sendAudioSampleUpdate(sample: List<Float>) {
@@ -145,7 +136,7 @@ class AudioPlayer(
       ),
       "timestamp" to player.currentPosition
     )
-    emit("onAudioSampleUpdate", body)
+    emit(AUDIO_SAMPLE_UPDATE, body)
   }
 
   private fun playbackStateToString(state: Int): String {
@@ -158,11 +149,49 @@ class AudioPlayer(
     }
   }
 
-  override fun deallocate() {
+  private fun createVisualizer() {
+    appContext?.reactContext?.let {
+      if (ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "\'android.permission.RECORD_AUDIO\' is required to use audio sampling. Please request this permission and try again.")
+        return
+      }
+    }
+
+    // It must only be created once, otherwise the app will crash
+    if (visualizer == null) {
+      visualizer = Visualizer(player.audioSessionId).apply {
+        captureSize = Visualizer.getCaptureSizeRange()[1]
+        setDataCaptureListener(
+          object : Visualizer.OnDataCaptureListener {
+            override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
+              waveform?.let {
+                if (samplingEnabled) {
+                  val data = extractAmplitudes(it)
+                  sendAudioSampleUpdate(data)
+                }
+              }
+            }
+
+            override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) = Unit
+          },
+          Visualizer.getMaxCaptureRate() / 2,
+          true,
+          false
+        )
+        enabled = true
+      }
+    }
+  }
+
+  override fun sharedObjectDidRelease() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()
-      visualizer.release()
+      visualizer?.release()
       player.release()
     }
+  }
+
+  companion object {
+    val TAG = AudioPlayer::class.simpleName
   }
 }

@@ -170,11 +170,6 @@ class Env {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
   }
 
-  /** Enable the React Native JS Inspector, instead of the "classic" Chrome DevTools (SDK <=49) */
-  get EXPO_USE_UNSTABLE_DEBUGGER(): boolean {
-    return boolish('EXPO_USE_UNSTABLE_DEBUGGER', false);
-  }
-
   /** Set the default `user` that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`. */
   get EXPO_ADB_USER(): string {
     return string('EXPO_ADB_USER', '0');
@@ -218,6 +213,21 @@ class Env {
   /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */
   get EXPO_NO_DEPLOY(): boolean {
     return boolish('EXPO_NO_DEPLOY', false);
+  }
+
+  /** Enable hydration during development when rendering Expo Web */
+  get EXPO_WEB_DEV_HYDRATE(): boolean {
+    return boolish('EXPO_WEB_DEV_HYDRATE', false);
+  }
+
+  /** Enable experimental React Server Functions support. */
+  get EXPO_UNSTABLE_SERVER_FUNCTIONS(): boolean {
+    return boolish('EXPO_UNSTABLE_SERVER_FUNCTIONS', false);
+  }
+
+  /** Enable unstable/experimental mode where React Native Web isn't required to run Expo apps on web. */
+  get EXPO_NO_REACT_NATIVE_WEB(): boolean {
+    return boolish('EXPO_NO_REACT_NATIVE_WEB', false);
   }
 }
 

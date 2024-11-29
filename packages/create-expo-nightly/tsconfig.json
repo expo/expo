@@ -1,8 +1,8 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "declaration": true,
     "strictNullChecks": true,
@@ -15,8 +15,8 @@
     "downlevelIteration": true,
 
     "outDir": "build",
-    "rootDir": "src",
+    "rootDir": "src"
   },
   "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
 }

@@ -128,31 +128,20 @@ class AudioModule : Module() {
     }
 
     OnDestroy {
-      for (player in players.values) {
-        player.player.stop()
-      }
+      appContext.mainQueue.launch {
+        for (player in players.values) {
+          player.player.stop()
+        }
 
-      for (recorder in recorders.values) {
-        recorder.stopRecording()
+        for (recorder in recorders.values) {
+          recorder.stopRecording()
+        }
       }
     }
 
     Class(AudioPlayer::class) {
       Constructor { source: AudioSource?, updateInterval: Double ->
-        val isLocal = Util.isLocalFileUri(Uri.parse(source?.uri))
-        val factory = if (isLocal) {
-          DefaultDataSource.Factory(context)
-        } else {
-          OkHttpDataSource.Factory(httpClient).apply {
-            source?.headers?.let {
-              setDefaultRequestProperties(it)
-            }
-            DefaultDataSource.Factory(context, this)
-          }
-        }
-
-        val item = MediaItem.fromUri(source?.uri ?: "")
-        val mediaSource = buildMediaSourceFactory(factory, item)
+        val mediaSource = createMediaItem(source)
         runOnMain {
           val player = AudioPlayer(
             context,
@@ -271,8 +260,17 @@ class AudioModule : Module() {
         }
       }
 
+      Function("replace") { ref: AudioPlayer, source: AudioSource ->
+        if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+          val mediaSource = createMediaItem(source)
+          ref.player.replaceMediaItem(0, mediaSource.mediaItem)
+        }
+      }
+
       Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
-        ref.setSamplingEnabled(enabled)
+        appContext.mainQueue.launch {
+          ref.setSamplingEnabled(enabled)
+        }
       }
 
       AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->
@@ -355,6 +353,23 @@ class AudioModule : Module() {
         ref.setInput(input, audioManager)
       }
     }
+  }
+
+  private fun createMediaItem(source: AudioSource?): MediaSource {
+    val isLocal = Util.isLocalFileUri(Uri.parse(source?.uri))
+    val factory = if (isLocal) {
+      DefaultDataSource.Factory(context)
+    } else {
+      OkHttpDataSource.Factory(httpClient).apply {
+        source?.headers?.let {
+          setDefaultRequestProperties(it)
+        }
+        DefaultDataSource.Factory(context, this)
+      }
+    }
+
+    val item = MediaItem.fromUri(source?.uri ?: "")
+    return buildMediaSourceFactory(factory, item)
   }
 
   private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {

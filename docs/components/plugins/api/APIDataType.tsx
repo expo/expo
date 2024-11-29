@@ -1,10 +1,11 @@
+import { TypeDefinitionData } from './APIDataTypes';
+import { resolveTypeName } from './APISectionUtils';
+
 import { CodeBlock } from '~/components/base/code';
-import { TypeDefinitionData } from '~/components/plugins/api/APIDataTypes';
-import { resolveTypeName } from '~/components/plugins/api/APISectionUtils';
 import { CODE } from '~/ui/components/Text';
 
 const typeDefinitionContainsObject = (typDef: TypeDefinitionData) =>
-  typDef.type === 'reflection' && typDef.declaration?.children;
+  typDef.type === 'reflection' && typDef.declaration;
 
 type APIDataTypeProps = {
   typeDefinition: TypeDefinitionData;
@@ -20,11 +21,11 @@ export const APIDataType = ({ typeDefinition, sdkVersion, inline = true }: APIDa
     type === 'intersection' && types?.filter(typeDefinitionContainsObject).length;
   const isUnionWithObject =
     (type === 'union' || (elementType && elementType.type === 'union')) &&
-    types?.filter(typeDefinitionContainsObject).length;
+    (types?.filter(typeDefinitionContainsObject)?.length ?? 0) > 0;
   const isObjectWrapped =
     type === 'reference' &&
     typeArguments &&
-    typeArguments?.filter(typeDefinitionContainsObject).length;
+    typeArguments?.filter(typeDefinitionContainsObject).length > 0;
 
   return isObjectDefinition || isIntersectionWithObject || isUnionWithObject || isObjectWrapped ? (
     <CodeBlock inline={inline} key={typeDefinition.name}>

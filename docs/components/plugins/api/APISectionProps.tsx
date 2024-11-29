@@ -1,15 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { ELEMENT_SPACING, STYLES_SECONDARY } from './styles';
-
 import {
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
   TypeDefinitionData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   BoxSectionHeader,
   CommentTextBlock,
@@ -19,12 +17,11 @@ import {
   getTagNamesList,
   renderTypeOrSignatureType,
   resolveTypeName,
-  STYLES_APIBOX,
-  STYLES_APIBOX_NESTED,
-  STYLES_NOT_EXPOSED_HEADER,
   TypeDocKind,
-} from '~/components/plugins/api/APISectionUtils';
-import { CODE, H2, H3, H4, LI, MONOSPACE, P, UL } from '~/ui/components/Text';
+} from './APISectionUtils';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
+
+import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -117,30 +114,30 @@ export const renderProp = (
   return (
     <div
       key={`prop-entry-${name}`}
-      css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}
-      className="!pb-4 [&>*:last-child]:!mb-0">
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!pb-4 [&>*:last-child]:!mb-0')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
       <APISectionPlatformTags comment={comment} />
       <HeaderComponent tags={getTagNamesList(comment)}>
         <MONOSPACE
           weight="medium"
-          css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
-          className="wrap-anywhere">
+          className={mergeClasses(
+            'wrap-anywhere',
+            !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
+          )}>
           {name}
         </MONOSPACE>
       </HeaderComponent>
-      <P className={mergeClasses(extractedComment && ELEMENT_SPACING)}>
-        {flags?.isOptional && <span className={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
-        {flags?.isReadonly && <span className={STYLES_SECONDARY}>Read Only&emsp;&bull;&emsp;</span>}
-        <span className={STYLES_SECONDARY}>Type:</span>{' '}
+      <div className={mergeClasses(STYLES_SECONDARY, extractedComment && ELEMENT_SPACING)}>
+        {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
+        {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
+        <>Type:</>{' '}
         {renderTypeOrSignatureType({ type, signatures: extractedSignatures, sdkVersion })}
-        {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
-          <span>
-            <span className={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
-            <CODE>{defaultValue}</CODE>
-          </span>
-        ) : null}
-      </P>
+        {defaultValue && defaultValue !== UNKNOWN_VALUE && (
+          <>
+            &emsp;&bull;&emsp;Default: <CODE>{defaultValue}</CODE>
+          </>
+        )}
+      </div>
       <CommentTextBlock comment={extractedComment} includePlatforms={false} />
     </div>
   );
@@ -165,12 +162,7 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <BoxSectionHeader
-            text={header}
-            className="!text-secondary !font-medium"
-            exposeInSidebar
-            baseNestingLevel={99}
-          />
+          <BoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
           {baseProp && baseProp.comment && <CommentTextBlock comment={baseProp.comment} />}
         </div>
       )}

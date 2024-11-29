@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.getDefaultConfig = void 0;
+exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.getDefaultConfig = exports.createStableModuleIdFactory = void 0;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
@@ -101,33 +101,57 @@ function createNumericModuleIdFactory() {
         return id;
     };
 }
-function createStableModuleIdFactory(root) {
-    const fileToIdMap = new Map();
-    // This is an absolute file path.
-    return (modulePath) => {
-        // TODO: We may want a hashed version for production builds in the future.
-        let id = fileToIdMap.get(modulePath);
-        if (id == null) {
-            // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
-            if (modulePath == null) {
-                id = 'MODULE_NOT_FOUND';
-            }
-            else if ((0, sideEffects_1.isVirtualModule)(modulePath)) {
-                // Virtual modules should be stable.
-                id = modulePath;
-            }
-            else if (path_1.default.isAbsolute(modulePath)) {
-                id = path_1.default.relative(root, modulePath);
-            }
-            else {
-                id = modulePath;
-            }
-            fileToIdMap.set(modulePath, id);
+function memoize(fn) {
+    const cache = new Map();
+    return ((...args) => {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) {
+            return cache.get(key);
         }
+        const result = fn(...args);
+        cache.set(key, result);
+        return result;
+    });
+}
+function createStableModuleIdFactory(root) {
+    const getModulePath = (modulePath, scope) => {
+        // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+        if (modulePath == null) {
+            return 'MODULE_NOT_FOUND';
+        }
+        else if ((0, sideEffects_1.isVirtualModule)(modulePath)) {
+            // Virtual modules should be stable.
+            return modulePath;
+        }
+        else if (path_1.default.isAbsolute(modulePath)) {
+            return path_1.default.relative(root, modulePath) + scope;
+        }
+        else {
+            return modulePath + scope;
+        }
+    };
+    const memoizedGetModulePath = memoize(getModulePath);
+    // This is an absolute file path.
+    // TODO: We may want a hashed version for production builds in the future.
+    return (modulePath, context) => {
+        const env = context?.environment ?? 'client';
+        if (env === 'client') {
+            // Only need scope for server bundles where multiple dimensions could run simultaneously.
+            // @ts-expect-error: we patch this to support being a string.
+            return memoizedGetModulePath(modulePath, '');
+        }
+        // Helps find missing parts to the patch.
+        if (!context?.platform) {
+            // context = { platform: 'web' };
+            throw new Error('createStableModuleIdFactory: `context.platform` is required');
+        }
+        // Only need scope for server bundles where multiple dimensions could run simultaneously.
+        const scope = env !== 'client' ? `?platform=${context?.platform}&env=${env}` : '';
         // @ts-expect-error: we patch this to support being a string.
-        return id;
+        return memoizedGetModulePath(modulePath, scope);
     };
 }
+exports.createStableModuleIdFactory = createStableModuleIdFactory;
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
@@ -290,7 +314,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             asyncRequireModulePath: (0, resolve_from_1.default)(reactNativePath, metroDefaultValues.transformer.asyncRequireModulePath),
             assetRegistryPath: '@react-native/assets-registry/registry',
             assetPlugins: getAssetPlugins(projectRoot),
-            hermesParser: true,
+            // hermesParser: true,
             getTransformOptions: async () => ({
                 transform: {
                     experimentalImportSupport: false,

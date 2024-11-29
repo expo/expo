@@ -3,8 +3,8 @@ import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
 import { parsePathAndParamsFromExpoGoLink } from '../fork/extractPathFromURL';
-import getPathFromState from '../fork/getPathFromState';
-import getStateFromPath from '../fork/getStateFromPath';
+import { getPathFromState } from '../fork/getPathFromState';
+import { getStateFromPath } from '../fork/getStateFromPath';
 import { NativeIntent } from '../types';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
@@ -72,6 +72,8 @@ export function addEventListener(nativeLinking?: NativeIntent) {
   return (listener: (url: string) => void) => {
     let callback: (({ url }: { url: string }) => void) | undefined;
 
+    const legacySubscription = nativeLinking?.legacy_subscribe?.(listener);
+
     if (isExpoGo) {
       // This extra work is only done in the Expo Go app.
       callback = async ({ url }) => {
@@ -97,6 +99,7 @@ export function addEventListener(nativeLinking?: NativeIntent) {
     return () => {
       // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
       subscription?.remove?.();
+      legacySubscription?.();
     };
   };
 }

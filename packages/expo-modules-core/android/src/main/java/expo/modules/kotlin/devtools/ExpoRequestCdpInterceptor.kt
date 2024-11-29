@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
+import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -22,18 +23,18 @@ import java.math.RoundingMode
  * dispatch CDP (Chrome DevTools Protocol: https://chromedevtools.github.io/devtools-protocol/) events.
  */
 object ExpoRequestCdpInterceptor : ExpoNetworkInspectOkHttpInterceptorsDelegate {
-  private var delegate: Delegate? = null
+  private var delegate: WeakReference<Delegate?> = WeakReference(null)
   internal var coroutineScope = CoroutineScope(Dispatchers.Default)
 
   fun setDelegate(delegate: Delegate?) {
     coroutineScope.launch {
-      this@ExpoRequestCdpInterceptor.delegate = delegate
+      this@ExpoRequestCdpInterceptor.delegate = WeakReference(delegate)
     }
   }
 
   private fun dispatchEvent(event: Event) {
     coroutineScope.launch {
-      this@ExpoRequestCdpInterceptor.delegate?.dispatch(event.toJson())
+      this@ExpoRequestCdpInterceptor.delegate.get()?.dispatch(event.toJson())
     }
   }
 

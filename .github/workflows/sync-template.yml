@@ -3,7 +3,7 @@ name: Sync App Template Repository
 on:
   workflow_dispatch: {}
   push:
-    branches: [sdk-51]
+    branches: [sdk-52]
     paths:
       - .github/workflows/sync-template.yml
       - templates/expo-template-default/**
@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
+      - name: 🚚 Rename .gitignore
+        run: mv ./templates/expo-template-default/gitignore ./templates/expo-template-default/.gitignore
       - name: 🚀 Push changes to the template repository
         uses: cpina/github-action-push-to-another-repository@main
         env:

@@ -1,7 +1,5 @@
 package expo.modules.kotlin.jni
 
-import com.facebook.react.bridge.ReadableNativeMap
-
 @Suppress("KotlinJniMissingFunction")
 class JNIUtils {
   companion object {
@@ -26,7 +24,7 @@ class JNIUtils {
       jsiThis: JavaScriptModuleObject,
       jsiContext: JSIContext,
       eventName: String,
-      eventBody: ReadableNativeMap?
+      eventBody: Map<String, Any?>?
     )
   }
 }

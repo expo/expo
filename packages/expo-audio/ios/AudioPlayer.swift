@@ -1,8 +1,10 @@
 import ExpoModulesCore
 import Combine
 
-private let playbackStatus = "onPlaybackStatusUpdate"
-private let audioSample = "onAudioSampleUpdate"
+private enum AudioConstants {
+  static let playbackStatus = "playbackStatusUpdate"
+  static let audioSample = "audioSampleUpdate"
+}
 
 public class AudioPlayer: SharedRef<AVPlayer> {
   let id = UUID().uuidString
@@ -11,6 +13,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
   var currentRate: Float = 0.0
   let interval: Double
+  var isPaused: Bool {
+    ref.rate != 0.0
+  }
 
   // MARK: Observers
   private var timeToken: Any?
@@ -20,6 +25,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var audioProcessor: AudioTapProcessor?
   private var samplingEnabled = false
   private var tapInstalled = false
+
+  private var duration: Double {
+    (ref.currentItem?.duration.seconds ?? 0.0) * 1000
+  }
 
   init(_ ref: AVPlayer, interval: Double) {
     self.interval = interval
@@ -56,8 +65,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func currentStatus() -> [String: Any] {
-    let time = ref.currentItem?.duration
-    let duration = ref.status == .readyToPlay ? (time?.seconds ?? 0.0) : 0.0
+    let duration = ref.status == .readyToPlay ? duration : 0.0
     return [
       "id": id,
       "currentTime": (ref.currentItem?.currentTime().seconds ?? 0) * 1000,
@@ -65,7 +73,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
       "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
       "mute": ref.isMuted,
-      "duration": duration * 1000,
+      "duration": duration,
       "playing": ref.timeControlStatus == .playing,
       "loop": isLooping,
       "isLoaded": ref.currentItem?.status == .readyToPlay,
@@ -76,11 +84,11 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func updateStatus(with dict: [String: Any]) {
-    var body = currentStatus()
-    body.merge(dict) { _, new in
+    var arguments = currentStatus()
+    arguments.merge(dict) { _, new in
       new
     }
-    self.emit(event: playbackStatus, arguments: body)
+    self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
   }
 
   private func setupPublisher() {
@@ -99,9 +107,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   private func playerIsBuffering() -> Bool {
-    let isPlaying = ref.timeControlStatus == .playing
-
-    if isPlaying {
+    if ref.timeControlStatus == .playing {
       return false
     }
 
@@ -137,7 +143,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
           return ["frames": channelData]
         }
 
-        self.emit(event: audioSample, arguments: [
+        self.emit(event: AudioConstants.audioSample, arguments: [
           "channels": channels,
           "timestamp": timestamp
         ])
@@ -165,7 +171,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         self.ref.play()
       } else {
         self.updateStatus(with: [
-          "isPlaying": false
+          "isPlaying": false,
+          "currentTime": self.duration
         ])
       }
     }
@@ -176,7 +183,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     let interval = CMTime(seconds: updateInterval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     timeToken = ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { time in
       self.updateStatus(with: [
-        "currentPosition": time.seconds * 1000
+        "currentTime": time.seconds * 1000
       ])
     }
   }

@@ -4,9 +4,23 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 5.1.0 - 2024-11-29
 
 ### 🎉 New features
+
+- Added support for tvOS. ([#33157](https://github.com/expo/expo/pull/33157) by [@msynowski](https://github.com/msynowski))
+
+## 5.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

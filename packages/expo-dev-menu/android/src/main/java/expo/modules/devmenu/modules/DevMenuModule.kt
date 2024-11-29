@@ -30,7 +30,7 @@ class DevMenuModule : Module() {
 
       val size = callbacks.size()
       for (i in 0 until size) {
-        val callback = callbacks.getMap(i)
+        val callback = callbacks.getMap(i) ?: continue
         val name = callback.getString("name") ?: continue
         val shouldCollapse = if (callback.hasKey("shouldCollapse")) {
           callback.getBoolean("shouldCollapse")

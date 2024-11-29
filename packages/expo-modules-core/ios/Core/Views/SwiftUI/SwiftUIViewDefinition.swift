@@ -14,6 +14,17 @@ public protocol ExpoSwiftUIView<Props>: SwiftUI.View {
   init()
 }
 
+public extension ExpoSwiftUIView {
+  /**
+   Returns React's children as SwiftUI views.
+   */
+  func Children() -> some View { // swiftlint:disable:this identifier_name
+    ZStack(alignment: .topLeading) {
+      ForEach(props.children ?? []) { $0 }
+    }
+  }
+}
+
 extension ExpoSwiftUI {
   public typealias View = ExpoSwiftUIView
 
@@ -27,7 +38,7 @@ extension ExpoSwiftUI {
 
     public override func createView(appContext: AppContext) -> UIView? {
       let props = Props()
-      return HostingView(viewType: ViewType.self, props: props)
+      return HostingView(viewType: ViewType.self, props: props, appContext: appContext)
     }
 
     public override func getSupportedPropNames() -> [String] {
