@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `zoom` on android and adjust the magnitude on iOS.
+
 ### 💡 Others
 
 ## 16.0.7 — 2024-11-22

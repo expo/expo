@@ -146,6 +146,12 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
+  var zoom: Float = 0f
+    set(value) {
+      field = value
+      camera?.cameraControl?.setLinearZoom(value.coerceIn(0f, 1f))
+    }
+
   var autoFocus: FocusMode = FocusMode.OFF
     set(value) {
       field = value
@@ -415,6 +421,8 @@ class ExpoCameraView(
           camera?.let {
             observeCameraState(it.cameraInfo)
           }
+          // Set the previous zoom level after recreating the camera
+          camera?.cameraControl?.setLinearZoom(zoom.coerceIn(0f, 1f))
           this.cameraProvider = cameraProvider
         } catch (e: Exception) {
           onMountError(
