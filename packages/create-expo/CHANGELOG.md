@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 3.1.3 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- Support making templates for React Native macOS, and rename project name inside `contents.xcworkspacedata` files ([#30309](https://github.com/expo/expo/pull/30309) by [@shirakaba](https://github.com/shirakaba))
+
 ## 3.1.2 — 2024-11-14
 
 _This version does not introduce any user-facing changes._

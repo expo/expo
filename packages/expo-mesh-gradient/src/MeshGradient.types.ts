@@ -37,4 +37,11 @@ export interface MeshGradientViewProps extends ViewProps {
    * @default true
    */
   ignoresSafeArea?: boolean;
+
+  /**
+   * Masks the gradient using the alpha channel of the given children views.
+   * > **Note**: When this option is enabled, all user interactions (gestures) on children views are ignored.
+   * @default false
+   */
+  mask?: boolean;
 }
