@@ -28,7 +28,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.29.8):
     - ExpoModulesCore
-  - Expo (52.0.10):
+  - Expo (52.0.11):
     - ExpoModulesCore
   - ExpoAppleAuthentication (7.1.2):
     - ExpoModulesCore
@@ -44,7 +44,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (14.0.3):
     - ExpoModulesCore
-  - ExpoCamera (16.0.6):
+  - ExpoCamera (16.0.7):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -77,7 +77,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (14.0.0):
     - ExpoModulesCore
-  - ExpoHead (4.0.8):
+  - ExpoHead (4.0.9):
     - ExpoModulesCore
   - ExpoImage (2.0.2):
     - ExpoModulesCore
@@ -114,14 +114,16 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (14.0.1):
     - ExpoModulesCore
-  - ExpoMediaLibrary (17.0.2):
+  - ExpoMediaLibrary (17.0.3):
     - ExpoModulesCore
     - React-Core
-  - ExpoMediaLibrary/Tests (17.0.2):
+  - ExpoMediaLibrary/Tests (17.0.3):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
-  - ExpoModulesCore (2.0.5):
+  - ExpoMeshGradient (0.1.0):
+    - ExpoModulesCore
+  - ExpoModulesCore (2.0.6):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -144,7 +146,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (2.0.5):
+  - ExpoModulesCore/Tests (2.0.6):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -217,7 +219,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSymbols (0.2.0):
     - ExpoModulesCore
-  - ExpoSystemUI (4.0.3):
+  - ExpoSystemUI (4.0.4):
     - ExpoModulesCore
   - ExpoTrackingTransparency (5.0.0):
     - ExpoModulesCore
@@ -2540,6 +2542,7 @@ DEPENDENCIES:
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
+  - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
@@ -2776,6 +2779,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-mail-composer/ios"
   ExpoMediaLibrary:
     :path: "../../../packages/expo-media-library/ios"
+  ExpoMeshGradient:
+    :path: "../../../packages/expo-mesh-gradient/ios"
   ExpoModulesCore:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesTestCore:
@@ -3011,7 +3016,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
   EXNotifications: c5b96ad5fffef5515c9cfc7887ae10f8720c70a5
-  Expo: 7571b8c65b98450ac23a123dcc4d8ee3d50f1e42
+  Expo: 148aac4ce0da148c63447d09ae41ddb153f35506
   ExpoAppleAuthentication: 218e275c9bf19963247a198c450ce3852e6a9342
   ExpoAsset: 8138f2a9ec55ae1ad7c3871448379f7d97692d15
   ExpoBackgroundFetch: a3080ab72736b60441adf5f452919426c62e0533
@@ -3019,7 +3024,7 @@ SPEC CHECKSUMS:
   ExpoBlur: 562b3da84d3cd79016c411671eaf71a404266415
   ExpoBrightness: ce777f6a365592f745428cb0acc9066b400182e8
   ExpoCalendar: c063db1cf7b5c9a11930745cb75bb5ee9ce68029
-  ExpoCamera: c98e7c44765d186469ca37985e76bda1cb972758
+  ExpoCamera: 0e504ac6907bddc915770c19f001dc361ce55f0b
   ExpoCellular: c7ae03fd9480e6a4296a5632c35ab00ddaea4783
   ExpoClipboard: 166ca8c13ca1041f5ba619a211f59427ab5da8a7
   ExpoContacts: 209f0739c712bf808413c691722ce1bb1e2ea0af
@@ -3031,7 +3036,7 @@ SPEC CHECKSUMS:
   ExpoFont: 7522d869d84ee2ee8093ee997fef5b86f85d856b
   ExpoGL: 3e7c3b8478a6783d737103b33b9c11235deb6675
   ExpoHaptics: e636188d1d5f7ccb79f3c1bfab47aaf5a1768c73
-  ExpoHead: 53bf3275866fa9609f2516e4feba0c0bc5b0396c
+  ExpoHead: a623db43433938dcfbd6a38c27381055d01a0f3a
   ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
   ExpoImageManipulator: 774eb1a17c5db07944d6f9000650d422ebb3ce47
   ExpoImagePicker: 440a560c9bfc63edae854d08b9f12f75bd11c112
@@ -3043,8 +3048,9 @@ SPEC CHECKSUMS:
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: e0c5b5212381b0b800a2c1f715be823d17c51b05
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
-  ExpoMediaLibrary: 83f47430d5193186029bc57bae16e2130941bc83
-  ExpoModulesCore: 8f010532d9ab0115f047c76e0303b9f0a1a50e97
+  ExpoMediaLibrary: 2d20778aafaa2e6f60640167f0618cfacee6f81c
+  ExpoMeshGradient: 0a9aca4028bd131bd8313b1899c004aad7526c37
+  ExpoModulesCore: bb3f481a7912159f2289a653e4195146170f0a00
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
   ExpoNetwork: f07b371f7e143812980075fda6768702c154a0a0
   ExpoPrint: 3f9f5a5a19dbda5b30963d5bf078918f024aa29d
@@ -3058,8 +3064,8 @@ SPEC CHECKSUMS:
   ExpoSQLite: 56051549ddac62c16460d4391b84994faf494f00
   ExpoStoreReview: f3439c43f13fa497cfe07d16b095f39101ed5548
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
-  ExpoSystemUI: d8fb1abd91c7283d8ead3df77ed0575b85f1bb42
-  ExpoTrackingTransparency: 206d9790744f329a21e53cba0ee411d8db43ce16
+  ExpoSystemUI: 97ec8f20af5e8ca18d3191c5c72e8a04e6e2f02d
+  ExpoTrackingTransparency: 10b0304d6d2b95ea41391bf92684c1078f633e39
   ExpoVideo: 85750319df61d76237b5952fca5a9f39504c6b9b
   ExpoVideoThumbnails: 8b6bbe3cb76dd2225910667b896b27855bbda694
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
@@ -3075,7 +3081,7 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 91ab7445d2f8b0803494ed80cbfc9bd0c7526514
+  hermes-engine: fc27a3c4b51c81f907a3e55b33fd71bae214c9f1
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3176,7 +3182,7 @@ SPEC CHECKSUMS:
   StripePaymentsUI: c24f990b03a68a7f6fe704b15dd487e7bb6b603e
   StripeUICore: f2d514e900c37436dc5427fdf2c29d68ab1c2935
   UMAppLoader: bda51f73f8599e336a778b23e0956130d1e244d5
-  Yoga: f6dc1b6029519815d5516a1241821c6a9074af6d
+  Yoga: 3deb2471faa9916c8a82dda2a22d3fba2620ad37
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 640a6a74acfd58d09119af8207a10b6297b9048b
