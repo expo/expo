@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update docs and API so all units of time are returned as seconds, not milliseconds. ([#33320](https://github.com/expo/expo/pull/33320) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 0.2.4 — 2024-11-19
