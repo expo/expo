@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Support creating an `AudioPlayer` instance without using the `useAudioPlayer` hook.
+- Support creating an `AudioPlayer` instance without using the `useAudioPlayer` hook. ([#33331](https://github.com/expo/expo/pull/33331) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
