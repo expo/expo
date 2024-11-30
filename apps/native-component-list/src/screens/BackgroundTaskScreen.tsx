@@ -113,7 +113,12 @@ TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
     key: LAST_TASK_DATE_KEY,
     value: Date.now().toString(),
   });
-  await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
+  try {
+    await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
+  } catch (error) {
+    console.error('Failed to save the last fetch date', error);
+    return BackgroundTaskResult.Failed;
+  }
 
   return BackgroundTaskResult.Success;
 });
