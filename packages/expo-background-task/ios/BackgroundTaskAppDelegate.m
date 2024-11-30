@@ -16,7 +16,7 @@ EX_REGISTER_SINGLETON_MODULE(BackgroundTaskAppDelegate)
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
   // MARK: Registering Launch Handlers for Tasks
-  if ([BackgroundTaskService supportsBackgroundTasks] == YES) {
+  if ([BackgroundTaskScheduler supportsBackgroundTasks] == YES) {
 
     // Register with the BGTaskScheduler
     if ([[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:BackgroundTaskConstants.BackgroundWorkerIdentifier usingQueue:nil launchHandler:^(__kindof BGTask * _Nonnull task) {
