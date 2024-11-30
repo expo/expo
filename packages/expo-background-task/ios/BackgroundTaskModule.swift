@@ -18,7 +18,7 @@ public class BackgroundTaskModule: Module {
         throw TaskManagerNotFound()
       }
 
-      if !BackgroundTaskService.supportsBackgroundTasks() {
+      if !BackgroundTaskScheduler.supportsBackgroundTasks() {
         throw BackgroundTasksRestricted()
       }
 
@@ -34,7 +34,7 @@ public class BackgroundTaskModule: Module {
         throw TaskManagerNotFound()
       }
 
-      if !BackgroundTaskService.supportsBackgroundTasks() {
+      if !BackgroundTaskScheduler.supportsBackgroundTasks() {
         throw BackgroundTasksRestricted()
       }
 
@@ -46,7 +46,7 @@ public class BackgroundTaskModule: Module {
     }
 
     AsyncFunction("getStatusAsync") {
-      return BackgroundTaskService.supportsBackgroundTasks() ?
+      return BackgroundTaskScheduler.supportsBackgroundTasks() ?
         BackgroundTaskStatus.available : .restricted
     }
   }

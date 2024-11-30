@@ -1,7 +1,8 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 import BackgroundTasks
 
-class BackgroundTaskScheduler {
+@objc(BackgroundTaskScheduler)
+public class BackgroundTaskScheduler: NSObject {
   /**
    Tries to schedule the worker task to run
    */
@@ -47,5 +48,17 @@ class BackgroundTaskScheduler {
   public static func isWorkerRunning() async -> Bool {
     let requests = await BGTaskScheduler.shared.pendingTaskRequests()
     return requests.contains(where: { $0.identifier == BackgroundTaskConstants.BackgroundWorkerIdentifier })
+  }
+
+  /**
+   Returns true if we're on a device that supports background tasks
+   */
+  @objc public static func supportsBackgroundTasks() -> Bool {
+#if targetEnvironment(simulator)
+    // If we're on emulator we should definetly return restricted
+    return false
+#else
+    return true
+#endif
   }
 }
