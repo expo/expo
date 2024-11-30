@@ -18,9 +18,12 @@ export declare const getStatusAsync: () => Promise<BackgroundTaskStatus>;
  *
  * TaskManager.defineTask(YOUR_TASK_NAME, () => {
  *   try {
- *     // TODO
+ *     await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
  *   } catch (error) {
+ *     console.error('Failed to save the last fetch date', error);
+ *     return BackgroundTaskResult.Failed;
  *   }
+ *   return BackgroundTaskResult.Success;
  * });
  * ```
  */
