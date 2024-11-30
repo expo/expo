@@ -23,4 +23,5 @@ object Columns {
   const val IS_USER_PROFILE = ContactsContract.CommonDataKinds.Contactables.IS_USER_PROFILE
   const val MIMETYPE = ContactsContract.Data.MIMETYPE
   const val TYPE_CUSTOM = 0
+  const val STARRED = ContactsContract.Data.STARRED
 }
