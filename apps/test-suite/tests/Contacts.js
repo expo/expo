@@ -377,7 +377,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
         const { data: contacts } = await Contacts.getContactsAsync({
           fields: [Contacts.Fields.IsFavorite],
         });
-        console.log(contacts)
         const filteredContacts = contacts.filter((contact) => contact.isFavorite);
         expect(filteredContacts.length).toBe(1);
       });
