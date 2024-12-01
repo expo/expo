@@ -38,7 +38,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       if (prop === Contacts.Fields.Image || prop === 'lookupKey' || prop === 'id') {
         continue;
       }
-      if (prop === 'isFavorite' && !isAndroid) {
+      if (prop === Contacts.Fields.IsFavorite && !isAndroid) {
         continue;
       }
 
