@@ -144,6 +144,10 @@ export declare class File {
      * An md5 hash of the file. Null if the file does not exist or it cannot be read.
      */
     md5: string | null;
+    /**
+     * A mime type of the file. Null if the file does not exist or it cannot be read.
+     */
+    type: string | null;
 }
 export declare class FileHandle {
     close(): void;

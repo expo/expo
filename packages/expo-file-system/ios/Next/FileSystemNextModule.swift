@@ -98,6 +98,10 @@ public final class FileSystemNextModule: Module {
         try? file.md5
       }
 
+      Property("type") { file in
+        file.type
+      }
+
       Function("delete") { file in
         try file.delete()
       }
