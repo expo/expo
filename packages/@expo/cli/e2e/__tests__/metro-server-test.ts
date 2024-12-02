@@ -14,7 +14,7 @@ describe('bundling code', () => {
   });
 
   it('bundles the app entry point', async () => {
-    const response = await expo.fetchBundleAsync('/App.bundle');
+    const response = await expo.fetchBundleAsync('/App.bundle?platform=ios');
     expect(response).toMatchObject({ status: 200 });
     expect(response.headers.get('Content-Type')).toContain('application/javascript');
   });
