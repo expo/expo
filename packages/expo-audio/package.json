@@ -1,7 +1,7 @@
 {
   "name": "expo-audio",
   "title": "Expo Audio",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "A cross-platform audio library for React Native and Expo apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

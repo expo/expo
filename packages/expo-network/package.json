@@ -1,6 +1,6 @@
 {
   "name": "expo-network",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
   "main": "build/Network.js",
   "types": "build/Network.d.ts",
