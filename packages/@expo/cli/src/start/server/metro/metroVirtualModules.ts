@@ -52,6 +52,8 @@ function ensureMetroBundlerPatchedWithSetVirtualModule(
     hasVirtualModule?: (id: string) => boolean;
   }
 ): ExpoPatchedBundler {
+  // @ts-expect-error
+  globalThis['B'] = bundler;
   if (!bundler.setVirtualModule) {
     bundler.setVirtualModule = function (this: Bundler, id: string, contents: string) {
       assertBundlerHasPrivateMembers(this);
