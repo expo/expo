@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed cmd.exe warning. ([#33357](https://github.com/expo/expo/pull/33357) by [@keith-kurak](https://github.com/keith-kurak))
+
 ## 1.12.4 — 2024-11-14
 
 _This version does not introduce any user-facing changes._
