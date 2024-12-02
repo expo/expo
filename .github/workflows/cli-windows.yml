@@ -105,7 +105,7 @@ jobs:
 
       - name: 🧪 E2E Test CLI
         working-directory: packages/@expo/cli
-        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn test:e2e --max-workers 2 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   # web:
   #   runs-on: ubuntu-22.04
