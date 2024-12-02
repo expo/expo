@@ -175,14 +175,14 @@ export default class CameraView extends Component<CameraViewProps> {
   }
 
   /**
-   * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
-   * @platform ios
+   * On iOS, presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+   * On Android, we will use the [`Google Code Scanner`](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
    */
   static async launchScanner(options?: ScanningOptions): Promise<void> {
     if (!options) {
       options = { barcodeTypes: [] };
     }
-    if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
+    if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.launchScanner(options);
     }
   }
@@ -192,7 +192,7 @@ export default class CameraView extends Component<CameraViewProps> {
    * @platform ios
    */
   static async dismissScanner(): Promise<void> {
-    if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
+    if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.dismissScanner();
     }
   }

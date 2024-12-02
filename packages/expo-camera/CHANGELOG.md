@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add support for the `Google Code Scanner`, similar to the to `DataScannerViewController` used on iOS.
+
 ### 🐛 Bug fixes
 
 - Fix `zoom` on Android and adjust the magnitude on iOS. ([#33319](https://github.com/expo/expo/pull/33319) by [@alanjhughes](https://github.com/alanjhughes))

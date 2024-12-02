@@ -34,8 +34,8 @@ export default class CameraView extends Component<CameraViewProps> {
      */
     pausePreview(): Promise<void>;
     static ConversionTables: {
-        type: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
-        flash: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
+        type: Record<number | typeof Symbol.iterator | "length" | "toString" | "concat" | "slice" | "indexOf" | "lastIndexOf" | "includes" | "at" | "link" | "search" | "charAt" | "charCodeAt" | "localeCompare" | "match" | "replace" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "substr" | "codePointAt" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "valueOf", string | undefined>;
+        flash: Record<number | typeof Symbol.iterator | "length" | "toString" | "concat" | "slice" | "indexOf" | "lastIndexOf" | "includes" | "at" | "link" | "search" | "charAt" | "charCodeAt" | "localeCompare" | "match" | "replace" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "substr" | "codePointAt" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "valueOf", string | undefined>;
     };
     static defaultProps: CameraViewProps;
     _cameraHandle?: number | null;
@@ -69,8 +69,8 @@ export default class CameraView extends Component<CameraViewProps> {
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture | undefined>;
     /**
-     * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
-     * @platform ios
+     * On iOS, presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+     * On Android, we will use the [`Google Code Scanner`](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
      */
     static launchScanner(options?: ScanningOptions): Promise<void>;
     /**
