@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import JsonFile from '@expo/json-file';
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import chalk from 'chalk';
@@ -17,6 +16,7 @@ import { EOL } from 'os';
 import path from 'path';
 
 import { xcrunAsync } from './xcrun';
+import { getExpoHomeDirectory } from '../../../api/user/UserSettings';
 import * as Log from '../../../log';
 import { createTempFilePath } from '../../../utils/createTempPath';
 import { CommandError } from '../../../utils/errors';

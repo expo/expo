@@ -1,6 +1,6 @@
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from '@expo/config';
 
-import { getUserState } from './getUserState';
+import { getSettings } from '../api/user/UserSettings';
 
 const ANONYMOUS_USERNAME = 'anonymous';
 
@@ -19,5 +19,5 @@ export function getAccountUsername(manifest: Pick<ExpoConfig, 'owner'> = {}): st
     return username;
   }
   // Statically get the username from the global user state.
-  return getUserState().read().auth?.username || ANONYMOUS_USERNAME;
+  return getSettings().read().auth?.username || ANONYMOUS_USERNAME;
 }
