@@ -34,9 +34,7 @@ open class ExpoAppInstance: RCTAppDelegate {
     }
 
     configuration.customizeRootView = { rootView in
-      // @tsapeta: Currently (RN 0.76) `customizeRootView` signature in `RCTAppDelegate` is broken as it uses `RCTRootView` type,
-      // but this type is no longer used. It should rather be `RCTSurfaceHostingView`, but for simplicity it could be just `UIView`.
-      // We need a helper function in Objective-C to actually make it to work, otherwise the types will conflict in Swift.
+      // @tsapeta: We cannot just call `self.customize(rootView)` – see the description of the below method.
       return EXAppDelegateWrapper.customizeRootView(rootView, by: self)
     }
 
