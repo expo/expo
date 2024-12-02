@@ -384,7 +384,11 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
  * @see https://github.com/facebook/metro/pull/1286
  */
 export function convertPathToModuleSpecifier(pathLike: string) {
-  return pathLike.replaceAll('\\', '/');
+  if (process.platform === 'win32') {
+    return pathLike.replaceAll('\\', '/');
+  }
+
+  return pathLike;
 }
 
 export function getMetroOptionsFromUrl(urlFragment: string) {

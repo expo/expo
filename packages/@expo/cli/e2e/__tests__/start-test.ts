@@ -155,9 +155,9 @@ describe('server', () => {
       version: 3,
       sources: expect.arrayContaining([
         '__prelude__',
-        expect.pathMatching('metro-runtime/src/polyfills/require.js'),
-        expect.pathMatching('@react-native/js-polyfills/console.js'),
-        expect.pathMatching('@react-native/js-polyfills/error-guard.js'),
+        expect.pathMatching(/metro-runtime\/src\/polyfills\/require.js$/),
+        expect.pathMatching(/@react-native\/js-polyfills\/console.js$/),
+        expect.pathMatching(/@react-native\/js-polyfills\/error-guard.js$/),
         '\0polyfill:external-require',
         // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
         '\0polyfill:environment-variables',
