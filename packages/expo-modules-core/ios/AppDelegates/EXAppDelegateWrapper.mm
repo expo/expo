@@ -19,12 +19,6 @@
 
 @end
 
-@interface EXAppDelegateWrapper()
-
-@property (nonatomic, strong) EXReactDelegateWrapper *reactDelegate;
-
-@end
-
 @implementation EXAppDelegateWrapper {
   EXExpoAppDelegate *_expoAppDelegate;
 }
@@ -33,7 +27,6 @@
 {
   if (self = [super init]) {
     _expoAppDelegate = [[EXExpoAppDelegate alloc] init];
-    _reactDelegate = [[EXReactDelegateWrapper alloc] initWithExpoReactDelegate:_expoAppDelegate.reactDelegate];
   }
   return self;
 }
@@ -72,57 +65,7 @@
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
-  __weak __typeof(self) weakSelf = self;
-  RCTBundleURLBlock bundleUrlBlock = ^{
-    RCTAppDelegate *strongSelf = weakSelf;
-    return strongSelf.bundleURL;
-  };
-
-  RCTRootViewFactoryConfiguration *configuration =
-      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
-                                                       newArchEnabled:self.newArchEnabled
-                                                   turboModuleEnabled:self.newArchEnabled
-                                                    bridgelessEnabled:self.newArchEnabled];
-
-  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
-  {
-    return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
-  };
-
-  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions)
-  {
-    return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
-  };
-
-  configuration.customizeRootView = ^(UIView *_Nonnull rootView) {
-    [weakSelf customizeRootView:(RCTRootView *)rootView];
-  };
-
-  // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
-  configuration.sourceURLForBridge = nil;
-
-  if ([self respondsToSelector:@selector(extraModulesForBridge:)]) {
-    configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
-    {
-      return [weakSelf extraModulesForBridge:bridge];
-    };
-  }
-
-  if ([self respondsToSelector:@selector(extraLazyModuleClassesForBridge:)]) {
-    configuration.extraLazyModuleClassesForBridge =
-        ^NSDictionary<NSString *, Class> *_Nonnull(RCTBridge *_Nonnull bridge)
-    {
-      return [weakSelf extraLazyModuleClassesForBridge:bridge];
-    };
-  }
-
-  if ([self respondsToSelector:@selector(bridge:didNotFindModule:)]) {
-    configuration.bridgeDidNotFindModule = ^BOOL(RCTBridge *_Nonnull bridge, NSString *_Nonnull moduleName) {
-      return [weakSelf bridge:bridge didNotFindModule:moduleName];
-    };
-  }
-
-  return [[EXReactRootViewFactory alloc] initWithReactDelegate:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
+  return [_expoAppDelegate createRCTRootViewFactory];
 }
 
 #if !TARGET_OS_OSX
@@ -150,6 +93,13 @@
                exceptionId:(NSUInteger)exceptionId
                    isFatal:(BOOL)isFatal
 {
+}
+
+#pragma mark - Helpers
+
++ (void)customizeRootView:(nonnull UIView *)rootView byAppDelegate:(nonnull RCTAppDelegate *)appDelegate
+{
+  [appDelegate customizeRootView:(RCTRootView *)rootView];
 }
 
 @end

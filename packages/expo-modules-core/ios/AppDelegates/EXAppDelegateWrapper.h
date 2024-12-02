@@ -6,9 +6,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface RCTAppDelegate ()
+
+- (RCTRootViewFactory *)createRCTRootViewFactory;
+
+@end
+
 @interface EXAppDelegateWrapper : RCTAppDelegate
 
 @property (nonatomic, strong, readonly) EXReactDelegateWrapper *reactDelegate;
+
++ (void)customizeRootView:(nonnull UIView *)rootView byAppDelegate:(nonnull RCTAppDelegate *)appDelegate;
 
 @end
 
