@@ -76,7 +76,7 @@ async function fetchBundleAsync(server: BackgroundServer, url: string) {
     throw new Error(`Bundle fetch failed, received ${response.statusText} (${response.status})`);
   }
 
-  return await response.text();
+  return response;
 }
 
 function fetchAsExpoGoAsync(server: BackgroundServer, url: string) {
