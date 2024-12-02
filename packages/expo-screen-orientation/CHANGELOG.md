@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed event listeners on web.
+
 ### 💡 Others
 
 ## 8.0.0 — 2024-10-22
