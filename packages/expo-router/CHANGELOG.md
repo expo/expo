@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+### 🐛 Bug fixes
+
+- Fix regex on `expo-router/matcher` method `matchLastGroupName` allows to use it on `IOS > 16.4` ([#33224](https://github.com/expo/expo/issues/33224) by [@antonio-serrat](https://github.com/Antonio-Serat))
+
 ## 4.0.10 - 2024-11-29
 
 _This version does not introduce any user-facing changes._
