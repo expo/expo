@@ -7,8 +7,8 @@ import {
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
-  ExpoSourceStartCommand,
 } from './utils';
+import { createExpoStartServer } from '../utils/expo-server';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -89,12 +89,11 @@ for (const args of [
 }
 
 describe('server', () => {
-  let expo: ExpoSourceStartCommand;
+  const expo = createExpoStartServer();
 
   beforeAll(async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
+    expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
     await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
-    expo = new ExpoSourceStartCommand(projectRoot);
     await expo.startAsync();
   });
 
@@ -117,11 +116,14 @@ describe('server', () => {
 
     // URLs
     expect(manifest.launchAsset.url).toBe(
-      'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable'
+      new URL(
+        '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
+        expo.url
+      ).href
     );
-    expect(manifest.extra.expoGo?.debuggerHost).toBe('127.0.0.1:8081');
+    expect(manifest.extra.expoGo?.debuggerHost).toBe(expo.url.host);
+    expect(manifest.extra.expoClient?.hostUri).toBe(expo.url.host);
     expect(manifest.extra.expoGo?.mainModuleName).toBe('node_modules/expo/AppEntry');
-    expect(manifest.extra.expoClient?.hostUri).toBe('127.0.0.1:8081');
 
     // Manifest
     expect(manifest.runtimeVersion).toBe('1.0');
@@ -153,9 +155,9 @@ describe('server', () => {
       version: 3,
       sources: expect.arrayContaining([
         '__prelude__',
-        expect.stringContaining('metro-runtime/src/polyfills/require.js'),
-        expect.stringContaining('@react-native/js-polyfills/console.js'),
-        expect.stringContaining('@react-native/js-polyfills/error-guard.js'),
+        expect.pathMatching('metro-runtime/src/polyfills/require.js'),
+        expect.pathMatching('@react-native/js-polyfills/console.js'),
+        expect.pathMatching('@react-native/js-polyfills/error-guard.js'),
         '\0polyfill:external-require',
         // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
         '\0polyfill:environment-variables',

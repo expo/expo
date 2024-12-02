@@ -4,6 +4,7 @@ import type { SpawnOptions, ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
 import { createServer } from 'node:net';
 import { env } from 'node:process';
+import stripAnsi from 'strip-ansi';
 import treeKill from 'tree-kill';
 
 export type BackgroundServerOptions = SpawnOptions & {
@@ -30,11 +31,14 @@ export type BackgroundServerOptions = SpawnOptions & {
    * When passing a URL, the port will be overriden using the configured port.
    */
   host(output: string | Uint8Array): URL | string | null;
+  /** Fully show the child process output */
+  verbose?: boolean;
 };
 
 export type BackgroundServer = {
-  process: ChildProcess;
-  url: URL;
+  options: SpawnOptions;
+  readonly process: ChildProcess;
+  readonly url: URL;
   /** Fetch using URL pathnames from the server, the full URL of the server will be added */
   fetchAsync(url: string | URL, init?: RequestInit): Promise<Response>;
   /** Start the background server, and wait until the server URL is resolved */
@@ -51,13 +55,16 @@ export function createBackgroundServer({
   command,
   host: resolveUrl,
   port: resolvePort = findFreePortAsync,
+  verbose = false,
   ...spawnOptions
 }: BackgroundServerOptions): BackgroundServer {
   let child: ChildProcess | null = null;
   let url: URL | null = null;
-  let exitHandler: ((code: number | null, signal: number | null) => void) | null = null;
+
+  let subscriptions: (() => void)[] = [];
 
   return {
+    options: spawnOptions,
     get process() {
       assert(child, 'Server process is unavailable, likely not fully started');
       return child;
@@ -79,55 +86,64 @@ export function createBackgroundServer({
         ? command.concat(flags)
         : command(port).concat(flags);
 
-      exitHandler = (code, signal) => {
-        console.error(
-          [bin, ...commandOrFlags].join(' '),
-          'exited unexpectedly with:',
-          code || signal || 'unknown exit signal'
-        );
-      };
+      // Define the port through the environment variable, setting this here outputs the port in verbose mode
+      spawnOptions.env ??= {};
+      spawnOptions.env.PORT = String(port);
 
       child = spawn(bin, commandOrFlags, {
         shell: false,
         stdio: ['ignore', 'pipe', 'pipe'],
         ...spawnOptions,
         env: {
-          // Attempt to define the `NODE_ENV` environment variable
-          NODE_ENV: spawnOptions.env?.NODE_ENV ?? '',
-          // Define the `PATH` environment variable, to allow `command: ['yarn', 'expo']`
-          PATH: spawnOptions.env?.PATH ?? env.PATH,
-          // Define the port the command should bind to
-          PORT: String(port),
+          ...env, // Pipe through all environment variables from the host by default
           ...spawnOptions.env,
         },
       });
 
-      child.on('exit', exitHandler);
-
-      // Wait until the server URL is resolved, or spawn errors occurred
-      const result = await Promise.race([
-        once(child, 'error').then(([error]) => ({ error })),
-        waitForOutputAsync(child, resolveUrl).then((url) => ({ url })),
-      ]);
-
-      if ('error' in result) {
-        child.off('exit', exitHandler);
-        child = null;
-        throw createSpawnError(result.error);
+      if (verbose) {
+        console.log('[server] spawn', bin, ...commandOrFlags, this.options);
+        subscriptions.push(enableVerboseLogging(child));
       }
 
+      // Wait until the server is ready, or when startup errors occurred
+      const result = await Promise.race([
+        waitForOutputAsync(child, resolveUrl).then((url) => ({ url })),
+        once(child, 'error').then(([error]) => ({ error: createSpawnCommandError(error) })),
+        once(child, 'exit').then(([code, signal]) => ({
+          error: createSpawnExitError([bin, ...commandOrFlags].join(' '), code ?? signal),
+        })),
+      ]);
+      if ('error' in result) {
+        await this.stopAsync(true);
+        throw result.error;
+      }
+
+      // Store the resolved host, marking the server as ready
       url = new URL(result.url, 'http://localhost');
       url.port = String(port);
+
+      // Add a listener that throws when the process exits unexpectedly
+      const onChildExit = (code: number | null, signal: NodeJS.Signals | null) => {
+        throw createSpawnExitError([bin, ...commandOrFlags].join(' '), code || signal);
+      };
+      child.on('exit', onChildExit);
+      subscriptions.push(() => child?.off('exit', onChildExit));
     },
     async stopAsync(force = false) {
       if (!child && !force) {
         throw new Error('Server was not started, unable to stop server process');
       }
 
-      if (exitHandler) child?.off('exit', exitHandler);
-      await killProcessAsync(child ?? undefined);
+      subscriptions.forEach((unsubscribe) => unsubscribe());
+      subscriptions = [];
 
-      exitHandler = null;
+      if (verbose) {
+        console.log('[server] Stopping server', force ? 'by force' : '');
+      }
+
+      await killProcessAsync(child ?? undefined, 'SIGKILL', force);
+
+      subscriptions = [];
       child = null;
       url = null;
     },
@@ -139,7 +155,7 @@ export function createBackgroundServer({
  * Errors thrown through `child.on('error')` are not actual Error instances,
  * and obfuscates the command executed.
  */
-function createSpawnError(spawn: any): Error {
+function createSpawnCommandError(spawn: any): Error {
   if (spawn instanceof Error) return spawn;
 
   const cause = new Error(
@@ -153,6 +169,31 @@ function createSpawnError(spawn: any): Error {
   });
 
   return new Error('Server command failed to spawn', { cause });
+}
+
+/** Create a descriptive error containing the fully executed command when the process exits unexpectedly */
+function createSpawnExitError(command: string, codeOrSignal: number | NodeJS.Signals | null) {
+  return new Error(`${command} exited unexpectedly with: ${codeOrSignal || 'unknown exit signal'}`);
+}
+
+/**
+ * Enable verbose logging passing through the output of the child process to the current process.
+ * This method returns a unsubscribe method.
+ */
+function enableVerboseLogging(child: ChildProcess) {
+  const prefixLines = (chunk: any, prefix: string) =>
+    `${prefix} ` + chunk.toString().split('\n').join(`\n${prefix} `);
+
+  const onChildStderr = (chunk: any) => process.stderr.write(prefixLines(chunk, '[server err]'));
+  const onChildStdout = (chunk: any) => process.stdout.write(prefixLines(chunk, '[server out]'));
+
+  child.stderr?.on('data', onChildStderr);
+  child.stdout?.on('data', onChildStdout);
+
+  return () => {
+    child.stderr?.off('data', onChildStderr);
+    child.stderr?.off('data', onChildStdout);
+  };
 }
 
 /**
@@ -194,11 +235,16 @@ export async function findFreePortAsync() {
  * Stop or kill a running the child process, and possible sub-processes it started.
  * This uses `tree-kill` to stop all processes on Linux, macOS, and Windows.
  */
-export async function killProcessAsync(child?: ChildProcess, signal: NodeJS.Signals = 'SIGKILL') {
+export async function killProcessAsync(
+  child?: ChildProcess,
+  signal: NodeJS.Signals = 'SIGKILL',
+  force = false
+) {
   if (!child) return;
 
   const killed = once(child, 'close');
   await new Promise<void>((resolve, reject) => {
+    if (force && !child.pid) return resolve();
     assert(child.pid, 'Child process has no process ID, unable to kill process');
     treeKill(child.pid, signal, (error) => {
       if (error) {
@@ -242,4 +288,21 @@ export async function waitForOutputAsync<T>(
     child.stderr.off('data', onChildOutput);
     child.stdout.off('data', onChildOutput);
   }
+}
+
+/** Find a value, prefixed by another string, per line of the output. */
+export function findPrefixedValue(output: string, prefix: string) {
+  const line = output.split('\n').find((line) => line.includes(prefix));
+  const value = line?.split(prefix).pop()?.trim();
+  return value ?? null;
+}
+
+/** Create a background server using `npx serve` */
+export function createStaticServer(options: Partial<BackgroundServerOptions>) {
+  return createBackgroundServer({
+    command: ['npx', 'serve'],
+    host: (chunk: any) =>
+      findPrefixedValue(stripAnsi(chunk.toString()), 'Accepting connections at '),
+    ...options,
+  });
 }

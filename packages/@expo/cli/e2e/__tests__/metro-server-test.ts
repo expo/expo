@@ -1,14 +1,11 @@
-import {
-  ExpoSourceStartCommand,
-  setupTestProjectWithOptionsAsync as setupTestProjectAsync,
-} from './utils';
+import { setupTestProjectWithOptionsAsync as setupTestProjectAsync } from './utils';
+import { createExpoStartServer } from '../utils/expo-server';
 
 describe('bundling code', () => {
-  let expo: ExpoSourceStartCommand;
+  const expo = createExpoStartServer();
 
   beforeAll(async () => {
-    const projectRoot = await setupTestProjectAsync('metro-server-bundle-code', 'with-blank');
-    expo = new ExpoSourceStartCommand(projectRoot);
+    expo.options.cwd = await setupTestProjectAsync('metro-server-bundle-code', 'with-blank');
     await expo.startAsync(['--max-workers=0']);
   });
 
@@ -24,15 +21,16 @@ describe('bundling code', () => {
 });
 
 describe('serving assets', () => {
-  let expo: ExpoSourceStartCommand;
-
-  beforeAll(async () => {
-    const projectRoot = await setupTestProjectAsync('metro-server-bundle-asset', 'with-assets');
-    expo = new ExpoSourceStartCommand(projectRoot, {
+  const expo = createExpoStartServer({
+    env: {
       // See: e2e/fixtures/with-assets/babel.config.js
       TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
-    });
-    await expo.startAsync();
+    },
+  });
+
+  beforeAll(async () => {
+    expo.options.cwd = await setupTestProjectAsync('metro-server-bundle-asset', 'with-assets');
+    await expo.startAsync(['--max-workers=0']);
   });
 
   afterAll(async () => {

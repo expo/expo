@@ -16,7 +16,6 @@ import { promisify } from 'node:util';
 import treeKill from 'tree-kill';
 
 import { copySync } from '../../src/utils/dir';
-import { ExpoStartCommand } from '../utils/command-instance';
 
 export const bin = require.resolve('../../build/bin/cli');
 
@@ -35,11 +34,6 @@ export function execute(...args: string[]) {
 export function execaLog(command: string, args: string[], options: execa.Options) {
   //   console.log(`Running: ${command} ${args.join(' ')}`);
   return execa(command, args, options);
-}
-
-/** Start the Expo development server with controlled interactions, similar to {@link ExpoStartCommand} - except running from source */
-export class ExpoSourceStartCommand extends ExpoStartCommand {
-  protected cliBinary = ['node', bin];
 }
 
 export function getRoot(...args: string[]) {
