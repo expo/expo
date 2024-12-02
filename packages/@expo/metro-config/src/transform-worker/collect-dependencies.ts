@@ -17,7 +17,11 @@ import * as crypto from 'node:crypto';
 
 const debug = require('debug')('expo:metro:collect-dependencies') as typeof console.log;
 
-const MAGIC_IMPORT_COMMENT = '@metro-ignore';
+const MAGIC_IMPORT_COMMENTS = [
+  '@metro-ignore',
+  // Add support for Webpack ignore comment which is used in many different React libraries.
+  'webpackIgnore: true',
+];
 
 // asserts non-null
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
@@ -468,14 +472,8 @@ function hasMagicImportComment(path: NodePath<CallExpression>): boolean {
   // Get first argument of import()
   const [firstArg] = path.node.arguments;
 
-  const comments = [
-    MAGIC_IMPORT_COMMENT,
-    // Add support for Webpack ignore comment which is used in many different React libraries.
-    'webpackIgnore: true',
-  ];
-
   // Check comments before the argument
-  return !!comments.some(
+  return !!MAGIC_IMPORT_COMMENTS.some(
     (magicComment) =>
       firstArg?.leadingComments?.some((comment) => comment.value.includes(magicComment)) ||
       path.node.leadingComments?.some((comment) => comment.value.includes(magicComment)) ||
