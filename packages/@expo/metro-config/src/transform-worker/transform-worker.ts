@@ -51,6 +51,7 @@ export async function transform(
 ): Promise<TransformResponse> {
   const reactServer = options.customTransformOptions?.environment === 'react-server';
   const posixFilename = toPosixPath(filename);
+
   if (
     typeof options.customTransformOptions?.dom === 'string' &&
     posixFilename.match(/expo\/dom\/entry\.js/)
@@ -61,7 +62,7 @@ export async function transform(
     const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
     return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
   }
-  if (filename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+  if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
     const environment = options.customTransformOptions?.environment;
     const isServer = environment === 'node' || environment === 'react-server';
 
@@ -100,7 +101,7 @@ export async function transform(
     if (
       isClientEnvironment &&
       // TODO: Ensure this works with windows.
-      (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+      (posixFilename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
         // Strip +api files.
         filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))
     ) {
@@ -168,7 +169,8 @@ export async function transform(
   // in development and a static CSS file in production.
   if (matchCssModule(filename)) {
     const results = await transformCssModuleWeb({
-      filename,
+      // Use the POSIX formatted filename for consistent CSS module IDs, which affect file hashes causing different hashes between platforms.
+      filename: posixFilename,
       src: code,
       options: {
         reactServer,

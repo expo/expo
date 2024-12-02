@@ -68,7 +68,7 @@ async function transform(config, projectRoot, filename, data, options) {
         const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
         return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
     }
-    if (filename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+    if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
         const environment = options.customTransformOptions?.environment;
         const isServer = environment === 'node' || environment === 'react-server';
         if (!isServer) {
@@ -95,7 +95,7 @@ async function transform(config, projectRoot, filename, data, options) {
         const isClientEnvironment = environment !== 'node' && environment !== 'react-server';
         if (isClientEnvironment &&
             // TODO: Ensure this works with windows.
-            (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+            (posixFilename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
                 // Strip +api files.
                 filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))) {
             // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
@@ -140,7 +140,8 @@ async function transform(config, projectRoot, filename, data, options) {
     // in development and a static CSS file in production.
     if ((0, css_modules_1.matchCssModule)(filename)) {
         const results = await (0, css_modules_1.transformCssModuleWeb)({
-            filename,
+            // Use the POSIX formatted filename for consistent CSS module IDs, which affect file hashes causing different hashes between platforms.
+            filename: posixFilename,
             src: code,
             options: {
                 reactServer,

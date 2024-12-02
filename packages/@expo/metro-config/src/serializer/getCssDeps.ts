@@ -5,8 +5,8 @@ import path from 'path';
 import { CSSMetadata } from './jsOutput';
 import { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
-import { hashString } from '../utils/hash';
 import { toPosixPath } from '../utils/filePath';
+import { hashString } from '../utils/hash';
 
 export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
 
