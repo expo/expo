@@ -7,10 +7,12 @@ open class ExpoAppInstance: RCTAppDelegate {
   @objc
   public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
+  @objc
   open override func createRootViewController() -> UIViewController {
     return reactDelegate.createRootViewController()
   }
 
+  @objc
   open override func createRCTRootViewFactory() -> RCTRootViewFactory {
     let bundleUrlBlock: RCTBundleURLBlock = { [weak self] in
       return self?.bundleURL()

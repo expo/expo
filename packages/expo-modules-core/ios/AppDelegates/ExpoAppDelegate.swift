@@ -39,7 +39,11 @@ open class ExpoAppDelegate: ExpoAppInstance {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    if UIApplication.shared.delegate is ExpoAppDelegate {
+      // Super function from `RCTAppDelegate` must be called only when the class is used as the base class of the AppDelegate.
+      // For backwards compatibility `EXAppDelegateWrapper` creates a detached instance of `ExpoAppDelegate`, in which case this call must be skipped.
+      super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
 
     return subscribers.reduce(false) { result, subscriber in
       return subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions) ?? false || result

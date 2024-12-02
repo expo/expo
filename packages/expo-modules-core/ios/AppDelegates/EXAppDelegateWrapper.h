@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+__deprecated_msg("EXAppDelegateWrapper is deprecated as of SDK 53. Migrate your AppDelegate to Swift and use ExpoAppDelegate instead.")
 @interface EXAppDelegateWrapper : RCTAppDelegate
 
 @property (nonatomic, strong, readonly) EXReactDelegateWrapper *reactDelegate;
