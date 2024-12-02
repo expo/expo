@@ -468,12 +468,19 @@ function hasMagicImportComment(path: NodePath<CallExpression>): boolean {
   // Get first argument of import()
   const [firstArg] = path.node.arguments;
 
+  const comments = [
+    MAGIC_IMPORT_COMMENT,
+    // Add support for Webpack ignore comment which is used in many different React libraries.
+    'webpackIgnore: true',
+  ];
+
   // Check comments before the argument
-  return !!(
-    firstArg?.leadingComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)) ||
-    path.node.leadingComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)) ||
-    // Get the inner comments between import and its argument
-    path.node.innerComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT))
+  return !!comments.some(
+    (magicComment) =>
+      firstArg?.leadingComments?.some((comment) => comment.value.includes(magicComment)) ||
+      path.node.leadingComments?.some((comment) => comment.value.includes(magicComment)) ||
+      // Get the inner comments between import and its argument
+      path.node.innerComments?.some((comment) => comment.value.includes(magicComment))
   );
 }
 

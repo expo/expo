@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for `/* webpackIgnore: true */` magic comment in code splitting.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
