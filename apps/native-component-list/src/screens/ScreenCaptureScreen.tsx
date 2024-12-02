@@ -11,7 +11,7 @@ function useScreenCapture({
   onRecording,
 }: {
   onScreenshot: () => void;
-  onRecording: (isRecording: boolean) => void;
+  onRecording: (props: { isCaptured: boolean }) => void;
 }) {
   const hasPermissions = async () => {
     const { status } = await ScreenCapture.requestPermissionsAsync();
@@ -43,7 +43,7 @@ function useScreenCapture({
 type Timestamp = {
   type: 'screenshot' | 'recording';
   timestamp: Date;
-  isRecording?: boolean;
+  isCaptured?: boolean;
 };
 
 export default function ScreenCaptureScreen() {
@@ -63,12 +63,14 @@ export default function ScreenCaptureScreen() {
       setTimestamps((timestamps) =>
         timestamps.concat([{ type: 'screenshot', timestamp: new Date() }])
       ),
-    onRecording: (isRecording) => {
+    onRecording: ({ isCaptured }) => {
       setTimestamps((timestamps) =>
-        timestamps.concat([{ type: 'recording', timestamp: new Date(), isRecording }])
+        timestamps.concat([{ type: 'recording', timestamp: new Date(), isCaptured }])
       );
     },
   });
+
+  console.log('isCaptured', JSON.stringify(timestamps));
 
   return (
     <View style={styles.container}>
@@ -84,7 +86,7 @@ export default function ScreenCaptureScreen() {
         renderItem={({ item }) => (
           <MonoText>
             {item.timestamp.toLocaleTimeString()} - {item.type}
-            {item.type === 'recording' ? (item.isRecording ? ' - Started' : '- Stopped') : ''}
+            {item.type === 'recording' ? (item.isCaptured ? ' - Started' : '- Stopped') : ''}
           </MonoText>
         )}
       />

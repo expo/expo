@@ -120,7 +120,9 @@ export function addScreenshotListener(listener: () => void): EventSubscription {
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
  * `remove()` or passing it to `removeRecordingListener`.
  */
-export function addRecordingListener(listener: (isRecording: boolean) => void): EventSubscription {
+export function addRecordingListener(
+  listener: (props: { isCaptured: boolean }) => void
+): EventSubscription {
   return ExpoScreenCapture.addListener(onRecordingEventName, listener);
 }
 

@@ -11,8 +11,7 @@ public final class ScreenCaptureModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenCapture")
 
-    Events(onScreenshotEventName)
-    Events(onRecordingEventName)
+    Events(onScreenshotEventName, onRecordingEventName)
 
     OnCreate {
       let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
@@ -58,9 +57,9 @@ public final class ScreenCaptureModule: Module {
 
   @objc
   func preventScreenRecording() {
-    let isRecording = UIScreen.main.isRecording
+    let isCaptured = UIScreen.main.isCaptured
 
-    if isRecording {
+    if isCaptured {
       UIApplication.shared.keyWindow?.subviews.first?.addSubview(blockView)
     } else {
       blockView.removeFromSuperview()
@@ -69,15 +68,15 @@ public final class ScreenCaptureModule: Module {
 
   @objc
   func listenForScreenCapture() {
-    sendEvent(onScreenshotEventName, [
-      "body": nil
-    ])
+      sendEvent(onScreenshotEventName, [
+          "body": nil
+      ])
   }
 
   @objc
   func listenForScreenRecording() {
     sendEvent(onRecordingEventName, [
-      "isRecording": UIScreen.main.isRecording
+      "isCaptured": UIScreen.main.isCaptured
     ])
   }
 }
