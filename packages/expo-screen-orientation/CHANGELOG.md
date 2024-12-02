@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed event listeners on web.
+- Fixed event listeners on web. ([#33361](https://github.com/expo/expo/pull/33361) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
