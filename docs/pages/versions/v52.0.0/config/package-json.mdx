@@ -8,13 +8,15 @@ isNew: true
 
 This is a reference to Expo specific properties that can be used in the **package.json** file.
 
-## `install.exclude`
+## `install`
+
+### `exclude`
 
 Exclude a specific library from the version checks handled by `npx expo start` or `npx expo-doctor` by adding the `install.exclude` property to the **package.json** file.
 
 ```json package.json
 {
-  /* @hide other package.json properties... */ /* @end */
+  /* @hide Other package.json properties... */ /* @end */
   "expo": {
     "install": {
       "exclude": ["expo-updates", "expo-splash-screen"]
@@ -25,33 +27,8 @@ Exclude a specific library from the version checks handled by `npx expo start` o
 
 Any library listed in the `exclude` array will be ignored, but the [ `npx expo install` command](/more/expo-cli/#install) will install, check, and fix all other dependencies.
 
-## `autolinking.exclude`
+## `autolinking`
 
-Exclude a specific Expo SDK library that is installed by other dependencies from [autolinking](/modules/autolinking/) by adding the `autolinking.exclude` property to the **package.json** file.
+Allows configuring module resolution behavior by using `autolinking` property in **package.json**.
 
-```json package.json
-{
-  /* @hide Other package.json properties... */ /* @end */
-  "expo": {
-    "autolinking": {
-      "exclude": ["expo-keep-awake"]
-    }
-  }
-}
-```
-
-You can also exclude an Expo SDK library for a specific platform using `exclude` under the platform key.
-
-```json package.json
-{
-  /* @hide Other package.json properties... */ /* @end */
-  "expo": {
-    "autolinking": {
-      "exclude": ["expo-keep-awake"]
-      "ios": {
-        "exclude": ["expo-font"]
-      }
-    }
-  }
-}
-```
+For complete reference, see [Autolinking configuration](/modules/autolinking/#configuration).

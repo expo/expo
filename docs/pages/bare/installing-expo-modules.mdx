@@ -168,7 +168,7 @@ To exclude any of these modules, refer to the following guide on [excluding modu
 
 ### Excluding specific modules from autolinking
 
-If you need to exclude Expo modules you are not using, which were installed by other dependencies, you can use the `expo.autolinking` field in **package.json**:
+If you need to exclude Expo modules you are not using, but were installed by other dependencies, you can use the [`expo.autolinking.exclude`](/modules/autolinking/#exclude) property in **package.json**:
 
 ```json package.json
 {
@@ -177,23 +177,6 @@ If you need to exclude Expo modules you are not using, which were installed by o
   "expo": {
     "autolinking": {
       "exclude": ["expo-keep-awake"]
-    }
-  }
-}
-```
-
-You can also exclude a specific platform by using `exclude` under the platform key:
-
-```json package.json
-{
-  "name": "...",
-  "dependencies": {},
-  "expo": {
-    "autolinking": {
-      "exclude": ["expo-font"],
-      "ios": {
-        "exclude": ["expo-keep-awake"]
-      }
     }
   }
 }
