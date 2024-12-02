@@ -4,6 +4,9 @@ sidebar_title: Production
 description: Learn how to create a production build for your Expo app locally.
 ---
 
+import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -104,11 +107,29 @@ android {
 
 ### Generate release Android Application Bundle (aab)
 
-Create a production build in **.aab** format by running Gradle's `bundleRelease` command:
+Navigate inside the **android** directory and create a production build in **.aab** format by running Gradle's `bundleRelease` command:
 
-<Terminal cmd={['$ ./gradlew app:bundleRelease']} />
+<Terminal
+  cmd={['$ cd android', '', '$ ./gradlew app:bundleRelease']}
+  cmdCopy="cd android && ./gradlew app:bundleRelease"
+/>
 
-This command will generate app-release.aab inside the android/app/build/outputs/bundle/release directory.
+This command will generate app-release.aab inside the **android/app/build/outputs/bundle/release** directory.
+
+</Step>
+
+<Step label="5">
+
+### Manual app submission to Google Play Console
+
+Google Play Store requires manual app submission when submitting the **.aab** file for the first time.
+
+<BoxLink
+  title="Manual first submission of an Android app"
+  description="Follow the steps from the FYI guide on manually submitting your app to Google Play Store for the first time."
+  href="https://expo.fyi/first-android-submission"
+  Icon={AndroidIcon}
+/>
 
 </Step>
 
