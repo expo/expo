@@ -1,8 +1,8 @@
 import spawn from 'cross-spawn';
-import freePortAsync from 'freeport-async';
 import assert from 'node:assert';
 import type { SpawnOptions, ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
+import { createServer } from 'node:net';
 import { env } from 'node:process';
 import treeKill from 'tree-kill';
 
@@ -50,7 +50,7 @@ export type BackgroundServer = {
 export function createBackgroundServer({
   command,
   host: resolveUrl,
-  port: resolvePort = freePortAsync,
+  port: resolvePort = findFreePortAsync,
   ...spawnOptions
 }: BackgroundServerOptions): BackgroundServer {
   let child: ChildProcess | null = null;
@@ -153,6 +153,41 @@ function createSpawnError(spawn: any): Error {
   });
 
   return new Error('Server command failed to spawn', { cause });
+}
+
+/**
+ * Find a random available port through Node's own `net.createServer`.
+ * This highly increases the randomness compared to `freeport-async`,
+ * and avoids overlapping ports in parallel tests.
+ */
+export async function findFreePortAsync() {
+  // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
+  let resolve: (value: number) => void;
+  let reject: (reason: any) => void;
+  const promise = new Promise<number>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  const server = createServer();
+  server.once('error', reject!);
+  server.listen(0, () => {
+    const address = server.address();
+    const url = typeof address === 'string' ? new URL(address) : address;
+    server.close(() => {
+      if (!url) {
+        reject(new Error('Could not find the address of a temporary server'));
+      } else {
+        resolve(Number(url.port));
+      }
+    });
+  });
+
+  try {
+    return await promise;
+  } finally {
+    server.off('error', reject!);
+  }
 }
 
 /**
