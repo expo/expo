@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `USE_RNCORE_AUTOLINKING_FROM_EXPO does not exist and no fallback value provided.` error. ([#33323](https://github.com/expo/expo/pull/33323) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.11.2 — 2024-11-04
