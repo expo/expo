@@ -135,22 +135,18 @@ describe('server', () => {
     expect(manifest.extra.expoGo?.__flipperHack).toBe('React Native packager is running');
 
     console.log('Fetching bundle');
-    const bundleRequest = await fetch(manifest.launchAsset.url);
-    if (!bundleRequest.ok) {
-      console.error(await bundleRequest.text());
-      throw new Error('Failed to fetch bundle');
-    }
-    const bundle = await bundleRequest.text();
-    console.log('Fetched bundle: ', bundle.length);
-    expect(bundle.length).toBeGreaterThan(1000);
+    const bundleRequest = await expo.fetchBundleAsync(manifest.launchAsset.url);
+    const bundleContent = await bundleRequest.text();
+    console.log('Fetched bundle: ', bundleContent.length);
+    expect(bundleContent.length).toBeGreaterThan(1000);
     console.log('Finished');
 
     // Get source maps for the bundle
     // Find source map URL
-    const sourceMapUrl = bundle.match(/\/\/# sourceMappingURL=(.*)/)?.[1];
+    const sourceMapUrl = bundleContent.match(/\/\/# sourceMappingURL=(.*)/)?.[1];
     expect(sourceMapUrl).toBeTruthy();
 
-    const sourceMaps = await fetch(sourceMapUrl!).then((res) => res.json());
+    const sourceMaps = await expo.fetchAsync(sourceMapUrl!).then((res) => res.json());
     expect(sourceMaps).toMatchObject({
       version: 3,
       sources: expect.arrayContaining([
