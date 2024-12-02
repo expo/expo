@@ -7,6 +7,7 @@ import path from 'path';
 import { runExportSideEffects } from './export-side-effects';
 import { ExpoServeLocalCommand } from '../../utils/command-instance';
 import { bin, execaLog, getRouterE2ERoot } from '../utils';
+import { createExpoServeServer } from '../../utils/expo-server';
 
 runExportSideEffects();
 
@@ -81,21 +82,24 @@ describe('export embed for RSC iOS', () => {
   });
 
   describe('server', () => {
-    let serveCmd: ExpoServeLocalCommand;
     const inputDir = '.expo/server/ios';
 
     const serverOutput = path.resolve(projectRoot, '.expo/server/ios');
     const staticLocation = path.join(serverOutput, 'client/_flight/ios/index.txt');
     const tempStaticLocation = path.join(serverOutput, 'client/_flight/ios/other.txt');
 
-    beforeAll(async () => {
-      serveCmd = new ExpoServeLocalCommand(projectRoot, {
+    const serve = createExpoServeServer({
+      verbose: true,
+      cwd: projectRoot,
+      env: {
         NODE_ENV: 'production',
         TEST_SECRET_VALUE: 'test-secret-dynamic',
-      });
+      },
+    });
 
+    beforeAll(async () => {
       console.time('npx serve');
-      await serveCmd.startAsync([inputDir, '--port=' + 3035]);
+      await serve.startAsync([inputDir]);
 
       // Move the static file to a temporary location so we can test both static and dynamic RSC payloads.
       if (fs.existsSync(staticLocation)) {
@@ -104,14 +108,14 @@ describe('export embed for RSC iOS', () => {
     });
 
     it('fetches static RSC payload from server', async () => {
-      const payload = await fetch('http://localhost:3035/_flight/ios/other.txt').then((response) =>
+      const payload = await serve.fetchAsync('/_flight/ios/other.txt').then((response) =>
         response.text()
       );
       expect(payload).toMatch('test-secret');
     });
 
     it('server renders RSC payload from server', async () => {
-      const payload = await fetch('http://localhost:3035/_flight/ios/index.txt', {
+      const payload = await serve.fetchAsync('/_flight/ios/index.txt', {
         headers: {
           accept: 'text/x-component',
           'expo-platform': 'ios',
@@ -125,7 +129,7 @@ describe('export embed for RSC iOS', () => {
         fs.renameSync(tempStaticLocation, staticLocation);
       }
 
-      await serveCmd.stopAsync();
+      await serve.stopAsync();
     });
   });
 });

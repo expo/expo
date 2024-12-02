@@ -141,11 +141,15 @@ export function createBackgroundServer({
         console.log('[server] Stopping server', force ? 'by force' : '');
       }
 
-      await killProcessAsync(child ?? undefined, 'SIGKILL', force);
-
-      subscriptions = [];
-      child = null;
-      url = null;
+      try {
+        await killProcessAsync(child ?? undefined, 'SIGKILL', force);
+      } catch (error) {
+        throw new Error('Server could not be stopped', { cause: error });
+      } finally {
+        subscriptions = [];
+        child = null;
+        url = null;
+      }
     },
   };
 }
@@ -240,7 +244,7 @@ export async function killProcessAsync(
   signal: NodeJS.Signals = 'SIGKILL',
   force = false
 ) {
-  if (!child) return;
+  if (!child || child.exitCode !== null) return;
 
   const killed = once(child, 'close');
   await new Promise<void>((resolve, reject) => {
