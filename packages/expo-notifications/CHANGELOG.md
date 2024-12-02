@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.29.9 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- fix event subscription type export names ([#33295](https://github.com/expo/expo/pull/33295) by [@vonovak](https://github.com/vonovak))
+
 ## 0.29.8 — 2024-11-14
 
 _This version does not introduce any user-facing changes._

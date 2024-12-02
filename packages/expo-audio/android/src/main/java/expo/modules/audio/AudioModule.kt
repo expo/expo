@@ -218,13 +218,13 @@ class AudioModule : Module() {
 
       Property("currentTime") { ref ->
         runOnMain {
-          ref.player.currentPosition
+          ref.currentTime
         }
       }
 
       Property("duration") { ref ->
         runOnMain {
-          ref.player.duration
+          ref.duration
         }
       }
 
@@ -274,7 +274,7 @@ class AudioModule : Module() {
       }
 
       AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->
-        ref.player.seekTo(seekTime.toLong())
+        ref.player.seekTo((seekTime * 1000L).toLong())
       }.runOnQueue(Queues.MAIN)
 
       Function("setPlaybackRate") { ref: AudioPlayer, rate: Float ->

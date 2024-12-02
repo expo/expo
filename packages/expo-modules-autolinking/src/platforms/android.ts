@@ -51,10 +51,11 @@ export async function resolveModuleAsync(
   }
 
   const plugins = (revision.config?.androidGradlePlugins() ?? []).map(
-    ({ id, group, sourceDir }) => ({
+    ({ id, group, sourceDir, applyToRootProject }) => ({
       id,
       group,
       sourceDir: path.join(revision.path, sourceDir),
+      applyToRootProject: applyToRootProject ?? true,
     })
   );
 

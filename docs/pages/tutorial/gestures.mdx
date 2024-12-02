@@ -214,9 +214,10 @@ To recognize a dragging gesture on the sticker and to track its movement, we'll 
 ```tsx components/EmojiSticker.tsx
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   const scaleImage = useSharedValue(imageSize);
+  /* @tutinfo Add <CODE>translateX</CODE> and <CODE>translateY</CODE> shared values.*/
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
-
+  /* @end */
   // ...rest of the code remains same
 
   return (

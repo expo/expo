@@ -39,10 +39,11 @@ async function resolveModuleAsync(packageName, revision) {
     if (!buildGradleFiles.length) {
         return null;
     }
-    const plugins = (revision.config?.androidGradlePlugins() ?? []).map(({ id, group, sourceDir }) => ({
+    const plugins = (revision.config?.androidGradlePlugins() ?? []).map(({ id, group, sourceDir, applyToRootProject }) => ({
         id,
         group,
         sourceDir: path_1.default.join(revision.path, sourceDir),
+        applyToRootProject: applyToRootProject ?? true,
     }));
     const aarProjects = (revision.config?.androidGradleAarProjects() ?? []).map(({ name, aarFilePath }) => {
         const mainProjectName = convertPackageToProjectName(packageName);
