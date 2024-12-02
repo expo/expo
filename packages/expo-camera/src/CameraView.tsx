@@ -175,10 +175,10 @@ export default class CameraView extends Component<CameraViewProps> {
   }
 
   /**
+   * On Android, we will use the [Google code scanner](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
    * On iOS, presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
-   * On Android, will use the [`Google Code Scanner`](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
-   * @platform ios
    * @platform android
+   * @platform ios
    */
   static async launchScanner(options?: ScanningOptions): Promise<void> {
     if (!options) {
