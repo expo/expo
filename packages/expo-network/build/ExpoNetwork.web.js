@@ -13,7 +13,6 @@ class ExpoNetworkModule extends NativeModule {
     eventListener;
     updateNetworkState() {
         const state = getNetworkState();
-        console.log(this.emit);
         this.emit(onNetworkStateEventName, state);
     }
     async getIpAddressAsync() {

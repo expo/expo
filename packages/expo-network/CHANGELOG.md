@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix event emitters not working on web.
+- Fix event emitters not working on web. ([#33327](https://github.com/expo/expo/pull/33327) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

@@ -17,7 +17,6 @@ class ExpoNetworkModule extends NativeModule<NetworkEvents> {
   eventListener?: () => void;
   updateNetworkState() {
     const state = getNetworkState();
-    console.log(this.emit);
     this.emit(onNetworkStateEventName, state);
   }
 
