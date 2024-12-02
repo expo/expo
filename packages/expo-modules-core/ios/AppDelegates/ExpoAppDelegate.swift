@@ -15,7 +15,10 @@ open class ExpoAppDelegate: ExpoAppInstance {
   #if os(iOS) || os(tvOS)
   // MARK: - Initializing the App
 
-  open override func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+  open override func application(
+    _ application: UIApplication,
+    willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
     let parsedSubscribers = subscribers.filter {
       $0.responds(to: #selector(application(_:willFinishLaunchingWithOptions:)))
     }
@@ -32,7 +35,10 @@ open class ExpoAppDelegate: ExpoAppInstance {
     }
   }
 
-  open override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+  open override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
 
     return subscribers.reduce(false) { result, subscriber in
@@ -73,7 +79,11 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Downloading Data in the Background
 
-  open override func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+  open override func application(
+    _ application: UIApplication,
+    handleEventsForBackgroundURLSession identifier: String,
+    completionHandler: @escaping () -> Void
+  ) {
     let selector = #selector(application(_:handleEventsForBackgroundURLSession:completionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
@@ -200,7 +210,11 @@ open class ExpoAppDelegate: ExpoAppInstance {
   }
 
 #if !os(tvOS)
-  open override func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+  open override func application(
+    _ application: UIApplication,
+    performActionFor shortcutItem: UIApplicationShortcutItem,
+    completionHandler: @escaping (Bool) -> Void
+  ) {
     let selector = #selector(application(_:performActionFor:completionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
@@ -230,7 +244,10 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Background Fetch
 
-  open override func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+  open override func application(
+    _ application: UIApplication,
+    performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+  ) {
     let selector = #selector(application(_:performFetchWithCompletionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
