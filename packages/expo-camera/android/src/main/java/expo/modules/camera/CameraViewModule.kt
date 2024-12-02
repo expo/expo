@@ -48,6 +48,8 @@ class CameraViewModule : Module() {
 
     Events("onModernBarcodeScanned")
 
+    // Aligned with iOS which has the same property. Will always be true on Android since
+    // the Google code scanner's min sdk is 21 - and our min sdk is currently 24.
     Property("isModernBarcodeScannerAvailable") {
       true
     }
