@@ -6,6 +6,7 @@ import { CSSMetadata } from './jsOutput';
 import { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
 import { hashString } from '../utils/hash';
+import { toPosixPath } from '../utils/filePath';
 
 export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
 
@@ -54,17 +55,19 @@ export function getCssSerialAssets<T extends any>(
     if (cssMetadata) {
       const contents = cssMetadata.code;
 
-      const originFilename = path.relative(projectRoot, module.path);
-
-      const filename = path.join(
-        // Consistent location
-        STATIC_EXPORT_DIRECTORY,
-        // Hashed file contents + name for caching
-        fileNameFromContents({
-          // Stable filename for hashing in CI.
-          filepath: originFilename,
-          src: contents,
-        }) + '.css'
+      // NOTE(cedric): these two filenames are relative paths, used as URL paths and need to be in POSIX format
+      const originFilename = toPosixPath(path.relative(projectRoot, module.path));
+      const filename = toPosixPath(
+        path.join(
+          // Consistent location
+          STATIC_EXPORT_DIRECTORY,
+          // Hashed file contents + name for caching
+          fileNameFromContents({
+            // Stable filename for hashing in CI.
+            filepath: originFilename,
+            src: contents,
+          }) + '.css'
+        )
       );
 
       if (cssMetadata.externalImports) {
