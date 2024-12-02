@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [next] Add blob support to @expo/fetch ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
+- [next] Add blob support to `expo/fetch`. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
