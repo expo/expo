@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { ExpoServeLocalCommand } from '../../utils/command-instance';
+import { createExpoServeServer } from '../../utils/expo-server';
 import { bin, execaLog, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
@@ -33,23 +33,24 @@ describe('export server with magic import comments', () => {
   });
 
   describe('server', () => {
-    let serveCmd: ExpoServeLocalCommand;
-    beforeAll(async () => {
-      serveCmd = new ExpoServeLocalCommand(projectRoot, {
+    const expo = createExpoServeServer({
+      cwd: projectRoot,
+      env: {
         NODE_ENV: 'production',
-      });
-      await serveCmd.startAsync([outputName, '--port=' + 3037]);
+      },
     });
 
-    it('fetches api route to ensure the dynamic import works', async () => {
-      const payload = await fetch('http://localhost:3037/methods').then((response) =>
-        response.json()
-      );
-      expect(payload).toEqual({ method: 'get/method' });
+    beforeAll(async () => {
+      await expo.startAsync([outputName]);
     });
 
     afterAll(async () => {
-      await serveCmd.stopAsync();
+      await expo.stopAsync();
+    });
+
+    it('fetches api route to ensure the dynamic import works', async () => {
+      const payload = await expo.fetchAsync('/methods').then((response) => response.json());
+      expect(payload).toEqual({ method: expect.pathMatching('get/method') });
     });
   });
 });

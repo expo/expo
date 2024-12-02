@@ -17,7 +17,7 @@ const EXPO_CLI_BIN = require.resolve('../../build/bin/cli');
 
 export function createExpoServeServer(options: Partial<BackgroundServerOptions> = {}) {
   return createBackgroundServer({
-    command: [EXPO_CLI_BIN, 'serve'],
+    command: (port) => [EXPO_CLI_BIN, 'serve', `--port=${port}`],
     host: (chunk) => findPrefixedValue(stripAnsi(chunk.toString()), 'Server running at '),
     ...options,
   });
