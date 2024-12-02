@@ -3,6 +3,7 @@ title: Tailwind CSS
 description: Learn how to configure and use Tailwind CSS in your Expo project.
 ---
 
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -96,13 +97,18 @@ Create a **global.css** file in the root of your project and directives for each
 
 Import the **global.css** file in your **app/\_layout.tsx** (if using Expo Router) or **index.js** file:
 
-```tsx
-// If your project uses Expo Router, import the global.css file in the top level_layout.tsx file:
-import '../global.css';
+<CodeBlocksTable tabs={['app/_layout.tsx', 'index.js']}>
 
-// Otherwise, import the global.css file in the index.js file:
+```tsx
+import '../global.css';
+```
+
+```tsx
+// Import the global.css file in the index.js file:
 import './global.css';
 ```
+
+</CodeBlocksTable>
 
 > **info** If you are using [DOM components](/guides/dom-components), add this file import to each module using the `"use dom"` directive since they don't share globals.
 

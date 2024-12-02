@@ -174,6 +174,16 @@ See an example of **app.json** that enables audio playback in background:
 }
 ```
 
+### Using the AudioPlayer directly
+
+In most cases, the [`useAudioPlayer`](#useaudioplayersource-updateinterval) hook should be used to create a `AudioPlayer` instance. It manages the player's lifecycle and ensures that it is properly disposed of when the component is unmounted. However, in some advanced use cases, it might be necessary to create a `AudioPlayer` that does not get automatically destroyed when the component is unmounted.
+In those cases, the `AudioPlayer` can be created using the [`createAudioPlayer`](#audiocreateaudioplayersource-updateinterval) function. You need be aware of the risks that come with this approach, as it is your responsibility to call the [`release()`](../sdk/expo/#release) method when the player is no longer needed. If not handled properly, this approach may lead to memory leaks.
+
+```tsx
+import { createAudioPlayer } from 'expo-audio';
+const player = createAudioPlayer(audioSource);
+```
+
 ### Notes on web usage
 
 - A MediaRecorder issue on Chrome produces WebM files missing the duration metadata. [See the open Chromium issue](https://bugs.chromium.org/p/chromium/issues/detail?id=642012).

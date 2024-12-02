@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.10 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.9 — 2024-11-22
 
 ### 🐛 Bug fixes
@@ -40,6 +44,7 @@
 
 ### 🐛 Bug fixes
 
+- Add missing dependency for React Server environments. ([#33121](https://github.com/expo/expo/pull/33121) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Typed Routes incorrectly collapsing group index routes ([#32890](https://github.com/expo/expo/pull/32890) by [@marklawlor](https://github.com/marklawlor))
 - Fix relative Hrefs not including search params ([#32931](https://github.com/expo/expo/pull/32931) by [@marklawlor](https://github.com/marklawlor))
 

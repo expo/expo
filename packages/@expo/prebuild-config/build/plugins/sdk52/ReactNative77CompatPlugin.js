@@ -40,7 +40,7 @@ const withSdk52ReactNative77CompatAndroid = config => {
       return config;
     }
     const reactNativeVersion = await queryReactNativeVersionAsync(config.modRequest.projectRoot);
-    if (!reactNativeVersion || reactNativeVersion.minor !== 77) {
+    if (!reactNativeVersion || _semver().default.lt(reactNativeVersion, '0.77.0')) {
       return config;
     }
     if (config.modResults.language === 'groovy') {

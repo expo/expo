@@ -10,4 +10,5 @@ class MeshGradientProps: ExpoSwiftUI.ViewProps {
   @Field var colors: [Color] = []
   @Field var smoothsColors: Bool = true
   @Field var ignoresSafeArea: Bool = true
+  @Field var mask: Bool = false
 }

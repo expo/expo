@@ -72,7 +72,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   isBuffering: boolean;
 
   /**
-   * The current position through the audio item, in seconds.
+   * The current position through the audio item in seconds.
    */
   currentTime: number;
 

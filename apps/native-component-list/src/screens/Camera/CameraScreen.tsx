@@ -1,6 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Slider from '@react-native-community/slider';
 import {
   BarcodePoint,
   BarcodeScanningResult,
@@ -15,11 +16,13 @@ import {
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import React, { useMemo } from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Svg from 'react-native-svg';
 
 import GalleryScreen from './GalleryScreen';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 
 const flashModeOrder: Record<string, FlashMode> = {
   off: 'on',
@@ -349,35 +352,44 @@ export default class CameraScreen extends React.Component<object, State> {
   );
 
   renderBottomBar = () => (
-    <View style={styles.bottomBar}>
-      <TouchableOpacity style={styles.bottomButton} onPress={this.changeMode}>
-        <MaterialCommunityIcons
-          name={this.state.mode === 'picture' ? 'image' : 'video'}
-          size={32}
-          color="white"
-        />
-      </TouchableOpacity>
-      <View style={{ flex: 0.4 }}>
-        <TouchableOpacity
-          onPress={this.state.mode === 'picture' ? this.takePicture : this.takeVideo}
-          style={{ alignSelf: 'center' }}>
-          {this.state.recording ? (
-            <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
-          ) : (
-            <Ionicons
-              name="radio-button-on"
-              size={64}
-              color={this.state.mode === 'picture' ? 'white' : 'red'}
-            />
-          )}
+    <View style={{ alignItems: 'center' }}>
+      <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.bottomButton} onPress={this.changeMode}>
+          <MaterialCommunityIcons
+            name={this.state.mode === 'picture' ? 'image' : 'video'}
+            size={32}
+            color="white"
+          />
+        </TouchableOpacity>
+        <View style={{ flex: 0.4 }}>
+          <TouchableOpacity
+            onPress={this.state.mode === 'picture' ? this.takePicture : this.takeVideo}
+            style={{ alignSelf: 'center' }}>
+            {this.state.recording ? (
+              <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
+            ) : (
+              <Ionicons
+                name="radio-button-on"
+                size={64}
+                color={this.state.mode === 'picture' ? 'white' : 'red'}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.bottomButton} onPress={this.toggleView}>
+          <View>
+            <MaterialCommunityIcons name="apps" size={32} color="white" />
+            {this.state.newPhotos && <View style={styles.newPhotosDot} />}
+          </View>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.bottomButton} onPress={this.toggleView}>
-        <View>
-          <MaterialCommunityIcons name="apps" size={32} color="white" />
-          {this.state.newPhotos && <View style={styles.newPhotosDot} />}
-        </View>
-      </TouchableOpacity>
+      <Slider
+        minimumValue={0}
+        maximumValue={1.0}
+        step={0.1}
+        style={{ width: SCREEN_WIDTH - 20, height: 30 }}
+        onValueChange={(v) => this.setState({ zoom: parseFloat(v.toFixed(1)) })}
+      />
     </View>
   );
 

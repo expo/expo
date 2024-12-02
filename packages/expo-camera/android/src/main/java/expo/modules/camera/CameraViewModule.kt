@@ -136,9 +136,7 @@ class CameraViewModule : Module() {
       }
 
       Prop("zoom") { view, zoom: Float? ->
-        zoom?.let {
-          view.camera?.cameraControl?.setLinearZoom(it)
-        }
+        view.zoom = zoom ?: 0f
       }
 
       Prop("mode") { view, mode: CameraMode? ->
@@ -159,7 +157,13 @@ class CameraViewModule : Module() {
 
       Prop("videoQuality") { view, quality: VideoQuality? ->
         quality?.let {
-          view.videoQuality = it
+          if (view.videoQuality != quality) {
+            view.videoQuality = it
+          }
+          return@Prop
+        }
+        if (view.videoQuality != VideoQuality.VIDEO1080P) {
+          view.videoQuality = VideoQuality.VIDEO1080P
         }
       }
 
@@ -180,11 +184,12 @@ class CameraViewModule : Module() {
         pictureSize?.let {
           if (view.pictureSize != pictureSize) {
             view.pictureSize = it
-            return@Prop
           }
+          return@Prop
         }
-
-        view.pictureSize = ""
+        if (view.pictureSize.isNotEmpty()) {
+          view.pictureSize = ""
+        }
       }
 
       Prop("autoFocus") { view, autoFocus: FocusMode? ->
@@ -199,10 +204,14 @@ class CameraViewModule : Module() {
 
       Prop("mirror") { view, mirror: Boolean? ->
         mirror?.let {
-          view.mirror = it
-          return@Prop
+          if (view.mirror != mirror) {
+            view.mirror = it
+            return@Prop
+          }
         }
-        view.mirror = false
+        if (view.mirror != false) {
+          view.mirror = false
+        }
       }
 
       Prop("videoBitrate") { view, bitrate: Int? ->

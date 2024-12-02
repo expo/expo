@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.19.5 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- Fixed DOM Components support on Windows. ([#33114](https://github.com/expo/expo/pull/33114) by [@kudo](https://github.com/kudo))
+
 ## 0.19.4 — 2024-11-14
 
 _This version does not introduce any user-facing changes._

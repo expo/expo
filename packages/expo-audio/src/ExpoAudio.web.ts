@@ -10,11 +10,19 @@ import {
   RecordingOptions,
   RecordingStatus,
 } from './Audio.types';
-import { AudioRecorder, AudioSample } from './AudioModule.types';
+import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
+
+export function createAudioPlayer(
+  source: AudioSource | string | number | null = null,
+  updateInterval: number = 500
+): AudioPlayer {
+  const parsedSource = resolveSource(source);
+  return new AudioModule.AudioPlayerWeb(parsedSource, updateInterval);
+}
 
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null,

@@ -8,7 +8,7 @@ const BASE_OG_URL = 'https://og.expo.dev/?theme=docs';
 const BASE_TITLE = 'Expo Documentation';
 const BASE_DESCRIPTION = `Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.`;
 
-const Head = ({ title, description, canonicalUrl, children }: HeadProps) => {
+const DocumentationHead = ({ title, description, canonicalUrl, children }: HeadProps) => {
   const OGImageURL = `${BASE_OG_URL}&title=${encodeURIComponent(title ?? BASE_TITLE)}&description=${encodeURIComponent(description ?? BASE_DESCRIPTION)}`;
 
   return (
@@ -48,4 +48,4 @@ const Head = ({ title, description, canonicalUrl, children }: HeadProps) => {
   );
 };
 
-export default Head;
+export default DocumentationHead;

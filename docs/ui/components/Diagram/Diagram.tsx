@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 
 import { DotGrid } from './DotGrid';
 
+import { prefersDarkTheme } from '~/common/window';
+
 type Props = {
   source: string;
   alt: string;
@@ -16,7 +18,7 @@ export const Diagram = ({ source, darkSource, disableSrcSet, alt }: Props) => {
 
   useEffect(() => {
     if (themeName === 'auto') {
-      setDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      setDark(prefersDarkTheme());
     } else {
       setDark(themeName === 'dark');
     }

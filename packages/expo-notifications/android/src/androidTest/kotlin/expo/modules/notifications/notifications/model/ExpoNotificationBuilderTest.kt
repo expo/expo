@@ -1,4 +1,4 @@
-package expo.modules.notifications
+package expo.modules.notifications.notifications.model
 
 import android.app.Notification
 import android.content.Context
@@ -9,10 +9,6 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.interfaces.INotificationContent
-import expo.modules.notifications.notifications.model.NotificationAction
-import expo.modules.notifications.notifications.model.NotificationCategory
-import expo.modules.notifications.notifications.model.NotificationContent
-import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
 import kotlinx.coroutines.runBlocking
@@ -44,9 +40,19 @@ class ExpoNotificationBuilderTest {
   private fun createTestNotificationBuilder(notificationContent: INotificationContent): ExpoNotificationBuilder {
     val notificationRequest = NotificationRequest("test-1", notificationContent, null)
     val exNotification =
-      expo.modules.notifications.notifications.model.Notification(notificationRequest)
+      Notification(notificationRequest)
 
     return ExpoNotificationBuilder(context, exNotification, categoriesStore)
+  }
+
+  private fun assertIsSilent(notification: Notification) {
+    // Verifying sound is a bit tricky because of channels; so we use this "proxy"
+    assertTrue("Notification should be silent", notification.group == "silent")
+  }
+
+  private fun assertIsNotSilent(notification: Notification) {
+    // Verifying sound is a bit tricky because of channels; so we use this "proxy"
+    assertTrue("Notification should not be silent", notification.group == null)
   }
 
   @Test
@@ -96,6 +102,7 @@ class ExpoNotificationBuilderTest {
     if (androidNotification.vibrate != null) {
       assertArrayEquals(longArrayOf(100, 200, 300, 400), androidNotification.vibrate)
     }
+    assertIsNotSilent(androidNotification)
   }
 
   @Test
@@ -114,5 +121,28 @@ class ExpoNotificationBuilderTest {
     assertEquals(androidNotification.channelId, "expo_notifications_fallback_notification_channel")
     assertNull(androidNotification.actions)
     assertEquals(androidNotification.number, 0)
+    assertIsNotSilent(androidNotification)
+  }
+
+  @Test
+  fun customSoundAndDisabledVibrationAreNotSilent() = runBlocking {
+    val notificationContent = NotificationContent.Builder()
+      .setSound(Uri.parse("content://media/external/audio/media/123"))
+      .disableVibrations()
+      .build()
+    val androidNotification = createTestNotificationBuilder(notificationContent).build()
+
+    assertIsNotSilent(androidNotification)
+  }
+
+  @Test
+  fun disablingSoundAndVibrationsTurnsNotificationIntoSilent() = runBlocking {
+    val notificationContent = NotificationContent.Builder()
+      .setSound(null)
+      .disableVibrations()
+      .build()
+    val androidNotification = createTestNotificationBuilder(notificationContent).build()
+
+    assertIsSilent(androidNotification)
   }
 }
