@@ -21,6 +21,7 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
         const cssMetadata = getCssMetadata(module);
         if (cssMetadata) {
             const contents = cssMetadata.code;
+            // NOTE(cedric): these two filenames are relative paths, used as URL paths and need to be in POSIX format
             const originFilename = (0, filePath_1.toPosixPath)(path_1.default.relative(projectRoot, module.path));
             const filename = (0, filePath_1.toPosixPath)(path_1.default.join(
             // Consistent location

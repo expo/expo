@@ -64,9 +64,10 @@ describe('exports with react native canary', () => {
     })[0];
 
     const bundle = await fs.promises.readFile(bundlePath, 'utf8');
+    await fs.promises.writeFile(path.join(__dirname, 'BUNDLE.js'), bundle);
     // Minified mark
     expect(bundle).not.toMatch('__d((function(g,r,');
     // Canary comment. This needs to be updated with each canary.
-    expect(bundle).toMatch('canary-full/react/cjs/react.production.js');
+    expect(bundle).toMatchPath(/canary-full\/react\/cjs\/react\.production\.js/);
   });
 });
