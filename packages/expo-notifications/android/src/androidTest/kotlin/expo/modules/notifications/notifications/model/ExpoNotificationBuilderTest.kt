@@ -47,7 +47,7 @@ class ExpoNotificationBuilderTest {
 
   private fun assertIsSilent(notification: Notification) {
     // Verifying sound is a bit tricky because of channels; so we use this "proxy"
-    assertTrue("Notification should not be silent", notification.group == "silent")
+    assertTrue("Notification should be silent", notification.group == "silent")
   }
 
   private fun assertIsNotSilent(notification: Notification) {
