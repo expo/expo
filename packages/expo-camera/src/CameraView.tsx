@@ -176,7 +176,9 @@ export default class CameraView extends Component<CameraViewProps> {
 
   /**
    * On iOS, presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
-   * On Android, we will use the [`Google Code Scanner`](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
+   * On Android, will use the [`Google Code Scanner`](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
+   * @platform ios
+   * @platform android
    */
   static async launchScanner(options?: ScanningOptions): Promise<void> {
     if (!options) {
@@ -189,6 +191,7 @@ export default class CameraView extends Component<CameraViewProps> {
 
   /**
    * Dismiss the scanner presented by `launchScanner`.
+   * > **info** On Android, the scanner is dismissed automatically when a barcode is scanned.
    * @platform ios
    */
   static async dismissScanner(): Promise<void> {
@@ -204,6 +207,7 @@ export default class CameraView extends Component<CameraViewProps> {
    * @param listener Invoked with the [ScanningResult](#scanningresult) when a bar code has been successfully scanned.
    *
    * @platform ios
+   * @platform android
    */
   static onModernBarcodeScanned(listener: (event: ScanningResult) => void): EventSubscription {
     return CameraManager.addListener('onModernBarcodeScanned', listener);
