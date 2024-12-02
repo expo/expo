@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Add support for the `Google Code Scanner`, similar to the to `DataScannerViewController` used on iOS.
+- [Android] Add support for the `Google Code Scanner`, similar to the `DataScannerViewController` used on iOS. ([#33347](https://github.com/expo/expo/pull/33347) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 

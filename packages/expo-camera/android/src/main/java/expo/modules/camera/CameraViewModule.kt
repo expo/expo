@@ -3,7 +3,6 @@ package expo.modules.camera
 import android.Manifest
 import android.graphics.Bitmap
 import android.util.Log
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import expo.modules.camera.analyzers.BarCodeScannerResultSerializer
@@ -115,7 +114,8 @@ class CameraViewModule : Module() {
       val options = GmsBarcodeScannerOptions.Builder()
         .setBarcodeFormats(
           settings.barcodeTypes.first().mapToBarcode(),
-          *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray())
+          *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
+        )
         .build()
 
       val scanner = GmsBarcodeScanning.getClient(reactContext, options)
