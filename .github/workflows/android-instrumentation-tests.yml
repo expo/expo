@@ -12,6 +12,7 @@ on:
       - packages/expo-eas-client/android/**
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
+      - packages/expo-notifications/android/**
       - packages/expo-updates/android/**
       - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock
@@ -25,6 +26,7 @@ on:
       - packages/expo-eas-client/android/**
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
+      - packages/expo-notifications/android/**
       - packages/expo-updates/android/**
       - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock

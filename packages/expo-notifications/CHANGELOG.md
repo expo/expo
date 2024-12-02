@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] fix notifications with custom sounds treated as silent ([#33311](https://github.com/expo/expo/pull/33311) by [@pennersr](https://github.com/pennersr))
+
 ### 💡 Others
 
 ## 0.29.9 - 2024-11-29
