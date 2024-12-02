@@ -294,6 +294,9 @@ redirects[router/ui/tabs]=router/advanced/custom-tabs
 redirects[build-reference/variables]=eas/environment-variables
 redirects[eas-update/environment-variables]=eas/environment-variables
 
+# After moving common questions from Expo Router FAQ to Introduction
+redirects[router/reference/faq]=router/introduction
+
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
