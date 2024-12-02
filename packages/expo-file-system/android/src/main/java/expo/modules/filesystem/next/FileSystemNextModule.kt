@@ -138,6 +138,10 @@ class FileSystemNextModule : Module() {
         }
       }
 
+      Property("type") { file ->
+        file.type
+      }
+
       Function("open") { file: FileSystemFile ->
         FileSystemFileHandle(file)
       }
