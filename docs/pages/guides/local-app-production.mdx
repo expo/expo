@@ -8,7 +8,7 @@ import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { Terminal } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 To create your app's production build (also known as release build) locally, you need to follow separate steps on your computer and use the tools required to create any native app. This guide provides the necessary steps for Android and iOS.
@@ -76,30 +76,7 @@ MYAPP_UPLOAD_KEY_PASSWORD=*****
 
 Open **android/app/build.gradle** file and add the following configuration:
 
-```diff android/app/build.gradle
-android {
-  signingConfigs {
-    // ...
-+   release {
-+     if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
-+         storeFile file(MYAPP_UPLOAD_STORE_FILE)
-+         storePassword MYAPP_UPLOAD_STORE_PASSWORD
-+         keyAlias MYAPP_UPLOAD_KEY_ALIAS
-+         keyPassword MYAPP_UPLOAD_KEY_PASSWORD
-+     }
-    }
-  }
-  buildTypes {
-    // ...
-    release {
-      signingConfig signingConfigs.debug
-+     signingConfig signingConfigs.release
-      minifyEnabled false
-      // ...
-    }
-  }
-}
-```
+<DiffBlock source="/static/diffs/android-release-build.diff" />
 
 </Step>
 
