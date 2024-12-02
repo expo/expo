@@ -33,4 +33,5 @@ export declare function normalizeHeadersInit(headers: HeadersInit | null | undef
  * Create a new header array by overriding the existing headers with new headers (by header key).
  */
 export declare function overrideHeaders(headers: NativeHeadersType, newHeaders: NativeHeadersType): NativeHeadersType;
+export declare function joinUint8Arrays(arrays: Uint8Array[]): Uint8Array;
 //# sourceMappingURL=RequestUtils.d.ts.map
