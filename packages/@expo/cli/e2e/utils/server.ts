@@ -113,8 +113,7 @@ export function createBackgroundServer({
       if ('error' in result) {
         child.off('exit', exitHandler);
         child = null;
-        // TODO(cedric): try to hydrate an actual error instance, otherwise we only see the error code (not the message)
-        throw new Error('Server command failed', { cause: result.error });
+        throw createSpawnError(result.error);
       }
 
       url = new URL(result.url, 'http://localhost');
@@ -133,6 +132,27 @@ export function createBackgroundServer({
       url = null;
     },
   };
+}
+
+/**
+ * Hydrate the spawn error into an actual error that shows all information.
+ * Errors thrown through `child.on('error')` are not actual Error instances,
+ * and obfuscates the command executed.
+ */
+function createSpawnError(spawn: any): Error {
+  if (spawn instanceof Error) return spawn;
+
+  const cause = new Error(
+    'syscall' in spawn && 'spawnargs' in spawn
+      ? `${spawn.code} ${spawn.syscall} ${spawn.spawnargs}`
+      : `${spawn.code} ${spawn.message}`
+  );
+
+  Object.defineProperty(cause, 'code', {
+    value: spawn.code,
+  });
+
+  return new Error('Server command failed to spawn', { cause });
 }
 
 /**
