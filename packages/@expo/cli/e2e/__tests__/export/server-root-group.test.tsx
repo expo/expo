@@ -2,13 +2,8 @@ import execa from 'execa';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import {
-  bin,
-  ensurePortFreeAsync,
-  findProjectFiles,
-  getRouterE2ERoot,
-  killChildProcess,
-} from '../utils';
+import { createBackgroundServer } from '../../utils/server';
+import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -17,7 +12,7 @@ runExportSideEffects();
 describe('server-root-group', () => {
   const projectRoot = getRouterE2ERoot();
   const outputDir = path.join(projectRoot, 'dist-server-root-group');
-  const PORT = 3002;
+
   beforeAll(async () => {
     console.time('export-server-root-group');
     await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-server-root-group'], {
@@ -34,50 +29,38 @@ describe('server-root-group', () => {
   });
 
   describe('requests', () => {
-    beforeAll(async () => {
-      await ensurePortFreeAsync(PORT);
-      // Start a server instance that we can test against then kill it.
-      server = execa('node', [nodeScript], {
-        cwd: projectRoot,
-
-        stderr: 'inherit',
-
-        env: {
-          PORT: String(PORT),
-          NODE_ENV: 'production',
-        },
-      });
-      // Wait for the server to start
-      await new Promise((resolve) => {
-        const listener = server!.stdout?.on('data', (data) => {
-          if (data.toString().includes('server listening')) {
-            console.log('Express server ready');
-            resolve(null);
-            listener?.removeAllListeners();
-          }
-        });
-      });
+    const server = createBackgroundServer({
+      command: ['node', path.join(projectRoot, '__e2e__/server-root-group/express.js')],
+      host: (output) =>
+        output.toString().includes('server listening') ? 'http://localhost' : null,
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+      },
     });
-    const nodeScript = path.join(projectRoot, '__e2e__/server-root-group/express.js');
-    let server: execa.ExecaChildProcess<string> | undefined;
+
+    beforeAll(async () => {
+      await server.startAsync();
+      console.log('Express server ready on', server.url.href);
+    });
 
     afterAll(async () => {
-      await killChildProcess(server);
+      await server.stopAsync();
     });
 
     it(`can serve up group routes`, async () => {
-      const res = await fetch(`http://localhost:${PORT}`);
+      const res = await server.fetchAsync('');
       //   const res = await fetch(`http://localhost:${PORT}/(root)`);
       expect(res.status).toEqual(200);
 
       // Can access the same route from different paths
-      expect(await fetch(`http://localhost:${PORT}/`).then((res) => res.text())).toMatch(
+      expect(await server.fetchAsync('/').then((res) => res.text())).toMatch(
         /<div data-testid="index-text">/
       );
-      expect(await fetch(`http://localhost:${PORT}`).then((res) => res.text())).toMatch(
+      expect(await server.fetchAsync('').then((res) => res.text())).toMatch(
         /<div data-testid="index-text">/
       );
-      expect(await fetch(`http://localhost:${PORT}/(root)`).then((res) => res.text())).toMatch(
+      expect(await server.fetchAsync(`/(root)`).then((res) => res.text())).toMatch(
         /<div data-testid="index-text">/
       );
     });
