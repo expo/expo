@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Introduced the Gradle plugin to improve the autolining setup.
+
 ## 2.0.3 - 2024-12-02
 
 _This version does not introduce any user-facing changes._
