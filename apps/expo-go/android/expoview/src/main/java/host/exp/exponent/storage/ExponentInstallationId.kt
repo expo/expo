@@ -38,6 +38,8 @@ internal class ExponentInstallationId(
       // do nothing, try other sources
     } catch (e: IllegalArgumentException) {
       // do nothing, try other sources
+    } catch (e: NullPointerException) {
+      // do nothing, try other sources
     }
 
     // We could have returned inside try clause,
