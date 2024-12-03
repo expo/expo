@@ -26,6 +26,9 @@ class LoadingProgressPopupController(activity: Activity) {
 
   fun show() {
     mWeakActivity.get()?.let { activity ->
+      if (activity.isFinishing || activity.isDestroyed) {
+        return
+      }
       activity.runOnUiThread {
         if (mPopupWindow != null) {
           // already showing
@@ -42,7 +45,9 @@ class LoadingProgressPopupController(activity: Activity) {
         mPopupWindow = PopupWindow(mContainer, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also {
           it.isTouchable = false
           activity.window.decorView.post {
-            it.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
+            if (!activity.isFinishing || !activity.isDestroyed) {
+              it.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
+            }
           }
         }
       }
