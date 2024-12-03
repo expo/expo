@@ -130,11 +130,11 @@ export default function useScreenCaptureCallback() {
 
 ## Screen Recording Events
 
-Starting from iOS 11, you can detect when a user starts or stops screen recording your app. This is useful for protecting sensitive content or implementing security measures.
+Screen recording detection is available on iOS 11 and newer. The API lets you detect when users start or stop recording your app's screen, allowing you to protect sensitive content.
 
 ### `addRecordingListener(listener)`
 
-Adds a listener that will fire whenever the app starts or stops being recorded.
+Registers a listener that is called when screen recording starts or stops.
 
 #### Arguments
 
@@ -149,29 +149,38 @@ Adds a listener that will fire whenever the app starts or stops being recorded.
 
 ```javascript
 import * as ScreenCapture from 'expo-screen-capture';
+import { useEffect } from 'react';
 
-export default function useScreenRecordingCallback() {
-  const addRecordingListener = async () => {
+export default function App() {
+  const [sensitiveContentVisible, setSensitiveContentVisible] = useState(true);
+
+  useEffect(() => {
     const subscription = ScreenCapture.addRecordingListener(({ isCaptured }) => {
       if (isCaptured) {
-        console.log('Screen recording started');
+        // Hide sensitive content
+        setSensitiveContentVisible(false);
       } else {
-        console.log('Screen recording stopped');
+        // Show sensitive content again
+        setSensitiveContentVisible(true);
       }
     });
 
+    // Clean up subscription when component unmounts
     return () => {
       subscription?.remove();
     };
-  };
-
-  useEffect(() => {
-    addRecordingListener();
   }, []);
-}
-```
 
-</SnackInline>
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      {sensitiveContentVisible && (
+        <Text>This is sensitive content. It will be hidden when screen recording starts.</Text>
+      )}
+    </View>
+  );
+}
+
+> **Note**: Screen recording detection is only available on iOS 11 and newer. On Android, the `addRecordingListener` method has no effect.
 
 ## API
 
