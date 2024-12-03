@@ -88,7 +88,7 @@ export default function ScreenCaptureScreen() {
         renderItem={({ item }) => (
           <MonoText>
             {item.timestamp.toLocaleTimeString()} - {item.type}
-            {item.type === 'recording' ? (item.isCaptured ? ' - Started' : '- Stopped') : ''}
+            {item.type === 'recording' ? (item.isCaptured ? ' - Started' : ' - Stopped') : ''}
           </MonoText>
         )}
       />
