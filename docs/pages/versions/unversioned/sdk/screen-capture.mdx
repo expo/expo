@@ -128,6 +128,51 @@ export default function useScreenCaptureCallback() {
 
 </SnackInline>
 
+## Screen Recording Events
+
+Starting from iOS 11, you can detect when a user starts or stops screen recording your app. This is useful for protecting sensitive content or implementing security measures.
+
+### `addRecordingListener(listener)`
+
+Adds a listener that will fire whenever the app starts or stops being recorded.
+
+#### Arguments
+
+- **listener (_function_)** -- A callback that is invoked with an object containing the following key:
+  - **isCaptured (_boolean_)** -- `true` when screen recording starts, `false` when it stops.
+
+#### Returns
+
+- An `EventSubscription` object that you can call `remove()` on when you want to unsubscribe from the listener.
+
+#### Example
+
+```javascript
+import * as ScreenCapture from 'expo-screen-capture';
+
+export default function useScreenRecordingCallback() {
+  const addRecordingListener = async () => {
+    const subscription = ScreenCapture.addRecordingListener(({ isCaptured }) => {
+      if (isCaptured) {
+        console.log('Screen recording started');
+      } else {
+        console.log('Screen recording stopped');
+      }
+    });
+
+    return () => {
+      subscription?.remove();
+    };
+  };
+
+  useEffect(() => {
+    addRecordingListener();
+  }, []);
+}
+```
+
+</SnackInline>
+
 ## API
 
 ```js
