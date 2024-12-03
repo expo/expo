@@ -13,7 +13,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 const val screenshotEventName = "onScreenshot"
-const val recordingEventName = "onRecording"
 
 val grantedPermissions = mapOf(
   "canAskAgain" to true,
@@ -37,7 +36,7 @@ class ScreenCaptureModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenCapture")
 
-    Events(screenshotEventName, recordingEventName)
+    Events(screenshotEventName)
 
     OnCreate {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
