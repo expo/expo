@@ -45,7 +45,7 @@ describe('export server with magic import comments', () => {
     });
 
     beforeAll(async () => {
-      await expo.startAsync();
+      await expo.startAsync([outputName]);
     });
     afterAll(async () => {
       await expo.stopAsync();
