@@ -12,7 +12,7 @@ import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
-const val screenshotEventName = "onScreenshot"
+const val eventName = "onScreenshot"
 
 val grantedPermissions = mapOf(
   "canAskAgain" to true,
@@ -36,28 +36,18 @@ class ScreenCaptureModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenCapture")
 
-    Events(screenshotEventName)
+    Events(eventName)
 
     OnCreate {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         screenCaptureCallback = Activity.ScreenCaptureCallback {
-          sendEvent(screenshotEventName)
+          sendEvent(eventName)
         }
         // Let's try to register the callback
         registerCallback()
       } else {
         screenshotEventEmitter = ScreenshotEventEmitter(context) {
-          sendEvent(screenshotEventName)
-        }
-      }
-
-      // Add recording detection for Android 15+
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        safeCurrentActivity?.let { activity ->
-          screenRecordingEventEmitter = ScreenRecordingEventEmitter(activity) {
-            sendEvent(recordingEventName)
-          }
-          screenRecordingEventEmitter?.register()
+          sendEvent(eventName)
         }
       }
     }
@@ -98,16 +88,10 @@ class ScreenCaptureModule : Module() {
       // Call registerCallback once more as a fallback if activity wasn't available in onCreate
       registerCallback()
       screenshotEventEmitter?.onHostResume()
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        screenRecordingEventEmitter?.register()
-      }
     }
 
     OnActivityEntersBackground {
       screenshotEventEmitter?.onHostPause()
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        screenRecordingEventEmitter?.unregister()
-      }
     }
 
     OnDestroy {
@@ -116,9 +100,6 @@ class ScreenCaptureModule : Module() {
         screenCaptureCallback?.let {
           safeCurrentActivity?.unregisterScreenCaptureCallback(it)
         }
-      }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        screenRecordingEventEmitter?.unregister()
       }
     }
   }
