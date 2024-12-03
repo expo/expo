@@ -1,4 +1,5 @@
 import spawn from 'cross-spawn';
+import { boolish } from 'getenv';
 import assert from 'node:assert';
 import type { ChildProcess, SpawnOptions } from 'node:child_process';
 import { createServer } from 'node:net';
@@ -37,7 +38,7 @@ export type BackgroundServerOptions = SpawnOptions & {
    * When passing a URL, the port will be overriden using the configured port.
    */
   host(chunk: any): URL | string | null;
-  /** Fully show the child process output */
+  /** Fully show the child process output, enabled when re-running GitHub Actions with debug mode */
   verbose?: boolean;
 };
 
@@ -61,7 +62,7 @@ export function createBackgroundServer({
   command,
   host: resolveHost,
   port: resolvePort = findFreePortAsync,
-  verbose = false,
+  verbose = boolish('ACTIONS_RUNNER_DEBUG', false),
   ...spawnOptions
 }: BackgroundServerOptions): BackgroundServer {
   let child: ChildProcess | null = null;
