@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use POSIX-formatted filenames when transforming CSS modules for consistent class names.
+
 ### 💡 Others
 
 ## 0.19.5 - 2024-11-29
