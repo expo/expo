@@ -80,7 +80,8 @@ async function transform(config, projectRoot, filename, data, options) {
                 const src = 'module.exports = {\n' +
                     clientBoundaries
                         .map((boundary) => {
-                        return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+                        const boundaryPath = process.platform === 'win32' ? JSON.stringify(boundary) : boundary;
+                        return `[\`$\{require.resolveWeak(${boundaryPath})}\`]: /* ${boundary} */ () => import(${boundaryPath}),`;
                     })
                         .join('\n') +
                     '\n};';
@@ -95,7 +96,7 @@ async function transform(config, projectRoot, filename, data, options) {
         const isClientEnvironment = environment !== 'node' && environment !== 'react-server';
         if (isClientEnvironment &&
             // TODO: Ensure this works with windows.
-            (posixFilename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+            (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
                 // Strip +api files.
                 filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))) {
             // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.

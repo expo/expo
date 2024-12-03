@@ -8,6 +8,9 @@
  *
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/utils/path.ts#L1
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.path2regexp = exports.getPathMapping = exports.parsePathWithSlug = exports.extname = exports.joinPath = exports.fileURLToFilePath = exports.filePathToFileURL = exports.decodeFilePathFromAbsolute = exports.encodeFilePathToAbsolute = void 0;
 // Terminology:
@@ -17,6 +20,7 @@ exports.path2regexp = exports.getPathMapping = exports.parsePathWithSlug = expor
 //   This is used by import().
 // - osPath: os dependent path, e.g. `/foo/bar.js` or `c:\foo\bar.js`
 //   This is used by node:fs.
+const node_url_1 = __importDefault(require("node:url"));
 const ABSOLUTE_WIN32_PATH_REGEXP = /^\/[a-zA-Z]:\//;
 const encodeFilePathToAbsolute = (filePath) => {
     if (ABSOLUTE_WIN32_PATH_REGEXP.test(filePath)) {
@@ -38,10 +42,8 @@ exports.decodeFilePathFromAbsolute = decodeFilePathFromAbsolute;
 const filePathToFileURL = (filePath) => 'file://' + encodeURI(filePath);
 exports.filePathToFileURL = filePathToFileURL;
 const fileURLToFilePath = (fileURL) => {
-    if (!fileURL.startsWith('file://')) {
-        throw new Error('Not a file URL');
-    }
-    return decodeURI(fileURL.slice('file://'.length));
+    // TODO(cedric): check if we can use url.fileURLToPath, or if we have to make it work on web as well
+    return decodeURI(node_url_1.default.fileURLToPath(fileURL));
 };
 exports.fileURLToFilePath = fileURLToFilePath;
 // for filePath

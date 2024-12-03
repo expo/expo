@@ -16,6 +16,8 @@
 // - osPath: os dependent path, e.g. `/foo/bar.js` or `c:\foo\bar.js`
 //   This is used by node:fs.
 
+import url from 'node:url';
+
 const ABSOLUTE_WIN32_PATH_REGEXP = /^\/[a-zA-Z]:\//;
 
 export const encodeFilePathToAbsolute = (filePath: string) => {
@@ -38,10 +40,8 @@ export const decodeFilePathFromAbsolute = (filePath: string) => {
 export const filePathToFileURL = (filePath: string) => 'file://' + encodeURI(filePath);
 
 export const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
+  // TODO(cedric): check if we can use url.fileURLToPath, or if we have to make it work on web as well
+  return decodeURI(url.fileURLToPath(fileURL));
 };
 
 // for filePath

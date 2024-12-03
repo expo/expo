@@ -77,7 +77,9 @@ export async function transform(
           'module.exports = {\n' +
           clientBoundaries
             .map((boundary: string) => {
-              return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+              const boundaryPath =
+                process.platform === 'win32' ? JSON.stringify(boundary) : boundary;
+              return `[\`$\{require.resolveWeak(${boundaryPath})}\`]: /* ${boundary} */ () => import(${boundaryPath}),`;
             })
             .join('\n') +
           '\n};';
@@ -101,7 +103,7 @@ export async function transform(
     if (
       isClientEnvironment &&
       // TODO: Ensure this works with windows.
-      (posixFilename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+      (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
         // Strip +api files.
         filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))
     ) {
