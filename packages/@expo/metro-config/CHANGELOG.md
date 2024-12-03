@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Use POSIX-formatted relative CSS asset paths for URL consistency across platforms.
+- Use POSIX-formatted relative CSS asset paths for URL consistency across platforms. ([#33395](https://github.com/expo/expo/pull/33395) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
