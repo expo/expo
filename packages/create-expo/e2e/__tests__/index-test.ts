@@ -297,6 +297,26 @@ xdescribe('templates', () => {
     expectFileNotExists(projectName, 'node_modules');
   });
 
+  it('downloads a github repo with shorthand', async () => {
+    const projectName = 'github-shorthand-url';
+    const results = await executePassing([
+      projectName,
+      '--no-install',
+      '--template',
+      'expo/examples/tree/master/blank',
+    ]);
+
+    // Test that the user was warned about deps
+    expect(results.stdout).toMatch(/make sure you have modules installed/);
+    expect(results.stdout).toMatch(/yarn/);
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'App.js');
+    expectFileExists(projectName, 'README.md');
+    expectFileExists(projectName, '.gitignore');
+    // Check if it skipped install
+    expectFileNotExists(projectName, 'node_modules');
+  });
+
   it('downloads a github repo with sub-project', async () => {
     const projectName = 'full-url';
     const results = await executePassing([
