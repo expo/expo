@@ -3,7 +3,6 @@ package host.exp.exponent
 
 import android.Manifest
 import android.app.ActivityManager.RecentTaskInfo
-import android.app.ComponentCaller
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
