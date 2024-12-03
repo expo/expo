@@ -23,7 +23,7 @@ class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
     case BackgroundTaskResult.failed.rawValue:
       return UIBackgroundFetchResult.failed.rawValue
     default:
-      return UIBackgroundFetchResult.noData.rawValue
+      return UIBackgroundFetchResult.newData.rawValue
     }
   }
 
@@ -57,9 +57,5 @@ class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
       // Stop worker
       BackgroundTaskScheduler.stopWorker()
     }
-  }
-
-  func setOptions(_ options: [AnyHashable: Any]) {
-
   }
 }

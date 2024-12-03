@@ -8,5 +8,5 @@ enum BackgroundTaskStatus: Int, Enumerable {
 
 enum BackgroundTaskResult: Int, Enumerable {
   case success = 1
-  case failed = 3
+  case failed = 2
 }
