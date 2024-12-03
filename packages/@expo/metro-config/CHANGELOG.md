@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Use POSIX-formatted relative module paths to stabelize module IDs across platforms.
+- Use POSIX-formatted relative module paths to stabelize module IDs across platforms. ([#33393](https://github.com/expo/expo/pull/33393) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
