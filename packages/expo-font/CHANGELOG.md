@@ -10,8 +10,6 @@
 
 ### 💡 Others
 
-- Add additional default for project ID in notification options ([#33359](https://github.com/expo/expo/pull/33359) by [@bradjones1](https://github.com/bradjones1))
-
 ## 13.0.1 — 2024-11-05
 
 ### 💡 Others
