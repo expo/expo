@@ -32,7 +32,7 @@ export function SnacksListItem(snackData: Props) {
   const theme = useExpoTheme();
 
   const normalizedDescription = normalizeDescription(description);
-  const isSupported = sdkVersion ? sdkVersion === Environment.supportedSdksString : true;
+  const isSupported = Environment.isSupportedSdkVersion(sdkVersion);
 
   const handlePressProject = () => {
     if (isSupported) {
