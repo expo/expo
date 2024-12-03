@@ -1,7 +1,9 @@
+/* eslint-env node */
 const path = require('path');
 
 const roots = ['../__mocks__', '.'];
 
+/** @type {import('jest').Config} */
 module.exports = {
   testEnvironment: 'node',
   preset: 'ts-jest',
@@ -10,4 +12,5 @@ module.exports = {
   rootDir: path.resolve(__dirname),
   displayName: require('../package').name,
   roots,
+  setupFilesAfterEnv: [path.resolve(__dirname, './jest.setup.ts')],
 };
