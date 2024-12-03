@@ -42,38 +42,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}-latest
-    continue-on-error: ${{ matrix.experimental == 'allow-errors' }}
+  e2e-linux:
+    runs-on: linux-22.04
     strategy:
       fail-fast: false
       matrix:
         shard: [1, 2, 3, 4]
-        os: [linux]
-        experimental: ['disallow-errors']
-        include:
-          - os: windows
-            shard: 1
-            experimental: allow-errors
-          - os: windows
-            shard: 2
-            experimental: allow-errors
-          - os: windows
-            shard: 3
-            experimental: allow-errors
-          - os: windows
-            shard: 4
-            experimental: allow-errors
     steps:
-      - name: 🪟 Setup Windows
-        if: runner.os == 'Windows'
-        # Configure Git to use LF line endlings, and Bun to use a faster cache disk on Windows
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-          echo "BUN_INSTALL_CACHE_DIR=$GITHUB_WORKSPACE\.bun\install\cache" >> $GITHUB_ENV
-        shell: bash
-
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
@@ -107,36 +82,84 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir (Linux/macOS)
-        if: runner.os != 'Windows'
         run: yarn install --prefer-offline --frozen-lockfile
         env:
           YARN_IGNORE_SCRIPTS: 'true'
-      - name: 🧶 Install node modules in root dir (Windows)
-        if: runner.os == 'Windows'
+      
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+
+      - name: 🔎 Type Check CLI
+        working-directory: packages/@expo/cli
+        run: yarn typecheck
+
+      - name: 🧪 E2E Test CLI
+        working-directory: packages/@expo/cli
+        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+
+  e2e-windows:
+    runs-on: windows-2022
+    continue-on-error: true
+    steps:
+      - name: 🪟 Setup Windows
+        shell: bash
+        # Configure Git to use LF line endlings, and Bun to use a faster cache disk on Windows
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+          echo "BUN_INSTALL_CACHE_DIR=$GITHUB_WORKSPACE\.bun\install\cache" >> $GITHUB_ENV
+      
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+      - name: 🔎 Find Yarn Cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: ♻️ Restore Yarn Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: 🧶 Install node modules in root dir
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
         run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
         env:
           YARN_IGNORE_SCRIPTS: 'true'
-      
-      - name: Build Expo CLI
+
+      - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
-      - name: 🔎 Type Check CLI (Linux/macOS)
-        working-directory: packages/@expo/cli
-        run: yarn typecheck
       - name: 🔎 Type Check CLI (Windows)
         working-directory: packages/@expo/cli
         # TODO(cedric): expo module scripts is incompatible with Windows, forcing us to manually set up these steps instead of `yarn typecheck`
         run: yarn tsc --noEmit
 
-      - name: 🧪 E2E Test CLI (Linux/macOS)
-        working-directory: packages/@expo/cli
-        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
       - name: 🧪 E2E Test CLI (Windows)
         working-directory: packages/@expo/cli
         # NOTE(cedric): Windows is significantly slower and suffers from IO congestion when running more than 2 workers
-        run: yarn test:e2e --max-workers 2 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
-
+        run: yarn test:e2e --max-workers 2
+  
   web:
     runs-on: ubuntu-22.04
     steps:
