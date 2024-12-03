@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `+html` and `+native-intent` to `expo customize`.
+- Add `+html` and `+native-intent` to `expo customize`. ([#33368](https://github.com/expo/expo/pull/33368) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
