@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support for `/* webpackIgnore: true */` magic comment in code splitting.
+- Add support for `/* webpackIgnore: true */` magic comment in code splitting. ([#33366](https://github.com/expo/expo/pull/33366) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

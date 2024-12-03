@@ -470,7 +470,7 @@ const myModule = await import(/* @metro-ignore */ './my-module.js');
 
 Expo CLI will skip the `./my-module.js` dependency and assume that the developer has manually added it to the output bundle. Internally, this is used for exporting custom server code that dynamically switches between files based on the request. Avoid using this syntax for native bundles since `import()` is generally not available in React Native with Hermes enabled.
 
-A number of React libraries shipped the Webpack `/* webpackIgnore: true */` comment for similar behavior. To bridge support, we've also added support for this comment but you should use the Metro equivalent in your app.
+Many React libraries shipped the Webpack `/* webpackIgnore: true */` comment to achieve similar behavior. To bridge the gap, we've also added support for Webpack's comment but recommend using the Metro equivalent in your app.
 
 ## Asset imports
 
