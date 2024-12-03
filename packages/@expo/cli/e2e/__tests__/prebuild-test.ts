@@ -3,7 +3,6 @@ import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs/promises';
 import { sync as globSync } from 'glob';
-import klawSync from 'klaw-sync';
 import path from 'path';
 import semver from 'semver';
 
@@ -14,6 +13,7 @@ import {
   getRoot,
   setupTestProjectWithOptionsAsync,
   getLoadedModulesAsync,
+  findProjectFiles,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -185,18 +185,6 @@ it('runs `npx expo prebuild`', async () => {
     cwd: projectRoot,
   });
 
-  // List output files with sizes for snapshotting.
-  // This is to make sure that any changes to the output are intentional.
-  // Posix path formatting is used to make paths the same across OSes.
-  const files = klawSync(projectRoot)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(projectRoot, entry.path);
-    })
-    .filter(Boolean);
-
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
   await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
@@ -215,7 +203,7 @@ it('runs `npx expo prebuild`', async () => {
   });
 
   // If this changes then everything else probably changed as well.
-  expect(files).toMatchSnapshot();
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
 
 // This tests contains assertions related to ios files, making it incompatible with Windows
@@ -227,18 +215,6 @@ itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0
     cwd: projectRoot,
   });
 
-  // List output files with sizes for snapshotting.
-  // This is to make sure that any changes to the output are intentional.
-  // Posix path formatting is used to make paths the same across OSes.
-  const files = klawSync(projectRoot)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(projectRoot, entry.path);
-    })
-    .filter(Boolean);
-
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
   await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
@@ -257,7 +233,7 @@ itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0
   });
 
   // If this changes then everything else probably changed as well.
-  expect(files).toMatchSnapshot();
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
 
 // This tests contains assertions related to ios files, making it incompatible with Windows
@@ -280,18 +256,6 @@ itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
     cwd: projectRoot,
   });
 
-  // List output files with sizes for snapshotting.
-  // This is to make sure that any changes to the output are intentional.
-  // Posix path formatting is used to make paths the same across OSes.
-  const files = klawSync(projectRoot)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(projectRoot, entry.path);
-    })
-    .filter(Boolean);
-
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
   // Added new packages
@@ -308,5 +272,5 @@ itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   });
 
   // If this changes then everything else probably changed as well.
-  expect(files).toMatchSnapshot();
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });

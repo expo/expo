@@ -3,7 +3,6 @@ import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs-extra';
 import { sync as globSync } from 'glob';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import {
@@ -12,6 +11,7 @@ import {
   getLoadedModulesAsync,
   bin,
   setupTestProjectWithOptionsAsync,
+  findProjectFiles,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -59,18 +59,6 @@ describe('server', () => {
     });
 
     const outputDir = path.join(projectRoot, 'dist');
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-
     const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
 
     expect(metadata).toEqual({
@@ -158,7 +146,7 @@ describe('server', () => {
     });
 
     // If this changes then everything else probably changed as well.
-    expect(files).toEqual([
+    expect(findProjectFiles(outputDir)).toEqual([
       expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc$/),
       expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc\.map$/),
       expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc$/),
@@ -197,18 +185,6 @@ describe('server', () => {
     );
 
     const outputDir = path.join(projectRoot, 'dist');
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-
     const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
 
     expect(metadata).toEqual({
@@ -267,7 +243,7 @@ describe('server', () => {
     });
 
     // If this changes then everything else probably changed as well.
-    expect(files).toEqual([
+    expect(findProjectFiles(outputDir)).toEqual([
       expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js/),
       expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js\.map/),
       'assetmap.json',

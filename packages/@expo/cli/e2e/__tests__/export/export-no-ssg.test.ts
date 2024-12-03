@@ -1,11 +1,10 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getRouterE2ERoot } from '../utils';
+import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -32,27 +31,9 @@ describe('export-no-ssg', () => {
     console.timeEnd('export-server');
   });
 
-  function getFiles() {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    return klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-  }
-
   it('has expected files', async () => {
     // Request HTML
-
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = getFiles();
+    const files = findProjectFiles(outputDir);
 
     // The wrapper should not be included as a route.
     expect(files).not.toContain('server/+html.html');

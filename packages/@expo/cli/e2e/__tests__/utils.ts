@@ -6,6 +6,7 @@ import assert from 'assert';
 import execa from 'execa';
 import findProcess from 'find-process';
 import fs from 'fs';
+import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
 import os from 'os';
 import path from 'path';
@@ -316,4 +317,19 @@ export function expectChunkPathMatching(name: string) {
       `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
     )
   );
+}
+
+/**
+ * Find all project files in the given project root.
+ * This returns all paths in POSIX format, sorted alphabetically, and relative to the project root without any prefix.
+ */
+export function findProjectFiles(projectRoot: string) {
+  return klawSync(projectRoot, { nodir: true })
+    .map((entry) =>
+      entry.path.includes('node_modules')
+        ? null
+        : toPosixPath(path.relative(projectRoot, entry.path))
+    )
+    .filter(Boolean)
+    .sort() as string[];
 }

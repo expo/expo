@@ -2,7 +2,6 @@
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs/promises';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import {
@@ -11,6 +10,7 @@ import {
   getLoadedModulesAsync,
   bin,
   setupTestProjectWithOptionsAsync,
+  findProjectFiles,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -47,33 +47,20 @@ it('runs `npx expo lint` to install lint in a project', async () => {
   // `npx expo install expo-sms`
   await execa('node', [bin, 'lint'], { cwd: projectRoot });
 
-  // List output files with sizes for snapshotting.
-  // This is to make sure that any changes to the output are intentional.
-  // Posix path formatting is used to make paths the same across OSes.
-  const files = klawSync(projectRoot)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(projectRoot, entry.path);
-    })
-    .filter(Boolean)
-    .sort();
-
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
   // Ensure the config was added
-  expect((pkg.devDependencies as any)['eslint-config-expo']).toBeDefined();
+  expect(pkg.devDependencies).toHaveProperty('eslint-config-expo');
   // And not in the dependencies
-  expect((pkg.dependencies as any)['eslint-config-expo']).not.toBeDefined();
+  expect(pkg.dependencies).not.toHaveProperty('eslint-config-expo');
 
   // Ensure the eslint package was added
-  expect((pkg.devDependencies as any)['eslint']).toBeDefined();
+  expect(pkg.devDependencies).toHaveProperty('eslint');
 
   // Check if the helper script was added
-  expect((pkg.scripts as any)['lint']).toBeDefined();
+  expect(pkg.scripts).toHaveProperty('lint');
 
-  expect(files).toStrictEqual([
+  expect(findProjectFiles(projectRoot)).toStrictEqual([
     '.eslintrc.js',
     'App.js',
     'app.json',
@@ -92,33 +79,20 @@ it('runs `npx expo customize .eslintrc.js` to install lint in a project', async 
   // `npx expo install expo-sms`
   await execa('node', [bin, 'customize', '.eslintrc.js'], { cwd: projectRoot });
 
-  // List output files with sizes for snapshotting.
-  // This is to make sure that any changes to the output are intentional.
-  // Posix path formatting is used to make paths the same across OSes.
-  const files = klawSync(projectRoot)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(projectRoot, entry.path);
-    })
-    .filter(Boolean)
-    .sort();
-
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
   // Ensure the config was added
-  expect((pkg.devDependencies as any)['eslint-config-expo']).toBeDefined();
+  expect(pkg.devDependencies).toHaveProperty('eslint-config-expo');
   // And not in the dependencies
-  expect((pkg.dependencies as any)['eslint-config-expo']).not.toBeDefined();
+  expect(pkg.dependencies).not.toHaveProperty('eslint-config-expo');
 
   // Ensure the eslint package was added
-  expect((pkg.devDependencies as any)['eslint']).toBeDefined();
+  expect(pkg.devDependencies).toHaveProperty('eslint');
 
   // Check if the helper script was added
-  expect((pkg.scripts as any)['lint']).toBeDefined();
+  expect(pkg.scripts).toHaveProperty('lint');
 
-  expect(files).toStrictEqual([
+  expect(findProjectFiles(projectRoot)).toStrictEqual([
     '.eslintrc.js',
     'App.js',
     'app.json',

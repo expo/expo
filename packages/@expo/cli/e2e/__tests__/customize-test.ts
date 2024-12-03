@@ -2,7 +2,6 @@
 import execa from 'execa';
 import { constants as fsConstants } from 'fs';
 import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import {
@@ -11,6 +10,7 @@ import {
   getLoadedModulesAsync,
   bin,
   setupTestProjectWithOptionsAsync,
+  findProjectFiles,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -75,16 +75,7 @@ it('runs `npx expo customize`', async () => {
     cwd: projectRoot,
   });
 
-  const files = klawSync(projectRoot)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(projectRoot, entry.path);
-    })
-    .filter(Boolean);
-
-  expect(files).toEqual([
+  expect(findProjectFiles(projectRoot)).toEqual([
     'App.js',
     'app.json',
     'babel.config.js',
@@ -145,7 +136,7 @@ it('runs `npx expo customize tsconfig.json` on a partially setup project', async
   );
 
   // `npx expo typescript
-  const a = await execa('node', [bin, 'customize', 'tsconfig.json'], {
+  await execa('node', [bin, 'customize', 'tsconfig.json'], {
     cwd: projectRoot,
   });
 

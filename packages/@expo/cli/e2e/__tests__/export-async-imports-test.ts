@@ -1,7 +1,6 @@
 /* eslint-env jest */
 import execa from 'execa';
 import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import {
@@ -9,6 +8,7 @@ import {
   projectRoot,
   bin,
   setupTestProjectWithOptionsAsync,
+  findProjectFiles,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -36,14 +36,7 @@ it('runs `npx expo export -p web`', async () => {
   });
 
   const outputDir = path.join(projectRoot, 'dist');
-  const files = klawSync(outputDir)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(outputDir, entry.path);
-    })
-    .filter(Boolean);
+  const files = findProjectFiles(outputDir);
 
   // If this changes then everything else probably changed as well.
   expect(files).toEqual(

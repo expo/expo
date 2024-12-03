@@ -1,11 +1,10 @@
 /* eslint-env jest */
 import execa from 'execa';
-import klawSync from 'klaw-sync';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, setupTestProjectWithOptionsAsync } from '../utils';
+import { bin, findProjectFiles, setupTestProjectWithOptionsAsync } from '../utils';
 
 runExportSideEffects();
 
@@ -31,8 +30,8 @@ describe.each(configTypes)('exports monorepo using "%s"', (configType) => {
     const appBExportDir = await exportApp(projectRoot, 'apps/app-b');
 
     // Find all relative files on both exports
-    const appAFiles = findFilesInPath(appAExportDir);
-    const appBFiles = findFilesInPath(appBExportDir);
+    const appAFiles = findProjectFiles(appAExportDir);
+    const appBFiles = findProjectFiles(appBExportDir);
 
     // Ensure app A only have files related to app A
     expect(appAFiles).toContain('page-a.html');
@@ -54,16 +53,6 @@ async function exportApp(monorepoRoot: string, workspacePath: string) {
   });
 
   return path.join(monorepoRoot, workspacePath, 'dist');
-}
-
-function findFilesInPath(outputDir: string) {
-  return klawSync(outputDir)
-    .map((entry) =>
-      entry.path.includes('node_modules') || !entry.stats.isFile()
-        ? null
-        : path.posix.relative(outputDir, entry.path)
-    )
-    .filter(Boolean);
 }
 
 async function configureMonorepo(configTypes: MonorepoConfigTypes, projectRoot: string) {

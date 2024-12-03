@@ -1,11 +1,10 @@
 /* eslint-env jest */
 import execa from 'execa';
 import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getRouterE2ERoot } from '../utils';
+import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -30,18 +29,7 @@ describe('exports with serializer plugins', () => {
   });
 
   it('has source maps', async () => {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-
+    const files = findProjectFiles(outputDir);
     const mapFiles = files.filter((file) => file?.endsWith('.map'));
 
     // "_expo/static/js/web/_layout-e67451b6ca1f415eec1baf46b17d16c6.js.map",

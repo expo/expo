@@ -2,7 +2,6 @@
 import JsonFile from '@expo/json-file';
 import execa, { ExecaError } from 'execa';
 import fs from 'fs/promises';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import {
@@ -12,6 +11,7 @@ import {
   bin,
   setupTestProjectWithOptionsAsync,
   installAsync,
+  findProjectFiles,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -68,18 +68,6 @@ it('runs `npx expo install expo-sms`', async () => {
   // `npx expo install expo-sms`
   await execa('node', [bin, 'install', 'expo-sms'], { cwd: projectRoot });
 
-  // List output files with sizes for snapshotting.
-  // This is to make sure that any changes to the output are intentional.
-  // Posix path formatting is used to make paths the same across OSes.
-  const files = klawSync(projectRoot)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(projectRoot, entry.path);
-    })
-    .filter(Boolean);
-
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
   // Added expected package
@@ -97,7 +85,7 @@ it('runs `npx expo install expo-sms`', async () => {
     'react-native',
   ]);
 
-  expect(files).toStrictEqual([
+  expect(findProjectFiles(projectRoot)).toStrictEqual([
     'App.js',
     'app.json',
     'bun.lockb',

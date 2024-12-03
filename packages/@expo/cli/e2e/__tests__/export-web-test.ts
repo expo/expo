@@ -3,7 +3,6 @@ import JsonFile from '@expo/json-file';
 import assert from 'assert';
 import execa from 'execa';
 import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import {
@@ -12,6 +11,7 @@ import {
   getLoadedModulesAsync,
   bin,
   setupTestProjectWithOptionsAsync,
+  findProjectFiles,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -67,17 +67,6 @@ it('runs `npx expo export:web`', async () => {
   });
 
   const outputDir = path.join(projectRoot, 'web-build');
-  // List output files with sizes for snapshotting.
-  // This is to make sure that any changes to the output are intentional.
-  // Posix path formatting is used to make paths the same across OSes.
-  const files = klawSync(outputDir)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(outputDir, entry.path);
-    })
-    .filter(Boolean);
 
   const assetsManifest = await JsonFile.readAsync(path.resolve(outputDir, 'asset-manifest.json'));
   expect(assetsManifest.entrypoints).toEqual([
@@ -139,7 +128,7 @@ it('runs `npx expo export:web`', async () => {
   });
 
   // If this changes then everything else probably changed as well.
-  expect(files).toEqual([
+  expect(findProjectFiles(outputDir)).toEqual([
     'asset-manifest.json',
     'index.html',
     'manifest.json',

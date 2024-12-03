@@ -3,11 +3,10 @@ import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getRouterE2ERoot } from '../utils';
+import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -37,18 +36,7 @@ describe('exports with react native canary', () => {
   });
 
   it('has expected files', async () => {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-
+    const files = findProjectFiles(outputDir);
     const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
 
     expect(metadata).toEqual({
