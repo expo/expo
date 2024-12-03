@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `+html` and `+native-intent` to `expo customize`.
+
 ### 🐛 Bug fixes
 
 - Add minor fixes to nested server actions. ([#32925](https://github.com/expo/expo/pull/32925) by [@EvanBacon](https://github.com/EvanBacon))

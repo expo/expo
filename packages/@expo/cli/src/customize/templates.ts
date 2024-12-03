@@ -10,6 +10,8 @@ const debug = require('debug')('expo:customize:templates');
 export type DestinationResolutionProps = {
   /** Web 'public' folder path (defaults to `/web`). This technically can be changed but shouldn't be. */
   webStaticPath: string;
+  /** The Expo Router app directory. */
+  appDirPath: string;
 };
 
 function importFromExpoWebpackConfig(projectRoot: string, folder: string, moduleId: string) {
@@ -107,6 +109,18 @@ export const TEMPLATES: {
       importFromExpoWebpackConfig(projectRoot, 'template', 'webpack.config.js'),
     destination: () => 'webpack.config.js',
     dependencies: ['@expo/webpack-config'],
+  },
+  {
+    id: '+html.tsx',
+    file: (projectRoot) => importFromVendor(projectRoot, '+html.tsx'),
+    destination: ({ appDirPath }) => path.join(appDirPath, '+html.tsx'),
+    dependencies: [],
+  },
+  {
+    id: '+native-intent.ts',
+    file: (projectRoot) => importFromVendor(projectRoot, '+native-intent.ts'),
+    destination: ({ appDirPath }) => path.join(appDirPath, '+native-intent.ts'),
+    dependencies: [],
   },
 ];
 

@@ -23,6 +23,7 @@ describe(queryAndGenerateAsync, () => {
         files: ['file1', 'file2'],
         props: {
           webStaticPath: 'web',
+          appDirPath: 'app',
         },
         extras: [],
       })
@@ -35,6 +36,7 @@ describe(queryAndGenerateAsync, () => {
       files: [],
       props: {
         webStaticPath: 'web',
+        appDirPath: 'app',
       },
       extras: ['foobar'],
     });
@@ -46,6 +48,7 @@ describe(queryAndGenerateAsync, () => {
       files: ['babel.config.js'],
       props: {
         webStaticPath: 'web',
+        appDirPath: 'app',
       },
       extras: ['foobar'],
     });
@@ -70,6 +73,7 @@ describe(selectAndGenerateAsync, () => {
       selectAndGenerateAsync('/', {
         props: {
           webStaticPath: 'web',
+          appDirPath: 'app',
         },
         extras: [],
       })
@@ -92,6 +96,7 @@ describe(selectAndGenerateAsync, () => {
     await selectAndGenerateAsync('/', {
       props: {
         webStaticPath: 'web',
+        appDirPath: 'app',
       },
       extras: [],
     });
@@ -112,6 +117,7 @@ describe(selectAndGenerateAsync, () => {
     await selectAndGenerateAsync('/', {
       props: {
         webStaticPath: 'web',
+        appDirPath: 'app',
       },
       extras: [],
     });
