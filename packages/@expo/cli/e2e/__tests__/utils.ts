@@ -243,7 +243,7 @@ export async function getLoadedModulesAsync(statement: string): Promise<string[]
     'node',
     [
       '-e',
-      [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join('\n'),
+      [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join(';'),
     ],
     { cwd: __dirname }
   );
