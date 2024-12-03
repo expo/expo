@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix sending a blob as fetch body not setting correct content-type.
+
 ### 💡 Others
 
 ## 52.0.14 - 2024-12-02
