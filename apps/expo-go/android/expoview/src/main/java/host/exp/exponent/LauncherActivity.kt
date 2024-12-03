@@ -78,7 +78,7 @@ class LauncherActivity : Activity() {
   }
 
   private fun startStayAwakeServiceIfNeeded() {
-    if (isAppInForeground){
+    if (isAppInForeground) {
       // Start a service to keep our process awake. This isn't necessary most of the time, but
       // if the user has "Don't keep activities" on it's possible for the process to exit in between
       // finishing this activity and starting the BaseExperienceActivity.
