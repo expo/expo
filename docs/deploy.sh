@@ -89,6 +89,7 @@ redirects[develop/development-builds/installation]=develop/development-builds/cr
 
 # Guides that have been deleted
 redirects[guides/web-performance/]=guides/analyzing-bundles
+redirects[push-notifications/obtaining-a-device-token-for-fcm-or-apns]=push-notifications/sending-notifications-custom
 
 # Redirects after adding Home to the docs
 redirects[next-steps/additional-resources]=additional-resources
