@@ -21,6 +21,22 @@ We'll also use the [Reanimated](https://docs.swmansion.com/react-native-reanimat
 
 <Step label="1">
 
+## Install dependencies
+
+Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the required dependencies:
+
+<Terminal cmd={['$ npx expo install react-native-gesture-handler react-native-reanimated']} />
+
+The [`npx expo install`](/more/expo-cli/#installation) command will install the libraries and add them to the project's dependencies in **package.json**.
+
+In the project directory, run the following command to start the development server again.
+
+<Terminal cmd={['$ npx expo start']} />
+
+</Step>
+
+<Step label="2">
+
 ## Add GestureHandlerRootView
 
 To get gesture interactions to work in the app, we'll render `<GestureHandlerRootView>` from `react-native-gesture-handler` at the top of `Index` component. Replace the root level `<View>` component in the **app/(tabs)/index.tsx** with `<GestureHandlerRootView>`.
@@ -45,7 +61,7 @@ export default function Index() {
 
 </Step>
 
-<Step label="2">
+<Step label="3">
 
 ## Use animated components
 
@@ -84,7 +100,7 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 
 ## Add a tap gesture
 
@@ -201,7 +217,7 @@ Let's take a look at our app on Android, iOS and the web:
 
 </Step>
 
-<Step label="4">
+<Step label="5">
 
 ## Add a pan gesture
 
