@@ -13,6 +13,7 @@ import treeKill from 'tree-kill';
 import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
+import { toPosixPath } from '../../src/utils/filePath';
 
 export const bin = require.resolve('../../build/bin/cli');
 
@@ -245,8 +246,11 @@ export async function getLoadedModulesAsync(statement: string): Promise<string[]
     ],
     { cwd: __dirname }
   );
-  const loadedModules = JSON.parse(results.stdout.trim());
-  return loadedModules.map((value: string) => path.relative(repoRoot, value)).sort();
+  const loadedModules = JSON.parse(results.stdout.trim()) as string[];
+  return loadedModules
+    .map((value) => toPosixPath(path.relative(repoRoot, value)))
+    .filter((value) => !value.includes('/ms-vscode.js-debug/')) // Ignore injected vscode debugger scripts
+    .sort();
 }
 
 const pTreeKill = promisify(treeKill);
