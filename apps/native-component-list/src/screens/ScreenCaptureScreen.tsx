@@ -1,6 +1,6 @@
 import * as ScreenCapture from 'expo-screen-capture';
 import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Platform, StyleSheet, Text, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
@@ -70,8 +70,6 @@ export default function ScreenCaptureScreen() {
     },
   });
 
-  console.log('isCaptured', JSON.stringify(timestamps));
-
   return (
     <View style={styles.container}>
       <TitleSwitch title="Screen Capture Allowed" value={isEnabled} setValue={setEnabled} />
@@ -79,7 +77,11 @@ export default function ScreenCaptureScreen() {
         Take a screenshot or attempt to record the screen to test that the image is/isn't obscured.
       </Text>
       <HeadingText>Capture Timestamps</HeadingText>
-      <Text>Take a screenshot or record the screen to test if the listener works.</Text>
+      {Platform.OS === 'ios' ? (
+        <Text>Take a screenshot or record the screen to test if the listener works.</Text>
+      ) : (
+        <Text>Take a screenshot to test if the listener works.</Text>
+      )}
       <FlatList
         data={timestamps}
         keyExtractor={(item) => item.timestamp.getTime() + '-' + item.type}
