@@ -7,7 +7,7 @@ You can control the flow of your workflows with conditions that run certain jobs
 
 ## `needs`
 
-You can add a list of previous job names using the `needs` keyword on a job. If any job from that list fails, the current job will be skipped.
+You can add a list of previous job names using the `needs` keyword on a job. If any job from that list fails, the current job will be failed, and if any job from the list is skipped, the current job will be skipped as well.
 
 ```yaml .eas/workflows/prerequisite.yaml
 jobs:
@@ -67,3 +67,7 @@ jobs:
       profile: production
       platform: ios
 ```
+
+## Combining conditions
+
+You can use both `needs` and `if` conditions in the same job definition. Note that the job will be run if all jobs on the `needs` list are successful **AND** the `if` condition is true. If any job on the `needs` list had been skipped or the `if` condition is false, the current job will be skipped. If any job on the `needs` list had failed, the current job will be failed.
