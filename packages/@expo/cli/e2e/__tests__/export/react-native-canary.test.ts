@@ -79,6 +79,6 @@ describe('exports with react native canary', () => {
     // Minified mark
     expect(bundle).not.toMatch('__d((function(g,r,');
     // Canary comment. This needs to be updated with each canary.
-    expect(bundle).toMatch('canary-full/react/cjs/react.production.js');
+    expect(bundle).toMatchPath(/\/canary-full\/react\/cjs\/react\.production\.js/);
   });
 });

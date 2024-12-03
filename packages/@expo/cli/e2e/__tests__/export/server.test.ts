@@ -261,7 +261,7 @@ describe('server-output', () => {
       });
     });
     it('supports using Node.js externals to read local files', async () => {
-      await expect(server.fetchAsync('/api/externals').then((r) => r.text())).resolves.toEqual(
+      await expect(server.fetchAsync('/api/externals').then((r) => r.text())).resolves.toMatchPath(
         'a/b/c'
       );
     });

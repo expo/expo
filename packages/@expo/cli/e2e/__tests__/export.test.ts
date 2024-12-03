@@ -80,35 +80,35 @@ describe('server', () => {
           assets: [
             {
               ext: 'png',
-              path: 'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
+              path: expect.pathMatching('assets/fb960eb5e4eb49ec8786c7f6c4a57ce2'),
             },
             {
               ext: 'png',
-              path: 'assets/9ce7db807e4147e00df372d053c154c2',
+              path: expect.pathMatching('assets/9ce7db807e4147e00df372d053c154c2'),
             },
             {
               ext: 'ttf',
-              path: 'assets/3858f62230ac3c915f300c664312c63f',
+              path: expect.pathMatching('assets/3858f62230ac3c915f300c664312c63f'),
             },
           ],
-          bundle: expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-.*\.hbc/),
+          bundle: expect.pathMatching(/_expo\/static\/js\/android\/AppEntry-.*\.hbc$/),
         },
         ios: {
           assets: [
             {
               ext: 'png',
-              path: 'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
+              path: expect.pathMatching('assets/fb960eb5e4eb49ec8786c7f6c4a57ce2'),
             },
             {
               ext: 'png',
-              path: 'assets/9ce7db807e4147e00df372d053c154c2',
+              path: expect.pathMatching('assets/9ce7db807e4147e00df372d053c154c2'),
             },
             {
               ext: 'ttf',
-              path: 'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
+              path: expect.pathMatching('assets/2f334f6c7ca5b2a504bdf8acdee104f3'),
             },
           ],
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc/),
+          bundle: expect.pathMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc$/),
         },
       },
       version: 0,
@@ -119,8 +119,8 @@ describe('server', () => {
       '2f334f6c7ca5b2a504bdf8acdee104f3': {
         __packager_asset: true,
         fileHashes: ['2f334f6c7ca5b2a504bdf8acdee104f3'],
-        fileSystemLocation: expect.stringMatching(/\/.*\/basic-export\/assets/),
-        files: [expect.stringMatching(/\/.*\/basic-export\/assets\/font\.ios\.ttf/)],
+        fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
+        files: [expect.pathMatching(/\/.*\/basic-export\/assets\/font\.ios\.ttf$/)],
         hash: '2f334f6c7ca5b2a504bdf8acdee104f3',
         httpServerLocation: '/assets/assets',
         name: 'font',
@@ -131,8 +131,8 @@ describe('server', () => {
       '3858f62230ac3c915f300c664312c63f': {
         __packager_asset: true,
         fileHashes: ['3858f62230ac3c915f300c664312c63f'],
-        fileSystemLocation: expect.stringMatching(/\/.*\/basic-export\/assets/),
-        files: [expect.stringMatching(/\/.*\/basic-export\/assets\/font\.ttf/)],
+        fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
+        files: [expect.pathMatching(/\/.*\/basic-export\/assets\/font\.ttf$/)],
         hash: '3858f62230ac3c915f300c664312c63f',
         httpServerLocation: '/assets/assets',
         name: 'font',
@@ -142,10 +142,10 @@ describe('server', () => {
       d48d481475a80809fcf9253a765193d1: {
         __packager_asset: true,
         fileHashes: ['fb960eb5e4eb49ec8786c7f6c4a57ce2', '9ce7db807e4147e00df372d053c154c2'],
-        fileSystemLocation: expect.stringMatching(/\/.*\/basic-export\/assets/),
+        fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
         files: [
-          expect.stringMatching(/\/.*\/basic-export\/assets\/icon\.png/),
-          expect.stringMatching(/\/.*\/basic-export\/assets\/icon@2x\.png/),
+          expect.pathMatching(/\/.*\/basic-export\/assets\/icon\.png$/),
+          expect.pathMatching(/\/.*\/basic-export\/assets\/icon@2x\.png$/),
         ],
         hash: 'd48d481475a80809fcf9253a765193d1',
         height: 1,
@@ -159,12 +159,12 @@ describe('server', () => {
 
     // If this changes then everything else probably changed as well.
     expect(files).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc/),
-      expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc\.map/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map/),
-      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js/),
-      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map/),
+      expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc$/),
+      expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc\.map$/),
+      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc$/),
+      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map$/),
+      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js$/),
+      expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map$/),
       'assetmap.json',
       'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
       'assets/3858f62230ac3c915f300c664312c63f',
@@ -218,18 +218,18 @@ describe('server', () => {
           assets: [
             {
               ext: 'png',
-              path: 'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
+              path: expect.pathMatching('assets/fb960eb5e4eb49ec8786c7f6c4a57ce2'),
             },
             {
               ext: 'png',
-              path: 'assets/9ce7db807e4147e00df372d053c154c2',
+              path: expect.pathMatching('assets/9ce7db807e4147e00df372d053c154c2'),
             },
             {
               ext: 'ttf',
-              path: 'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
+              path: expect.pathMatching('assets/2f334f6c7ca5b2a504bdf8acdee104f3'),
             },
           ],
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.js/),
+          bundle: expect.pathMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.js$/),
         },
       },
       version: 0,
@@ -240,8 +240,8 @@ describe('server', () => {
       '2f334f6c7ca5b2a504bdf8acdee104f3': {
         __packager_asset: true,
         fileHashes: ['2f334f6c7ca5b2a504bdf8acdee104f3'],
-        fileSystemLocation: expect.stringMatching(/\/.*\/basic-export\/assets/),
-        files: [expect.stringMatching(/\/.*\/basic-export\/assets\/font\.ios\.ttf/)],
+        fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
+        files: [expect.pathMatching(/\/.*\/basic-export\/assets\/font\.ios\.ttf$/)],
         hash: '2f334f6c7ca5b2a504bdf8acdee104f3',
         httpServerLocation: '/assets/assets',
         name: 'font',
@@ -251,10 +251,10 @@ describe('server', () => {
       d48d481475a80809fcf9253a765193d1: {
         __packager_asset: true,
         fileHashes: ['fb960eb5e4eb49ec8786c7f6c4a57ce2', '9ce7db807e4147e00df372d053c154c2'],
-        fileSystemLocation: expect.stringMatching(/\/.*\/basic-export\/assets/),
+        fileSystemLocation: expect.pathMatching(/\/.*\/basic-export\/assets$/),
         files: [
-          expect.stringMatching(/\/.*\/basic-export\/assets\/icon\.png/),
-          expect.stringMatching(/\/.*\/basic-export\/assets\/icon@2x\.png/),
+          expect.pathMatching(/\/.*\/basic-export\/assets\/icon\.png$/),
+          expect.pathMatching(/\/.*\/basic-export\/assets\/icon@2x\.png$/),
         ],
         hash: 'd48d481475a80809fcf9253a765193d1',
         height: 1,

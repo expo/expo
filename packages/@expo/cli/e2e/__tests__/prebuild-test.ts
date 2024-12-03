@@ -218,7 +218,8 @@ it('runs `npx expo prebuild`', async () => {
   expect(files).toMatchSnapshot();
 });
 
-it('runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`', async () => {
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
 
   const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
@@ -259,7 +260,8 @@ it('runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`', asy
   expect(files).toMatchSnapshot();
 });
 
-it('runs `npx expo prebuild --template <github-url>`', async () => {
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'github-template-prebuild',
     'with-blank'

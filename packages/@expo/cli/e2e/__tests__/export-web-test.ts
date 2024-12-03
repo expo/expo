@@ -81,12 +81,12 @@ it('runs `npx expo export:web`', async () => {
 
   const assetsManifest = await JsonFile.readAsync(path.resolve(outputDir, 'asset-manifest.json'));
   expect(assetsManifest.entrypoints).toEqual([
-    expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
-    expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
+    expect.pathMatching(/static\/js\/\d+\.[a-z\d]+\.js$/),
+    expect.pathMatching(/static\/js\/main\.[a-z\d]+\.js$/),
   ]);
 
   const knownFiles = [
-    ['main.js', expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/)],
+    ['main.js', expect.pathMatching(/static\/js\/main\.[a-z\d]+\.js$/)],
     ['index.html', '/index.html'],
     ['manifest.json', '/manifest.json'],
     ['serve.json', '/serve.json'],
@@ -101,8 +101,8 @@ it('runs `npx expo export:web`', async () => {
   }
 
   for (const [key, value] of Object.entries(assetsManifest?.files ?? {})) {
-    expect(key).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
-    expect(value).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
+    expect(key).toMatchPath(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?$/);
+    expect(value).toMatchPath(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?$/);
   }
 
   expect(await JsonFile.readAsync(path.resolve(outputDir, 'manifest.json'))).toEqual({

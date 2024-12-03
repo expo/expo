@@ -126,10 +126,10 @@ describe('exports static', () => {
         expect.arrayContaining([
           '__prelude__',
           // NOTE: No `/Users/evanbacon/`...
-          '/node_modules/metro-runtime/src/polyfills/require.js',
+          expect.pathMatching(/\/node_modules\/metro-runtime\/src\/polyfills\/require\.js/),
 
           // NOTE: relative to the server root for optimal source map support
-          '/apps/router-e2e/__e2e__/static-rendering/app/[post].tsx',
+          expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/),
         ])
       );
     }

@@ -65,7 +65,7 @@ it('runs `npx expo config --json`', async () => {
   expect(exp.platforms).toStrictEqual([]);
   expect(exp.version).toBe('1.0.0');
   expect(exp._internal.dynamicConfigPath).toBe(null);
-  expect(exp._internal.staticConfigPath).toMatch(/\/basic-config\/app\.json$/);
+  expect(exp._internal.staticConfigPath).toMatchPath(/\/basic-config\/app\.json$/);
 });
 
 it('runs `npx expo config --json` with a warning', async () => {

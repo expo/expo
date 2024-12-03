@@ -49,7 +49,7 @@ describe('export server with magic import comments', () => {
 
     it('fetches api route to ensure the dynamic import works', async () => {
       const payload = await expo.fetchAsync('/methods').then((response) => response.json());
-      expect(payload).toEqual({ method: 'get/method' });
+      expect(payload).toEqual({ method: expect.pathMatching('get/method') });
     });
   });
 });

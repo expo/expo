@@ -131,7 +131,7 @@ describe('server', () => {
       ).href
     );
     expect(manifest.extra.expoGo?.debuggerHost).toBe(expo.url.host);
-    expect(manifest.extra.expoGo?.mainModuleName).toBe('node_modules/expo/AppEntry');
+    expect(manifest.extra.expoGo?.mainModuleName).toMatchPath('node_modules/expo/AppEntry');
     expect(manifest.extra.expoClient?.hostUri).toBe(expo.url.host);
 
     // Manifest
@@ -162,9 +162,9 @@ describe('server', () => {
       version: 3,
       sources: expect.arrayContaining([
         '__prelude__',
-        expect.stringContaining('metro-runtime/src/polyfills/require.js'),
-        expect.stringContaining('@react-native/js-polyfills/console.js'),
-        expect.stringContaining('@react-native/js-polyfills/error-guard.js'),
+        expect.pathMatching(/metro-runtime\/src\/polyfills\/require\.js$/),
+        expect.pathMatching(/@react-native\/js-polyfills\/console\.js$/),
+        expect.pathMatching(/@react-native\/js-polyfills\/error-guard\.js$/),
         '\0polyfill:external-require',
         // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
         '\0polyfill:environment-variables',
