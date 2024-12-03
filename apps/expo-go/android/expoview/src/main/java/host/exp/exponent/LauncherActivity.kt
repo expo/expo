@@ -19,7 +19,6 @@ import javax.inject.Inject
 class LauncherActivity : Activity() {
   @Inject
   lateinit var kernel: Kernel
-  private var isAppInForeground = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -68,22 +67,14 @@ class LauncherActivity : Activity() {
 
   override fun onResume() {
     super.onResume()
-    isAppInForeground = true
     startStayAwakeServiceIfNeeded()
   }
 
-  override fun onPause() {
-    super.onPause()
-    isAppInForeground = false
-  }
-
   private fun startStayAwakeServiceIfNeeded() {
-    if (isAppInForeground) {
-      // Start a service to keep our process awake. This isn't necessary most of the time, but
-      // if the user has "Don't keep activities" on it's possible for the process to exit in between
-      // finishing this activity and starting the BaseExperienceActivity.
-      startService(ExponentIntentService.getActionStayAwake(applicationContext))
-    }
+    // Start a service to keep our process awake. This isn't necessary most of the time, but
+    // if the user has "Don't keep activities" on it's possible for the process to exit in between
+    // finishing this activity and starting the BaseExperienceActivity.
+    startService(ExponentIntentService.getActionStayAwake(applicationContext))
   }
 
   public override fun onNewIntent(intent: Intent) {
