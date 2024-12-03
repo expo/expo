@@ -1,22 +1,36 @@
 ---
-title: Send notifications with FCMv1 & APNs
+title: Send notifications with FCM and APNs
 hideFromSearch: true
-description: Learn how to send notifications with FCMv1 and APNs.
+description: Learn how to send notifications with FCM and APNs.
 ---
 
-You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic.
+You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo Application Services, and the `expo-notifications` API is push-service agnostic.
 
-> **info** Before sending a notification directly through FCMv1 or APNs, you will need to [obtain a device token](/push-notifications/obtaining-a-device-token-for-fcm-or-apns).
+> **Note**: This guide does not aim to be a comprehensive resource for sending notifications via FCM or APNs. We recommend you read the official documentation to make sure you're following the latest instructions.
+
+## Obtaining a device token for FCM or APNs
+
+When using Expo notification service, you use the `ExpoPushToken` obtained with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken).
+
+If you instead want to send notifications via FCM or APNs, you need to obtain the native device token with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
+
+```diff
+import * as Notifications from 'expo-notifications';
+...
+- const token = (await Notifications.getExpoPushTokenAsync()).data;
++ const token = (await Notifications.getDevicePushTokenAsync()).data;
+// send token to your server
+```
 
 ## FCMv1 server
 
-This guide is based on [Firebase official documentation](https://firebase.google.com/docs/cloud-messaging/migrate-v1).
+This guide is based on [Firebase official documentation](https://firebase.google.com/docs/cloud-messaging/server).
 
-Communicating with FCM is done by sending a POST request. However, before sending or receiving any notifications, you'll need to follow the steps to [configure FCMv1](/push-notifications/fcm-credentials/) and get your `FCM-SERVER-KEY`.
+Communicating with FCM is done by sending a POST request. However, before sending or receiving any notifications, you'll need to follow the steps to [configure FCM](/push-notifications/fcm-credentials/) and get your `FCM-SERVER-KEY`.
 
 ### Getting an authentication token
 
-FCMv1 requires an Oauth 2.0 access token, which must be obtained via one of the methods described in ["Update authorization of send requests"](https://firebase.google.com/docs/cloud-messaging/migrate-v1#update-authorization-of-send-requests).
+FCM requires an Oauth 2.0 access token, which must be obtained via one of the methods described in ["Update authorization of send requests"](https://firebase.google.com/docs/cloud-messaging/migrate-v1#update-authorization-of-send-requests).
 
 For testing purposes, you can use the Google Auth Library and your private key file obtained above, to obtain a short lived token for a single notification, as in this Node example adapted from Firebase documentation:
 
@@ -102,10 +116,6 @@ FCM also provides some [server-side libraries in a few different languages](http
 
 Your FCM server key can be found by making sure you've followed the [configuration steps](/push-notifications/push-notifications-setup/#android), and instead of uploading your FCM key to Expo, you would use that key directly in your server (as the `FCM-SERVER-KEY` in the previous example).
 
-### FCM legacy service
-
-Firebase has discontinued the legacy FCM service. Our documentation page on this service is [archived here](/archive/push-notifications/sending-notifications-custom-fcm-legacy).
-
 ## APNs server
 
 > **info** This documentation is based on [Apple's documentation](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html), and this section covers the basics to get you started.
@@ -174,112 +184,6 @@ request.write(
 request.end();
 ```
 
-> This example is minimal and includes no error handling and connection pooling. For testing purposes, you can refer to [`sentNotificationToAPNS`](https://github.com/expo/expo/blob/main/docs/public/static/examples/sendNotificationToAPNS.js) example code.
+> This example is minimal and includes no error handling and connection pooling. For testing purposes, you can refer to [`sendNotificationToAPNS`](https://github.com/expo/expo/blob/main/docs/public/static/examples/sendNotificationToAPNS.js) example code.
 
-APNs provide their full list of supported fields in the [notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html).
-
-## Payload formats
-
-The examples in the previous section provide the bare minimum notification requests. You may have to send category identifiers, custom sounds, icons, custom key-value pairs, and so on. [`expo-notifications` documents](/versions/latest/sdk/notifications/#manage-notification-categories-interactive-notifications) all the fields it supports, and below are the example payloads Expo sends in its notifications service:
-
-### Android
-
-```json
-{
-  "token": native device token string,
-  "collapse_key": string that identifies notification as collapsible,
-  "priority": "normal" || "high",
-  "data": {
-    "experienceId": "@yourExpoUsername/yourProjectSlug",
-    "scopeKey": "@yourExpoUsername/yourProjectSlug",
-    "title": title of your message,
-    "message": body of your message,
-    "channelId": the android channel ID associated with this notification,
-    "categoryId": the category associated with this notification,
-    "icon": the icon to show with this notification,
-    "link": the link this notification should open,
-    "sound": boolean or the custom sound file you'd like to play,
-    "vibrate": "true" | "false" | number[],
-    "priority": AndroidNotificationPriority, // https://docs.expo.dev/versions/latest/sdk/notifications/#androidnotificationpriority
-    "badge": the number to set the icon badge to,
-    "body": { object of key-value pairs }
-  }
-}
-```
-
-### iOS
-
-```json
-{
-  "aps": {
-    "alert": {
-      "title": title of your message,
-      "subtitle": subtitle of your message (shown below title, above body),
-      "body": body of your message,
-      "launch-image": the name of the launch image file to display,
-    },
-    "category": the category associated with this notification,
-    "badge": number to set badge count to upon notification's arrival,
-    "sound": the sound to play when the notification is received,
-    "thread-id": app-specific identifier for grouping related notifications
-  },
-  "body": { object of key-value pairs },
-  "experienceId": "@yourExpoUsername/yourProjectSlug",
-  "scopeKey": "@yourExpoUsername/yourProjectSlug",
-}
-```
-
-### Firebase notification types
-
-There are two types of Firebase Cloud Messaging messages: [notification and data messages](https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages).
-
-1. **Notification** messages are only handled (and displayed) by the Firebase library. They don't necessarily wake the app, and `expo-notifications` will not be made aware that your app has received any notification.
-
-2. **Data** messages are not handled by the Firebase library. They are immediately handed off to your app for processing. That's where `expo-notifications` interprets the data payload and takes action based on that data. **In almost all cases, this is the type of notification you have to send.**
-
-If you send a message of type **notification** instead of **data** directly through Firebase, you won't know if a user interacted with the notification (no `onNotificationResponse` event available), and you won't be able to parse the notification payload for any data in your notification event-related listeners.
-
-> Using notification-type messages can be beneficial when you need a configuration option that is not yet exposed by `expo-notifications`. Generally, it may lead to less predictable situations than using data-type messages. However, you may need to report any issue you encounter directly to Google.
-
-Below is an example of each type using Node.js Firebase Admin SDK to send data-type messages instead of notification-type:
-
-```js
-const devicePushToken = /* ... */;
-const options = /* ... */;
-
-// ❌ The following payload has a root-level notification object and
-// it will not trigger expo-notifications and may not work as expected.
-admin.messaging().sendToDevice(
-  devicePushToken,
-  {
-    notification: {
-      title: "This is a notification-type message",
-      body: "`expo-notifications` will never see this 😢",
-    },
-    data: {
-      photoId: 42,
-    },
-  },
-  options
-);
-
-// ✅ There is no "notification" key in the root level of the payload
-// so the message is a "data" message, thus triggering expo-notifications.
-admin.messaging().sendToDevice(
-  devicePushToken,
-  {
-    data: {
-      title: "This is a data-type message",
-      message: "`expo-notifications` events will be triggered 🤗",
-      // ⚠️ Notice the schema of this payload is different
-      // than that of Firebase SDK. What is there called "body"
-      // here is a "message". For more info see:
-      // https://docs.expo.dev/versions/latest/sdk/notifications/#android-push-notification-payload-specification
-
-      body:                              // As per Android payload format specified above, the
-        JSON.stringify({ photoId: 42 }), // additional "data" should be placed under "body" key.
-    },
-  },
-  options
-);
-```
+APNs provide their full list of supported fields in the [notification payload](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Payload-key-reference).

@@ -1,0 +1,35 @@
+---
+title: package.json
+description: A reference for Expo-specific properties that can be used in the package.json file.
+isNew: true
+---
+
+**package.json** is a JSON file that contains the metadata for a JavaScript project. This is a reference to Expo-specific properties that can be used in the **package.json** file.
+
+## `install`
+
+### `exclude`
+
+The following commands perform a version check for the libraries installed in a project and give a warning when a library's version is different from the version recommended by Expo:
+
+- `npx expo start` and `npx expo-doctor`
+- `npx expo install` (when installing a new version of that library or using `--check` or `--fix` options)
+
+By specifying the library under the `install.exclude` array in the **package.json** file, you can exclude it from the version checks:
+
+```json package.json
+{
+  /* @hide Other package.json properties... */ /* @end */
+  "expo": {
+    "install": {
+      "exclude": ["expo-updates", "expo-splash-screen"]
+    }
+  }
+}
+```
+
+## `autolinking`
+
+Allows configuring module resolution behavior by using `autolinking` property in **package.json**.
+
+For complete reference, see [Autolinking configuration](/modules/autolinking/#configuration).

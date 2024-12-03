@@ -89,6 +89,7 @@ redirects[develop/development-builds/installation]=develop/development-builds/cr
 
 # Guides that have been deleted
 redirects[guides/web-performance/]=guides/analyzing-bundles
+redirects[push-notifications/obtaining-a-device-token-for-fcm-or-apns]=push-notifications/sending-notifications-custom
 
 # Redirects after adding Home to the docs
 redirects[next-steps/additional-resources]=additional-resources
@@ -293,6 +294,9 @@ redirects[router/ui/tabs]=router/advanced/custom-tabs
 # After new environment variables guide
 redirects[build-reference/variables]=eas/environment-variables
 redirects[eas-update/environment-variables]=eas/environment-variables
+
+# After moving common questions from Expo Router FAQ to Introduction
+redirects[router/reference/faq]=router/introduction
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
