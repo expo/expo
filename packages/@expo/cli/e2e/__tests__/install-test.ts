@@ -153,7 +153,7 @@ it('runs `npx expo install --fix` fails', async () => {
 
   // Didn't fix expo-auth-session since we didn't pass it in
   pkgDependencies = pkg.dependencies as Record<string, string>;
-  expect(pkgDependencies['expo-auth-session']).toBe('~6.0.0');
+  expect(pkgDependencies['expo-auth-session']).toBe('~6.0.1');
 });
 
 it('runs `npx expo install expo@<version> --fix`', async () => {

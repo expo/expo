@@ -89,7 +89,6 @@ describe('export embed for RSC iOS', () => {
     const tempStaticLocation = path.join(serverOutput, 'client/_flight/ios/other.txt');
 
     const serve = createExpoServeServer({
-      verbose: true,
       cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
