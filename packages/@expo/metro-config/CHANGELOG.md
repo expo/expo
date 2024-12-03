@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Use POSIX-formatted filenames when transforming CSS modules for consistent class names.
+- Use POSIX-formatted filenames when transforming CSS modules for consistent class names. ([#33394](https://github.com/expo/expo/pull/33394) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
