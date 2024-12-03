@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
+- Use `ios.appleTeamId` when prompting users to select the Apple identity in `expo run ios`. ([#33330](https://github.com/expo/expo/pull/33330) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
