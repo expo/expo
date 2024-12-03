@@ -154,10 +154,10 @@ export function processPipeOutput(child: ChildProcess, prefix = '[child process]
  */
 export function processFindPrefixedValue(chunk: any, prefix: string) {
   const lines = stripVTControlCharacters(chunk.toString()).split('\n');
-  const value = lines.find((line) => line.includes(prefix));
+  const line = lines.find((line) => line.includes(prefix));
 
-  if (value) {
-    return value.split(prefix).pop()?.trim() ?? null;
+  if (line) {
+    return line.split(prefix).pop()?.trim() ?? null;
   }
 
   return null;

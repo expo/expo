@@ -51,7 +51,8 @@ describe('server-output', () => {
   describe('requests', () => {
     const server = createBackgroundServer({
       command: ['node', path.join(projectRoot, '__e2e__/server/express.js')],
-      host: (chunk) => processFindPrefixedValue(chunk, 'Express server ready'),
+      host: (chunk) =>
+        processFindPrefixedValue(chunk, 'Express server listening') && 'http://localhost',
       cwd: projectRoot,
       env: {
         NODE_ENV: 'production',

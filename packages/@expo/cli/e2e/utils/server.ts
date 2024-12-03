@@ -139,7 +139,7 @@ export function createBackgroundServer({
 
       if (exitHandler) child?.off('exit', exitHandler);
       if (verbose) {
-        console.log('[server] stopAsync -', force ? 'by force' : '');
+        console.log('[server] stopAsync', force ? '- by force' : '');
       }
 
       try {
@@ -149,6 +149,7 @@ export function createBackgroundServer({
       } finally {
         child = null;
         url = null;
+        exitHandler = null;
       }
     },
   };

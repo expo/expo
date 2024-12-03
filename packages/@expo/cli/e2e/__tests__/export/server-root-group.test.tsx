@@ -52,7 +52,8 @@ describe('server-root-group', () => {
   describe('requests', () => {
     const server = createBackgroundServer({
       command: ['node', path.join(projectRoot, '__e2e__/server-root-group/express.js')],
-      host: (chunk) => processFindPrefixedValue(chunk, 'Express server ready'),
+      host: (chunk) =>
+        processFindPrefixedValue(chunk, 'Express server listening') && 'http://localhost',
     });
 
     beforeAll(async () => {
