@@ -14,7 +14,6 @@ const url_1 = __importDefault(require("url"));
 const common_1 = require("./common");
 function expoUseDomDirectivePlugin(api) {
     const { types: t } = api;
-    // TODO: Is exporting
     const isProduction = api.caller(common_1.getIsProd);
     const platform = api.caller((caller) => caller?.platform);
     const projectRoot = api.caller(common_1.getPossibleProjectRoot);
@@ -37,6 +36,7 @@ function expoUseDomDirectivePlugin(api) {
                     // Do nothing for code that isn't marked as a dom component.
                     return;
                 }
+                let displayName = 'DOMComponent';
                 // Assert that a default export must exist and that no other exports should be present.
                 // NOTE: In the future we could support other exports with extraction.
                 let hasDefaultExport = false;
@@ -53,8 +53,11 @@ function expoUseDomDirectivePlugin(api) {
                         }
                         throw path.buildCodeFrameError('Modules with the "use dom" directive only support a single default export.');
                     },
-                    ExportDefaultDeclaration() {
+                    ExportDefaultDeclaration(path) {
                         hasDefaultExport = true;
+                        if (t.isFunctionDeclaration(path.node.declaration) && path.node.declaration.id) {
+                            displayName = path.node.declaration.id.name;
+                        }
                     },
                 });
                 if (!hasDefaultExport) {
@@ -78,38 +81,42 @@ function expoUseDomDirectivePlugin(api) {
                     }
                 }
                 const outputKey = url_1.default.pathToFileURL(filePath).href;
-                const proxyModule = [
-                    `import React from 'react';`,
-                    `import { WebView } from 'expo/dom/internal';`,
-                ];
-                if (isProduction) {
-                    // MUST MATCH THE EXPORT COMMAND!
-                    const hash = crypto_1.default.createHash('sha1').update(outputKey).digest('hex');
-                    proxyModule.push(`const filePath = "${hash}.html";`);
-                }
-                else {
-                    proxyModule.push(
-                    // Add the basename to improve the Safari debug preview option.
-                    `const filePath = "${fileBasename}?file=" + ${JSON.stringify(outputKey)};`);
-                }
-                proxyModule.push(`
-export default React.forwardRef((props, ref) => {
-  return React.createElement(WebView, { ref, ...props, filePath });
-});`);
                 // Removes all imports using babel API, that will disconnect import bindings from the program.
                 // plugin-transform-typescript TSX uses the bindings to remove type imports.
                 // If the DOM component has `import React from 'react';`,
                 // the plugin-transform-typescript treats it as an typed import and removes it.
-                // That will futher cause undefined `React` error.
+                // That will further cause undefined `React` error.
                 path.traverse({
                     ImportDeclaration(path) {
                         path.remove();
                     },
                 });
-                // Clear the body
                 path.node.body = [];
                 path.node.directives = [];
-                path.pushContainer('body', core_1.template.ast(proxyModule.join('\n')));
+                // Create template with declaration first
+                const proxyModuleTemplate = `
+          import React from 'react';
+          import { WebView } from 'expo/dom/internal';
+          ${isProduction
+                    ? `const filePath = "${crypto_1.default.createHash('sha1').update(outputKey).digest('hex')}.html";`
+                    : `const filePath = "${fileBasename}?file=" + ${JSON.stringify(outputKey)};`}
+          const _Expo_DOMProxyComponent = React.forwardRef((props, ref) => {
+            return React.createElement(WebView, { ref, ...props, filePath });
+          });
+          if (__DEV__) _Expo_DOMProxyComponent.displayName = ${JSON.stringify(displayName)};
+          export default _Expo_DOMProxyComponent;
+        `;
+                // Convert template to AST and push to body
+                const ast = core_1.template.ast(proxyModuleTemplate);
+                const results = path.pushContainer('body', ast);
+                // Find and register the component declaration
+                results.forEach((nodePath) => {
+                    if (t.isVariableDeclaration(nodePath.node) &&
+                        'name' in nodePath.node.declarations[0]?.id &&
+                        nodePath.node.declarations[0].id.name === '_Expo_DOMProxyComponent') {
+                        path.scope.registerDeclaration(nodePath);
+                    }
+                });
                 assertExpoMetadata(state.file.metadata);
                 // Save the client reference in the metadata.
                 state.file.metadata.expoDomComponentReference = outputKey;

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `displayName` to DOM components for better debugging.
+
 ### 🐛 Bug fixes
 
 - Add support for `TSInterfaceDeclaration` in server component plugin. ([#33121](https://github.com/expo/expo/pull/33121) by [@EvanBacon](https://github.com/EvanBacon))

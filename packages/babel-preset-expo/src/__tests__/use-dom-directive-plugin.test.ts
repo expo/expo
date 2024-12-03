@@ -96,13 +96,15 @@ export default function App() {
       "import React from 'react';
       import { WebView } from 'expo/dom/internal';
       var filePath = "unknown?file=" + "file:///unknown";
-      export default React.forwardRef(function (props, ref) {
+      var _Expo_DOMProxyComponent = React.forwardRef(function (props, ref) {
         return React.createElement(WebView, Object.assign({
           ref: ref
         }, props, {
           filePath: filePath
         }));
-      });"
+      });
+      if (__DEV__) _Expo_DOMProxyComponent.displayName = "App";
+      export default _Expo_DOMProxyComponent;"
     `);
   });
 });
@@ -124,13 +126,15 @@ it(`adds dom components proxy for ios in production`, () => {
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
     var filePath = "98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html";
-    export default React.forwardRef(function (props, ref) {
+    var _Expo_DOMProxyComponent = React.forwardRef(function (props, ref) {
       return React.createElement(WebView, Object.assign({
         ref: ref
       }, props, {
         filePath: filePath
       }));
-    });"
+    });
+    if (false) _Expo_DOMProxyComponent.displayName = "App";
+    export default _Expo_DOMProxyComponent;"
   `);
 });
 it(`adds dom components proxy for android in production`, () => {
@@ -144,13 +148,15 @@ it(`adds dom components proxy for android in production`, () => {
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
     var filePath = "98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html";
-    export default React.forwardRef(function (props, ref) {
+    var _Expo_DOMProxyComponent = React.forwardRef(function (props, ref) {
       return React.createElement(WebView, Object.assign({
         ref: ref
       }, props, {
         filePath: filePath
       }));
-    });"
+    });
+    if (false) _Expo_DOMProxyComponent.displayName = "App";
+    export default _Expo_DOMProxyComponent;"
   `);
 });
 it(`keeps React import from tsx`, () => {
