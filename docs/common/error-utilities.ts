@@ -433,4 +433,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // After new environment variables guide
   '/build-reference/variables/': '/eas/environment-variables/',
   '/eas-update/environment-variables/': '/eas/environment-variables/#eas-update',
+
+  // After moving common questions from Expo Router FAQ to Introduction
+  '/router/reference/faq/': '/router/introduction/',
 };
