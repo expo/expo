@@ -42,8 +42,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e-linux:
-    runs-on: linux-22.04
+  e2e-ubuntu:
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -81,7 +81,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: 🧶 Install node modules in root dir (Linux/macOS)
+      - name: 🧶 Install node modules in root dir
         run: yarn install --prefer-offline --frozen-lockfile
         env:
           YARN_IGNORE_SCRIPTS: 'true'
