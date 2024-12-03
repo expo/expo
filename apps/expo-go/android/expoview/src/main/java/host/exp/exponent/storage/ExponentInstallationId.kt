@@ -34,11 +34,7 @@ internal class ExponentInstallationId(
         // Cache for future calls
         uuid = UUID.fromString(bufferedReader.readLine()).toString()
       }
-    } catch (e: IOException) {
-      // do nothing, try other sources
-    } catch (e: IllegalArgumentException) {
-      // do nothing, try other sources
-    } catch (e: NullPointerException) {
+    } catch (e: Throwable) {
       // do nothing, try other sources
     }
 
