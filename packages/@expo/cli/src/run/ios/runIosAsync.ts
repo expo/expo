@@ -75,8 +75,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     try {
       await simctlAsync(['terminate', props.device.udid, launchInfo.bundleId]);
     } catch (error) {
-      // If we failed the app was not running to begin with and we will get an `invalid device` error
-      debug('Failed to terminate app:', error);
+      // If we failed it's likely that the app was not running to begin with and we will get an `invalid device` error
+      debug('Failed to terminate app (possibly because it was not running):', error);
     }
   }
 
