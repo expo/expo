@@ -3,9 +3,9 @@ package host.exp.exponent.storage
 import android.content.Context
 import android.content.SharedPreferences
 import host.exp.exponent.analytics.EXL
-import java.io.*
-import java.lang.IllegalArgumentException
-import java.util.*
+import java.io.File
+import java.io.IOException
+import java.util.UUID
 
 /**
  * An installation ID provider - it solves two purposes:
