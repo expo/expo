@@ -12,7 +12,6 @@ public class BackgroundTaskScheduler: NSObject {
     // We'll require network but accept running on battery power.
     request.requiresNetworkConnectivity = true
     request.requiresExternalPower = false
-    // TODO: request.earliestBeginDate =
 
     do {
       try BGTaskScheduler.shared.submit(request)

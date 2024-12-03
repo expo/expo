@@ -76,4 +76,8 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
 }
 
 // Export types
-export { BackgroundTaskStatus, BackgroundTaskResult } from './BackgroundTask.types';
+export {
+  BackgroundTaskStatus,
+  BackgroundTaskResult,
+  BackgroundTaskOptions as BackgroundOptions,
+} from './BackgroundTask.types';

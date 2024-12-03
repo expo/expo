@@ -34,5 +34,5 @@ export declare function registerTaskAsync(taskName: string, options?: object): P
  * @return A promise which fulfils when the task is fully unregistered.
  */
 export declare function unregisterTaskAsync(taskName: string): Promise<void>;
-export { BackgroundTaskStatus, BackgroundTaskResult } from './BackgroundTask.types';
+export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions as BackgroundOptions, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.d.ts.map
