@@ -175,151 +175,136 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
   // android/app/src/main/java/com/minimal/MainApplication.java
 }
 
-it(
-  'runs `npx expo prebuild`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
+it('runs `npx expo prebuild`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
 
-    const templateFolder = await ensureTemplatePathAsync();
-    console.log('Using local template:', templateFolder);
+  const templateFolder = await ensureTemplatePathAsync();
+  console.log('Using local template:', templateFolder);
 
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
-      cwd: projectRoot,
-    });
+  await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
+    cwd: projectRoot,
+  });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
+  // List output files with sizes for snapshotting.
+  // This is to make sure that any changes to the output are intentional.
+  // Posix path formatting is used to make paths the same across OSes.
+  const files = klawSync(projectRoot)
+    .map((entry) => {
+      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+        return null;
+      }
+      return path.posix.relative(projectRoot, entry.path);
+    })
+    .filter(Boolean);
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+  await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
 
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
+  // Added new packages
+  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+    'expo',
+    'react',
+    'react-native',
+  ]);
 
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
+  // Updated scripts
+  expect(pkg.scripts).toStrictEqual({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
 
-    // If this changes then everything else probably changed as well.
-    expect(files).toMatchSnapshot();
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  // If this changes then everything else probably changed as well.
+  expect(files).toMatchSnapshot();
+});
 
-it(
-  'runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
+it('runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
 
-    const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', npmTemplatePackage], {
-      cwd: projectRoot,
-    });
+  const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
+  await execa('node', [bin, 'prebuild', '--no-install', '--template', npmTemplatePackage], {
+    cwd: projectRoot,
+  });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
+  // List output files with sizes for snapshotting.
+  // This is to make sure that any changes to the output are intentional.
+  // Posix path formatting is used to make paths the same across OSes.
+  const files = klawSync(projectRoot)
+    .map((entry) => {
+      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+        return null;
+      }
+      return path.posix.relative(projectRoot, entry.path);
+    })
+    .filter(Boolean);
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+  await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
 
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
+  // Added new packages
+  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+    'expo',
+    'react',
+    'react-native',
+  ]);
 
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
+  // Updated scripts
+  expect(pkg.scripts).toStrictEqual({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
 
-    // If this changes then everything else probably changed as well.
-    expect(files).toMatchSnapshot();
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  // If this changes then everything else probably changed as well.
+  expect(files).toMatchSnapshot();
+});
 
-it(
-  'runs `npx expo prebuild --template <github-url>`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync(
-      'github-template-prebuild',
-      'with-blank'
-    );
+it('runs `npx expo prebuild --template <github-url>`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'github-template-prebuild',
+    'with-blank'
+  );
 
-    const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
-    const expoSdkVersion = semver.minVersion(expoPackage)?.major;
-    if (!expoSdkVersion) {
-      throw new Error('Could not determine Expo SDK major version from template');
-    }
+  const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
+  const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+  if (!expoSdkVersion) {
+    throw new Error('Could not determine Expo SDK major version from template');
+  }
 
-    const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
-    console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
+  const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
+  console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
 
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateUrl], {
-      cwd: projectRoot,
-    });
+  await execa('node', [bin, 'prebuild', '--no-install', '--template', templateUrl], {
+    cwd: projectRoot,
+  });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
+  // List output files with sizes for snapshotting.
+  // This is to make sure that any changes to the output are intentional.
+  // Posix path formatting is used to make paths the same across OSes.
+  const files = klawSync(projectRoot)
+    .map((entry) => {
+      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+        return null;
+      }
+      return path.posix.relative(projectRoot, entry.path);
+    })
+    .filter(Boolean);
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
+  // Added new packages
+  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+    'expo',
+    'react',
+    'react-native',
+  ]);
 
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
+  // Updated scripts
+  expect(pkg.scripts).toStrictEqual({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
 
-    // If this changes then everything else probably changed as well.
-    expect(files).toMatchSnapshot();
-  },
-  // Could take 1-2m depending on how fast github returns the tarball of expo/expo
-  2 * 60 * 1000
-);
+  // If this changes then everything else probably changed as well.
+  expect(files).toMatchSnapshot();
+});

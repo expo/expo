@@ -14,21 +14,17 @@ describe('export server with magic import comments', () => {
   const outputName = 'dist-' + inputDir;
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      await execaLog(bin, ['export', '-p', 'web', '--output-dir', outputName], {
-        cwd: projectRoot,
-        env: {
-          NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'server',
-          E2E_ROUTER_SRC: inputDir,
-          E2E_ROUTER_JS_ENGINE: 'hermes',
-        },
-      });
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    await execaLog(bin, ['export', '-p', 'web', '--output-dir', outputName], {
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'server',
+        E2E_ROUTER_SRC: inputDir,
+        E2E_ROUTER_JS_ENGINE: 'hermes',
+      },
+    });
+  });
 
   it('has expected syntax', async () => {
     expect(

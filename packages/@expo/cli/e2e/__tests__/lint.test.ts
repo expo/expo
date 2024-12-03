@@ -40,102 +40,92 @@ it('runs `npx expo lint --help`', async () => {
   expect(results.stdout).toMatchSnapshot();
 });
 
-it(
-  'runs `npx expo lint` to install lint in a project',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-lint', 'with-blank', {
-      reuseExisting: false,
-    });
-    // `npx expo install expo-sms`
-    await execa('node', [bin, 'lint'], { cwd: projectRoot });
+it('runs `npx expo lint` to install lint in a project', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-lint', 'with-blank', {
+    reuseExisting: false,
+  });
+  // `npx expo install expo-sms`
+  await execa('node', [bin, 'lint'], { cwd: projectRoot });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean)
-      .sort();
+  // List output files with sizes for snapshotting.
+  // This is to make sure that any changes to the output are intentional.
+  // Posix path formatting is used to make paths the same across OSes.
+  const files = klawSync(projectRoot)
+    .map((entry) => {
+      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+        return null;
+      }
+      return path.posix.relative(projectRoot, entry.path);
+    })
+    .filter(Boolean)
+    .sort();
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Ensure the config was added
-    expect((pkg.devDependencies as any)['eslint-config-expo']).toBeDefined();
-    // And not in the dependencies
-    expect((pkg.dependencies as any)['eslint-config-expo']).not.toBeDefined();
+  // Ensure the config was added
+  expect((pkg.devDependencies as any)['eslint-config-expo']).toBeDefined();
+  // And not in the dependencies
+  expect((pkg.dependencies as any)['eslint-config-expo']).not.toBeDefined();
 
-    // Ensure the eslint package was added
-    expect((pkg.devDependencies as any)['eslint']).toBeDefined();
+  // Ensure the eslint package was added
+  expect((pkg.devDependencies as any)['eslint']).toBeDefined();
 
-    // Check if the helper script was added
-    expect((pkg.scripts as any)['lint']).toBeDefined();
+  // Check if the helper script was added
+  expect((pkg.scripts as any)['lint']).toBeDefined();
 
-    expect(files).toStrictEqual([
-      '.eslintrc.js',
-      'App.js',
-      'app.json',
-      'bun.lockb',
-      'metro.config.js',
-      'package.json',
-    ]);
+  expect(files).toStrictEqual([
+    '.eslintrc.js',
+    'App.js',
+    'app.json',
+    'bun.lockb',
+    'metro.config.js',
+    'package.json',
+  ]);
 
-    await execa('bun', ['run', 'lint', '--max-warnings', '0'], { cwd: projectRoot });
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  await execa('bun', ['run', 'lint', '--max-warnings', '0'], { cwd: projectRoot });
+});
 
-it(
-  'runs `npx expo customize .eslintrc.js` to install lint in a project',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank', {
-      reuseExisting: false,
-    });
-    // `npx expo install expo-sms`
-    await execa('node', [bin, 'customize', '.eslintrc.js'], { cwd: projectRoot });
+it('runs `npx expo customize .eslintrc.js` to install lint in a project', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank', {
+    reuseExisting: false,
+  });
+  // `npx expo install expo-sms`
+  await execa('node', [bin, 'customize', '.eslintrc.js'], { cwd: projectRoot });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean)
-      .sort();
+  // List output files with sizes for snapshotting.
+  // This is to make sure that any changes to the output are intentional.
+  // Posix path formatting is used to make paths the same across OSes.
+  const files = klawSync(projectRoot)
+    .map((entry) => {
+      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+        return null;
+      }
+      return path.posix.relative(projectRoot, entry.path);
+    })
+    .filter(Boolean)
+    .sort();
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Ensure the config was added
-    expect((pkg.devDependencies as any)['eslint-config-expo']).toBeDefined();
-    // And not in the dependencies
-    expect((pkg.dependencies as any)['eslint-config-expo']).not.toBeDefined();
+  // Ensure the config was added
+  expect((pkg.devDependencies as any)['eslint-config-expo']).toBeDefined();
+  // And not in the dependencies
+  expect((pkg.dependencies as any)['eslint-config-expo']).not.toBeDefined();
 
-    // Ensure the eslint package was added
-    expect((pkg.devDependencies as any)['eslint']).toBeDefined();
+  // Ensure the eslint package was added
+  expect((pkg.devDependencies as any)['eslint']).toBeDefined();
 
-    // Check if the helper script was added
-    expect((pkg.scripts as any)['lint']).toBeDefined();
+  // Check if the helper script was added
+  expect((pkg.scripts as any)['lint']).toBeDefined();
 
-    expect(files).toStrictEqual([
-      '.eslintrc.js',
-      'App.js',
-      'app.json',
-      'bun.lockb',
-      'metro.config.js',
-      'package.json',
-    ]);
+  expect(files).toStrictEqual([
+    '.eslintrc.js',
+    'App.js',
+    'app.json',
+    'bun.lockb',
+    'metro.config.js',
+    'package.json',
+  ]);
 
-    await execa('bun', ['run', 'lint', '--max-warnings', '0'], { cwd: projectRoot });
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  await execa('bun', ['run', 'lint', '--max-warnings', '0'], { cwd: projectRoot });
+});

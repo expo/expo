@@ -20,27 +20,19 @@ describe('exports static with bundle splitting', () => {
   const outputName = 'dist-static-splitting';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      // NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting
-      await execa(
-        'node',
-        [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
-            E2E_ROUTER_SRC: 'static-rendering',
-            E2E_ROUTER_ASYNC: 'production',
-            EXPO_USE_FAST_RESOLVER: 'true',
-          },
-        }
-      );
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    // NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting
+    await execa('node', [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName], {
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_ASYNC: 'production',
+        EXPO_USE_FAST_RESOLVER: 'true',
+      },
+    });
+  });
 
   it('has expected files', async () => {
     // List output files with sizes for snapshotting.

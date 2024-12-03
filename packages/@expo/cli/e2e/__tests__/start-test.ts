@@ -109,72 +109,67 @@ describe('server', () => {
     await expo.stopAsync();
   });
 
-  it(
-    'runs `npx expo start`',
-    async () => {
-      console.log('Fetching manifest');
+  it('runs `npx expo start`', async () => {
+    console.log('Fetching manifest');
 
-      const manifest = await expo.fetchExpoGoManifestAsync();
+    const manifest = await expo.fetchExpoGoManifestAsync();
 
-      // Required for Expo Go
-      expect(manifest.extra.expoGo?.packagerOpts).toStrictEqual({
-        dev: true,
-      });
-      expect(manifest.extra.expoGo?.developer).toStrictEqual({
-        projectRoot: expect.anything(),
-        tool: 'expo-cli',
-      });
+    // Required for Expo Go
+    expect(manifest.extra.expoGo?.packagerOpts).toStrictEqual({
+      dev: true,
+    });
+    expect(manifest.extra.expoGo?.developer).toStrictEqual({
+      projectRoot: expect.anything(),
+      tool: 'expo-cli',
+    });
 
-      // URLs
-      expect(manifest.launchAsset.url).toBe(
-        new URL(
-          '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
-          expo.url
-        ).href
-      );
-      expect(manifest.extra.expoGo?.debuggerHost).toBe(expo.url.host);
-      expect(manifest.extra.expoGo?.mainModuleName).toBe('node_modules/expo/AppEntry');
-      expect(manifest.extra.expoClient?.hostUri).toBe(expo.url.host);
+    // URLs
+    expect(manifest.launchAsset.url).toBe(
+      new URL(
+        '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
+        expo.url
+      ).href
+    );
+    expect(manifest.extra.expoGo?.debuggerHost).toBe(expo.url.host);
+    expect(manifest.extra.expoGo?.mainModuleName).toBe('node_modules/expo/AppEntry');
+    expect(manifest.extra.expoClient?.hostUri).toBe(expo.url.host);
 
-      // Manifest
-      expect(manifest.runtimeVersion).toBe('1.0');
-      expect(manifest.extra.expoClient?.sdkVersion).toBe('52.0.0');
-      expect(manifest.extra.expoClient?.slug).toBe('basic-start');
-      expect(manifest.extra.expoClient?.name).toBe('basic-start');
+    // Manifest
+    expect(manifest.runtimeVersion).toBe('1.0');
+    expect(manifest.extra.expoClient?.sdkVersion).toBe('52.0.0');
+    expect(manifest.extra.expoClient?.slug).toBe('basic-start');
+    expect(manifest.extra.expoClient?.name).toBe('basic-start');
 
-      // Custom
-      expect(manifest.extra.expoGo?.__flipperHack).toBe('React Native packager is running');
+    // Custom
+    expect(manifest.extra.expoGo?.__flipperHack).toBe('React Native packager is running');
 
-      console.log('Fetching bundle');
+    console.log('Fetching bundle');
 
-      const bundleResponse = await expo.fetchBundleAsync(manifest.launchAsset.url);
-      const bundleContent = await bundleResponse.text();
+    const bundleResponse = await expo.fetchBundleAsync(manifest.launchAsset.url);
+    const bundleContent = await bundleResponse.text();
 
-      console.log('Fetched bundle: ', bundleContent.length);
-      expect(bundleContent.length).toBeGreaterThan(1000);
-      console.log('Finished');
+    console.log('Fetched bundle: ', bundleContent.length);
+    expect(bundleContent.length).toBeGreaterThan(1000);
+    console.log('Finished');
 
-      // Get source maps for the bundle
-      // Find source map URL
-      const sourceMapUrl = bundleContent.match(/\/\/# sourceMappingURL=(.*)/)?.[1];
-      expect(sourceMapUrl).toBeTruthy();
+    // Get source maps for the bundle
+    // Find source map URL
+    const sourceMapUrl = bundleContent.match(/\/\/# sourceMappingURL=(.*)/)?.[1];
+    expect(sourceMapUrl).toBeTruthy();
 
-      const sourceMaps = await expo.fetchBundleAsync(sourceMapUrl!).then((res) => res.json());
-      expect(sourceMaps).toMatchObject({
-        version: 3,
-        sources: expect.arrayContaining([
-          '__prelude__',
-          expect.stringContaining('metro-runtime/src/polyfills/require.js'),
-          expect.stringContaining('@react-native/js-polyfills/console.js'),
-          expect.stringContaining('@react-native/js-polyfills/error-guard.js'),
-          '\0polyfill:external-require',
-          // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
-          '\0polyfill:environment-variables',
-        ]),
-        mappings: expect.any(String),
-      });
-    },
-    // Could take 45s depending on how fast npm installs
-    120 * 1000
-  );
+    const sourceMaps = await expo.fetchBundleAsync(sourceMapUrl!).then((res) => res.json());
+    expect(sourceMaps).toMatchObject({
+      version: 3,
+      sources: expect.arrayContaining([
+        '__prelude__',
+        expect.stringContaining('metro-runtime/src/polyfills/require.js'),
+        expect.stringContaining('@react-native/js-polyfills/console.js'),
+        expect.stringContaining('@react-native/js-polyfills/error-guard.js'),
+        '\0polyfill:external-require',
+        // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
+        '\0polyfill:environment-variables',
+      ]),
+      mappings: expect.any(String),
+    });
+  });
 });

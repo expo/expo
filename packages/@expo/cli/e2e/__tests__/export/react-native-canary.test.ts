@@ -16,29 +16,25 @@ describe('exports with react native canary', () => {
   const outputName = 'dist-rn-canary';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      await execa(
-        'node',
-        [bin, 'export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode', '--no-minify'],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
-            E2E_CANARY_ENABLED: '1',
-            E2E_ROUTER_JS_ENGINE: 'hermes',
-            E2E_ROUTER_SRC: 'react-native-canary',
-            E2E_ROUTER_ASYNC: 'development',
-            EXPO_USE_FAST_RESOLVER: 'true',
-            EXPO_USE_METRO_REQUIRE: '1',
-          },
-        }
-      );
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    await execa(
+      'node',
+      [bin, 'export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode', '--no-minify'],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_CANARY_ENABLED: '1',
+          E2E_ROUTER_JS_ENGINE: 'hermes',
+          E2E_ROUTER_SRC: 'react-native-canary',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: 'true',
+          EXPO_USE_METRO_REQUIRE: '1',
+        },
+      }
+    );
+  });
 
   it('has expected files', async () => {
     // List output files with sizes for snapshotting.
