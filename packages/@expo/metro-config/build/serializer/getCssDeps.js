@@ -7,8 +7,8 @@ exports.getFileName = exports.fileNameFromContents = exports.getCssSerialAssets 
 const js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js");
 const path_1 = __importDefault(require("path"));
 const css_1 = require("../transform-worker/css");
-const hash_1 = require("../utils/hash");
 const filePath_1 = require("../utils/filePath");
+const hash_1 = require("../utils/hash");
 // s = static
 const STATIC_EXPORT_DIRECTORY = '_expo/static/css';
 function isTypeJSModule(module) {
