@@ -1,7 +1,8 @@
 import { PermissionResponse } from 'expo-modules-core';
 import { AudioMode, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
-import { AudioRecorder, AudioSample } from './AudioModule.types';
+import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
+export declare function createAudioPlayer(source?: AudioSource | string | number | null, updateInterval?: number): AudioPlayer;
 export declare function useAudioPlayer(source?: AudioSource | string | number | null, updateInterval?: number): AudioModule.AudioPlayerWeb;
 export declare function useAudioPlayerStatus(player: AudioModule.AudioPlayerWeb): AudioStatus;
 export declare function useAudioSampleListener(player: AudioModule.AudioPlayerWeb, listener: (data: AudioSample) => void): void;

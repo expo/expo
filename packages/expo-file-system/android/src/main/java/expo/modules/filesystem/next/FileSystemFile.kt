@@ -2,6 +2,7 @@ package expo.modules.filesystem.next
 
 import android.net.Uri
 import android.util.Base64
+import android.webkit.MimeTypeMap
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
@@ -104,5 +105,10 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     } else {
       null
     }
+  }
+
+  val type: String? get() {
+    return MimeTypeMap.getFileExtensionFromUrl(file.path)
+      ?.run { MimeTypeMap.getSingleton().getMimeTypeFromExtension(lowercase()) }
   }
 }

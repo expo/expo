@@ -12,6 +12,10 @@
 
 - [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default. ([#33261](https://github.com/expo/expo/pull/33261) by [@lukmccall](https://github.com/lukmccall))
 
+## 2.1.1 - 2024-12-02
+
+_This version does not introduce any user-facing changes._
+
 ## 2.1.0 - 2024-11-29
 
 ### 🎉 New features
