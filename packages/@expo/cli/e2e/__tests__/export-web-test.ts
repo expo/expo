@@ -2,7 +2,7 @@
 import JsonFile from '@expo/json-file';
 import assert from 'assert';
 import execa from 'execa';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import {
@@ -18,7 +18,7 @@ const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
 beforeAll(async () => {
-  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.promises.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
 });

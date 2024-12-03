@@ -1,10 +1,16 @@
 /* eslint-env jest */
 import execa from 'execa';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, ensurePortFreeAsync, findProjectFiles, getPageHtml, getRouterE2ERoot } from '../utils';
+import {
+  bin,
+  ensurePortFreeAsync,
+  findProjectFiles,
+  getPageHtml,
+  getRouterE2ERoot,
+} from '../utils';
 
 runExportSideEffects();
 
@@ -262,7 +268,7 @@ describe('exports static', () => {
   });
 
   it('supports usePathname in +html files', async () => {
-    const page = await fs.readFile(path.join(outputDir, 'index.html'), 'utf8');
+    const page = await fs.promises.readFile(path.join(outputDir, 'index.html'), 'utf8');
 
     expect(page).toContain('<meta name="custom-value" content="value"/>');
 

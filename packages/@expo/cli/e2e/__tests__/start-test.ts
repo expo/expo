@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import execa from 'execa';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import {
@@ -16,7 +16,7 @@ const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
 beforeAll(async () => {
-  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.promises.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
 });
@@ -101,7 +101,7 @@ describe('server', () => {
 
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
-    await fs.remove(path.join(projectRoot, '.expo'));
+    await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
     await expo.startAsync();
   });
 

@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import execa from 'execa';
 import { AtlasFileSource } from 'expo-atlas';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';

@@ -1,10 +1,11 @@
 /* eslint-env jest */
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import execa from 'execa';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { execute, projectRoot, getLoadedModulesAsync, bin, findProjectFiles } from './utils';
+import ResourceNotFoundError from 'metro/src/IncrementalBundler/ResourceNotFoundError';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -12,7 +13,7 @@ const originalCI = process.env.CI;
 jest.unmock('resolve-from');
 
 beforeAll(async () => {
-  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.promises.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
   process.env._EXPO_E2E_USE_PATH_ALIASES = '1';
@@ -85,8 +86,8 @@ function ensureTesterReady(fixtureName: string): string {
 it('runs `npx expo export:embed`', async () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const output = 'dist-export-embed';
-  await fs.remove(path.join(projectRoot, output));
-  await fs.ensureDir(path.join(projectRoot, output));
+  await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
+  await fs.promises.mkdir(path.join(projectRoot, output));
 
   await execa(
     'node',
@@ -145,8 +146,8 @@ it('runs `npx expo export:embed`', async () => {
 it('runs `npx expo export:embed --platform ios` with source maps', async () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const output = 'dist-export-embed-source-maps';
-  await fs.remove(path.join(projectRoot, output));
-  await fs.ensureDir(path.join(projectRoot, output));
+  await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
+  await fs.promises.mkdir(path.join(projectRoot, output));
 
   await execa(
     'node',
@@ -208,8 +209,8 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
 it('runs `npx expo export:embed --platform ios` with a robot user', async () => {
   const projectRoot = ensureTesterReady('react-native-canary');
   const output = 'dist-export-embed-robot-user';
-  await fs.remove(path.join(projectRoot, output));
-  await fs.ensureDir(path.join(projectRoot, output));
+  await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
+  await fs.promises.mkdir(path.join(projectRoot, output));
 
   await execa(
     'node',
@@ -268,8 +269,8 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
 it('runs `npx expo export:embed --platform android` with source maps', async () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const output = 'dist-export-embed-source-maps-android';
-  await fs.remove(path.join(projectRoot, output));
-  await fs.ensureDir(path.join(projectRoot, output));
+  await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
+  await fs.promises.mkdir(path.join(projectRoot, output));
 
   console.log(
     [

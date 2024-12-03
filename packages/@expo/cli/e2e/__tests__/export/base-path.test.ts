@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import execa from 'execa';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
@@ -100,7 +100,7 @@ describe('static-rendering with a custom base path', () => {
   });
 
   it('supports usePathname in +html files', async () => {
-    const page = await fs.readFile(path.join(outputDir, 'index.html'), 'utf8');
+    const page = await fs.promises.readFile(path.join(outputDir, 'index.html'), 'utf8');
 
     expect(page).toContain('<meta name="custom-value" content="value"/>');
 

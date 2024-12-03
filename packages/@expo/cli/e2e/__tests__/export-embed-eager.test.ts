@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import execa from 'execa';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import { projectRoot, bin, findProjectFiles } from './utils';
@@ -9,7 +9,7 @@ const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
 beforeAll(async () => {
-  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.promises.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
   process.env._EXPO_E2E_USE_PATH_ALIASES = '1';
@@ -35,8 +35,8 @@ function ensureTesterReady(fixtureName: string): string {
 it('runs `npx expo export:embed --platform ios --eager`', async () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const output = 'dist-export-embed-eager-source-maps';
-  await fs.remove(path.join(projectRoot, output));
-  await fs.ensureDir(path.join(projectRoot, output));
+  await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
+  await fs.promises.mkdir(path.join(projectRoot, output));
 
   await execa(
     'node',

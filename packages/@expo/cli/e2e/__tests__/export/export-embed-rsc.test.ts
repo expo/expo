@@ -2,7 +2,6 @@
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import execa from 'execa';
 import fs from 'fs';
-import { remove } from 'fs-extra';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
@@ -24,8 +23,11 @@ describe('export embed for RSC iOS', () => {
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
-    await remove(outputDir);
-    await remove(path.join(projectRoot, '.expo/server/ios'));
+    await fs.promises.rm(outputDir, { force: true, recursive: true });
+    await fs.promises.rm(path.join(projectRoot, '.expo/server/ios'), {
+      force: true,
+      recursive: true,
+    });
 
     await execaLog(
       bin,
