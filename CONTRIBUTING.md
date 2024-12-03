@@ -175,7 +175,7 @@ To keep CI green, please make sure of the following:
   - (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
   - All `console.log`s or commented out code blocks are removed!
 
-### If you edited the **docs** directory:
+### If you edited the docs directory:
 
   - Any change to the current SDK version should also be in the unversioned copy as well. Example:
     - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
