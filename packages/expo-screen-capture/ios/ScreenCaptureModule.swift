@@ -70,7 +70,7 @@ public final class ScreenCaptureModule: Module {
   @objc
   func listenForScreenCapture() {
     sendEvent(onScreenshotEventName, [
-        "body": nil
+      "body": nil
     ])
   }
 
