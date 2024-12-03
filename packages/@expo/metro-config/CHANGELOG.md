@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use POSIX-formatted relative module paths to stabelize module IDs across platforms.
+
 ### 💡 Others
 
 ## 0.19.5 - 2024-11-29
