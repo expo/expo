@@ -103,7 +103,7 @@ export default function App() {
           filePath: filePath
         }));
       });
-      if (__DEV__) _Expo_DOMProxyComponent.displayName = "App";
+      if (__DEV__) _Expo_DOMProxyComponent.displayName = "DOM(App)";
       export default _Expo_DOMProxyComponent;"
     `);
   });
@@ -133,7 +133,7 @@ it(`adds dom components proxy for ios in production`, () => {
         filePath: filePath
       }));
     });
-    if (false) _Expo_DOMProxyComponent.displayName = "App";
+    if (false) _Expo_DOMProxyComponent.displayName = "DOM(App)";
     export default _Expo_DOMProxyComponent;"
   `);
 });
@@ -155,7 +155,7 @@ it(`adds dom components proxy for android in production`, () => {
         filePath: filePath
       }));
     });
-    if (false) _Expo_DOMProxyComponent.displayName = "App";
+    if (false) _Expo_DOMProxyComponent.displayName = "DOM(App)";
     export default _Expo_DOMProxyComponent;"
   `);
 });

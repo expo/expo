@@ -43,7 +43,7 @@ export function expoUseDomDirectivePlugin(
           return;
         }
 
-        let displayName: string = 'DOMComponent';
+        let displayName: string = 'Component';
         // Assert that a default export must exist and that no other exports should be present.
         // NOTE: In the future we could support other exports with extraction.
 
@@ -132,7 +132,7 @@ export function expoUseDomDirectivePlugin(
           const _Expo_DOMProxyComponent = React.forwardRef((props, ref) => {
             return React.createElement(WebView, { ref, ...props, filePath });
           });
-          if (__DEV__) _Expo_DOMProxyComponent.displayName = ${JSON.stringify(displayName)};
+          if (__DEV__) _Expo_DOMProxyComponent.displayName = ${JSON.stringify(`DOM(${displayName})`)};
           export default _Expo_DOMProxyComponent;
         `;
 

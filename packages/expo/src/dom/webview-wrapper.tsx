@@ -214,6 +214,10 @@ const RawWebView = React.forwardRef<object, Props>(
   }
 );
 
+if (__DEV__) {
+  RawWebView.displayName = 'DOM';
+}
+
 function serializeError(error: any) {
   if (error instanceof Error) {
     return {
