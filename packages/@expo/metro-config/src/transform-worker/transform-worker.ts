@@ -23,7 +23,7 @@ import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput } from '../serializer/jsOutput';
-import { serializePath, toPosixPath } from '../utils/filePath';
+import { toPosixPath } from '../utils/filePath';
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 
@@ -76,7 +76,7 @@ export async function transform(
           'module.exports = {\n' +
           clientBoundaries
             .map((boundary: string) => {
-              const serializedBoundary = serializePath(boundary);
+              const serializedBoundary = JSON.stringify(boundary);
               return `[\`$\{require.resolveWeak(${serializedBoundary})}\`]: /* ${boundary} */ () => import(${serializedBoundary}),`;
             })
             .join('\n') +

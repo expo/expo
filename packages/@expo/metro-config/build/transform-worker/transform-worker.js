@@ -80,7 +80,7 @@ async function transform(config, projectRoot, filename, data, options) {
                 const src = 'module.exports = {\n' +
                     clientBoundaries
                         .map((boundary) => {
-                        const serializedBoundary = (0, filePath_1.serializePath)(boundary);
+                        const serializedBoundary = JSON.stringify(boundary);
                         return `[\`$\{require.resolveWeak(${serializedBoundary})}\`]: /* ${boundary} */ () => import(${serializedBoundary}),`;
                     })
                         .join('\n') +
