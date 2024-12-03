@@ -16,6 +16,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   TaskConsumer(context, taskManagerUtils), TaskConsumerInterface {
   companion object {
     const val BACKGROUND_TASK_TYPE: String = "expo-background-task"
+    const val DEFAULT_INTERVAL_SECONDS: Long = 60 * 24 // Once every day
     private val TAG: String = BackgroundTaskConsumer::class.java.simpleName
   }
   private var mTask: TaskInterface? = null
@@ -42,9 +43,11 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
     taskCoroutineScope.launch {
       val context = context
       if (!BackgroundTaskScheduler.isWorkerRunning(context)) {
+        // Get interval for the task
+        val intervalSeconds = getIntervalSeconds()
         // Start worker
         Log.i(TAG, "didRegister: worker not running - starting worker.")
-        BackgroundTaskScheduler.startWorker(context, task.appScopeKey)
+        BackgroundTaskScheduler.startWorker(context, task.appScopeKey, intervalSeconds)
       } else {
         Log.i(TAG, "didRegister: worker already running.")
       }
@@ -80,5 +83,15 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
         Log.i(TAG, "didRegister: Leaving worker running.")
       }
     }
+  }
+
+  private fun getIntervalSeconds(): Long {
+    val options = if (mTask != null) mTask!!.options else null
+
+    if (options != null && options.containsKey("minimumInterval")) {
+      // minimumInterval option is in seconds.
+      return (options["minimumInterval"] as Number).toLong()
+    }
+    return BackgroundTaskConsumer.DEFAULT_INTERVAL_SECONDS
   }
 }

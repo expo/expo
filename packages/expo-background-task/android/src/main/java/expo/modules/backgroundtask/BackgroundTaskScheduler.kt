@@ -31,10 +31,9 @@ class BackgroundTaskScheduler {
     private val TAG: String = BackgroundTaskScheduler::class.java.simpleName
 
     /**
-     Schedules the worker task to run. The worker should run periodically
-     at least every 15 minutes
+     Schedules the worker task to run. The worker should run periodically.
      */
-    suspend fun startWorker(context: Context, appScopeKey: String): Boolean {
+    suspend fun startWorker(context: Context, appScopeKey: String, intervalMinutes: Long): Boolean {
       // Ensure we have the react context
       Log.i(TAG, "Enqueuing worker with identifier $WORKER_IDENTIFIER")
 
@@ -44,8 +43,7 @@ class BackgroundTaskScheduler {
       // Create the work request
       val builder = PeriodicWorkRequestBuilder<BackgroundTaskWork>(
         repeatIntervalTimeUnit = TimeUnit.MINUTES,
-        // TODO: Configurable?
-        repeatInterval = 15
+        repeatInterval = intervalMinutes
       ).setInputData(data.build())
        .setConstraints(
         Constraints.Builder()
@@ -54,11 +52,11 @@ class BackgroundTaskScheduler {
           .build()
       )
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        // TODO: We should add more time here - like 15 minutes, 60 minutes etc.
+      /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // T O D O: We should add more time here - like 15 minutes, 60 minutes etc.
         // Maybe even be configurable on the API side.
         builder.setInitialDelay(Duration.ofSeconds(25))
-      }
+      }*/
 
       // Create work request
       val workRequest = builder.build()
