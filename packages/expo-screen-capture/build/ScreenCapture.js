@@ -99,13 +99,24 @@ export function addScreenshotListener(listener) {
  * @platform ios
  * @example
  * ```ts
- * let mySubscription = addRecordingListener(({ isCaptured }) => {
- *   if (isCaptured) {
- *     console.log("Screen recording started!");
- *   } else {
- *     console.log("Screen recording stopped!");
- *   }
- * });
+ * const [sensitiveContentVisible, setSensitiveContentVisible] = useState(true);
+ *
+ * useEffect(() => {
+ *   const subscription = ScreenCapture.addRecordingListener(({ isCaptured }) => {
+ *     if (isCaptured) {
+ *       // Hide sensitive content
+ *       setSensitiveContentVisible(false);
+ *     } else {
+ *       // Show sensitive content again
+ *       setSensitiveContentVisible(true);
+ *     }
+ *   });
+ *
+ *   // Clean up subscription when component unmounts
+ *   return () => {
+ *     subscription?.remove();
+ *   };
+ * }, []);
  * ```
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
  * `remove()` or passing it to `removeRecordingListener`.
@@ -140,20 +151,27 @@ export function removeScreenshotListener(subscription) {
  * You can also call `remove()` on that `Subscription` object.
  *
  * @param subscription Subscription returned by `addRecordingListener`.
- * @platform ios
+ * @platform ios 11+
  * @example
  * ```ts
- * let mySubscription = addRecordingListener(({ isCaptured }) => {
- *   if (isCaptured) {
- *     console.log("Screen recording started!");
- *   } else {
- *     console.log("Screen recording stopped!");
- *   }
- * });
- * ...
- * mySubscription.remove();
- * // OR
- * removeScreenshotListener(mySubscription);
+ * const [sensitiveContentVisible, setSensitiveContentVisible] = useState(true);
+ *
+ * useEffect(() => {
+ *   const subscription = ScreenCapture.addRecordingListener(({ isCaptured }) => {
+ *     if (isCaptured) {
+ *       // Hide sensitive content
+ *       setSensitiveContentVisible(false);
+ *     } else {
+ *       // Show sensitive content again
+ *       setSensitiveContentVisible(true);
+ *     }
+ *   });
+ *
+ *   // Clean up subscription when component unmounts
+ *   return () => {
+ *     removeRecordingListener(subscription);
+ *   };
+ * }, []);
  * ```
  */
 export function removeRecordingListener(subscription) {
