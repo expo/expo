@@ -2,9 +2,9 @@
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs-extra';
+import { sync as globSync } from 'glob';
 import klawSync from 'klaw-sync';
 import path from 'path';
-import { sync as globSync } from 'glob';
 
 import {
   execute,

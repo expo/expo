@@ -1,6 +1,5 @@
 /* eslint-env jest */
 import execa from 'execa';
-import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 

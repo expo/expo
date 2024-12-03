@@ -1,9 +1,9 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import execa, { ExecaError } from 'execa';
-import * as fs from 'fs/promises';
+import fs from 'fs/promises';
 import klawSync from 'klaw-sync';
-import * as path from 'path';
+import path from 'path';
 
 import {
   execute,

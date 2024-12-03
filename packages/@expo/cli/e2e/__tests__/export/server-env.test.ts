@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import execa from 'execa';
 
 import { runExportSideEffects } from './export-side-effects';
