@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [next] Add blob support to `expo/fetch`. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
+- Assert that DOM components cannot have `children`.
 
 ### 🐛 Bug fixes
 
