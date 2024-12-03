@@ -53,14 +53,22 @@ export declare function usePreventScreenCapture(key?: string): void;
  */
 export declare function addScreenshotListener(listener: () => void): EventSubscription;
 /**
- * Adds a listener that will fire whenever the user takes a screen recording while the app is foregrounded.
- * On Android, this method requires the `READ_EXTERNAL_STORAGE` permission. You can request this
- * with [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
+ * Adds a listener that will fire whenever the app starts or stops to be recorded.
  *
  * @param listener The function that will be executed when the user takes a screen recording.
  * This function accepts a single boolean argument that indicates whether the screen recording
  * started or stopped.
- *
+ * @platform ios
+ * @example
+ * ```ts
+ * let mySubscription = addRecordingListener(({ isCaptured }) => {
+ *   if (isCaptured) {
+ *     console.log("Screen recording started!");
+ *   } else {
+ *     console.log("Screen recording stopped!");
+ *   }
+ * });
+ * ```
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
  * `remove()` or passing it to `removeRecordingListener`.
  */
@@ -90,16 +98,20 @@ export declare function removeScreenshotListener(subscription: EventSubscription
  * You can also call `remove()` on that `Subscription` object.
  *
  * @param subscription Subscription returned by `addRecordingListener`.
- *
+ * @platform ios
  * @example
  * ```ts
- * let mySubscription = addRecordingListener(() => {
- *   console.log("You took a screen recording!");
+ * let mySubscription = addRecordingListener(({ isCaptured }) => {
+ *   if (isCaptured) {
+ *     console.log("Screen recording started!");
+ *   } else {
+ *     console.log("Screen recording stopped!");
+ *   }
  * });
  * ...
  * mySubscription.remove();
  * // OR
- * removeRecordingListener(mySubscription);
+ * removeScreenshotListener(mySubscription);
  * ```
  */
 export declare function removeRecordingListener(subscription: EventSubscription): void;
