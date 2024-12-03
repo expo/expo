@@ -174,12 +174,17 @@ it(
     // Fix all versions
     await execa('node', [bin, 'install', '--fix'], { cwd: projectRoot });
 
-    // Check that the versions are fixed
+    // Reload the dependency versions
     pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-
-    // Didn't fix expo-auth-session since we didn't pass it in
     pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-auth-session']).toBe('~6.0.0');
+
+    // Load the expected dependency versions
+    const expectedVersion = await JsonFile.readAsync(
+      require.resolve('expo/bundledNativeModules.json', { paths: [projectRoot] })
+    );
+
+    // Check that the versions are fixed
+    expect(pkgDependencies['expo-auth-session']).toBe(expectedVersion['expo-auth-session']);
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000
