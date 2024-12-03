@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Drop unintentional `console.log` when modifying config. ([#33330](https://github.com/expo/expo/pull/33330) by [@byCedric](https://github.com/byCedric))
+
 ## 10.0.5 — 2024-11-20
 
 _This version does not introduce any user-facing changes._

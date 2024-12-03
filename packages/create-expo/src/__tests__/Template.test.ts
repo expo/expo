@@ -45,6 +45,24 @@ describe(resolvePackageModuleId, () => {
       uri: 'basic',
     });
   });
+  it('resolves github shorthand', () => {
+    expect(resolvePackageModuleId('expo/template-example')).toMatchObject({
+      type: 'repository',
+      uri: expect.objectContaining({
+        href: 'https://github.com/expo/template-example',
+      }),
+    });
+  });
+  it('resolves GitHub shorthand with repository path', () => {
+    expect(
+      resolvePackageModuleId('expo/expo/tree/sdk-49/templates/expo-template-bare-minimum')
+    ).toMatchObject({
+      type: 'repository',
+      uri: expect.objectContaining({
+        href: 'https://github.com/expo/expo/tree/sdk-49/templates/expo-template-bare-minimum',
+      }),
+    });
+  });
   it('resolves github repository url', () => {
     expect(
       resolvePackageModuleId(
