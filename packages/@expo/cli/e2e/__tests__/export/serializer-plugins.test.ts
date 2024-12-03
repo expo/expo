@@ -5,13 +5,7 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import {
-  bin,
-  expectChunkPathMatching,
-  getHtmlHelpers,
-  getPageHtml,
-  getRouterE2ERoot,
-} from '../utils';
+import { bin, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 

@@ -1,11 +1,6 @@
 /* eslint-env jest */
-import {
-  isMultipartPartWithName,
-  parseMultipartMixedResponseAsync,
-} from '@expo/multipart-body-parser';
 import execa from 'execa';
 import fs from 'fs-extra';
-import nullthrows from 'nullthrows';
 import path from 'path';
 
 import {
@@ -13,9 +8,9 @@ import {
   projectRoot,
   getLoadedModulesAsync,
   bin,
-  ensurePortFreeAsync,
   setupTestProjectWithOptionsAsync,
 } from './utils';
+import { createExpoStart } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -98,112 +93,73 @@ for (const args of [
 }
 
 describe('server', () => {
-  // Kill port
-  const kill = () => ensurePortFreeAsync(8081);
+  const expo = createExpoStart({
+    env: {
+      EXPO_USE_FAST_RESOLVER: 'true',
+    },
+  });
 
   beforeEach(async () => {
-    await kill();
+    expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
+    await fs.remove(path.join(projectRoot, '.expo'));
+    await expo.startAsync();
   });
 
   afterAll(async () => {
-    await kill();
+    await expo.stopAsync();
   });
+
   it(
     'runs `npx expo start`',
     async () => {
-      const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
-
-      await fs.remove(path.join(projectRoot, '.expo'));
-
-      const promise = execa('node', [bin, 'start'], {
-        cwd: projectRoot,
-        env: {
-          ...process.env,
-          EXPO_USE_FAST_RESOLVER: 'true',
-        },
-      });
-
-      console.log('Starting server');
-
-      await new Promise<void>((resolve, reject) => {
-        promise.on('close', (code: number) => {
-          reject(
-            code === 0
-              ? 'Server closed too early. Run `kill -9 $(lsof -ti:8081)` to kill the orphaned process.'
-              : code
-          );
-        });
-
-        promise.stdout?.on('data', (data) => {
-          const stdout = data.toString();
-          console.log('output:', stdout);
-          if (stdout.includes('Logs for your project')) {
-            resolve();
-          }
-        });
-      });
-
       console.log('Fetching manifest');
-      const response = await fetch('http://localhost:8081/', {
-        headers: {
-          'expo-platform': 'ios',
-          Accept: 'multipart/mixed',
-        },
-      });
 
-      const multipartParts = await parseMultipartMixedResponseAsync(
-        response.headers.get('content-type') as string,
-        Buffer.from(await response.arrayBuffer())
-      );
-      const manifestPart = nullthrows(
-        multipartParts.find((part) => isMultipartPartWithName(part, 'manifest'))
-      );
-
-      const manifest = JSON.parse(manifestPart.body);
+      const manifest = await expo.fetchExpoGoManifestAsync();
 
       // Required for Expo Go
-      expect(manifest.extra.expoGo.packagerOpts).toStrictEqual({
+      expect(manifest.extra.expoGo?.packagerOpts).toStrictEqual({
         dev: true,
       });
-      expect(manifest.extra.expoGo.developer).toStrictEqual({
+      expect(manifest.extra.expoGo?.developer).toStrictEqual({
         projectRoot: expect.anything(),
         tool: 'expo-cli',
       });
 
       // URLs
       expect(manifest.launchAsset.url).toBe(
-        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable'
+        new URL(
+          '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
+          expo.url
+        ).href
       );
-      expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:8081');
-      expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
-      expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:8081');
+      expect(manifest.extra.expoGo?.debuggerHost).toBe(expo.url.host);
+      expect(manifest.extra.expoGo?.mainModuleName).toBe('node_modules/expo/AppEntry');
+      expect(manifest.extra.expoClient?.hostUri).toBe(expo.url.host);
 
       // Manifest
       expect(manifest.runtimeVersion).toBe('1.0');
-      expect(manifest.extra.expoClient.sdkVersion).toBe('52.0.0');
-      expect(manifest.extra.expoClient.slug).toBe('basic-start');
-      expect(manifest.extra.expoClient.name).toBe('basic-start');
+      expect(manifest.extra.expoClient?.sdkVersion).toBe('52.0.0');
+      expect(manifest.extra.expoClient?.slug).toBe('basic-start');
+      expect(manifest.extra.expoClient?.name).toBe('basic-start');
 
       // Custom
-      expect(manifest.extra.expoGo.__flipperHack).toBe('React Native packager is running');
+      expect(manifest.extra.expoGo?.__flipperHack).toBe('React Native packager is running');
 
       console.log('Fetching bundle');
-      const bundleRequest = await fetch(manifest.launchAsset.url);
-      if (!bundleRequest.ok) {
-        console.error(await bundleRequest.text());
-        throw new Error('Failed to fetch bundle');
-      }
-      const bundle = await bundleRequest.text();
-      console.log('Fetched bundle: ', bundle.length);
-      expect(bundle.length).toBeGreaterThan(1000);
+
+      const bundleResponse = await expo.fetchBundleAsync(manifest.launchAsset.url);
+      const bundleContent = await bundleResponse.text();
+
+      console.log('Fetched bundle: ', bundleContent.length);
+      expect(bundleContent.length).toBeGreaterThan(1000);
       console.log('Finished');
 
       // Get source maps for the bundle
       // Find source map URL
-      const sourceMapUrl = bundle.match(/\/\/# sourceMappingURL=(.*)/)?.[1];
+      const sourceMapUrl = bundleContent.match(/\/\/# sourceMappingURL=(.*)/)?.[1];
       expect(sourceMapUrl).toBeTruthy();
 
-      const sourceMaps = await fetch(sourceMapUrl!).then((res) => res.json());
+      const sourceMaps = await expo.fetchBundleAsync(sourceMapUrl!).then((res) => res.json());
       expect(sourceMaps).toMatchObject({
         version: 3,
         sources: expect.arrayContaining([
@@ -217,11 +173,6 @@ describe('server', () => {
         ]),
         mappings: expect.any(String),
       });
-
-      // Kill process.
-      promise.kill('SIGTERM');
-
-      await promise;
     },
     // Could take 45s depending on how fast npm installs
     120 * 1000

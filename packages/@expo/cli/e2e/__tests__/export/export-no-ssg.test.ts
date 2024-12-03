@@ -1,10 +1,11 @@
+/* eslint-env jest */
+import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
 import { bin, getRouterE2ERoot } from '../utils';
-import JsonFile from '@expo/json-file';
 
 runExportSideEffects();
 

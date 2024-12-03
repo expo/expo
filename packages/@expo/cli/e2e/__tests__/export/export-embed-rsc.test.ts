@@ -1,12 +1,12 @@
 /* eslint-env jest */
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import execa from 'execa';
-import * as fs from 'fs';
+import fs from 'fs';
 import { remove } from 'fs-extra';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { ExpoServeLocalCommand } from '../../utils/command-instance';
+import { createExpoServe } from '../../utils/expo';
 import { bin, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
@@ -28,7 +28,7 @@ describe('export embed for RSC iOS', () => {
       await remove(outputDir);
       await remove(path.join(projectRoot, '.expo/server/ios'));
 
-      const res = await execaLog(
+      await execaLog(
         bin,
         [
           'export:embed',
@@ -91,51 +91,55 @@ describe('export embed for RSC iOS', () => {
   });
 
   describe('server', () => {
-    let serveCmd: ExpoServeLocalCommand;
     const inputDir = '.expo/server/ios';
 
     const serverOutput = path.resolve(projectRoot, '.expo/server/ios');
     const staticLocation = path.join(serverOutput, 'client/_flight/ios/index.txt');
     const tempStaticLocation = path.join(serverOutput, 'client/_flight/ios/other.txt');
 
-    beforeAll(async () => {
-      serveCmd = new ExpoServeLocalCommand(projectRoot, {
+    const expo = createExpoServe({
+      command: (port) => ['npx', 'expo', 'serve', `--port=${port}`],
+      cwd: projectRoot,
+      env: {
         NODE_ENV: 'production',
         TEST_SECRET_VALUE: 'test-secret-dynamic',
-      });
+      },
+    });
 
+    beforeAll(async () => {
       console.time('npx serve');
-      await serveCmd.startAsync([inputDir, '--port=' + 3035]);
+      await expo.startAsync([inputDir]);
 
       // Move the static file to a temporary location so we can test both static and dynamic RSC payloads.
       if (fs.existsSync(staticLocation)) {
         fs.renameSync(staticLocation, tempStaticLocation);
       }
     });
-
-    it('fetches static RSC payload from server', async () => {
-      const payload = await fetch('http://localhost:3035/_flight/ios/other.txt').then((response) =>
-        response.text()
-      );
-      expect(payload).toMatch('test-secret');
-    });
-
-    it('server renders RSC payload from server', async () => {
-      const payload = await fetch('http://localhost:3035/_flight/ios/index.txt', {
-        headers: {
-          accept: 'text/x-component',
-          'expo-platform': 'ios',
-        },
-      }).then((response) => response.text());
-      expect(payload).toMatch('test-secret');
-    });
-
     afterAll(async () => {
       if (fs.existsSync(tempStaticLocation)) {
         fs.renameSync(tempStaticLocation, staticLocation);
       }
 
-      await serveCmd.stopAsync();
+      await expo.stopAsync();
+    });
+
+    it('fetches static RSC payload from server', async () => {
+      const payload = await expo
+        .fetchAsync('/_flight/ios/other.txt')
+        .then((response) => response.text());
+      expect(payload).toMatch('test-secret');
+    });
+
+    it('server renders RSC payload from server', async () => {
+      const payload = await expo
+        .fetchAsync('/_flight/ios/index.txt', {
+          headers: {
+            accept: 'text/x-component',
+            'expo-platform': 'ios',
+          },
+        })
+        .then((response) => response.text());
+      expect(payload).toMatch('test-secret');
     });
   });
 });

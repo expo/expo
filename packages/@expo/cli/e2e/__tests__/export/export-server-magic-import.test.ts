@@ -1,9 +1,9 @@
 /* eslint-env jest */
-import * as fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { ExpoServeLocalCommand } from '../../utils/command-instance';
+import { createExpoServe } from '../../utils/expo';
 import { bin, execaLog, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
@@ -37,23 +37,23 @@ describe('export server with magic import comments', () => {
   });
 
   describe('server', () => {
-    let serveCmd: ExpoServeLocalCommand;
-    beforeAll(async () => {
-      serveCmd = new ExpoServeLocalCommand(projectRoot, {
+    const expo = createExpoServe({
+      cwd: projectRoot,
+      env: {
         NODE_ENV: 'production',
-      });
-      await serveCmd.startAsync([outputName, '--port=' + 3037]);
+      },
+    });
+
+    beforeAll(async () => {
+      await expo.startAsync();
+    });
+    afterAll(async () => {
+      await expo.stopAsync();
     });
 
     it('fetches api route to ensure the dynamic import works', async () => {
-      const payload = await fetch('http://localhost:3037/methods').then((response) =>
-        response.json()
-      );
+      const payload = await expo.fetchAsync('/methods').then((response) => response.json());
       expect(payload).toEqual({ method: 'get/method' });
-    });
-
-    afterAll(async () => {
-      await serveCmd.stopAsync();
     });
   });
 });
