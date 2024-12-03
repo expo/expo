@@ -40,11 +40,6 @@ class LauncherActivity : AppCompatActivity() {
     kernel.startJSKernel(this)
     kernel.handleIntent(this, intent)
 
-    // Start a service to keep our process awake. This isn't necessary most of the time, but
-    // if the user has "Don't keep activities" on it's possible for the process to exit in between
-    // finishing this activity and starting the BaseExperienceActivity.
-    startService(ExponentIntentService.getActionStayAwake(applicationContext))
-
     // Delay to prevent race condition where finish() is called before service starts.
     Handler(mainLooper).postDelayed(
       Runnable {
@@ -68,6 +63,18 @@ class LauncherActivity : AppCompatActivity() {
       },
       100
     )
+  }
+
+  override fun onResume() {
+    super.onResume()
+    startStayAwakeServiceIfNeeded()
+  }
+
+  private fun startStayAwakeServiceIfNeeded() {
+    // Start a service to keep our process awake. This isn't necessary most of the time, but
+    // if the user has "Don't keep activities" on it's possible for the process to exit in between
+    // finishing this activity and starting the BaseExperienceActivity.
+    startService(ExponentIntentService.getActionStayAwake(applicationContext))
   }
 
   public override fun onNewIntent(intent: Intent) {
