@@ -1,13 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import format from 'date-format';
-import {
-  registerTaskAsync,
-  unregisterTaskAsync,
-  getStatusAsync,
-  BackgroundTaskStatus,
-  BackgroundTaskResult,
-} from 'expo-background-task';
+import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -17,48 +11,49 @@ import useAppState from '../utilities/useAppState';
 
 const BACKGROUND_TASK_IDENTIFIER = 'background-task';
 const LAST_TASK_DATE_KEY = 'background-task-date';
+
 export default function BackgroundTaskScreen() {
   const [isRegistered, setIsRegistered] = React.useState<boolean>(false);
-  const [fetchDate, setFetchDate] = React.useState<Date | null>(null);
-  const [status, setStatus] = React.useState<BackgroundTaskStatus | null>(null);
+  const [lastRunDate, setLastRunDate] = React.useState<Date | null>(null);
+  const [status, setStatus] = React.useState<BackgroundTask.BackgroundTaskStatus | null>(null);
   const appState = useAppState(null);
 
   React.useEffect(() => {
     if (appState === 'active') {
-      refreshLastFetchDateAsync();
+      refreshLastRunDateAsync();
     }
   }, [appState]);
 
   const onFocus = React.useCallback(() => {
-    refreshLastFetchDateAsync();
+    refreshLastRunDateAsync();
     checkStatusAsync();
   }, []);
   useFocusEffect(onFocus);
 
-  const refreshLastFetchDateAsync = async () => {
-    const lastFetchDateStr = await AsyncStorage.getItem(LAST_TASK_DATE_KEY);
-    if (lastFetchDateStr) {
-      setFetchDate(new Date(+lastFetchDateStr));
+  const refreshLastRunDateAsync = async () => {
+    const lastRunDateStr = await AsyncStorage.getItem(LAST_TASK_DATE_KEY);
+    if (lastRunDateStr) {
+      setLastRunDate(new Date(+lastRunDateStr));
     }
     const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_IDENTIFIER);
     setIsRegistered(isRegistered);
   };
 
   const checkStatusAsync = async () => {
-    const status = await getStatusAsync();
+    const status = await BackgroundTask.getStatusAsync();
     console.log({ status, isRegistered });
     setStatus(status);
-    await refreshLastFetchDateAsync();
+    await refreshLastRunDateAsync();
   };
 
   const toggle = async () => {
     console.log({ isRegistered });
     if (isRegistered) {
       console.log('unregister');
-      await unregisterTaskAsync(BACKGROUND_TASK_IDENTIFIER);
+      await BackgroundTask.unregisterTaskAsync(BACKGROUND_TASK_IDENTIFIER);
     } else {
       console.log('register');
-      await registerTaskAsync(BACKGROUND_TASK_IDENTIFIER, {
+      await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER, {
         minimumInterval: 60, // 1 minute
       });
     }
@@ -66,13 +61,13 @@ export default function BackgroundTaskScreen() {
   };
 
   const renderText = () => {
-    if (!fetchDate) {
+    if (!lastRunDate) {
       return <Text>There was no Background Task call yet.</Text>;
     }
     return (
       <View style={{ flexDirection: 'column', alignItems: 'center' }}>
         <Text>Last background task was invoked at:</Text>
-        <Text style={styles.boldText}>{format('yyyy-MM-dd hh:mm:ss:SSS', fetchDate)}</Text>
+        <Text style={styles.boldText}>{format('yyyy-MM-dd hh:mm:ss:SSS', lastRunDate)}</Text>
       </View>
     );
   };
@@ -82,13 +77,15 @@ export default function BackgroundTaskScreen() {
       <View style={styles.textContainer}>
         <Text>
           Background Task Service:{' '}
-          <Text style={styles.boldText}>{status ? BackgroundTaskStatus[status] : null}</Text>
+          <Text style={styles.boldText}>
+            {status ? BackgroundTask.BackgroundTaskStatus[status] : null}
+          </Text>
         </Text>
       </View>
       <View style={styles.textContainer}>{renderText()}</View>
       <Button
         buttonStyle={styles.button}
-        disabled={status === BackgroundTaskStatus.Restricted}
+        disabled={status === BackgroundTask.BackgroundTaskStatus.Restricted}
         title={isRegistered ? 'Cancel Background Task' : 'Schedule Background Task'}
         onPress={toggle}
       />
@@ -116,11 +113,11 @@ TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
   try {
     await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
   } catch (error) {
-    console.error('Failed to save the last fetch date', error);
-    return BackgroundTaskResult.Failed;
+    console.error('Failed to save the last run date', error);
+    return BackgroundTask.BackgroundTaskResult.Failed;
   }
 
-  return BackgroundTaskResult.Success;
+  return BackgroundTask.BackgroundTaskResult.Success;
 });
 
 const styles = StyleSheet.create({
