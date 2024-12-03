@@ -14,6 +14,7 @@ const activeTags: Set<string> = new Set();
 
 const onScreenshotEventName = 'onScreenshot';
 const onRecordingEventName = 'onRecording';
+
 // @needsAudit
 /**
  * Returns whether the Screen Capture API is available on the current device.
