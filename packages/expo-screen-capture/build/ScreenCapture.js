@@ -92,8 +92,9 @@ export function addScreenshotListener(listener) {
 // @needsAudit
 /**
  * Adds a listener that will fire whenever the user takes a screen recording while the app is foregrounded.
- * On Android, this only works on API level 35 and above.
- * 
+ * On Android, this method requires the `READ_EXTERNAL_STORAGE` permission. You can request this
+ * with [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
+ *
  * @param listener The function that will be executed when the user takes a screen recording.
  * This function accepts a single boolean argument that indicates whether the screen recording
  * started or stopped.
