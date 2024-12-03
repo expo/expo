@@ -8,6 +8,7 @@ const js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js");
 const path_1 = __importDefault(require("path"));
 const css_1 = require("../transform-worker/css");
 const hash_1 = require("../utils/hash");
+const filePath_1 = require("../utils/filePath");
 // s = static
 const STATIC_EXPORT_DIRECTORY = '_expo/static/css';
 function isTypeJSModule(module) {
@@ -20,8 +21,10 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
         const cssMetadata = getCssMetadata(module);
         if (cssMetadata) {
             const contents = cssMetadata.code;
-            const originFilename = path_1.default.relative(projectRoot, module.path);
-            const filename = path_1.default.join(
+            // NOTE(cedric): these relative paths are used as URL pathnames when serializing HTML
+            // Use POSIX-format to avoid urls like `_expo/static/css/some\\file\\name.css`
+            const originFilename = (0, filePath_1.toPosixPath)(path_1.default.relative(projectRoot, module.path));
+            const filename = (0, filePath_1.toPosixPath)(path_1.default.join(
             // Consistent location
             STATIC_EXPORT_DIRECTORY, 
             // Hashed file contents + name for caching
@@ -29,7 +32,7 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
                 // Stable filename for hashing in CI.
                 filepath: originFilename,
                 src: contents,
-            }) + '.css');
+            }) + '.css'));
             if (cssMetadata.externalImports) {
                 for (const external of cssMetadata.externalImports) {
                     let source = `<link rel="stylesheet" href="${external.url}"`;

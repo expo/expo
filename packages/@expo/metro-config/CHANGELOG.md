@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use POSIX-formatted relative CSS asset paths for URL consistency across platforms.
+
 ### 💡 Others
 
 ## 0.19.5 - 2024-11-29
