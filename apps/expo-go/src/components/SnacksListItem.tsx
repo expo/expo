@@ -15,7 +15,7 @@ type Props = {
   isDraft: boolean;
   first: boolean;
   last: boolean;
-  sdkVersion?: string;
+  sdkVersion: string;
 };
 
 function normalizeDescription(description?: string): string | undefined {
