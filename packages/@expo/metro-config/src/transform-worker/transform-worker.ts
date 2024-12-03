@@ -23,7 +23,7 @@ import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput } from '../serializer/jsOutput';
-import { toPosixPath } from '../utils/filePath';
+import { serializePath, toPosixPath } from '../utils/filePath';
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 
@@ -61,7 +61,7 @@ export async function transform(
     const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
     return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
   }
-  if (filename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+  if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
     const environment = options.customTransformOptions?.environment;
     const isServer = environment === 'node' || environment === 'react-server';
 
@@ -76,7 +76,8 @@ export async function transform(
           'module.exports = {\n' +
           clientBoundaries
             .map((boundary: string) => {
-              return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+              const serializedBoundary = serializePath(boundary);
+              return `[\`$\{require.resolveWeak(${serializedBoundary})}\`]: /* ${boundary} */ () => import(${serializedBoundary}),`;
             })
             .join('\n') +
           '\n};';
