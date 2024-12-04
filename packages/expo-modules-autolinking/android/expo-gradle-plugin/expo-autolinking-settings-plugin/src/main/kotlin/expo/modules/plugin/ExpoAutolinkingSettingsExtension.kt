@@ -6,7 +6,7 @@ open class ExpoAutolinkingSettingsExtension(settings: Settings) {
   private val settingsManager = SettingsManager(settings)
 
   /**
-   * Command that should be provided to the `react-native` to resolve the configuration.
+   * Command that should be provided to `react-native` to resolve the configuration.
    */
   val rnConfigCommand = AutolinkigCommandBuilder()
     .command("react-native-config")

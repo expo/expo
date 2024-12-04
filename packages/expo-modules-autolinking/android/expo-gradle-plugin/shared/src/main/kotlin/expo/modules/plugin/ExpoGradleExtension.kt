@@ -4,7 +4,7 @@ import expo.modules.plugin.configuration.ExpoAutolinkingConfig
 import java.security.MessageDigest
 
 /**
- * Extension that will be added to the Gradle, making possible to access configuration in all projects.
+ * Extension that will be added to Gradle, making it possible to access the configuration in all projects.
  */
 open class ExpoGradleExtension(
   val config: ExpoAutolinkingConfig

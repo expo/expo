@@ -17,7 +17,7 @@ import org.gradle.api.initialization.Settings
 
 class SettingsManager(val settings: Settings) {
   /**
-   * Resolved configuration from the `expo-modules-autolinking`.
+   * Resolved configuration from `expo-modules-autolinking`.
    */
   private val config by lazy {
     val command = AutolinkigCommandBuilder()

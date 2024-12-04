@@ -5,7 +5,7 @@ package expo.modules.plugin
  */
 class AutolinkigCommandBuilder {
   /**
-   * Command for finding and running the `expo-modules-autolinking`.
+   * Command for finding and running `expo-modules-autolinking`.
    */
   private val baseCommand = listOf(
     "node",
@@ -39,7 +39,7 @@ class AutolinkigCommandBuilder {
   }
 
   /**
-   * Whether is should output the json.
+   * Whether it should output json.
    */
   fun useJson() = apply {
     useJson = listOf("--json")
