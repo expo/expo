@@ -45,12 +45,12 @@ class BackgroundTaskScheduler {
         repeatIntervalTimeUnit = TimeUnit.MINUTES,
         repeatInterval = intervalMinutes
       ).setInputData(data.build())
-       .setConstraints(
-        Constraints.Builder()
-          .setRequiresBatteryNotLow(true)
-          .setRequiredNetworkType(NetworkType.CONNECTED)
-          .build()
-      )
+        .setConstraints(
+          Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        )
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         // Add minimum interval here as well so that the work doesn't start immediately
@@ -74,7 +74,8 @@ class BackgroundTaskScheduler {
         val operation = workManager.enqueueUniquePeriodicWork(
           WORKER_IDENTIFIER,
           ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-          workRequest).await()
+          workRequest
+        ).await()
 
         Log.i(TAG, "Worker enqueued successfully")
         true
@@ -85,29 +86,29 @@ class BackgroundTaskScheduler {
     }
 
     /**
-    Cancels the worker task
+     Cancels the worker task
      */
-    suspend fun stopWorker (context: Context): Boolean {
+    suspend fun stopWorker(context: Context): Boolean {
       Log.i(TAG, "Cancelling worker with identifier $WORKER_IDENTIFIER")
 
       // Stop our main worker
       val workManager = WorkManager.getInstance(context)
       return try {
-          workManager.cancelUniqueWork(WORKER_IDENTIFIER).await()
-          workManager.pruneWork().await()
-        } catch (e: Exception) {
-          Log.i(TAG, "Stopping worker failed with error " + e.message)
-          false
-        }
+        workManager.cancelUniqueWork(WORKER_IDENTIFIER).await()
+        workManager.pruneWork().await()
+      } catch (e: Exception) {
+        Log.i(TAG, "Stopping worker failed with error " + e.message)
+        false
+      }
     }
 
     /**
-    Returns true if the worker task is pending
+     Returns true if the worker task is pending
      */
-    suspend fun isWorkerRunning(context: Context ): Boolean {
+    suspend fun isWorkerRunning(context: Context): Boolean {
       val workInfo = getWorkerInfo(context)
       return workInfo?.state == WorkInfo.State.RUNNING ||
-             workInfo?.state == WorkInfo.State.ENQUEUED
+        workInfo?.state == WorkInfo.State.ENQUEUED
     }
 
     /**
@@ -115,7 +116,7 @@ class BackgroundTaskScheduler {
      */
     suspend fun runTasks(context: Context, appScopeKey: String) {
       // Get task service
-       val taskService = TaskServiceProviderHelper.getTaskServiceImpl(context)
+      val taskService = TaskServiceProviderHelper.getTaskServiceImpl(context)
         ?: throw MissingTaskServiceException()
 
       Log.i(TAG, "runTasks: $appScopeKey")
@@ -124,15 +125,14 @@ class BackgroundTaskScheduler {
       val consumers = taskService.getTaskConsumers(appScopeKey)
       Log.i(TAG, "runTasks: number of consumers ${consumers.size}")
 
-       val tasks = consumers.mapNotNull { consumer ->
+      val tasks = consumers.mapNotNull { consumer ->
         if (consumer.taskType() == BackgroundTaskConsumer.BACKGROUND_TASK_TYPE) {
-
           val bgTaskConsumer = (consumer as? BackgroundTaskConsumer) ?: throw InvalidBackgroundTaskConsumer()
           Log.i(TAG, "runTasks: executing tasks for consumer of type ${consumer.taskType()}")
 
           val taskCompletion = CompletableDeferred<Unit>()
 
-          bgTaskConsumer.executeTask() {
+          bgTaskConsumer.executeTask {
             Log.i(TAG, "Task successfully finished")
             taskCompletion.complete(Unit)
           }

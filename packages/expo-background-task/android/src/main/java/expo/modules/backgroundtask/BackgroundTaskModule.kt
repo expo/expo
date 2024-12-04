@@ -45,4 +45,3 @@ class BackgroundTaskModule : Module() {
     }
   }
 }
-
