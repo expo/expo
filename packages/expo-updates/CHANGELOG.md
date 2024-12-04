@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix black screen appearing instead of the splashscreen on launch.
+
 ### 💡 Others
 
 ## 0.26.9 — 2024-11-22
