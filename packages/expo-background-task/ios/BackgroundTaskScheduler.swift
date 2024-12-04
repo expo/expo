@@ -16,7 +16,6 @@ public class BackgroundTaskScheduler: NSObject {
 
     do {
       try BGTaskScheduler.shared.submit(request)
-
     } catch let error as BGTaskScheduler.Error {
       switch error.code {
       case .unavailable:
@@ -44,8 +43,8 @@ public class BackgroundTaskScheduler: NSObject {
     let selector = NSSelectorFromString("_simulateLaunchForTaskWithIdentifier:")
     if let method = BGTaskScheduler.shared.method(for: selector) {
       print("BackgroundTaskScheduler: calling _simulateLaunchForTaskWithIdentifier method on BGTaskScheduler")
-      let implementation = unsafeBitCast(method, to: (@convention(c) (Any?, Selector, NSString) -> Void).self)
-      implementation(BGTaskScheduler.shared, selector, BackgroundTaskConstants.BackgroundWorkerIdentifier as NSString)
+      let implementation = unsafeBitCast(method, to: (@convention(c) (Any?, Selector, String) -> Void).self)
+      implementation(BGTaskScheduler.shared, selector, BackgroundTaskConstants.BackgroundWorkerIdentifier)
     } else {
       print("BackgroundTaskScheduler: _simulateLaunchForTaskWithIdentifier method not found on BGTaskScheduler.")
     }

@@ -1,13 +1,11 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 import ExpoModulesCore
 
-let ModuleName = "ExpoBackgroundTask"
-
 public class BackgroundTaskModule: Module {
   private var taskManager: EXTaskManagerInterface?
 
   public func definition() -> ModuleDefinition {
-    Name(ModuleName)
+    Name("ExpoBackgroundTask")
 
     OnCreate {
       taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
