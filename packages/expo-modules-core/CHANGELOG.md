@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- Changed `import` to `import type` for TS type declarations. ([#33447](https://github.com/expo/expo/pull/33447) by [@j-piasecki](https://github.com/j-piasecki))
+
 ### 💡 Others
 
 - [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default. ([#33261](https://github.com/expo/expo/pull/33261) by [@lukmccall](https://github.com/lukmccall))
+
+### ⚠️ Notices
+
+- Deprecated `EXAppDelegateWrapper` in favor of `ExpoAppDelegate`. ([#33348](https://github.com/expo/expo/pull/33348) by [@tsapeta](https://github.com/tsapeta)))
+
+## 2.1.1 - 2024-12-02
+
+_This version does not introduce any user-facing changes._
 
 ## 2.1.0 - 2024-11-29
 

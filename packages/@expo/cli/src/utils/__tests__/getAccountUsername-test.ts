@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { vol } from 'memfs';
 
+import { getExpoHomeDirectory, getSettings } from '../../api/user/UserSettings';
 import { getAccountUsername } from '../getAccountUsername';
-import { getExpoHomeDirectory, getUserState } from '../getUserState';
 
 jest.mock('os');
 jest.mock('fs');
@@ -45,7 +45,7 @@ describe(getAccountUsername, () => {
     // Ensure the dir exists
     fs.mkdirSync(getExpoHomeDirectory(), { recursive: true });
     // Set a username...
-    await getUserState().setAsync('auth', { username: 'bacon-boi' });
+    await getSettings().setAsync('auth', { username: 'bacon-boi' });
     // Check the username...
     expect(getAccountUsername()).toBe('bacon-boi');
   });

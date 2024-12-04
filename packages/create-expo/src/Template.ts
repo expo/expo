@@ -68,6 +68,20 @@ function coerceUrl(urlString: string) {
 
 export function resolvePackageModuleId(moduleId: string) {
   if (
+    // Expands github shorthand (owner/repo) to full URLs
+    moduleId.includes('/') &&
+    !(
+      moduleId.startsWith('@') || // Scoped package
+      moduleId.startsWith('.') || // Relative path
+      moduleId.startsWith(path.sep) || // Absolute path
+      // Contains a protocol
+      /^[a-z][-a-z0-9\\.\\+]*:/.test(moduleId)
+    )
+  ) {
+    moduleId = `https://github.com/${moduleId}`;
+  }
+
+  if (
     // Supports github repository URLs
     /^(https?:\/\/)?github\.com\//.test(moduleId)
   ) {

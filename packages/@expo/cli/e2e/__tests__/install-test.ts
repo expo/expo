@@ -151,9 +151,17 @@ it('runs `npx expo install --fix` fails', async () => {
   // Check that the versions are fixed
   pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-  // Didn't fix expo-auth-session since we didn't pass it in
+  // Reload the dependency versions
+  pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
   pkgDependencies = pkg.dependencies as Record<string, string>;
-  expect(pkgDependencies['expo-auth-session']).toBe('~6.0.1');
+
+  // Load the expected dependency versions
+  const expectedVersion = await JsonFile.readAsync(
+    require.resolve('expo/bundledNativeModules.json', { paths: [projectRoot] })
+  );
+
+  // Check that the versions are fixed
+  expect(pkgDependencies['expo-auth-session']).toBe(expectedVersion['expo-auth-session']);
 });
 
 it('runs `npx expo install expo@<version> --fix`', async () => {

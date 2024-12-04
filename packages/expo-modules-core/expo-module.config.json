@@ -2,5 +2,15 @@
   "platforms": ["apple", "android"],
   "apple": {
     "podspecPath": "./ExpoModulesCore.podspec"
+  },
+  "android": {
+    "gradlePlugins": [
+      {
+        "id": "expo-module-gradle-plugin",
+        "group": "expo.modules",
+        "sourceDir": "expo-module-gradle-plugin",
+        "applyToRootProject": false
+      }
+    ]
   }
 }

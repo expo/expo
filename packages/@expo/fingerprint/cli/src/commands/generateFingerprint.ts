@@ -47,7 +47,9 @@ Generate fingerprint for a project
 
   const options: Options = {
     debug: !!process.env.DEBUG || args['--debug'],
-    useRNCoreAutolinkingFromExpo: boolish('USE_RNCORE_AUTOLINKING_FROM_EXPO', undefined),
+    useRNCoreAutolinkingFromExpo: process.env['USE_RNCORE_AUTOLINKING_FROM_EXPO']
+      ? boolish('USE_RNCORE_AUTOLINKING_FROM_EXPO')
+      : undefined,
     ...(platform ? { platforms: [platform] } : null),
     silent: true,
   };

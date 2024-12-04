@@ -89,6 +89,7 @@ redirects[develop/development-builds/installation]=develop/development-builds/cr
 
 # Guides that have been deleted
 redirects[guides/web-performance/]=guides/analyzing-bundles
+redirects[push-notifications/obtaining-a-device-token-for-fcm-or-apns]=push-notifications/sending-notifications-custom
 
 # Redirects after adding Home to the docs
 redirects[next-steps/additional-resources]=additional-resources
@@ -239,6 +240,8 @@ redirects[workflow/hermes]=guides/using-hermes
 # Redirects based on Algolia 404 report
 redirects[versions/latest/sdk/permissions]=guides/permissions
 redirects[workflow/build/building-on-ci]=build/building-on-ci
+redirects[versions/v52.0.0/sdk/taskmanager]=versions/v52.0.0/sdk/task-manager
+redirects[versions/v51.0.0/sdk/taskmanager]=versions/v51.0.0/sdk/task-manager
 redirects[versions/v50.0.0/sdk/taskmanager]=versions/v50.0.0/sdk/task-manager
 redirects[versions/v49.0.0/sdk/taskmanager]=versions/v49.0.0/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager
@@ -293,6 +296,9 @@ redirects[router/ui/tabs]=router/advanced/custom-tabs
 # After new environment variables guide
 redirects[build-reference/variables]=eas/environment-variables
 redirects[eas-update/environment-variables]=eas/environment-variables
+
+# After moving common questions from Expo Router FAQ to Introduction
+redirects[router/reference/faq]=router/introduction
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
