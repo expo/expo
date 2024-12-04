@@ -41,5 +41,13 @@ export declare function registerTaskAsync(taskName: string, options?: Background
  * @return A promise which fulfils when the task is fully unregistered.
  */
 export declare function unregisterTaskAsync(taskName: string): Promise<void>;
-export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions as BackgroundOptions, } from './BackgroundTask.types';
+/**
+ * When in debug mode this function will trigger running the background tasks.
+ * This function will only work on iOS and only for apps built in debug mode.
+ * @param taskName Name of the task to trigger.
+ * @returns A promise which fulfils when the task is triggered.
+ * @platform ios
+ */
+export declare function triggerTaskForTestingAsync(taskName: string): Promise<void>;
+export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.d.ts.map

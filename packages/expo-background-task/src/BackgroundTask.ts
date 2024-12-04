@@ -60,11 +60,7 @@ export async function registerTaskAsync(
       `Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`
     );
   }
-  console.log(
-    'ExpoBackgroundTaskModule.registerTaskAsync',
-    ExpoBackgroundTaskModule.registerTaskAsync,
-    { taskName, options }
-  );
+  console.log('Calling ExpoBackgroundTaskModule.registerTaskAsync', { taskName, options });
   await ExpoBackgroundTaskModule.registerTaskAsync(taskName, options);
 }
 
@@ -78,16 +74,33 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
   if (!ExpoBackgroundTaskModule.unregisterTaskAsync) {
     throw new UnavailabilityError('BackgroundTask', 'unregisterTaskAsync');
   }
-  console.log(
-    'ExpoBackgroundTaskModule.unregisterTaskAsync',
-    ExpoBackgroundTaskModule.unregisterTaskAsync
-  );
+  console.log('Calling ExpoBackgroundTaskModule.unregisterTaskAsync', taskName);
   await ExpoBackgroundTaskModule.unregisterTaskAsync(taskName);
+}
+
+// @needsAudit
+/**
+ * When in debug mode this function will trigger running the background tasks.
+ * This function will only work on iOS and only for apps built in debug mode.
+ * @param taskName Name of the task to trigger.
+ * @returns A promise which fulfils when the task is triggered.
+ * @platform ios
+ */
+export async function triggerTaskForTestingAsync(taskName: string): Promise<void> {
+  if (__DEV__) {
+    if (!ExpoBackgroundTaskModule.triggerTaskForTestingAsync) {
+      throw new UnavailabilityError('BackgroundTask', 'triggerTaskForTestingAsync');
+    }
+    console.log('Calling triggerTaskForTestingAsync', taskName);
+    await ExpoBackgroundTaskModule.triggerTaskForTestingAsync(taskName);
+  } else {
+    return Promise.resolve();
+  }
 }
 
 // Export types
 export {
   BackgroundTaskStatus,
   BackgroundTaskResult,
-  BackgroundTaskOptions as BackgroundOptions,
+  BackgroundTaskOptions,
 } from './BackgroundTask.types';

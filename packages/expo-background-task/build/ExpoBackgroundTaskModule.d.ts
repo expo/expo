@@ -4,6 +4,7 @@ declare class ExpoBackgroundTaskModule extends NativeModule {
     getStatusAsync(): Promise<BackgroundTaskStatus>;
     registerTaskAsync(name: string, options: BackgroundTaskOptions): Promise<void>;
     unregisterTaskAsync(name: string): Promise<void>;
+    triggerTaskForTestingAsync(name: string): Promise<void>;
 }
 declare const _default: ExpoBackgroundTaskModule;
 export default _default;

@@ -12,6 +12,10 @@ public class BackgroundTaskModule: Module {
     OnCreate {
       taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
     }
+    
+    AsyncFunction("triggerTaskForTestingAsync") { (name: String) in
+      BackgroundTaskScheduler.triggerTaskForTesting()
+    }
 
     AsyncFunction("registerTaskAsync") { (name: String, options: [String: Any]) in
       guard let taskManager else {

@@ -22,6 +22,11 @@ class BackgroundTaskModule : Module() {
       return@AsyncFunction 2 // WorkManager is always available on Android.
     }
 
+    AsyncFunction("triggerTaskForTestingAsync") {
+      Log.w(TAG, "Triggering tasks for testing is not available on Android. Just " +
+        "schedule your task in a debug build to start the task.")
+    }
+
     AsyncFunction("registerTaskAsync") { taskName: String, options: Map<String, Any?> ->
       Log.i(TAG, "registerTaskAsync: $taskName")
       taskManager.registerTask(taskName, BackgroundTaskConsumer::class.java, options)

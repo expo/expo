@@ -4,7 +4,7 @@ import format from 'date-format';
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import useAppState from '../utilities/useAppState';
@@ -49,7 +49,9 @@ export default function BackgroundTaskScreen() {
     if (isRegistered) {
       await BackgroundTask.unregisterTaskAsync(BACKGROUND_TASK_IDENTIFIER);
     } else {
-      await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER);
+      await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER, {
+        minimumInterval: 15, // 15 minutes
+      });
     }
     setIsRegistered(!isRegistered);
   };
@@ -88,6 +90,13 @@ export default function BackgroundTaskScreen() {
         title="Check Background Task Status"
         onPress={checkStatusAsync}
       />
+      {Platform.OS === 'ios' && (
+        <Button
+          buttonStyle={styles.button}
+          title="Trigger Background Tasks (DEBUG)"
+          onPress={() => BackgroundTask.triggerTaskForTestingAsync(BACKGROUND_TASK_IDENTIFIER)}
+        />
+      )}
     </View>
   );
 }
@@ -96,7 +105,7 @@ BackgroundTaskScreen.navigationOptions = {
   title: 'Background Task',
 };
 
-console.log('App: Registering background task');
+console.log('App: Defining background task');
 
 // Register / create the task so that it is available also when the background task screen is not open
 TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
