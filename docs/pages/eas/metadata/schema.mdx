@@ -126,7 +126,8 @@ EAS Metadata uses the least restrictive answer for each of these questions by de
       "gambling": false,
       "unrestrictedWebAccess": false,
       "kidsAgeBand": null,
-      "seventeenPlus": false
+      "ageRatingOverride": "NONE",
+      "koreaAgeRatingOverride": "NONE"
     }
   }
 }
@@ -195,19 +196,32 @@ EAS Metadata uses the least restrictive answer for each of these questions by de
       description: 'Does the app contain profanity or crude humor?',
     },
     {
-      name: 'seventeenPlus',
-      type: 'boolean',
+      name: 'ageRatingOverride',
+      type: <MD.a href="#apple-advisory-age-rating-override">AppleAgeRatingOverride</MD.a>,
       description: [
         <MD.p>
-          If your app rates 12+ or lower, and you believe its content may not be suitable for
-          children under 17, you can manually set the age rating to 17+.
+          If your app rates 12+ or lower, and you believe its content may not be suitable for children, you can manually override the age rating.
         </MD.p>,
         <MD.p>
-          <MD.a openInNewTab href="https://help.apple.com/app-store-connect/#/dev599d50efb">
+          <MD.a openInNewTab href="https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating">
             Learn more
           </MD.a>
         </MD.p>,
-      ],
+      ]
+    },
+    {
+      name: 'koreaAgeRatingOverride',
+      type: <MD.a href="#apple-advisory-korea-age-rating-override">AppleKoreaAgeRatingOverride</MD.a>,
+      description: [
+        <MD.p>
+          If your app rates 12+ or lower, and you believe its content may not be suitable for children, you can manually override the age rating. Same as ageRatingOverride, but for South Korea.
+        </MD.p>,
+        <MD.p>
+          <MD.a openInNewTab href="https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating">
+            Learn more
+          </MD.a>
+        </MD.p>,
+      ]
     },
     {
       name: 'sexualContentGraphicAndNudity',
@@ -268,6 +282,39 @@ EAS Metadata uses the least restrictive answer for each of these questions by de
     { name: 'NINE_TO_ELEVEN', description: 'For kids between the age of 9 to 11 years.' },
   ]}
 </MetadataTable>
+
+#### Apple advisory age rating override
+
+<MetadataTable headers={['Name', 'Description']}>
+  {[
+    { name: 'NONE', description: 'No age rating override' },
+    {
+      name: 'SEVENTEEN_PLUS',
+      description: 'App contains content that may not be suitable for children under the age of 17',
+    },
+    {
+      name: 'UNRATED',
+      description: 'Adults Only. This content can\'t be published on the App Store. It may be published on alternative app marketplaces on iOS or websites in the European Union',
+    },
+  ]}
+</MetadataTable>
+
+#### Apple advisory korea age rating override
+
+<MetadataTable headers={['Name', 'Description']}>
+  {[
+    { name: 'NONE', description: 'No age rating override' },
+    {
+      name: 'FIFTEEN_PLUS',
+      description: 'App contains content that may not be suitable for children under the age of 15',
+    },
+    {
+      name: 'NINETEEN_PLUS',
+      description: 'App contains content that may not be suitable for children under the age of 19',
+    },
+  ]}
+</MetadataTable>
+
 
 ### Apple categories
 
