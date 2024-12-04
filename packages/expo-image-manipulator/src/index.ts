@@ -1,7 +1,7 @@
 export { ImageManipulator, manipulateAsync, useImageManipulator } from './ImageManipulator';
 
-// SaveFormat is an enum
-export { SaveFormat } from './ImageManipulator.types';
+// SaveFormat and FlipType are enums
+export { SaveFormat, FlipType} from './ImageManipulator.types';
 
 export type { SaveOptions, ImageResult } from './ImageManipulator.types';
 
@@ -9,7 +9,6 @@ export type { SaveOptions, ImageResult } from './ImageManipulator.types';
 export type {
   ActionResize,
   ActionRotate,
-  FlipType,
   ActionFlip,
   ActionCrop,
   ActionExtent,
