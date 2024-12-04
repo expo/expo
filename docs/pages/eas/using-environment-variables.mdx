@@ -100,7 +100,7 @@ export default {
 };
 ```
 
-## Create EAS environment variables
+## Create environment variables
 
 To create environment variables on EAS servers, you can use the [environment variables creation form](https://expo.dev/accounts/[account]/projects/[project]/environment-variables/new) page or `eas env:create` command.
 
@@ -122,7 +122,9 @@ Based on the environment variables in this example, the list will look like this
   className="max-w-[600px]"
 />
 
-## Pull EAS environment variables for your local development environment
+In above example, the `SENTRY_AUTH_TOKEN` can be treated as a sensitive environment variable. It is used to authenticate Sentry to upload source maps after builds and updates, so it has to be accessible outside of EAS servers.
+
+## Pull environment variables for your local development
 
 The easiest way to use the EAS environment variables for local development is to pull them into a **.env** file using the `eas env:pull --environment environment` command. You can also use the Export option on the [Expo website](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to download the file and store it inside your project.
 
@@ -145,7 +147,7 @@ The downloaded `EXPO_PUBLIC_` variables are available for local development when
 
 > **warning** It is best to add all of the **.env** files to **.gitignore** to avoid committing them to your repository and exposing sensitive information. Committing a **.env** file may additionally lead to environment variables resolution conflicts.
 
-## Use EAS environment variables with EAS Build
+## Use environment variables with EAS Build
 
 To have a full control over the environments used for your builds, you can specify the [`environment`](/eas/json#environment) field in the build profiles settings in the **eas.json** file.
 
@@ -188,7 +190,7 @@ In this example app, all of the environment variables except `GOOGLE_SERVICES_JS
 
 It's especially important in this context to have the correct visibility set for the `APP_VARIANT` variable so that the variable available in EAS CLI and is able to generate credentials for the correct package name and bundle identifier.
 
-## Use EAS environment variables with EAS Update
+## Use environment variables with EAS Update
 
 The most convenient way to use EAS environment variables with EAS Update is to run the `eas update` command with the `--environment` flag specified:
 
@@ -200,7 +202,7 @@ When the `--environment` flag is used, **only the environment variables from the
 
 > **warning** The default behavior of the `eas update` command is to use **.env** files if the `--environment` flag is not specified.
 
-## Use EAS environment variables for other commands
+## Use environment variables for other commands
 
 One way to supply non-secret EAS environment variables to other EAS commands is to use the `eas env:exec` command.
 
@@ -211,5 +213,3 @@ It can be useful when uploading source maps to Sentry using a [`SENTRY_AUTH_TOKE
 <Terminal
   cmd={["$ eas env:exec --environment production 'npx sentry-expo-upload-sourcemaps dist'"]}
 />
-
-In above example, the `SENTRY_AUTH_TOKEN` is treated as a sensitive environment variable. It is used to authenticate with Sentry to upload source maps after builds and updates, and accessible outside of EAS servers.
