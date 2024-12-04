@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import type { ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
+import { clearTimeout, setTimeout } from 'node:timers';
 import { stripVTControlCharacters } from 'node:util';
 import treeKill from 'tree-kill';
 
@@ -68,7 +69,11 @@ export async function waitForProcessOutput<T>(
  * Wait for the child process to become "ready", defined through the resolver's promise.
  * This listens for possible spawn errors or unexepcted exits of the child process.
  */
-export async function waitForProcessReady<T>(child: ChildProcess, resolver: () => Promise<T>) {
+export async function waitForProcessReady<T>(
+  child: ChildProcess,
+  resolver: () => Promise<T>,
+  timeoutMs = 30_000
+) {
   // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
   let resolve: (value: T | PromiseLike<T>) => void;
   let reject: (reason: any) => void;
@@ -85,12 +90,25 @@ export async function waitForProcessReady<T>(child: ChildProcess, resolver: () =
     reject(processExitToError(code ?? signal));
   };
 
+  // Add a check to ensure the process is ready within a set timeout.
+  // Without this timeout, malformed ready checks are extremely hard to find.
+  const readyTimeout = setTimeout(
+    () =>
+      reject(
+        new Error(
+          `Process did not become ready within ${timeoutMs}ms. Ensure the ready check is resolving as expected.`
+        )
+      ),
+    timeoutMs
+  );
+
   try {
-    resolver().then(resolve!);
+    resolver().then(resolve!).catch(reject!);
     child.once('error', onProcessError);
     child.once('exit', onProcessExit);
     return await promise;
   } finally {
+    clearTimeout(readyTimeout);
     child.off('error', onProcessError);
     child.off('exit', onProcessExit);
   }

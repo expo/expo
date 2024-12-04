@@ -34,7 +34,8 @@ export type BackgroundServerOptions = SpawnOptions & {
   port?: number | (() => Promise<number>);
   /**
    * The host derrived from the child process output chunks (stdout or stderr).
-   * When starting the server, the promise won't resolve before the host is resolved.
+   * `server.startAsync` will not be resolved, until this method returns the host.
+   * This method also functions as the ready-check to determine if the server fully started.
    * When passing a URL, the port will be overriden using the configured port.
    */
   host(chunk: any): URL | string | null;
