@@ -1,7 +1,7 @@
 export { ImageManipulator, manipulateAsync, useImageManipulator } from './ImageManipulator';
 
 // SaveFormat and FlipType are enums
-export { SaveFormat, FlipType} from './ImageManipulator.types';
+export { SaveFormat, FlipType } from './ImageManipulator.types';
 
 export type { SaveOptions, ImageResult } from './ImageManipulator.types';
 
