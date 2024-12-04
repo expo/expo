@@ -6,9 +6,9 @@
   "android": {
     "gradlePlugins": [
       {
-        "id": "expo-modules-library",
+        "id": "expo-module-gradle-plugin",
         "group": "expo.modules",
-        "sourceDir": "expo-modules-library",
+        "sourceDir": "expo-module-gradle-plugin",
         "applyToRootProject": false
       }
     ]
