@@ -109,7 +109,7 @@ export function createBackgroundServer({
 
       if (verbose) {
         console.log('[server] startAsync -', bin, ...commandOrFlags, this.options);
-        processPipeOutput(child, '[server]');
+        processPipeOutput(child, 'server');
       }
 
       try {

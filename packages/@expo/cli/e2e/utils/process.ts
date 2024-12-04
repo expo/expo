@@ -150,12 +150,14 @@ export function processExitToError(
  * This will append a prefix for each line, to make it more readable.
  * Once the process exits or errors, the listeners are removed automatically.
  */
-export function processPipeOutput(child: ChildProcess, prefix = '[child process]') {
-  const prefixLines = (chunk: any) =>
-    `${prefix} ` + chunk.toString().split('\n').join(`\n${prefix} `);
+export function processPipeOutput(child: ChildProcess, prefix = 'child process') {
+  const prefixLines = (chunk: any, type: 'stderr' | 'stdout') => {
+    const tag = `[${prefix} ${type}]`;
+    return `${tag} ` + chunk.toString().split('\n').join(`\n${tag} `);
+  };
 
-  const onProcessStderr = (chunk: any) => process.stderr.write(prefixLines(chunk));
-  const onProcessStdout = (chunk: any) => process.stdout.write(prefixLines(chunk));
+  const onProcessStderr = (chunk: any) => process.stderr.write(prefixLines(chunk, 'stderr'));
+  const onProcessStdout = (chunk: any) => process.stdout.write(prefixLines(chunk, 'stdout'));
 
   child.stderr?.on('data', onProcessStderr);
   child.stdout?.on('data', onProcessStdout);
