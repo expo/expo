@@ -117,7 +117,10 @@ export async function normalizeBodyInitAsync(
   }
 
   if (body instanceof Blob) {
-    return { body: new Uint8Array(await body.arrayBuffer()) };
+    return {
+      body: new Uint8Array(await body.arrayBuffer()),
+      overriddenHeaders: [['Content-Type', body.type]],
+    };
   }
 
   if (body instanceof URLSearchParams) {
