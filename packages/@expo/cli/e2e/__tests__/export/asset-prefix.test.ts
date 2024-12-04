@@ -31,7 +31,7 @@ describe('static-rendering with a custom asset prefix url', () => {
 
       // Find the main bundle
       const bundleFile = klawSync(outputDir).find((entry) =>
-        entry.path.match(/_expo\/static\/js\/web\/index-.*\.js/)
+        entry.path.match(/_expo\/static\/js\/web\/entry-.*\.js$/)
       );
       expect(bundleFile).toBeDefined();
 
