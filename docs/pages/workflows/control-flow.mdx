@@ -70,4 +70,4 @@ jobs:
 
 ## Combining conditions
 
-You can use both `needs` and `if` conditions in the same job definition. Note that the job will be run if all jobs on the `needs` list are successful **AND** the `if` condition is true. If any job on the `needs` list had been skipped or the `if` condition is false, the current job will be skipped. If any job on the `needs` list had failed, the current job will be failed.
+You can use both `needs` and `if` conditions in the same job definition. **Note that the job will be run if all jobs on the `needs` list are successful and the `if` condition is true.** If any job on the `needs` list has been skipped or the `if` condition is false, the current job will be skipped. If any job on the `needs` list has failed, the current job will be failed.
