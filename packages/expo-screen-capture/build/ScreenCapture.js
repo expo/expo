@@ -96,7 +96,8 @@ export function addScreenshotListener(listener) {
  * @param listener The function that will be executed when the user takes a screen recording.
  * This function accepts a single boolean argument that indicates whether the screen recording
  * started or stopped.
- * @platform ios
+ * @platform android 15+
+ * @platform ios 11+
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
  * `remove()` or passing it to `removeRecordingListener`.
  */
@@ -130,6 +131,7 @@ export function removeScreenshotListener(subscription) {
  * You can also call `remove()` on that `Subscription` object.
  *
  * @param subscription Subscription returned by `addRecordingListener`.
+ * @platform android 15+
  * @platform ios 11+
  */
 export function removeRecordingListener(subscription) {
