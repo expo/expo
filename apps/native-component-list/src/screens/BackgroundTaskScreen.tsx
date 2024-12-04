@@ -41,21 +41,15 @@ export default function BackgroundTaskScreen() {
 
   const checkStatusAsync = async () => {
     const status = await BackgroundTask.getStatusAsync();
-    console.log({ status, isRegistered });
     setStatus(status);
     await refreshLastRunDateAsync();
   };
 
   const toggle = async () => {
-    console.log({ isRegistered });
     if (isRegistered) {
-      console.log('unregister');
       await BackgroundTask.unregisterTaskAsync(BACKGROUND_TASK_IDENTIFIER);
     } else {
-      console.log('register');
-      await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER, {
-        minimumInterval: 60, // 1 minute
-      });
+      await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER);
     }
     setIsRegistered(!isRegistered);
   };
