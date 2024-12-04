@@ -43,7 +43,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       // The deferredRootView needs to be dark mode aware so we set the color to be the same as the splashscreen background.
       rootView.backgroundColor = UIColor(named: "SplashScreenBackground") ?? .white
       rootView.addSubview(view)
-      
+
       NSLayoutConstraint.activate([
         view.centerXAnchor.constraint(equalTo: rootView.centerXAnchor),
         view.centerYAnchor.constraint(equalTo: rootView.centerYAnchor)
