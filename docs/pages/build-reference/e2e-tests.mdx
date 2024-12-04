@@ -95,20 +95,27 @@ appId: dev.expo.eastestsexample # This is an example app id. Replace it with you
 - assertVisible: 'This app has two screens.*'
 ```
 
-To verify that these flows work as expected, install your app on a local simulator or emulator. Navigate to the Maestro folder in your terminal, then run the following commands to start the tests using Maestro CLI:
+</Step>
+
+<Step label="5">
+## Run Maestro tests locally
+
+To run Maestro tests locally, install the Maestro CLI by following the instructions in [Installing Maestro](https://maestro.mobile.dev/getting-started/installing-maestro).
+
+Install your app on a local Android emulator or iOS simulator. Open a terminal, navigate to the Maestro folder, and run the following commands to start the tests with the Maestro CLI:
 
 <Terminal
   cmd={['$ maestro test maestro/expand_test.yaml', '$ maestro test maestro/home.yaml']}
   cmdCopy={['maestro test maestro/expand_test.yaml']}
 />
 
-To install the Maestro CLI, follow the instructions in [Installing Maestro](https://maestro.mobile.dev/getting-started/installing-maestro).
+The video below shows a successful run of the `maestro/expand_test.yaml` flow:
 
 <ContentSpotlight file="guides/local-e2e.mp4" />
 
 </Step>
 
-<Step label="5">
+<Step label="6">
 ## Create a custom build workflow for running Maestro E2E tests
 
 The easiest way to run Maestro E2E tests on EAS Build is to create a [custom build workflow](/custom-builds/get-started/). This workflow will build your app and run the Maestro tests on it.
@@ -156,7 +163,7 @@ Now modify the **eas.json** by adding a new [build profile](/build/eas-json/#bui
 
 </Step>
 
-<Step label="6">
+<Step label="7">
 ## Build your app and run E2E tests on EAS Build
 
 To execute a custom build using the `build-and-maestro-test` profile that will build your app and run the Maestro E2E tests afterward, run the following command:
