@@ -63,7 +63,7 @@ export function createBackgroundServer({
   command,
   host: resolveHost,
   port: resolvePort = findFreePortAsync,
-  verbose = boolish('ACTIONS_RUNNER_DEBUG', false),
+  verbose = boolish('RUNNER_DEBUG', boolish('EXPO_VERBOSE', false)),
   ...spawnOptions
 }: BackgroundServerOptions): BackgroundServer {
   let child: ChildProcess | null = null;
