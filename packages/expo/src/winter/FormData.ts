@@ -121,7 +121,7 @@ export function installFormDataPatch(formData: typeof FormData) {
 
   // Required for RSC: https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-server/src/ReactFlightServer.js#L2117
   // @ts-ignore: DOM.iterable is disabled for jest compat
-  formData.prototype.entries = function* entries(
+  formData.prototype.entries ??= function* entries(
     this: ReactNativeFormDataInternal
   ): IterableIterator<[string, FormDataEntryValue]> {
     for (const part of this._parts) {
