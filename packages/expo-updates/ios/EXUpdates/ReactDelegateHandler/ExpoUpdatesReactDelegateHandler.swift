@@ -36,6 +36,18 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
     self.deferredRootView = EXDeferredRCTRootView()
+    // This view can potentially be displayed for a while. We should use the splashscreens view here otherwise a black view appears in the middle of the loading sequence.
+    if let view = UIStoryboard(name: "SplashScreen", bundle: nil).instantiateInitialViewController()?.view, let rootView = self.deferredRootView {
+      view.translatesAutoresizingMaskIntoConstraints = false
+      // The deferredRootView needs to be dark mode aware so we set the color to the same as the splashscreen view
+      rootView.backgroundColor = UIColor(named: "SplashScreenBackground") ?? .white
+      rootView.addSubview(view)
+      
+      NSLayoutConstraint.activate([
+        view.centerXAnchor.constraint(equalTo: rootView.centerXAnchor),
+        view.centerYAnchor.constraint(equalTo: rootView.centerYAnchor)
+      ])
+    }
     return self.deferredRootView
   }
 
