@@ -55,7 +55,8 @@ jobs:
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
-          echo "BUN_INSTALL_CACHE_DIR=$GITHUB_WORKSPACE\.bun\install\cache" >> $GITHUB_ENV
+          echo "BUN_INSTALL_CACHE_DIR=$GITHUB_WORKSPACE\..\..\_temp\bun" >> $GITHUB_ENV
+          echo "EXPO_E2E_TEMP_DIR=$GITHUB_WORKSPACE\..\..\_temp\expo-cli-e2e" >> $GITHUB_ENV
         shell: bash
 
       - name: 🏗️ Setup Node

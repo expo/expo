@@ -24,7 +24,11 @@ export const projectRoot = getTemporaryPath();
 export const EXPO_MONOREPO_ROOT = path.resolve(__dirname, '../../../../..');
 
 export function getTemporaryPath() {
-  return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
+  const tmpDir = process.env.EXPO_E2E_TEMP_DIR
+    ? path.resolve(process.env.EXPO_E2E_TEMP_DIR)
+    : os.tmpdir();
+
+  return path.join(tmpDir, Math.random().toString(36).substring(2));
 }
 
 export function execute(...args: string[]) {
@@ -226,7 +230,7 @@ export async function setupTestProjectWithOptionsAsync(
   } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
-  const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
+  const projectRoot = await createFromFixtureAsync(getTemporaryPath(), {
     dirName: name,
     reuseExisting,
     fixtureName,
