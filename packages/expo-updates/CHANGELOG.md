@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix black screen appearing instead of the splashscreen on launch.
+- Fix black screen appearing instead of the splashscreen on launch. ([#33432](https://github.com/expo/expo/pull/33432) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
