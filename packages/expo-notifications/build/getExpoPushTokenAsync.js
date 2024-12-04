@@ -46,7 +46,6 @@ export default async function getExpoPushTokenAsync(options = {}) {
     const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
     const deviceId = options.deviceId || (await getDeviceIdAsync());
     // Depending on the runtime environment, the default may be located in various places.
-    // @see https://github.com/expo/expo/issues/23225
     const projectId = options.projectId ||
         Constants.easConfig?.projectId ||
         Constants.expoConfig?.extra?.eas?.projectId;
