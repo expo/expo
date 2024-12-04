@@ -30,7 +30,6 @@ class ScreenCaptureModule : Module() {
     get() = safeCurrentActivity ?: throw Exceptions.MissingActivity()
   private var screenCaptureCallback: Activity.ScreenCaptureCallback? = null
   private var screenshotEventEmitter: ScreenshotEventEmitter? = null
-  private var screenRecordingEventEmitter: ScreenRecordingEventEmitter? = null
   private var isRegistered = false
 
   override fun definition() = ModuleDefinition {
