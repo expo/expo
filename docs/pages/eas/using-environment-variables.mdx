@@ -1,7 +1,7 @@
 ---
 title: Using EAS environment variables
 sidebar_title: Environment variables usage
-description: Learn how to use environment variables in EAS with practical examples.
+description: Learn how to use environment variables in EAS with examples.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -208,7 +208,7 @@ One way to supply non-secret EAS environment variables to other EAS commands is 
 
 <Terminal cmd={["$ eas env:exec --environment production 'echo $APP_VARIANT'"]} />
 
-It can be useful when uploading source maps to Sentry using a [`SENTRY_AUTH_TOKEN`](/guides/using-sentry) variable after an update bundle is created.
+For example, it can be useful when uploading source maps to Sentry using a [`SENTRY_AUTH_TOKEN`](/guides/using-sentry) variable after an update bundle is created.
 
 <Terminal
   cmd={["$ eas env:exec --environment production 'npx sentry-expo-upload-sourcemaps dist'"]}
