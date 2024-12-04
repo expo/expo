@@ -95,7 +95,16 @@ appId: dev.expo.eastestsexample # This is an example app id. Replace it with you
 - assertVisible: 'This app has two screens.*'
 ```
 
-If you want to run these flows locally to verify that they work as expected, you need to install your app on your local simulator/emulator and run `maestro test maestro/expand_test.yaml` or `maestro test maestro/home.yaml` commands in the terminal to use Maestro CLI to start the tests.
+To verify that these flows work as expected, install your app on a local simulator or emulator. Navigate to the Maestro folder in your terminal, then run the following commands to start the tests using Maestro CLI:
+
+<Terminal
+  cmd={['$ maestro test maestro/expand_test.yaml', '$ maestro test maestro/home.yaml']}
+  cmdCopy={['maestro test maestro/expand_test.yaml']}
+/>
+
+To install the Maestro CLI, follow the instructions in [Installing Maestro](https://maestro.mobile.dev/getting-started/installing-maestro).
+
+<ContentSpotlight file="guides/local-e2e.mp4" />
 
 </Step>
 
