@@ -10,7 +10,7 @@ private const val defaultKotlinVersion = "1.9.24"
 private const val defaultKSPVersion = "1.9.24-1.0.20"
 
 
-abstract class ExpoModulesLibraryPlugin : Plugin<Project> {
+abstract class ExpoModulesGradlePlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val kotlinVersion = getKotlinVersion(project)
     val kspVersion = getKSPVersion(project, kotlinVersion)

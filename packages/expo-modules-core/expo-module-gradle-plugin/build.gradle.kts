@@ -31,9 +31,9 @@ group = "expo.modules"
 
 gradlePlugin {
   plugins {
-    register("expoModulesLibrary") {
-      id = "expo-modules-library"
-      implementationClass = "expo.modules.plugin.ExpoModulesLibraryPlugin"
+    register("expoModulesGradlePlugin") {
+      id = "expo-module-gradle-plugin"
+      implementationClass = "expo.modules.plugin.ExpoModulesGradlePlugin"
     }
   }
 }
