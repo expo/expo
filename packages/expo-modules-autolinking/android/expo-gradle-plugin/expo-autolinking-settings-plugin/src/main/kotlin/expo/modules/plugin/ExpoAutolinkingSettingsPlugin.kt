@@ -27,11 +27,14 @@ open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
   }
 
   private fun getExpoGradlePluginPath(settings: Settings): File {
-    return File(
+    val expoModulesAutolinkingPath =
       settings.providers.exec { env ->
         env.workingDir(settings.rootDir)
-        env.commandLine("node", "--print", "require.resolve('expo-modules-autolinking/package.json')")
-      }.standardOutput.asText.get().trim(),
+        env.commandLine("node", "--print", "require.resolve('expo-modules-autolinking', { paths: [require.resolve('expo/package.json')] })")
+      }.standardOutput.asText.get().trim()
+
+    return File(
+      expoModulesAutolinkingPath,
       "../android/expo-gradle-plugin"
     )
   }
