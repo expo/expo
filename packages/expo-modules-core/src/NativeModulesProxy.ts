@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from './NativeModulesProxy.types';
+import type { ProxyNativeModule } from './NativeModulesProxy.types';
 
 // We default to an empty object shim wherever we don't have an environment-specific implementation
 
