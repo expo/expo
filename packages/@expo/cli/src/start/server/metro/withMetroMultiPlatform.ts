@@ -76,13 +76,22 @@ function withWebPolyfills(
     );
 
     if (ctx.platform === 'web') {
+      const virtualErrorGuardId = `\0polyfill:external-require`;
+
+      // NOTE(cedric): this is a test, to see if this would fix Windows E2E tests
+      getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+        virtualErrorGuardId,
+        `let _inGuard=0,_globalHandler=function(r,l){throw r};const ErrorUtils={setGlobalHandler(r){_globalHandler=r},getGlobalHandler:()=>_globalHandler,reportError(r){_globalHandler&&_globalHandler(r,!1)},reportFatalError(r){_globalHandler&&_globalHandler(r,!0)},applyWithGuard(r,l,a,n,t){try{return _inGuard++,r.apply(l,a)}catch(r){ErrorUtils.reportError(r)}finally{_inGuard--}return null},applyWithGuardIfNeeded:(r,l,a)=>ErrorUtils.inGuard()?r.apply(l,a):(ErrorUtils.applyWithGuard(r,l,a),null),inGuard:()=>!!_inGuard,guard(r,l,a){if("function"!=typeof r)return console.warn("A function must be passed to ErrorUtils.guard, got ",r),null;const n=l??r.name??"<generated guard>";return function(...l){return ErrorUtils.applyWithGuard(r,a??this,l,null,n)}}};global.ErrorUtils=ErrorUtils;`
+      );
+
       return [
         virtualModuleId,
         virtualEnvVarId,
         // Ensure that the error-guard polyfill is included in the web polyfills to
         // make metro-runtime work correctly.
         // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
-        require.resolve('@react-native/js-polyfills/error-guard'),
+        // require.resolve('@react-native/js-polyfills/error-guard'),
+        virtualErrorGuardId,
       ];
     }
 
