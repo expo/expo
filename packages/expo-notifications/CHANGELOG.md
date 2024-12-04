@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [android] fix missing data for notifications with `ChannelAwareTrigger` ([#33354](https://github.com/expo/expo/pull/33354) by [@alextoudic](https://github.com/alextoudic))
+- [android] fix data serialization for notifications with `ChannelAwareTrigger` ([#33354](https://github.com/expo/expo/pull/33354) by [@alextoudic](https://github.com/alextoudic))
 
 ### 💡 Others
 
