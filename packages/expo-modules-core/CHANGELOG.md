@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Changed `import` to `import type` for TS type declarations. ([#33447](https://github.com/expo/expo/pull/33447) by [@j-piasecki](https://github.com/j-piasecki))
+
 ### 💡 Others
 
 ## 2.1.1 — 2024-12-02
