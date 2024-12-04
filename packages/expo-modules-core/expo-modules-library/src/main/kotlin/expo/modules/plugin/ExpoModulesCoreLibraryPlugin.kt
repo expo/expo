@@ -12,10 +12,6 @@ private const val defaultKSPVersion = "1.9.24-1.0.20"
 
 abstract class ExpoModulesLibraryPlugin : Plugin<Project> {
   override fun apply(project: Project) {
-    if (project.pluginManager.hasPlugin("com.android.application")) {
-      return
-    }
-
     val kotlinVersion = getKotlinVersion(project)
     val kspVersion = getKSPVersion(project, kotlinVersion)
 
@@ -46,7 +42,7 @@ abstract class ExpoModulesLibraryPlugin : Plugin<Project> {
       "1.8.22" -> "1.8.22-1.0.11"
       "1.9.23" -> "1.9.23-1.0.20"
       "1.9.24" -> "1.9.24-1.0.20"
-      "2.0.21" -> "2.0.21-1.0.27"
+      "2.0.21" -> "2.0.21-1.0.28"
       else -> defaultKSPVersion
     }
   }

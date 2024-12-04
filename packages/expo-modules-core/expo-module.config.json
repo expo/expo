@@ -8,7 +8,8 @@
       {
         "id": "expo-modules-library",
         "group": "expo.modules",
-        "sourceDir": "expo-modules-library"
+        "sourceDir": "expo-modules-library",
+        "applyToRootProject": false
       }
     ]
   }
