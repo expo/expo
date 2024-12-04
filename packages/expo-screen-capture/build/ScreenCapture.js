@@ -97,27 +97,6 @@ export function addScreenshotListener(listener) {
  * This function accepts a single boolean argument that indicates whether the screen recording
  * started or stopped.
  * @platform ios
- * @example
- * ```ts
- * const [sensitiveContentVisible, setSensitiveContentVisible] = useState(true);
- *
- * useEffect(() => {
- *   const subscription = ScreenCapture.addRecordingListener(({ isCaptured }) => {
- *     if (isCaptured) {
- *       // Hide sensitive content
- *       setSensitiveContentVisible(false);
- *     } else {
- *       // Show sensitive content again
- *       setSensitiveContentVisible(true);
- *     }
- *   });
- *
- *   // Clean up subscription when component unmounts
- *   return () => {
- *     subscription?.remove();
- *   };
- * }, []);
- * ```
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
  * `remove()` or passing it to `removeRecordingListener`.
  */
@@ -152,27 +131,6 @@ export function removeScreenshotListener(subscription) {
  *
  * @param subscription Subscription returned by `addRecordingListener`.
  * @platform ios 11+
- * @example
- * ```ts
- * const [sensitiveContentVisible, setSensitiveContentVisible] = useState(true);
- *
- * useEffect(() => {
- *   const subscription = ScreenCapture.addRecordingListener(({ isCaptured }) => {
- *     if (isCaptured) {
- *       // Hide sensitive content
- *       setSensitiveContentVisible(false);
- *     } else {
- *       // Show sensitive content again
- *       setSensitiveContentVisible(true);
- *     }
- *   });
- *
- *   // Clean up subscription when component unmounts
- *   return () => {
- *     removeRecordingListener(subscription);
- *   };
- * }, []);
- * ```
  */
 export function removeRecordingListener(subscription) {
     subscription.remove();
