@@ -15,7 +15,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';
 
-`expo-background-task` provides an API to run deferrable background tasks in a way that optimises battery and power consumption for the end user. This module is using the [`Background Tasks`](https://developer.apple.com/documentation/backgroundtasks) API on iOS and the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android to schedule tasks, and the [Expo TaskManager](task-manager.mdx) Native API for running JavaScript tasks.
+`expo-background-task` provides an API to run deferrable background tasks in a way that optimises battery and power consumption for the end user. This module is using the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS and the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android to schedule tasks, and the [Expo TaskManager](task-manager.mdx) Native API for running JavaScript tasks.
 
 ## Background Tasks
 
@@ -43,7 +43,7 @@ On Android, the [`WorkManager`](https://developer.android.com/topic/libraries/ar
 
 ### iOS&ensp;<PlatformTags platforms={['ios']} />
 
-On iOS, the [`Background Tasks`](https://developer.apple.com/documentation/backgroundtasks) API decides the best time to launch your background task. The system will consider the battery level, the network availability, and the user's usage patterns to determine when to run the task.
+On iOS, the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API decides the best time to launch your background task. The system will consider the battery level, the network availability, and the user's usage patterns to determine when to run the task.
 
 ## Known limitations
 
