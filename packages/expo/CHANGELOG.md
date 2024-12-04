@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix sending a blob as fetch body not setting correct content-type. ([#33405](https://github.com/expo/expo/pull/33405) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 52.0.14 - 2024-12-02
