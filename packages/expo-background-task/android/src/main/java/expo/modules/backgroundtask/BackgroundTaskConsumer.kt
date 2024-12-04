@@ -2,6 +2,8 @@ package expo.modules.backgroundtask
 
 import android.content.Context
 import android.util.Log
+import com.facebook.react.common.build.ReactBuildConfig
+import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskConsumerInterface
 import expo.modules.interfaces.taskManager.TaskExecutionCallback
@@ -13,13 +15,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtilsInterface?) :
-  TaskConsumer(context, taskManagerUtils), TaskConsumerInterface {
+  TaskConsumer(context, taskManagerUtils), TaskConsumerInterface, LifecycleEventListener {
   companion object {
     const val BACKGROUND_TASK_TYPE: String = "expo-background-task"
-    const val DEFAULT_INTERVAL_SECONDS: Long = 60 * 24 // Once every day
+    const val DEFAULT_INTERVAL_MINUTES: Long = 60 * 24 // Once every day
     private val TAG: String = BackgroundTaskConsumer::class.java.simpleName
   }
   private var mTask: TaskInterface? = null
+  private var mBackgrounded: Boolean = true
   private val taskCoroutineScope = CoroutineScope(Dispatchers.Default)
 
   override fun taskType(): String {
@@ -28,10 +31,15 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
 
   /**
    * Exposing the execute task function so that the BackgroundTaskWork (WorkManager Work unit)
-   * can execute the inner task.
+   * can execute the inner task. A task is only executed if the app is in the background.
+   * This only applies when the app is in release mode.
    */
   fun executeTask(callback: TaskExecutionCallback) {
-    taskManagerUtils.executeTask(mTask, null, callback)
+    if (mBackgrounded || ReactBuildConfig.DEBUG) {
+      taskManagerUtils.executeTask(mTask, null, callback)
+    } else {
+      Log.w(TAG, "Task was not executed since the app was not in the background or in Debug mode.")
+    }
   }
 
   override fun didRegister(task: TaskInterface) {
@@ -44,10 +52,10 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
       val context = context
       if (!BackgroundTaskScheduler.isWorkerRunning(context)) {
         // Get interval for the task
-        val intervalSeconds = getIntervalSeconds()
+        val intervalMinutes = getIntervalMinutes()
         // Start worker
         Log.i(TAG, "didRegister: worker not running - starting worker.")
-        BackgroundTaskScheduler.startWorker(context, task.appScopeKey, intervalSeconds)
+        BackgroundTaskScheduler.startWorker(context, task.appScopeKey, intervalMinutes)
       } else {
         Log.i(TAG, "didRegister: worker already running.")
       }
@@ -85,13 +93,25 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
     }
   }
 
-  private fun getIntervalSeconds(): Long {
+  override fun onHostResume() {
+    mBackgrounded = false
+  }
+
+  override fun onHostPause() {
+    mBackgrounded = true
+  }
+
+  override fun onHostDestroy() {
+    // Do nothing
+  }
+
+  private fun getIntervalMinutes(): Long {
     val options = if (mTask != null) mTask!!.options else null
 
     if (options != null && options.containsKey("minimumInterval")) {
-      // minimumInterval option is in seconds.
+      // minimumInterval option is in minutes
       return (options["minimumInterval"] as Number).toLong()
     }
-    return BackgroundTaskConsumer.DEFAULT_INTERVAL_SECONDS
+    return BackgroundTaskConsumer.DEFAULT_INTERVAL_MINUTES
   }
 }

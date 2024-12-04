@@ -29,11 +29,10 @@ export declare enum BackgroundTaskResult {
  */
 export interface BackgroundTaskOptions {
     /**
-     * Inexact interval in seconds between subsequent repeats of the background tasks. The final
+     * Inexact interval in minutes between subsequent repeats of the background tasks. The final
      * interval may differ from the specified one to minimize wakeups and battery usage.
-     * - Defaults to __15 minutes__ on Android.
-     * - The minimum internval is 15 minutes.
-     * - On iOS there is no way to set the interval. The system will determine the interval.
+     * - Defaults to once every day on Android (The minimum interval is 15 minutes)
+     * - On iOS the system will determine the interval.
      * @platform android
      */
     minimumInterval?: number;

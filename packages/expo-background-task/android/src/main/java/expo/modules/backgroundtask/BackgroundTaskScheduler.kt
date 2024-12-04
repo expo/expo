@@ -12,6 +12,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.await
+import com.facebook.react.common.build.ReactBuildConfig
 import com.google.common.util.concurrent.ListenableFuture
 import expo.modules.kotlin.AppContext
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -52,11 +53,16 @@ class BackgroundTaskScheduler {
           .build()
       )
 
-      /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        // T O D O: We should add more time here - like 15 minutes, 60 minutes etc.
-        // Maybe even be configurable on the API side.
-        builder.setInitialDelay(Duration.ofSeconds(25))
-      }*/
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // Add minimum interval here as well so that the work doesn't start immediately
+        // In Debug builds we wait 30 seconds to make sure background tasks are easy to test.
+        // Remember to put the app in the background for the task to run.
+        if (ReactBuildConfig.DEBUG) {
+          builder.setInitialDelay(Duration.ofSeconds(30))
+        } else {
+          builder.setInitialDelay(Duration.ofMinutes(intervalMinutes))
+        }
+      }
 
       // Create work request
       val workRequest = builder.build()

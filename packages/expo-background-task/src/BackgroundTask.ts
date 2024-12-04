@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 
-import { BackgroundTaskStatus } from './BackgroundTask.types';
+import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 
 // @needsAudit
@@ -48,7 +48,10 @@ export const getStatusAsync = async (): Promise<BackgroundTaskStatus> => {
  * BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER, {});
  * ```
  */
-export async function registerTaskAsync(taskName: string, options: object = {}): Promise<void> {
+export async function registerTaskAsync(
+  taskName: string,
+  options: BackgroundTaskOptions = {}
+): Promise<void> {
   if (!ExpoBackgroundTaskModule.registerTaskAsync) {
     throw new UnavailabilityError('BackgroundTask', 'registerTaskAsync');
   }

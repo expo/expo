@@ -1,4 +1,4 @@
-import { BackgroundTaskStatus } from './BackgroundTask.types';
+import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
 /**
  * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
  * while on native platforms it returns `BackgroundTaskStatus.Available`. There is
@@ -34,7 +34,7 @@ export declare const getStatusAsync: () => Promise<BackgroundTaskStatus>;
  * BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER, {});
  * ```
  */
-export declare function registerTaskAsync(taskName: string, options?: object): Promise<void>;
+export declare function registerTaskAsync(taskName: string, options?: BackgroundTaskOptions): Promise<void>;
 /**
  * Unregisters a background task, so the application will no longer be executing this task.
  * @param taskName Name of the task to unregister.
