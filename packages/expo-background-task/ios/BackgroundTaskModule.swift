@@ -12,7 +12,7 @@ public class BackgroundTaskModule: Module {
     OnCreate {
       taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
     }
-    
+
     AsyncFunction("triggerTaskWorkerForTestingAsync") {
       BackgroundTaskScheduler.triggerTaskForTesting()
     }

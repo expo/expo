@@ -37,13 +37,13 @@ class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
 
   func didRegisterTask(_ task: EXTaskInterface) {
     self.task = task
-    
-    if (!BackgroundTaskScheduler.supportsBackgroundTasks()) {
+
+    if !BackgroundTaskScheduler.supportsBackgroundTasks() {
       return
     }
 
     BackgroundTaskConsumer.numberOfRegisteredTasksOfThisType += 1
-    
+
     // Ensure that the the BGTask is running
     Task {
       if await !BackgroundTaskScheduler.isWorkerRunning() {
@@ -55,11 +55,11 @@ class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
 
   func didUnregister() {
     self.task = nil
-    
-    if (!BackgroundTaskScheduler.supportsBackgroundTasks()) {
+
+    if !BackgroundTaskScheduler.supportsBackgroundTasks() {
       return
     }
-    
+
     BackgroundTaskConsumer.numberOfRegisteredTasksOfThisType -= 1
 
     // Stop worker only if this was the last task registered

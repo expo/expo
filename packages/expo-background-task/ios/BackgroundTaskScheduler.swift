@@ -34,7 +34,7 @@ public class BackgroundTaskScheduler: NSObject {
       throw CouldNotRegisterWorkerTask("Unknown error occurred.")
     }
   }
-  
+
   /**
    Calls a private iOS API if we're in debug mode to invoke the BGTaskScheduler's worker.
    NOTE: This code is only compiled when we're in DEBUG mode!
@@ -45,7 +45,7 @@ public class BackgroundTaskScheduler: NSObject {
     if let method = BGTaskScheduler.shared.method(for: selector) {
       print("BackgroundTaskScheduler: calling _simulateLaunchForTaskWithIdentifier method on BGTaskScheduler")
       let implementation = unsafeBitCast(method, to: (@convention(c) (Any?, Selector, NSString) -> Void).self)
-      implementation(BGTaskScheduler.shared, selector, BackgroundTaskConstants.BackgroundWorkerIdentifier as NSString)      
+      implementation(BGTaskScheduler.shared, selector, BackgroundTaskConstants.BackgroundWorkerIdentifier as NSString)
     } else {
       print("BackgroundTaskScheduler: _simulateLaunchForTaskWithIdentifier method not found on BGTaskScheduler.")
     }
