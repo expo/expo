@@ -115,8 +115,10 @@ class ReactActivityDelegateWrapper(
         reactActivityLifecycleListeners.forEach { listener ->
           listener.onContentChanged(activity)
         }
-        shouldEmitPendingResume = false
-        onResume()
+        if (shouldEmitPendingResume) {
+          shouldEmitPendingResume = false
+          onResume()
+        }
       }
       return
     }
@@ -193,9 +195,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onPause() {
-    // If app is stopped before delayed `loadApp`, we should cancel the pending resume
+    // If app is stopped before the delayed `loadApp`, we should cancel the pending resume
+    // and avoid propagating the pause event because the state was never resumed.
     if (shouldEmitPendingResume) {
       shouldEmitPendingResume = false
+      return
     }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
@@ -211,9 +215,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onDestroy() {
-    // If app is stopped before delayed `loadApp`, we should cancel the pending resume
+    // If app is stopped before the delayed `loadApp`, we should cancel the pending resume
+    // and avoid propagating the destroy event because the state was never resumed.
     if (shouldEmitPendingResume) {
       shouldEmitPendingResume = false
+      return
     }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onDestroy(activity)

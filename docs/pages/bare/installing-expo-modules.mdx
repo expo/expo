@@ -38,7 +38,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 ## Manual installation
 
-The following instructions apply to installing the latest version of Expo modules in React Native 0.76.
+The following instructions apply to installing the latest version of Expo modules in React Native 0.76. For previous versions, check the [native upgrade helper](/bare/upgrade) to see how these files are customized.
 
 <InstallSection packageName="expo" cmd={['$ npm install expo']} hideBareInstructions />
 
@@ -168,7 +168,7 @@ To exclude any of these modules, refer to the following guide on [excluding modu
 
 ### Excluding specific modules from autolinking
 
-If you need to exclude Expo modules you are not using, which were installed by other dependencies, you can use the `expo.autolinking` field in **package.json**:
+If you need to exclude native code from Expo modules you are not using, but were installed by other dependencies, you can use the [`expo.autolinking.exclude`](/modules/autolinking/#exclude) property in **package.json**:
 
 ```json package.json
 {
@@ -177,23 +177,6 @@ If you need to exclude Expo modules you are not using, which were installed by o
   "expo": {
     "autolinking": {
       "exclude": ["expo-keep-awake"]
-    }
-  }
-}
-```
-
-You can also exclude a specific platform by using `exclude` under the platform key:
-
-```json package.json
-{
-  "name": "...",
-  "dependencies": {},
-  "expo": {
-    "autolinking": {
-      "exclude": ["expo-font"],
-      "ios": {
-        "exclude": ["expo-keep-awake"]
-      }
     }
   }
 }

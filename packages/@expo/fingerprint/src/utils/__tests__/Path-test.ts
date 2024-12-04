@@ -1,4 +1,4 @@
-import { isIgnoredPath } from '../Path';
+import { buildDirMatchObjects, buildPathMatchObjects, isIgnoredPath } from '../Path';
 
 describe(isIgnoredPath, () => {
   it('should support file pattern', () => {
@@ -40,5 +40,31 @@ describe(isIgnoredPath, () => {
     expect(isIgnoredPath('../node_modules/chalk/package.json', ignorePaths)).toBe(true);
     expect(isIgnoredPath('../../node_modules/chalk/package.json', ignorePaths)).toBe(true);
     expect(isIgnoredPath('../../../node_modules/chalk/package.json', ignorePaths)).toBe(true);
+  });
+});
+
+describe(buildDirMatchObjects, () => {
+  it('should build from patterns with `/**/*`, `/**`, or `/` suffix', () => {
+    const ignorePathMatchObjects = buildPathMatchObjects(['**/dir1/**/*', '**/dir2/**', 'dir3/']);
+    const dirMatchObjects = buildDirMatchObjects(ignorePathMatchObjects);
+    const dirPatterns = dirMatchObjects.map((obj) => obj.pattern);
+    expect(dirPatterns).toEqual(['**/dir1', '**/dir2', 'dir3']);
+  });
+
+  // `**/file` and `**/dir` can be ambiguous between files and dirs,
+  // because we don't check the real type of the path.
+  // To avoid this, you should use `**/dir/**/*` or `**/dir/` instead.
+  it('should not build from patterns that can be ambiguous between files and dirs', () => {
+    const ignorePathMatchObjects = buildPathMatchObjects(['**/dir', '**/file', 'dir2']);
+    const dirMatchObjects = buildDirMatchObjects(ignorePathMatchObjects);
+    const dirPatterns = dirMatchObjects.map((obj) => obj.pattern);
+    expect(dirPatterns).toEqual([]);
+  });
+
+  it('should remove existing directory patterns if there is a negate pattern in the same directory', () => {
+    const ignorePathMatchObjects = buildPathMatchObjects(['**/ios/**/*', '!**/ios/Podfile']);
+    const dirMatchObjects = buildDirMatchObjects(ignorePathMatchObjects);
+    const dirPatterns = dirMatchObjects.map((obj) => obj.pattern);
+    expect(dirPatterns).toEqual([]);
   });
 });

@@ -40,7 +40,7 @@ export async function convertReadableStreamToUint8ArrayAsync(
 export function convertFormData(
   formData: FormData,
   boundary: string = createBoundary()
-): { body: string; boundary: string } {
+): { body: Uint8Array; boundary: string } {
   // @ts-expect-error: React Native's FormData is not compatible with the web's FormData
   if (typeof formData.getParts !== 'function') {
     throw new Error('Unsupported FormData implementation');
@@ -48,7 +48,7 @@ export function convertFormData(
   // @ts-expect-error: React Native's FormData is not compatible with the web's FormData
   const parts: FormDataPart[] = formData.getParts();
 
-  const results: string[] = [];
+  const results: (Uint8Array | string)[] = [];
   for (const entry of parts) {
     results.push(`--${boundary}\r\n`);
     for (const [headerKey, headerValue] of Object.entries(entry.headers)) {
@@ -59,6 +59,10 @@ export function convertFormData(
     if (entry.string != null) {
       // @ts-expect-error: TypeScript doesn't know about the `string` property
       results.push(entry.string);
+      // @ts-expect-error: TypeScript doesn't know about the `file` property
+    } else if (entry.file != null && entry.file.bytes != null) {
+      // @ts-expect-error: TypeScript doesn't know about the `file` property
+      results.push(entry.file.bytes());
     } else {
       throw new Error('Unsupported FormDataPart implementation');
     }
@@ -66,7 +70,15 @@ export function convertFormData(
   }
 
   results.push(`--${boundary}--\r\n`);
-  return { body: results.join(''), boundary };
+  const arrays = results.map((result) => {
+    if (typeof result === 'string') {
+      return new TextEncoder().encode(result);
+    } else {
+      return result;
+    }
+  }) as Uint8Array[];
+
+  return { body: joinUint8Arrays(arrays), boundary };
 }
 
 /**
@@ -105,7 +117,10 @@ export async function normalizeBodyInitAsync(
   }
 
   if (body instanceof Blob) {
-    return { body: new Uint8Array(await body.arrayBuffer()) };
+    return {
+      body: new Uint8Array(await body.arrayBuffer()),
+      overriddenHeaders: [['Content-Type', body.type]],
+    };
   }
 
   if (body instanceof URLSearchParams) {
@@ -120,9 +135,9 @@ export async function normalizeBodyInitAsync(
 
   if (body instanceof FormData) {
     const { body: result, boundary } = convertFormData(body);
-    const encoder = new TextEncoder();
+
     return {
-      body: encoder.encode(result),
+      body: result,
       overriddenHeaders: [['Content-Type', `multipart/form-data; boundary=${boundary}`]],
     };
   }
@@ -167,5 +182,18 @@ export function overrideHeaders(
   for (const [key, value] of newHeaders) {
     result.push([key, value]);
   }
+  return result;
+}
+
+export function joinUint8Arrays(arrays: Uint8Array[]): Uint8Array {
+  const totalLength: number = arrays.reduce((acc: number, arr: Uint8Array) => acc + arr.length, 0);
+  const result: Uint8Array = new Uint8Array(totalLength);
+
+  let offset: number = 0;
+  arrays.forEach((array: Uint8Array) => {
+    result.set(array, offset);
+    offset += array.length;
+  });
+
   return result;
 }

@@ -165,3 +165,7 @@ export type OrientationChangeEvent = {
    */
   orientationInfo: ScreenOrientationInfo;
 };
+
+export type ExpoOrientationEvents = {
+  expoDidUpdateDimensions: OrientationChangeListener;
+};

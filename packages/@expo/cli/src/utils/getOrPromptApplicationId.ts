@@ -1,4 +1,4 @@
-import { ExpoConfig, getAccountUsername, getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import { memoize } from './fn';
@@ -17,6 +17,7 @@ import {
   validatePackageWithWarning,
 } from './validateApplicationId';
 import * as Log from '../log';
+import { getAccountUsername } from './getAccountUsername';
 
 const debug = require('debug')('expo:app-id') as typeof console.log;
 

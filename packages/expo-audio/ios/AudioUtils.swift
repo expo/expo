@@ -69,6 +69,7 @@ struct RecordingUtils {
 }
 
 struct AudioUtils {
+  #if os(iOS)
   static func createRecorder(directory: URL?, with options: RecordingOptions) -> AVAudioRecorder {
     if let directory {
       let fileUrl = createRecordingUrl(from: directory, with: options)
@@ -80,6 +81,7 @@ struct AudioUtils {
     }
     return AVAudioRecorder()
   }
+  #endif
 
   static func createAVPlayer(from source: AudioSource?) -> AVPlayer {
     if let source, let url = source.uri {
@@ -139,6 +141,7 @@ struct AudioUtils {
   }
 
   private static func getFormatIDFromString(typeString: String) -> UInt32? {
+    // swiftlint:disable:next legacy_objc_type
     if let s = (typeString as NSString).utf8String {
       return UInt32(s[3]) | (UInt32(s[2]) << 8) | (UInt32(s[1]) << 16) | (UInt32(s[0]) << 24)
     }
@@ -148,9 +151,11 @@ struct AudioUtils {
   static func validateAudioMode(mode: AudioMode) throws {
     if !mode.playsInSilentMode && mode.interruptionMode == .duckOthers {
       throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
-    } else if !mode.playsInSilentMode && mode.allowsRecording {
+    }
+    if !mode.playsInSilentMode && mode.allowsRecording {
       throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
-    } else if !mode.playsInSilentMode && mode.shouldPlayInBackground {
+    }
+    if !mode.playsInSilentMode && mode.shouldPlayInBackground {
       throw InvalidAudioModeException("playsInSilentMode == false and staysActiveInBackground == true cannot be set on iOS.")
     }
   }
