@@ -34,7 +34,7 @@ open class ExpoAppInstance: RCTAppDelegate {
     }
 
     configuration.customizeRootView = { rootView in
-      // @tsapeta: We cannot just call `self.customize(rootView)` – see the description of the below method.
+      // @tsapeta: We cannot just call `self.customize(rootView)` – see the comment of the `customizeRootView:byAppDelegate:` function in EXAppDelegateWrapper.h
       return EXAppDelegateWrapper.customizeRootView(rootView, by: self)
     }
 

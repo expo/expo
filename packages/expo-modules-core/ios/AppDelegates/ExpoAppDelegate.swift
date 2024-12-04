@@ -45,9 +45,11 @@ open class ExpoAppDelegate: ExpoAppInstance {
       super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
-    return subscribers.reduce(false) { result, subscriber in
-      return subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions) ?? false || result
+    subscribers.forEach { subscriber in
+      // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
+      _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
     }
+    return true
   }
 
   // TODO: - Configuring and Discarding Scenes
