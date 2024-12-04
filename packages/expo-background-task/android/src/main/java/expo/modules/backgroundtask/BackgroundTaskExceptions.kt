@@ -2,7 +2,9 @@ package expo.modules.backgroundtask
 
 import expo.modules.kotlin.exception.CodedException
 
-class MissingTaskException : CodedException(message = "No task found")
+class MissingTaskException : CodedException(message = "Task not found")
+
+class MissingContextException : CodedException(message = "Application context not found")
 
 class MissingTaskServiceException : CodedException(message = "TaskService not available.")
 

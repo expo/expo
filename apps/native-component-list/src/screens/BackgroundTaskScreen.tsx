@@ -4,7 +4,7 @@ import format from 'date-format';
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import useAppState from '../utilities/useAppState';
@@ -90,13 +90,11 @@ export default function BackgroundTaskScreen() {
         title="Check Background Task Status"
         onPress={checkStatusAsync}
       />
-      {Platform.OS === 'ios' && (
-        <Button
-          buttonStyle={styles.button}
-          title="Trigger Background Tasks (DEBUG)"
-          onPress={() => BackgroundTask.triggerTaskForTestingAsync(BACKGROUND_TASK_IDENTIFIER)}
-        />
-      )}
+      <Button
+        buttonStyle={styles.button}
+        title="Trigger Background Tasks (DEBUG)"
+        onPress={() => BackgroundTask.triggerTaskWorkerForTestingAsync()}
+      />
     </View>
   );
 }
@@ -120,6 +118,13 @@ TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
     return BackgroundTask.BackgroundTaskResult.Failed;
   }
 
+  return BackgroundTask.BackgroundTaskResult.Success;
+});
+
+// We're defining an unused, additional task to verify that the task manager is working correctly
+// - not running this task when we trigger the background task worker for testing
+TaskManager.defineTask('my-special-task', async () => {
+  console.log('TASK RUNNING', 'my-special-task - SHOULD NOT HAPPEN');
   return BackgroundTask.BackgroundTaskResult.Success;
 });
 

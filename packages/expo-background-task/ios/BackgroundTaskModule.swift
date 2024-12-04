@@ -13,7 +13,7 @@ public class BackgroundTaskModule: Module {
       taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
     }
     
-    AsyncFunction("triggerTaskForTestingAsync") { (name: String) in
+    AsyncFunction("triggerTaskWorkerForTestingAsync") {
       BackgroundTaskScheduler.triggerTaskForTesting()
     }
 

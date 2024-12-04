@@ -22,7 +22,7 @@ export const getStatusAsync = async (): Promise<BackgroundTaskStatus> => {
 // @needsAudit
 /**
  * Registers a background task with the given name. Registered tasks are saved in persistent storage and restored once the app is initialized.
- * @param taskName Name of the task to register. The task needs to be defined first - see [`TaskManager.defineTask`](taskmanager#defineTask)
+ * @param taskName Name of the task to register. The task needs to be defined first - see [`TaskManager.defineTask`](task-manager/#taskmanagerdefinetasktaskname-taskexecutor)
  * for more details.
  * @param options An object containing the background task options.
  *
@@ -81,18 +81,16 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
 // @needsAudit
 /**
  * When in debug mode this function will trigger running the background tasks.
- * This function will only work on iOS and only for apps built in debug mode.
- * @param taskName Name of the task to trigger.
+ * This function will only work for apps built in debug mode.
  * @returns A promise which fulfils when the task is triggered.
- * @platform ios
  */
-export async function triggerTaskForTestingAsync(taskName: string): Promise<void> {
+export async function triggerTaskWorkerForTestingAsync(): Promise<void> {
   if (__DEV__) {
-    if (!ExpoBackgroundTaskModule.triggerTaskForTestingAsync) {
-      throw new UnavailabilityError('BackgroundTask', 'triggerTaskForTestingAsync');
+    if (!ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync) {
+      throw new UnavailabilityError('BackgroundTask', 'triggerTaskWorkerForTestingAsync');
     }
-    console.log('Calling triggerTaskForTestingAsync', taskName);
-    await ExpoBackgroundTaskModule.triggerTaskForTestingAsync(taskName);
+    console.log('Calling triggerTaskWorkerForTestingAsync');
+    await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
   } else {
     return Promise.resolve();
   }

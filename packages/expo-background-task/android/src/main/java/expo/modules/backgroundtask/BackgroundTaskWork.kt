@@ -3,9 +3,8 @@ package expo.modules.backgroundtask
 import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.WorkerParameters
-import expo.modules.interfaces.taskManager.TaskServiceProviderHelper
-import kotlinx.coroutines.CompletableDeferred
 
 class BackgroundTaskWork(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
   companion object {
@@ -13,49 +12,25 @@ class BackgroundTaskWork(context: Context, params: WorkerParameters) : Coroutine
   }
 
   /**
-   * The doWork function is called by the Android Work Manager to execute work. When we've scheduled
-   * work this function can be called from :
-   * 1) The WorkManager calls the function on a running app to execute any tasks
-   * 2) The device was rebooted and the app is auto-started
-   * 3) The app is started from the background
+   * The doWork function is called by the Android WorkManager to execute scheduled work.
    */
   override suspend fun doWork(): Result {
-    Log.i(TAG, "doWork: Starting worker")
+    Log.i(TAG, "doWork: Running worker")
 
-    // Get task service
-    val taskService = TaskServiceProviderHelper.getTaskServiceImpl(applicationContext)
-      ?: return Result.failure()
-
+    // Get the app scope key
     val appScopeKey = inputData.getString("appScopeKey") ?: throw MissingAppScopeKey()
 
-    Log.i(TAG, "doWork: $appScopeKey")
+    try {
+      BackgroundTaskScheduler.runTasks(applicationContext, appScopeKey)
+    } catch (e: Exception) {
+      // Wrap exception in Data:
+      val outputData = Data.Builder()
+        .putString("error", e.message)
+        .putString("stackTrace", e.stackTraceToString())
+        .build()
 
-    // Get all task consumers
-    val consumers = taskService.getTaskConsumers(appScopeKey)
-    Log.i(TAG, "doWork: number of consumers ${consumers.size}")
-
-    val tasks = consumers.mapNotNull { consumer ->
-      if (consumer.taskType() == BackgroundTaskConsumer.BACKGROUND_TASK_TYPE) {
-        val bgTaskConsumer = (consumer as? BackgroundTaskConsumer) ?: throw InvalidBackgroundTaskConsumer()
-        Log.i(TAG, "doWork: executing tasks for consumer of type ${consumer.taskType()}")
-
-        val taskCompletion = CompletableDeferred<Unit>()
-
-        bgTaskConsumer.executeTask {
-          Log.i(TAG, "Task successfully finished")
-          taskCompletion.complete(Unit)
-        }
-
-        taskCompletion
-      } else {
-        null
-      }
+      return Result.failure(outputData)
     }
-
-    // Await all tasks to complete
-    tasks.forEach { it.await() }
-
-    // TODO: Wait until tasks are done?
     return Result.success()
   }
 }

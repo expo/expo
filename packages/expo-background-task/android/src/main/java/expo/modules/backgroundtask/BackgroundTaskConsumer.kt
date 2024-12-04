@@ -21,6 +21,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
     const val DEFAULT_INTERVAL_MINUTES: Long = 60 * 24 // Once every day
     private val TAG: String = BackgroundTaskConsumer::class.java.simpleName
   }
+
   private var mTask: TaskInterface? = null
   private var mBackgrounded: Boolean = true
   private val taskCoroutineScope = CoroutineScope(Dispatchers.Default)
@@ -36,6 +37,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
    */
   fun executeTask(callback: TaskExecutionCallback) {
     if (mBackgrounded || ReactBuildConfig.DEBUG) {
+      Log.i(TAG, "Executing task '${mTask?.name}'")
       taskManagerUtils.executeTask(mTask, null, callback)
     } else {
       Log.w(TAG, "Task was not executed since the app was not in the background or in Debug mode.")
@@ -75,7 +77,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
         ?: throw MissingTaskServiceException()
 
       // Get tasks for our appScope
-      val appScopeKey = mTask?.appScopeKey ?: throw MissingTaskException()
+      val appScopeKey = mTask?.appScopeKey ?: throw MissingAppScopeKey()
       mTask = null
 
       // Check if we have a task that

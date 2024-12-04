@@ -11,13 +11,12 @@ import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.await
 import com.facebook.react.common.build.ReactBuildConfig
 import com.google.common.util.concurrent.ListenableFuture
-import expo.modules.kotlin.AppContext
+import expo.modules.interfaces.taskManager.TaskServiceProviderHelper
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.time.Duration
-import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
@@ -109,6 +108,43 @@ class BackgroundTaskScheduler {
       val workInfo = getWorkerInfo(context)
       return workInfo?.state == WorkInfo.State.RUNNING ||
              workInfo?.state == WorkInfo.State.ENQUEUED
+    }
+
+    /**
+     * Runs tasks with the given appScopeKey
+     */
+    suspend fun runTasks(context: Context, appScopeKey: String) {
+      // Get task service
+       val taskService = TaskServiceProviderHelper.getTaskServiceImpl(context)
+        ?: throw MissingTaskServiceException()
+
+      Log.i(TAG, "runTasks: $appScopeKey")
+
+      // Get all task consumers
+      val consumers = taskService.getTaskConsumers(appScopeKey)
+      Log.i(TAG, "runTasks: number of consumers ${consumers.size}")
+
+       val tasks = consumers.mapNotNull { consumer ->
+        if (consumer.taskType() == BackgroundTaskConsumer.BACKGROUND_TASK_TYPE) {
+
+          val bgTaskConsumer = (consumer as? BackgroundTaskConsumer) ?: throw InvalidBackgroundTaskConsumer()
+          Log.i(TAG, "runTasks: executing tasks for consumer of type ${consumer.taskType()}")
+
+          val taskCompletion = CompletableDeferred<Unit>()
+
+          bgTaskConsumer.executeTask() {
+            Log.i(TAG, "Task successfully finished")
+            taskCompletion.complete(Unit)
+          }
+
+          taskCompletion
+        } else {
+          null
+        }
+      }
+
+      // Await all tasks to complete
+      tasks.forEach { it.await() }
     }
 
     /**

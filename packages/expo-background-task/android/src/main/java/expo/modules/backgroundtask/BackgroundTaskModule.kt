@@ -1,7 +1,9 @@
 package expo.modules.backgroundtask
 
 import android.util.Log
+import com.facebook.react.common.build.ReactBuildConfig
 import expo.modules.interfaces.taskManager.TaskManagerInterface
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -22,9 +24,14 @@ class BackgroundTaskModule : Module() {
       return@AsyncFunction 2 // WorkManager is always available on Android.
     }
 
-    AsyncFunction("triggerTaskForTestingAsync") {
-      Log.w(TAG, "Triggering tasks for testing is not available on Android. Just " +
-        "schedule your task in a debug build to start the task.")
+    AsyncFunction("triggerTaskWorkerForTestingAsync") Coroutine { ->
+      if (ReactBuildConfig.DEBUG) {
+        Log.i(TAG, "Triggering tasks for testing")
+        appContext.reactContext?.let {
+          val appScopeKey = it.packageName
+          BackgroundTaskScheduler.runTasks(it, appScopeKey)
+        } ?: throw MissingContextException()
+      }
     }
 
     AsyncFunction("registerTaskAsync") { taskName: String, options: Map<String, Any?> ->
