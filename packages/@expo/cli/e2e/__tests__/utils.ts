@@ -8,21 +8,19 @@ import findProcess from 'find-process';
 import fs from 'fs';
 import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
-import os from 'os';
 import path from 'path';
 import treeKill from 'tree-kill';
 import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
 import { toPosixPath } from '../../src/utils/filePath';
+import { TEMP_DIR, getTemporaryPath } from '../utils/path';
+
+export { getTemporaryPath } from '../utils/path';
 
 export const bin = require.resolve('../../build/bin/cli');
 
 export const projectRoot = getTemporaryPath();
-
-export function getTemporaryPath() {
-  return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
-}
 
 export function execute(...args: string[]) {
   return execaLog('node', [bin, ...args], { cwd: projectRoot });
@@ -222,7 +220,7 @@ export async function setupTestProjectWithOptionsAsync(
   } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
-  const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
+  const projectRoot = await createFromFixtureAsync(TEMP_DIR, {
     dirName: name,
     reuseExisting,
     fixtureName,
