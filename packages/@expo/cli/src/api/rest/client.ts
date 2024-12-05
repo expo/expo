@@ -13,6 +13,7 @@ import { fetch } from '../../utils/fetch';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { disableNetwork } from '../settings';
 import { getAccessToken, getExpoHomeDirectory, getSession } from '../user/UserSettings';
+import { wrapFetchWithUserAgent } from './wrapFetchWithUserAgent';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
@@ -144,7 +145,7 @@ function isNetworkError(error: Error & { code?: string }) {
   );
 }
 
-const fetchWithOffline = wrapFetchWithOffline(fetch);
+const fetchWithOffline = wrapFetchWithOffline(wrapFetchWithUserAgent(fetch));
 
 const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchWithOffline, getExpoApiBaseUrl() + '/v2/');
 
