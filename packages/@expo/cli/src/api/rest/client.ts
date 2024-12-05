@@ -7,13 +7,13 @@ import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
 import { wrapFetchWithOffline } from './wrapFetchWithOffline';
 import { wrapFetchWithProgress } from './wrapFetchWithProgress';
 import { wrapFetchWithProxy } from './wrapFetchWithProxy';
+import { wrapFetchWithUserAgent } from './wrapFetchWithUserAgent';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { fetch } from '../../utils/fetch';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { disableNetwork } from '../settings';
 import { getAccessToken, getExpoHomeDirectory, getSession } from '../user/UserSettings';
-import { wrapFetchWithUserAgent } from './wrapFetchWithUserAgent';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';

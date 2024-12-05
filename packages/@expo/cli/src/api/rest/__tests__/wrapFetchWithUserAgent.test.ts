@@ -14,12 +14,11 @@ describe(wrapFetchWithUserAgent, () => {
 
     expect(fetch).toHaveBeenCalledWith(
       'https://example.com',
-      expect.objectContaining({
-        headers: {
-          'User-Agent': 'expo-cli/1.33.7',
-        },
-      })
+      expect.objectContaining({ headers: expect.any(Headers) })
     );
+    expect([...fetch.mock.calls[0][1].headers.entries()]).toEqual([
+      ['user-agent', 'expo-cli/1.33.7'],
+    ]);
   });
 
   it('adds user-agent with header object', async () => {
@@ -31,8 +30,14 @@ describe(wrapFetchWithUserAgent, () => {
 
     await wrapped('https://example.com', { headers });
 
-    expect(fetch).toHaveBeenCalledWith('https://example.com', expect.objectContaining({ headers }));
-    expect(headers['User-Agent']).toBe('expo-cli/1.33.7');
+    expect(fetch).toHaveBeenCalledWith(
+      'https://example.com',
+      expect.objectContaining({ headers: expect.any(Headers) })
+    );
+    expect([...fetch.mock.calls[0][1].headers.entries()]).toEqual([
+      ['authorization', 'bearer some-token'],
+      ['user-agent', 'expo-cli/1.33.7'],
+    ]);
   });
 
   it('adds user-agent with header object with existing user-agent', async () => {
@@ -45,8 +50,14 @@ describe(wrapFetchWithUserAgent, () => {
 
     await wrapped('https://example.com', { headers });
 
-    expect(fetch).toHaveBeenCalledWith('https://example.com', expect.objectContaining({ headers }));
-    expect(headers['User-Agent']).toBe('test, expo-cli/1.33.7');
+    expect(fetch).toHaveBeenCalledWith(
+      'https://example.com',
+      expect.objectContaining({ headers: expect.any(Headers) })
+    );
+    expect([...fetch.mock.calls[0][1].headers.entries()]).toEqual([
+      ['authorization', 'bearer some-token'],
+      ['user-agent', 'test, expo-cli/1.33.7'],
+    ]);
   });
 
   it('adds user-agent with header array', async () => {
@@ -56,10 +67,13 @@ describe(wrapFetchWithUserAgent, () => {
 
     await wrapped('https://example.com', { headers });
 
-    expect(fetch).toHaveBeenCalledWith('https://example.com', expect.objectContaining({ headers }));
-    expect(headers).toEqual([
-      ['Authorization', 'bearer some-token'],
-      ['User-Agent', 'expo-cli/1.33.7'],
+    expect(fetch).toHaveBeenCalledWith(
+      'https://example.com',
+      expect.objectContaining({ headers: expect.any(Headers) })
+    );
+    expect([...fetch.mock.calls[0][1].headers.entries()]).toEqual([
+      ['authorization', 'bearer some-token'],
+      ['user-agent', 'expo-cli/1.33.7'],
     ]);
   });
 
@@ -73,10 +87,13 @@ describe(wrapFetchWithUserAgent, () => {
 
     await wrapped('https://example.com', { headers });
 
-    expect(fetch).toHaveBeenCalledWith('https://example.com', expect.objectContaining({ headers }));
-    expect(headers).toEqual([
-      ['Authorization', 'bearer some-token'],
-      ['User-Agent', 'test, expo-cli/1.33.7'],
+    expect(fetch).toHaveBeenCalledWith(
+      'https://example.com',
+      expect.objectContaining({ headers: expect.any(Headers) })
+    );
+    expect([...fetch.mock.calls[0][1].headers.entries()]).toEqual([
+      ['authorization', 'bearer some-token'],
+      ['user-agent', 'test, expo-cli/1.33.7'],
     ]);
   });
 
@@ -89,8 +106,11 @@ describe(wrapFetchWithUserAgent, () => {
 
     await wrapped('https://example.com', { headers });
 
-    expect(fetch).toHaveBeenCalledWith('https://example.com', expect.objectContaining({ headers }));
-    expect([...headers.entries()]).toEqual([
+    expect(fetch).toHaveBeenCalledWith(
+      'https://example.com',
+      expect.objectContaining({ headers: expect.any(Headers) })
+    );
+    expect([...fetch.mock.calls[0][1].headers.entries()]).toEqual([
       ['authorization', 'bearer some-token'],
       ['user-agent', 'expo-cli/1.33.7'],
     ]);
@@ -106,8 +126,11 @@ describe(wrapFetchWithUserAgent, () => {
 
     await wrapped('https://example.com', { headers });
 
-    expect(fetch).toHaveBeenCalledWith('https://example.com', expect.objectContaining({ headers }));
-    expect([...headers.entries()]).toEqual([
+    expect(fetch).toHaveBeenCalledWith(
+      'https://example.com',
+      expect.objectContaining({ headers: expect.any(Headers) })
+    );
+    expect([...fetch.mock.calls[0][1].headers.entries()]).toEqual([
       ['authorization', 'bearer some-token'],
       ['user-agent', 'test, expo-cli/1.33.7'],
     ]);
