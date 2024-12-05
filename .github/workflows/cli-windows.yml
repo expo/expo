@@ -49,16 +49,6 @@ jobs:
       matrix:
         shard: [1, 2, 3]
     steps:
-      - name: 🪟 Setup Windows
-        if: runner.os == 'Windows'
-        # Configure Git to use LF line endlings, and Bun to use a faster cache disk on Windows
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-          echo "BUN_INSTALL_CACHE_DIR=$GITHUB_WORKSPACE\..\..\_temp\bun" >> $GITHUB_ENV
-          echo "EXPO_E2E_TEMP_DIR=$GITHUB_WORKSPACE\..\..\_temp\expo-cli-e2e" >> $GITHUB_ENV
-        shell: bash
-
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v3
         with:
@@ -70,6 +60,16 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
+
+      - name: 🪟 Setup Windows
+        if: runner.os == 'Windows'
+        # Configure Git to use LF line endlings, and Bun to use a faster cache disk on Windows
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+          echo "BUN_INSTALL_CACHE_DIR=$(node --print 'require(`path`).join(process.env.GITHUB_WORKSPACE,  `./../../_temp/bun`)')" >> $GITHUB_ENV
+          echo "EXPO_E2E_TEMP_DIR=$(node --print 'require(`path`).join(process.env.GITHUB_WORKSPACE,  `./../../_temp/expo-cli-e2e`)')" >> $GITHUB_ENV
+        shell: bash
 
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -106,7 +106,7 @@ jobs:
 
       - name: 🧪 E2E Test CLI
         working-directory: packages/@expo/cli
-        run: yarn test:e2e --max-workers 2 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   # web:
   #   runs-on: ubuntu-22.04
