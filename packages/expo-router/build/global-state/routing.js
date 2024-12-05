@@ -177,10 +177,20 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
         const childState = actionStateRoute.state;
         const nextNavigationState = stateRoute.state;
         const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
+        /**
+         * When a Drawer navigator is open, we cannot target loaded sub-navigator
+         * The DrawerRouter sees the navigation event and just closes the drawer.
+         * However we make the Drawer the target, then it will both close and correctly pass down the navigation event
+         */
+        const isOpenDrawer = navigationState.type === 'drawer' &&
+            navigationState.history?.[navigationState.history.length - 1]
+                ?.status === 'open';
         const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
             !childState ||
             !nextNavigationState ||
-            (dynamicName && actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName]);
+            (dynamicName &&
+                actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName]) ||
+            isOpenDrawer;
         if (didActionAndCurrentStateDiverge) {
             break;
         }
