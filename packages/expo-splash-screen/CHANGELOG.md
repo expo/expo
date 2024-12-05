@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `light` and `dark` colors on `iOS` instead of `any`. ([#33472](https://github.com/expo/expo/pull/33472) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 0.29.13 — 2024-11-22
 
 ### 🐛 Bug fixes

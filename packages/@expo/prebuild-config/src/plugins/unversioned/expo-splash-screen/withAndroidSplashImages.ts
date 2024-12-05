@@ -160,8 +160,6 @@ export async function setSplashImageDrawablesForThemeAsync(
   imageWidth: number = 100
 ) {
   if (!config) return;
-  const androidMainPath = path.join(projectRoot, 'android/app/src/main');
-
   const sizes: DRAWABLE_SIZE[] = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
 
   await Promise.all(
@@ -170,6 +168,17 @@ export async function setSplashImageDrawablesForThemeAsync(
       const image = config[imageKey];
 
       if (image) {
+        if (config.enableFullScreenImage_legacy) {
+          const { source } = await generateImageAsync(
+            { projectRoot, cacheType: IMAGE_CACHE_NAME },
+            {
+              src: image,
+            } as any
+          );
+
+          return writeDrawable(projectRoot, imageKey, theme, source);
+        }
+
         const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
         const size = imageWidth * multiplier; // "imageWidth" must be replaced by the logo width chosen by the user in its config file
         const canvasSize = 288 * multiplier;
@@ -201,18 +210,25 @@ export async function setSplashImageDrawablesForThemeAsync(
           y: (canvasSize - size) / 2,
         });
 
-        // Get output path for drawable.
-        const outputPath = path.join(
-          androidMainPath,
-          DRAWABLES_CONFIGS[imageKey].modes[theme].path
-        );
-
-        const folder = path.dirname(outputPath);
-        // Ensure directory exists.
-        await fs.ensureDir(folder);
-        await fs.writeFile(outputPath, composedImage);
+        await writeDrawable(projectRoot, imageKey, theme, composedImage);
       }
       return null;
     })
   );
+}
+
+async function writeDrawable(
+  projectRoot: string,
+  imageKey: DRAWABLE_SIZE,
+  theme: 'dark' | 'light',
+  composedImage: Buffer
+) {
+  const androidMainPath = path.join(projectRoot, 'android/app/src/main');
+  // Get output path for drawable.
+  const outputPath = path.join(androidMainPath, DRAWABLES_CONFIGS[imageKey].modes[theme].path);
+
+  const folder = path.dirname(outputPath);
+  // Ensure directory exists.
+  await fs.ensureDir(folder);
+  await fs.writeFile(outputPath, composedImage);
 }
