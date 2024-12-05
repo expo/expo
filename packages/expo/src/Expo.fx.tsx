@@ -28,7 +28,7 @@ if (__DEV__ && isRunningInExpoGo() && process.env.NODE_ENV === 'development') {
       // Wrap it in rAF to show the warning after the React Native DevTools message
       requestAnimationFrame(() => {
         console.warn(
-          `🚨 React Native's New Architecture is always enabled in Expo Go, but it is not explicitly enabled your project app config. This may lead to unexpected behavior when you create a production or development build. Set "newArchEnabled": true in your app.json.\nLearn more: https://docs.expo.dev/guides/new-architecture/`
+          `🚨 React Native's New Architecture is always enabled in Expo Go, but it is not explicitly enabled in your project's app config. This may lead to unexpected behavior when creating a production or development build. Set "newArchEnabled": true in your app.json.\nLearn more: https://docs.expo.dev/guides/new-architecture/`
         );
       });
     }

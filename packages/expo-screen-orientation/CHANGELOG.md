@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed event listeners on web. ([#33361](https://github.com/expo/expo/pull/33361) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 8.0.0 — 2024-10-22

@@ -209,7 +209,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/routing/create-pages/': '/router/create-pages/',
   '/routing/navigating-pages/': '/router/navigating-pages/',
   '/routing/layouts/': '/router/layouts/',
-  '/routing/appearance/': '/router/appearance/',
+  '/routing/appearance/': '/router/introduction/',
   '/routing/error-handling/': '/router/error-handling/',
 
   // Errors and debugging is better suited for getting started than tutorial
@@ -377,9 +377,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
+  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
+  '/versions/v51.0.0/sdk/taskmanager': '/versions/v51.0.0/sdk/task-manager/',
   '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
   '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
-  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
   '/versions/v50.0.0/sdk': '/versions/v50.0.0',
   '/versions/v49.0.0/sdk': '/versions/v49.0.0',

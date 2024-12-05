@@ -45,7 +45,8 @@ export const Footer = ({
             'max-xl-gutters:flex-col-reverse',
             'max-lg-gutters:flex-row',
             'max-md-gutters:flex-col-reverse'
-          )}>
+          )}
+          data-nosnippet>
           {previousPage ? (
             <LinkBase
               href={previousPage.href}
