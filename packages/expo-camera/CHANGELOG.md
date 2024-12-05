@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `zoom` on Android and adjust the magnitude on iOS. ([#33319](https://github.com/expo/expo/pull/33319) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 16.0.9 — 2024-12-05
+
+### 🐛 Bug fixes
+
+- Fix `zoom` on Android and adjust the magnitude on iOS. ([#33319](https://github.com/expo/expo/pull/33319) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 16.0.8 — 2024-11-29
 

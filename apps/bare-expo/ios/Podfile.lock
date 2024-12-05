@@ -45,9 +45,9 @@ PODS:
   - EXManifests/Tests (0.15.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.29.10):
+  - EXNotifications (0.29.11):
     - ExpoModulesCore
-  - Expo (52.0.14):
+  - Expo (52.0.15):
     - ExpoModulesCore
   - expo-dev-client (5.0.5):
     - EXManifests
@@ -353,7 +353,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (14.0.4):
     - ExpoModulesCore
-  - ExpoCamera (16.0.8):
+  - ExpoCamera (16.0.9):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -550,7 +550,7 @@ PODS:
   - EXTaskManager (12.0.3):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.26.9):
+  - EXUpdates (0.26.10):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -577,7 +577,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdates/Tests (0.26.9):
+  - EXUpdates/Tests (0.26.10):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -3280,8 +3280,8 @@ SPEC CHECKSUMS:
   EXImageLoader: 759063a65ab016b836f73972d3bb25404888713d
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
-  EXNotifications: 57ada29928cbea7a0aa41521d96997c16b46698b
-  Expo: 0e7b52be71a24a38d5e919e3040d8f51a8739cd0
+  EXNotifications: e27ed9ad086026ef0cdd5ddbf9be60abd18232c8
+  Expo: 519f13c4c6ac9d73b7dd27627ea78be54e11453c
   expo-dev-client: 49ce02cb369ab60bcb203f0ac2f8bf39f004dfc9
   expo-dev-launcher: 74c8c15678d4ef5ae39c0094192669d18f3ff0ab
   expo-dev-menu: 460327af62e2b16fe79af0082753c48e82ba099f
@@ -3294,7 +3294,7 @@ SPEC CHECKSUMS:
   ExpoBlur: 562b3da84d3cd79016c411671eaf71a404266415
   ExpoBrightness: ce777f6a365592f745428cb0acc9066b400182e8
   ExpoCalendar: 584170a07064802a186bc199914d4b6db4119e27
-  ExpoCamera: ca541b630f9d72422f6befa9984135d65318c2dc
+  ExpoCamera: 5f1133dd302a9db5048ad63dd29a08e436dedd9b
   ExpoCellular: c7ae03fd9480e6a4296a5632c35ab00ddaea4783
   ExpoClipboard: 166ca8c13ca1041f5ba619a211f59427ab5da8a7
   ExpoContacts: 209f0739c712bf808413c691722ce1bb1e2ea0af
@@ -3343,7 +3343,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: afcec33a6643f24fed4a89062757037b185c8a88
-  EXUpdates: 997e21370185bcaf4ed52aa776582f08828470f1
+  EXUpdates: 6367731b69e9190c3894d809d1483f0ec6df0e65
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   FBLazyVector: be7314029d6ec6b90f0f75ce1195b8130ed9ac4f
   fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be

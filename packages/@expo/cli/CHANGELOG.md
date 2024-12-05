@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Use `ios.appleTeamId` when prompting users to select the Apple identity in `expo run ios`. ([#33330](https://github.com/expo/expo/pull/33330) by [@byCedric](https://github.com/byCedric))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.22.1 — 2024-12-05
+
+### 🎉 New features
+
+- Use `ios.appleTeamId` when prompting users to select the Apple identity in `expo run ios`. ([#33330](https://github.com/expo/expo/pull/33330) by [@byCedric](https://github.com/byCedric))
 
 ## 0.22.0 — 2024-11-29
 
