@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent base url from being appended to external links. ([#31420](https://github.com/expo/expo/pull/31420) by [@6TELOIV](https://github.com/6teloiv))
+
 ### 💡 Others
 
 ## 4.0.13 — 2024-12-16
