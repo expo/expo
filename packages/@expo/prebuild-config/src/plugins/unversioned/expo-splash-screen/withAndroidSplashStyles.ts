@@ -43,7 +43,11 @@ export const withAndroidSplashStyles: ConfigPlugin<{
   });
   config = withAndroidStyles(config, (config) => {
     config.modResults = removeOldSplashStyleGroup(config.modResults);
-    config.modResults = addSplashScreenStyle(config.modResults, isLegacyConfig);
+    config.modResults = addSplashScreenStyle(
+      config.modResults,
+      isLegacyConfig,
+      splashConfig?.enableFullScreenImage_legacy ?? false
+    );
     return config;
   });
   return config;
@@ -52,7 +56,8 @@ export const withAndroidSplashStyles: ConfigPlugin<{
 // Add the style that extends Theme.SplashScreen
 function addSplashScreenStyle(
   styles: AndroidConfig.Resources.ResourceXML,
-  isLegacyConfig: boolean
+  isLegacyConfig: boolean,
+  enableFullScreen: boolean
 ) {
   const { resources } = styles;
   const { style = [] } = resources;
@@ -71,10 +76,15 @@ function addSplashScreenStyle(
         $: { name: 'windowSplashScreenBackground' },
         _: '@color/splashscreen_background',
       },
-      {
-        $: { name: 'windowSplashScreenAnimatedIcon' },
-        _: '@drawable/splashscreen_logo',
-      },
+      enableFullScreen
+        ? {
+            $: { name: 'android:windowBackground' },
+            _: '@drawable/splashscreen_logo',
+          }
+        : {
+            $: { name: 'windowSplashScreenAnimatedIcon' },
+            _: '@drawable/splashscreen_logo',
+          },
       {
         $: { name: 'postSplashScreenTheme' },
         _: '@style/AppTheme',
