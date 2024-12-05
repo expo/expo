@@ -18,6 +18,7 @@
 ### 💡 Others
 
 - Move getAccountUsername from `@expo/config` to CLI for internal usage ([#33249](https://github.com/expo/expo/pull/33249) by [@wschurman](https://github.com/wschurman))
+- Add `User-Agent: expo-cli/<version>` to all CLI requests.
 
 ## 0.22.0 - 2024-11-29
 
