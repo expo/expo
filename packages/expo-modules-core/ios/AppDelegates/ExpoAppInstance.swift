@@ -12,7 +12,7 @@ open class ExpoAppInstance: RCTAppDelegate {
     return reactDelegate.createRootViewController()
   }
 
-  public override func bundleURL() -> URL? {
+  open override func bundleURL() -> URL? {
 #if DEBUG
     return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
 #else
