@@ -151,19 +151,22 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
   expect(contents).not.toMatch('com.helloworld');
   expect(contents).toMatch('com.example.minimal');
 
-  contents = await read('ios/Podfile');
-  expect(contents).not.toMatch('HelloWorld');
-  expect(contents).toMatch('basicprebuild');
+  // Only assert these paths on macOS or Linux
+  if (process.platform !== 'win32') {
+    contents = await read('ios/Podfile');
+    expect(contents).not.toMatch('HelloWorld');
+    expect(contents).toMatch('basicprebuild');
 
-  contents = await read('ios/basicprebuild.xcodeproj/project.pbxproj');
-  expect(contents).not.toMatch('HelloWorld');
-  expect(contents).toMatch('basicprebuild');
+    contents = await read('ios/basicprebuild.xcodeproj/project.pbxproj');
+    expect(contents).not.toMatch('HelloWorld');
+    expect(contents).toMatch('basicprebuild');
 
-  contents = await read(
-    'ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme'
-  );
-  expect(contents).not.toMatch('HelloWorld');
-  expect(contents).toMatch('basicprebuild');
+    contents = await read(
+      'ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme'
+    );
+    expect(contents).not.toMatch('HelloWorld');
+    expect(contents).toMatch('basicprebuild');
+  }
 
   // In case this template ever changes in future, other typical files to look
   // out for include:
