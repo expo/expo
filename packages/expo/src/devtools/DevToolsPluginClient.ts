@@ -3,9 +3,9 @@ import { EventEmitter, EventSubscription } from 'fbemitter';
 import { MessageFramePacker } from './MessageFramePacker';
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import { WebSocketWithReconnect } from './WebSocketWithReconnect';
-import { blobToArrayBufferAsync } from '../utils/blobUtils';
 import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
 import * as logger from './logger';
+import { blobToArrayBufferAsync } from '../utils/blobUtils';
 
 interface MessageFramePackerMessageKey {
   pluginName: string;
