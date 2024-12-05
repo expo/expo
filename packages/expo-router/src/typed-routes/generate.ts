@@ -10,6 +10,8 @@ const SLUG = /\[.+?\]/g;
 // /(group)/path/(group2)/route - Match [(group), (group2)]
 const GROUP = /(?:^|\/)\(.*?\)/g;
 
+const urlParams = "${`?${string}` | `#${string}` | ''}";
+
 export type GetTypedRoutesDeclarationFileOptions = {
   partialTypedGroups?: boolean;
   testIgnoreComments?: boolean;
@@ -50,9 +52,7 @@ export function getTypedRoutesDeclarationFile(
   ];
 
   for (const type of groupedNodes.static) {
-    staticRoutesStrings.push(
-      contextKeyToType(type + "${`?${string}` | `#${string}` | ''}", partialTypedGroups)
-    );
+    staticRoutesStrings.push(contextKeyToType(type + urlParams, partialTypedGroups));
     staticRouteInputObjects.push(
       `{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownInputParams; }`
     );
@@ -173,6 +173,8 @@ function groupRouteNodes(
     routeKey = `/${routeKey}`;
   }
 
+  routeKey = routeKey.replace(/\\/g, '/');
+
   if (routeNode.dynamic) {
     groupedContextKeys.dynamic.set(
       routeKey,
@@ -197,6 +199,10 @@ function groupRouteNodes(
 }
 
 function contextKeyToType(contextKey: string, partialTypedGroups: boolean) {
+  if (contextKey.match(GROUP) === null) {
+    return `\`${contextKey}\``;
+  }
+
   // If the route has groups, turn them into template strings
   const typeWithGroups = contextKey.replaceAll(GROUP, (match) => {
     const groups = match.slice(2, -1); // Remove the leading ( and the trailing )
@@ -215,11 +221,16 @@ function contextKeyToType(contextKey: string, partialTypedGroups: boolean) {
     }
   });
 
-  const typeWithoutGroups = contextKey.replaceAll(GROUP, '');
+  let typeWithoutGroups = contextKey.replaceAll(GROUP, '') || '/';
 
-  if (typeWithGroups === typeWithoutGroups) {
-    return `\`${typeWithGroups}\``;
-  } else {
-    return `\`${typeWithGroups}\` | \`${typeWithoutGroups}\``;
+  /**
+   * When getting the static routes, they include a urlParams string at the end.
+   * If we have a route like `/(group)/(group2)`, this would normally be collapsed to `/`.
+   * But because of the urlParams, it becomes `${urlParams}` and we need to add a `/` to the start.
+   */
+  if (typeWithoutGroups.startsWith(urlParams)) {
+    typeWithoutGroups = `/${typeWithoutGroups}`;
   }
+
+  return `\`${typeWithGroups}\` | \`${typeWithoutGroups}\``;
 }

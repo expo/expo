@@ -177,6 +177,7 @@ const general = [
         makePage('distribution/publishing-websites.mdx'),
         makePage('guides/dom-components.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
+        makePage('guides/tailwind.mdx'),
       ],
       { expanded: false }
     ),
@@ -213,6 +214,7 @@ const general = [
         makePage('workflow/android-studio-emulator.mdx'),
         makePage('workflow/ios-simulator.mdx'),
         makePage('guides/new-architecture.mdx'),
+        makePage('guides/react-compiler.mdx'),
       ],
       { expanded: false }
     ),
@@ -254,7 +256,6 @@ const general = [
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
       makePage('router/reference/troubleshooting.mdx'),
-      makePage('router/reference/faq.mdx'),
     ]),
     makeGroup('Migration', [
       makePage('router/migrate/from-react-navigation.mdx'),
@@ -287,7 +288,19 @@ const general = [
     ],
     { expanded: false }
   ),
-  makeSection('EAS', [makePage('eas/index.mdx'), makePage('eas/json.mdx')]),
+  makeSection('EAS', [
+    makePage('eas/index.mdx'),
+    makePage('eas/json.mdx'),
+    makePage('eas/environment-variables.mdx'),
+    makePage('eas/using-environment-variables.mdx'),
+  ]),
+  makeSection('Workflows', [
+    makePage('workflows/get-started.mdx'),
+    makePage('workflows/triggers.mdx'),
+    makePage('workflows/jobs.mdx'),
+    makePage('workflows/control-flow.mdx'),
+    makePage('workflows/variables.mdx'),
+  ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
     makePage('build/setup.mdx'),
@@ -328,7 +341,6 @@ const general = [
         makePage('build-reference/git-submodules.mdx'),
         makePage('build-reference/npm-cache-with-yarn.mdx'),
         makePage('build-reference/build-with-monorepos.mdx'),
-        makePage('build-reference/variables.mdx'),
         makePage('build-reference/apk.mdx'),
         makePage('build-reference/simulators.mdx'),
         makePage('build-reference/app-versions.mdx'),
@@ -381,7 +393,6 @@ const general = [
       makePage('eas-update/error-recovery.mdx'),
     ]),
     makeGroup('Reference', [
-      makePage('eas-update/environment-variables.mdx'),
       makePage('eas-update/code-signing.mdx'),
       makePage('eas-update/asset-selection.mdx'),
       makePage('eas-update/standalone-service.mdx'),
@@ -406,14 +417,14 @@ const general = [
   makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
   makeSection('Push notifications', [
     makePage('push-notifications/overview.mdx'),
+    makePage('push-notifications/what-you-need-to-know.mdx'),
     makePage('push-notifications/push-notifications-setup.mdx'),
     makePage('push-notifications/sending-notifications.mdx'),
     makePage('push-notifications/receiving-notifications.mdx'),
-    makePage('push-notifications/fcm-credentials.mdx'),
     makeGroup(
       'Reference',
       [
-        makePage('push-notifications/obtaining-a-device-token-for-fcm-or-apns.mdx'),
+        makePage('push-notifications/fcm-credentials.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
         makePage('push-notifications/faq.mdx'),
       ],
@@ -547,11 +558,7 @@ const learn = [
 ];
 
 const preview = [
-  makeSection('Preview', [
-    makePage('preview/introduction.mdx'),
-    makePage('preview/react-compiler.mdx'),
-    { expanded: true },
-  ]),
+  makeSection('Preview', [makePage('preview/introduction.mdx'), { expanded: true }]),
 ];
 
 const archive = [

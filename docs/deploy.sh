@@ -89,6 +89,7 @@ redirects[develop/development-builds/installation]=develop/development-builds/cr
 
 # Guides that have been deleted
 redirects[guides/web-performance/]=guides/analyzing-bundles
+redirects[push-notifications/obtaining-a-device-token-for-fcm-or-apns]=push-notifications/sending-notifications-custom
 
 # Redirects after adding Home to the docs
 redirects[next-steps/additional-resources]=additional-resources
@@ -239,6 +240,8 @@ redirects[workflow/hermes]=guides/using-hermes
 # Redirects based on Algolia 404 report
 redirects[versions/latest/sdk/permissions]=guides/permissions
 redirects[workflow/build/building-on-ci]=build/building-on-ci
+redirects[versions/v52.0.0/sdk/taskmanager]=versions/v52.0.0/sdk/task-manager
+redirects[versions/v51.0.0/sdk/taskmanager]=versions/v51.0.0/sdk/task-manager
 redirects[versions/v50.0.0/sdk/taskmanager]=versions/v50.0.0/sdk/task-manager
 redirects[versions/v49.0.0/sdk/taskmanager]=versions/v49.0.0/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager
@@ -272,25 +275,30 @@ redirects[develop/user-interface/splash-screen]=develop/user-interface/splash-sc
 
 # Preview section
 redirects[/preview/support]=preview/introduction
+redirects[preview/react-compiler]=guides/react-compiler
 
 # Archived
 redirects[guides/using-flipper]=archive/using-flipper
-
-# Temporary redirects
-redirects[guides/react-compiler]=preview/react-compiler
 
 # Troubleshooting section
 redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
 
 # After adding "Linking" (/linking/**) section
 redirects[guides/linking]=linking/overview
-redirects[guides/deep-linking]=/linking/into-your-app
+redirects[guides/deep-linking]=linking/into-your-app
 
 # After adding /sdk/router/ API reference
 redirects[router/reference/hooks]=versions/latest/sdk/router
 
 # After moving custom tabs under Expo Router > Navigation patterns
 redirects[router/ui/tabs]=router/advanced/custom-tabs
+
+# After new environment variables guide
+redirects[build-reference/variables]=eas/environment-variables
+redirects[eas-update/environment-variables]=eas/environment-variables
+
+# After moving common questions from Expo Router FAQ to Introduction
+redirects[router/reference/faq]=router/introduction
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

@@ -3,7 +3,7 @@ import ExpoModulesCore
 import CoreMotion
 
 public class CameraView: ExpoView, EXAppLifecycleListener,
-  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, CameraEvent {
+  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, EXCameraInterface, CameraEvent {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
 
@@ -14,7 +14,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   // MARK: - Properties
 
-  private lazy var barcodeScanner = createBarcodeScanner()
+  private var barcodeScanner: BarcodeScanner?
   private lazy var previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
@@ -50,10 +50,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   var isScanningBarcodes = false {
     didSet {
       Task {
-        await barcodeScanner.setIsEnabled(isScanningBarcodes)
+        await barcodeScanner?.setIsEnabled(isScanningBarcodes)
       }
     }
   }
+
+  var videoBitrate: Int?
 
   var presetCamera = AVCaptureDevice.Position.back {
     didSet {
@@ -144,6 +146,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     #if !targetEnvironment(simulator)
     setupPreview()
     #endif
+    barcodeScanner = createBarcodeScanner()
     UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.addObserver(
       self,
@@ -245,9 +248,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   private func startSession() async {
-    #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
     return
-    #endif
+#else
     guard let manager = permissionsManager else {
       log.info("Permissions module not found.")
       return
@@ -268,11 +271,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     addErrorNotification()
     await changePreviewOrientation()
 
-    await barcodeScanner.maybeStartBarcodeScanning()
+    await barcodeScanner?.maybeStartBarcodeScanning()
     session.commitConfiguration()
     updateCameraIsActive()
     onCameraReady()
     enableTorch()
+#endif
   }
 
   private func updateZoom() {
@@ -282,7 +286,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
     do {
       try device.lockForConfiguration()
-      device.videoZoomFactor = (device.activeFormat.videoMaxZoomFactor - 1.0) * zoom + 1.0
+      let minZoom = 1.0
+      device.videoZoomFactor = minZoom * pow(device.activeFormat.videoMaxZoomFactor / minZoom, zoom)
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
     }
@@ -306,7 +311,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   func setBarcodeScannerSettings(settings: BarcodeSettings) {
     Task {
-      await barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+      await barcodeScanner?.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
     }
   }
 
@@ -356,7 +361,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     var photoSettings = AVCapturePhotoSettings()
 
     if photoOutput.availablePhotoCodecTypes.contains(AVVideoCodecType.hevc) {
-      photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+      photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
     }
 
     let requestedFlashMode = flashMode.toDeviceFlashMode()
@@ -391,9 +396,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       return
     }
     Task { @MainActor in
-      self.previewLayer.opacity = 0
+      self.layer.opacity = 0
       UIView.animate(withDuration: 0.25) {
-        self.previewLayer.opacity = 1
+        self.layer.opacity = 1
       }
     }
   }
@@ -585,10 +590,14 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     if let codec = options.codec {
       let codecType = codec.codecType()
       if videoFileOutput.availableVideoCodecTypes.contains(codecType) {
-        videoFileOutput.setOutputSettings([AVVideoCodecKey: codecType], for: connection)
+        var outputSettings: [String: Any] = [AVVideoCodecKey: codecType]
+        if let videoBitrate {
+          outputSettings[AVVideoCompressionPropertiesKey] = [AVVideoAverageBitRateKey: videoBitrate]
+        }
+        videoFileOutput.setOutputSettings(outputSettings, for: connection)
         self.videoCodecType = codecType
       } else {
-        promise.reject(CameraRecordingException(videoCodecType?.rawValue))
+        promise.reject(CameraRecordingException(options.codec?.rawValue))
         await cleanupMovieFileCapture()
         videoRecordedPromise = nil
         isValidVideoOptions = false
@@ -746,9 +755,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   private func stopSession() async {
-    #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
     return
-    #endif
+#else
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
@@ -757,13 +766,14 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     for output in session.outputs {
       session.removeOutput(output)
     }
-    await barcodeScanner.stopBarcodeScanning()
+    await barcodeScanner?.stopBarcodeScanning()
     session.commitConfiguration()
 
     motionManager.stopAccelerometerUpdates()
     if session.isRunning {
       session.stopRunning()
     }
+#endif
   }
 
   func resumePreview() {

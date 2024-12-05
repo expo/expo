@@ -9,6 +9,7 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
 import path from 'path';
+import url from 'url';
 
 import { logMetroError } from './metroErrorInterface';
 import { ExportAssetMap } from '../../../export/saveAssets';
@@ -46,12 +47,17 @@ export function createServerComponentsMiddleware(
     ssrLoadModule,
     ssrLoadModuleArtifacts,
     useClientRouter,
+    createModuleId,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
     useClientRouter: boolean;
+    createModuleId: (
+      filePath: string,
+      context: { platform: string; environment: string }
+    ) => string | number;
   }
 ) {
   const routerModule = useClientRouter
@@ -116,7 +122,11 @@ export function createServerComponentsMiddleware(
   }
 
   async function exportServerActionsAsync(
-    { platform, entryPoints }: { platform: string; entryPoints: string[] },
+    {
+      platform,
+      entryPoints,
+      domRoot,
+    }: { platform: string; entryPoints: string[]; domRoot?: string },
     files: ExportAssetMap
   ): Promise<{
     clientBoundaries: string[];
@@ -124,10 +134,9 @@ export function createServerComponentsMiddleware(
   }> {
     const uniqueEntryPoints = [...new Set(entryPoints)];
     // TODO: Support multiple entry points in a single split server bundle...
-    const serverRoot = getMetroServerRootMemo(projectRoot);
-
     const manifest: Record<string, [string, string]> = {};
     const nestedClientBoundaries: string[] = [];
+
     for (const entryPoint of uniqueEntryPoints) {
       const contents = await ssrLoadModuleArtifacts(entryPoint, {
         environment: 'react-server',
@@ -136,6 +145,8 @@ export function createServerComponentsMiddleware(
         modulesOnly: true,
         // Required
         runModule: true,
+        // Required to ensure assets load as client boundaries.
+        domRoot,
       });
 
       const reactClientReferences = contents.artifacts
@@ -153,7 +164,11 @@ export function createServerComponentsMiddleware(
             entryPoint
         );
       }
-      const relativeName = path.relative(serverRoot, entryPoint);
+
+      const relativeName = createModuleId(entryPoint, {
+        platform,
+        environment: 'react-server',
+      });
       const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;
@@ -164,7 +179,7 @@ export function createServerComponentsMiddleware(
       });
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
-      manifest[entryPoint] = [relativeName, outputName];
+      manifest[entryPoint] = [String(relativeName), outputName];
     }
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
@@ -226,24 +241,46 @@ export function createServerComponentsMiddleware(
     return { reactClientReferences, reactServerReferences, cssModules };
   }
 
+  const routerCache = new Map<
+    string,
+    typeof import('expo-router/build/rsc/router/expo-definedRouter')
+  >();
+
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
-    return ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
+    // We can only cache this if we're using the client router since it doesn't change or use HMR
+    if (routerCache.has(platform) && useClientRouter) {
+      return routerCache.get(platform)!;
+    }
+
+    const router = await ssrLoadModule<
+      typeof import('expo-router/build/rsc/router/expo-definedRouter')
+    >(
       routerModule,
       {
         environment: 'react-server',
+        // modulesOnly: true,
         platform,
       },
       {
-        hot: true,
+        hot: !useClientRouter,
       }
     );
+
+    routerCache.set(platform, router);
+    return router;
   }
 
   function getResolveClientEntry(context: {
     platform: string;
     engine?: 'hermes' | null;
     ssrManifest?: Map<string, string>;
-  }) {
+  }): (
+    file: string,
+    isServer: boolean
+  ) => {
+    id: string;
+    chunks: string[];
+  } {
     const serverRoot = getMetroServerRootMemo(projectRoot);
 
     const {
@@ -280,11 +317,12 @@ export function createServerComponentsMiddleware(
         const chunk = context.ssrManifest.get(relativeFilePath);
 
         return {
-          id: relativeFilePath,
+          id: String(createModuleId(file, { platform: context.platform, environment: 'client' })),
           chunks: chunk != null ? [chunk] : [],
         };
       }
 
+      const environment = isServer ? 'react-server' : 'client';
       const searchParams = createBundleUrlSearchParams({
         mainModuleName: '',
         platform: context.platform,
@@ -301,7 +339,7 @@ export function createServerComponentsMiddleware(
         bytecode: false,
         clientBoundaries: [],
         inlineSourceMap: false,
-        environment: isServer ? 'react-server' : 'client',
+        environment,
         modulesOnly: true,
         runModule: false,
       });
@@ -316,6 +354,7 @@ export function createServerComponentsMiddleware(
       clientReferenceUrl.search = searchParams.toString();
 
       const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+
       const relativeFilePath = path.relative(serverRoot, filePath);
 
       clientReferenceUrl.pathname = relativeFilePath;
@@ -326,9 +365,12 @@ export function createServerComponentsMiddleware(
       }
 
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
-      const id = clientReferenceUrl.pathname + clientReferenceUrl.search;
+      const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
-      return { id: relativeFilePath, chunks: [id] };
+      return {
+        id: String(createModuleId(filePath, { platform: context.platform, environment })),
+        chunks: [chunkName],
+      };
     };
   }
 
@@ -426,7 +468,9 @@ export function createServerComponentsMiddleware(
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
-          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options);
+          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options, {
+            hot: true,
+          });
         },
       }
     );
@@ -514,10 +558,7 @@ const getFullUrl = (url: string) => {
 };
 
 export const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
+  return url.fileURLToPath(fileURL);
 };
 
 const encodeInput = (input: string) => {

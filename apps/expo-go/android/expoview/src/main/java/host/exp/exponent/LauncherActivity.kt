@@ -2,12 +2,12 @@
 package host.exp.exponent
 
 import android.Manifest
-import android.app.Activity
 import android.app.ActivityManager.RecentTaskInfo
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.Kernel
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 // This activity is transparent. It uses android:style/Theme.Translucent.NoTitleBar.
 // Calls finish() once it is done processing Intent.
-class LauncherActivity : Activity() {
+class LauncherActivity : AppCompatActivity() {
   @Inject
   lateinit var kernel: Kernel
 
@@ -39,11 +39,6 @@ class LauncherActivity : Activity() {
     // Kernel's JS needs to be started for the dev menu to work when the app is launched through the deep link.
     kernel.startJSKernel(this)
     kernel.handleIntent(this, intent)
-
-    // Start a service to keep our process awake. This isn't necessary most of the time, but
-    // if the user has "Don't keep activities" on it's possible for the process to exit in between
-    // finishing this activity and starting the BaseExperienceActivity.
-    startService(ExponentIntentService.getActionStayAwake(applicationContext))
 
     // Delay to prevent race condition where finish() is called before service starts.
     Handler(mainLooper).postDelayed(
@@ -68,6 +63,18 @@ class LauncherActivity : Activity() {
       },
       100
     )
+  }
+
+  override fun onResume() {
+    super.onResume()
+    startStayAwakeServiceIfNeeded()
+  }
+
+  private fun startStayAwakeServiceIfNeeded() {
+    // Start a service to keep our process awake. This isn't necessary most of the time, but
+    // if the user has "Don't keep activities" on it's possible for the process to exit in between
+    // finishing this activity and starting the BaseExperienceActivity.
+    startService(ExponentIntentService.getActionStayAwake(applicationContext))
   }
 
   public override fun onNewIntent(intent: Intent) {

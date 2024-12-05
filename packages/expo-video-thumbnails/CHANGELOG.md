@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Run thumnbnail generation on background thread. ([#32773](https://github.com/expo/expo/pull/32773) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 9.0.2 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.1 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- [iOS] Run thumnbnail generation on background thread. ([#32773](https://github.com/expo/expo/pull/32773) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 9.0.0 — 2024-10-22
 

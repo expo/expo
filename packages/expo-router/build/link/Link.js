@@ -9,12 +9,12 @@ exports.Link = exports.Redirect = void 0;
 // `to` / `action` support removed.
 const react_1 = require("react");
 const react_native_1 = require("react-native");
-const LinkSlot_1 = require("./LinkSlot");
 const href_1 = require("./href");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const hooks_1 = require("../hooks");
 const useFocusEffect_1 = require("../useFocusEffect");
 const useLinkHooks_1 = require("./useLinkHooks");
+const Slot_1 = require("../ui/Slot");
 /**
  * Redirects to the `href` as soon as the component is mounted.
  *
@@ -38,11 +38,11 @@ const useLinkHooks_1 = require("./useLinkHooks");
  * }
  * ```
  */
-function Redirect({ href }) {
+function Redirect({ href, relativeToDirectory, withAnchor }) {
     const router = (0, hooks_1.useRouter)();
     (0, useFocusEffect_1.useFocusEffect)(() => {
         try {
-            router.replace(href);
+            router.replace(href, { relativeToDirectory, withAnchor });
         }
         catch (error) {
             console.error(error);
@@ -79,7 +79,7 @@ exports.Redirect = Redirect;
  */
 exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
-function ExpoRouterLink({ href, replace, push, 
+function ExpoRouterLink({ href, replace, push, dismissTo, 
 // TODO: This does not prevent default on the anchor tag.
 relativeToDirectory, asChild, rel, target, download, withAnchor, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
@@ -97,6 +97,8 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, ...rest }, ref)
         event = 'PUSH';
     if (replace)
         event = 'REPLACE';
+    if (dismissTo)
+        event = 'POP_TO';
     const props = (0, useLinkToPathProps_1.default)({
         href: resolvedHref,
         event,
@@ -109,7 +111,7 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, ...rest }, ref)
         }
         props.onPress(e);
     };
-    const Element = asChild ? LinkSlot_1.Slot : react_native_1.Text;
+    const Element = asChild ? Slot_1.Slot : react_native_1.Text;
     // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
     return (<Element ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
         web: {

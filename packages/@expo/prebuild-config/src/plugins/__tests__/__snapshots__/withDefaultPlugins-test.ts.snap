@@ -70,7 +70,15 @@ exports[`built-in plugins compiles mods 1`] = `
             ],
             "resources": [
               {
-                "image": [],
+                "image": [
+                  {
+                    "$": {
+                      "height": "90.333335876464844",
+                      "name": "SplashScreenLogo",
+                      "width": "100",
+                    },
+                  },
+                ],
               },
             ],
             "scenes": [
@@ -834,12 +842,6 @@ exports[`built-in plugins introspects mods 1`] = `
                       },
                     ],
                   },
-                  {
-                    "$": {
-                      "android:exported": "false",
-                      "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
-                    },
-                  },
                 ],
                 "meta-data": [
                   {
@@ -1115,26 +1117,14 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "Theme.SplashScreen",
+                  "parent": "AppTheme",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "windowSplashScreenBackground",
+                      "name": "android:windowBackground",
                     },
-                    "_": "@color/splashscreen_background",
-                  },
-                  {
-                    "$": {
-                      "name": "windowSplashScreenAnimatedIcon",
-                    },
-                    "_": "@drawable/splashscreen_logo",
-                  },
-                  {
-                    "$": {
-                      "name": "postSplashScreenTheme",
-                    },
-                    "_": "@style/AppTheme",
+                    "_": "@drawable/ic_launcher_background",
                   },
                 ],
               },
@@ -1281,7 +1271,15 @@ exports[`built-in plugins introspects mods 1`] = `
             ],
             "resources": [
               {
-                "image": [],
+                "image": [
+                  {
+                    "$": {
+                      "height": "90.333335876464844",
+                      "name": "SplashScreenLogo",
+                      "width": "100",
+                    },
+                  },
+                ],
               },
             ],
             "scenes": [
@@ -1830,12 +1828,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                       },
                     ],
                   },
-                  {
-                    "$": {
-                      "android:exported": "false",
-                      "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
-                    },
-                  },
                 ],
                 "meta-data": [
                   {
@@ -2067,26 +2059,14 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "Theme.SplashScreen",
+                  "parent": "AppTheme",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "windowSplashScreenBackground",
+                      "name": "android:windowBackground",
                     },
-                    "_": "@color/splashscreen_background",
-                  },
-                  {
-                    "$": {
-                      "name": "windowSplashScreenAnimatedIcon",
-                    },
-                    "_": "@drawable/splashscreen_logo",
-                  },
-                  {
-                    "$": {
-                      "name": "postSplashScreenTheme",
-                    },
-                    "_": "@style/AppTheme",
+                    "_": "@drawable/ic_launcher_background",
                   },
                 ],
               },
@@ -2230,7 +2210,15 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             ],
             "resources": [
               {
-                "image": [],
+                "image": [
+                  {
+                    "$": {
+                      "height": "90.333335876464844",
+                      "name": "SplashScreenLogo",
+                      "width": "100",
+                    },
+                  },
+                ],
                 "namedColor": [
                   {
                     "$": {

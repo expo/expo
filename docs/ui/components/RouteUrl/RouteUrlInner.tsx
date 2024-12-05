@@ -47,7 +47,7 @@ export function RouteUrlInner({
       float
       title={
         <span className="select-all">
-          <span className="text-icon-secondary ">{parsedProtocol}</span>
+          <span className="text-icon-secondary">{parsedProtocol}</span>
           {inputUrl}
         </span>
       }

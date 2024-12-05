@@ -51,7 +51,7 @@ describe(createReactNativeConfigAsync, () => {
       '/app/node_modules/react-native-test/package.json': '',
       '/app/node_modules/@react-native/subtest/package.json': '',
     });
-    mockPlatformResolverIos.mockImplementation(async (packageRoot, reactNativeConfig) => {
+    mockPlatformResolverIos.mockImplementationOnce(async (packageRoot, reactNativeConfig) => {
       if (packageRoot.endsWith('react-native-test')) {
         return {
           podspecPath: '/app/node_modules/react-native-test/RNTest.podspec',
@@ -92,6 +92,77 @@ describe(createReactNativeConfigAsync, () => {
         "root": "/app",
       }
     `);
+  });
+
+  it('should return config with local dependencies', async () => {
+    const packageJson = {
+      name: 'test',
+      version: '1.0.0',
+      dependencies: {
+        'react-native': '0.0.1',
+      },
+    };
+    const projectConfig: RNConfigReactNativeProjectConfig = {
+      dependencies: {
+        'react-native-test': {
+          root: '/app/modules/react-native-test',
+        },
+      },
+    };
+    const mockLoadReactNativeConfigAsync = loadConfigAsync as jest.MockedFunction<
+      typeof loadConfigAsync
+    >;
+    mockLoadReactNativeConfigAsync.mockResolvedValueOnce(projectConfig);
+
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/modules/react-native-test/package.json': '',
+      '/app/node_modules/react-native/package.json': '',
+    });
+    mockPlatformResolverIos.mockImplementationOnce(async (packageRoot, reactNativeConfig) => {
+      if (packageRoot.endsWith('react-native-test')) {
+        return {
+          podspecPath: '/app/modules/react-native-test/RNTest.podspec',
+          version: '1.0.0',
+          configurations: [],
+          scriptPhases: [],
+        };
+      }
+      return null;
+    });
+    const result = await createReactNativeConfigAsync({
+      platform: 'ios',
+      projectRoot: '/app',
+      searchPaths: ['/app/node_modules'],
+    });
+    expect(result.dependencies['react-native-test']).toBeDefined();
+    expect(result.dependencies['react-native-test'].root).toBe('/app/modules/react-native-test');
+  });
+
+  it('should return config if local dependencies are not specified', async () => {
+    const packageJson = {
+      name: 'test',
+      version: '1.0.0',
+      dependencies: {
+        'react-native': '0.0.1',
+      },
+    };
+    const projectConfig: RNConfigReactNativeProjectConfig = {};
+    const mockLoadReactNativeConfigAsync = loadConfigAsync as jest.MockedFunction<
+      typeof loadConfigAsync
+    >;
+    mockLoadReactNativeConfigAsync.mockResolvedValueOnce(projectConfig);
+
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/node_modules/react-native/package.json': '',
+    });
+    const result = await createReactNativeConfigAsync({
+      platform: 'ios',
+      projectRoot: '/app',
+      searchPaths: ['/app/node_modules'],
+    });
+    expect(result).toBeDefined();
   });
 });
 

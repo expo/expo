@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 14.0.4 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- [Android] Fix expo-calendar isPrimary on Android always returns false ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva) & [@sanchaz](https://github.com/sanchaz)) ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva), [@sanchaz](https://github.com/sanchaz))
+
+## 14.0.3 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed missing deserialization of calendarId field when calling createEventInCalendarAsync ([#33142](https://github.com/expo/expo/pull/33142) by [@chrfalch](https://github.com/chrfalch))
+
 ## 14.0.2 — 2024-10-24
 
 _This version does not introduce any user-facing changes._

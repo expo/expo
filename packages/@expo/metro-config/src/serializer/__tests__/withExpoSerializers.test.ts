@@ -22,6 +22,7 @@ describe(withSerializerPlugins, () => {
     );
 
     const options = {
+      createModuleId: expect.any(Function),
       sourceUrl: 'https://localhost:8081/index.bundle?platform=ios&dev=true&minify=false',
     };
     // @ts-expect-error

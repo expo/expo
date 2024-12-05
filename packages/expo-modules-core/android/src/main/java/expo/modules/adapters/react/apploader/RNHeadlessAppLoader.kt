@@ -77,7 +77,12 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
         // New architecture
         val reactHost = (reactContext.applicationContext as ReactApplication).reactHost ?: throw IllegalStateException("Your application does not have a valid reactHost")
         android.os.Handler(reactContext.mainLooper).post {
-          reactHost.destroy("Closing headless task app", null)
+          // Only destroy the `ReactInstanceManager` if it does not bind with an Activity.
+          // And The Activity would take over the ownership of `ReactInstanceManager`.
+          // This case happens when a user clicks a background task triggered notification immediately.
+          if (reactHost.lifecycleState == LifecycleState.BEFORE_CREATE) {
+            reactHost.destroy("Closing headless task app", null)
+          }
           HeadlessAppLoaderNotifier.notifyAppDestroyed(appScopeKey)
           appRecords.remove(appScopeKey)
         }

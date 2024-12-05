@@ -19,7 +19,7 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.76.1",
+    "react-native": "0.76.3",
     "react": "18.3.1",
     "@react-navigation/bottom-tabs": "7.0.0",
     "@react-navigation/core": "7.0.0",
@@ -29,7 +29,7 @@
     "@react-navigation/native-stack": "7.0.0",
     "@react-navigation/routers": "7.0.0",
     "@react-navigation/stack": "7.0.0",
-    "react-native-screens": "~4.0.0",
+    "react-native-screens": "~4.1.0",
     "**/util": "~0.12.4"
   },
   "dependencies": {

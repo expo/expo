@@ -3,6 +3,8 @@ package expo.modules.camera
 import android.Manifest
 import android.graphics.Bitmap
 import android.util.Log
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import expo.modules.camera.analyzers.BarCodeScannerResultSerializer
 import expo.modules.camera.analyzers.MLKitBarCodeScanner
 import expo.modules.camera.records.BarcodeSettings
@@ -45,6 +47,12 @@ class CameraViewModule : Module() {
     Name("ExpoCamera")
 
     Events("onModernBarcodeScanned")
+
+    // Aligned with iOS which has the same property. Will always be true on Android since
+    // the Google code scanner's min sdk is 21 - and our min sdk is currently 24.
+    Property("isModernBarcodeScannerAvailable") {
+      true
+    }
 
     AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
@@ -102,6 +110,27 @@ class CameraViewModule : Module() {
       )
     }
 
+    AsyncFunction("launchScanner") { settings: BarcodeSettings ->
+      val reactContext = appContext.reactContext
+        ?: throw Exceptions.ReactContextLost()
+      val options = GmsBarcodeScannerOptions.Builder()
+        .setBarcodeFormats(
+          settings.barcodeTypes.first().mapToBarcode(),
+          *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
+        )
+        .build()
+
+      val scanner = GmsBarcodeScanning.getClient(reactContext, options)
+      scanner.startScan()
+        .addOnSuccessListener { barcode ->
+          val result = BarCodeScannerResultSerializer.parseBarcodeScanningResult(barcode)
+          sendEvent("onModernBarcodeScanned", BarCodeScannerResultSerializer.toBundle(result, 1.0f))
+        }
+        .addOnFailureListener {
+          throw CameraExceptions.BarcodeScanningFailedException()
+        }
+    }
+
     OnDestroy {
       try {
         moduleScope.cancel(ModuleDestroyedException())
@@ -136,9 +165,7 @@ class CameraViewModule : Module() {
       }
 
       Prop("zoom") { view, zoom: Float? ->
-        zoom?.let {
-          view.camera?.cameraControl?.setLinearZoom(it)
-        }
+        view.zoom = zoom ?: 0f
       }
 
       Prop("mode") { view, mode: CameraMode? ->
@@ -159,7 +186,13 @@ class CameraViewModule : Module() {
 
       Prop("videoQuality") { view, quality: VideoQuality? ->
         quality?.let {
-          view.videoQuality = it
+          if (view.videoQuality != quality) {
+            view.videoQuality = it
+          }
+          return@Prop
+        }
+        if (view.videoQuality != VideoQuality.VIDEO1080P) {
+          view.videoQuality = VideoQuality.VIDEO1080P
         }
       }
 
@@ -180,11 +213,12 @@ class CameraViewModule : Module() {
         pictureSize?.let {
           if (view.pictureSize != pictureSize) {
             view.pictureSize = it
-            return@Prop
           }
+          return@Prop
         }
-
-        view.pictureSize = ""
+        if (view.pictureSize.isNotEmpty()) {
+          view.pictureSize = ""
+        }
       }
 
       Prop("autoFocus") { view, autoFocus: FocusMode? ->
@@ -199,10 +233,24 @@ class CameraViewModule : Module() {
 
       Prop("mirror") { view, mirror: Boolean? ->
         mirror?.let {
-          view.mirror = it
+          if (view.mirror != mirror) {
+            view.mirror = it
+            return@Prop
+          }
+        }
+        if (view.mirror != false) {
+          view.mirror = false
+        }
+      }
+
+      Prop("videoBitrate") { view, bitrate: Int? ->
+        bitrate?.let {
+          view.videoEncodingBitrate = it
           return@Prop
         }
-        view.mirror = false
+        if (view.videoEncodingBitrate != null) {
+          view.videoEncodingBitrate = null
+        }
       }
 
       OnViewDidUpdateProps { view ->

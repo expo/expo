@@ -2,9 +2,8 @@ import { mergeClasses } from '@expo/styleguide';
 import { useRouter } from 'next/compat/router';
 import { useEffect } from 'react';
 
-import { VersionSelector } from './VersionSelector';
+import { VersionSelector, BETA_MAJOR_VERSION } from './VersionSelector';
 
-import packageJson from '~/package.json';
 import versions from '~/public/static/constants/versions.json';
 import diffInfo from '~/public/static/diffs/template-bare-minimum/diffInfo.json';
 import { DiffBlock } from '~/ui/components/Snippet';
@@ -13,7 +12,6 @@ import { RawH3, RawH4 } from '~/ui/components/Text';
 
 // versions used by SDK selector. This has "unversioned" removed on production versions. The diff selectors will match that.
 const { VERSIONS } = versions;
-const BETA_MAJOR_VERSION = packageJson.betaVersion.split('.')[0];
 
 export const TemplateBareMinimumDiffViewer = () => {
   const router = useRouter();

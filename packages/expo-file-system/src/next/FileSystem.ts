@@ -1,5 +1,8 @@
+import { ReadableStream, WritableStream } from 'web-streams-polyfill';
+
 import ExpoFileSystem from './ExpoFileSystem';
 import { PathUtilities } from './pathUtilities';
+import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
 export class Paths extends PathUtilities {
   /**
@@ -25,6 +28,48 @@ export class Paths extends PathUtilities {
   }
 }
 
+export class FileBlob extends Blob {
+  file: File;
+  key: string = 'FileBlob';
+
+  constructor(file: File) {
+    super();
+    this.file = file;
+  }
+
+  get size(): number {
+    return this.file.size ?? 0;
+  }
+
+  get name(): string {
+    return this.file.name;
+  }
+
+  get type(): string {
+    return this.file.type ?? '';
+  }
+
+  async arrayBuffer(): Promise<ArrayBuffer> {
+    return this.file.bytes().buffer;
+  }
+
+  async text(): Promise<string> {
+    return this.file.text();
+  }
+
+  async bytes(): Promise<Uint8Array> {
+    return this.file.bytes();
+  }
+
+  stream(): ReadableStream<Uint8Array> {
+    return this.file.readableStream();
+  }
+
+  slice(start?: number, end?: number, contentType?: string): Blob {
+    return new Blob([this.file.bytes().slice(start, end)], { type: contentType });
+  }
+}
+
 export class File extends ExpoFileSystem.FileSystemFile {
   /**
    * Creates an instance of a file.
@@ -37,6 +82,13 @@ export class File extends ExpoFileSystem.FileSystemFile {
   constructor(...uris: (string | File | Directory)[]) {
     super(Paths.join(...uris));
     this.validatePath();
+  }
+
+  /*
+   * Returns the file as a Blob. The blob can be used in `@expo/fetch` to send files over network and for other uses.
+   */
+  blob(): Blob {
+    return new FileBlob(this);
   }
 
   /*
@@ -59,6 +111,14 @@ export class File extends ExpoFileSystem.FileSystemFile {
    */
   get name() {
     return Paths.basename(this.uri);
+  }
+
+  readableStream() {
+    return new ReadableStream<Uint8Array>(new FileSystemReadableStreamSource(super.open()));
+  }
+
+  writableStream() {
+    return new WritableStream<Uint8Array>(new FileSystemWritableSink(super.open()));
   }
 }
 

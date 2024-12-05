@@ -6,9 +6,24 @@
 
 ### 🎉 New features
 
+- [next] Add blob support and `.blob()` function. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Add options to the create function. ([#32909](https://github.com/expo/expo/pull/32909) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 18.0.4 — 2024-11-19
+
+### 🎉 New features
+
+- [next] Added `.bytes()` and writing a `Uint8Array`. ([#33020](https://github.com/expo/expo/pull/33020) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.3 — 2024-11-13
+
+### 🎉 New features
+
+- [next] Add file handles. ([#31738](https://github.com/expo/expo/pull/31738) by [@aleqsio](https://github.com/aleqsio))
 
 ## 18.0.2 — 2024-11-11
 

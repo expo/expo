@@ -54,7 +54,7 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     versionCode 227
-    versionName '2.32.8'
+    versionName '2.32.11'
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
@@ -207,7 +207,6 @@ dependencies {
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation ('androidx.appcompat:appcompat:1.4.1')
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   implementation 'com.jakewharton:butterknife:10.2.1'
   implementation 'de.greenrobot:eventbus:2.4.0'

@@ -10,6 +10,40 @@
 
 ### 💡 Others
 
+## 0.29.13 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Correctly handle `resizeMode` in config plugin. ([#33143](https://github.com/expo/expo/pull/33143) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.12 — 2024-11-20
+
+### 🐛 Bug fixes
+
+- Prevent `setOptions` from being called in Expo Go. ([#33104](https://github.com/expo/expo/pull/33104) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.11 — 2024-11-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.10 — 2024-11-14
+
+### 💡 Others
+
+- Bump minimum @expo/prebuild-config version.
+
+## 0.29.9 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.8 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.7 — 2024-11-12
+
+_This version does not introduce any user-facing changes._
+
 ## 0.29.6 — 2024-11-11
 
 _This version does not introduce any user-facing changes._

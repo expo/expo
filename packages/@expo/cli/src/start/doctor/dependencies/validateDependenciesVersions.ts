@@ -218,7 +218,6 @@ function findIncorrectDependencies(
 ): IncorrectDependency[] {
   const packages = Object.keys(packageVersions);
   const incorrectDeps: IncorrectDependency[] = [];
-
   for (const packageName of packages) {
     const expectedVersionOrRange = bundledNativeModules[packageName];
     const actualVersion = packageVersions[packageName];
@@ -248,22 +247,12 @@ export function isDependencyVersionIncorrect(
     return semver.ltr(actualVersion, expectedVersionOrRange);
   }
 
-  const actualPrerelease = semver.prerelease(actualVersion);
-  const expectedPrerelease = semver.prerelease(expectedVersionOrRange);
+  // For all other packages, check if the actual version satisfies the expected range
+  const satisfies = semver.satisfies(actualVersion, expectedVersionOrRange, {
+    includePrerelease: true,
+  });
 
-  // If both are prereleases or both are not prereleases, use satisfies
-  if ((actualPrerelease && expectedPrerelease) || (!actualPrerelease && !expectedPrerelease)) {
-    return !semver.satisfies(actualVersion, expectedVersionOrRange);
-  }
-
-  // If actual is prerelease but expected is not
-  if (actualPrerelease && !expectedPrerelease) {
-    const cleanedActualVersion = `${semver.major(actualVersion)}.${semver.minor(actualVersion)}.${semver.patch(actualVersion)}`;
-    return !semver.satisfies(cleanedActualVersion, expectedVersionOrRange);
-  }
-
-  // If expected is prerelease but actual is not, consider it incorrect
-  return true;
+  return !satisfies;
 }
 
 function findDependencyType(

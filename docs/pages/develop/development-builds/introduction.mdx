@@ -2,6 +2,7 @@
 title: Introduction to development builds
 sidebar_title: Introduction
 description: A better development environment for React Native apps.
+hideTOC: true
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -10,6 +11,16 @@ import { VideoRecorderIcon } from '@expo/styleguide-icons/outline/VideoRecorderI
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { StructuredData } from '~/ui/components/StructuredData';
+
+<StructuredData
+  data={{
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: 'Development builds introduction',
+    description: 'A better development environment for React Native apps.',
+  }}
+/>
 
 A **development build** is a debug build of your app that contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) package. By using development builds instead of [Expo Go](/get-started/set-up-your-environment/), you gain full control over the native runtime, so you can [install any native libraries](/workflow/using-libraries/#determining-third-party-library-compatibility), [modify any project configuration](/config-plugins/introduction/), or [write your own native code](/modules/get-started/). With Expo development builds, you are building your own native app, while with Expo Go you are running your project in a sandboxed native app environment.
 

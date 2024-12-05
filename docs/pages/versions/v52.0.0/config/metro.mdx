@@ -3,20 +3,22 @@ title: metro.config.js
 description: A reference of available configurations in Metro.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
 ## Environment variables
 
-In SDK 49 and higher, the Expo CLI can load environment variables from **.env** files. Learn more about how to use environment variables in Expo CLI in the [environment variables guide](/guides/environment-variables/).
+Expo CLI can load environment variables from **.env** files. Learn more about how to use environment variables in Expo CLI in the [environment variables guide](/guides/environment-variables/).
 
 EAS CLI uses a different mechanism for environment variables, except when it invokes Expo CLI for compiling and bundling. Learn more about [environment variables in EAS](/build-reference/variables/).
 
-If you are migrating an older project to SDK 49 or above, then you should ignore local env files by adding the following to your **.gitignore**:
+If you are migrating an older project, then you should ignore local env files by adding the following to your **.gitignore**:
 
 ```sh .gitignore
 # local env files
@@ -220,156 +222,14 @@ Then, ensure [CSS is setup](#css) in the **metro.config.js** file.
 
 ### Tailwind
 
-> **info** Standard Tailwind does not support native platforms. This is web-only. For universal support, use a compatible library like [Nativewind](https://www.nativewind.dev/).
+> **info** Standard Tailwind CSS supports only web platform. For universal support, use a library such as [NativeWind](https://www.nativewind.dev/), which allows creating styled React Native components with Tailwind CSS.
 
-[Tailwind](https://tailwindcss.com/) can be used with Metro for web. The following files are required to be modified to set it up:
-
-<FileTree files={['app.json', 'package.json', 'global.css', 'tailwind.config.js', 'index.js']} />
-
-First, ensure you are using Metro for web in your **app.json**:
-
-```json app.json
-{
-  "expo": {
-    "web": {
-      "bundler": "metro"
-    }
-  }
-}
-```
-
-Then, configure Tailwind according to the [Tailwind PostCSS docs](https://tailwindcss.com/docs/installation/using-postcss).
-
-<Step label="1">
-
-Install `tailwindcss` and its peer dependencies, and create a **tailwind.config.js** file:
-
-<Terminal cmd={['$ yarn add --dev tailwindcss postcss autoprefixer', '$ npx tailwindcss init']} />
-
-</Step>
-
-<Step label="2">
-
-Add `tailwindcss` and `autoprefixer` to your **postcss.config.js** file:
-
-```js postcss.config.js
-module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-};
-```
-
-</Step>
-
-<Step label="3">
-
-Add the paths to all of your template files in your **tailwind.config.js** file:
-
-```js tailwind.config.js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    // Ensure this points to your source code...
-    './app/**/*.{js,tsx,ts,jsx}',
-    // If you use a `src` folder, add: './src/**/*.{js,tsx,ts,jsx}'
-    // Do the same with `components`, `hooks`, `styles`, or any other top-level folders...
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-};
-```
-
-> Consider using a root `/src` directory to simplify this step. Learn more in [`src` directory](/router/reference/src-directory).
-
-</Step>
-
-<Step label="4">
-
-Create **global.css** in your project and add directives for each of Tailwind's layers:
-
-```css global.css
-/* This file adds the requisite utility classes for Tailwind to work. */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-Ensure you import this file in your root-most JavaScript file:
-
-```js index.js
-import './global.css';
-```
-
-> When using Expo Router, you can use **./index.js** or **./app/\_layout.js**. They both work the same.
-
-</Step>
-
-<Step label="5">
-
-Start your project by clearing the transform cache for good measure:
-
-<Terminal cmd={['$ npx expo --clear']} />
-
-</Step>
-
-#### Tailwind usage
-
-You can use Tailwind with React DOM elements as-is:
-
-```jsx
-export default function Page() {
-  return (
-    <div className="bg-slate-100 rounded-xl">
-      <p className="text-lg font-medium">Welcome to Tailwind</p>
-    </div>
-  );
-}
-```
-
-You can use the `{ $$css: true }` syntax to use Tailwind with React Native web elements:
-
-```jsx
-import { View, Text } from 'react-native';
-
-export default function Page() {
-  return (
-    <View style={{ $$css: true, _: 'bg-slate-100 rounded-xl' }}>
-      <Text style={{ $$css: true, _: 'text-lg font-medium' }}>Welcome to Tailwind</Text>
-    </View>
-  );
-}
-```
-
-#### Tailwind troubleshooting
-
-If you have a custom `config.cacheStores` in your **metro.config.js**, you need to extend the Expo superclass of `FileStore`:
-
-```js metro.config.js
-// Import the Expo superclass which has support for PostCSS.
-const { FileStore } = require('@expo/metro-config/file-store');
-
-config.cacheStores = [
-  new FileStore({
-    root: '/path/to/custom/cache',
-  }),
-];
-
-module.exports = config;
-```
-
-Ensure you don't have CSS disabled in your **metro.config.js**:
-
-```js metro.config.js
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname, {
-  // Do not disable CSS support when using Tailwind.
-  isCSSEnabled: true,
-});
-```
+<BoxLink
+  title="Tailwind CSS"
+  description="Learn how to configure and use Tailwind CSS in your Expo project."
+  href="/guides/tailwind/"
+  Icon={BookOpen02Icon}
+/>
 
 ## Extending the Babel transformer
 

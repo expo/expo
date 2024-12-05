@@ -33,7 +33,7 @@ export const APISectionDeprecationNote = ({ comment, sticky = false }: Props) =>
         key="deprecation-note"
         className={mergeClasses(
           '[table_&]:last-of-type:mb-2.5',
-          sticky && 'pl-6 pr-4 shadow-none rounded-b-none rounded-t-lg max-md-gutters:px-4'
+          sticky && 'rounded-b-none rounded-t-lg pl-6 pr-4 shadow-none max-md-gutters:px-4'
         )}>
         {content.length ? (
           <ReactMarkdown components={mdComponents}>{`**Deprecated** ${content}`}</ReactMarkdown>

@@ -6,9 +6,39 @@
 
 ### 🎉 New features
 
+- Add support for `/* webpackIgnore: true */` magic comment in code splitting. ([#33366](https://github.com/expo/expo/pull/33366) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.19.5 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- Fixed DOM Components support on Windows. ([#33114](https://github.com/expo/expo/pull/33114) by [@kudo](https://github.com/kudo))
+
+## 0.19.4 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.3 — 2024-11-13
+
+### 🐛 Bug fixes
+
+- Fix Expo Router root path on Windows. ([#32792](https://github.com/expo/expo/pull/32792) by [@marklawlor](https://github.com/marklawlor))
+
+## 0.19.2 — 2024-11-13
+
+### 🎉 New features
+
+- Add scoped module IDs for Metro SSR. ([#32737](https://github.com/expo/expo/pull/32737) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.1 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- Fixed `npx expo export` to support Hermes bytecode bundling. ([#32770](https://github.com/expo/expo/pull/32770) by [@kudo](https://github.com/kudo))
 
 ## 0.19.0 — 2024-11-10
 

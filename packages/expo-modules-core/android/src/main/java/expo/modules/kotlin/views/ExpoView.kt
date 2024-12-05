@@ -1,8 +1,10 @@
 package expo.modules.kotlin.views
 
 import android.content.Context
+import android.graphics.Canvas
 import android.widget.LinearLayout
 import androidx.annotation.UiThread
+import com.facebook.react.uimanager.BackgroundStyleApplicator
 import expo.modules.kotlin.AppContext
 
 /**
@@ -45,5 +47,17 @@ abstract class ExpoView(
       // We need to force measure and layout, because React Native doesn't do it for us.
       post(Runnable { measureAndLayout() })
     }
+  }
+
+  open fun clipToPaddingBox(canvas: Canvas) {
+    // When the border radius is set, we need to clip the content to the padding box.
+    // This is because the border radius is applied to the background drawable, not the view itself.
+    // It is the same behavior as in React Native.
+    BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
+  }
+
+  override fun dispatchDraw(canvas: Canvas) {
+    clipToPaddingBox(canvas)
+    super.dispatchDraw(canvas)
   }
 }

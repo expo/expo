@@ -6,9 +6,25 @@
 
 ### 🎉 New features
 
+- Add `displayName` to DOM components for better debugging. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
+- Add support for `TSInterfaceDeclaration` in server component plugin. ([#33121](https://github.com/expo/expo/pull/33121) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 12.0.3 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.2 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.1 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
 
 ## 12.0.0 — 2024-11-11
 

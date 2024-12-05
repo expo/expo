@@ -4,10 +4,10 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "start:02-server-actions": "EXPO_UNSTABLE_SERVER_ACTIONS=1 E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=02-server-actions expo start",
-    "export:02-server-actions": "EXPO_UNSTABLE_SERVER_ACTIONS=1 E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=02-server-actions expo export",
-    "start:03-server-actions-only": "EXPO_UNSTABLE_SERVER_ACTIONS=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=03-server-actions-only expo start",
-    "export:03-server-actions-only": "EXPO_UNSTABLE_SERVER_ACTIONS=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=03-server-actions-only expo export",
+    "start:02-server-actions": "EXPO_UNSTABLE_SERVER_FUNCTIONS=1 E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=02-server-actions expo start",
+    "export:02-server-actions": "EXPO_UNSTABLE_SERVER_FUNCTIONS=1 E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=02-server-actions expo export",
+    "start:03-server-actions-only": "EXPO_UNSTABLE_SERVER_FUNCTIONS=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=03-server-actions-only expo start",
+    "export:03-server-actions-only": "EXPO_UNSTABLE_SERVER_FUNCTIONS=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=03-server-actions-only expo export",
     "start:rsc": "E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=01-rsc expo start",
     "export:rsc": "E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=01-rsc expo export",
     "start:react-native-canary": "E2E_RSC_ENABLED=1 E2E_CANARY_ENABLED=1 E2E_ROUTER_SRC=react-native-canary expo start",
@@ -26,10 +26,10 @@
     "expo-speech": "~13.0.0",
     "expo-sqlite": "~15.0.0",
     "react": "18.3.1",
-    "react-native": "0.76.1",
+    "react-native": "0.76.3",
     "react-native-safe-area-context": "4.12.0",
-    "react-native-screens": "~4.0.0",
-    "react-native-webview": "13.12.2"
+    "react-native-screens": "~4.1.0",
+    "react-native-webview": "13.12.5"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",

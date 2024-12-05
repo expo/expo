@@ -14,8 +14,8 @@ type BoxProps = PropsWithChildren<{
 
 export const Box = ({ name, image, createUrl, children }: BoxProps) => (
   <APIBox className="mt-6">
-    <div className="inline-flex flex-row items-center gap-4 pb-4 w-full max-md-gutters::gap-3 max-md-gutters::flex-col">
-      <div className="flex flex-row gap-3 items-center w-[inherit] [&>h3]:!mb-0">
+    <div className="max-md-gutters::gap-3 max-md-gutters::flex-col inline-flex w-full flex-row items-center gap-4 pb-4">
+      <div className="flex w-[inherit] flex-row items-center gap-3 [&>h3]:!mb-0">
         <Icon title={name} image={image} className="size-12" />
         <H3>{name}</H3>
       </div>

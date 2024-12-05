@@ -114,12 +114,14 @@ export function installFormDataPatch(formData: typeof FormData) {
       );
     }
     for (const part of this._parts) {
+      // @ts-ignore: part[1] could throw an error in Node.js runtime because of `File` type mismatch.
       callback.call(thisArg, part[1], part[0], this);
     }
   };
 
   // Required for RSC: https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-server/src/ReactFlightServer.js#L2117
-  formData.prototype.entries = function* entries(
+  // @ts-ignore: DOM.iterable is disabled for jest compat
+  formData.prototype.entries ??= function* entries(
     this: ReactNativeFormDataInternal
   ): IterableIterator<[string, FormDataEntryValue]> {
     for (const part of this._parts) {
@@ -129,12 +131,14 @@ export function installFormDataPatch(formData: typeof FormData) {
     }
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.keys ??= function* keys(this: ReactNativeFormDataInternal) {
     for (const part of this._parts) {
       yield part[0];
     }
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.values ??= function* values(
     this: ReactNativeFormDataInternal
   ): IterableIterator<FormDataEntryValue> {
@@ -145,6 +149,7 @@ export function installFormDataPatch(formData: typeof FormData) {
     }
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype[Symbol.iterator] = formData.prototype.entries;
 
   return formData;

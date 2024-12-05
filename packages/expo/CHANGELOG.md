@@ -6,9 +6,72 @@
 
 ### 🎉 New features
 
+- [next] Add blob support to `expo/fetch`. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
+- Assert that DOM components cannot have `children`. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
+- Fix sending a blob as fetch body not setting correct content-type. ([#33405](https://github.com/expo/expo/pull/33405) by [@aleqsio](https://github.com/aleqsio))
+- Use nullish assignment operator to assign entries in FormData. ([#33445](https://github.com/expo/expo/pull/33445) by [@j-piasecki](https://github.com/j-piasecki))
+
 ### 💡 Others
+
+## 52.0.14 - 2024-12-02
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `AssertionError` from `ReactActivityDelegateWrapper.onPause`. ([#33309](https://github.com/expo/expo/pull/33309) by [@kudo](https://github.com/kudo))
+
+## 52.0.13 - 2024-12-02
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.12 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.11 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.10 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.9 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.8 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- Fixed type errors when using `ts-jest`. ([#32954](https://github.com/expo/expo/pull/32954) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Started `expo/fetch` streaming lazily. ([#33021](https://github.com/expo/expo/pull/33021) by [@kudo](https://github.com/kudo))
+- Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
+
+## 52.0.7 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.6 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.5 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.4 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.3 — 2024-11-12
+
+_This version does not introduce any user-facing changes._
 
 ## 52.0.2 — 2024-11-11
 

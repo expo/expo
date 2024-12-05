@@ -1,7 +1,11 @@
 package expo.modules.audio
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.audiofx.Visualizer
+import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -45,29 +49,10 @@ class AudioPlayer(
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
+  private var visualizer: Visualizer? = null
 
-  private val visualizer = Visualizer(player.audioSessionId).apply {
-    captureSize = Visualizer.getCaptureSizeRange()[1]
-    setDataCaptureListener(
-      object : Visualizer.OnDataCaptureListener {
-        override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
-          waveform?.let {
-            if (samplingEnabled) {
-              val data = extractAmplitudes(it)
-              sendAudioSampleUpdate(data)
-            }
-          }
-        }
-
-        override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
-        }
-      },
-      Visualizer.getMaxCaptureRate() / 2,
-      true,
-      false
-    )
-    enabled = true
-  }
+  val currentTime get() = player.currentPosition / 1000
+  val duration get() = player.duration / 1000
 
   init {
     addPlayerListeners()
@@ -104,6 +89,12 @@ class AudioPlayer(
 
   fun setSamplingEnabled(enabled: Boolean) {
     samplingEnabled = enabled
+    if (enabled) {
+      createVisualizer()
+    } else {
+      visualizer?.release()
+      visualizer = null
+    }
   }
 
   private fun extractAmplitudes(chunk: ByteArray): List<Float> = chunk.map { byte ->
@@ -119,12 +110,12 @@ class AudioPlayer(
 
     return mapOf(
       "id" to id,
-      "currentTime" to player.currentPosition,
+      "currentTime" to currentTime,
       "playbackState" to playbackStateToString(player.playbackState),
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
       "reasonForWaitingToPlay" to null,
       "mute" to isMuted,
-      "duration" to player.duration,
+      "duration" to duration,
       "playing" to player.isPlaying,
       "loop" to isLooping,
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,
@@ -161,11 +152,49 @@ class AudioPlayer(
     }
   }
 
-  override fun deallocate() {
+  private fun createVisualizer() {
+    appContext?.reactContext?.let {
+      if (ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "\'android.permission.RECORD_AUDIO\' is required to use audio sampling. Please request this permission and try again.")
+        return
+      }
+    }
+
+    // It must only be created once, otherwise the app will crash
+    if (visualizer == null) {
+      visualizer = Visualizer(player.audioSessionId).apply {
+        captureSize = Visualizer.getCaptureSizeRange()[1]
+        setDataCaptureListener(
+          object : Visualizer.OnDataCaptureListener {
+            override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
+              waveform?.let {
+                if (samplingEnabled) {
+                  val data = extractAmplitudes(it)
+                  sendAudioSampleUpdate(data)
+                }
+              }
+            }
+
+            override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) = Unit
+          },
+          Visualizer.getMaxCaptureRate() / 2,
+          true,
+          false
+        )
+        enabled = true
+      }
+    }
+  }
+
+  override fun sharedObjectDidRelease() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()
-      visualizer.release()
+      visualizer?.release()
       player.release()
     }
+  }
+
+  companion object {
+    val TAG = AudioPlayer::class.simpleName
   }
 }

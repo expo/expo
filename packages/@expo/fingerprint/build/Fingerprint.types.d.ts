@@ -130,6 +130,10 @@ export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
     sourceSkips: NonNullable<Options['sourceSkips']>;
     enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
     ignorePathMatchObjects: IMinimatch[];
+    /**
+     * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
+     */
+    ignoreDirMatchObjects: IMinimatch[];
 };
 export interface HashSourceFile {
     type: 'file';

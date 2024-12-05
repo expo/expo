@@ -276,7 +276,7 @@ class Chunk {
     }
     boolishTransformOption(name) {
         const value = this.graph.transformOptions?.customTransformOptions?.[name];
-        return value === true || value === 'true';
+        return value === true || value === 'true' || value === '1';
     }
     async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }) {
         // Create hash without wrapping to prevent it changing when the wrapping changes.

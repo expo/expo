@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 7.0.3 - 2024-12-02
+
+### 🐛 Bug fixes
+
+- Fix event emitters not working on web. ([#33327](https://github.com/expo/expo/pull/33327) by [@aleqsio](https://github.com/aleqsio))
+
+## 7.0.2 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.1 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Added fix to getNetworkStateAsync failing on iOS ([#33137](https://github.com/expo/expo/pull/33137) by [@chrfalch](https://github.com/chrfalch))
+
 ## 7.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

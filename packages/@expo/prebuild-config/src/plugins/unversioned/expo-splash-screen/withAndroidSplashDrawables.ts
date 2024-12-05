@@ -39,8 +39,7 @@ export async function setSplashDrawableAsync(
             'android:drawable': '@color/splashscreen_background',
           },
         },
-        // Only include the image if resizeMode native is in-use.
-        resizeMode === 'native' && {
+        {
           bitmap: [
             {
               $: {

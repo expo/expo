@@ -47,7 +47,7 @@ export default function Index() {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -229,7 +229,7 @@ export default function Index() {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -389,37 +389,6 @@ Let's learn what the above code does:
 - Its `animationType` prop determines how it enters and leaves the screen. In this case, it is sliding from the bottom of the screen.
 - Lastly, the `<EmojiPicker>` invokes the `onClose` prop when the user presses the close `<Pressable>`.
 
-The next step is to add the corresponding styles for the `<EmojiPicker>` component:
-
-{/* prettier-ignore */}
-```jsx components/EmojiPicker.tsx
-const styles = StyleSheet.create({
-  modalContent: {
-    height: '25%',
-    width: '100%',
-    backgroundColor: '#25292e',
-    borderTopRightRadius: 18,
-    borderTopLeftRadius: 18,
-    position: 'absolute',
-    bottom: 0,
-  },
-  titleContainer: {
-    height: '16%',
-    backgroundColor: '#464C55',
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  title: {
-    color: '#fff',
-    fontSize: 16,
-  },
-});
-```
-
 Now, let's modify the **app/(tabs)/index.tsx**:
 
 1. Import the `<EmojiPicker>` component.
@@ -453,7 +422,7 @@ export default function Index() {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -649,7 +618,7 @@ export default function Index() {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -802,7 +771,7 @@ export default function Index() {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });

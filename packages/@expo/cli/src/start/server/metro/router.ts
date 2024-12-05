@@ -56,9 +56,9 @@ const logSrcDir = () => {
 
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
-  if (directoryExistsSync(path.join(projectRoot, 'src/app'))) {
+  if (directoryExistsSync(path.join(projectRoot, 'src', 'app'))) {
     logSrcDir();
-    return 'src/app';
+    return path.join('src', 'app');
   }
 
   debug('Using app as the root directory for Expo Router.');

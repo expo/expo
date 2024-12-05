@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-plugins",
-  "version": "9.0.8",
+  "version": "9.0.10",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
   "scripts": {

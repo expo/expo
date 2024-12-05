@@ -10,6 +10,52 @@
 
 ### 💡 Others
 
+## 8.0.21 - 2024-11-29
+
+### 💡 Others
+
+- Fixed compatibility for React Native 0.78 nightlies. ([#33306](https://github.com/expo/expo/pull/33306) by [@kudo](https://github.com/kudo))
+
+## 8.0.20 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.19 — 2024-11-22
+
+### 💡 Others
+
+- Added React Native 0.77 support for Kotlin and NDK version bumps. ([#33073](https://github.com/expo/expo/pull/33073) by [@kudo](https://github.com/kudo))
+
+## 8.0.18 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.17 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.16 — 2024-11-14
+
+### 🐛 Bug fixes
+
+- [Android] Fix app icon generation. ([#32908](https://github.com/expo/expo/pull/32908) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 8.0.15 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.14 — 2024-11-13
+
+### 🐛 Bug fixes
+
+- Ensure image resource section exists in `SplashScreen.storyboard`. ([#32858](https://github.com/expo/expo/pull/32858) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 8.0.13 — 2024-11-12
+
+### 💡 Others
+
+- Vary android styles depending on config ([#32776](https://github.com/expo/expo/pull/32776) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 8.0.12 — 2024-11-11
 
 _This version does not introduce any user-facing changes._

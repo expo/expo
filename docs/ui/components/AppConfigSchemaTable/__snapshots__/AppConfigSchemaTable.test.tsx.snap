@@ -4,14 +4,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div>
     <div
-      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
     >
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
           href="#name"
           id="name"
         >
@@ -19,15 +19,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline"
           >
             <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-              data-text="true"
+              class="font-medium"
             >
               name
             </code>
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -51,18 +50,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </a>
       </p>
-      <p
-        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+      <div
+        class="my-3"
         data-text="true"
       >
-        Type: 
-        <code
-          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        <span
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
           data-text="true"
         >
-          string
-        </code>
-      </p>
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            string
+          </code>
+        </span>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -70,21 +74,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Name of your app.
       </p>
       <details
-        class="bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="bare-workflow"
       >
         <summary
-          class="group grid grid-cols-[min-content_auto_min-content_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 rounded-md cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="mt-[5px] ml-1.5 mr-2 self-baseline"
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -98,18 +101,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Bare Workflow
           </span>
           <a
-            class="inline ml-auto"
+            aria-label="Permalink"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#bare-workflow"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm inline-flex mb-auto invisible group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -135,7 +139,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           <div />
         </summary>
         <div
-          class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -147,14 +151,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </details>
     </div>
     <div
-      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
     >
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
           href="#androidnavigationbar"
           id="androidnavigationbar"
         >
@@ -162,15 +166,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline"
           >
             <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-              data-text="true"
+              class="font-medium"
             >
               androidNavigationBar
             </code>
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -194,18 +197,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </a>
       </p>
-      <p
-        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+      <div
+        class="my-3"
         data-text="true"
       >
-        Type: 
-        <code
-          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        <span
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
           data-text="true"
         >
-          object
-        </code>
-      </p>
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            object
+          </code>
+        </span>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -213,21 +221,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Configuration for the bottom navigation bar on Android.
       </p>
       <details
-        class="bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="expokit"
       >
         <summary
-          class="group grid grid-cols-[min-content_auto_min-content_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 rounded-md cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="mt-[5px] ml-1.5 mr-2 self-baseline"
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -241,18 +248,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             ExpoKit
           </span>
           <a
-            class="inline ml-auto"
+            aria-label="Permalink"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#expokit"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm inline-flex mb-auto invisible group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -278,7 +286,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           <div />
         </summary>
         <div
-          class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -289,21 +297,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <details
-        class="bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="bare-workflow-1"
       >
         <summary
-          class="group grid grid-cols-[min-content_auto_min-content_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 rounded-md cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="mt-[5px] ml-1.5 mr-2 self-baseline"
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -317,18 +324,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Bare Workflow
           </span>
           <a
-            class="inline ml-auto"
+            aria-label="Permalink"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#bare-workflow-1"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm inline-flex mb-auto invisible group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -354,7 +362,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           <div />
         </summary>
         <div
-          class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -365,14 +373,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
             href="#visible"
             id="visible"
           >
@@ -380,15 +388,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                data-text="true"
+                class="font-medium"
               >
                 visible
               </code>
             </span>
             <svg
               aria-label="permalink"
-              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -412,27 +419,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </a>
         </p>
-        <p
-          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        <div
+          class="my-3"
           data-text="true"
         >
-          Type: 
-          <code
-            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
-            enum
-          </code>
-           • Path:
-           
-          <code
-            class="text-secondary px-1 break-words"
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              enum
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
           >
-            androidNavigationBar
-            .
-            visible
-          </code>
-        </p>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              androidNavigationBar
+              .
+              visible
+            </code>
+          </span>
+        </div>
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
@@ -440,21 +457,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
+          class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
           id="expokit-1"
         >
           <summary
-            class="group grid grid-cols-[min-content_auto_min-content_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 rounded-md cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
+            class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
           >
             <div
-              class="mt-[5px] ml-1.5 mr-2 self-baseline"
+              class="ml-1.5 mr-2 mt-[5px] self-baseline"
             >
               <svg
-                class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
+                class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
                 fill="none"
                 role="img"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <g
                   id="triangle-down-custom-icon"
@@ -468,18 +484,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </div>
             <span
-              class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+              class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
               data-text="true"
             >
               ExpoKit
             </span>
             <a
-              class="inline ml-auto"
+              aria-label="Permalink"
+              class="ml-auto inline rounded-md p-1 hocus:bg-element"
               href="#expokit-1"
             >
               <svg
                 aria-label="permalink"
-                class="icon-sm inline-flex mb-auto invisible group-hover:visible group-focus-visible:visible"
+                class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -505,7 +522,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             <div />
           </summary>
           <div
-            class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
+            class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
           >
             <p
               class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -516,14 +533,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </details>
         <div
-          class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+          class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
             data-text="true"
           >
             <a
-              class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+              class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
               href="#always"
               id="always"
             >
@@ -531,15 +548,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class="inline"
               >
                 <code
-                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                  data-text="true"
+                  class="font-medium"
                 >
                   always
                 </code>
               </span>
               <svg
                 aria-label="permalink"
-                class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -563,27 +579,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </a>
           </p>
-          <p
-            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+          <div
+            class="my-3"
             data-text="true"
           >
-            Type: 
-            <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
               data-text="true"
             >
-              boolean
-            </code>
-             • Path:
-             
-            <code
-              class="text-secondary px-1 break-words"
+              Type: 
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+                data-text="true"
+              >
+                boolean
+              </code>
+            </span>
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+              data-text="true"
             >
-              androidNavigationBar.visible
-              .
-              always
-            </code>
-          </p>
+               • Path:
+               
+              <code
+                class="break-words px-1 text-secondary"
+              >
+                androidNavigationBar.visible
+                .
+                always
+              </code>
+            </span>
+          </div>
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
             data-text="true"
@@ -593,14 +619,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
             href="#backgroundcolor"
             id="backgroundcolor"
           >
@@ -608,15 +634,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                data-text="true"
+                class="font-medium"
               >
                 backgroundColor
               </code>
             </span>
             <svg
               aria-label="permalink"
-              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -640,27 +665,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </a>
         </p>
-        <p
-          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        <div
+          class="my-3"
           data-text="true"
         >
-          Type: 
-          <code
-            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
-            string
-          </code>
-           • Path:
-           
-          <code
-            class="text-secondary px-1 break-words"
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              string
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
           >
-            androidNavigationBar
-            .
-            backgroundColor
-          </code>
-        </p>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              androidNavigationBar
+              .
+              backgroundColor
+            </code>
+          </span>
+        </div>
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
@@ -684,14 +719,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
     >
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
           href="#intentfilters"
           id="intentfilters"
         >
@@ -699,15 +734,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline"
           >
             <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-              data-text="true"
+              class="font-medium"
             >
               intentFilters
             </code>
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -731,18 +765,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </a>
       </p>
-      <p
-        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+      <div
+        class="my-3"
         data-text="true"
       >
-        Type: 
-        <code
-          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+        <span
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
           data-text="true"
         >
-          array
-        </code>
-      </p>
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            array
+          </code>
+        </span>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -750,21 +789,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Configuration for setting an array of custom intent filters in Android manifest.
       </p>
       <details
-        class="bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="bare-workflow-2"
       >
         <summary
-          class="group grid grid-cols-[min-content_auto_min-content_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 rounded-md cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
+          class="group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="mt-[5px] ml-1.5 mr-2 self-baseline"
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -778,18 +816,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Bare Workflow
           </span>
           <a
-            class="inline ml-auto"
+            aria-label="Permalink"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#bare-workflow-2"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm inline-flex mb-auto invisible group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -815,7 +854,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           <div />
         </summary>
         <div
-          class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -826,7 +865,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <span
-        class="grid grid-cols-1 gap-2 mb-6"
+        class="mb-6 grid grid-cols-1 gap-2"
       >
         <p
           class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary font-bold"
@@ -835,7 +874,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Example
         </p>
         <span
-          class="whitespace-pre m-0 px-1 py-1.5 inline-flex !p-0"
+          class="m-0 whitespace-pre px-1 py-1.5 inline-flex !p-0"
           data-text="true"
         >
           <code
@@ -854,14 +893,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </span>
       <div
-        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
             href="#autoverify"
             id="autoverify"
           >
@@ -869,15 +908,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                data-text="true"
+                class="font-medium"
               >
                 autoVerify
               </code>
             </span>
             <svg
               aria-label="permalink"
-              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -901,27 +939,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </a>
         </p>
-        <p
-          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        <div
+          class="my-3"
           data-text="true"
         >
-          Type: 
-          <code
-            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
-            boolean
-          </code>
-           • Path:
-           
-          <code
-            class="text-secondary px-1 break-words"
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              boolean
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
           >
-            intentFilters
-            .
-            autoVerify
-          </code>
-        </p>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              intentFilters
+              .
+              autoVerify
+            </code>
+          </span>
+        </div>
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
@@ -930,14 +978,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
       </div>
       <div
-        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
             href="#data"
             id="data"
           >
@@ -945,15 +993,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                data-text="true"
+                class="font-medium"
               >
                 data
               </code>
             </span>
             <svg
               aria-label="permalink"
-              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -977,36 +1024,46 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </a>
         </p>
-        <p
-          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+        <div
+          class="my-3"
           data-text="true"
         >
-          Type: 
-          <code
-            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
-            array || object
-          </code>
-           • Path:
-           
-          <code
-            class="text-secondary px-1 break-words"
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              array || object
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
           >
-            intentFilters
-            .
-            data
-          </code>
-        </p>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              intentFilters
+              .
+              data
+            </code>
+          </span>
+        </div>
         <div
-          class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
+          class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-3.5 px-5 pt-4 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
             data-text="true"
           >
             <a
-              class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+              class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-12"
               href="#host"
               id="host"
             >
@@ -1014,15 +1071,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class="inline"
               >
                 <code
-                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
-                  data-text="true"
+                  class="font-medium"
                 >
                   host
                 </code>
               </span>
               <svg
                 aria-label="permalink"
-                class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -1046,27 +1102,37 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </a>
           </p>
-          <p
-            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
+          <div
+            class="my-3"
             data-text="true"
           >
-            Type: 
-            <code
-              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
               data-text="true"
             >
-              string
-            </code>
-             • Path:
-             
-            <code
-              class="text-secondary px-1 break-words"
+              Type: 
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+                data-text="true"
+              >
+                string
+              </code>
+            </span>
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+              data-text="true"
             >
-              intentFilters.data
-              .
-              host
-            </code>
-          </p>
+               • Path:
+               
+              <code
+                class="break-words px-1 text-secondary"
+              >
+                intentFilters.data
+                .
+                host
+              </code>
+            </span>
+          </div>
         </div>
       </div>
     </div>

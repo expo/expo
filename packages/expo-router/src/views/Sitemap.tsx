@@ -12,7 +12,7 @@ import { useExpoRouter } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import { Link } from '../link/Link';
 import { matchDeepDynamicRouteName } from '../matchers';
-import { hasViewControllerBasedStatusBarAppearance } from '../utils/statusbar';
+import { canOverrideStatusBarBehavior } from '../utils/statusbar';
 
 const INDENT = 20;
 
@@ -54,7 +54,7 @@ export function getNavOptions(): NativeStackNavigationOptions {
 export function Sitemap() {
   return (
     <View style={styles.container}>
-      {!hasViewControllerBasedStatusBarAppearance && <StatusBar barStyle="light-content" />}
+      {canOverrideStatusBarBehavior && <StatusBar barStyle="light-content" />}
       <ScrollView contentContainerStyle={styles.scroll}>
         <FileSystemView />
       </ScrollView>
