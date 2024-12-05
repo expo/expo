@@ -38,7 +38,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 ## Manual installation
 
-The following instructions apply to installing the latest version of Expo modules in React Native 0.76. For previous versions, check the [native upgrade helper](bare/upgrade) to see how these files are customized.
+The following instructions apply to installing the latest version of Expo modules in React Native 0.76. For previous versions, check the [native upgrade helper](/bare/upgrade) to see how these files are customized.
 
 <InstallSection packageName="expo" cmd={['$ npm install expo']} hideBareInstructions />
 
@@ -75,7 +75,11 @@ The last step is to install the project's CocoaPods again to pull in Expo module
 
 ### Configure Expo CLI for bundling on Android and iOS
 
-We recommend using Expo CLI to bundle your app JavaScript code and assets. This adds support for using the `"main"` field in **package.json** to use [Expo Router](/router/introduction/) library. Not using Expo CLI for bundling may result in unexpected behavior. [Learn more about Expo CLI](/bare/using-expo-cli/).
+We recommend using Expo CLI and related tooling configurations to bundle your app JavaScript code and assets. This adds support for using the `"main"` field in **package.json** to use [Expo Router](/router/introduction/) library. Not using Expo CLI for bundling may result in unexpected behavior. [Learn more about Expo CLI](/bare/using-expo-cli/).
+
+<Collapsible summary="Use babel-preset-expo in your babel.config.js">
+  <DiffBlock source="/static/diffs/babel-config.diff" />
+</Collapsible>
 
 <Collapsible summary="Extend expo/metro-config in your metro.config.js">
   <DiffBlock source="/static/diffs/metro-config.diff" />
