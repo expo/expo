@@ -42,7 +42,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e-ubuntu:
+  jest-ubuntu:
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -97,7 +97,7 @@ jobs:
         working-directory: packages/@expo/cli
         run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
-  e2e-windows:
+  jest-windows:
     runs-on: windows-2022
     continue-on-error: true
     steps:
@@ -161,7 +161,7 @@ jobs:
         working-directory: packages/@expo/cli
         run: yarn test:e2e
   
-  web:
+  playwright-ubuntu:
     runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
