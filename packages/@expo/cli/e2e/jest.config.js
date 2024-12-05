@@ -6,7 +6,7 @@ const process = require('node:process');
 const roots = ['../__mocks__', '.'];
 
 /** @type {import('jest').Config} */
-module.exports = withMaxWorkersForCI({
+const config = {
   testEnvironment: 'node',
   preset: 'ts-jest',
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
@@ -17,19 +17,16 @@ module.exports = withMaxWorkersForCI({
   setupFilesAfterEnv: [path.resolve(__dirname, './jest.setup.ts')],
   // Configure the global jest timeout to 3m, on Windows increase this to 5m
   testTimeout: process.platform === 'win32' ? 300_000 : 180_000,
-});
+};
 
-/**
- * CI may suffer from IO congestion when running parallel tests.
- * This turns off parallel testing on CI, instead we use test sharding to speed up the tests.
- *
- * @param {import('jest').Config} config
- * @returns {import('jest').Config}
- */
-function withMaxWorkersForCI(config) {
-  if (boolish('CI', false)) {
-    config.maxWorkers = 1;
-  }
-
-  return config;
+// Only run 2 separate tests concurrently on CI
+if (boolish('CI', false)) {
+  config.maxWorkers = 2;
 }
+
+// Run tests serially when CI is running in debug mode
+if (boolish('RUNNER_DEBUG', false)) {
+  config.maxWorkers = 1;
+}
+
+module.exports = config;
