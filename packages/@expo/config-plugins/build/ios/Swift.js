@@ -178,7 +178,6 @@ function createBridgingHeaderFile({
     // Add Bridging Header to PBXFileReference
     project.addFile(filePath, project.getFirstProject().firstProject.mainGroup, {
       lastKnownFileType: 'sourcecode.c.h',
-      // fileEncoding: 4,
       defaultEncoding: 4
     });
   }
