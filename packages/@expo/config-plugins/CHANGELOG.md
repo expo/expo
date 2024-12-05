@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix orphaned bridging header reference in prebuild.
+- Fix orphaned bridging header reference in prebuild. ([#33462](https://github.com/expo/expo/pull/33462) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
