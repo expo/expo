@@ -152,15 +152,14 @@ jobs:
       - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
-      - name: 🔎 Type Check CLI (Windows)
+      - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
         # TODO(cedric): expo module scripts is incompatible with Windows, forcing us to manually set up these steps instead of `yarn typecheck`
         run: yarn tsc --noEmit
 
-      - name: 🧪 E2E Test CLI (Windows)
+      - name: 🧪 E2E Test CLI
         working-directory: packages/@expo/cli
-        # NOTE(cedric): Windows is significantly slower and suffers from IO congestion when running more than 2 workers
-        run: yarn test:e2e --max-workers 2
+        run: yarn test:e2e
   
   web:
     runs-on: ubuntu-22.04
