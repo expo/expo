@@ -76,6 +76,12 @@ async function writeColorsContentsJsonFileAsync({
         'color-space': 'srgb',
       },
       idiom: 'universal',
+      appearances: [
+        {
+          appearance: 'luminosity',
+          value: 'light',
+        },
+      ],
     },
   ];
 
