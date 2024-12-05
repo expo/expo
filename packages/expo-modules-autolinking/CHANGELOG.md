@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - [Android] Introduced the Gradle plugin to improve the autolinking setup. ([#33402](https://github.com/expo/expo/pull/33402) by [@lukmccall](https://github.com/lukmccall))
+- Added library `android.sourceDir` support for react-native-config. ([#33473](https://github.com/expo/expo/pull/33473) by [@kudo](https://github.com/kudo))
 
 ## 2.0.3 - 2024-12-02
 
