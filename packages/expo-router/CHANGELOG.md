@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Prevent base url from being appended to external links. ([#31420](https://github.com/expo/expo/pull/31420) by [@6TELOIV](https://github.com/6teloiv))
+- Fix baseURL being removed when refreshing the app on web.
 
 ### 💡 Others
 
