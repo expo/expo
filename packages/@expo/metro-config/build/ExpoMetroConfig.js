@@ -48,6 +48,7 @@ const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
+const filePath_1 = require("./utils/filePath");
 const debug = require('debug')('expo:metro:config');
 function getAssetPlugins(projectRoot) {
     const hashAssetFilesPath = resolve_from_1.default.silent(projectRoot, 'expo-asset/tools/hashAssetFiles');
@@ -124,10 +125,10 @@ function createStableModuleIdFactory(root) {
             return modulePath;
         }
         else if (path_1.default.isAbsolute(modulePath)) {
-            return path_1.default.relative(root, modulePath) + scope;
+            return (0, filePath_1.toPosixPath)(path_1.default.relative(root, modulePath)) + scope;
         }
         else {
-            return modulePath + scope;
+            return (0, filePath_1.toPosixPath)(modulePath) + scope;
         }
     };
     const memoizedGetModulePath = memoize(getModulePath);
