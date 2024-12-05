@@ -99,7 +99,10 @@ jobs:
 
   jest-windows:
     runs-on: windows-2022
-    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
@@ -159,7 +162,7 @@ jobs:
 
       - name: 🧪 E2E Test CLI
         working-directory: packages/@expo/cli
-        run: yarn test:e2e
+        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
   
   playwright-ubuntu:
     runs-on: ubuntu-22.04
