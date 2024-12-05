@@ -9,27 +9,6 @@ applyKotlinExpoModulesCorePlugin()
 useDefaultAndroidSdkVersions()
 useExpoPublishing()
 
-static def versionToNumber(major, minor, patch) {
-  return patch * 100 + minor * 10000 + major * 1000000
-}
-
-def getRNVersion() {
-  def nodeModulesVersion = providers.exec {
-    workingDir(projectDir)
-    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
-  }.standardOutput.asText.get().trim()
-
-  def version = safeExtGet("reactNativeVersion", nodeModulesVersion)
-  def coreVersion = version.split("-")[0]
-  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
-
-  return versionToNumber(
-      major,
-      minor,
-      patch
-  )
-}
-
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
