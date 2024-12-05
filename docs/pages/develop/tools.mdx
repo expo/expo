@@ -59,55 +59,9 @@ This command performs checks and analyzes your project's codebase for common iss
 
 If Expo Doctor finds an issue, it provides a description of the problem along with advice on how to fix it or where to find help.
 
+By default, Expo Doctor validates your project's packages against the [React Native directory](https://reactnative.directory/) and checks if app config fields are properly synced when native directories exist. You can configure these checks in your project's **package.json** file. See [`reactNativeDirectoryCheck`](/versions/latest/config/package-json/#reactnativedirectorycheck) and [`appConfigFieldsNotSyncedCheck`](/versions/latest/config/package-json/#appconfigfieldsnotsynced) for more details.
+
 You can also use `npx expo-doctor --help` to display usage information.
-
-### React Native directory check
-
-By default, Expo Doctor validates your project's packages against the [React Native directory](https://reactnative.directory/). This check throws a warning with a list of packages that are not included in the React Native Directory.
-
-You can customize this check by adding the following configuration in your project's **package.json** file:
-
-```json package.json
-{
-  "expo": {
-    "doctor": {
-      "reactNativeDirectoryCheck": {
-        /* @info Use this option to disable/enable the check. */
-        "enabled": true,
-        /* @end */
-        /* @info Use this option to exclude specific packages. */
-        "exclude": ["/foo/", "bar"],
-        /* @end */
-        /* @info Use this option to disable/enable listing unknown packages. */
-        "listUnknownPackages": true
-        /* @end */
-      }
-    }
-  }
-}
-```
-
-By default, the check is enabled and unknown packages are listed.
-
-### App config fields not synced check
-
-Expo Doctor checks if your project includes native project folders such as **android** or **ios**. If these folders exist but are not listed in your **.gitignore** or [**.easignore**](/build-reference/easignore) files, Expo Doctor verifies the presence of an **app.json** or **app.config.js** file. If this file exists, it means your project is configured to use [Prebuild](/workflow/prebuild).
-
-When the **android** or **ios** folders are present, EAS Build does not sync app configuration fields to the native projects. Expo Doctor throws a warning if these conditions are true.
-
-You can disable/enable this check by adding the following configuration to your project's **package.json** file:
-
-```json package.json
-{
-  "expo": {
-    "doctor": {
-      "appConfigFieldsNotSyncedCheck": {
-        "enabled": false
-      }
-    }
-  }
-}
-```
 
 ## Orbit
 
