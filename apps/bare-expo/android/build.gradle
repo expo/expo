@@ -40,14 +40,6 @@ def jscAndroidDir = new File(
   "../dist"
 )
 
-def expoCameraDir = new File(
-  providers.exec {
-    workingDir(rootDir)
-    commandLine("node", "--print", "require.resolve('expo-camera/package.json')")
-  }.standardOutput.asText.get().trim(),
-  "../android/maven"
-)
-
 allprojects {
   repositories {
     mavenLocal()
@@ -58,9 +50,6 @@ allprojects {
     maven {
       // Android JSC is installed from npm
       url(jscAndroidDir)
-    }
-    maven {
-      url(expoCameraDir)
     }
 
     google()
