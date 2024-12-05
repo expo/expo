@@ -165,7 +165,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     for (const route of manifest.apiRoutes) {
-      const filepath = route.file.startsWith('/') ? route.file : path.join(appDir, route.file);
+      const filepath = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
       const contents = await this.bundleApiRoute(filepath, { platform });
 
       const artifactFilename =

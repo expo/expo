@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix manifest url and API route exports on Windows. ([#33408](https://github.com/expo/expo/pull/33408) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.22.3 — 2024-12-05
