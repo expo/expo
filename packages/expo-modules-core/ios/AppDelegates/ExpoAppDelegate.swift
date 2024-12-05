@@ -12,6 +12,14 @@ var subscribers = [ExpoAppDelegateSubscriberProtocol]()
  */
 @objc(EXExpoAppDelegate)
 open class ExpoAppDelegate: ExpoAppInstance {
+  /**
+   Whether to skip calling the React Native instance setup from `RCTAppDelegate`.
+   Set this property to `false` if your app delegate is not supposed to initialize a React Native app,
+   but only to handle the app delegate subscribers.
+   */
+  @objc
+  public var shouldCallReactNativeSetup: Bool = true
+
   #if os(iOS) || os(tvOS)
   // MARK: - Initializing the App
 
@@ -39,9 +47,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    if UIApplication.shared.delegate is ExpoAppDelegate {
-      // Super function from `RCTAppDelegate` must be called only when the class is used as the base class of the AppDelegate.
-      // For backwards compatibility `EXAppDelegateWrapper` creates a detached instance of `ExpoAppDelegate`, in which case this call must be skipped.
+    if shouldCallReactNativeSetup {
       super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
