@@ -6,7 +6,7 @@ const process = require('node:process');
 const roots = ['../__mocks__', '.'];
 
 /** @type {import('jest').Config} */
-module.exports = withMaxWorkersByPlatform({
+module.exports = withMaxWorkersForCI({
   testEnvironment: 'node',
   preset: 'ts-jest',
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
@@ -20,22 +20,15 @@ module.exports = withMaxWorkersByPlatform({
 });
 
 /**
- * Windows suffers a lot from IO congestion when running multiple tests at once.
- * Set the max workers to 2 on CI, or 1 when CI is running in debug mode
+ * CI may suffer from IO congestion when running parallel tests.
+ * This turns off parallel testing on CI, instead we use test sharding to speed up the tests.
  *
  * @param {import('jest').Config} config
  * @returns {import('jest').Config}
  */
-function withMaxWorkersByPlatform(config) {
+function withMaxWorkersForCI(config) {
   if (boolish('CI', false)) {
-    // Set max workers to 2 for Windows on CI
-    if (process.platform === 'win32') {
-      config.maxWorkers = 2;
-    }
-    // Run test serially when running on CI in debug mode
-    if (boolish('RUNNER_DEBUG', false)) {
-      config.maxWorkers = 1;
-    }
+    config.maxWorkers = 1;
   }
 
   return config;
