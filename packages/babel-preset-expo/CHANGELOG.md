@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Test for UNIX paths when removing console polyfill from RSC client output. ([#33397](https://github.com/expo/expo/pull/33397) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 12.0.3 — 2024-11-29
