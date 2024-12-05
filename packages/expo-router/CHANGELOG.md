@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Fix regex on `expo-router/matcher` `matchLastGroupName` allows to use it on `IOS < 16.4` ([#33350](https://github.com/expo/expo/pull/33350) by [@antonio-serrat](https://github.com/Antonio-Serat))
+- Fix `__EXPO_ROUTER_key` appearing in web urls
 
 ## 4.0.10 - 2024-11-29
 

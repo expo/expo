@@ -236,6 +236,7 @@ function getPathDataFromState(state, options) {
             }
             // START FORK
             delete focusedParams['#'];
+            delete focusedParams['__EXPO_ROUTER_key'];
             // END FORK
             const query = queryString.stringify(focusedParams, { sort: false });
             if (query) {
