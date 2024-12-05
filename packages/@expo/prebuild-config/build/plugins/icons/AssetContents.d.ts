@@ -1,5 +1,5 @@
 export type ContentsJsonImageIdiom = 'iphone' | 'ipad' | 'watchos' | 'ios' | 'ios-marketing' | 'universal';
-export type ContentsJsonImageAppearanceLuminosityType = 'dark' | 'tinted';
+export type ContentsJsonImageAppearanceLuminosityType = 'light' | 'dark' | 'tinted';
 export type ContentsJsonAppearance = {
     appearance: 'luminosity';
     value: ContentsJsonImageAppearanceLuminosityType;

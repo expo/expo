@@ -7,6 +7,7 @@ import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
 import { wrapFetchWithOffline } from './wrapFetchWithOffline';
 import { wrapFetchWithProgress } from './wrapFetchWithProgress';
 import { wrapFetchWithProxy } from './wrapFetchWithProxy';
+import { wrapFetchWithUserAgent } from './wrapFetchWithUserAgent';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { fetch } from '../../utils/fetch';
@@ -144,7 +145,7 @@ function isNetworkError(error: Error & { code?: string }) {
   );
 }
 
-const fetchWithOffline = wrapFetchWithOffline(fetch);
+const fetchWithOffline = wrapFetchWithOffline(wrapFetchWithUserAgent(fetch));
 
 const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchWithOffline, getExpoApiBaseUrl() + '/v2/');
 

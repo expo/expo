@@ -14,5 +14,5 @@ type PluginConfig = {
     android?: AndroidSplashConfig;
     ios?: IOSSplashConfig;
 };
-declare const _default: ConfigPlugin<PluginConfig>;
+declare const _default: ConfigPlugin<PluginConfig | null>;
 export default _default;
