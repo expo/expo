@@ -64,7 +64,7 @@
   "expo-print": "~14.0.2",
   "expo-router": "~4.0.11",
   "expo-screen-capture": "~7.0.0",
-  "expo-screen-orientation": "~8.0.0",
+  "expo-screen-orientation": "~8.0.1",
   "expo-secure-store": "~14.0.0",
   "expo-sensors": "~14.0.1",
   "expo-sharing": "~13.0.0",

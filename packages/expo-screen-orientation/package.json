@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-orientation",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "Expo universal module for managing device's screen orientation",
   "main": "build/ScreenOrientation.js",
   "types": "build/ScreenOrientation.d.ts",

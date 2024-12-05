@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '8.0.0'
+version = '8.0.1'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,6 +14,6 @@ android {
   namespace "expo.modules.screenorientation"
   defaultConfig {
     versionCode 7
-    versionName '8.0.0'
+    versionName '8.0.1'
   }
 }
