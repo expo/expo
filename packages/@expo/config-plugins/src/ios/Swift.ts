@@ -4,7 +4,7 @@ import path from 'path';
 import { getAppDelegate, getSourceRoot } from './Paths';
 import { withBuildSourceFile } from './XcodeProjectFile';
 import { ConfigPlugin, XcodeProject } from '../Plugin.types';
-import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
+import { getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
 
 const templateBridgingHeader = `//
@@ -145,13 +145,10 @@ export function createBridgingHeaderFile({
   const filePath = `${projectName}/${bridgingHeader}`;
   // Ensure the file is linked with Xcode resource files
   if (!project.hasFile(filePath)) {
-    project = addResourceFileToGroup({
-      filepath: filePath,
-      groupName: projectName,
-      project,
-      // Not sure why, but this is how Xcode generates it.
-      isBuildFile: false,
-      verbose: false,
+    // Add Bridging Header to PBXFileReference
+    project.addFile(filePath, project.getFirstProject().firstProject.mainGroup, {
+      lastKnownFileType: 'sourcecode.c.h',
+      defaultEncoding: 4,
     });
   }
   return project;

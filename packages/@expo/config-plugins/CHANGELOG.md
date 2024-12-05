@@ -8,9 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix orphaned bridging header reference in prebuild.
+
 ### 💡 Others
 
-## 9.0.10 —  2024-11-24
+## 9.0.10 — 2024-11-24
 
 ### 💡 Others
 

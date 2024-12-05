@@ -175,13 +175,11 @@ function createBridgingHeaderFile({
   const filePath = `${projectName}/${bridgingHeader}`;
   // Ensure the file is linked with Xcode resource files
   if (!project.hasFile(filePath)) {
-    project = (0, _Xcodeproj().addResourceFileToGroup)({
-      filepath: filePath,
-      groupName: projectName,
-      project,
-      // Not sure why, but this is how Xcode generates it.
-      isBuildFile: false,
-      verbose: false
+    // Add Bridging Header to PBXFileReference
+    project.addFile(filePath, project.getFirstProject().firstProject.mainGroup, {
+      lastKnownFileType: 'sourcecode.c.h',
+      // fileEncoding: 4,
+      defaultEncoding: 4
     });
   }
   return project;
