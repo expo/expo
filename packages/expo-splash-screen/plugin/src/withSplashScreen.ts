@@ -22,22 +22,25 @@ type PluginConfig = {
 
 const withSplashScreen: ConfigPlugin<PluginConfig> = (config, props) => {
   const resizeMode = props?.resizeMode || 'contain';
+
+  const { ios: iosProps, android: androidProps, ...otherProps } = props;
+
   const android: AndroidSplashConfig = {
-    ...props,
-    ...props?.android,
-    resizeMode,
+    ...otherProps,
+    ...androidProps,
+    resizeMode: androidProps?.resizeMode || resizeMode,
     dark: {
-      ...props?.android?.dark,
-      ...props?.dark,
+      ...otherProps?.dark,
+      ...androidProps?.dark,
     },
   };
   const ios: IOSSplashConfig = {
-    ...props,
-    ...props?.ios,
-    resizeMode: resizeMode === 'native' ? 'contain' : resizeMode,
+    ...otherProps,
+    ...iosProps,
+    resizeMode: iosProps?.resizeMode || (resizeMode === 'native' ? 'contain' : resizeMode),
     dark: {
-      ...props?.ios?.dark,
-      ...props?.dark,
+      ...otherProps?.dark,
+      ...iosProps?.dark,
     },
   };
 

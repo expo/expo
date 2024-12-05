@@ -6,22 +6,23 @@ const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-splash-screen/package.json');
 const withSplashScreen = (config, props) => {
     const resizeMode = props?.resizeMode || 'contain';
+    const { ios: iosProps, android: androidProps, ...otherProps } = props;
     const android = {
-        ...props,
-        ...props?.android,
-        resizeMode,
+        ...otherProps,
+        ...androidProps,
+        resizeMode: androidProps?.resizeMode || resizeMode,
         dark: {
-            ...props?.android?.dark,
-            ...props?.dark,
+            ...otherProps?.dark,
+            ...androidProps?.dark,
         },
     };
     const ios = {
-        ...props,
-        ...props?.ios,
-        resizeMode: resizeMode === 'native' ? 'contain' : resizeMode,
+        ...otherProps,
+        ...iosProps,
+        resizeMode: iosProps?.resizeMode || (resizeMode === 'native' ? 'contain' : resizeMode),
         dark: {
-            ...props?.ios?.dark,
-            ...props?.dark,
+            ...otherProps?.dark,
+            ...iosProps?.dark,
         },
     };
     // Need to pass null here if we don't receive any props. This means that the plugin has not been used.
