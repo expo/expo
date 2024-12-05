@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add `User-Agent: expo-cli/<version>` to all CLI requests. ([#33471](https://github.com/expo/expo/pull/33471) by [@byCedric](https://github.com/byCedric))
+
 ## 0.22.1 — 2024-12-05
 
 ### 🎉 New features
