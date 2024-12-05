@@ -101,14 +101,6 @@ jobs:
     runs-on: windows-2022
     continue-on-error: true
     steps:
-      - name: 🪟 Setup Windows
-        shell: bash
-        # Configure Git to use LF line endlings, and Bun to use a faster cache disk on Windows
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-          echo "BUN_INSTALL_CACHE_DIR=$GITHUB_WORKSPACE\.bun\install\cache" >> $GITHUB_ENV
-      
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
@@ -120,6 +112,16 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
+
+      - name: 🪟 Setup Windows
+        shell: bash
+        # Configure Git to use LF line endlings, Bun to use a faster cache disk, and the E2E to use the same drive for testing as the repository
+        # Note that the GitHub workspace is structured as `D:\a\<owner>\<repo>` and has an existing `D:\a\_temp` directory
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+          echo "BUN_INSTALL_CACHE_DIR=$(node --print 'require(`path`).join(process.env.GITHUB_WORKSPACE,  `./../../_temp/bun`)')" >> $GITHUB_ENV
+          echo "EXPO_E2E_TEMP_DIR=$(node --print 'require(`path`).join(process.env.GITHUB_WORKSPACE,  `./../../_temp/expo-cli-e2e`)')" >> $GITHUB_ENV
 
       - name: 👀 Checkout
         uses: actions/checkout@v4
