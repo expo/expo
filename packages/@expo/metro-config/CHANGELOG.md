@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Exclude `beforeAssetSerializationPlugins.preModules` from `stableChunkSource` ([#33344](https://github.com/expo/expo/pull/33344) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 💡 Others
+
+## 0.19.6 — 2024-12-05
+
+### 🐛 Bug fixes
+
+- Exclude `beforeAssetSerializationPlugins.preModules` from `stableChunkSource` ([#33344](https://github.com/expo/expo/pull/33344) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 0.19.5 — 2024-11-29
 
