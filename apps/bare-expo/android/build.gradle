@@ -35,7 +35,7 @@ def reactNativeAndroidDir = new File(
 def jscAndroidDir = new File(
   providers.exec {
     workingDir(rootDir)
-    commandLine("node", "--print", "require.resolve('jsc-android/package.json')")
+    commandLine("node", "--print", "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })")
   }.standardOutput.asText.get().trim(),
   "../dist"
 )
