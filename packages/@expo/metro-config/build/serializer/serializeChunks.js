@@ -20,6 +20,7 @@ const exportPath_1 = require("./exportPath");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const getCssDeps_1 = require("./getCssDeps");
 const getAssets_1 = __importDefault(require("../transform-worker/getAssets"));
+const filePath_1 = require("../utils/filePath");
 // Convert file paths to regex matchers.
 function pathToRegex(path) {
     // Escape regex special characters, except for '*'
@@ -374,10 +375,11 @@ class Chunk {
             ].map((module) => {
                 // TODO: Make this user-configurable.
                 // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-                if (module.path.startsWith('/')) {
+                if (path_1.default.isAbsolute(module.path)) {
                     return {
                         ...module,
-                        path: '/' + path_1.default.relative(this.options.serverRoot ?? this.options.projectRoot, module.path),
+                        path: 'file:///' +
+                            (0, filePath_1.toPosixPath)(path_1.default.relative(this.options.serverRoot ?? this.options.projectRoot, module.path)),
                     };
                 }
                 return module;
