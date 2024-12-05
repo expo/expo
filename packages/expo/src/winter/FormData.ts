@@ -86,7 +86,7 @@ function normalizeArgs(
   blobFilename: string | undefined
 ): [string, File | string] {
   if (value instanceof Blob) {
-    value = { type: value.type, name: blobFilename, blob: value };
+    value = { type: value.type, name: blobFilename || 'blob', blob: value };
   } else if (typeof value !== 'object') {
     value = String(value);
   }
