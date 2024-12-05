@@ -140,7 +140,9 @@ async function transform(config, projectRoot, filename, data, options) {
     // in development and a static CSS file in production.
     if ((0, css_modules_1.matchCssModule)(filename)) {
         const results = await (0, css_modules_1.transformCssModuleWeb)({
-            filename,
+            // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
+            // This affects the content hashes, which should be stable across platforms.
+            filename: posixFilename,
             src: code,
             options: {
                 reactServer,
