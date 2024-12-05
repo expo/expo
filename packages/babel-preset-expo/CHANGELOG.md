@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Add support for `TSInterfaceDeclaration` in server component plugin. ([#33121](https://github.com/expo/expo/pull/33121) by [@EvanBacon](https://github.com/EvanBacon))
+- Test for UNIX paths when removing console polyfill from RSC client output. ([#33397](https://github.com/expo/expo/pull/33397) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
