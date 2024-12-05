@@ -240,6 +240,8 @@ redirects[workflow/hermes]=guides/using-hermes
 # Redirects based on Algolia 404 report
 redirects[versions/latest/sdk/permissions]=guides/permissions
 redirects[workflow/build/building-on-ci]=build/building-on-ci
+redirects[versions/v52.0.0/sdk/taskmanager]=versions/v52.0.0/sdk/task-manager
+redirects[versions/v51.0.0/sdk/taskmanager]=versions/v51.0.0/sdk/task-manager
 redirects[versions/v50.0.0/sdk/taskmanager]=versions/v50.0.0/sdk/task-manager
 redirects[versions/v49.0.0/sdk/taskmanager]=versions/v49.0.0/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager

@@ -81,45 +81,6 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     stateMachine.queueExecution(stateMachineProcedure: startupProcedure)
   }
 
-  /**
-   Starts the update process to launch a previously-loaded update and (if configured to do so)
-   check for a new update from the server. This method should be called as early as possible in
-   the application's lifecycle.
-
-   Note that iOS may stop showing the app's splash screen in case the update is taking a while
-   to load. This method will attempt to find `LaunchScreen.xib` and load it into view while the
-   update is loading.
-   */
-  public func startAndShowLaunchScreen(_ window: UIWindow) {
-    var view: UIView?
-    let mainBundle = Bundle.main
-    let launchScreen = mainBundle.object(forInfoDictionaryKey: "UILaunchStoryboardName") as? String ?? "LaunchScreen"
-
-    if mainBundle.path(forResource: launchScreen, ofType: "nib") != nil {
-      let views = mainBundle.loadNibNamed(launchScreen, owner: self)
-      view = views?.first as? UIView
-      view?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    } else if mainBundle.path(forResource: launchScreen, ofType: "storyboard") != nil ||
-      mainBundle.path(forResource: launchScreen, ofType: "storyboardc") != nil {
-      let launchScreenStoryboard = UIStoryboard(name: launchScreen, bundle: nil)
-      let viewController = launchScreenStoryboard.instantiateInitialViewController()
-      view = viewController?.view
-      viewController?.view = nil
-    } else {
-      logger.warn(message: "Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.")
-      view = UIView()
-      view?.backgroundColor = .white
-    }
-
-    if window.rootViewController == nil {
-      window.rootViewController = UIViewController()
-    }
-    window.rootViewController!.view = view
-    window.makeKeyAndVisible()
-
-    start()
-  }
-
   public func onEventListenerStartObserving() {
     stateMachine.sendContextToJS()
   }

@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- [android] fix data serialization for notifications with `ChannelAwareTrigger` ([#33354](https://github.com/expo/expo/pull/33354) by [@alextoudic](https://github.com/alextoudic))
+- Add additional fallback value for project ID in `getExpoPushTokenAsync` ([#33359](https://github.com/expo/expo/pull/33359) by [@bradjones1](https://github.com/bradjones1))
+
 ### 💡 Others
 
 ## 0.29.10 - 2024-12-02
