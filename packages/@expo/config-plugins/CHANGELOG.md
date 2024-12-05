@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve iOS build schemes on Windows. ([#33468](https://github.com/expo/expo/pull/33468) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 9.0.10 —  2024-11-24
