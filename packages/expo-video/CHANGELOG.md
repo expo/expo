@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed `generateThumbnailsAsync` not being available on Android in the types.
+
 ## 2.0.2 - 2024-11-29
 
 _This version does not introduce any user-facing changes._
