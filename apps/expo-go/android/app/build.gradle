@@ -80,7 +80,6 @@ android {
       debuggable true
       firebaseCrashlytics {
         nativeSymbolUploadEnabled false
-        mappingFileUploadEnabled false
       }
     }
     release {
@@ -93,9 +92,7 @@ android {
       def shouldUploadCrashlytics = System.getenv("EAS_BUILD") != null
       firebaseCrashlytics {
         nativeSymbolUploadEnabled shouldUploadCrashlytics
-        mappingFileUploadEnabled shouldUploadCrashlytics
-
-        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/release/out/lib")
+        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib")
       }
     }
   }
@@ -268,7 +265,7 @@ apply plugin: 'com.google.gms.google-services'
 
 def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir') {
   doLast {
-    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/release/out/lib"))
+    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib"))
   }
 }
 preBuild.dependsOn(ensureCrashlyticsDir)
