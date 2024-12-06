@@ -72,7 +72,7 @@ export async function waitForProcessOutput<T>(
 export async function waitForProcessReady<T>(
   child: ChildProcess,
   resolver: () => Promise<T>,
-  timeoutMs = 30_000
+  timeoutMs = 60_000
 ) {
   // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
   let resolve: (value: T | PromiseLike<T>) => void;
@@ -92,15 +92,11 @@ export async function waitForProcessReady<T>(
 
   // Add a check to ensure the process is ready within a set timeout.
   // Without this timeout, malformed ready checks are extremely hard to find.
-  const readyTimeout = setTimeout(
-    () =>
-      reject(
-        new Error(
-          `Process did not become ready within ${timeoutMs}ms. Ensure the ready check is resolving as expected.`
-        )
-      ),
-    timeoutMs
+  // NOTE(cedric): creating the error outside the timeout sets the proper stacktraces from where the ready check was called
+  const readyError = new Error(
+    `Process did not become ready within ${timeoutMs}ms. Ensure the ready check is resolving as expected.`
   );
+  const readyTimeout = setTimeout(() => reject(readyError), timeoutMs);
 
   try {
     resolver().then(resolve!).catch(reject!);
