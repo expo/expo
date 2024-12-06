@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import fs from 'fs/promises';
 
 import { execute, getLoadedModulesAsync, projectRoot } from './utils';
