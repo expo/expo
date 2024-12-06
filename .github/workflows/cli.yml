@@ -95,7 +95,7 @@ jobs:
 
       - name: 🧪 E2E Test CLI
         working-directory: packages/@expo/cli
-        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   jest-windows:
     runs-on: windows-2022
@@ -168,7 +168,7 @@ jobs:
 
       - name: 🧪 E2E Test CLI
         working-directory: packages/@expo/cli
-        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
   
   playwright-ubuntu:
     runs-on: ubuntu-22.04
