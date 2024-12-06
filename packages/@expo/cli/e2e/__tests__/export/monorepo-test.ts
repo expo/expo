@@ -13,15 +13,15 @@ type MonorepoConfigTypes = (typeof configTypes)[number];
 /** The monorepo configuration types, e.g. where `workspaces` are defined */
 const configTypes = ['package-json', 'pnpm-workspace-yaml'] as const;
 
+let projectRoot: string;
+
+beforeAll(async () => {
+  projectRoot = await setupTestProjectWithOptionsAsync(`basic-export-monorepo`, 'with-monorepo');
+});
+
 describe.each(configTypes)('exports monorepo using "%s"', (configType) => {
   // See: https://github.com/expo/expo/issues/29700#issuecomment-2165348259
   it('exports identical projects with cache invalidation', async () => {
-    // Create a project from the monorepo fixture
-    const projectRoot = await setupTestProjectWithOptionsAsync(
-      `basic-export-monorepo-${configType}`,
-      'with-monorepo'
-    );
-
     // Ensure our fixture uses the correct monorepo configuration
     await configureMonorepo(configType, projectRoot);
 
