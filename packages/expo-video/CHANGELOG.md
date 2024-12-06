@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed `generateThumbnailsAsync` not being available on Android in the types. ([#33491](https://github.com/expo/expo/pull/33491) by [@hirbod](https://github.com/hirbod))
+
 ## 2.0.2 - 2024-11-29
 
 _This version does not introduce any user-facing changes._
