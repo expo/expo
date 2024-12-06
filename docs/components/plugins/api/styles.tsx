@@ -9,7 +9,7 @@ export const STYLES_OPTIONAL = mergeClasses('pt-5 !text-[13px] text-secondary');
 export const STYLES_APIBOX = mergeClasses(
   'mb-6 rounded-lg border border-secondary p-5 shadow-xs',
   '[&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0',
-  '[&_h3]:mb-2.5',
+  '[&_h3]:mb-1.5',
   '[&_li]:mb-0',
   '[&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary',
   '[&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none',

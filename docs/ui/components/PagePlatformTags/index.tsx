@@ -28,7 +28,7 @@ export function PagePlatformTags({ platforms }: Props) {
             );
           }
           return (
-            <PlatformTag platform={platform} key={platform} className="!rounded-full !px-2.5" />
+            <PlatformTag platform={platform} key={platform} className="rounded-full px-2.5 py-1" />
           );
         })}
     </div>

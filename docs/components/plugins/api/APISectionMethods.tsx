@@ -70,7 +70,6 @@ export const renderMethod = (
         key={`method-signature-${method.name || name}-${parameters?.length ?? 0}`}
         className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <APISectionPlatformTags comment={comment} />
         <HeaderComponent>
           <MONOSPACE
             weight="medium"
@@ -87,6 +86,7 @@ export const renderMethod = (
             )}
           </MONOSPACE>
         </HeaderComponent>
+        <APISectionPlatformTags comment={comment} />
         {parameters && parameters.length > 0 && (
           <>
             {renderParams(parameters, sdkVersion)}

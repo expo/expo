@@ -125,12 +125,12 @@ const renderInterface = (
       key={`interface-definition-${name}`}
       className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">
           {name}
         </MONOSPACE>
       </H3Code>
+      <APISectionPlatformTags comment={comment} />
       {extendedTypes?.length ? (
         <CALLOUT className={ELEMENT_SPACING}>
           <CALLOUT tag="span" theme="secondary" weight="medium">

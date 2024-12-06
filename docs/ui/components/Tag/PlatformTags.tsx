@@ -20,9 +20,11 @@ export const PlatformTags = ({ prefix, platforms }: PlatformTagsProps) => {
           {prefix}&ensp;
         </DEMI>
       )}
-      {platforms.map(platform => (
-        <PlatformTag key={platform} platform={platform} />
-      ))}
+      {platforms
+        .sort((a, b) => a.localeCompare(b))
+        .map(platform => (
+          <PlatformTag key={platform} platform={platform} />
+        ))}
       {prefix && <br />}
     </CALLOUT>
   );

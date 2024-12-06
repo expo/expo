@@ -115,7 +115,7 @@ export const TableOfContents = forwardRef<
 
     slugScrollingTo.current = slug;
 
-    const scrollOffset = type === 'inlineCode' ? 50 : 26;
+    const scrollOffset = type === 'inlineCode' ? 35 : 21;
 
     contentRef?.current?.getScrollRef().current?.scrollTo({
       behavior: reducedMotion ? 'instant' : 'smooth',

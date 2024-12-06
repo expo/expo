@@ -44,12 +44,12 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
   return (
     <div key={`class-definition-${name}`} className={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">
           {name}
         </MONOSPACE>
       </H3Code>
+      <APISectionPlatformTags comment={comment} />
       <APICommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>

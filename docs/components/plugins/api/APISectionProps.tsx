@@ -116,7 +116,6 @@ export const renderProp = (
       key={`prop-entry-${name}`}
       className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!pb-4 [&>*:last-child]:!mb-0')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
-      <APISectionPlatformTags comment={comment} />
       <HeaderComponent tags={getTagNamesList(comment)}>
         <MONOSPACE
           weight="medium"
@@ -127,6 +126,7 @@ export const renderProp = (
           {name}
         </MONOSPACE>
       </HeaderComponent>
+      <APISectionPlatformTags comment={comment} />
       <div className={mergeClasses(STYLES_SECONDARY, extractedComment && ELEMENT_SPACING)}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}

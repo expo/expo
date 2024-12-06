@@ -36,7 +36,7 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
       <LinkBase
         className={mergeClasses(
           'relative inline-flex items-center gap-1.5 text-[inherit] decoration-0',
-          props.additionalProps?.sidebarType === 'text' ? 'scroll-m-6' : 'scroll-m-12',
+          props.additionalProps?.sidebarType === 'text' ? 'scroll-m-5' : 'scroll-m-8',
           props.additionalProps?.className
         )}
         href={'#' + heading.slug}

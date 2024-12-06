@@ -14,14 +14,14 @@ exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
   <div
-    class="mb-2 flex flex-row items-center"
+    class="mb-3.5 flex flex-row items-center"
   >
     <span
       class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
       data-text="true"
     >
       <div
-        class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-2 py-1 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
+        class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-[7px] py-0.5 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
       >
         <svg
           class="translate-z icon-xs mt-[-0.5px] text-palette-green12 opacity-80"

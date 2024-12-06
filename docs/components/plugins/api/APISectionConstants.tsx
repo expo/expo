@@ -25,13 +25,13 @@ const renderConstant = (
     key={`constant-definition-${name}`}
     className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
     <APISectionDeprecationNote comment={comment} sticky />
-    <APISectionPlatformTags comment={comment} />
     <H3Code tags={getTagNamesList(comment)}>
       <MONOSPACE weight="medium" className="wrap-anywhere">
         {apiName ? `${apiName}.` : ''}
         {name}
       </MONOSPACE>
     </H3Code>
+    <APISectionPlatformTags comment={comment} />
     {type && (
       <P className={STYLES_SECONDARY}>
         Type: <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
