@@ -149,22 +149,12 @@ async function clearAllExistingSplashImagesAsync(projectRoot) {
 }
 async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, imageWidth = 100) {
   if (!config) return;
+  const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
   const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
   await Promise.all(sizes.map(async imageKey => {
     // @ts-ignore
     const image = config[imageKey];
     if (image) {
-      if (config.enableFullScreenImage_legacy) {
-        const {
-          source
-        } = await (0, _imageUtils().generateImageAsync)({
-          projectRoot,
-          cacheType: IMAGE_CACHE_NAME
-        }, {
-          src: image
-        });
-        return writeDrawable(projectRoot, imageKey, theme, source);
-      }
       const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
       const size = imageWidth * multiplier; // "imageWidth" must be replaced by the logo width chosen by the user in its config file
       const canvasSize = 288 * multiplier;
@@ -191,18 +181,15 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
         x: (canvasSize - size) / 2,
         y: (canvasSize - size) / 2
       });
-      await writeDrawable(projectRoot, imageKey, theme, composedImage);
+
+      // Get output path for drawable.
+      const outputPath = _path().default.join(androidMainPath, DRAWABLES_CONFIGS[imageKey].modes[theme].path);
+      const folder = _path().default.dirname(outputPath);
+      // Ensure directory exists.
+      await _fsExtra().default.ensureDir(folder);
+      await _fsExtra().default.writeFile(outputPath, composedImage);
     }
     return null;
   }));
-}
-async function writeDrawable(projectRoot, imageKey, theme, composedImage) {
-  const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
-  // Get output path for drawable.
-  const outputPath = _path().default.join(androidMainPath, DRAWABLES_CONFIGS[imageKey].modes[theme].path);
-  const folder = _path().default.dirname(outputPath);
-  // Ensure directory exists.
-  await _fsExtra().default.ensureDir(folder);
-  await _fsExtra().default.writeFile(outputPath, composedImage);
 }
 //# sourceMappingURL=withAndroidSplashImages.js.map

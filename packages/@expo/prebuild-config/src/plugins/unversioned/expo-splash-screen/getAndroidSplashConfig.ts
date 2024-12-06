@@ -8,7 +8,6 @@ export type SplashScreenConfig = {
   mdpi?: string;
   image?: string;
   backgroundColor?: string;
-  enableFullScreenImage_legacy?: boolean;
   resizeMode: 'contain' | 'cover' | 'native';
   dark?: {
     backgroundColor?: string;
@@ -43,7 +42,6 @@ export function getAndroidSplashConfig(
       hdpi: splash.hdpi ?? splash.image,
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
-      enableFullScreenImage_legacy: splash.enableFullScreenImage_legacy,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: splash.imageWidth ?? 100,
       dark: splash.dark,
@@ -60,7 +58,6 @@ export function getAndroidSplashConfig(
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
       image: splash.image,
-      enableFullScreenImage_legacy: true,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: 200,
       dark: splash.dark,
@@ -76,7 +73,6 @@ export function getAndroidSplashConfig(
       hdpi: splash.image,
       mdpi: splash.image,
       backgroundColor: splash.backgroundColor,
-      enableFullScreenImage_legacy: true,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: 200,
       dark: splash.dark,
@@ -97,7 +93,6 @@ export function getAndroidDarkSplashConfig(
       xxxhdpi: splash.xxxhdpi ?? splash.image,
       xxhdpi: splash.xxhdpi ?? splash.image,
       xhdpi: splash.xhdpi ?? splash.image,
-      enableFullScreenImage_legacy: props.enableFullScreenImage_legacy,
       hdpi: splash.hdpi ?? splash.image,
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
@@ -116,7 +111,6 @@ export function getAndroidDarkSplashConfig(
       xhdpi: splash.xhdpi ?? splash.image,
       hdpi: splash.hdpi ?? splash.image,
       mdpi: splash.mdpi ?? splash.image,
-      enableFullScreenImage_legacy: true,
       backgroundColor: splash.backgroundColor,
       // Can't support dark resizeMode because the resize mode is hardcoded into the MainActivity.java
       resizeMode: lightTheme?.resizeMode ?? defaultResizeMode,

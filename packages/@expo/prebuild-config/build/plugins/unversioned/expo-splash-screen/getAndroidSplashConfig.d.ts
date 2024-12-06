@@ -7,7 +7,6 @@ export type SplashScreenConfig = {
     mdpi?: string;
     image?: string;
     backgroundColor?: string;
-    enableFullScreenImage_legacy?: boolean;
     resizeMode: 'contain' | 'cover' | 'native';
     dark?: {
         backgroundColor?: string;
