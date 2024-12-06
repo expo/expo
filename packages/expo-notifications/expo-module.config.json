@@ -1,6 +1,9 @@
 {
   "name": "expo-notifications",
   "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["BadgeModule", "ServerRegistrationModule"]
+  },
   "android": {
     "modules": [
       "expo.modules.notifications.badge.BadgeModule",
