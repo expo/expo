@@ -46,8 +46,13 @@ it('runs `npx expo export --help`', async () => {
 });
 
 describe('server', () => {
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
+  });
+
   it('runs `npx expo export`', async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
     // `npx expo export`
     await execa('node', [bin, 'export', '--source-maps', '--dump-assetmap'], {
       cwd: projectRoot,
@@ -169,8 +174,6 @@ describe('server', () => {
   });
 
   it('runs `npx expo export --no-bytecode`', async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
-
     await execa(
       'node',
       [bin, 'export', '--source-maps', '--no-bytecode', '--dump-assetmap', '--platform', 'ios'],
