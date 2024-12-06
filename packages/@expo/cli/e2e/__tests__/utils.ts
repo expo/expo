@@ -14,6 +14,7 @@ import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
 import { toPosixPath } from '../../src/utils/filePath';
+import { createPackageTarball } from '../utils/package';
 import { TEMP_DIR, getTemporaryPath } from '../utils/path';
 
 export { getTemporaryPath } from '../utils/path';
@@ -144,7 +145,6 @@ export async function createFromFixtureAsync(
     if (pkg || linkExpoPackages || linkExpoPackagesDev) {
       pkg ??= {};
       const pkgPath = path.join(projectRoot, 'package.json');
-      const expoPackagesPath = path.join(__dirname, '../../../../');
       const fixturePkg = (await JsonFile.readAsync(pkgPath)) as PackageJSONConfig;
 
       const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
@@ -152,13 +152,15 @@ export async function createFromFixtureAsync(
 
       if (linkExpoPackages) {
         for (const pkg of linkExpoPackages) {
-          dependencies[pkg] = `file:${path.join(expoPackagesPath, pkg)}`;
+          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
+          dependencies[pkg] = tarball.packageReference;
         }
       }
 
       if (linkExpoPackagesDev) {
         for (const pkg of linkExpoPackagesDev) {
-          devDependencies[pkg] = path.join(expoPackagesPath, pkg);
+          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
+          devDependencies[pkg] = tarball.packageReference;
         }
       }
 

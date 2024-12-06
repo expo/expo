@@ -2,7 +2,6 @@
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs/promises';
-import { sync as globSync } from 'glob';
 import path from 'path';
 import semver from 'semver';
 
@@ -15,40 +14,10 @@ import {
   getLoadedModulesAsync,
   findProjectFiles,
 } from './utils';
+import { createPackageTarball } from '../utils/package';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
-
-const templateFolder = path.join(__dirname, '../../../../../templates/expo-template-bare-minimum/');
-
-function getTemplatePath() {
-  const results = globSync(`*.tgz`, {
-    absolute: true,
-    cwd: templateFolder,
-  });
-
-  return results[0];
-}
-
-let cachedTemplatePath: string | null = null;
-
-async function ensureTemplatePathAsync() {
-  // let templatePath = getTemplatePath();
-  if (cachedTemplatePath) return cachedTemplatePath;
-  await execa('npm', ['pack'], { cwd: templateFolder });
-
-  cachedTemplatePath = getTemplatePath();
-
-  const tmpTemplate = path.join(projectRoot, 'template.tgz');
-  // Move to tmp directory
-  await fs.rename(cachedTemplatePath, tmpTemplate);
-
-  cachedTemplatePath = tmpTemplate;
-
-  if (cachedTemplatePath) return cachedTemplatePath;
-
-  throw new Error('Could not find template tarball');
-}
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
@@ -178,13 +147,20 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
 // This tests contains assertions related to ios files, making it incompatible with Windows
 itNotWindows('runs `npx expo prebuild`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
+  const templateTarball = await createPackageTarball(
+    projectRoot,
+    'templates/expo-template-bare-minimum'
+  );
 
-  const templateFolder = await ensureTemplatePathAsync();
-  console.log('Using local template:', templateFolder);
+  console.log('Using local template:', templateTarball.relativePath);
 
-  await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
-    cwd: projectRoot,
-  });
+  await execa(
+    'node',
+    [bin, 'prebuild', '--no-install', '--template', templateTarball.relativePath],
+    {
+      cwd: projectRoot,
+    }
+  );
 
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
