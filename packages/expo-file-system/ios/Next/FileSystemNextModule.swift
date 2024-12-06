@@ -97,6 +97,10 @@ public final class FileSystemNextModule: Module {
         try? file.md5
       }
 
+      Property("type") { file in
+        file.type
+      }
+
       Function("delete") { file in
         try file.delete()
       }
@@ -105,8 +109,8 @@ public final class FileSystemNextModule: Module {
         return (try? file.exists) ?? false
       }
 
-      Function("create") { file in
-        try file.create()
+      Function("create") { (file, options: CreateOptions?) in
+        try file.create(options ?? CreateOptions())
       }
 
       Function("copy") { (file, to: FileSystemPath) in
@@ -164,8 +168,8 @@ public final class FileSystemNextModule: Module {
         return directory.exists
       }
 
-      Function("create") { directory in
-        try directory.create()
+      Function("create") { (directory, options: CreateOptions?) in
+        try directory.create(options ?? CreateOptions())
       }
 
       Function("copy") { (directory, to: FileSystemPath) in

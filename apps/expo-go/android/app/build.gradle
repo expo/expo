@@ -80,7 +80,6 @@ android {
       debuggable true
       firebaseCrashlytics {
         nativeSymbolUploadEnabled false
-        mappingFileUploadEnabled false
       }
     }
     release {
@@ -93,9 +92,7 @@ android {
       def shouldUploadCrashlytics = System.getenv("EAS_BUILD") != null
       firebaseCrashlytics {
         nativeSymbolUploadEnabled shouldUploadCrashlytics
-        mappingFileUploadEnabled shouldUploadCrashlytics
-
-        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/release/out/lib")
+        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib")
       }
     }
   }
@@ -207,7 +204,6 @@ dependencies {
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation ('androidx.appcompat:appcompat:1.4.1')
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   implementation 'com.jakewharton:butterknife:10.2.1'
   implementation 'de.greenrobot:eventbus:2.4.0'
@@ -269,7 +265,7 @@ apply plugin: 'com.google.gms.google-services'
 
 def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir') {
   doLast {
-    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/release/out/lib"))
+    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib"))
   }
 }
 preBuild.dependsOn(ensureCrashlyticsDir)

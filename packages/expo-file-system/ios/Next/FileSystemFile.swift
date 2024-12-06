@@ -1,6 +1,7 @@
 import Foundation
 import ExpoModulesCore
 import CryptoKit
+import UniformTypeIdentifiers
 
 internal final class FileSystemFile: FileSystemPath {
   init(url: URL) {
@@ -16,16 +17,22 @@ internal final class FileSystemFile: FileSystemPath {
     }
   }
 
-  func create() throws {
+  func create(_ options: CreateOptions) throws {
     try validatePermission(.write)
     try validateType()
-    guard !(try exists) else {
-      throw UnableToCreateFileException("file already exists")
+    try validateCanCreate(options)
+    do {
+      if options.intermediates {
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+      }
+      try? FileManager.default.removeItem(atPath: url.path)
+      FileManager.default.createFile(atPath: url.path, contents: nil)
+    } catch {
+      throw UnableToCreateException(error.localizedDescription)
     }
-    FileManager.default.createFile(atPath: url.path, contents: nil)
   }
 
-  var exists: Bool {
+  override var exists: Bool {
     get throws {
       try validatePermission(.read)
 
@@ -65,6 +72,15 @@ internal final class FileSystemFile: FileSystemPath {
       let hash = Insecure.MD5.hash(data: fileData)
       return hash.map { String(format: "%02hhx", $0) }.joined()
     }
+  }
+
+  var type: String? {
+    let pathExtension = url.pathExtension
+    if let utType = UTType(filenameExtension: pathExtension),
+      let mimeType = utType.preferredMIMEType {
+      return mimeType
+    }
+    return nil
   }
 
   func write(_ content: String) throws {

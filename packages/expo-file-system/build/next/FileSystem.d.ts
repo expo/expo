@@ -12,6 +12,19 @@ export declare class Paths extends PathUtilities {
     static get document(): Directory;
     static get appleSharedContainers(): Record<string, Directory>;
 }
+export declare class FileBlob extends Blob {
+    file: File;
+    key: string;
+    constructor(file: File);
+    get size(): number;
+    get name(): string;
+    get type(): string;
+    arrayBuffer(): Promise<ArrayBuffer>;
+    text(): Promise<string>;
+    bytes(): Promise<Uint8Array>;
+    stream(): ReadableStream<Uint8Array>;
+    slice(start?: number, end?: number, contentType?: string): Blob;
+}
 export declare class File extends ExpoFileSystem.FileSystemFile {
     /**
      * Creates an instance of a file.
@@ -22,6 +35,7 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
      * ```
      */
     constructor(...uris: (string | File | Directory)[]);
+    blob(): Blob;
     get parentDirectory(): Directory;
     /**
      * File extension.

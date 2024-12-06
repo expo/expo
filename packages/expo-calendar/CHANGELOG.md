@@ -6,15 +6,19 @@
 
 ### 🎉 New features
 
+- feat: Allow nullable dates for getRemindersAsync ([#33264](https://github.com/expo/expo/pull/33264) by [@TomAtterton](https://github.com/TomAtterton))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-## 14.0.4 — 2024-11-26
+- [ios][calendar] Use EXPermissionStatus instead of CalendarPermissionsStatus in calendar permissions requesters ([#33453](https://github.com/expo/expo/pull/33453) by [@ryanduffin](https://github.com/ryanduffin)
 
-### 🎉 New features
+## 14.0.4 - 2024-11-29
 
-- feat: Allow nullable dates for getRemindersAsync ([#33264](https://github.com/expo/expo/pull/33264) by [@TomAtterton](https://github.com/TomAtterton))
+### 🐛 Bug fixes
+
+- [Android] Fix expo-calendar isPrimary on Android always returns false ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva) & [@sanchaz](https://github.com/sanchaz)) ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva), [@sanchaz](https://github.com/sanchaz))
 
 ## 14.0.3 — 2024-11-22
 

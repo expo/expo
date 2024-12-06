@@ -380,6 +380,11 @@ export type Contact = {
    * @platform ios
    */
   socialProfiles?: SocialProfile[];
+  /**
+   * Whether the contact is starred.
+   * @platform android
+   */
+  isFavorite?: boolean;
 };
 
 /**
@@ -687,7 +692,6 @@ export async function addContactAsync(contact: Contact, containerId?: string): P
   }
 
   const noIdContact = removeIds(contact);
-
   return await ExpoContacts.addContactAsync(noIdContact, containerId);
 }
 
@@ -1091,6 +1095,10 @@ export enum Fields {
   Note = 'note',
   Dates = 'dates',
   Relationships = 'relationships',
+  /**
+   * @platform android
+   */
+  IsFavorite = 'isFavorite',
 }
 
 /**

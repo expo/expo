@@ -8,9 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- Fix orphaned bridging header reference in prebuild. ([#33462](https://github.com/expo/expo/pull/33462) by [@EvanBacon](https://github.com/EvanBacon))
+- Resolve iOS build schemes on Windows. ([#33468](https://github.com/expo/expo/pull/33468) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
-## 9.0.10 —  2024-11-24
+## 9.0.10 — 2024-11-24
 
 ### 💡 Others
 

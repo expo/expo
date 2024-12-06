@@ -23,6 +23,7 @@ import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput } from '../serializer/jsOutput';
+import { toPosixPath } from '../utils/filePath';
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 
@@ -49,9 +50,10 @@ export async function transform(
   options: JsTransformOptions
 ): Promise<TransformResponse> {
   const reactServer = options.customTransformOptions?.environment === 'react-server';
+  const posixFilename = toPosixPath(filename);
   if (
     typeof options.customTransformOptions?.dom === 'string' &&
-    filename.match(/expo\/dom\/entry\.js/)
+    posixFilename.match(/expo\/dom\/entry\.js/)
   ) {
     // TODO: Find some method to do this without invalidating the cache between different DOM components.
     // Inject source for DOM component entry.
@@ -59,7 +61,7 @@ export async function transform(
     const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
     return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
   }
-  if (filename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+  if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
     const environment = options.customTransformOptions?.environment;
     const isServer = environment === 'node' || environment === 'react-server';
 
@@ -74,7 +76,8 @@ export async function transform(
           'module.exports = {\n' +
           clientBoundaries
             .map((boundary: string) => {
-              return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+              const serializedBoundary = JSON.stringify(boundary);
+              return `[\`$\{require.resolveWeak(${serializedBoundary})}\`]: /* ${boundary} */ () => import(${serializedBoundary}),`;
             })
             .join('\n') +
           '\n};';
@@ -166,7 +169,9 @@ export async function transform(
   // in development and a static CSS file in production.
   if (matchCssModule(filename)) {
     const results = await transformCssModuleWeb({
-      filename,
+      // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
+      // This affects the content hashes, which should be stable across platforms.
+      filename: posixFilename,
       src: code,
       options: {
         reactServer,

@@ -51,6 +51,9 @@ class AudioPlayer(
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
 
+  val currentTime get() = player.currentPosition / 1000
+  val duration get() = player.duration / 1000
+
   init {
     addPlayerListeners()
     player.setAudioAttributes(AudioAttributes.DEFAULT, true)
@@ -107,12 +110,12 @@ class AudioPlayer(
 
     return mapOf(
       "id" to id,
-      "currentTime" to player.currentPosition,
+      "currentTime" to currentTime,
       "playbackState" to playbackStateToString(player.playbackState),
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
       "reasonForWaitingToPlay" to null,
       "mute" to isMuted,
-      "duration" to player.duration,
+      "duration" to duration,
       "playing" to player.isPlaying,
       "loop" to isLooping,
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,

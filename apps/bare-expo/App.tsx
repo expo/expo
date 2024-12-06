@@ -11,7 +11,7 @@ try {
   // do nothing
 }
 
-Splashscreen.setOptions({ fade: true });
+Splashscreen.setOptions({ fade: true, duration: 800 });
 
 // Require the `BackgroundFetchScreen` component from `native-component-list` if it's available
 // so that we load the module and register its background task on startup.

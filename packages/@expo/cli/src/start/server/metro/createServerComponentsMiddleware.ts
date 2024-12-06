@@ -9,6 +9,7 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
 import path from 'path';
+import url from 'url';
 
 import { logMetroError } from './metroErrorInterface';
 import { ExportAssetMap } from '../../../export/saveAssets';
@@ -557,10 +558,7 @@ const getFullUrl = (url: string) => {
 };
 
 export const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
+  return url.fileURLToPath(fileURL);
 };
 
 const encodeInput = (input: string) => {

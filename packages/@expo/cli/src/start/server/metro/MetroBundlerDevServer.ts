@@ -165,7 +165,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     for (const route of manifest.apiRoutes) {
-      const filepath = route.file.startsWith('/') ? route.file : path.join(appDir, route.file);
+      const filepath = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
       const contents = await this.bundleApiRoute(filepath, { platform });
 
       const artifactFilename =
@@ -802,7 +802,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
-    if (!opts.mainModuleName.startsWith('/')) {
+    if (!opts.mainModuleName.startsWith('/') && !path.isAbsolute(opts.mainModuleName)) {
       opts.mainModuleName = './' + opts.mainModuleName;
     }
 

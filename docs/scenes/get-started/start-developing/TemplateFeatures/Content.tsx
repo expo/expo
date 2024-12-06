@@ -2,6 +2,8 @@ import { Button, useTheme } from '@expo/styleguide';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { ReactNode, useEffect, useState } from 'react';
 
+import { prefersDarkTheme } from '~/common/window';
+
 type Props = {
   imgSrc: string;
   darkImgSrc?: string;
@@ -16,10 +18,7 @@ export function Content({ imgSrc, darkImgSrc, alt, href, content }: Props) {
 
   useEffect(
     function didMount() {
-      const darkMode =
-        themeName === 'dark' ||
-        (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      setIsDarkMode(darkMode);
+      setIsDarkMode(themeName === 'dark' || (themeName === 'auto' && prefersDarkTheme()));
     },
     [themeName]
   );

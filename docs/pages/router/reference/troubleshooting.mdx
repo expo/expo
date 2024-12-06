@@ -39,3 +39,13 @@ registerRootComponent(App);
 ## `require.context` not enabled
 
 This can happen when using a custom version of `@expo/metro-config` that does not enable context modules. Expo Router requires the project **metro.config.js** to use `expo-router/metro` as the default configuration. Delete the **metro.config.js**, or extend `expo/metro-config`. See [Customizing metro](/guides/customizing-metro/) for more information.
+
+## Missing back button
+
+If you set up a modal or another screen that is expected to have a back button, then you'll need to add [`unstable_settings`](/router/advanced/router-settings/) to the route's layout to ensure the initial route is configured. Initial routes are somewhat unique to mobile apps and fit awkwardly in the system &mdash; improvements pending.
+
+```tsx app/_layout.tsx
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
+```

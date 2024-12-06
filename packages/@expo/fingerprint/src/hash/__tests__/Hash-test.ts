@@ -3,7 +3,7 @@ import { vol } from 'memfs';
 import pLimit from 'p-limit';
 import path from 'path';
 
-import { HashSource } from '../../Fingerprint.types';
+import type { DebugInfoDir, HashSource } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
 import {
   createContentsHashResultsAsync,
@@ -220,6 +220,30 @@ describe(createDirHashResultsAsync, () => {
     vol.fromJSON(volJSONIgnoreNativeProjects);
     const fingerprint2 = await createDirHashResultsAsync('.', limiter, '/app', options);
     expect(fingerprint1).toEqual(fingerprint2);
+  });
+
+  it('should partially ignore dir if it is in options.ignorePaths but using negated pattern to include some files', async () => {
+    const limiter = pLimit(3);
+    const options = await normalizeOptionsAsync('/app', {
+      debug: true,
+      ignorePaths: ['ios/**/*', '!ios/Podfile', 'android/**/*'],
+    });
+    const volJSON = {
+      '/app/ios/Podfile': '...',
+      '/app/ios/HelloWorld/AppDelegate.mm': '...',
+      '/app/eas.json': '{}',
+      '/app/app.json': '{}',
+      '/app/android/build.gradle': '...',
+    };
+    vol.fromJSON(volJSON);
+
+    const fingerprint1 = await createDirHashResultsAsync('.', limiter, '/app', options);
+    const iosDir = fingerprint1?.debugInfo?.children.find(
+      (child) => (child as DebugInfoDir)?.children != null && child?.path === 'ios'
+    ) as DebugInfoDir;
+    expect(iosDir).toBeDefined();
+    expect(iosDir.children.length).toBe(1);
+    expect(iosDir.children[0]?.path).toBe('ios/Podfile');
   });
 
   it('should return stable result from sorted files', async () => {
