@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- On Android, add support for providing vector drawables as the splashscreen icon.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
