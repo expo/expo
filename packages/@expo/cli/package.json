@@ -18,7 +18,7 @@
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "test:e2e": "jest --config e2e/jest.config.js",
-    "test:playwright": "playwright test",
+    "test:playwright": "playwright test --config e2e/playwright.config.ts",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
