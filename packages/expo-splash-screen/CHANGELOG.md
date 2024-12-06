@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- On Android, add support for providing vector drawables as the splashscreen icon.
+- On Android, add support for providing vector drawables as the splashscreen icon. ([#33507](https://github.com/expo/expo/pull/33507) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
