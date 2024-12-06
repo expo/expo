@@ -141,7 +141,17 @@ To use Geofencing methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
 - The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
-- On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
+
+When using Geofencing, the following platform differences apply:
+
+- <PlatformTag platform="android" /> You are allowed [up to
+  100](https://developer.android.com/develop/sensors-and-location/location/geofencing) active
+  geofences per app.
+- <PlatformTag platform="ios" /> Expo Location will report the initial state of the registered
+  geofence(s) at app startup.
+- <PlatformTag platform="ios" /> There is a [limit of
+  20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions)
+  `regions` that can be simultaneously monitored.
 
 ## Usage
 
