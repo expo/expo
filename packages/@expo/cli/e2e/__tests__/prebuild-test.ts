@@ -162,6 +162,9 @@ itNotWindows('runs `npx expo prebuild`', async () => {
     }
   );
 
+  // Clean up the tarballs to avoid `.tarballs` being validated
+  await fs.rm(path.dirname(templateTarball.absolutePath), { force: true, recursive: true });
+
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
   await expectTemplateAppNameToHaveBeenRenamed(projectRoot);

@@ -9,7 +9,7 @@ export const EXPO_MONOREPO_ROOT = path.resolve(__dirname, '../../../../..');
 
 /**
  * Create a tarball from a package within the Expo monorepo.
- * This creates the tarball from source, and moves it within the fixture directory using `_tarball`.
+ * This creates the tarball from source, and moves it within the fixture directory using `.tarball`.
  * It can be used to test any of our packages directly from source, without publishing or leaking other dependencies.
  */
 export async function createPackageTarball(fixtureRoot: string, packagePath: string) {
@@ -20,7 +20,7 @@ export async function createPackageTarball(fixtureRoot: string, packagePath: str
   }
 
   // Prepare the destination of the tarball within the fixture
-  const outputDir = path.join(fixtureRoot, '_tarballs');
+  const outputDir = path.join(fixtureRoot, '.tarballs');
   await fs.promises.mkdir(outputDir, { recursive: true });
 
   // Create the tarball with npm pack
