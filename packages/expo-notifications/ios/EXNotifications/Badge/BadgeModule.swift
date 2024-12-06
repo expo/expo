@@ -11,6 +11,7 @@ public class BadgeModule: Module {
     AsyncFunction("getBadgeCountAsync") { () -> Int in
       return EXSharedApplication().applicationIconBadgeNumber
     }
+    .runOnQueue(.main)
 
     AsyncFunction("setBadgeCountAsync") { (badgeCount: Int) -> Bool in
       let settings = await UNUserNotificationCenter.current().notificationSettings()
