@@ -103,6 +103,15 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1, 2, 3, 4]
+    env:
+      # Change bun, npm, and yarn caches to the much faster D:\ drive
+      # See: https://github.com/twpayne/chezmoi/pull/4064
+      BUN_INSTALL_CACHE_DIR: D:\_temp\bun
+      NPM_CACHE_LOCATION: D:\_temp\npm
+      YARN_CACHE_FOLDER: D:\_temp\yarn
+      # Change the Expo E2E project directory to the same drive as the repository,
+      # allowing to run Expo from source (avoiding Metro's multi-drive limitation)
+      EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
     steps:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
@@ -118,13 +127,10 @@ jobs:
 
       - name: 🪟 Setup Windows
         shell: bash
-        # Configure Git to use LF line endlings, Bun to use a faster cache disk, and the E2E to use the same drive for testing as the repository
-        # Note that the GitHub workspace is structured as `D:\a\<owner>\<repo>` and has an existing `D:\a\_temp` directory
+        # Configure Git to use LF line endlings
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
-          echo "BUN_INSTALL_CACHE_DIR=$(node --print 'require(`path`).join(process.env.GITHUB_WORKSPACE,  `./../../_temp/bun`)')" >> $GITHUB_ENV
-          echo "EXPO_E2E_TEMP_DIR=$(node --print 'require(`path`).join(process.env.GITHUB_WORKSPACE,  `./../../_temp/expo-cli-e2e`)')" >> $GITHUB_ENV
 
       - name: 👀 Checkout
         uses: actions/checkout@v4
