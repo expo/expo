@@ -20,7 +20,9 @@ function getAndroidSplashConfig(config, props) {
       backgroundColor: splash.backgroundColor,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: splash.imageWidth ?? 100,
-      dark: splash.dark
+      dark: splash.dark,
+      statusBar: splash.statusBar,
+      navigationBar: splash.navigationBar
     };
   }
   if (config.android?.splash) {

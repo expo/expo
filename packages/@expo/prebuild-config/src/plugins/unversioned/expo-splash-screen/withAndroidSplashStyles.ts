@@ -43,7 +43,7 @@ export const withAndroidSplashStyles: ConfigPlugin<{
   });
   config = withAndroidStyles(config, (config) => {
     config.modResults = removeOldSplashStyleGroup(config.modResults);
-    config.modResults = addSplashScreenStyle(config.modResults, isLegacyConfig);
+    config.modResults = addSplashScreenStyle(config.modResults, { isLegacyConfig, splashConfig });
     return config;
   });
   return config;
@@ -52,7 +52,10 @@ export const withAndroidSplashStyles: ConfigPlugin<{
 // Add the style that extends Theme.SplashScreen
 function addSplashScreenStyle(
   styles: AndroidConfig.Resources.ResourceXML,
-  isLegacyConfig: boolean
+  {
+    isLegacyConfig,
+    splashConfig,
+  }: { isLegacyConfig: boolean; splashConfig: AndroidSplashConfig | null }
 ) {
   const { resources } = styles;
   const { style = [] } = resources;
@@ -80,6 +83,24 @@ function addSplashScreenStyle(
         _: '@style/AppTheme',
       },
     ];
+  }
+
+  const statusBarStyle = getStatusBarStyle(splashConfig);
+  // Default is light-content, don't need to do anything to set it
+  if (statusBarStyle === 'dark-content') {
+    item.push({
+      $: { name: 'android:windowLightStatusBar' },
+      _: 'true',
+    });
+  }
+
+  const navigationBarStyle = getNavigationBarStyle(splashConfig);
+  // Default is light-content, don't need to do anything to set it
+  if (navigationBarStyle === 'dark-content') {
+    item.push({
+      $: { name: 'android:windowLightNavigationBar' },
+      _: 'true',
+    });
   }
 
   styles.resources.style = [
@@ -143,4 +164,12 @@ export function setSplashColorsForTheme(
   backgroundColor: string | null
 ): AndroidConfig.Resources.ResourceXML {
   return Colors.assignColorValue(colors, { value: backgroundColor, name: SPLASH_COLOR_NAME });
+}
+
+export function getStatusBarStyle(config: Pick<AndroidSplashConfig, 'statusBar'> | null) {
+  return config?.statusBar?.barStyle || 'light-content';
+}
+
+export function getNavigationBarStyle(config: Pick<AndroidSplashConfig, 'navigationBar'> | null) {
+  return config?.navigationBar?.barStyle || 'light-content';
 }

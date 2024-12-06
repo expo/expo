@@ -23,6 +23,12 @@ export type SplashScreenConfig = {
 
 export type AndroidSplashConfig = {
   imageWidth?: number;
+  statusBar?: {
+    barStyle?: 'light-content' | 'dark-content';
+  };
+  navigationBar?: {
+    barStyle?: 'light-content' | 'dark-content';
+  };
 } & SplashScreenConfig;
 
 const defaultResizeMode = 'contain';
@@ -45,6 +51,8 @@ export function getAndroidSplashConfig(
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: splash.imageWidth ?? 100,
       dark: splash.dark,
+      statusBar: splash.statusBar,
+      navigationBar: splash.navigationBar,
     };
   }
 
