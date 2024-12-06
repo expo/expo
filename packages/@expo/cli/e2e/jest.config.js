@@ -19,13 +19,7 @@ const config = {
   testTimeout: process.platform === 'win32' ? 300_000 : 180_000,
 };
 
-// Only run 2 separate tests concurrently on CI
 if (boolish('CI', false)) {
-  config.maxWorkers = 2;
-}
-
-// Run tests serially when CI is running in debug mode
-if (boolish('RUNNER_DEBUG', false)) {
   config.maxWorkers = 1;
 }
 
