@@ -1,11 +1,15 @@
 /* eslint-env jest */
 import execa from 'execa';
-import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, expectChunkPathMatching, getHtmlHelpers, getRouterE2ERoot } from '../utils';
+import {
+  bin,
+  expectChunkPathMatching,
+  findProjectFiles,
+  getHtmlHelpers,
+  getRouterE2ERoot,
+} from '../utils';
 
 runExportSideEffects();
 
@@ -14,35 +18,21 @@ describe('exports static splitting with modal', () => {
   const outputName = 'dist-static-modal-splitting';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
-        cwd: projectRoot,
-        env: {
-          NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_SRC: 'modal-splitting',
-          E2E_ROUTER_ASYNC: 'production',
-          EXPO_USE_FAST_RESOLVER: 'true',
-        },
-      });
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_SRC: 'modal-splitting',
+        E2E_ROUTER_ASYNC: 'production',
+        EXPO_USE_FAST_RESOLVER: 'true',
+      },
+    });
+  });
 
   it('has expected files', async () => {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    const files = findProjectFiles(outputDir);
 
     // The wrapper should not be included as a route.
     expect(files).not.toContain('+html.html');

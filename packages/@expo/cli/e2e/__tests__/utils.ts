@@ -6,21 +6,22 @@ import assert from 'assert';
 import execa from 'execa';
 import findProcess from 'find-process';
 import fs from 'fs';
+import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
-import os from 'os';
 import path from 'path';
 import treeKill from 'tree-kill';
 import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
+import { toPosixPath } from '../../src/utils/filePath';
+import { createPackageTarball } from '../utils/package';
+import { TEMP_DIR, getTemporaryPath } from '../utils/path';
+
+export { getTemporaryPath } from '../utils/path';
 
 export const bin = require.resolve('../../build/bin/cli');
 
 export const projectRoot = getTemporaryPath();
-
-export function getTemporaryPath() {
-  return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
-}
 
 export function execute(...args: string[]) {
   return execaLog('node', [bin, ...args], { cwd: projectRoot });
@@ -144,7 +145,6 @@ export async function createFromFixtureAsync(
     if (pkg || linkExpoPackages || linkExpoPackagesDev) {
       pkg ??= {};
       const pkgPath = path.join(projectRoot, 'package.json');
-      const expoPackagesPath = path.join(__dirname, '../../../../');
       const fixturePkg = (await JsonFile.readAsync(pkgPath)) as PackageJSONConfig;
 
       const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
@@ -152,13 +152,15 @@ export async function createFromFixtureAsync(
 
       if (linkExpoPackages) {
         for (const pkg of linkExpoPackages) {
-          dependencies[pkg] = `file:${path.join(expoPackagesPath, pkg)}`;
+          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
+          dependencies[pkg] = tarball.packageReference;
         }
       }
 
       if (linkExpoPackagesDev) {
         for (const pkg of linkExpoPackagesDev) {
-          devDependencies[pkg] = path.join(expoPackagesPath, pkg);
+          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
+          devDependencies[pkg] = tarball.packageReference;
         }
       }
 
@@ -220,7 +222,7 @@ export async function setupTestProjectWithOptionsAsync(
   } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
-  const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
+  const projectRoot = await createFromFixtureAsync(TEMP_DIR, {
     dirName: name,
     reuseExisting,
     fixtureName,
@@ -241,12 +243,15 @@ export async function getLoadedModulesAsync(statement: string): Promise<string[]
     'node',
     [
       '-e',
-      [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join('\n'),
+      [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join(';'),
     ],
     { cwd: __dirname }
   );
-  const loadedModules = JSON.parse(results.stdout.trim());
-  return loadedModules.map((value: string) => path.relative(repoRoot, value)).sort();
+  const loadedModules = JSON.parse(results.stdout.trim()) as string[];
+  return loadedModules
+    .map((value) => toPosixPath(path.relative(repoRoot, value)))
+    .filter((value) => !value.includes('/ms-vscode.js-debug/')) // Ignore injected vscode debugger scripts
+    .sort();
 }
 
 const pTreeKill = promisify(treeKill);
@@ -312,4 +317,19 @@ export function expectChunkPathMatching(name: string) {
       `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
     )
   );
+}
+
+/**
+ * Find all project files in the given project root.
+ * This returns all paths in POSIX format, sorted alphabetically, and relative to the project root without any prefix.
+ */
+export function findProjectFiles(projectRoot: string) {
+  return klawSync(projectRoot, { nodir: true })
+    .map((entry) =>
+      entry.path.includes('node_modules')
+        ? null
+        : toPosixPath(path.relative(projectRoot, entry.path))
+    )
+    .filter(Boolean)
+    .sort() as string[];
 }
