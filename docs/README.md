@@ -69,6 +69,7 @@ These metadata items include:
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
 - `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
 - `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
+- `isNew`: Whether to display the new label for a page. Commonly used with API pages under Reference. Defaults to `false`.
 
 ### Edit Code
 
@@ -90,24 +91,30 @@ yarn lint
 
 We use [Vale](https://vale.sh/) to lint our docs for style and grammar based on [Expo's writing style guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
-There are two ways you can use it:
+In a terminal window, run the following script which will run Vale for all markdown files inside the **pages** directory:
 
-#### Use Vale in VS Code (Recommended)
+```sh
+yarn run lint-prose
+```
+
+<details>
+
+<summary>Alternative: Use Vale with VS Code</summary>
+
+Alternatively, you can use Vale with VS Code. You need to:
 
 - [Install Vale on your system](https://vale.sh/docs/vale-cli/installation/)
 - [Install Vale's VS Code extension](https://marketplace.visualstudio.com/items?itemName=ChrisChinchilla.vale-vscode)
 
 Open the doc file (`*.mdx`) that you are working on and you'll may see suggested lines (yellow squiggly) in VS Code editor.
 
-#### Run the `lint-prose` script
-
-In a terminal window, run the `yarn run lint-prose` script from **package.json**. This will run Vale for all markdown files in the **pages** directory.
+</details>
 
 ## Redirects
 
 ### Server-side redirects
 
-These redirects are limited in their expressiveness - you can map a path to another path, but no regular expressions are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of **deploy.sh**.
+These redirects are limited in their expressiveness &mdash; you can map a path to another path, but no regular expressions are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of **deploy.sh**.
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
@@ -206,7 +213,7 @@ cd expo/packages/expo-constants
 
   ```ts
   /**
-   * The standard Expo confg object defined in `app.json` and `app.config.js` files. For both
+   * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
    * classic and modern manifests, whether they are embedded or remote.
    */
   expoConfig: ExpoConfig | null;
