@@ -152,7 +152,7 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
   if (!config) return;
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
   if (config.drawable) {
-    await writeSplashScreenDrawables(androidMainPath, projectRoot, config.drawable);
+    await writeSplashScreenDrawablesAsync(androidMainPath, projectRoot, config.drawable);
     return;
   }
   const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
@@ -197,7 +197,7 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
     return null;
   }));
 }
-async function writeSplashScreenDrawables(drawablePath, projectRoot, drawable) {
+async function writeSplashScreenDrawablesAsync(drawablePath, projectRoot, drawable) {
   if (!drawable) {
     return;
   }

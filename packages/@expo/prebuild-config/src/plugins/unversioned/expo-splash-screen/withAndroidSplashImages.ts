@@ -165,7 +165,7 @@ export async function setSplashImageDrawablesForThemeAsync(
   const androidMainPath = path.join(projectRoot, 'android/app/src/main');
 
   if (config.drawable) {
-    await writeSplashScreenDrawables(androidMainPath, projectRoot, config.drawable);
+    await writeSplashScreenDrawablesAsync(androidMainPath, projectRoot, config.drawable);
     return;
   }
 
@@ -224,7 +224,7 @@ export async function setSplashImageDrawablesForThemeAsync(
   );
 }
 
-async function writeSplashScreenDrawables(
+async function writeSplashScreenDrawablesAsync(
   drawablePath: string,
   projectRoot: string,
   drawable: SplashScreenConfig['drawable']
