@@ -93,11 +93,7 @@ async function writeColorsContentsJsonFileAsync({
       },
       'color-space': 'srgb'
     },
-    idiom: 'universal',
-    appearances: [{
-      appearance: 'luminosity',
-      value: 'light'
-    }]
+    idiom: 'universal'
   }];
   if (darkColor) {
     colors.push({
