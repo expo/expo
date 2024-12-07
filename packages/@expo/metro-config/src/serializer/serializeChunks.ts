@@ -31,6 +31,7 @@ import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
+import { toPosixPath } from '../utils/filePath';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -513,11 +514,14 @@ export class Chunk {
         // TODO: Make this user-configurable.
 
         // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-        if (module.path.startsWith('/')) {
+        if (path.isAbsolute(module.path)) {
           return {
             ...module,
             path:
-              '/' + path.relative(this.options.serverRoot ?? this.options.projectRoot, module.path),
+              '/' +
+              toPosixPath(
+                path.relative(this.options.serverRoot ?? this.options.projectRoot, module.path)
+              ),
           };
         }
         return module;
