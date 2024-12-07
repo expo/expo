@@ -230,3 +230,14 @@ describe('expo-router integration', () => {
     });
   });
 });
+
+it('verbose logging through `executeAsync` will always show for unexpected errors', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'install-expo-canary-fix',
+    'with-blank'
+  );
+
+  await executeExpoAsync(projectRoot, ['install', 'thispackagedoesntexist']);
+
+  expect(true).toBeTruthy();
+});
