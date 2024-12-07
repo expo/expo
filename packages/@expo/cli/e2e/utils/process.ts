@@ -21,7 +21,7 @@ type ExecuteOptions = Omit<execa.Options, 'cwd'> & {
  */
 export async function executeAsync(
   cwd: string,
-  commandOrFlags: string[],
+  commandOrFlags: string[] = [],
   { command, verbose, ...spawnOptions }: ExecuteOptions = {}
 ) {
   const [bin, ...flags] = command ? command.concat(commandOrFlags) : commandOrFlags;
@@ -29,30 +29,17 @@ export async function executeAsync(
   const log = createVerboseLogger({ verbose, prefix: 'execute' });
 
   log(bin, ...flags, { ...spawnOptions, cwd });
-
-  const onChildStderr = (chunk: any) => log.tag('stderr', chunk.toString());
-  const onChildStdout = (chunk: any) => log.tag('stdout', chunk.toString());
-
-  child.stderr?.on('data', onChildStderr);
-  child.stdout?.on('data', onChildStdout);
+  processCollectOutput(child, (type, output) => log.tag(type, output));
 
   try {
     const result = await child;
-    log.tag('close', { code: result.exitCode, signal: result.signal });
+    log.tag('close', result);
     log.output();
     return result;
   } catch (error) {
-    log.tag(
-      'error',
-      error && typeof error === 'object' && 'exitCode' in error && 'signal' in error
-        ? { code: error.exitCode, signal: error.signal }
-        : error
-    );
+    log.tag('error', error);
     log.output(true);
     throw error;
-  } finally {
-    child.stderr?.off('data', onChildStderr);
-    child.stdout?.off('data', onChildStdout);
   }
 }
 
@@ -193,18 +180,24 @@ export function processExitToError(
 }
 
 /**
- * Pipe the received output of the child process into the current process output stream.
- * This will append a prefix for each line, to make it more readable.
+ * Collect the received output of the child process storing it in a `stdout`, `stderr`, and `all` object.
+ * This converts the chunked stream output to string, and optionally calls the output callback.
  * Once the process exits or errors, the listeners are removed automatically.
  */
-export function processPipeOutput(child: ChildProcess, prefix = 'child process') {
-  const prefixLines = (chunk: any, type: 'stderr' | 'stdout') => {
-    const tag = `[${prefix} ${type}]`;
-    return `${tag} ` + chunk.toString().split('\n').join(`\n${tag} `);
+export function processCollectOutput(
+  child: ChildProcess,
+  onOutput?: (type: 'stderr' | 'stdout', output: string) => void
+) {
+  const collected = { stderr: '', stdout: '', all: '' };
+
+  const collect = (type: 'stderr' | 'stdout', output: string) => {
+    collected[type] += output;
+    collected.all += output;
+    onOutput?.(type, output);
   };
 
-  const onProcessStderr = (chunk: any) => process.stderr.write(prefixLines(chunk, 'stderr'));
-  const onProcessStdout = (chunk: any) => process.stdout.write(prefixLines(chunk, 'stdout'));
+  const onProcessStderr = (chunk: any) => collect('stderr', chunk.toString());
+  const onProcessStdout = (chunk: any) => collect('stdout', chunk.toString());
 
   child.stderr?.on('data', onProcessStderr);
   child.stdout?.on('data', onProcessStdout);
@@ -213,6 +206,8 @@ export function processPipeOutput(child: ChildProcess, prefix = 'child process')
     child.stderr?.off('data', onProcessStderr);
     child.stdout?.off('data', onProcessStdout);
   });
+
+  return collected;
 }
 
 /**

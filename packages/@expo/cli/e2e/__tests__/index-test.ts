@@ -1,7 +1,8 @@
 /* eslint-env jest */
 import fs from 'fs/promises';
 
-import { execute, projectRoot } from './utils';
+import { projectRoot } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
@@ -13,19 +14,21 @@ afterAll(() => {
 });
 
 it('runs `npx expo --version`', async () => {
-  const results = await execute('--version');
+  const results = await executeExpoAsync(projectRoot, ['--version']);
   expect(results.stdout).toEqual(require('../../package.json').version);
 });
 it('runs `npx expo -v`', async () => {
-  const results = await execute('-v');
+  const results = await executeExpoAsync(projectRoot, ['-v']);
   expect(results.stdout).toEqual(require('../../package.json').version);
 });
 it('asserts with a deprecated command `npx expo send`', async () => {
-  await expect(execute('send')).rejects.toThrow(/expo send is deprecated/);
+  await expect(executeExpoAsync(projectRoot, ['send'], { verbose: false })).rejects.toThrow(
+    /expo send is deprecated/
+  );
 });
 
 it('runs `npx expo --help`', async () => {
-  const results = await execute('--help');
+  const results = await executeExpoAsync(projectRoot, ['--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Usage

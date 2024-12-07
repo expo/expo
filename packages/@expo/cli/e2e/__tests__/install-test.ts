@@ -1,17 +1,15 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import type { ExecaError } from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
 
 import {
-  execute,
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
 } from './utils';
-import { executeExpoAsync, executeInstallAsync } from '../utils/expo';
+import { executeBunAsync, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -35,7 +33,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo install --help`', async () => {
-  const results = await execute('install', '--help');
+  const results = await executeExpoAsync(projectRoot, ['install', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -101,7 +99,7 @@ it('runs `npx expo install --check` fails', async () => {
   const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
   // Install wrong package versions of `expo-sms` and `expo-auth-session`
-  await executeInstallAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+  await executeBunAsync(projectRoot, ['install', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
 
   // Ensure the wrong versions are installed
   expect(pkg.read().dependencies).toMatchObject({
@@ -113,8 +111,7 @@ it('runs `npx expo install --check` fails', async () => {
   try {
     await executeExpoAsync(projectRoot, ['install', '--check'], { verbose: false });
     throw new Error('SHOULD NOT HAPPEN');
-  } catch (e) {
-    const error = e as ExecaError;
+  } catch (error: any) {
     expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~\d\.\d\.\d/);
     expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~\d+\.\d\.\d/);
   }
@@ -137,7 +134,7 @@ it('runs `npx expo install --fix` fails', async () => {
   });
 
   // Install wrong package versions of `expo-sms` and `expo-auth-session`
-  await executeInstallAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+  await executeBunAsync(projectRoot, ['install', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
 
   // Load the installed and expected dependency versions
   const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));

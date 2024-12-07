@@ -1,12 +1,12 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
 import fs from 'fs';
 import type { BasicSourceMap } from 'metro-source-map';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
+import { executeExpoAsync } from '../../utils/expo';
+import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -17,17 +17,20 @@ describe('exports with serializer plugins', () => {
 
   beforeAll(async () => {
     // E2E_USE_MOCK_SERIALIZER_PLUGIN=1 NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting-plugins
-    await execa('node', [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName], {
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        E2E_USE_MOCK_SERIALIZER_PLUGINS: '1',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'modal-splitting',
-        E2E_ROUTER_ASYNC: 'production',
-        EXPO_USE_FAST_RESOLVER: '1',
-      },
-    });
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', '--source-maps', '--output-dir', outputName],
+      {
+        env: {
+          NODE_ENV: 'production',
+          E2E_USE_MOCK_SERIALIZER_PLUGINS: '1',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'modal-splitting',
+          E2E_ROUTER_ASYNC: 'production',
+          EXPO_USE_FAST_RESOLVER: '1',
+        },
+      }
+    );
   });
 
   it('has source maps', async () => {

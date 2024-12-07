@@ -16,16 +16,16 @@ import {
 const EXPO_CLI_BIN = require.resolve('../../build/bin/cli');
 
 /** Execute the Expo CLI, from source and with verbose logging on unexpected errors */
-export const executeExpoAsync: typeof executeAsync = (cwd, flags, options = {}) =>
+export const executeExpoAsync: typeof executeAsync = (cwd, flags, options) =>
   executeAsync(cwd, flags, {
     command: ['node', EXPO_CLI_BIN],
     ...options,
   });
 
 /** Install any (dev) dependencies with Bun and verbose logging on unexpected errors */
-export const executeInstallAsync: typeof executeAsync = (cwd, flags, options = {}) =>
+export const executeBunAsync: typeof executeAsync = (cwd, flags, options) =>
   executeAsync(cwd, flags, {
-    command: ['bun', 'install'],
+    command: ['bun'],
     ...options,
   });
 

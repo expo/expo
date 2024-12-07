@@ -1,13 +1,21 @@
 import { boolish } from 'getenv';
 import { format } from 'node:util';
 
+/** If the verbose logging should be enabled by default, based on `EXPO_E2E_VERBOSE` or GitHub Actions running in debug mode */
 export const EXPO_E2E_VERBOSE = boolish('RUNNER_DEBUG', boolish('EXPO_E2E_VERBOSE', false));
 
+/**
+ * Create a verbose logger, similar to `debug`.
+ * When omitting `verbose`, the global verbose logging is inherited.
+ */
 export function createVerboseLogger({
   prefix = 'verbose',
   verbose,
 }: { prefix?: string; verbose?: boolean } = {}) {
   let logs = '';
+
+  const prefixLines = (prefix: string, output: string) =>
+    `[${prefix}] ${output.split('\n').join(`\n[${prefix}] `)}`;
 
   /** Log verbose output that normally should not be visible */
   function logger(...log: any[]) {
@@ -32,8 +40,4 @@ export function createVerboseLogger({
       logs = '';
     },
   });
-}
-
-export function prefixLines(prefix: string, output: string) {
-  return `[${prefix}] ${output.split('\n').join(`\n[${prefix}] `)}`;
 }

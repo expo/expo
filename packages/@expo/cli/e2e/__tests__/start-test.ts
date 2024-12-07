@@ -1,16 +1,9 @@
 /* eslint-env jest */
-import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
 
-import {
-  execute,
-  projectRoot,
-  getLoadedModulesAsync,
-  bin,
-  setupTestProjectWithOptionsAsync,
-} from './utils';
-import { createExpoStart } from '../utils/expo';
+import { projectRoot, getLoadedModulesAsync, setupTestProjectWithOptionsAsync } from './utils';
+import { createExpoStart, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -37,7 +30,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo start --help`', async () => {
-  const results = await execute('start', '--help');
+  const results = await executeExpoAsync(projectRoot, ['start', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -86,9 +79,9 @@ for (const args of [
   ['-m', 'localhost', '--lan', '--offline'],
 ]) {
   it(`asserts invalid URL arguments on \`expo start ${args.join(' ')}\``, async () => {
-    await expect(execa('node', [bin, 'start', ...args], { cwd: projectRoot })).rejects.toThrowError(
-      /Specify at most one of/
-    );
+    await expect(
+      executeExpoAsync(projectRoot, ['start', ...args], { verbose: false })
+    ).rejects.toThrow(/Specify at most one of/);
   });
 }
 
@@ -110,8 +103,6 @@ describe('server', () => {
   });
 
   it('runs `npx expo start`', async () => {
-    console.log('Fetching manifest');
-
     const manifest = await expo.fetchExpoGoManifestAsync();
 
     // Required for Expo Go
@@ -143,14 +134,9 @@ describe('server', () => {
     // Custom
     expect(manifest.extra.expoGo?.__flipperHack).toBe('React Native packager is running');
 
-    console.log('Fetching bundle');
-
     const bundleResponse = await expo.fetchBundleAsync(manifest.launchAsset.url);
     const bundleContent = await bundleResponse.text();
-
-    console.log('Fetched bundle: ', bundleContent.length);
     expect(bundleContent.length).toBeGreaterThan(1000);
-    console.log('Finished');
 
     // Get source maps for the bundle
     // Find source map URL
