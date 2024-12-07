@@ -102,6 +102,7 @@ export function getAndroidDarkSplashConfig(
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
       resizeMode: lightTheme?.resizeMode ?? defaultResizeMode,
+      drawable: props.drawable,
     };
   }
 
