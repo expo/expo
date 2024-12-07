@@ -1,10 +1,10 @@
 import spawn from 'cross-spawn';
-import { boolish } from 'getenv';
 import assert from 'node:assert';
 import type { ChildProcess, SpawnOptions } from 'node:child_process';
 import { createServer } from 'node:net';
 import { env } from 'node:process';
 
+import { EXPO_E2E_VERBOSE } from './log';
 import {
   killProcessAsync,
   processExitToError,
@@ -63,7 +63,7 @@ export function createBackgroundServer({
   command,
   host: resolveHost,
   port: resolvePort = findFreePortAsync,
-  verbose = boolish('RUNNER_DEBUG', boolish('EXPO_VERBOSE', false)),
+  verbose = EXPO_E2E_VERBOSE,
   ...spawnOptions
 }: BackgroundServerOptions): BackgroundServer {
   let child: ChildProcess | null = null;

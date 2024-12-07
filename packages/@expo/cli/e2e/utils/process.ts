@@ -1,9 +1,60 @@
+import execa from 'execa';
 import assert from 'node:assert';
 import type { ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
 import { clearTimeout, setTimeout } from 'node:timers';
 import { stripVTControlCharacters } from 'node:util';
 import treeKill from 'tree-kill';
+
+import { createVerboseLogger } from './log';
+
+type ExecuteOptions = Omit<execa.Options, 'cwd'> & {
+  /** The command prefix to execute, otherwise the full `commandOrFlags` is executed */
+  command?: string[];
+  /** Log the full output of the child process, when omitted verbose is enabled through `EXPO_E2E_VERBOSE` or GitHub Actions debug mode  */
+  verbose?: boolean;
+};
+
+/**
+ * Execute a child process and wait until the process exits or errors.
+ * This wraps the process execution in verbose logging, shown on errors or on any invocation with verbose enabled.
+ */
+export async function executeAsync(
+  cwd: string,
+  commandOrFlags: string[],
+  { command, verbose, ...spawnOptions }: ExecuteOptions = {}
+) {
+  const [bin, ...flags] = command ? command.concat(commandOrFlags) : commandOrFlags;
+  const child = execa(bin, flags, { ...spawnOptions, cwd });
+  const log = createVerboseLogger({ verbose, prefix: 'execute' });
+
+  log(bin, ...flags, { ...spawnOptions, cwd });
+
+  const onChildStderr = (chunk: any) => log.tag('stderr', chunk.toString());
+  const onChildStdout = (chunk: any) => log.tag('stdout', chunk.toString());
+
+  child.stderr?.on('data', onChildStderr);
+  child.stdout?.on('data', onChildStdout);
+
+  try {
+    const result = await child;
+    log.tag('close', { code: result.exitCode, signal: result.signal });
+    log.output();
+    return result;
+  } catch (error) {
+    log.tag(
+      'error',
+      error && typeof error === 'object' && 'exitCode' in error && 'signal' in error
+        ? { code: error.exitCode, signal: error.signal }
+        : error
+    );
+    log.output(true);
+    throw error;
+  } finally {
+    child.stderr?.off('data', onChildStderr);
+    child.stdout?.off('data', onChildStdout);
+  }
+}
 
 /**
  * Stop or kill a running the child process, and possible sub-processes it started.
