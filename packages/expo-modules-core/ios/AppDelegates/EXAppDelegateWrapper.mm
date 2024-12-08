@@ -20,6 +20,7 @@
 {
   if (self = [super init]) {
     _expoAppDelegate = [[EXExpoAppDelegate alloc] init];
+    _expoAppDelegate.shouldCallReactNativeSetup = NO;
   }
   return self;
 }

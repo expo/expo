@@ -68,7 +68,7 @@ async function transform(config, projectRoot, filename, data, options) {
         const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
         return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
     }
-    if (filename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+    if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
         const environment = options.customTransformOptions?.environment;
         const isServer = environment === 'node' || environment === 'react-server';
         if (!isServer) {
@@ -80,7 +80,8 @@ async function transform(config, projectRoot, filename, data, options) {
                 const src = 'module.exports = {\n' +
                     clientBoundaries
                         .map((boundary) => {
-                        return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+                        const serializedBoundary = JSON.stringify(boundary);
+                        return `[\`$\{require.resolveWeak(${serializedBoundary})}\`]: /* ${boundary} */ () => import(${serializedBoundary}),`;
                     })
                         .join('\n') +
                     '\n};';
@@ -140,7 +141,9 @@ async function transform(config, projectRoot, filename, data, options) {
     // in development and a static CSS file in production.
     if ((0, css_modules_1.matchCssModule)(filename)) {
         const results = await (0, css_modules_1.transformCssModuleWeb)({
-            filename,
+            // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
+            // This affects the content hashes, which should be stable across platforms.
+            filename: posixFilename,
             src: code,
             options: {
                 reactServer,

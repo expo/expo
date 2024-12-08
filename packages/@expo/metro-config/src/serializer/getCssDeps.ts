@@ -5,6 +5,7 @@ import path from 'path';
 import { CSSMetadata } from './jsOutput';
 import { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
+import { toPosixPath } from '../utils/filePath';
 import { hashString } from '../utils/hash';
 
 export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
@@ -54,17 +55,20 @@ export function getCssSerialAssets<T extends any>(
     if (cssMetadata) {
       const contents = cssMetadata.code;
 
-      const originFilename = path.relative(projectRoot, module.path);
-
-      const filename = path.join(
-        // Consistent location
-        STATIC_EXPORT_DIRECTORY,
-        // Hashed file contents + name for caching
-        fileNameFromContents({
-          // Stable filename for hashing in CI.
-          filepath: originFilename,
-          src: contents,
-        }) + '.css'
+      // NOTE(cedric): these relative paths are used as URL pathnames when serializing HTML
+      // Use POSIX-format to avoid urls like `_expo/static/css/some\\file\\name.css`
+      const originFilename = toPosixPath(path.relative(projectRoot, module.path));
+      const filename = toPosixPath(
+        path.join(
+          // Consistent location
+          STATIC_EXPORT_DIRECTORY,
+          // Hashed file contents + name for caching
+          fileNameFromContents({
+            // Stable filename for hashing in CI.
+            filepath: originFilename,
+            src: contents,
+          }) + '.css'
+        )
       );
 
       if (cssMetadata.externalImports) {

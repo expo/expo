@@ -12,6 +12,14 @@ open class ExpoAppInstance: RCTAppDelegate {
     return reactDelegate.createRootViewController()
   }
 
+  open override func bundleURL() -> URL? {
+#if DEBUG
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+#endif
+  }
+
   @objc
   open override func createRCTRootViewFactory() -> RCTRootViewFactory {
     let bundleUrlBlock: RCTBundleURLBlock = { [weak self] in
