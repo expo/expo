@@ -5,5 +5,5 @@ module.exports = {
   displayName: require('./package').name,
   rootDir: __dirname,
   roots: ['../cli/__mocks__', 'src'],
-  setupFiles: ['<rootDir>/../cli/e2e/setup.ts'],
+  setupFiles: ['<rootDir>/../cli/jest.setup.ts'],
 };

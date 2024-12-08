@@ -18,10 +18,10 @@ function getAndroidSplashConfig(config, props) {
       hdpi: splash.hdpi ?? splash.image,
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
-      enableFullScreenImage_legacy: splash.enableFullScreenImage_legacy,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: splash.imageWidth ?? 100,
-      dark: splash.dark
+      dark: splash.dark,
+      drawable: splash.drawable
     };
   }
   if (config.android?.splash) {
@@ -34,7 +34,6 @@ function getAndroidSplashConfig(config, props) {
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
       image: splash.image,
-      enableFullScreenImage_legacy: true,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: 200,
       dark: splash.dark
@@ -49,7 +48,6 @@ function getAndroidSplashConfig(config, props) {
       hdpi: splash.image,
       mdpi: splash.image,
       backgroundColor: splash.backgroundColor,
-      enableFullScreenImage_legacy: true,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: 200,
       dark: splash.dark
@@ -65,11 +63,11 @@ function getAndroidDarkSplashConfig(config, props) {
       xxxhdpi: splash.xxxhdpi ?? splash.image,
       xxhdpi: splash.xxhdpi ?? splash.image,
       xhdpi: splash.xhdpi ?? splash.image,
-      enableFullScreenImage_legacy: props.enableFullScreenImage_legacy,
       hdpi: splash.hdpi ?? splash.image,
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
-      resizeMode: lightTheme?.resizeMode ?? defaultResizeMode
+      resizeMode: lightTheme?.resizeMode ?? defaultResizeMode,
+      drawable: props.drawable
     };
   }
 
@@ -84,7 +82,6 @@ function getAndroidDarkSplashConfig(config, props) {
       xhdpi: splash.xhdpi ?? splash.image,
       hdpi: splash.hdpi ?? splash.image,
       mdpi: splash.mdpi ?? splash.image,
-      enableFullScreenImage_legacy: true,
       backgroundColor: splash.backgroundColor,
       // Can't support dark resizeMode because the resize mode is hardcoded into the MainActivity.java
       resizeMode: lightTheme?.resizeMode ?? defaultResizeMode

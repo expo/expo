@@ -13,6 +13,11 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- [iOS] Swift conversion 1: badge and server registration. ([#32069](https://github.com/expo/expo/pull/32069) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 2: push token module. ([#32612](https://github.com/expo/expo/pull/32612) by [@douglowder](https://github.com/douglowder))
+
 ## 0.29.10 - 2024-12-02
 
 ### 🐛 Bug fixes

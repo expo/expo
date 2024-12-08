@@ -46,6 +46,7 @@ it('throws on invalid project root', async () => {
     await execute('very---invalid', 'logout');
   } catch (e) {
     const error = e as ExecaError;
-    expect(error.stderr).toMatch(/Invalid project root: \//);
+    // Test on the invalid project prefix, and absolute path ending in the expected project folder
+    expect(error.stderr).toMatch(/^Invalid project root: .*very---invalid$/);
   }
 });

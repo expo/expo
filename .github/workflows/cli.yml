@@ -42,53 +42,135 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  jest-ubuntu:
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4]
     steps:
-      - name: 👀 Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 100
-      - uses: actions/setup-node@v3
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: ⬇️ Fetch commits from base branch
-        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-
-      - name: ♻️ Restore Yarn Cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: 🧶 Install node modules in root dir
-        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
-      
-      - name: Build Expo CLI
-        run: yarn workspace @expo/cli prepare
 
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
         with:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
 
-      - name: 🔎 Type Check CLI
-        run: yarn typecheck
-        working-directory: packages/@expo/cli
-      - name: E2E Test CLI
-        run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
-        working-directory: packages/@expo/cli
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
 
-  web:
+      - name: 🔎 Find Yarn Cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: ♻️ Restore Yarn Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: 🧶 Install node modules in root dir
+        run: yarn install --prefer-offline --frozen-lockfile
+        env:
+          YARN_IGNORE_SCRIPTS: 'true'
+      
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+
+      - name: 🔎 Type Check CLI
+        working-directory: packages/@expo/cli
+        run: yarn typecheck
+
+      - name: 🧪 E2E Test CLI
+        working-directory: packages/@expo/cli
+        run: yarn test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+
+  jest-windows:
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      # Change bun, npm, and yarn caches to the much faster D:\ drive
+      # See: https://github.com/twpayne/chezmoi/pull/4064
+      BUN_INSTALL_CACHE_DIR: D:\_temp\bun
+      NPM_CACHE_LOCATION: D:\_temp\npm
+      YARN_CACHE_FOLDER: D:\_temp\yarn
+      # Change the Expo E2E project directory to the same drive as the repository,
+      # allowing to run Expo from source (avoiding Metro's multi-drive limitation)
+      EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
+    steps:
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+
+      - name: 🪟 Setup Windows
+        shell: bash
+        # Configure Git to use LF line endlings
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+      - name: 🔎 Find Yarn Cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: ♻️ Restore Yarn Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: 🧶 Install node modules in root dir
+        # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
+        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
+        env:
+          YARN_IGNORE_SCRIPTS: 'true'
+
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+
+      - name: 🔎 Type Check CLI
+        working-directory: packages/@expo/cli
+        # TODO(cedric): expo module scripts is incompatible with Windows, forcing us to manually set up these steps instead of `yarn typecheck`
+        run: yarn tsc --noEmit
+
+      - name: 🧪 E2E Test CLI
+        working-directory: packages/@expo/cli
+        run: yarn test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+  
+  playwright-ubuntu:
     runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout

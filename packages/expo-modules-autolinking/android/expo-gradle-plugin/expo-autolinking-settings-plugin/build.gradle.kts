@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -14,6 +15,9 @@ dependencies {
   implementation(project(":shared"))
   implementation(gradleApi())
   compileOnly("com.android.tools.build:gradle:8.5.0")
+
+  testImplementation("junit:junit:4.13.2")
+  testImplementation("com.google.truth:truth:1.1.2")
 }
 
 java {
@@ -35,5 +39,14 @@ gradlePlugin {
       id = "expo-autolinking-settings"
       implementationClass = "expo.modules.plugin.ExpoAutolinkingSettingsPlugin"
     }
+  }
+}
+
+tasks.withType<Test>().configureEach {
+  testLogging {
+    exceptionFormat = TestExceptionFormat.FULL
+    showExceptions = true
+    showCauses = true
+    showStackTraces = true
   }
 }

@@ -1,17 +1,12 @@
 /* eslint-env jest */
+import JsonFile from '@expo/json-file';
 import execa from 'execa';
-import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
+import fs from 'fs';
+import type { BasicSourceMap } from 'metro-source-map';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import {
-  bin,
-  expectChunkPathMatching,
-  getHtmlHelpers,
-  getPageHtml,
-  getRouterE2ERoot,
-} from '../utils';
+import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -20,42 +15,23 @@ describe('exports with serializer plugins', () => {
   const outputName = 'dist-splitting-plugins';
   const outputDir = path.join(projectRoot, outputName);
 
-  beforeAll(
-    async () => {
-      // E2E_USE_MOCK_SERIALIZER_PLUGIN=1 NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting-plugins
-      await execa(
-        'node',
-        [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName],
-        {
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            E2E_USE_MOCK_SERIALIZER_PLUGINS: '1',
-            EXPO_USE_STATIC: 'static',
-            E2E_ROUTER_SRC: 'modal-splitting',
-            E2E_ROUTER_ASYNC: 'production',
-            EXPO_USE_FAST_RESOLVER: '1',
-          },
-        }
-      );
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+  beforeAll(async () => {
+    // E2E_USE_MOCK_SERIALIZER_PLUGIN=1 NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting-plugins
+    await execa('node', [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName], {
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        E2E_USE_MOCK_SERIALIZER_PLUGINS: '1',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_SRC: 'modal-splitting',
+        E2E_ROUTER_ASYNC: 'production',
+        EXPO_USE_FAST_RESOLVER: '1',
+      },
+    });
+  });
 
   it('has source maps', async () => {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-
+    const files = findProjectFiles(outputDir);
     const mapFiles = files.filter((file) => file?.endsWith('.map'));
 
     // "_expo/static/js/web/_layout-e67451b6ca1f415eec1baf46b17d16c6.js.map",
@@ -83,5 +59,21 @@ describe('exports with serializer plugins', () => {
 
       expect(fs.existsSync(path.join(outputDir, mapFile!))).toBe(true);
     }
+  });
+
+  it('source maps do not contain project paths', async () => {
+    const files = findProjectFiles(outputDir).filter((file) => file.endsWith('.map'));
+
+    // Ensure the source map is available
+    expect(files).not.toEqual([]);
+
+    // Load the sourcemap and parse it as JSON
+    const rawmap = await JsonFile.readAsync(path.resolve(outputDir, files[0]));
+    const sourcemap = rawmap as unknown as BasicSourceMap;
+
+    // Ensure the sourcemap does not contain absolute paths to the project directory
+    expect(sourcemap.sources).not.toEqual(
+      expect.arrayContaining([expect.stringContaining(projectRoot)])
+    );
   });
 });

@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import execa from 'execa';
 
 import { runExportSideEffects } from './export-side-effects';
@@ -23,4 +24,4 @@ it(`asserts the server env isn't correct`, async () => {
   ).rejects.toThrow(
     /NODE_OPTIONS="--no-experimental-fetch" is not supported with Expo server. Node.js built-in Request\/Response APIs are required to continue./
   );
-}, 10000);
+});

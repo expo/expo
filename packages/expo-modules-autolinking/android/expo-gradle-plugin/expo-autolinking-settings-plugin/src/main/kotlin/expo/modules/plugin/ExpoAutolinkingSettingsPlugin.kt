@@ -11,26 +11,30 @@ open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
     // Creates an extension that allows users to link expo modules and add additional configuration.
     settings.extensions.create("expoAutolinking", ExpoAutolinkingSettingsExtension::class.java, settings)
 
-    settings.gradle.beforeRootProject { rootProject ->
-      // Adds the `expo-autolinking-plugin` to the root project, so it will be available for all subprojects.
-      rootProject
-        .buildscript
-        .dependencies
-        .add("classpath", "expo.modules:expo-autolinking-plugin")
-    }
-
     val expoGradlePluginPath = getExpoGradlePluginPath(settings)
-    // Includes the `expo-gradle-plugin` subproject.
-    settings.includeBuild(
-      expoGradlePluginPath
-    )
+    // If the `expo-gradle-plugin` is available, it will be included in the settings.
+    // It won't be available in our test project or when we decide to prebuild plugin.
+    if (expoGradlePluginPath.exists()) {
+      settings.gradle.beforeRootProject { rootProject ->
+        // Adds the `expo-autolinking-plugin` to the root project, so it will be available for all subprojects.
+        rootProject
+          .buildscript
+          .dependencies
+          .add("classpath", "expo.modules:expo-autolinking-plugin")
+      }
+
+      // Includes the `expo-gradle-plugin` subproject.
+      settings.includeBuild(
+        expoGradlePluginPath
+      )
+    }
   }
 
   private fun getExpoGradlePluginPath(settings: Settings): File {
     val expoModulesAutolinkingPath =
       settings.providers.exec { env ->
         env.workingDir(settings.rootDir)
-        env.commandLine("node", "--print", "require.resolve('expo-modules-autolinking', { paths: [require.resolve('expo/package.json')] })")
+        env.commandLine("node", "--print", "require.resolve('expo-modules-autolinking/package.json', { paths: [require.resolve('expo/package.json')] })")
       }.standardOutput.asText.get().trim()
 
     return File(

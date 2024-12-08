@@ -1,6 +1,7 @@
 package expo.modules.plugin.configuration
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 
@@ -26,6 +27,10 @@ data class ExpoAutolinkingConfig(
    */
   val allAarProjects: List<GradleAarProject>
     get() = modules.flatMap { it.aarProjects }
+
+  fun toJson(): String {
+    return Json.encodeToString(this)
+  }
 
   companion object {
     private val jsonDecoder by lazy {
