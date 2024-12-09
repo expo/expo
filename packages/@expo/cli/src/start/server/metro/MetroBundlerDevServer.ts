@@ -77,6 +77,7 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { toPosixPath } from '../../../utils/filePath';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -714,7 +715,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // HACK: Maybe this should be done in the serializer.
     const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
-      path.relative(serverRoot, boundary)
+      // NOTE(cedric): relative module specifiers / IDs should always be POSIX formatted
+      toPosixPath(path.relative(serverRoot, boundary))
     );
     const moduleIdToSplitBundle = (
       bundle.artifacts
