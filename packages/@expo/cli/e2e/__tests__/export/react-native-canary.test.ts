@@ -1,12 +1,12 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
+import { executeExpoAsync } from '../../utils/expo';
+import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -16,11 +16,10 @@ describe('exports with react native canary', () => {
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
-    await execa(
-      'node',
-      [bin, 'export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode', '--no-minify'],
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode', '--no-minify'],
       {
-        cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',

@@ -14,6 +14,8 @@ import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
 import { toPosixPath } from '../../src/utils/filePath';
+import { executeBunAsync } from '../utils/expo';
+import { createVerboseLogger } from '../utils/log';
 import { createPackageTarball } from '../utils/package';
 import { TEMP_DIR, getTemporaryPath } from '../utils/path';
 
@@ -89,6 +91,7 @@ export async function installAsync(projectRoot: string, pkgs: string[] = []) {
 export async function createFromFixtureAsync(
   parentDir: string,
   {
+    verbose,
     dirName,
     reuseExisting,
     fixtureName,
@@ -97,6 +100,7 @@ export async function createFromFixtureAsync(
     linkExpoPackages,
     linkExpoPackagesDev,
   }: {
+    verbose?: boolean;
     dirName: string;
     reuseExisting?: boolean;
     fixtureName: string;
@@ -115,14 +119,28 @@ export async function createFromFixtureAsync(
   }
 ): Promise<string> {
   const projectRoot = path.join(parentDir, dirName);
+  const log = createVerboseLogger({ verbose, prefix: 'project' });
+
+  log('Creating fixture:', {
+    parentDir,
+    dirName,
+    reuseExisting,
+    fixtureName,
+    config,
+    pkg,
+    linkExpoPackages,
+    linkExpoPackagesDev,
+  });
 
   if (fs.existsSync(projectRoot)) {
     if (reuseExisting) {
-      console.log('[setup] Reusing existing fixture project:', projectRoot);
+      log.tag('existing', 'Reusing existing fixture project:', projectRoot);
+      log.exit();
+
       // bail out early, this is good for local testing.
       return projectRoot;
     } else {
-      console.log('[setup] Clearing existing fixture project:', projectRoot);
+      log.tag('existing', 'Clearing existing fixture project:', projectRoot);
       await fs.promises.rm(projectRoot, { recursive: true, force: true });
     }
   }
@@ -136,7 +154,7 @@ export async function createFromFixtureAsync(
 
     // Create the project root
     fs.mkdirSync(projectRoot, { recursive: true });
-    console.log('[setup] Created fixture project:', projectRoot);
+    log('Created fixture project:', projectRoot);
 
     // Copy all files recursively into the temporary directory
     await copySync(fixturePath, projectRoot);
@@ -153,6 +171,7 @@ export async function createFromFixtureAsync(
       if (linkExpoPackages) {
         for (const pkg of linkExpoPackages) {
           const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
+          log('Created and linked tarball for dependencies', tarball);
           dependencies[pkg] = tarball.packageReference;
         }
       }
@@ -160,6 +179,7 @@ export async function createFromFixtureAsync(
       if (linkExpoPackagesDev) {
         for (const pkg of linkExpoPackagesDev) {
           const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
+          log('Created and linked tarball for devDependencies', tarball);
           devDependencies[pkg] = tarball.packageReference;
         }
       }
@@ -193,11 +213,14 @@ export async function createFromFixtureAsync(
     }
 
     // Install the packages for e2e experience.
-    await installAsync(projectRoot);
+    await executeBunAsync(projectRoot, ['install']);
   } catch (error) {
+    log.error(error);
     // clean up if something failed.
     // await fs.remove(projectRoot).catch(() => null);
     throw error;
+  } finally {
+    log.exit();
   }
 
   return projectRoot;

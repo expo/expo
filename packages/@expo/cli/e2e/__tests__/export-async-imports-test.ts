@@ -1,15 +1,14 @@
 /* eslint-env jest */
-import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
 
 import {
   expectChunkPathMatching,
   projectRoot,
-  bin,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
 } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -30,10 +29,9 @@ it('runs `npx expo export -p web`', async () => {
     'expo-28016-export-async-imports',
     'with-circular-async-imports'
   );
+
   // `npx expo export:web`
-  await execa('node', [bin, 'export', '-p', 'web', '--no-minify'], {
-    cwd: projectRoot,
-  });
+  await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--no-minify']);
 
   const outputDir = path.join(projectRoot, 'dist');
   const files = findProjectFiles(outputDir);

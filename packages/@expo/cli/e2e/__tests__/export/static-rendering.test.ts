@@ -1,16 +1,11 @@
 /* eslint-env jest */
-import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import {
-  bin,
-  ensurePortFreeAsync,
-  findProjectFiles,
-  getPageHtml,
-  getRouterE2ERoot,
-} from '../utils';
+import { executeExpoAsync } from '../../utils/expo';
+import { createStaticServe } from '../../utils/server';
+import { findProjectFiles, getPageHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -20,58 +15,44 @@ describe('exports static', () => {
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
-    await execa('node', [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName], {
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'static-rendering',
-        E2E_ROUTER_ASYNC: '',
-        EXPO_USE_FAST_RESOLVER: 'true',
-      },
-    });
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', '--source-maps', '--output-dir', outputName],
+      {
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: '',
+          EXPO_USE_FAST_RESOLVER: 'true',
+        },
+      }
+    );
   });
 
   xdescribe('server', () => {
-    let server: execa.ExecaChildProcess<string> | undefined;
-    const serverUrl = 'http://localhost:3000';
-
-    beforeAll(async () => {
-      await ensurePortFreeAsync(3000);
-      // Start a server instance that we can test against then kill it.
-      server = execa('npx', ['serve', outputName, '-l', '3000'], {
-        cwd: projectRoot,
-
-        stderr: 'inherit',
-
-        env: {
-          NODE_ENV: 'production',
-          TEST_SECRET_KEY: 'test-secret-key',
-        },
-      });
-      // Wait for the server to start
-      await new Promise((resolve) => {
-        const listener = server!.stdout?.on('data', (data) => {
-          if (data.toString().includes('Accepting connections at')) {
-            resolve(null);
-            listener?.removeAllListeners();
-          }
-        });
-      });
+    const server = createStaticServe({
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        TEST_SECRET_KEY: 'test-secret-key',
+      },
     });
 
+    beforeAll(async () => {
+      // Start a server instance that we can test against then kill it.
+      await server.startAsync([outputName]);
+    });
     afterAll(async () => {
-      if (server) {
-        server.kill();
-        await server;
-      }
+      await server.stopAsync();
     });
 
     it(`can serve up index html`, async () => {
-      expect(await fetch(serverUrl).then((res) => res.text())).toMatch(/<div id="root">/);
+      expect(await server.fetchAsync('/').then((res) => res.text())).toMatch(/<div id="root">/);
     });
+
     it(`gets a 404`, async () => {
-      expect(await fetch(serverUrl + '/missing-route').then((res) => res.status)).toBe(404);
+      expect(await server.fetchAsync('/missing-route').then((res) => res.status)).toBe(404);
     });
   });
 
