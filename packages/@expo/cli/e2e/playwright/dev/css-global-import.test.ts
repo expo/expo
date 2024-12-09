@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
-import execa from 'execa';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
-import { bin, ServeStaticCommand } from '../../utils/command-instance';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -12,20 +12,16 @@ const projectRoot = getRouterE2ERoot();
 const inputDir = 'dist-css-global-import';
 
 test.describe(inputDir, () => {
-  test.beforeAll(async () => {
-    // Could take 45s depending on how fast the bundler resolves
-    test.setTimeout(560 * 1000);
+  const expoServe = createExpoServe({
+    cwd: projectRoot,
+    env: {
+      NODE_ENV: 'production',
+    },
   });
 
-  let serveCmd: ServeStaticCommand;
-
-  test.beforeEach('bundle and serve', async ({}, testInfo) => {
-    console.time('hydration setup');
-    testInfo.setTimeout(testInfo.timeout + 30000);
-
+  test.beforeEach('bundle and serve', async () => {
     console.time('expo export');
-    await execa('node', [bin, 'export', '-p', 'web', '--output-dir', inputDir], {
-      cwd: projectRoot,
+    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
@@ -34,42 +30,24 @@ test.describe(inputDir, () => {
     });
     console.timeEnd('expo export');
 
-    serveCmd = new ServeStaticCommand(projectRoot, {
-      NODE_ENV: 'production',
-    });
-    console.timeEnd('hydration setup');
-
-    console.time('npx serve');
-    await serveCmd.startAsync([inputDir]);
-    console.timeEnd('npx serve');
-    console.log('Server running:', serveCmd.url);
+    console.time('expo serve');
+    await expoServe.startAsync([inputDir]);
+    console.timeEnd('expo serve');
   });
 
   test.afterAll(async () => {
-    await serveCmd.stopAsync();
+    await expoServe.stopAsync();
   });
 
   // This test generally ensures no errors are thrown during an export loading.
   test('loads without hydration errors', async ({ page }) => {
+    // Listen for console logs and errors
+    const pageErrors = pageCollectErrors(page);
+
     console.time('Open page');
     // Navigate to the app
-    await page.goto(serveCmd.url);
-
+    await page.goto(expoServe.url.href);
     console.timeEnd('Open page');
-
-    // Listen for console errors
-    const errorLogs: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        errorLogs.push(msg.text());
-      }
-    });
-
-    // Listen for uncaught exceptions and console errors
-    const errors: string[] = [];
-    page.on('pageerror', (error) => {
-      errors.push(error.message);
-    });
 
     // Wait for the app to load
     await page.waitForSelector('[data-testid="index-text"]');
@@ -86,8 +64,7 @@ test.describe(inputDir, () => {
     expect(betaText).not.toBeNull();
     expect(await betaText?.evaluate((node) => getComputedStyle(node).color)).toBe('rgb(255, 0, 0)');
 
-    expect(errorLogs).toEqual([]);
-    expect(errors).toEqual([]);
+    expect(pageErrors.all).toEqual([]);
 
     // Ensure expected tags
     // <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap">

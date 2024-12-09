@@ -13,9 +13,6 @@ test.afterAll(() => restoreEnv());
 const projectRoot = getRouterE2ERoot();
 const inputDir = 'fast-refresh';
 
-// These tests modify the same files in the file system, so run them in serial
-test.describe.configure({ mode: 'serial' });
-
 test.describe(inputDir, () => {
   const expoStart = createExpoStart({
     cwd: projectRoot,
@@ -40,6 +37,14 @@ test.describe(inputDir, () => {
     await mutateFile(layoutFile, (contents) => {
       return contents.replace(/LAYOUT_VALUE_[\d\w]+/g, 'LAYOUT_VALUE');
     });
+
+    console.time('expo start');
+    await expoStart.startAsync();
+    console.timeEnd('expo start');
+
+    console.time('Eagerly bundled JS');
+    await expoStart.fetchBundleAsync('/').then((response) => response.text());
+    console.timeEnd('Eagerly bundled JS');
   });
   test.afterEach(async () => {
     await expoStart.stopAsync();
@@ -153,16 +158,6 @@ async function openPageAndEagerlyLoadJS(
   page: Page,
   url?: string
 ) {
-  console.time('expo start');
-  await expo.startAsync();
-  console.timeEnd('expo start');
-
-  console.time('Eagerly bundled JS');
-  const indexRes = await expo.fetchBundleAsync('/');
-  expect(indexRes.ok).toBe(true);
-  await indexRes.text();
-  console.timeEnd('Eagerly bundled JS');
-
   // Keep track of the `/message` socket, which is used to control the device programatically
   const messageSocketPromise = page.waitForEvent('websocket', (ws) =>
     ws.url().endsWith('/message')
