@@ -6,13 +6,6 @@ type ReactNativeFormDataInternal = FormData & {
   _parts: [string, string | Blob][];
 };
 
-// To decouple the dependency from expo-file-system, just uses the necessary type here.
-// Please keeps in sync with the `FileBlob` type in `packages/expo-file-system/src/next/FileSystem.ts`.
-type ExpoFileSystemFileBlob = {
-  file: {
-    bytes: () => Uint8Array;
-  };
-};
 export type ExpoFormDataValue = string | Blob;
 export type ExpoFormDataPart =
   | {
@@ -26,11 +19,6 @@ export type ExpoFormDataPart =
       headers: { [name: string]: string };
       name?: string | undefined;
       type?: string | undefined;
-    }
-  | {
-      // expo-file-system FileBlob
-      file: ExpoFileSystemFileBlob;
-      headers: { [name: string]: string };
     }
   | {
       // React Native proprietary local file
@@ -50,10 +38,6 @@ export declare class ExpoFormData {
   has(name: string): boolean;
   set(name: string, value: string): void;
   set(name: string, value: Blob, filename?: string): void;
-
-  // expo-file-system FileBlob
-  append(name: string, value: ExpoFileSystemFileBlob): void;
-  set(name: string, value: ExpoFileSystemFileBlob): void;
 
   // React Native proprietary local file
   append(name: string, value: { uri: string; name?: string; type?: string }): void;

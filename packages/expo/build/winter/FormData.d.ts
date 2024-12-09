@@ -1,8 +1,3 @@
-type ExpoFileSystemFileBlob = {
-    file: {
-        bytes: () => Uint8Array;
-    };
-};
 export type ExpoFormDataValue = string | Blob;
 export type ExpoFormDataPart = {
     string: string;
@@ -16,11 +11,6 @@ export type ExpoFormDataPart = {
     };
     name?: string | undefined;
     type?: string | undefined;
-} | {
-    file: ExpoFileSystemFileBlob;
-    headers: {
-        [name: string]: string;
-    };
 } | {
     uri: string;
     headers: {
@@ -39,8 +29,6 @@ export declare class ExpoFormData {
     has(name: string): boolean;
     set(name: string, value: string): void;
     set(name: string, value: Blob, filename?: string): void;
-    append(name: string, value: ExpoFileSystemFileBlob): void;
-    set(name: string, value: ExpoFileSystemFileBlob): void;
     append(name: string, value: {
         uri: string;
         name?: string;
@@ -58,5 +46,4 @@ export declare class ExpoFormData {
     [Symbol.iterator](): IterableIterator<[string, FormDataEntryValue]>;
 }
 export declare function installFormDataPatch(formData: typeof FormData): typeof ExpoFormData;
-export {};
 //# sourceMappingURL=FormData.d.ts.map
