@@ -37,7 +37,7 @@ export type DevServerInstance = {
     url: string;
     port: number;
     protocol: 'http' | 'https';
-    host?: string;
+    host?: string | null;
   };
   /** Additional middleware that's attached to the `server`. */
   middleware: any;
@@ -104,6 +104,7 @@ export abstract class BundlerDevServer {
   private notifier: FileNotifier | null = null;
   protected readonly devToolsPluginManager: DevToolsPluginManager;
   public isDevClient: boolean;
+  public hostname = 'localhost';
 
   constructor(
     /** Project root folder. */
@@ -200,9 +201,9 @@ export abstract class BundlerDevServer {
         // The port is the main thing we want to send back.
         port: options.port,
         // localhost isn't always correct.
-        host: 'localhost',
+        host: options.location.hostname,
         // http is the only supported protocol on native.
-        url: `http://localhost:${options.port}`,
+        url: `http://${this.hostname}:${options.port}`,
         protocol: 'http',
       },
       middleware: {},
@@ -371,6 +372,9 @@ export abstract class BundlerDevServer {
     const { location } = instance;
     if (options.hostType === 'localhost') {
       return `${location.protocol}://localhost:${location.port}`;
+    }
+    if (location.host) {
+      return `${location.protocol}://${location.host}`;
     }
     return location.url ?? null;
   }

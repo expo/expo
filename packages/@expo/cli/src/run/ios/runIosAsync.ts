@@ -85,6 +85,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
     headless: !props.shouldStartBundler,
+    hostname: props.host,
     // If a scheme is specified then use that instead of the package name.
 
     scheme: isCustomBinary
