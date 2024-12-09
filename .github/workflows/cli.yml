@@ -250,6 +250,8 @@ jobs:
       BUN_INSTALL_CACHE_DIR: D:\_temp\bun
       NPM_CACHE_LOCATION: D:\_temp\npm
       YARN_CACHE_FOLDER: D:\_temp\yarn
+      # Change playwright browser cache to the much faster D:\ drive
+      PLAYWRIGHT_BROWSERS_PATH: D:\_temp\playwright-browsers
       # Change the Expo E2E project directory to the same drive as the repository,
       # allowing to run Expo from source (avoiding Metro's multi-drive limitation)
       EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
@@ -303,14 +305,16 @@ jobs:
         run: yarn workspace @expo/cli prepare
 
       - name: 🎭 Get installed Playwright version for cache key
+        id: playwright-cache
         shell: bash
-        run: echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
+        run: |
+          echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
+          echo "dir=$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
         with:
-          path: |
-            ~/.cache/ms-playwright
+          path: ${{ steps.playwright-cache.outputs.dir }}
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - name: 🎭 Install Playwright Browsers
         run: bun playwright install --with-deps chromium
