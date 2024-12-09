@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove extraneous arg from command help doc ([#33512](https://github.com/expo/expo/pull/33512) by [@wschurman](https://github.com/wschurman))
+
 ## 0.11.3 - 2024-12-02
 
 ### 🐛 Bug fixes
