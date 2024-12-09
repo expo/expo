@@ -85,7 +85,7 @@ jobs:
         run: yarn install --prefer-offline --frozen-lockfile
         env:
           YARN_IGNORE_SCRIPTS: 'true'
-      
+
       - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
@@ -169,7 +169,7 @@ jobs:
       - name: 🧪 E2E Test CLI
         working-directory: packages/@expo/cli
         run: yarn test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
-  
+
   playwright-ubuntu:
     runs-on: ubuntu-22.04
     steps:
@@ -184,7 +184,7 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
-      
+
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
@@ -208,10 +208,10 @@ jobs:
         run: yarn install --prefer-offline --frozen-lockfile
         env:
           YARN_IGNORE_SCRIPTS: 'true'
-      
+
       - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
-        
+
       - name: 🎭 Get installed Playwright version for cache key
         run: echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
       - name: 🎭 Cache Playwright browser binaries
@@ -240,6 +240,10 @@ jobs:
 
   playwright-windows:
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     env:
       # Change bun, npm, and yarn caches to the much faster D:\ drive
       # See: https://github.com/twpayne/chezmoi/pull/4064
@@ -276,7 +280,7 @@ jobs:
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-  
+
       - name: 🔎 Find Yarn Cache
         id: yarn-cache
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
@@ -294,7 +298,7 @@ jobs:
         run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
         env:
           YARN_IGNORE_SCRIPTS: 'true'
-      
+
       - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
@@ -314,8 +318,8 @@ jobs:
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
 
       - name: 🧪 E2E (playwright) Test CLI
-        run: yarn test:playwright
         working-directory: packages/@expo/cli
+        run: yarn test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
         uses: actions/upload-artifact@v4
