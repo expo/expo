@@ -53,10 +53,8 @@ exports[`runs \`npx expo prebuild --template <github-url>\` 1`] = `
   "ios/githubtemplateprebuild/Info.plist",
   "ios/githubtemplateprebuild/SplashScreen.storyboard",
   "ios/githubtemplateprebuild/Supporting/Expo.plist",
-  "ios/githubtemplateprebuild/githubtemplateprebuild-Bridging-Header.h",
   "ios/githubtemplateprebuild/githubtemplateprebuild.entitlements",
   "ios/githubtemplateprebuild/main.m",
-  "ios/githubtemplateprebuild/noop-file.swift",
   "metro.config.js",
   "package.json",
 ]
@@ -120,10 +118,8 @@ exports[`runs \`npx expo prebuild --template expo-template-bare-minimum@50.0.43\
   "ios/basicprebuild/Info.plist",
   "ios/basicprebuild/SplashScreen.storyboard",
   "ios/basicprebuild/Supporting/Expo.plist",
-  "ios/basicprebuild/basicprebuild-Bridging-Header.h",
   "ios/basicprebuild/basicprebuild.entitlements",
   "ios/basicprebuild/main.m",
-  "ios/basicprebuild/noop-file.swift",
   "metro.config.js",
   "package.json",
 ]
@@ -185,7 +181,6 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "ios/basicprebuild/basicprebuild-Bridging-Header.h",
   "ios/basicprebuild/basicprebuild.entitlements",
   "ios/basicprebuild/main.m",
-  "ios/basicprebuild/noop-file.swift",
   "metro.config.js",
   "package.json",
 ]

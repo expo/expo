@@ -43,8 +43,6 @@ export const withIosExpoPlugins: ConfigPlugin<{
 
   return withPlugins(config, [
     [IOSConfig.BundleIdentifier.withBundleIdentifier, { bundleIdentifier }],
-    IOSConfig.Swift.withSwiftBridgingHeader,
-    IOSConfig.Swift.withNoopSwiftFile,
     IOSConfig.Google.withGoogle,
     IOSConfig.Name.withDisplayName,
     IOSConfig.Name.withProductName,
