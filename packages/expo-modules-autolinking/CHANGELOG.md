@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix incorrect `__dirname` in `react-native-config.(js|ts)` ([#33532](https://github.com/expo/expo/pull/33532) by [@satya164](https://github.com/satya164))
+
 ### 💡 Others
 
 - [Android] Introduced the Gradle plugin to improve the autolinking setup. ([#33402](https://github.com/expo/expo/pull/33402) by [@lukmccall](https://github.com/lukmccall))
