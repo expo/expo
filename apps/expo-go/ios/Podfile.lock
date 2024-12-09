@@ -42,7 +42,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (13.0.2):
     - ExpoModulesCore
-  - ExpoCalendar (14.0.4):
+  - ExpoCalendar (14.0.5):
     - ExpoModulesCore
   - ExpoCamera (16.0.9):
     - ExpoModulesCore
@@ -347,17 +347,17 @@ PODS:
   - GoogleUtilities/UserDefaults (8.0.2):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - hermes-engine (0.76.3):
-    - hermes-engine/cdp (= 0.76.3)
-    - hermes-engine/Hermes (= 0.76.3)
-    - hermes-engine/inspector (= 0.76.3)
-    - hermes-engine/inspector_chrome (= 0.76.3)
-    - hermes-engine/Public (= 0.76.3)
-  - hermes-engine/cdp (0.76.3)
-  - hermes-engine/Hermes (0.76.3)
-  - hermes-engine/inspector (0.76.3)
-  - hermes-engine/inspector_chrome (0.76.3)
-  - hermes-engine/Public (0.76.3)
+  - hermes-engine (0.76.5):
+    - hermes-engine/cdp (= 0.76.5)
+    - hermes-engine/Hermes (= 0.76.5)
+    - hermes-engine/inspector (= 0.76.5)
+    - hermes-engine/inspector_chrome (= 0.76.5)
+    - hermes-engine/Public (= 0.76.5)
+  - hermes-engine/cdp (0.76.5)
+  - hermes-engine/Hermes (0.76.5)
+  - hermes-engine/inspector (0.76.5)
+  - hermes-engine/inspector_chrome (0.76.5)
+  - hermes-engine/Public (0.76.5)
   - JKBigInteger (0.0.6)
   - libavif/core (0.11.1)
   - libavif/libdav1d (0.11.1):
@@ -3023,7 +3023,7 @@ SPEC CHECKSUMS:
   ExpoBattery: 71bb388c37c3bcd0e87077e06e95780ea34fa6c8
   ExpoBlur: 562b3da84d3cd79016c411671eaf71a404266415
   ExpoBrightness: ce777f6a365592f745428cb0acc9066b400182e8
-  ExpoCalendar: 584170a07064802a186bc199914d4b6db4119e27
+  ExpoCalendar: 540f2576e76530bc46a1c93d9966fdf6b29d614f
   ExpoCamera: 5f1133dd302a9db5048ad63dd29a08e436dedd9b
   ExpoCellular: c7ae03fd9480e6a4296a5632c35ab00ddaea4783
   ExpoClipboard: 166ca8c13ca1041f5ba619a211f59427ab5da8a7
@@ -3081,7 +3081,7 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: dea79a6ab643181036c0fb87c2db6f97f6e44601
+  hermes-engine: 2881549388d6fc3c7354ce7bd0b62b3192c6c299
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3182,7 +3182,7 @@ SPEC CHECKSUMS:
   StripePaymentsUI: c24f990b03a68a7f6fe704b15dd487e7bb6b603e
   StripeUICore: f2d514e900c37436dc5427fdf2c29d68ab1c2935
   UMAppLoader: bda51f73f8599e336a778b23e0956130d1e244d5
-  Yoga: 3deb2471faa9916c8a82dda2a22d3fba2620ad37
+  Yoga: f6dc1b6029519815d5516a1241821c6a9074af6d
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 640a6a74acfd58d09119af8207a10b6297b9048b

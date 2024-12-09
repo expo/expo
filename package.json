@@ -19,7 +19,7 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.76.3",
+    "react-native": "0.76.5",
     "react": "18.3.1",
     "@react-navigation/bottom-tabs": "7.0.0",
     "@react-navigation/core": "7.0.0",
