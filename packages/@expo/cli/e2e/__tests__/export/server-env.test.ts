@@ -1,8 +1,7 @@
 /* eslint-env jest */
-import execa from 'execa';
-
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getRouterE2ERoot } from '../utils';
+import { executeExpoAsync } from '../../utils/expo';
+import { getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -10,8 +9,8 @@ const projectRoot = getRouterE2ERoot();
 
 it(`asserts the server env isn't correct`, async () => {
   await expect(
-    execa('node', [bin, 'start', '--port', '3002'], {
-      cwd: projectRoot,
+    executeExpoAsync(projectRoot, ['start', '--port', '3002'], {
+      verbose: false,
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',

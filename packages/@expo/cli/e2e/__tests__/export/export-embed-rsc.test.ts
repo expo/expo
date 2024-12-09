@@ -1,19 +1,13 @@
 /* eslint-env jest */
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
-import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { createExpoServe } from '../../utils/expo';
-import { bin, getRouterE2ERoot } from '../utils';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
-
-function execaLog(command: string, args: string[], options: execa.Options) {
-  //   console.log(`Running: ${command} ${args.join(' ')}`);
-  return execa(command, args, options);
-}
 
 jest.unmock('resolve-from');
 
@@ -29,8 +23,8 @@ describe('export embed for RSC iOS', () => {
       recursive: true,
     });
 
-    await execaLog(
-      bin,
+    await executeExpoAsync(
+      projectRoot,
       [
         'export:embed',
         //
@@ -53,7 +47,6 @@ describe('export embed for RSC iOS', () => {
         projectRoot,
       ],
       {
-        cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
 

@@ -1,11 +1,10 @@
 /* eslint-env jest */
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
-import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
 
-import { execute, projectRoot, getLoadedModulesAsync, bin, findProjectFiles } from './utils';
-import ResourceNotFoundError from 'metro/src/IncrementalBundler/ResourceNotFoundError';
+import { projectRoot, getLoadedModulesAsync, findProjectFiles } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -37,7 +36,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo export:embed --help`', async () => {
-  const results = await execute('export:embed', '--help');
+  const results = await executeExpoAsync(projectRoot, ['export:embed', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -89,10 +88,10 @@ it('runs `npx expo export:embed`', async () => {
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
   await fs.promises.mkdir(path.join(projectRoot, output));
 
-  await execa(
-    'node',
+  // `npx expo export:embed`
+  await executeExpoAsync(
+    projectRoot,
     [
-      bin,
       'export:embed',
       '--entry-file',
       resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
@@ -106,7 +105,6 @@ it('runs `npx expo export:embed`', async () => {
       'false',
     ],
     {
-      cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
@@ -149,10 +147,10 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
   await fs.promises.mkdir(path.join(projectRoot, output));
 
-  await execa(
-    'node',
+  // `npx expo export:embed`
+  await executeExpoAsync(
+    projectRoot,
     [
-      bin,
       'export:embed',
       '--entry-file',
       resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
@@ -170,7 +168,6 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
       projectRoot,
     ],
     {
-      cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
@@ -212,10 +209,10 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
   await fs.promises.mkdir(path.join(projectRoot, output));
 
-  await execa(
-    'node',
+  // `npx expo export:embed`
+  await executeExpoAsync(
+    projectRoot,
     [
-      bin,
       'export:embed',
       '--entry-file',
       resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
@@ -229,7 +226,6 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
       'false',
     ],
     {
-      cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
         E2E_ROUTER_SRC: 'react-native-canary',
@@ -272,33 +268,12 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
   await fs.promises.mkdir(path.join(projectRoot, output));
 
-  console.log(
-    [
-      'export:embed',
-      '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
-      '--bundle-output',
-      `./${output}/output.js`,
-      '--assets-dest',
-      output,
-      '--platform',
-      'android',
-      '--dev',
-      'false',
-      '--sourcemap-output',
-      path.join(projectRoot, `./${output}/output.js.map`),
-      '--sourcemap-sources-root',
-      projectRoot,
-    ].join(' ')
-  );
-
-  const res = await execa(
-    'node',
-
+  // `npx expo export:embed`
+  const { stderr } = await executeExpoAsync(
+    projectRoot,
     // yarn expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
     // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
     [
-      bin,
       'export:embed',
       '--entry-file',
       resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
@@ -316,7 +291,6 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
       projectRoot,
     ],
     {
-      cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
@@ -327,8 +301,8 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     }
   );
 
-  // Ensure no unexpected errors/warnings are thrown.
-  expect(res.stderr).toBe('Experimental module resolution is enabled.');
+  // Ensure the experimental module resolution warning is logged
+  expect(stderr).toBe('Experimental module resolution is enabled.');
 
   const outputDir = path.join(projectRoot, output);
 

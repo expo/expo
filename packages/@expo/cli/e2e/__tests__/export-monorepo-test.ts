@@ -1,10 +1,10 @@
 /* eslint-env jest */
-import execa from 'execa';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
-import { bin, findProjectFiles, setupTestProjectWithOptionsAsync } from '../utils';
+import { runExportSideEffects } from './export/export-side-effects';
+import { findProjectFiles, setupTestProjectWithOptionsAsync } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 runExportSideEffects();
 
@@ -13,15 +13,15 @@ type MonorepoConfigTypes = (typeof configTypes)[number];
 /** The monorepo configuration types, e.g. where `workspaces` are defined */
 const configTypes = ['package-json', 'pnpm-workspace-yaml'] as const;
 
+let projectRoot: string;
+
+beforeAll(async () => {
+  projectRoot = await setupTestProjectWithOptionsAsync(`basic-export-monorepo`, 'with-monorepo');
+});
+
 describe.each(configTypes)('exports monorepo using "%s"', (configType) => {
   // See: https://github.com/expo/expo/issues/29700#issuecomment-2165348259
   it('exports identical projects with cache invalidation', async () => {
-    // Create a project from the monorepo fixture
-    const projectRoot = await setupTestProjectWithOptionsAsync(
-      `basic-export-monorepo-${configType}`,
-      'with-monorepo'
-    );
-
     // Ensure our fixture uses the correct monorepo configuration
     await configureMonorepo(configType, projectRoot);
 
@@ -44,20 +44,23 @@ describe.each(configTypes)('exports monorepo using "%s"', (configType) => {
 });
 
 async function exportApp(monorepoRoot: string, workspacePath: string) {
-  await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist'], {
-    cwd: path.join(monorepoRoot, workspacePath),
-    env: {
-      NODE_ENV: 'production',
-      EXPO_USE_FAST_RESOLVER: 'true',
-    },
-  });
+  await executeExpoAsync(
+    path.join(monorepoRoot, workspacePath),
+    ['export', '-p', 'web', '--output-dir', 'dist'],
+    {
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_FAST_RESOLVER: 'true',
+      },
+    }
+  );
 
   return path.join(monorepoRoot, workspacePath, 'dist');
 }
 
 async function configureMonorepo(configTypes: MonorepoConfigTypes, projectRoot: string) {
   // Load initial workspaces config, from fixture
-  const fixturePackageFile = path.join(__dirname, '../../fixtures/with-monorepo/package.json');
+  const fixturePackageFile = path.join(__dirname, '../fixtures/with-monorepo/package.json');
   const fixturePackageJson = JSON.parse(fs.readFileSync(fixturePackageFile, 'utf8'));
 
   const packageFile = path.join(projectRoot, 'package.json');

@@ -1,18 +1,16 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import assert from 'assert';
-import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
 
 import {
-  execute,
   projectRoot,
   getLoadedModulesAsync,
-  bin,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
 } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -41,7 +39,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo export:web --help`', async () => {
-  const results = await execute('export:web', '--help');
+  const results = await executeExpoAsync(projectRoot, ['export:web', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -61,10 +59,9 @@ it('runs `npx expo export:web --help`', async () => {
 
 it('runs `npx expo export:web`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('basic-export-web', 'with-web');
+
   // `npx expo export:web`
-  await execa('node', [bin, 'export:web'], {
-    cwd: projectRoot,
-  });
+  await executeExpoAsync(projectRoot, ['export:web']);
 
   const outputDir = path.join(projectRoot, 'web-build');
 

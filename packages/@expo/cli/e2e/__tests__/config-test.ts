@@ -1,9 +1,9 @@
 /* eslint-env jest */
-import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { execute, projectRoot, getRoot, getLoadedModulesAsync } from './utils';
+import { projectRoot, getRoot, getLoadedModulesAsync } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 
@@ -26,7 +26,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo config --help`', async () => {
-  const results = await execute('config', '--help');
+  const results = await executeExpoAsync(projectRoot, ['config', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -46,8 +46,8 @@ it('runs `npx expo config --help`', async () => {
 });
 
 it('runs `npx expo config --json`', async () => {
-  const projectName = 'basic-config';
-  const projectRoot = getRoot(projectName);
+  const projectRoot = getRoot('basic-config');
+
   // Create the project root aot
   await fs.mkdir(projectRoot, { recursive: true });
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
@@ -56,7 +56,7 @@ it('runs `npx expo config --json`', async () => {
   // Add an environment variable file to test that it's not included in the config.
   await fs.writeFile(path.join(projectRoot, '.env'), 'FOOBAR=1');
 
-  const results = await execute('config', projectName, '--json');
+  const results = await executeExpoAsync(projectRoot, ['config', '--json']);
   // @ts-ignore
   const exp = JSON.parse(results.stdout);
 
@@ -69,8 +69,8 @@ it('runs `npx expo config --json`', async () => {
 });
 
 it('runs `npx expo config --json` with a warning', async () => {
-  const projectName = 'basic-config';
-  const projectRoot = getRoot(projectName);
+  const projectRoot = getRoot('basic-config');
+
   // Create the project root aot
   await fs.mkdir(projectRoot, { recursive: true });
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
@@ -80,7 +80,7 @@ it('runs `npx expo config --json` with a warning', async () => {
     '{ "abc": true, "expo": { "name": "foobar" } }'
   );
 
-  const results = await execute('config', projectName, '--json');
+  const results = await executeExpoAsync(projectRoot, ['config', '--json']);
   // @ts-ignore
   const exp = JSON.parse(results.stdout);
 
@@ -89,12 +89,7 @@ it('runs `npx expo config --json` with a warning', async () => {
 });
 
 it('throws on invalid project root', async () => {
-  expect.assertions(1);
-  try {
-    await execute('config', 'very---invalid', '--json');
-  } catch (e) {
-    const error = e as ExecaError;
-    // Test on the invalid project prefix, and absolute path ending in the expected project folder
-    expect(error.stderr).toMatch(/^Invalid project root: .*very---invalid$/);
-  }
+  await expect(
+    executeExpoAsync(projectRoot, ['config', 'very---invalid', '--json'], { verbose: false })
+  ).rejects.toThrow(/^Invalid project root: .*very---invalid$/m);
 });
