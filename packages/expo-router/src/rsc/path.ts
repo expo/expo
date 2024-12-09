@@ -37,11 +37,20 @@ export const decodeFilePathFromAbsolute = (filePath: string) => {
 
 export const filePathToFileURL = (filePath: string) => 'file://' + encodeURI(filePath);
 
+/** Return the original "osPath" based on the file URL */
 export const fileURLToFilePath = (fileURL: string) => {
   if (!fileURL.startsWith('file://')) {
     throw new Error('Not a file URL');
   }
-  return decodeURI(fileURL.slice('file://'.length));
+
+  const filePath = decodeURI(fileURL.slice('file://'.length));
+
+  // File URLs are always formatted in POSIX, using a leading `/` (URL pathname) separator.
+  // On POSIX systems, this leading `/` is the root directory, which is valid for absolute file paths.
+  // On UNIX systems, this leading `/` needs to be stripped, and the actual UNIX formatted path is returned - to match Metro's behavior
+  return ABSOLUTE_WIN32_PATH_REGEXP.test(filePath)
+    ? filePath.slice(1).replace(/\//g, '\\')
+    : filePath;
 };
 
 // for filePath
