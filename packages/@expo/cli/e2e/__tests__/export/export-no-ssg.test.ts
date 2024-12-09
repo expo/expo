@@ -1,10 +1,10 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
+import { executeExpoAsync } from '../../utils/expo';
+import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -14,11 +14,10 @@ describe('export-no-ssg', () => {
 
   beforeAll(async () => {
     console.time('export-server');
-    await execa(
-      'node',
-      [bin, 'export', '-p', 'web', '-p', 'ios', '--output-dir', 'dist-server-no-ssg', '--no-ssg'],
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', '-p', 'ios', '--output-dir', 'dist-server-no-ssg', '--no-ssg'],
       {
-        cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'server',

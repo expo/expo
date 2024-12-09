@@ -1,10 +1,9 @@
 /* eslint-env jest */
-import execa from 'execa';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
+import { executeExpoAsync } from '../../utils/expo';
 import {
-  bin,
   expectChunkPathMatching,
   findProjectFiles,
   getHtmlHelpers,
@@ -19,8 +18,7 @@ describe('exports static splitting with modal', () => {
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
-    await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
-      cwd: projectRoot,
+    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',

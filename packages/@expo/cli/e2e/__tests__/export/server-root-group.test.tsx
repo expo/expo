@@ -1,11 +1,11 @@
 /* eslint-env jest */
-import execa from 'execa';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
+import { executeExpoAsync } from '../../utils/expo';
 import { processFindPrefixedValue } from '../../utils/process';
 import { createBackgroundServer } from '../../utils/server';
-import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
+import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -17,16 +17,19 @@ describe('server-root-group', () => {
 
   beforeAll(async () => {
     console.time('export-server-root-group');
-    await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-server-root-group'], {
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SRC: 'server-root-group',
-        E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
-      },
-    });
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', '--output-dir', 'dist-server-root-group'],
+      {
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'server',
+          E2E_ROUTER_SRC: 'server-root-group',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: 'true',
+        },
+      }
+    );
     console.timeEnd('export-server-root-group');
   });
 

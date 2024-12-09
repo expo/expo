@@ -1,10 +1,10 @@
 /* eslint-env jest */
-import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
+import { executeExpoAsync } from '../../utils/expo';
+import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -14,8 +14,7 @@ describe('exports static without sourcemaps', () => {
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
-    await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
-      cwd: projectRoot,
+    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',

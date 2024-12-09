@@ -1,18 +1,16 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
 import fs from 'fs/promises';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
 import {
-  execute,
   projectRoot,
   getLoadedModulesAsync,
-  bin,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
 } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -41,16 +39,42 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo export --help`', async () => {
-  const results = await execute('export', '--help');
-  expect(results.stdout).toMatchSnapshot();
+  const results = await executeExpoAsync(projectRoot, ['export', '--help']);
+  expect(results.stdout).toMatchInlineSnapshot(`
+    "
+      Info
+        Export the static files of the app for hosting it on a web server
+
+      Usage
+        $ npx expo export <dir>
+
+      Options
+        <dir>                      Directory of the Expo project. Default: Current working directory
+        --output-dir <dir>         The directory to export the static files to. Default: dist
+        --dev                      Configure static files for developing locally using a non-https server
+        --no-minify                Prevent minifying source
+        --no-bytecode              Prevent generating Hermes bytecode
+        --max-workers <number>     Maximum number of tasks to allow the bundler to spawn
+        --dump-assetmap            Emit an asset map for further processing
+        --no-ssg                   Skip exporting static HTML files for web routes
+        -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        -s, --source-maps          Emit JavaScript source maps
+        -c, --clear                Clear the bundler cache
+        -h, --help                 Usage info
+    "
+  `);
 });
 
 describe('server', () => {
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
+  });
+
   it('runs `npx expo export`', async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
     // `npx expo export`
-    await execa('node', [bin, 'export', '--source-maps', '--dump-assetmap'], {
-      cwd: projectRoot,
+    await executeExpoAsync(projectRoot, ['export', '--source-maps', '--dump-assetmap'], {
       env: {
         NODE_ENV: 'production',
         TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
@@ -169,13 +193,11 @@ describe('server', () => {
   });
 
   it('runs `npx expo export --no-bytecode`', async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
-
-    await execa(
-      'node',
-      [bin, 'export', '--source-maps', '--no-bytecode', '--dump-assetmap', '--platform', 'ios'],
+    // `npx expo export`
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '--source-maps', '--no-bytecode', '--dump-assetmap', '--platform', 'ios'],
       {
-        cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
           TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),

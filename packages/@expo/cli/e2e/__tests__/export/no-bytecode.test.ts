@@ -1,12 +1,12 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
+import { executeExpoAsync } from '../../utils/expo';
+import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -16,17 +16,20 @@ describe('exports for hermes with no bytecode', () => {
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
-    await execa('node', [bin, 'export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode'], {
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_JS_ENGINE: 'hermes',
-        E2E_ROUTER_SRC: 'url-polyfill',
-        E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
-      },
-    });
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode'],
+      {
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_JS_ENGINE: 'hermes',
+          E2E_ROUTER_SRC: 'url-polyfill',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: 'true',
+        },
+      }
+    );
   });
 
   it('has expected files', async () => {
@@ -69,11 +72,10 @@ describe('exports for hermes with no bytecode and no minification', () => {
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
-    await execa(
-      'node',
-      [bin, 'export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode', '--no-minify'],
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'ios', '--output-dir', outputName, '--no-bytecode', '--no-minify'],
       {
-        cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
