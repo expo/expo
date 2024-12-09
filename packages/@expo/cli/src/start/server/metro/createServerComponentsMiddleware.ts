@@ -317,6 +317,7 @@ export function createServerComponentsMiddleware(
 
         const chunk = context.ssrManifest.get(relativeFilePath);
 
+        // TODO(cedric): refactor by using `createModuleId`'s relative path, and assert based on this
         return {
           id: String(createModuleId(file, { platform: context.platform, environment: 'client' })),
           chunks: chunk != null ? [chunk] : [],
