@@ -14,6 +14,7 @@ import url from 'url';
 import { logMetroError } from './metroErrorInterface';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
+import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
 import { getIpAddress } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
@@ -307,7 +308,7 @@ export function createServerComponentsMiddleware(
     return (file: string, isServer: boolean) => {
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
-        const relativeFilePath = path.relative(serverRoot, file);
+        const relativeFilePath = toPosixPath(path.relative(serverRoot, file));
 
         assert(
           context.ssrManifest.has(relativeFilePath),
