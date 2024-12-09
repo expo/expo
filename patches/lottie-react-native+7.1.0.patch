@@ -1,0 +1,30 @@
+diff --git a/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt b/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt
+index effa27e..3e6ac4f 100644
+--- a/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt
++++ b/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt
+@@ -105,9 +105,11 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
+                 val textDelegate = TextDelegate(view)
+                 for (i in 0 until textFilters!!.size()) {
+                     val current = textFilters!!.getMap(i)
++                  if (current != null) {
+                     val searchText = current.getString("find")
+                     val replacementText = current.getString("replace")
+                     textDelegate.setText(searchText, replacementText)
++                  }
+                 }
+                 view.setTextDelegate(textDelegate)
+             }
+@@ -227,9 +229,12 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
+     }
+ 
+     private fun parseColorFilter(
+-        colorFilter: ReadableMap,
++        colorFilter: ReadableMap?,
+         view: LottieAnimationView
+     ) {
++      if (colorFilter == null) {
++        return
++      }
+         val color: Int = if (colorFilter.getType("color") == ReadableType.Map) {
+             ColorPropConverter.getColor(colorFilter.getMap("color"), view.context)
+         } else {

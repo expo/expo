@@ -1,0 +1,32 @@
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/RNGestureHandlerPackage.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/RNGestureHandlerPackage.kt
+index e3ad6a6..1414ec5 100644
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/RNGestureHandlerPackage.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/RNGestureHandlerPackage.kt
+@@ -37,16 +37,13 @@ class RNGestureHandlerPackage : TurboReactPackage(), ViewManagerOnDemandReactPac
+       RNGestureHandlerButtonViewManager()
+     )
+ 
+-  override fun getViewManagerNames(reactContext: ReactApplicationContext?) =
++  override fun getViewManagerNames(reactContext: ReactApplicationContext): Collection<String> =
+     viewManagers.keys.toList()
+ 
+-  override fun getViewManagers(reactContext: ReactApplicationContext?): MutableList<ModuleSpec> =
++  override fun getViewManagers(reactContext: ReactApplicationContext): List<ModuleSpec> =
+     viewManagers.values.toMutableList()
+ 
+-  override fun createViewManager(
+-    reactContext: ReactApplicationContext?,
+-    viewManagerName: String?
+-  ) = viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
++  override fun createViewManager(reactContext: ReactApplicationContext, viewManagerName: String): ViewManager<in Nothing, in Nothing>? = viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
+ 
+   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
+     return if (name == RNGestureHandlerModule.NAME) {
+@@ -71,7 +68,6 @@ class RNGestureHandlerPackage : TurboReactPackage(), ViewManagerOnDemandReactPac
+             RNGestureHandlerModule::class.java.name,
+             reactModule.canOverrideExistingModule,
+             reactModule.needsEagerInit,
+-            true, // Has constants is hardcoded to return true, so replacing it with `true` changes nothing.
+             reactModule.isCxxModule,
+             true
+           )
