@@ -1,10 +1,10 @@
 import spawn from 'cross-spawn';
-import { boolish } from 'getenv';
 import assert from 'node:assert';
 import type { ChildProcess, SpawnOptions } from 'node:child_process';
 import { createServer } from 'node:net';
 import { env } from 'node:process';
 
+import { EXPO_E2E_VERBOSE } from './log';
 import {
   killProcessAsync,
   processExitToError,
@@ -13,9 +13,6 @@ import {
   waitForProcessOutput,
   waitForProcessReady,
 } from './process';
-
-/** If the verbose logging should be enabled by default, based on `EXPO_E2E_VERBOSE` or GitHub Actions running in debug mode */
-const EXPO_E2E_VERBOSE = boolish('RUNNER_DEBUG', boolish('EXPO_E2E_VERBOSE', false));
 
 export type BackgroundServerOptions = SpawnOptions & {
   /**

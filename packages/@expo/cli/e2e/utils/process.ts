@@ -1,5 +1,4 @@
 import execa from 'execa';
-import { boolish } from 'getenv';
 import assert from 'node:assert';
 import type { ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
@@ -7,8 +6,7 @@ import { clearTimeout, setTimeout } from 'node:timers';
 import { stripVTControlCharacters } from 'node:util';
 import treeKill from 'tree-kill';
 
-/** If the verbose logging should be enabled by default, based on `EXPO_E2E_VERBOSE` or GitHub Actions running in debug mode */
-const EXPO_E2E_VERBOSE = boolish('RUNNER_DEBUG', boolish('EXPO_E2E_VERBOSE', false));
+import { createVerboseLogger, prefixLines } from './log';
 
 type ExecuteOptions = Omit<execa.Options, 'cwd'> & {
   /** The command prefix to execute, otherwise the full `commandOrFlags` is executed */
@@ -24,17 +22,23 @@ type ExecuteOptions = Omit<execa.Options, 'cwd'> & {
 export async function executeAsync(
   cwd: string,
   commandOrFlags: string[] = [],
-  { command, verbose = EXPO_E2E_VERBOSE, ...spawnOptions }: ExecuteOptions = {}
+  { command, verbose, ...spawnOptions }: ExecuteOptions = {}
 ) {
   const [bin, ...flags] = command ? command.concat(commandOrFlags) : commandOrFlags;
   const child = execa(bin, flags, { ...spawnOptions, cwd });
+  const log = createVerboseLogger({ verbose, prefix: 'execute' });
 
-  if (verbose) {
-    console.log('[execute]', bin, ...flags, { ...spawnOptions, cwd });
-    processPipeOutput(child, 'execute');
+  log(bin, ...flags, { ...spawnOptions, cwd });
+  processCollectOutput(child, log.tag);
+
+  try {
+    return await child;
+  } catch (error) {
+    log.error(error);
+    throw error;
+  } finally {
+    log.exit();
   }
-
-  return await child;
 }
 
 /**
@@ -179,9 +183,6 @@ export function processExitToError(
  * Once the process exits or errors, the listeners are removed automatically.
  */
 export function processPipeOutput(child: ChildProcess, prefix = 'child process') {
-  const prefixLines = (prefix: string, output: string) =>
-    `[${prefix}] ${output.split('\n').join(`\n[${prefix}] `)}`;
-
   const onProcessStderr = (chunk: any) =>
     process.stderr.write(prefixLines(`${prefix} stderr`, chunk));
   const onProcessStdout = (chunk: any) =>
@@ -194,6 +195,37 @@ export function processPipeOutput(child: ChildProcess, prefix = 'child process')
     child.stderr?.off('data', onProcessStderr);
     child.stdout?.off('data', onProcessStdout);
   });
+}
+
+/**
+ * Collect the received output of the child process and store it in an object.
+ * This also allows per-line processing through the `onOutput` callback.
+ * When the process closes, all event listeners are automatically removed.
+ */
+export function processCollectOutput(
+  child: ChildProcess,
+  onOutput?: (type: 'stderr' | 'stdout', output: string) => void
+) {
+  const collected = { stderr: '', stdout: '', all: '' };
+
+  const collect = (type: 'stderr' | 'stdout', output: string) => {
+    collected[type] += output;
+    collected.all += output;
+    onOutput?.(type, output);
+  };
+
+  const onProcessStderr = (chunk: any) => collect('stderr', chunk.toString());
+  const onProcessStdout = (chunk: any) => collect('stdout', chunk.toString());
+
+  child.stderr?.on('data', onProcessStderr);
+  child.stdout?.on('data', onProcessStdout);
+
+  child.once('close', () => {
+    child.stderr?.off('data', onProcessStderr);
+    child.stdout?.off('data', onProcessStdout);
+  });
+
+  return collected;
 }
 
 /**

@@ -135,7 +135,8 @@ export async function createFromFixtureAsync(
   if (fs.existsSync(projectRoot)) {
     if (reuseExisting) {
       log.tag('existing', 'Reusing existing fixture project:', projectRoot);
-      log.output();
+      log.exit();
+
       // bail out early, this is good for local testing.
       return projectRoot;
     } else {
@@ -213,14 +214,13 @@ export async function createFromFixtureAsync(
 
     // Install the packages for e2e experience.
     await executeBunAsync(projectRoot, ['install']);
-
-    log.output();
   } catch (error) {
-    log.tag('error', error);
-    log.output(true);
+    log.error(error);
     // clean up if something failed.
     // await fs.remove(projectRoot).catch(() => null);
     throw error;
+  } finally {
+    log.exit();
   }
 
   return projectRoot;
