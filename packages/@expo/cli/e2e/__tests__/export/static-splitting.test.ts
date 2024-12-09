@@ -1,11 +1,10 @@
 /* eslint-env jest */
-import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
+import { executeExpoAsync } from '../../utils/expo';
 import {
-  bin,
   expectChunkPathMatching,
   findProjectFiles,
   getHtmlHelpers,
@@ -22,16 +21,19 @@ describe('exports static with bundle splitting', () => {
 
   beforeAll(async () => {
     // NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting
-    await execa('node', [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName], {
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'static-rendering',
-        E2E_ROUTER_ASYNC: 'production',
-        EXPO_USE_FAST_RESOLVER: 'true',
-      },
-    });
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', '--source-maps', '--output-dir', outputName],
+      {
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'production',
+          EXPO_USE_FAST_RESOLVER: 'true',
+        },
+      }
+    );
   });
 
   it('has expected files', async () => {

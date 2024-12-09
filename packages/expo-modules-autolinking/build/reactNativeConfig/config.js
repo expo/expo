@@ -17,7 +17,7 @@ const mockedNativeModules = path_1.default.join(__dirname, '..', '..', 'node_mod
 async function loadConfigAsync(packageRoot) {
     const configJsPath = path_1.default.join(packageRoot, 'react-native.config.js');
     if (await (0, fileUtils_1.fileExistsAsync)(configJsPath)) {
-        return requireConfig(await promises_1.default.readFile(configJsPath, 'utf8'));
+        return requireConfig(configJsPath, await promises_1.default.readFile(configJsPath, 'utf8'));
     }
     const configTsPath = path_1.default.join(packageRoot, 'react-native.config.ts');
     if (await (0, fileUtils_1.fileExistsAsync)(configTsPath)) {
@@ -40,7 +40,7 @@ async function loadConfigAsync(packageRoot) {
         });
         const outputText = transpiledContents?.outputText;
         if (outputText) {
-            return requireConfig(outputText);
+            return requireConfig(configTsPath, outputText);
         }
     }
     return null;
@@ -51,9 +51,9 @@ exports.loadConfigAsync = loadConfigAsync;
  * some packages are checking the version of the CLI in the `react-native.config.js` file.
  * We can remove this once we remove this check from packages.
  */
-function requireConfig(configContents) {
+function requireConfig(filepath, configContents) {
     try {
-        const config = (0, require_from_string_1.default)(configContents, {
+        const config = (0, require_from_string_1.default)(configContents, filepath, {
             prependPaths: [mockedNativeModules],
         });
         return config.default ?? config ?? null;
