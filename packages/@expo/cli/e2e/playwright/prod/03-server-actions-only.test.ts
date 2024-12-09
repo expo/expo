@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
-import execa from 'execa';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
-import { bin, ExpoServeLocalCommand } from '../../utils/command-instance';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -12,17 +12,19 @@ const projectRoot = getRouterE2ERoot();
 const testName = '03-server-actions-only';
 const inputDir = 'dist-' + testName;
 
-test.beforeAll(async () => {
-  // Could take 45s depending on how fast the bundler resolves
-  test.setTimeout(560 * 1000);
+const expo = createExpoServe({
+  cwd: projectRoot,
+  env: {
+    NODE_ENV: 'production',
+    TEST_SECRET_VALUE: 'test-secret',
+  },
 });
 
-let serveCmd: ExpoServeLocalCommand;
-
+// These tests modify the same files in the file system, so run them in serial
+test.describe.configure({ mode: 'serial' });
 test.beforeAll('bundle and serve', async () => {
   console.time('expo export');
-  await execa('node', [bin, 'export', '-p', 'web', '--output-dir', inputDir], {
-    cwd: projectRoot,
+  await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
     env: {
       NODE_ENV: 'production',
       EXPO_USE_STATIC: 'single',
@@ -35,61 +37,34 @@ test.beforeAll('bundle and serve', async () => {
       TEST_SECRET_VALUE: 'test-secret',
       CI: '1',
     },
-    stdio: 'inherit',
   });
   console.timeEnd('expo export');
 
-  serveCmd = new ExpoServeLocalCommand(projectRoot, {
-    NODE_ENV: 'production',
-    TEST_SECRET_VALUE: 'test-secret',
-  });
-
-  console.time('npx serve');
-  await serveCmd.startAsync([inputDir, '--port=' + randomPort()]);
-  console.timeEnd('npx serve');
-  console.log('Server running:', serveCmd.url);
+  console.time('expo serve');
+  await expo.startAsync([inputDir]);
+  console.timeEnd('expo serve');
 });
-
-function randomPort() {
-  return Math.floor(Math.random() * 1000 + 3000);
-}
-
 test.afterAll('Close server', async () => {
-  await serveCmd.stopAsync();
+  await expo.stopAsync();
 });
 
-test.describe(inputDir, () => {
-  // This test generally ensures no errors are thrown during an export loading.
-  test('loads without hydration errors', async ({ page }) => {
-    console.time('Open page');
-    // Navigate to the app
-    await page.goto(serveCmd.url!);
+// This test generally ensures no errors are thrown during an export loading.
+test('loads without hydration errors', async ({ page }) => {
+  // Listen for console logs and errors
+  const pageErrors = pageCollectErrors(page);
 
-    console.timeEnd('Open page');
+  console.time('Open page');
+  // Navigate to the app
+  await page.goto(expo.url.href);
+  console.timeEnd('Open page');
 
-    // Listen for console errors
-    const errorLogs: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        errorLogs.push(msg.text());
-      }
-    });
+  console.time('hydrate');
+  // Wait for the app to load
+  await page.waitForSelector('[data-testid="index-text"]');
+  console.timeEnd('hydrate');
 
-    // Listen for uncaught exceptions and console errors
-    const errors: string[] = [];
-    page.on('pageerror', (error) => {
-      errors.push(error.message);
-    });
+  expect(pageErrors.all).toEqual([]);
 
-    console.time('hydrate');
-    // Wait for the app to load
-    await page.waitForSelector('[data-testid="index-text"]');
-    console.timeEnd('hydrate');
-
-    expect(errorLogs).toEqual([]);
-    expect(errors).toEqual([]);
-
-    await expect(page.locator('[data-testid="secret-text"]')).toHaveText('Secret: test-secret');
-    await expect(page.locator('[data-testid="server-contents"]')).toHaveText('Hello!');
-  });
+  await expect(page.locator('[data-testid="secret-text"]')).toHaveText('Secret: test-secret');
+  await expect(page.locator('[data-testid="server-contents"]')).toHaveText('Hello!');
 });
