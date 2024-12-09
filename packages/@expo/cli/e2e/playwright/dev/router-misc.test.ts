@@ -35,7 +35,21 @@ test.describe(inputDir, () => {
     await expo.stopAsync();
   });
 
-  test('url hash', async ({ page }) => {
+  test('url hash and search params are parsed correctly when both are set in URL', async ({ page }) => {
+    await expo.startAsync(['--port=8085']);
+    console.log('Server running:', expo.url);
+    await expo.fetchAsync('/');
+    page.on('console', (msg) => console.log(msg.text()));
+
+    await page.goto(`${expo.url}/hash-support?foo=bar#my-hash`);
+
+    // Ensure the hash and param are correct
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('my-hash');
+    await expect(page.locator('[data-testid="foo-param"]')).toHaveText('bar');
+    expect(page.url()).toEqual(`${expo.url}/hash-support?foo=bar#my-hash`);
+  });
+
+  test('url hash being set multiple times', async ({ page }) => {
     await expo.startAsync(['--port=8085']);
     console.log('Server running:', expo.url);
     await expo.fetchAsync('/');
