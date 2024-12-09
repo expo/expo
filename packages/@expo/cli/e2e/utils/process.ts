@@ -184,9 +184,9 @@ export function processExitToError(
  */
 export function processPipeOutput(child: ChildProcess, prefix = 'child process') {
   const onProcessStderr = (chunk: any) =>
-    process.stderr.write(prefixLines(`${prefix} stderr`, chunk));
+    process.stderr.write(prefixLines(`${prefix} stderr`, chunk.toString()));
   const onProcessStdout = (chunk: any) =>
-    process.stdout.write(prefixLines(`${prefix} stdout`, chunk));
+    process.stdout.write(prefixLines(`${prefix} stdout`, chunk.toString()));
 
   child.stderr?.on('data', onProcessStderr);
   child.stdout?.on('data', onProcessStdout);
