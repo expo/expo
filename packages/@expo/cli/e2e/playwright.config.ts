@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import { boolish } from 'getenv';
+import process from 'node:process';
 
 const isCI = boolish('CI', false);
 
@@ -12,10 +13,11 @@ export default defineConfig({
   forbidOnly: isCI,
   /* Retry on CI only */
   retries: isCI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: isCI ? 1 : undefined,
+  /* Opt out of parallel tests on CI or Windows. */
+  workers: isCI || process.platform === 'win32' ? 1 : undefined,
+  // Configure the global timeout to 3m, on Windows increase this to 5m
+  timeout: process.platform === 'win32' ? 300_000 : 180_000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-
   reporter: 'null',
   // reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
