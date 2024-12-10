@@ -128,7 +128,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       if controllerInterfaceMasks.isEmpty {
         return []
       }
-        
+
       // We want to apply an orientation mask which is an intersection of locks applied by the modules.
       var mask = doesDeviceHaveNotch ? UIInterfaceOrientationMask.allButUpsideDown : UIInterfaceOrientationMask.all
 
