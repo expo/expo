@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, Prevent crash from the `networkCallback` calling `fetchNetworkState`. ([#33563](https://github.com/expo/expo/pull/33563) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 7.0.3 — 2024-12-02
