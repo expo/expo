@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed exceptions when converting empty blob data on iOS. ([#33564](https://github.com/expo/expo/pull/33564) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 15.0.3 — 2024-11-12
