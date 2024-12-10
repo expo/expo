@@ -15,7 +15,18 @@ import expo.modules.plugin.text.Emojis
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 
-class SettingsManager(val settings: Settings) {
+class SettingsManager(
+  val settings: Settings,
+  searchPaths: List<String>? = null,
+  ignorePaths: List<String>? = null,
+  exclude: List<String>? = null
+) {
+  private val autolinkingOptions = AutolinkingOptions(
+    searchPaths,
+    ignorePaths,
+    exclude
+  )
+
   /**
    * Resolved configuration from `expo-modules-autolinking`.
    */
@@ -23,6 +34,7 @@ class SettingsManager(val settings: Settings) {
     val command = AutolinkigCommandBuilder()
       .command("resolve")
       .useJson()
+      .useAutolinkingOptions(autolinkingOptions)
       .build()
 
     val result = settings.providers.exec { env ->
@@ -61,7 +73,7 @@ class SettingsManager(val settings: Settings) {
         }
     }
 
-    settings.gradle.extensions.create("expoGradle", ExpoGradleExtension::class.java, config)
+    settings.gradle.extensions.create("expoGradle", ExpoGradleExtension::class.java, config, autolinkingOptions)
   }
 
   /**
