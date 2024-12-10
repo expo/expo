@@ -50,7 +50,7 @@
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.19",
     "react": "18.3.1",
-    "react-native": "0.76.3",
+    "react-native": "0.76.5",
     "react-native-gesture-handler": "~2.20.2",
     "sinon": "^7.1.1"
   },
