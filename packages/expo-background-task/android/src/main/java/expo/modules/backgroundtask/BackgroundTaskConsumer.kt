@@ -14,9 +14,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-const val BACKGROUND_TASK_TYPE: String = "expo-background-task"
-const val DEFAULT_INTERVAL_MINUTES: Long = 60 * 24 // Once every day
-private val TAG: String = BackgroundTaskConsumer::class.java.simpleName
+const val BACKGROUND_TASK_TYPE = "expo-background-task"
+const val DEFAULT_INTERVAL_MINUTES = 60L * 24L // Once every day
+private val TAG = BackgroundTaskConsumer::class.java.simpleName
 
 class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtilsInterface?) :
   TaskConsumer(context, taskManagerUtils), TaskConsumerInterface, LifecycleEventListener {
