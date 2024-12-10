@@ -197,5 +197,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
     } else {
       state = .bodyCompleted
     }
+
+    emit(event: "readyForJSFinalization")
   }
 }

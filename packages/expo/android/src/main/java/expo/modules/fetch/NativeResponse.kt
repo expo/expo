@@ -108,6 +108,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     }
     error = e
     state = ResponseState.ERROR_RECEIVED
+    emit("readyForJSFinalization")
   }
 
   override fun onResponse(call: Call, response: Response) {
@@ -123,6 +124,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         emit("didComplete")
       }
       this@NativeResponse.state = ResponseState.BODY_COMPLETED
+      emit("readyForJSFinalization")
     }
   }
 
