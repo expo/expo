@@ -71,7 +71,6 @@
     "recursive-omit-by": "^2.0.0",
     "semver": "^7.6.3",
     "sharp": "^0.33.5",
-    "strip-ansi": "^6.0.0",
     "terminal-link": "^2.1.1",
     "typedoc": "0.26.7",
     "uuid": "^9.0.0",

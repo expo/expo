@@ -5,11 +5,11 @@ import {
   parseMultipartMixedResponseAsync,
 } from '@expo/multipart-body-parser';
 import assert from 'assert';
-import spawn from 'cross-spawn';
 import { ChildProcess } from 'child_process';
+import spawn from 'cross-spawn';
 import { once } from 'events';
 import { EventEmitter } from 'fbemitter';
-import stripAnsi from 'strip-ansi';
+import util from 'node:util';
 import treeKill from 'tree-kill';
 
 export const bin = require.resolve('../../build/bin/cli');
@@ -111,7 +111,7 @@ export class ExpoStartCommand extends EventEmitter {
       ) {
         const errorObject = JSON.parse(text);
 
-        throw new Error(stripAnsi(errorObject.message) ?? errorObject.message);
+        throw new Error(util.stripVTControlCharacters(errorObject.message) ?? errorObject.message);
       }
       throw new Error(`[${res.status}]: ${res.statusText}\n${text}`);
     }
@@ -174,7 +174,7 @@ export class ExpoStartCommand extends EventEmitter {
             resolve();
           };
 
-          for (const rawStr of stripAnsi(message)) {
+          for (const rawStr of util.stripVTControlCharacters(message)) {
             const tag = '[__EXPO_E2E_TEST:server]';
             if (rawStr.includes(tag)) {
               const matchedLine = rawStr
@@ -332,7 +332,7 @@ export abstract class ServeAbstractCommand extends EventEmitter {
 export class ServeStaticCommand extends ServeAbstractCommand {
   isReadyCallback(message: string): boolean {
     const tag = 'Accepting connections at ';
-    for (const rawStr of stripAnsi(message)) {
+    for (const rawStr of util.stripVTControlCharacters(message)) {
       if (rawStr.includes(tag)) {
         const matchedLine = rawStr
           .split('\n')
@@ -358,7 +358,7 @@ export class ServeStaticCommand extends ServeAbstractCommand {
 export class ExpoServeLocalCommand extends ServeAbstractCommand {
   isReadyCallback(message: string): boolean {
     const tag = 'Server running at ';
-    for (const rawStr of stripAnsi(message)) {
+    for (const rawStr of util.stripVTControlCharacters(message)) {
       if (rawStr.includes(tag)) {
         const matchedLine = rawStr
           .split('\n')
