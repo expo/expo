@@ -15,7 +15,7 @@ This concept describes the process of [Expo Prebuild](#usage), which is a comman
 
 ## CNG in React Native apps
 
-React Native apps can use **CNG** by using [Expo Prebuild] to automate upgrades, install or uninstall libraries, white-labeling at scale, share configuration across multiple apps, reduce [orphaned code](#how-does-prebuild-help-with-orphaned-code), and more.
+React Native apps can use **CNG** by using [Prebuild](#usage) to automate upgrades, install or uninstall libraries, white-labeling at scale, share configuration across multiple apps, reduce [orphaned code](#how-does-prebuild-help-with-orphaned-code), and more.
 
 **Expo as a framework** enables CNG by combining the following tools:
 
@@ -26,7 +26,7 @@ React Native apps can use **CNG** by using [Expo Prebuild] to automate upgrades,
 5. Native Subscribers, for reducing native code side-effects in entry files.
 6. EAS Credentials for code signing additional targets and entitlements.
 
-This boils down to a workflow where a user can express any native application with the app config and generate that project continuously &mdash; by running `npx expo prebuild`.
+This boils down to a workflow where a developer can express any native application with the app config and generate that project continuously &mdash; by running `npx expo prebuild`.
 
 ## Usage
 
@@ -152,7 +152,7 @@ React Native library authors can adopt CNG in several ways. It depends on the co
 
 Many complex libraries and services already support CNG via Expo Prebuild such as, [MapBox](https://github.com/rnmapbox/maps), [OneSignal](https://github.com/OneSignal/onesignal-expo-plugin), [Stripe](https://github.com/stripe/stripe-react-native), and [React Native Firebase](https://rnfirebase.io/#expo).
 
-Adopting CNG by library authors is not a preqrequisite for using `npx expo prebuild`. If a library author has not adopted, developers can still use `npx expo prebuild` by creating local [Config Plugins](https://github.com/expo/config-plugins/) to modify the native generation pipeline. This flexibility makes CNG accessible and beneficial to all users with the React Native community.
+Adopting CNG by library authors is not a preqrequisite for using `npx expo prebuild`. If a library author has not adopted, developers can still use `npx expo prebuild` by creating local [Config Plugins](https://github.com/expo/config-plugins/) to modify the native generation pipeline. This flexibility makes CNG accessible and beneficial to all developers within the React Native community.
 
 </Collapsible>
 
@@ -186,7 +186,7 @@ At any point, these features can be easily added and removed, without any side e
 
 <Collapsible summary="Can CNG be used for operating systems other than Android and iOS?">
 
-Absolutely! CNG is an abstract concept that can be applied to any operating system. Take Expo for example, although Expo Prebuild officially implements CNG for Android and iOS, it also provides abstract platform support for users to create implementations for additional platforms.
+Absolutely! CNG is an abstract concept that can be applied to any operating system. Take Expo for example, although Expo Prebuild officially implements CNG for Android and iOS, it also provides abstract platform support for developers to create implementations for additional platforms.
 
 </Collapsible>
 
@@ -216,7 +216,7 @@ Expo Prebuild streamlines CNG processing. Here are some issues in the React Nati
 
 Building native code requires familiarity with the platform's tooling, creating a steep learning curve. This challenge intensifies in cross-platform development due to multiple platforms. Cross-platform tooling doesn't help if you must implement many features in platform-specific native code.
 
-When bootstrapping a native app, there's initial code and configuration that you may not understand but you own it. Eventually, you'll need to understand this code to upgrade your app safely. This challenge often leads users to upgrade incorrectly or start a new app, copying existing source code.
+When bootstrapping a native app, there's initial code and configuration that you may not understand but you own it. Eventually, you'll need to understand this code to upgrade your app safely. This challenge often leads developers to upgrade incorrectly or start a new app, copying existing source code.
 
 **With Prebuild** upgrading is much closer to upgrading a pure JavaScript application. Bump the versions in your **package.json** and regenerate the native project.
 
