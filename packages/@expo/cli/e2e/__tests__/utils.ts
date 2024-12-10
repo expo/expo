@@ -134,13 +134,13 @@ export async function createFromFixtureAsync(
 
   if (fs.existsSync(projectRoot)) {
     if (reuseExisting) {
-      log.tag('existing', 'Reusing existing fixture project:', projectRoot);
+      log('Reusing existing fixture project:', projectRoot);
       log.exit();
 
       // bail out early, this is good for local testing.
       return projectRoot;
     } else {
-      log.tag('existing', 'Clearing existing fixture project:', projectRoot);
+      log('Clearing existing fixture project:', projectRoot);
       await fs.promises.rm(projectRoot, { recursive: true, force: true });
     }
   }
