@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 [Environment variables in Expo](/guides/environment-variables) describe how to use environment variables with the Expo framework and **.env** files to set environment variables that can be inlined in your JavaScript code. Expo CLI will substitute prefixed variables in your code (for example, `process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files on your development machine.
 
-Since EAS Build and Workflows jobs run on a remote server, **.env** files may not be available. For instance, if **.env** files are excluded from your project because they are listed in **.gitignore** or not committed to your local version control system.
+Since EAS Build and EAS Workflows jobs run on a remote server, **.env** files may not be available. For instance, if **.env** files are excluded from your project because they are listed in **.gitignore** or not committed to your local version control system.
 
 Additionally, you may want to use environment variables outside of your project code to customize your app binary at build time, like setting a bundle identifier or a private key for an error reporting service.
 To accommodate for those needs we have a separate (but compatible) mechanism for managing environment variables in EAS, which is focused on storing and managing environment variables on EAS servers and synchronizing them for local development.
@@ -30,7 +30,7 @@ They are available in jobs that run on EAS servers and updates, together with pr
 Currently EAS supports three environments for environment variables: `development`, `preview` and `production`.
 Environments are independent sets of environment variables that can be used to customize your app in different contexts.
 For example, you might want to use different API keys for development and production, or different bundle identifiers for different App Store releases.
-Environments allows you to do so. Every EAS Build and Workflows job runs using environment variables from one of the available environments.
+Environments allows you to do so. Every EAS Build and EAS Workflows job runs using environment variables from one of the available environments.
 You can also use environments for updates, allowing you to use the same set of environment variables for your build jobs. You can do this when publishing an update by providing the `--environment` flag.
 
 Environment variables can be assigned to multiple environments and have the same value across all of them, or be created for a single environment, so that you can set a specific value for a single environment.
@@ -39,19 +39,19 @@ Environment variables can be assigned to multiple environments and have the same
 
 There are three different visibility settings:
 
-| Visibility | Description                                                                                                                              |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Plain text | Visible on the website, in EAS CLI, and in logs.                                                                                         |
-| Sensitive  | Obfuscated in build and Workflows jobs logs. You can use a toggle to make them visible on the website. They're also readable in EAS CLI. |
-| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in build and Workflows jobs logs.  |
+| Visibility | Description                                                                                                                                  |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Plain text | Visible on the website, in EAS CLI, and in logs.                                                                                             |
+| Sensitive  | Obfuscated in build and EAS Workflows jobs logs. You can use a toggle to make them visible on the website. They're also readable in EAS CLI. |
+| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in build and EAS Workflows jobs logs.  |
 
-> **warning** Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**. Secret type environment variables are intended to be used to provide values to an EAS Build or Workflows job so that they may be used to alter how a job runs. For example, a good use case is setting an `NPM_TOKEN` to install private packages from npm, or a setting a Sentry API key to create a release and upload your source maps. Secrets do not provide any additional security for values that you end up embedding in your application itself.
+> **warning** Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**. Secret type environment variables are intended to be used to provide values to an EAS Build or EAS Workflows job so that they may be used to alter how a job runs. For example, a good use case is setting an `NPM_TOKEN` to install private packages from npm, or a setting a Sentry API key to create a release and upload your source maps. Secrets do not provide any additional security for values that you end up embedding in your application itself.
 
 ## File environment variables
 
 In addition to setting strings as values, you can also upload files as the value of an environment variable.
 
-One common use case of using file environment variable is passing a git ignored **google-services.json** configuration file to a build job. During the job run, the file will be created in a location outside of the project directory and the path to the file will be assigned to the environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`). For example, you can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or Workflows job.
+One common use case of using file environment variable is passing a git ignored **google-services.json** configuration file to a build job. During the job run, the file will be created in a location outside of the project directory and the path to the file will be assigned to the environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`). For example, you can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or EAS Workflows job.
 
 ```js app.config.js
 export default {
@@ -104,7 +104,7 @@ Using `eas update` is the one exception to this rule. By default, for backward c
 
 To ensure that you can use the same environment variables in your updates as your build jobs, you can use the `--environment` flag with the `eas update` command to force it to use **only** the environment variables set on the EAS servers instead of the **.env** files present in your project directory. It will ignore environment variables from **.env**.
 
-## EAS Build and Workflows job runs
+## EAS Build and EAS Workflows job runs
 
 ### Setting the environment for your builds
 
