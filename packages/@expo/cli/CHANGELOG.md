@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix manifest url and API route exports on Windows. ([#33408](https://github.com/expo/expo/pull/33408) by [@byCedric](https://github.com/byCedric))
+- Fix SSR manifest client boundaries module IDs format on Windows. ([#33541](https://github.com/expo/expo/pull/33541) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
