@@ -8,7 +8,7 @@
 
 - [next] Add blob support to `expo/fetch`. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
 - Assert that DOM components cannot have `children`. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
-- Added `Blob` support in `FormData` and also supported from `expo/fetch`. ([#33463](https://github.com/expo/expo/pull/33463) by [@kudo](https://github.com/kudo))
+- Added `Blob` support in `FormData` and also supported from `expo/fetch`. ([#33463](https://github.com/expo/expo/pull/33463), [#33557](https://github.com/expo/expo/pull/33557) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
