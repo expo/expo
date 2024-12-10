@@ -23,7 +23,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   }
 
   private var mTask: TaskInterface? = null
-  private var mBackgrounded: Boolean = true
+  private var isBackgrounded: Boolean = true
   private val taskCoroutineScope = CoroutineScope(Dispatchers.Default)
 
   override fun taskType(): String {
@@ -36,7 +36,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
    * This only applies when the app is in release mode.
    */
   fun executeTask(callback: TaskExecutionCallback) {
-    if (mBackgrounded || ReactBuildConfig.DEBUG) {
+    if (isBackgrounded || ReactBuildConfig.DEBUG) {
       Log.i(TAG, "Executing task '${mTask?.name}'")
       taskManagerUtils.executeTask(mTask, null, callback)
     } else {
@@ -96,11 +96,11 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   }
 
   override fun onHostResume() {
-    mBackgrounded = false
+    isBackgrounded = false
   }
 
   override fun onHostPause() {
-    mBackgrounded = true
+    isBackgrounded = true
   }
 
   override fun onHostDestroy() {
