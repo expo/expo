@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed an issue where videos were unsupported. ([#33186](https://github.com/expo/expo/pull/33226) by [@nathan-ahn](https://github.com/nathan-ahn))
+
 ### 💡 Others
 
 ## 17.0.3 — 2024-11-22
