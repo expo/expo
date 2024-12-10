@@ -1,4 +1,5 @@
 // Copyright © 2024 650 Industries.
+// TODO: Class components are not supported with React Server Components.
 
 'use client';
 
@@ -10,7 +11,6 @@ import { BlurViewProps } from './BlurView.types';
 
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');
 
-// TODO: Class components are not supported with React Server Components.
 export default class BlurView extends React.Component<BlurViewProps> {
   blurViewRef? = React.createRef<typeof NativeBlurView>();
 
