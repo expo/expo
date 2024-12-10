@@ -19,6 +19,7 @@ import host.exp.expoview.BuildConfig
 import javax.inject.Inject
 
 private const val KEEP_ALIVE_MS = (1000 * 60).toLong()
+
 // This activity is transparent. It uses our custom theme @style/Theme.Exponent.Translucent.
 // Calls finish() once it is done processing Intent.
 class LauncherActivity : AppCompatActivity() {

@@ -4,7 +4,6 @@ package host.exp.exponent
 import android.app.IntentService
 import android.content.Context
 import android.content.Intent
-import android.os.Handler
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.kernel.Kernel
