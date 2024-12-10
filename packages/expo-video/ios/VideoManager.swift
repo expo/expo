@@ -14,7 +14,7 @@ class VideoManager {
   private var videoViews = NSHashTable<VideoView>.weakObjects()
   private var videoPlayers = NSHashTable<VideoPlayer>.weakObjects()
 
-  func register(videoPlayer: VideoPlayer, queue: DispatchQueue? = nil) {
+  func register(videoPlayer: VideoPlayer) {
     Self.managerQueue.async { [weak self, weak videoPlayer] in
       guard let self = self, let videoPlayer = videoPlayer else {
         return
