@@ -3,7 +3,7 @@
   "main": "expo-router/entry",
   "description": "The Tab Navigation project template includes several example screens.",
   "license": "0BSD",
-  "version": "52.0.45",
+  "version": "52.0.46",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -20,7 +20,7 @@
     "expo": "~52.0.18",
     "expo-font": "~13.0.1",
     "expo-linking": "~7.0.3",
-    "expo-router": "~4.0.12",
+    "expo-router": "4.0.11",
     "expo-splash-screen": "~0.29.18",
     "expo-status-bar": "~2.0.0",
     "expo-system-ui": "~4.0.6",
