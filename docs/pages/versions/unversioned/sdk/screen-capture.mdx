@@ -158,7 +158,7 @@ export default function App() {
   }, []);
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={styles.container}>
       {sensitiveContentVisible && (
         <Text>This is sensitive content. It will be hidden when screen recording starts.</Text>
       )}
