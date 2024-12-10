@@ -14,15 +14,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+const val BACKGROUND_TASK_TYPE: String = "expo-background-task"
+const val DEFAULT_INTERVAL_MINUTES: Long = 60 * 24 // Once every day
+private val TAG: String = BackgroundTaskConsumer::class.java.simpleName
+
 class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtilsInterface?) :
   TaskConsumer(context, taskManagerUtils), TaskConsumerInterface, LifecycleEventListener {
-  companion object {
-    const val BACKGROUND_TASK_TYPE: String = "expo-background-task"
-    const val DEFAULT_INTERVAL_MINUTES: Long = 60 * 24 // Once every day
-    private val TAG: String = BackgroundTaskConsumer::class.java.simpleName
-  }
 
-  private var mTask: TaskInterface? = null
+  private var task: TaskInterface? = null
   private var isBackgrounded: Boolean = true
   private val taskCoroutineScope = CoroutineScope(Dispatchers.Default)
 
@@ -37,15 +36,15 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
    */
   fun executeTask(callback: TaskExecutionCallback) {
     if (isBackgrounded || ReactBuildConfig.DEBUG) {
-      Log.i(TAG, "Executing task '${mTask?.name}'")
-      taskManagerUtils.executeTask(mTask, null, callback)
+      Log.i(TAG, "Executing task '${task?.name}'")
+      taskManagerUtils.executeTask(task, null, callback)
     } else {
       Log.w(TAG, "Task was not executed since the app was not in the background or in Debug mode.")
     }
   }
 
   override fun didRegister(task: TaskInterface) {
-    mTask = task
+    this.task = task
 
     Log.i(TAG, "didRegister: ${task.name}")
 
@@ -65,7 +64,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   }
 
   override fun didUnregister() {
-    Log.i(TAG, "didUnregister: ${mTask?.name}")
+    Log.i(TAG, "didUnregister: ${task?.name}")
 
     taskCoroutineScope.launch {
       if (!BackgroundTaskScheduler.isWorkerRunning(context)) {
@@ -77,14 +76,14 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
         ?: throw MissingTaskServiceException()
 
       // Get tasks for our appScope
-      val appScopeKey = mTask?.appScopeKey ?: throw MissingAppScopeKey()
-      mTask = null
+      val appScopeKey = task?.appScopeKey ?: throw MissingAppScopeKey()
+      task = null
 
       // Check if we have a task that
       val tasks = taskService.getTasksForAppScopeKey(appScopeKey)
       val ourTasks = tasks.filter { it.getString("taskType") == BACKGROUND_TASK_TYPE }
       if (ourTasks.isEmpty()) {
-        Log.i(TAG, "didUnregister: ${mTask?.name} - stopping worker, no more $BACKGROUND_TASK_TYPE tasks running.")
+        Log.i(TAG, "didUnregister: ${task?.name} - stopping worker, no more $BACKGROUND_TASK_TYPE tasks running.")
         taskCoroutineScope.launch {
           // We should just stop the worker
           BackgroundTaskScheduler.stopWorker(context)
@@ -108,12 +107,12 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   }
 
   private fun getIntervalMinutes(): Long {
-    val options = if (mTask != null) mTask!!.options else null
+    val options = if (task != null) task!!.options else null
 
     if (options != null && options.containsKey("minimumInterval")) {
       // minimumInterval option is in minutes
       return (options["minimumInterval"] as Number).toLong()
     }
-    return BackgroundTaskConsumer.DEFAULT_INTERVAL_MINUTES
+    return DEFAULT_INTERVAL_MINUTES
   }
 }
