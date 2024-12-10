@@ -45,7 +45,7 @@ export function getRouterDirectoryModuleIdWithManifest(
   projectRoot: string,
   exp: ExpoConfig
 ): string {
-  return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
+  return toPosixPath(exp.extra?.router?.root ?? getRouterDirectory(projectRoot));
 }
 
 let hasWarnedAboutSrcDir = false;
