@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 2.0.4 — 2024-12-10
+
+### 🐛 Bug fixes
+
 - Fix incorrect `__dirname` in `react-native-config.(js|ts)` ([#33532](https://github.com/expo/expo/pull/33532) by [@satya164](https://github.com/satya164))
 
 ### 💡 Others

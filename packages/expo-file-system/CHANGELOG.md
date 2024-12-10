@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [macOS][next]: Add availability checks ([#33504](https://github.com/expo/expo/pull/33504) by [@hassankhan](https://github.com/hassankhan))
-
 ### 💡 Others
+
+## 18.0.5 — 2024-12-10
+
+### 🐛 Bug fixes
+
+- [macOS][next]: Add availability checks ([#33504](https://github.com/expo/expo/pull/33504) by [@hassankhan](https://github.com/hassankhan))
 
 ## 18.0.4 — 2024-11-19
 

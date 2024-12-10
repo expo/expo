@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `fileURLtoFilePath` returning valid UNIX os paths to resolve client and server boundary entries on Windows. ([#33540](https://github.com/expo/expo/pull/33540) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 4.0.12 — 2024-12-10
+
+### 🐛 Bug fixes
+
+- Fix `fileURLtoFilePath` returning valid UNIX os paths to resolve client and server boundary entries on Windows. ([#33540](https://github.com/expo/expo/pull/33540) by [@byCedric](https://github.com/byCedric))
 
 ## 4.0.11 — 2024-12-02
 
