@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix crash when accessing resource from multiple threads
+
 ### 💡 Others
 
 ## 13.0.1 — 2024-11-05
