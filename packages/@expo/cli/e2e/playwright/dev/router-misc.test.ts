@@ -65,4 +65,23 @@ test.describe(inputDir, () => {
 
     expect(pageErrors.all).toEqual([]);
   });
+
+  test('url hash stays when setting other params', async ({ page }) => {
+    console.log('Server running:', expoStart.url);
+    await expoStart.fetchAsync('/');
+    page.on('console', (msg) => console.log(msg.text()));
+
+    await page.goto(`${expoStart.url.href}hash-support#my-hash`);
+
+    // Ensure the initial hash and param is correct
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('my-hash');
+    await expect(page.locator('[data-testid="foo-param"]')).not.toHaveText('bar');
+    expect(page.url()).toEqual(`${expoStart.url.href}hash-support#my-hash`);
+
+    // Update other params
+    page.locator('[data-testid="set-param-test"]').click();
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('my-hash');
+    await expect(page.locator('[data-testid="foo-param"]')).toHaveText('bar');
+    expect(page.url()).toEqual(`${expoStart.url.href}hash-support?foo=bar#my-hash`);
+  });
 });
