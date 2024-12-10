@@ -80,6 +80,7 @@ function normalizeArgs(
 export function installFormDataPatch(formData: typeof FormData): typeof ExpoFormData {
   formData.prototype.append = function append(this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('append', props, 2);
+    // @ts-ignore: When inferred FormData.append from React Native types, it does not support the 3rd blobFilename argument.
     const [name, value, blobFilename] = props;
     this._parts.push(normalizeArgs(name, value, blobFilename));
   };
@@ -202,5 +203,5 @@ export function installFormDataPatch(formData: typeof FormData): typeof ExpoForm
   // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype[Symbol.iterator] = formData.prototype.entries;
 
-  return formData as typeof ExpoFormData;
+  return formData as unknown as typeof ExpoFormData;
 }
