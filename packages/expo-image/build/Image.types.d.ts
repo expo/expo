@@ -91,6 +91,10 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
     source?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
     /**
      * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
+     *
+     * Note that the default value for placeholder's content fit is 'scale-down', which differs from the source image's default value.
+     * Using a lower-resolution placeholder may cause flickering due to scaling differences between it and the final image.
+     * To prevent this, you can set the [`placeholderContentFit`](#placeholdercontentfit) to match the [`contentFit`](#contentfit) value.
      */
     placeholder?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
     /**
