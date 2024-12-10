@@ -40,6 +40,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Add `User-Agent: expo-cli/<version>` to all CLI requests. ([#33471](https://github.com/expo/expo/pull/33471) by [@byCedric](https://github.com/byCedric))
+- Add e2e tests for browser history and hash param ([#33524](https://github.com/expo/expo/pull/33524) by [@stephentuso](https://github.com/stephentuso))
 
 ## 0.22.1 — 2024-12-05
 
