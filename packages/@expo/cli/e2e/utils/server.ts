@@ -4,12 +4,12 @@ import type { ChildProcess, SpawnOptions } from 'node:child_process';
 import { createServer } from 'node:net';
 import { env } from 'node:process';
 
-import { EXPO_E2E_VERBOSE } from './log';
+import { createVerboseLogger } from './log';
 import {
   killProcessAsync,
+  processCollectOutput,
   processExitToError,
   processFindPrefixedValue,
-  processPipeOutput,
   waitForProcessOutput,
   waitForProcessReady,
 } from './process';
@@ -63,12 +63,13 @@ export function createBackgroundServer({
   command,
   host: resolveHost,
   port: resolvePort = findFreePortAsync,
-  verbose = EXPO_E2E_VERBOSE,
+  verbose,
   ...spawnOptions
 }: BackgroundServerOptions): BackgroundServer {
   let child: ChildProcess | null = null;
   let url: URL | null = null;
   let exitHandler: ((code: number | null, signal: NodeJS.Signals | null) => void) | null = null;
+  let log: ReturnType<typeof createVerboseLogger> | null = null;
 
   return {
     options: spawnOptions,
@@ -107,10 +108,9 @@ export function createBackgroundServer({
         },
       });
 
-      if (verbose) {
-        console.log('[server] startAsync -', bin, ...commandOrFlags, this.options);
-        processPipeOutput(child, 'server');
-      }
+      log = createVerboseLogger({ verbose, prefix: 'server' });
+      log('startAsync()', bin, ...commandOrFlags, this.options);
+      processCollectOutput(child, log.tag);
 
       try {
         // Wait until the host is resolved based on the process output
@@ -124,10 +124,13 @@ export function createBackgroundServer({
 
         // Attach an exit handler to monitor if the process closes before intentionally closing
         exitHandler = (code, signal) => {
-          throw processExitToError(code ?? signal, '[server] exited unexpectedly with:');
+          const error = processExitToError(code ?? signal, '[server] exited unexpectedly with:');
+          log?.error(error);
+          throw error;
         };
         child.once('exit', exitHandler);
       } catch (error) {
+        log.error(error);
         // When an error occurred, ensure the process is closed
         await this.stopAsync(true);
         throw error;
@@ -139,18 +142,20 @@ export function createBackgroundServer({
       }
 
       if (exitHandler) child?.off('exit', exitHandler);
-      if (verbose) {
-        console.log('[server] stopAsync', force ? '- by force' : '');
-      }
+      log?.('stopAsync()', force ? 'by force' : '');
 
       try {
         await killProcessAsync(child ?? undefined, 'SIGKILL', force);
       } catch (error) {
+        log?.error(error);
         throw new Error('Server could not be stopped', { cause: error });
       } finally {
+        log?.exit();
+
         child = null;
         url = null;
         exitHandler = null;
+        log = null;
       }
     },
   };

@@ -69,8 +69,8 @@ import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddlewa
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   convertPathToModuleSpecifier,
-  createBundleUrlOsPath,
   createBundleUrlPath,
+  createBundleUrlOsPath,
   ExpoMetroOptions,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,

@@ -6,7 +6,7 @@ import { clearTimeout, setTimeout } from 'node:timers';
 import { stripVTControlCharacters } from 'node:util';
 import treeKill from 'tree-kill';
 
-import { createVerboseLogger, prefixLines } from './log';
+import { createVerboseLogger } from './log';
 
 type ExecuteOptions = Omit<execa.Options, 'cwd'> & {
   /** The command prefix to execute, otherwise the full `commandOrFlags` is executed */
@@ -175,26 +175,6 @@ export function processExitToError(
   message = 'Process exited unexpectedly with:'
 ) {
   return new Error(`${message} ${codeOrSignal || 'unknown exit reason'}`);
-}
-
-/**
- * Pipe the received output of the child process into the current process output stream.
- * This will append a prefix for each line, to make it more readable.
- * Once the process exits or errors, the listeners are removed automatically.
- */
-export function processPipeOutput(child: ChildProcess, prefix = 'child process') {
-  const onProcessStderr = (chunk: any) =>
-    process.stderr.write(prefixLines(`${prefix} stderr`, chunk));
-  const onProcessStdout = (chunk: any) =>
-    process.stdout.write(prefixLines(`${prefix} stdout`, chunk));
-
-  child.stderr?.on('data', onProcessStderr);
-  child.stdout?.on('data', onProcessStdout);
-
-  child.once('close', () => {
-    child.stderr?.off('data', onProcessStderr);
-    child.stdout?.off('data', onProcessStdout);
-  });
 }
 
 /**
