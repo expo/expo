@@ -132,18 +132,6 @@ export default function useScreenCaptureCallback() {
 
 Screen recording detection is available on iOS 11 and newer. The API lets you detect when users start or stop recording your app's screen, allowing you to protect sensitive content.
 
-### `addRecordingListener(listener)`
-
-Registers a listener that is called when screen recording starts or stops.
-
-#### Arguments
-
-- **listener (_function_)** -- A callback that is invoked with an object containing the following key:
-  - **isCaptured (_boolean_)** -- `true` when screen recording starts, `false` when it stops.
-
-#### Returns
-
-- An `EventSubscription` object that you can call `remove()` on when you want to unsubscribe from the listener.
 
 #### Example
 
