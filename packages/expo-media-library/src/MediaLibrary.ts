@@ -283,7 +283,7 @@ export type AssetsOptions = {
    */
   sortBy?: SortByValue[] | SortByValue;
   /**
-   * An array of [MediaTypeValue](#expomedialibrarymediatypevalue)s or a single `MediaTypeValue`.
+   * An array of [MediaTypeValue](#mediatypevalue)s or a single `MediaTypeValue`.
    * @default MediaType.photo
    */
   mediaType?: MediaTypeValue[] | MediaTypeValue;

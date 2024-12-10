@@ -44,7 +44,7 @@ function isCodeSigningConfigured(projectRoot: string): boolean {
 async function configureCodeSigningAsync(projectRoot: string) {
   const ids = await Security.findIdentitiesAsync();
 
-  const id = await resolveCertificateSigningIdentityAsync(ids);
+  const id = await resolveCertificateSigningIdentityAsync(projectRoot, ids);
 
   Log.log(`\u203A Signing and building iOS app with: ${id.codeSigningInfo}`);
 

@@ -10,9 +10,11 @@ public class AudioModule: Module {
     Name("ExpoAudio")
 
     OnCreate {
+      #if os(iOS)
       self.appContext?.permissions?.register([
         AudioRecordingRequester()
       ])
+      #endif
     }
 
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
@@ -24,19 +26,27 @@ public class AudioModule: Module {
     }
 
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
+      #if os(iOS)
       appContext?.permissions?.askForPermission(
         usingRequesterClass: AudioRecordingRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
+      #else
+      promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
+      #endif
     }
 
     AsyncFunction("getRecordingPermissionsAsync") { (promise: Promise) in
+      #if os(iOS)
       appContext?.permissions?.getPermissionUsingRequesterClass(
         AudioRecordingRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
+      #else
+      promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
+      #endif
     }
 
     OnDestroy {
@@ -46,7 +56,7 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
-        let avPlayer = AudioUtils.createAVPlayer(source: source)
+        let avPlayer = AudioUtils.createAVPlayer(from: source)
         let player = AudioPlayer(avPlayer, interval: updateInterval)
         AudioComponentRegistry.shared.add(player)
         return player
@@ -91,12 +101,12 @@ public class AudioModule: Module {
       }
 
       Property("currentTime") { player in
-        player.ref.currentItem?.currentTime().seconds
+        player.currentTime
       }
 
       Property("duration") { player in
         if player.ref.status == .readyToPlay {
-          (player.ref.currentItem?.duration.seconds ?? 0.0) * 1000
+          player.duration
         } else {
           0.0
         }
@@ -107,7 +117,7 @@ public class AudioModule: Module {
       }
 
       Property("paused") { player in
-        return player.ref.rate == 0.0
+        player.isPaused
       }
 
       Property("volume") { player in
@@ -140,6 +150,10 @@ public class AudioModule: Module {
         }
       }
 
+      Function("replace") { (player, source: AudioSource) in
+        player.ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
+      }
+
       Function("pause") { player in
         player.ref.pause()
       }
@@ -155,13 +169,14 @@ public class AudioModule: Module {
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
         await player.ref.currentItem?.seek(
           to: CMTime(
-            seconds: seconds / 1000,
+            seconds: seconds,
             preferredTimescale: CMTimeScale(NSEC_PER_SEC)
           )
         )
       }
     }
 
+    #if os(iOS)
     // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
@@ -234,6 +249,7 @@ public class AudioModule: Module {
         try RecordingUtils.setInput(input)
       }
     }
+    #endif
   }
 
   private func recordingDirectory() throws -> URL {
@@ -263,6 +279,7 @@ public class AudioModule: Module {
     var category: AVAudioSession.Category = .soloAmbient
     var options: AVAudioSession.CategoryOptions = []
 
+    #if os(iOS)
     if !mode.allowsRecording {
       AudioComponentRegistry.shared.recorders.values.forEach { recorder in
         if recorder.isRecording {
@@ -271,6 +288,7 @@ public class AudioModule: Module {
         }
       }
     }
+    #endif
 
     if !mode.playsInSilentMode {
       if mode.interruptionMode == .doNotMix {
@@ -294,6 +312,7 @@ public class AudioModule: Module {
   }
 
   private func checkPermissions() throws {
+    #if os(iOS)
     if #available(iOS 17.0, *) {
       switch AVAudioApplication.shared.recordPermission {
       case .denied, .undetermined:
@@ -309,5 +328,6 @@ public class AudioModule: Module {
         break
       }
     }
+    #endif
   }
 }

@@ -5,20 +5,6 @@ import { type NativeHeadersType } from './NativeRequest';
  */
 export declare function convertReadableStreamToUint8ArrayAsync(stream: ReadableStream<Uint8Array>): Promise<Uint8Array>;
 /**
- * Convert FormData to string
- *
- * `uri` is not supported for React Native's FormData.
- * `blob` is not supported for standard FormData.
- */
-export declare function convertFormData(formData: FormData, boundary?: string): {
-    body: string;
-    boundary: string;
-};
-/**
- * Create mutipart boundary
- */
-export declare function createBoundary(): string;
-/**
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
 export declare function normalizeBodyInitAsync(body: BodyInit | null | undefined): Promise<{

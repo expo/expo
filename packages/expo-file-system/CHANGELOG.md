@@ -6,9 +6,36 @@
 
 ### 🎉 New features
 
+- [next] Add blob support and `.blob()` function. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Add options to the create function. ([#32909](https://github.com/expo/expo/pull/32909) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
+- [macOS][next]: Add availability checks ([#33504](https://github.com/expo/expo/pull/33504) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
+
+## 18.0.4 — 2024-11-19
+
+### 🎉 New features
+
+- [next] Added `.bytes()` and writing a `Uint8Array`. ([#33020](https://github.com/expo/expo/pull/33020) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.3 — 2024-11-13
+
+### 🎉 New features
+
+- [next] Add file handles. ([#31738](https://github.com/expo/expo/pull/31738) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.2 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.1 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [expo-file-system][next] Fix download function throwing an unexpected error if destination already exists. ([#32626](https://github.com/expo/expo/pull/32626) by [@aleqsio](https://github.com/aleqsio))
 
 ## 18.0.0 — 2024-10-22
 

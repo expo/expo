@@ -122,4 +122,28 @@ export async function startActivityAsync(activityAction, params = {}) {
     }
     return ExpoIntentLauncher.startActivity(activityAction, params);
 }
+/**
+ * Opens an application by its package name.
+ * @param packageName e.g., `com.google.android.gm` for Gmail.
+ */
+export function openApplication(packageName) {
+    if (!ExpoIntentLauncher.openApplication) {
+        throw new UnavailabilityError('IntentLauncher', 'openApplication');
+    }
+    return ExpoIntentLauncher.openApplication(packageName);
+}
+/**
+ * Returns the icon of the specified application as a base64-encoded PNG image string.
+ * The returned string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image` `<Image>`
+ * component's `source` prop.
+ *
+ * @param packageName The package name of the target application, e.g. `com.google.android.gm` for Gmail.
+ * @return A promise that resolves to the base64-encoded PNG icon of the specified application, or an empty string if the icon could not be retrieved.
+ */
+export async function getApplicationIconAsync(packageName) {
+    if (!ExpoIntentLauncher.getApplicationIcon) {
+        throw new UnavailabilityError('IntentLauncher', 'getApplicationIconAsync');
+    }
+    return ExpoIntentLauncher.getApplicationIcon(packageName);
+}
 //# sourceMappingURL=IntentLauncher.js.map

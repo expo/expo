@@ -60,7 +60,7 @@ export default function Layout() {
 }
 ```
 
-As an alternative to the `<Stack.Screen>` component, you can use [`navigation.setOptions()`](https://reactnavigation.org/docs/navigation-prop/#setoptions) to configure a route's options from within the route's component file.
+As an alternative to the `<Stack.Screen>` component, you can use [`navigation.setOptions()`](https://reactnavigation.org/docs/navigation-object/#setoptions) to configure a route's options from within the route's component file.
 
 ```tsx app/index.tsx
 import { Stack, useNavigation } from 'expo-router';
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
 
 To configure a route's option dynamically, you can always use the `<Stack.Screen>` component in that route's file.
 
-As an alternative, you can also use the [imperative API's `router.setParams()`](/router/navigating-pages/#imperative-navigation) function to configure the route dynamically.
+As an alternative, you can also use the [imperative API's `router.setParams()`](/versions/latest/sdk/router/#router) function to configure the route dynamically.
 
 ```tsx app/details.tsx
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -306,6 +306,42 @@ export default function Settings() {
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       /* @info Trigger the handler method on a touchable or button component. */
       <Button title="Go to first screen" onPress={() => handleDismiss(3)} />
+      /* @end */
+    </View>
+  );
+}
+```
+
+### `dismissTo` action
+
+> `dismissTo` was added in Expo Router `4.0.8`. It operates similarly to the `navigation` function in Expo Router v3.
+
+Dismisses screens in the current `<Stack />` until the specified `Href` is reached. If the `Href` is absent in the history, a `push` action will be performed instead.
+
+For example, consider the history of `/one`, `/two`, `/three` routes, where `/three` is the current route. The action `router.dismissTo('/one')` will cause the history to go back twice, while `router.dismissTo('/four')` will `push` the history forward to the `/four` route.
+
+{/* prettier-ignore */}
+```tsx app/settings.tsx
+import { Button, View, Text } from 'react-native';
+/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+import { useRouter } from 'expo-router';
+/* @end */
+
+export default function Settings() {
+  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  const router = useRouter();
+  /* @end */
+
+  const handleDismissAll = () => {
+    /* @info In the handler method, call <CODE>router.dismissTo</CODE> to go back to a specific route. */
+    router.dismissTo('/')
+    /* @end */
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      /* @info Trigger the handler method on a touchable or button component. */
+      <Button title="Go to first screen" onPress={handleDismissAll} />
       /* @end */
     </View>
   );

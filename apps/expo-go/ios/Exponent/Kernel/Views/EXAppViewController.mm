@@ -22,7 +22,7 @@
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
 
-#import <EXSplashScreen/EXSplashScreenService.h>
+#import "EXSplashScreenService.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #import <React/RCTUtils.h>

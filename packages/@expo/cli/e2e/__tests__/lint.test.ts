@@ -1,17 +1,16 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
 import fs from 'fs/promises';
-import klawSync from 'klaw-sync';
 import path from 'path';
 
 import {
-  execute,
   projectRoot,
   getLoadedModulesAsync,
-  bin,
   setupTestProjectWithOptionsAsync,
+  findProjectFiles,
 } from './utils';
+import { executeExpoAsync } from '../utils/expo';
+import { executeAsync } from '../utils/process';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -36,106 +35,85 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo lint --help`', async () => {
-  const results = await execute('lint', '--help');
-  expect(results.stdout).toMatchSnapshot();
+  const results = await executeExpoAsync(projectRoot, ['lint', '--help']);
+  expect(results.stdout).toMatchInlineSnapshot(`
+    "
+      Info
+        Utility to run ESLint. Prompts to install and configure if not yet set up.
+
+      Usage
+        $ npx expo lint
+
+      Options
+        -h, --help    Usage info
+    "
+  `);
 });
 
-it(
-  'runs `npx expo lint` to install lint in a project',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-lint', 'with-blank', {
-      reuseExisting: false,
-    });
-    // `npx expo install expo-sms`
-    await execa('node', [bin, 'lint'], { cwd: projectRoot });
+it('runs `npx expo lint` to install lint in a project', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-lint', 'with-blank', {
+    reuseExisting: false,
+  });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean)
-      .sort();
+  // `npx expo install expo-sms`
+  await executeExpoAsync(projectRoot, ['lint']);
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Ensure the config was added
-    expect((pkg.devDependencies as any)['eslint-config-expo']).toBeDefined();
-    // And not in the dependencies
-    expect((pkg.dependencies as any)['eslint-config-expo']).not.toBeDefined();
+  // Ensure the config was added
+  expect(pkg.devDependencies).toHaveProperty('eslint-config-expo');
+  // And not in the dependencies
+  expect(pkg.dependencies).not.toHaveProperty('eslint-config-expo');
 
-    // Ensure the eslint package was added
-    expect((pkg.devDependencies as any)['eslint']).toBeDefined();
+  // Ensure the eslint package was added
+  expect(pkg.devDependencies).toHaveProperty('eslint');
 
-    // Check if the helper script was added
-    expect((pkg.scripts as any)['lint']).toBeDefined();
+  // Check if the helper script was added
+  expect(pkg.scripts).toHaveProperty('lint');
 
-    expect(files).toStrictEqual([
-      '.eslintrc.js',
-      'App.js',
-      'app.json',
-      'bun.lockb',
-      'metro.config.js',
-      'package.json',
-    ]);
+  expect(findProjectFiles(projectRoot)).toStrictEqual([
+    '.eslintrc.js',
+    'App.js',
+    'app.json',
+    'bun.lockb',
+    'metro.config.js',
+    'package.json',
+  ]);
 
-    await execa('bun', ['run', 'lint', '--max-warnings', '0'], { cwd: projectRoot });
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  // Ensure there are no linting errors
+  await executeAsync(projectRoot, ['bun', 'run', 'lint', '--max-warnings', '0']);
+});
 
-it(
-  'runs `npx expo customize .eslintrc.js` to install lint in a project',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank', {
-      reuseExisting: false,
-    });
-    // `npx expo install expo-sms`
-    await execa('node', [bin, 'customize', '.eslintrc.js'], { cwd: projectRoot });
+it('runs `npx expo customize .eslintrc.js` to install lint in a project', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank', {
+    reuseExisting: false,
+  });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean)
-      .sort();
+  // `npx expo customize .eslintrc.js`
+  await executeExpoAsync(projectRoot, ['customize', '.eslintrc.js']);
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Ensure the config was added
-    expect((pkg.devDependencies as any)['eslint-config-expo']).toBeDefined();
-    // And not in the dependencies
-    expect((pkg.dependencies as any)['eslint-config-expo']).not.toBeDefined();
+  // Ensure the config was added
+  expect(pkg.devDependencies).toHaveProperty('eslint-config-expo');
+  // And not in the dependencies
+  expect(pkg.dependencies).not.toHaveProperty('eslint-config-expo');
 
-    // Ensure the eslint package was added
-    expect((pkg.devDependencies as any)['eslint']).toBeDefined();
+  // Ensure the eslint package was added
+  expect(pkg.devDependencies).toHaveProperty('eslint');
 
-    // Check if the helper script was added
-    expect((pkg.scripts as any)['lint']).toBeDefined();
+  // Check if the helper script was added
+  expect(pkg.scripts).toHaveProperty('lint');
 
-    expect(files).toStrictEqual([
-      '.eslintrc.js',
-      'App.js',
-      'app.json',
-      'bun.lockb',
-      'metro.config.js',
-      'package.json',
-    ]);
+  expect(findProjectFiles(projectRoot)).toStrictEqual([
+    '.eslintrc.js',
+    'App.js',
+    'app.json',
+    'bun.lockb',
+    'metro.config.js',
+    'package.json',
+  ]);
 
-    await execa('bun', ['run', 'lint', '--max-warnings', '0'], { cwd: projectRoot });
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  // Ensure there are no linting errors
+  await executeAsync(projectRoot, ['bun', 'run', 'lint', '--max-warnings', '0']);
+});

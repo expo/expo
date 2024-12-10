@@ -52,6 +52,7 @@ export default function Index() {
   const pickImageAsync = async () => {
     /* @tutinfo Pass image picker options to <CODE>launchImageLibraryAsync()</CODE> */
     let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -165,7 +166,7 @@ const PlaceholderImage = require('@/assets/images/background-image.png');
 export default function Index() {
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -301,7 +302,9 @@ Modify the **app/(tabs)/index.tsx** file:
 ```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-/* @tutinfo Import useState hook from React. */ import { useState } from 'react';/* @end */
+/* @tutinfo Import <CODE>useState</CODE> hook from React.*/
+import { useState } from 'react';
+/* @end */
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
@@ -315,7 +318,7 @@ export default function Index() {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -369,16 +372,16 @@ Pass the `selectedImage` prop to the `ImageViewer` component to display the sele
 {/* prettier-ignore */}
 ```tsx components/ImageViewer.tsx
 import { StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { Image, type ImageSource } from "expo-image";
 
 type Props = {
-  imgSource: string;
+  imgSource: ImageSource;
   /* @tutinfo */
   selectedImage?: string;
   /* @end */
 };
 
-export default function ImageViewer({ imgSource, /* @tutinfo Pass the selectedImage prop.*/selectedImage/* @end */ }: Props) {
+export default function ImageViewer({ imgSource, /* @tutinfo Pass the <CODE>selectedImage</CODE> prop.*/selectedImage/* @end */ }: Props) {
   /* @tutinfo If the selected image is not null, show the image from the device, otherwise, show the placeholder image. */
   const imageSource = selectedImage ? { uri: selectedImage } : imgSource;
   /* @end */

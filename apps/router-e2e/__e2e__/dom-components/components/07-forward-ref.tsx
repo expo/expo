@@ -29,7 +29,7 @@ export default forwardRef<ForwardedImperativeRef, { dom?: DOMProps }>(function P
   );
 
   return (
-    <div style={{ width: 100, height: 50, backgroundColor: '#add8e6' }} ref={divRef}>
+    <div id="rect" style={{ width: 100, height: 50, backgroundColor: '#add8e6' }} ref={divRef}>
       {text}
     </div>
   );

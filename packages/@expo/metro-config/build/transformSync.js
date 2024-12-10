@@ -39,11 +39,19 @@ function isTSXSource(fileName) {
     return fileName?.endsWith('.tsx');
 }
 function transformSync(src, babelConfig, { hermesParser }) {
-    const useBabelCore = isTypeScriptSource(babelConfig.filename) ||
-        isTSXSource(babelConfig.filename) ||
-        !hermesParser;
-    const parser = useBabelCore ? parseWithBabel : parseWithHermes;
-    return parser(src, babelConfig);
+    const isTypeScript = isTypeScriptSource(babelConfig.filename) || isTSXSource(babelConfig.filename);
+    if (isTypeScript) {
+        return parseWithBabel(src, babelConfig);
+    }
+    if (!isTypeScript &&
+        // The Hermes parser doesn't support comments or babel proposals such as export default from, meaning it has lower compatibility with larger parts
+        // of the ecosystem.
+        // However, React Native ships with flow syntax that isn't supported in Babel so we need to use Hermes for those files.
+        // We can try to quickly detect if the file uses flow syntax by checking for the @flow pragma which is present in every React Native file.
+        (hermesParser || src.includes(' @flow'))) {
+        return parseWithHermes(src, babelConfig);
+    }
+    return parseWithBabel(src, babelConfig);
 }
 exports.transformSync = transformSync;
 function parseWithHermes(src, babelConfig) {

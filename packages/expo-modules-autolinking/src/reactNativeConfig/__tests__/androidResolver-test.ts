@@ -71,6 +71,115 @@ public class TestPackage implements ReactPackage {
     `);
   });
 
+  it('should return android config if gradle found but not AndroidManifest.xml', async () => {
+    // AndroidManifest.xml
+    mockGlob.mockResolvedValueOnce([]);
+    // build.gradle
+    mockGlob.mockResolvedValueOnce(['build.gradle']);
+    // parseNativePackageClassNameAsync()
+    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.java']));
+    // parseComponentDescriptorsAsync()
+    mockGlobStream.mockReturnValueOnce(Readable.from([]));
+
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-test/android/build.gradle': `
+android {
+    namespace "com.test"
+    defaultConfig {
+        applicationId "com.test"
+    }
+}
+`,
+      '/app/node_modules/react-native-test/android/src/main/com/test/TestPackage.java': `\
+package com.test;
+
+import com.facebook.react.ReactPackage;
+
+public class TestPackage implements ReactPackage {
+}
+`,
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      undefined
+    );
+    expect(result).not.toBeNull();
+  });
+
+  it('should return android config from custom sourceDir', async () => {
+    // AndroidManifest.xml
+    mockGlob.mockResolvedValueOnce([]);
+    // build.gradle
+    mockGlob.mockResolvedValueOnce(['build.gradle']);
+    // parseNativePackageClassNameAsync()
+    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.java']));
+    // parseComponentDescriptorsAsync()
+    mockGlobStream.mockReturnValueOnce(Readable.from([]));
+
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-test/custom/android/build.gradle': `
+android {
+    namespace "com.test"
+    defaultConfig {
+        applicationId "com.test"
+    }
+}
+`,
+      '/app/node_modules/react-native-test/custom/android/src/main/com/test/TestPackage.java': `\
+package com.test;
+
+import com.facebook.react.ReactPackage;
+
+public class TestPackage implements ReactPackage {
+}
+`,
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      {
+        sourceDir: './custom/android',
+      }
+    );
+    expect(result.sourceDir).toBe('/app/node_modules/react-native-test/custom/android');
+  });
+
+  it('should return null if gradle found but without namespace', async () => {
+    // AndroidManifest.xml
+    mockGlob.mockResolvedValueOnce([]);
+    // build.gradle
+    mockGlob.mockResolvedValueOnce(['build.gradle']);
+    // parseNativePackageClassNameAsync()
+    mockGlobStream.mockReturnValueOnce(Readable.from(['src/main/com/test/TestPackage.java']));
+    // parseComponentDescriptorsAsync()
+    mockGlobStream.mockReturnValueOnce(Readable.from([]));
+
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-test/android/build.gradle': `
+android {
+    defaultConfig {
+        applicationId "com.test"
+    }
+}
+`,
+      '/app/node_modules/react-native-test/android/src/main/com/test/TestPackage.java': `\
+package com.test;
+
+import com.facebook.react.ReactPackage;
+
+public class TestPackage implements ReactPackage {
+}
+`,
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      undefined
+    );
+    expect(result).toBeNull();
+  });
+
   it('should return null if reactNativeConfig is null', async () => {
     const result = await resolveDependencyConfigImplAndroidAsync(
       '/app/node_modules/react-native-test',
@@ -107,8 +216,9 @@ android {
 `,
     });
     const result = await parsePackageNameAsync(
-      '/app/node_modules/test/src/main/AndroidManifest.xml',
-      '/app/node_modules/test/build.gradle'
+      '/app/node_modules/test',
+      'src/main/AndroidManifest.xml',
+      'build.gradle'
     );
     expect(result).toEqual('com.test');
   });
@@ -121,8 +231,9 @@ android {
       '/app/node_modules/test/build.gradle': '',
     });
     const result = await parsePackageNameAsync(
-      '/app/node_modules/test/src/main/AndroidManifest.xml',
-      '/app/node_modules/test/build.gradle'
+      '/app/node_modules/test',
+      'src/main/AndroidManifest.xml',
+      'build.gradle'
     );
     expect(result).toEqual('com.test');
   });

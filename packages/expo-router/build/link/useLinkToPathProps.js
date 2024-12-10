@@ -1,33 +1,12 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.shouldHandleMouseEvent = void 0;
 const react_native_1 = require("react-native");
-const expo = __importStar(require("../fork/getPathFromState-forks"));
 const router_store_1 = require("../global-state/router-store");
 const matchers_1 = require("../matchers");
+const useDomComponentNavigation_1 = require("./useDomComponentNavigation");
+const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
+const url_1 = require("../utils/url");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;
@@ -51,12 +30,19 @@ function useLinkToPathProps({ href, ...options }) {
     const { linkTo } = (0, router_store_1.useExpoRouter)();
     const onPress = (event) => {
         if (shouldHandleMouseEvent(event)) {
+            if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
+                return;
+            }
             linkTo(href, options);
         }
     };
+    let strippedHref = (0, matchers_1.stripGroupSegmentsFromPath)(href) || '/';
+    // Append base url only if needed.
+    if (!(0, url_1.shouldLinkExternally)(strippedHref)) {
+        strippedHref = (0, getPathFromState_forks_1.appendBaseUrl)(strippedHref);
+    }
     return {
-        // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
-        href: expo.appendBaseUrl((0, matchers_1.stripGroupSegmentsFromPath)(href) || '/'),
+        href: strippedHref,
         role: 'link',
         onPress,
     };

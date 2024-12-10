@@ -1,6 +1,6 @@
 {
   "name": "expo-background-fetch",
-  "version": "13.0.1",
+  "version": "13.0.3",
   "description": "Expo universal module for BackgroundFetch API",
   "main": "build/BackgroundFetch.js",
   "types": "build/BackgroundFetch.d.ts",

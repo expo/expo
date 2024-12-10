@@ -19,7 +19,7 @@ To use a React Native component or API in your project, import it from the `reac
 
 <SnackInline>
 
-```jsx
+```tsx
 import { Text, View } from 'react-native';
 
 export default function App() {
@@ -41,7 +41,7 @@ To use a library from the Expo SDK, find the one you are looking for in the [API
 
 <ConfigReactNative>
 
-If you initialized your app using `npx react-native init` and you don't have the `expo` package installed in it yet, see the [installing Expo modules guide](/bare/installing-expo-modules) for more information.
+If you initialized your app using `npx @react-native-community/cli@latest init` and you don't have the `expo` package installed in it yet, see the [installing Expo modules guide](/bare/installing-expo-modules) for more information.
 
 </ConfigReactNative>
 
@@ -123,3 +123,7 @@ If the module is not supported in [Expo Go](https://expo.dev/go), you can create
   description="Learn how to add custom native code to your Expo project."
   href="/workflow/customizing/"
 />
+
+### Excluding a third-party library from version checks
+
+If you have a specific version of a third-party library installed and want it to be excluded from version checks performed by `npx expo install`, `npx expo-doctor`, or `npx expo start`, use the [`expo.install.exclude`](/versions/latest/config/package-json/#exclude) property in the **package.json** file.

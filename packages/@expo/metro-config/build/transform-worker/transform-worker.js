@@ -40,6 +40,7 @@ const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
+const filePath_1 = require("../utils/filePath");
 const debug = require('debug')('expo:metro-config:transform-worker');
 function getStringArray(value) {
     if (!value)
@@ -58,15 +59,16 @@ function getStringArray(value) {
 }
 async function transform(config, projectRoot, filename, data, options) {
     const reactServer = options.customTransformOptions?.environment === 'react-server';
+    const posixFilename = (0, filePath_1.toPosixPath)(filename);
     if (typeof options.customTransformOptions?.dom === 'string' &&
-        filename.match(/expo\/dom\/entry\.js/)) {
+        posixFilename.match(/expo\/dom\/entry\.js/)) {
         // TODO: Find some method to do this without invalidating the cache between different DOM components.
         // Inject source for DOM component entry.
         const relativeDomComponentEntry = JSON.stringify(decodeURI(options.customTransformOptions.dom));
         const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
         return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
     }
-    if (filename.match(/expo-router\/virtual-client-boundaries\.js/)) {
+    if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
         const environment = options.customTransformOptions?.environment;
         const isServer = environment === 'node' || environment === 'react-server';
         if (!isServer) {
@@ -78,14 +80,12 @@ async function transform(config, projectRoot, filename, data, options) {
                 const src = 'module.exports = {\n' +
                     clientBoundaries
                         .map((boundary) => {
-                        return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+                        const serializedBoundary = JSON.stringify(boundary);
+                        return `[\`$\{require.resolveWeak(${serializedBoundary})}\`]: /* ${boundary} */ () => import(${serializedBoundary}),`;
                     })
                         .join('\n') +
                     '\n};';
                 return worker.transform(config, projectRoot, filename, Buffer.from('/* RSC client boundaries */\n' + src), options);
-            }
-            else if (!options.dev) {
-                console.warn('clientBoundaries is not defined:', filename, options.customTransformOptions);
             }
         }
     }
@@ -141,7 +141,9 @@ async function transform(config, projectRoot, filename, data, options) {
     // in development and a static CSS file in production.
     if ((0, css_modules_1.matchCssModule)(filename)) {
         const results = await (0, css_modules_1.transformCssModuleWeb)({
-            filename,
+            // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
+            // This affects the content hashes, which should be stable across platforms.
+            filename: posixFilename,
             src: code,
             options: {
                 reactServer,

@@ -2,6 +2,7 @@ package expo.modules.filesystem.next
 
 import android.net.Uri
 import android.util.Base64
+import android.webkit.MimeTypeMap
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
@@ -29,10 +30,20 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     return file.isFile
   }
 
-  fun create() {
+  fun create(options: CreateOptions = CreateOptions()) {
     validateType()
     validatePermission(Permission.WRITE)
-    file.createNewFile()
+    validateCanCreate(options)
+    if (options.overwrite && file.exists()) {
+      file.delete()
+    }
+    if (options.intermediates) {
+      file.parentFile?.mkdirs()
+    }
+    val created = file.createNewFile()
+    if (!created) {
+      throw UnableToCreateException("file already exists or could not be created")
+    }
   }
 
   fun write(content: String) {
@@ -53,7 +64,7 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
       create()
     }
     FileOutputStream(file).use {
-      it.write(content.toDirectBuffer().array())
+      it.channel.write(content.toDirectBuffer())
     }
   }
 
@@ -74,6 +85,12 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     return Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
   }
 
+  fun bytes(): ByteArray {
+    validateType()
+    validatePermission(Permission.READ)
+    return file.readBytes()
+  }
+
   @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
     validatePermission(Permission.READ)
@@ -88,5 +105,10 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     } else {
       null
     }
+  }
+
+  val type: String? get() {
+    return MimeTypeMap.getFileExtensionFromUrl(file.path)
+      ?.run { MimeTypeMap.getSingleton().getMimeTypeFromExtension(lowercase()) }
   }
 }

@@ -3,7 +3,6 @@ import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
 const screens = [
   'ActivityIndicator',
-  'BarCodeScanner',
   'BlurView',
   'Button',
   'Camera',
@@ -26,6 +25,7 @@ const screens = [
   'Lottie',
   'Maps',
   'MaskedView',
+  'MeshGradient',
   'Modal',
   'Picker',
   'Pressable',

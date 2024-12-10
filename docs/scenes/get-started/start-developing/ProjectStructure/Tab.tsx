@@ -17,11 +17,11 @@ export function Tab({ title, onClick, isSelected, type }: Props) {
     <ButtonBase
       onClick={onClick}
       className={mergeClasses(
-        'py-1.5 px-3 rounded-md hocus:bg-hover border border-transparent text-left gap-1.5 items-center',
-        isSelected && 'bg-default border-default border shadow-xs'
+        'items-center gap-1.5 rounded-md border border-transparent px-3 py-1.5 text-left hocus:bg-hover',
+        isSelected && 'border border-default bg-default shadow-xs'
       )}>
-      {type === 'directory' ? <FolderIcon className="text-icon-tertiary icon-sm" /> : null}
-      {type === 'file' ? <FileCode01Icon className="text-icon-tertiary icon-sm" /> : null}
+      {type === 'directory' ? <FolderIcon className="icon-sm text-icon-tertiary" /> : null}
+      {type === 'file' ? <FileCode01Icon className="icon-sm text-icon-tertiary" /> : null}
       <CALLOUT theme={isSelected ? 'default' : 'secondary'}>{title}</CALLOUT>
     </ButtonBase>
   );

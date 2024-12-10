@@ -3,7 +3,7 @@ export declare function resolveDependencyConfigImplAndroidAsync(packageRoot: str
 /**
  * Parse the `RNConfigDependencyAndroid.packageName`
  */
-export declare function parsePackageNameAsync(manifestPath: string | null, gradlePath: string | null): Promise<string | null>;
+export declare function parsePackageNameAsync(androidDir: string, manifestPath: string | null, gradlePath: string | null): Promise<string | null>;
 /**
  * Parse the Java or Kotlin class name to for `ReactPackage` or `TurboReactPackage`.
  */

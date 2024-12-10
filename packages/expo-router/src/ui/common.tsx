@@ -1,4 +1,3 @@
-import { Slot } from '@radix-ui/react-slot';
 import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
 import { ViewProps, View, SafeAreaView } from 'react-native';
 
@@ -9,6 +8,7 @@ import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { sortRoutesWithInitial } from '../sortRoutes';
 import { Href } from '../types';
 import { routeToScreen } from '../useScreens';
+import { Slot } from './Slot';
 
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 export const ViewSlot = Slot as React.ForwardRefExoticComponent<
@@ -19,10 +19,10 @@ export const SafeAreaViewSlot = Slot as React.ForwardRefExoticComponent<
   ViewProps & React.RefAttributes<SafeAreaView>
 >;
 
-export type ScreenTrigger<T extends string | object> =
+export type ScreenTrigger =
   | {
       type: 'internal';
-      href: Href<T>;
+      href: Href;
       name: string;
     }
   | {
@@ -45,7 +45,7 @@ type TriggerConfig =
 export type TriggerMap = Record<string, TriggerConfig & { index: number }>;
 
 export function triggersToScreens(
-  triggers: ScreenTrigger<any>[],
+  triggers: ScreenTrigger[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
   initialRouteName: undefined | string,

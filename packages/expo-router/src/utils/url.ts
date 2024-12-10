@@ -3,7 +3,7 @@
  * NOTE: Additional strictness added to ensure URLs sent in query parameters for in-app navigation are not matched.
  */
 export function hasUrlProtocolPrefix(href: string): boolean {
-  return /^[\w\d_+.-]+:\/\//.test(href);
+  return /^([\w\d_+.-]+:)?\/\//.test(href);
 }
 
 export function isWellKnownUri(href: string): boolean {
@@ -15,5 +15,5 @@ export function isWellKnownUri(href: string): boolean {
 
 export function shouldLinkExternally(href: string): boolean {
   // Cheap check first to avoid regex if the href is not a path fragment.
-  return !/^[./]/.test(href) && (hasUrlProtocolPrefix(href) || isWellKnownUri(href));
+  return !href.startsWith('.') && (hasUrlProtocolPrefix(href) || isWellKnownUri(href));
 }

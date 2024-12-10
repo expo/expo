@@ -2,6 +2,7 @@
 
 import ExpoModulesCore
 
+@available(iOS 14, macOS 11, tvOS 14, *)
 public final class FileSystemNextModule: Module {
   public func definition() -> ModuleDefinition {
     Name("FileSystemNext")
@@ -33,17 +34,19 @@ public final class FileSystemNextModule: Module {
         }
 
         do {
+          let destination: URL
           if let to = to as? FileSystemDirectory {
             let filename = httpResponse.suggestedFilename ?? url.lastPathComponent
-            let destination = to.url.appendingPathComponent(filename)
-            try FileManager.default.copyItem(at: fileURL, to: to.url.appendingPathComponent(filename))
-            // TODO: Remove .url.absoluteString once returning shared objects works
-            promise.resolve(FileSystemFile(url: destination).url.absoluteString)
+            destination = to.url.appendingPathComponent(filename)
           } else {
-            try FileManager.default.moveItem(at: fileURL, to: to.url)
-            // TODO: Remove .url.absoluteString once returning shared objects works
-            promise.resolve(to.url.absoluteString)
+            destination = to.url
           }
+          if FileManager.default.fileExists(atPath: destination.path) {
+            throw DestinationAlreadyExistsException()
+          }
+          try FileManager.default.moveItem(at: fileURL, to: destination)
+          // TODO: Remove .url.absoluteString once returning shared objects works
+          promise.resolve(destination.absoluteString)
         } catch {
           promise.reject(error)
         }
@@ -70,6 +73,14 @@ public final class FileSystemNextModule: Module {
         return try file.base64()
       }
 
+      Function("bytes") { file in
+        return try file.bytes()
+      }
+
+      Function("open") { file in
+        return try FileSystemFileHandle(file: file)
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)
@@ -87,6 +98,10 @@ public final class FileSystemNextModule: Module {
         try? file.md5
       }
 
+      Property("type") { file in
+        file.type
+      }
+
       Function("delete") { file in
         try file.delete()
       }
@@ -95,8 +110,8 @@ public final class FileSystemNextModule: Module {
         return (try? file.exists) ?? false
       }
 
-      Function("create") { file in
-        try file.create()
+      Function("create") { (file, options: CreateOptions?) in
+        try file.create(options ?? CreateOptions())
       }
 
       Function("copy") { (file, to: FileSystemPath) in
@@ -109,6 +124,30 @@ public final class FileSystemNextModule: Module {
 
       Property("uri") { file in
         return file.url.absoluteString
+      }
+    }
+
+    Class(FileSystemFileHandle.self) {
+      Function("readBytes") { (fileHandle, bytes: Int) in
+        try fileHandle.read(bytes)
+      }
+
+      Function("writeBytes") { (fileHandle, bytes: Data) in
+        try fileHandle.write(bytes)
+      }
+
+      Function("close") { fileHandle in
+        try fileHandle.close()
+      }
+
+      Property("offset") { fileHandle in
+        fileHandle.offset
+      }.set { (fileHandle, volume: UInt64) in
+        fileHandle.offset = volume
+      }
+
+      Property("size") { fileHandle in
+        fileHandle.size
       }
     }
 
@@ -130,8 +169,8 @@ public final class FileSystemNextModule: Module {
         return directory.exists
       }
 
-      Function("create") { directory in
-        try directory.create()
+      Function("create") { (directory, options: CreateOptions?) in
+        try directory.create(options ?? CreateOptions())
       }
 
       Function("copy") { (directory, to: FileSystemPath) in

@@ -63,7 +63,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 
 ### Set up iOS
 
-If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@2.7`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
+If you will be working with the iOS project, ensure **ruby 3.3** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@3.3`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
 
 ### Verify native installation is successful
 
@@ -83,7 +83,7 @@ If you will be working with the iOS project, ensure **ruby 2.7** is installed on
 All Expo SDK packages can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory, so you can edit them in-place and see the changes in the running app.
 
 1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
-2. Start the TypeScript build in watch mode: `yarn build`
+2. Start the TypeScript build in watch mode: `yarn build` (skip this if such script is not present)
 3. Edit code in that package's `src/` directory
 4. Play with your changes on a simulator or device through `bare-expo`:
    - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
@@ -95,12 +95,13 @@ All Expo SDK packages can be found in the `packages/` directory. These packages 
    - Android Studio: `yarn edit:android`
    - Xcode: `yarn edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change
+6. (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
 
 ### Finding a task to work on
 
 If you don't have something in mind already, the best way to find something to help with is ["Issue accepted" label](https://github.com/expo/expo/issues?q=is%3Aissue+is%3Aopen+label%3A%22Issue+accepted%22).
 
-Note that we generally do not accept PRs that bump versions of native dependencies. The Expo team handles bumping these dependencies as part of our release process for each Expo SDK. The process for pulling in a new version and adequately requires a fair amount of context on how Expo Go works.
+Note that we generally do not accept PRs that bump versions of native dependencies. The Expo team handles bumping these dependencies as part of our release process for each Expo SDK. The process for pulling in a new version requires a fair amount of context on how Expo Go works.
 
 ### Style
 
@@ -152,6 +153,7 @@ Our docs are made with [Next.js](https://github.com/vercel/next.js). They're loc
 2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`).
 3. Navigate to the docs you want to edit: `cd docs/pages/`.
 4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
+5. Package API docs are generated from sources. To regenerate the docs, run `et generate-docs-api-data -p <package-name>` (for the next SDK version) or `et generate-docs-api-data -p <package-name> -s <number>` (for a specific SDK version).
 
 ## 📝 Writing a Commit Message
 
@@ -161,15 +163,20 @@ Commit messages are most useful when formatted like so: `[platform][api] Title`.
 
 ## 🔎 Before Submitting
 
-To help keep CI green, please make sure of the following:
-
 - Remember to add a concise description of any user-facing changes to `CHANGELOG.md` file in the package you've changed or [root's CHANGELOG.md](/CHANGELOG.md) if your changes don't apply to any package. This is especially helpful for breaking changes!
-- If you modified anything in `packages/`:
+
+To keep CI green, please make sure of the following:
+
+### If you modified anything in `packages/`:
+
   - You transpiled the TypeScript with `yarn build` in the directory of whichever package you modified.
   - Run `yarn lint --fix` to fix the formatting of the code. Ensure that `yarn lint` succeeds without errors or warnings.
   - Run `yarn test` to ensure all existing tests pass for that package, along with any new tests you would've written.
+  - (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
   - All `console.log`s or commented out code blocks are removed!
-- If you edited the **docs** directory:
+
+### If you edited the docs directory:
+
   - Any change to the current SDK version should also be in the unversioned copy as well. Example:
     - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
     - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`

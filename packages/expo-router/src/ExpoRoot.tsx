@@ -9,9 +9,10 @@ import { NavigationContainer as UpstreamNavigationContainer } from './fork/Navig
 import { ExpoLinkingOptions } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
+import { useDomComponentNavigation } from './link/useDomComponentNavigation';
 import { RequireContext } from './types';
-import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
-import { SplashScreen } from './views/Splash';
+import { canOverrideStatusBarBehavior } from './utils/statusbar';
+import * as SplashScreen from './views/Splash';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -53,7 +54,7 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
           // SSR support
           initialMetrics={INITIAL_METRICS}>
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {!hasViewControllerBasedStatusBarAppearance && <AutoStatusBar />}
+          {canOverrideStatusBarBehavior && <AutoStatusBar />}
           {children}
         </SafeAreaProvider>
       </ParentWrapper>
@@ -117,6 +118,8 @@ function ContextNavigator({
     ...linking,
     serverUrl,
   });
+
+  useDomComponentNavigation(store);
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();

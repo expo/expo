@@ -1,0 +1,49 @@
+--- android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotModule.java
++++ android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotModule.java
+@@ -34,12 +34,16 @@ import fr.greweb.reactnativeviewshot.ViewShot.Results;
+ public class RNViewShotModule extends NativeRNViewShotSpec {
+ 
+     private final ReactApplicationContext reactContext;
++    private final File internalCacheDir;
++    private final File externalCacheDir;
+ 
+     private final Executor executor = Executors.newCachedThreadPool();
+ 
+-    public RNViewShotModule(ReactApplicationContext reactContext) {
++    public RNViewShotModule(ReactApplicationContext reactContext, File internalCacheDir, File externalCacheDir) {
+         super(reactContext);
+         this.reactContext = reactContext;
++        this.internalCacheDir = internalCacheDir;
++        this.externalCacheDir = externalCacheDir;
+     }
+ 
+     @Override
+@@ -167,8 +171,6 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
+      */
+     @NonNull
+     private File createTempFile(@NonNull final Context context, @NonNull final String ext, String fileName) throws IOException {
+-        final File externalCacheDir = context.getExternalCacheDir();
+-        final File internalCacheDir = context.getCacheDir();
+         final File cacheDir;
+ 
+         if (externalCacheDir == null && internalCacheDir == null) {
+--- android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotPackage.java
++++ android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotPackage.java
+@@ -22,7 +22,7 @@ public class RNViewShotPackage extends TurboReactPackage {
+   @Nonnull
+   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
+     List<NativeModule> modules = new ArrayList<>();
+-    modules.add(new RNViewShotModule(reactContext));
++    modules.add(new RNViewShotModule(reactContext, reactContext.getCacheDir(), reactContext.getExternalCacheDir()));
+     return modules;
+   }
+   
+@@ -30,7 +30,7 @@ public class RNViewShotPackage extends TurboReactPackage {
+   @Override
+   public NativeModule getModule(@NonNull String name, @NonNull ReactApplicationContext reactApplicationContext) {
+     if (name.equals(RNViewShotModule.NAME)) {
+-      return new RNViewShotModule(reactApplicationContext);
++      return new RNViewShotModule(reactApplicationContext, reactApplicationContext.getCacheDir(), reactApplicationContext.getExternalCacheDir());
+     } else {
+       return null;
+     }

@@ -1,14 +1,13 @@
-import { APIDataType } from '~/components/plugins/api/APIDataType';
-import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import {
-  CommentTextBlock,
-  getTagNamesList,
-  STYLES_APIBOX,
-  H3Code,
-} from '~/components/plugins/api/APISectionUtils';
-import { H2, DEMI, P, MONOSPACE } from '~/ui/components/Text';
+import { mergeClasses } from '@expo/styleguide';
+
+import { APIDataType } from './APIDataType';
+import { ConstantDefinitionData } from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
+import { CommentTextBlock, getTagNamesList, H3Code } from './APISectionUtils';
+import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
+
+import { H2, P, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -21,7 +20,9 @@ const renderConstant = (
   sdkVersion: string,
   apiName?: string
 ): JSX.Element => (
-  <div key={`constant-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
+  <div
+    key={`constant-definition-${name}`}
+    className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
     <APISectionDeprecationNote comment={comment} sticky />
     <APISectionPlatformTags comment={comment} />
     <H3Code tags={getTagNamesList(comment)}>
@@ -31,9 +32,8 @@ const renderConstant = (
       </MONOSPACE>
     </H3Code>
     {type && (
-      <P>
-        <DEMI theme="secondary">Type:</DEMI>{' '}
-        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+      <P className={STYLES_SECONDARY}>
+        Type: <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </P>
     )}
     {comment && (

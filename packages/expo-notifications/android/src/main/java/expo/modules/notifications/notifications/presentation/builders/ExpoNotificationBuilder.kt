@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.provider.Settings
@@ -13,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 import expo.modules.notifications.notifications.SoundResolver
 import expo.modules.notifications.notifications.enums.NotificationPriority
+import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.model.NotificationAction
 import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationRequest
@@ -110,31 +112,7 @@ open class ExpoNotificationBuilder(
     notificationContent.badgeCount?.toInt()?.let { builder.setNumber(it) }
     notificationContent.categoryId?.let { addActionsToBuilder(builder, it) }
 
-    val shouldPlayDefaultSound = shouldPlaySound() && content.shouldPlayDefaultSound
-    if (shouldPlayDefaultSound && shouldVibrate()) {
-      builder.setDefaults(NotificationCompat.DEFAULT_ALL) // set sound, vibration and lights
-    } else if (shouldVibrate()) {
-      builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE)
-    } else if (shouldPlayDefaultSound) {
-      builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
-    } else {
-      // Notification will not vibrate or play sound, regardless of channel
-      builder.setSilent(true)
-    }
-
-    if (shouldPlaySound() && content.soundName != null) {
-      content.soundName?.let { soundName ->
-        val soundUri = SoundResolver(context).resolve(soundName)
-        builder.setSound(soundUri)
-      }
-    } else if (shouldPlayDefaultSound) {
-      builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-    }
-
-    val vibrationPatternOverride = content.vibrationPattern
-    if (shouldVibrate() && vibrationPatternOverride != null) {
-      builder.setVibrate(vibrationPatternOverride)
-    }
+    applySoundsAndVibrations(content, builder)
 
     if (content.body != null) {
       // Add body - JSON data - to extras
@@ -176,6 +154,42 @@ open class ExpoNotificationBuilder(
       builder.setLargeIcon(largeIcon)
     }
     return builder.build()
+  }
+
+  private fun applySoundsAndVibrations(content: INotificationContent, builder: NotificationCompat.Builder) {
+    val shouldPlaySound = shouldPlaySound()
+    val shouldVibrate = shouldVibrate()
+
+    if (!shouldPlaySound && !shouldVibrate) {
+      // Notification will not vibrate or play sound, regardless of channel
+      builder.setSilent(true)
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      // the calls below are ignored on Android O and newer because the sound and vibration are set in the channel
+      val shouldPlayDefaultSound = shouldPlaySound && content.shouldPlayDefaultSound
+      val shouldUseDefaultVibrationPattern = shouldVibrate && content.shouldUseDefaultVibrationPattern
+      if (shouldUseDefaultVibrationPattern && shouldPlayDefaultSound) {
+        builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+      } else {
+        if (shouldPlaySound) {
+          if (content.soundName != null) {
+            val soundUri = SoundResolver(context).resolve(content.soundName)
+            builder.setSound(soundUri)
+          } else if (shouldPlayDefaultSound) {
+            builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
+            builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+          }
+        }
+        if (shouldVibrate) {
+          val vibrationPatternOverride = content.vibrationPattern
+          if (vibrationPatternOverride != null) {
+            builder.setVibrate(vibrationPatternOverride)
+          } else if (shouldUseDefaultVibrationPattern) {
+            builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+          }
+        }
+      }
+    }
   }
 
   /**

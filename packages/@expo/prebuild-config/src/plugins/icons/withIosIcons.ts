@@ -31,7 +31,7 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
     }
 
     // in iOS 18 introduced the ability to specify dark and tinted icons, which users can specify as an object
-    if (!iosSpecificIcons.any && !iosSpecificIcons.dark && !iosSpecificIcons.tinted) {
+    if (!iosSpecificIcons.light && !iosSpecificIcons.dark && !iosSpecificIcons.tinted) {
       return config.icon || null;
     }
 
@@ -51,7 +51,7 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   if (
     !icon ||
     (typeof icon === 'string' && !icon) ||
-    (typeof icon === 'object' && !icon?.any && !icon?.dark && !icon?.tinted)
+    (typeof icon === 'object' && !icon?.light && !icon?.dark && !icon?.tinted)
   ) {
     WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
   }
@@ -64,7 +64,7 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
 
   const imagesJson: ContentsJson['images'] = [];
 
-  const baseIconPath = typeof icon === 'object' ? icon?.any || icon?.dark || icon?.tinted : icon;
+  const baseIconPath = typeof icon === 'object' ? icon?.light || icon?.dark || icon?.tinted : icon;
 
   // Store the image JSON data for assigning via the Contents.json
   const baseIcon = await generateUniversalIconAsync(projectRoot, {
@@ -160,7 +160,7 @@ export async function generateUniversalIconAsync(
           name: filename,
           width: size,
           height: size,
-          // Transparency needs to be preserved in dark variant, but can safely be removed in "any" and "tinted" variants.
+          // Transparency needs to be preserved in dark variant, but can safely be removed in "light" and "tinted" variants.
           removeTransparency: appearance !== 'dark',
           // The icon should be square, but if it's not then it will be cropped.
           resizeMode: 'cover',

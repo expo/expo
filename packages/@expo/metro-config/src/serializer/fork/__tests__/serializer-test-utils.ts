@@ -1,4 +1,7 @@
 import assert from 'assert';
+import { Module, MixedOutput } from 'metro';
+import CountingSet from 'metro/src/lib/CountingSet';
+import countLines from 'metro/src/lib/countLines';
 
 import { microBundle, projectRoot } from './mini-metro';
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
@@ -58,12 +61,18 @@ export async function serializeTo(
 // Serialize to a split bundle
 export async function serializeSplitAsync(
   fs: Record<string, string>,
-  options: { isReactServer?: boolean; treeshake?: boolean } = {}
+  options: Partial<Parameters<typeof microBundle>[0]['options']> = {},
+  processors: SerializerPlugin[] = [],
+  configOptions: SerializerConfigOptions = {}
 ) {
-  return await serializeTo({
-    fs,
-    options: { platform: 'web', dev: false, output: 'static', splitChunks: true, ...options },
-  });
+  return await serializeTo(
+    {
+      fs,
+      options: { platform: 'web', dev: false, output: 'static', splitChunks: true, ...options },
+    },
+    processors,
+    configOptions
+  );
 }
 
 // Serialize to a split bundle
@@ -88,6 +97,7 @@ export async function serializeOptimizeAsync(
     optimize?: boolean;
     splitChunks?: boolean;
     minify?: boolean;
+    dev?: boolean;
   } = {}
 ) {
   return await serializeToWithGraph(
@@ -112,4 +122,25 @@ export async function serializeOptimizeAsync(
 export function expectImports(graph, name: string) {
   if (!graph.dependencies.has(name)) throw new Error(`Module not found: ${name}`);
   return expect([...graph.dependencies.get(name).dependencies.values()]);
+}
+
+export function createJSVirtualModule(path: string, code: string): Module<MixedOutput> {
+  return {
+    path,
+    output: [
+      {
+        type: 'js/script/virtual',
+        data: {
+          code,
+          // @ts-ignore: Metro types are incomplete
+          lineCount: countLines(code),
+          // @ts-ignore: Metro types are incomplete
+          map: [],
+        },
+      },
+    ],
+    dependencies: new Map(),
+    inverseDependencies: new CountingSet(),
+    getSource: () => Buffer.from(code),
+  };
 }

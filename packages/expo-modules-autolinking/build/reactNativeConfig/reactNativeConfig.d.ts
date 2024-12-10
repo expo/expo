@@ -1,5 +1,5 @@
-import type { RNConfigCommandOptions, RNConfigDependency, RNConfigReactNativeAppProjectConfig, RNConfigReactNativeProjectConfig, RNConfigResult } from './reactNativeConfig.types';
 import type { SupportedPlatform } from '../types';
+import type { RNConfigCommandOptions, RNConfigDependency, RNConfigReactNativeAppProjectConfig, RNConfigReactNativeProjectConfig, RNConfigResult } from './reactNativeConfig.types';
 /**
  * Create config for react-native core autolinking.
  */

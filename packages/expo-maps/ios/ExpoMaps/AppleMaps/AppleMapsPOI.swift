@@ -47,7 +47,6 @@ class AppleMapsPOI: NSObject, PointsOfInterests {
   }
 
   // dispaying poi on map
-  @available(iOS 13.0, *)
   func setEnabledPOIs(enabled: Bool) {
     enabledPOIDisplay = enabled
     if enabled {
@@ -59,7 +58,6 @@ class AppleMapsPOI: NSObject, PointsOfInterests {
 }
 
 // adding filter with specified categories
-@available(iOS 13.0, *)
 extension AppleMapsPOI {
   func setEnabledPOIFilter(categories: [POICategoryType]) {
     if categories.isEmpty {

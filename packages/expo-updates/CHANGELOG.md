@@ -8,7 +8,57 @@
 
 ### 🐛 Bug fixes
 
+- Fix black screen appearing instead of the splashscreen on launch. ([#33432](https://github.com/expo/expo/pull/33432) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 0.26.9 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Fixed `Inconsistent JVM-target compatibility` error when building with JDK 21. ([#33148](https://github.com/expo/expo/pull/33148) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
+
+## 0.26.8 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.7 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.6 — 2024-11-13
+
+### 💡 Others
+
+- Upgrade `express` to `4.21.1` for `send`. ([#32852](https://github.com/expo/expo/pull/32852) by [@MWein](https://github.com/MWein))
+
+## 0.26.5 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.4 — 2024-11-04
+
+### 🐛 Bug fixes
+
+- Improve web native module interface completeness ([#32512](https://github.com/expo/expo/pull/32512) by [@wschurman](https://github.com/wschurman))
+
+## 0.26.3 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.2 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- Move event emitting responsibility to module. ([#32248](https://github.com/expo/expo/pull/32248) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Use enum event in OnStartObserving and OnStopObserving. ([#32252](https://github.com/expo/expo/pull/32252) by [@wschurman](https://github.com/wschurman))
 
 ## 0.26.1 — 2024-10-22
 

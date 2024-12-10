@@ -8,7 +8,50 @@
 
 ### 🐛 Bug fixes
 
+- Fix incorrect `__dirname` in `react-native-config.(js|ts)` ([#33532](https://github.com/expo/expo/pull/33532) by [@satya164](https://github.com/satya164))
+
 ### 💡 Others
+
+- [Android] Introduced the Gradle plugin to improve the autolinking setup. ([#33402](https://github.com/expo/expo/pull/33402) by [@lukmccall](https://github.com/lukmccall))
+- Added library `android.sourceDir` support for react-native-config. ([#33473](https://github.com/expo/expo/pull/33473) by [@kudo](https://github.com/kudo))
+
+## 2.0.3 - 2024-12-02
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.2 — 2024-11-13
+
+### 🐛 Bug fixes
+
+- Fixed autolinking when `react-native-config` doesn't specify local dependencies. ([#32841](https://github.com/expo/expo/pull/32841) by [@thespacemanatee](https://github.com/thespacemanatee))
+
+## 2.0.1 — 2024-11-13
+
+### 💡 Others
+
+- Added local project dependencies support to `react-native-config` autolinking. ([#32821](https://github.com/expo/expo/pull/32821) by [@kudo](https://github.com/kudo))
+
+## 2.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0-preview.3 — 2024-11-04
+
+### 🐛 Bug fixes
+
+- Fix issue when no dependencies in a package. ([#32547](https://github.com/expo/expo/pull/32547) by [@douglowder](https://github.com/douglowder))
+
+## 2.0.0-preview.2 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- Fixed react-native core autolinking for react-native-unistyles on Android. ([#32375](https://github.com/expo/expo/pull/32375) by [@kudo](https://github.com/kudo))
+
+## 2.0.0-preview.1 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fixed build error from `gradleAarProjects`. ([#32349](https://github.com/expo/expo/pull/32349) by [@kudo](https://github.com/kudo))
 
 ## 2.0.0-preview.0 — 2024-10-22
 

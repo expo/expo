@@ -6,9 +6,64 @@
 
 ### 🎉 New features
 
+- Add `displayName` to DOM components for better debugging. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
+- Add support for `TSInterfaceDeclaration` in server component plugin. ([#33121](https://github.com/expo/expo/pull/33121) by [@EvanBacon](https://github.com/EvanBacon))
+- Test for UNIX paths when removing console polyfill from RSC client output. ([#33397](https://github.com/expo/expo/pull/33397) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+## 12.0.3 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.2 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.1 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0-preview.6 — 2024-11-07
+
+### 🎉 New features
+
+- Support hoisting for inlined server actions. ([#32633](https://github.com/expo/expo/pull/32633) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.0.0-preview.5 — 2024-11-04
+
+### 💡 Others
+
+- Added EAS Updates support for DOM Components. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
+
+## 12.0.0-preview.4 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Don't assert `client-only` in SSR bundles. ([#32479](https://github.com/expo/expo/pull/32479) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.0.0-preview.3 — 2024-10-30
+
+### 🎉 New features
+
+- Add support for server actions that use `export default`. ([#32458](https://github.com/expo/expo/pull/32458) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.0.0-preview.2 — 2024-10-29
+
+### 🎉 New features
+
+- Assert that layout routes and API routes cannot be DOM components. ([#32422](https://github.com/expo/expo/pull/32422) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.0.0-preview.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
 
 ## 12.0.0-preview.0 — 2024-10-22
 

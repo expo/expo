@@ -3,22 +3,23 @@
 #pragma once
 
 #import <ExpoModulesCore/Platform.h>
-#import <ExpoModulesCore/EXReactDelegateWrapper.h>
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class EXReactDelegate;
+
 NS_SWIFT_NAME(ExpoReactRootViewFactory)
 @interface EXReactRootViewFactory : RCTRootViewFactory
 
-@property (nonatomic, weak, nullable) EXReactDelegateWrapper *reactDelegate;
+@property (nonatomic, weak, nullable) EXReactDelegate *reactDelegate;
 
 /**
  Initializer for EXAppDelegateWrapper integration
  */
-- (instancetype)initWithReactDelegate:(nullable EXReactDelegateWrapper *)reactDelegate
+- (instancetype)initWithReactDelegate:(nullable EXReactDelegate *)reactDelegate
                         configuration:(RCTRootViewFactoryConfiguration *)configuration
-           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate;
+           turboModuleManagerDelegate:(nullable id)turboModuleManagerDelegate;
 
 /**
  Calls super `viewWithModuleName:initialProperties:launchOptions:` from `RCTRootViewFactory`.

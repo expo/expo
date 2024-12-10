@@ -2,7 +2,6 @@ import { useEvent } from 'expo';
 import { useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useState, useMemo } from 'react';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 export const PLAYBACK_STATUS_UPDATE = 'playbackStatusUpdate';
@@ -51,13 +50,27 @@ export function useAudioRecorderState(recorder, interval = 500) {
     }, [recorder.id]);
     return state;
 }
+/**
+ * Creates an instance of an `AudioPlayer` that doesn't release automatically.
+ *
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-updateinterval) hook instead. See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
+ * @param source
+ */
+export function createAudioPlayer(source = null, updateInterval = 500) {
+    const parsedSource = resolveSource(source);
+    return new AudioModule.AudioPlayer(parsedSource, updateInterval);
+}
 export async function setIsAudioActiveAsync(active) {
     return await AudioModule.setIsAudioActiveAsync(active);
 }
 export async function setAudioModeAsync(mode) {
     return await AudioModule.setAudioModeAsync(mode);
 }
-export { AudioModule, AudioPlayer, AudioRecorder };
-export * from './Audio.types';
-export * from './RecordingConstants';
+export async function requestRecordingPermissionsAsync() {
+    return await AudioModule.requestRecordingPermissionsAsync();
+}
+export async function getRecordingPermissionsAsync() {
+    return await AudioModule.getRecordingPermissionsAsync();
+}
+export { AudioModule };
 //# sourceMappingURL=ExpoAudio.js.map

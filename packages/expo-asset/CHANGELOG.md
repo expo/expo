@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [macOS] Add macOS platform support ([#33505](https://github.com/expo/expo/pull/33505) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
+
+## 11.0.1 — 2024-11-10
+
+### 🐛 Bug fixes
+
+- Add support for simplified object asset format. ([#32728](https://github.com/expo/expo/pull/32728) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.0.0 — 2024-10-22
 

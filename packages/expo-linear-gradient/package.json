@@ -1,6 +1,6 @@
 {
   "name": "expo-linear-gradient",
-  "version": "14.0.0",
+  "version": "14.0.1",
   "description": "Provides a React component that renders a gradient view.",
   "main": "build/LinearGradient.js",
   "types": "build/LinearGradient.d.ts",

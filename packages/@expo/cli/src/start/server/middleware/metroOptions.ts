@@ -4,6 +4,7 @@ import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
+import { toPosixPath } from '../../../utils/filePath';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 const debug = require('debug')('expo:metro:options') as typeof console.log;
@@ -384,7 +385,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
  * @see https://github.com/facebook/metro/pull/1286
  */
 export function convertPathToModuleSpecifier(pathLike: string) {
-  return pathLike.replaceAll('\\', '/');
+  return toPosixPath(pathLike);
 }
 
 export function getMetroOptionsFromUrl(urlFragment: string) {

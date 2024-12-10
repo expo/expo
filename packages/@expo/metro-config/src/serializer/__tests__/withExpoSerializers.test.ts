@@ -1,5 +1,11 @@
+import { Module } from 'metro';
+
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
-import { serializeSplitAsync, serializeTo } from '../fork/__tests__/serializer-test-utils';
+import {
+  createJSVirtualModule,
+  serializeSplitAsync,
+  serializeTo,
+} from '../fork/__tests__/serializer-test-utils';
 import {
   SerialAsset,
   createSerializerFromSerialProcessors,
@@ -22,6 +28,7 @@ describe(withSerializerPlugins, () => {
     );
 
     const options = {
+      createModuleId: expect.any(Function),
       sourceUrl: 'https://localhost:8081/index.bundle?platform=ios&dev=true&minify=false',
     };
     // @ts-expect-error
@@ -43,6 +50,117 @@ jest.mock('../exportHermes', () => {
 
 describe('serializes', () => {
   describe('plugin callbacks', () => {
+    it(`runs plugin for each chunk`, async () => {
+      const unstablePlugin = ({ premodules }: { premodules: Module[] }): Module[] => {
+        return [createJSVirtualModule('__testPreModule', 'testPreModule;'), ...premodules];
+      };
+
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `
+              import('./foo')
+            `,
+          'foo.js': `
+              export const foo = 'foo';
+            `,
+        },
+        {
+          sourceMaps: true,
+        },
+        [], // processors
+        { unstable_beforeAssetSerializationPlugins: [unstablePlugin] }
+      );
+
+      if (typeof artifacts === 'string') {
+        throw new Error('wrong type');
+      }
+
+      const jsArtifacts = artifacts.filter((artifact) => artifact.type === 'js');
+      const mapArtifacts = artifacts.filter((artifact) => artifact.type === 'map');
+
+      jsArtifacts.forEach((artifact) => {
+        expect(artifact.source.startsWith('testPreModule;')).toBeTruthy();
+      });
+      mapArtifacts.forEach((artifact) => {
+        // Assert each map artifact has __testPreModule in sources
+        const map = JSON.parse(artifact.source);
+        expect(map.sources[0]).toEqual('__testPreModule');
+      });
+    });
+    it(`generated async import paths match generated artifacts`, async () => {
+      const unstablePlugin = ({ premodules }: { premodules: Module[] }): Module[] => {
+        return [createJSVirtualModule('__testPreModule', 'testPreModule;'), ...premodules];
+      };
+
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `
+              import('./foo')
+            `,
+          'foo.js': `
+              export const foo = 'foo';
+            `,
+        },
+        {
+          sourceMaps: true,
+        },
+        [], // processors
+        { unstable_beforeAssetSerializationPlugins: [unstablePlugin] }
+      );
+
+      if (typeof artifacts === 'string') {
+        throw new Error('wrong type');
+      }
+
+      const indexJs = artifacts.find((artifact) => artifact.originFilename === 'index.js');
+      const fooJs = artifacts.find((artifact) => artifact.originFilename === 'foo.js');
+
+      const fooJsFilenameImportedFromIndexJs =
+        // substring(1) to remove the leading '/'
+        indexJs?.metadata.paths['/app/index.js']['/app/foo.js']?.substring(1);
+
+      expect(fooJsFilenameImportedFromIndexJs).toBeDefined();
+      expect(fooJsFilenameImportedFromIndexJs).toEqual(fooJs?.filename);
+    });
+    it('plugin preModules changes are excluded from the file name hash', async () => {
+      const unstablePlugin = ({ premodules }: { premodules: Module[] }): Module[] => {
+        return [createJSVirtualModule('__testPreModule', 'testPreModule;'), ...premodules];
+      };
+
+      const options: Partial<Parameters<typeof microBundle>[0]> = {
+        options: {
+          dev: false,
+          platform: 'ios',
+          hermes: false,
+          // Source maps must be enabled otherwise the feature is disabled.
+          sourceMaps: true,
+          output: 'static',
+        },
+      };
+
+      const withoutPlugin = await serializeTo(
+        options,
+        [], // processors
+        { unstable_beforeAssetSerializationPlugins: [] }
+      );
+
+      const withPlugin = await serializeTo(
+        options,
+        [], // processors
+        { unstable_beforeAssetSerializationPlugins: [unstablePlugin] }
+      );
+
+      if (typeof withoutPlugin === 'string' || typeof withPlugin === 'string') {
+        throw new Error('wrong type');
+      }
+
+      // Get the filenames from both artifacts
+      const withoutFilename = (withoutPlugin as SerialAsset[]).map((asset) => asset.filename);
+      const withFilename = (withPlugin as SerialAsset[]).map((asset) => asset.filename);
+
+      // The filenames should be equal since premodules shouldn't affect the hash
+      expect(withoutFilename).toEqual(withFilename);
+    });
     it(`runs plugin with static output`, async () => {
       let didPluginRun = false;
       const unstablePlugin = ({ premodules }) => {

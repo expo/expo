@@ -1,10 +1,15 @@
 import { ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-import { generateImageAsync } from '@expo/image-utils';
+import {
+  generateImageAsync,
+  compositeImagesAsync,
+  generateImageBackgroundAsync,
+} from '@expo/image-utils';
 import fs from 'fs-extra';
 import path from 'path';
 
 import {
+  AndroidSplashConfig,
   getAndroidDarkSplashConfig,
   getAndroidSplashConfig,
   SplashScreenConfig,
@@ -14,7 +19,9 @@ type DRAWABLE_SIZE = 'default' | 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi
 type THEME = 'light' | 'dark';
 
 const IMAGE_CACHE_NAME = 'splash-android';
-const SPLASH_SCREEN_FILENAME = 'splashscreen_image.png';
+const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
+const SPLASH_SCREEN_DRAWABLE_NAME = 'splashscreen_logo.xml';
+
 const DRAWABLES_CONFIGS: {
   [key in DRAWABLE_SIZE]: {
     modes: {
@@ -28,10 +35,10 @@ const DRAWABLES_CONFIGS: {
   default: {
     modes: {
       light: {
-        path: `./res/drawable/${SPLASH_SCREEN_FILENAME}`,
+        path: `./res/drawable/${SPLASH_SCREEN_DRAWABLE_NAME}`,
       },
       dark: {
-        path: `./res/drawable-night/${SPLASH_SCREEN_FILENAME}`,
+        path: `./res/drawable-night/${SPLASH_SCREEN_DRAWABLE_NAME}`,
       },
     },
     dimensionsMultiplier: 1,
@@ -93,11 +100,16 @@ const DRAWABLES_CONFIGS: {
   },
 };
 
-export const withAndroidSplashImages: ConfigPlugin = (config) => {
+export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot);
+      await setSplashImageDrawablesAsync(
+        config,
+        props,
+        config.modRequest.projectRoot,
+        props?.imageWidth ?? 200
+      );
       return config;
     },
   ]);
@@ -112,16 +124,18 @@ export const withAndroidSplashImages: ConfigPlugin = (config) => {
  */
 export async function setSplashImageDrawablesAsync(
   config: Pick<ExpoConfig, 'android' | 'splash'>,
-  projectRoot: string
+  props: AndroidSplashConfig | null,
+  projectRoot: string,
+  imageWidth: number
 ) {
   await clearAllExistingSplashImagesAsync(projectRoot);
 
-  const splash = getAndroidSplashConfig(config);
-  const darkSplash = getAndroidDarkSplashConfig(config);
+  const splash = getAndroidSplashConfig(config, props);
+  const darkSplash = getAndroidDarkSplashConfig(config, props);
 
   await Promise.all([
-    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot),
-    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot),
+    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, imageWidth),
+    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, imageWidth),
   ]);
 }
 
@@ -144,35 +158,91 @@ async function clearAllExistingSplashImagesAsync(projectRoot: string) {
 export async function setSplashImageDrawablesForThemeAsync(
   config: SplashScreenConfig | null,
   theme: 'dark' | 'light',
-  projectRoot: string
+  projectRoot: string,
+  imageWidth: number = 100
 ) {
   if (!config) return;
   const androidMainPath = path.join(projectRoot, 'android/app/src/main');
 
+  if (config.drawable) {
+    await writeSplashScreenDrawablesAsync(androidMainPath, projectRoot, config.drawable);
+    return;
+  }
+
+  const sizes: DRAWABLE_SIZE[] = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
+
   await Promise.all(
-    ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'].map(async (imageKey) => {
+    sizes.map(async (imageKey) => {
       // @ts-ignore
       const image = config[imageKey];
+
       if (image) {
-        // Using this method will cache the images in `.expo` based on the properties used to generate them.
-        // this method also supports remote URLs and using the global sharp instance.
-        const { source } = await generateImageAsync({ projectRoot, cacheType: IMAGE_CACHE_NAME }, {
-          src: image,
-        } as any);
+        const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
+        const size = imageWidth * multiplier; // "imageWidth" must be replaced by the logo width chosen by the user in its config file
+        const canvasSize = 288 * multiplier;
+
+        const background = await generateImageBackgroundAsync({
+          width: canvasSize,
+          height: canvasSize,
+          backgroundColor: config.backgroundColor ?? 'transparent',
+          resizeMode: 'cover',
+        });
+
+        const { source: foreground } = await generateImageAsync(
+          {
+            projectRoot,
+            cacheType: IMAGE_CACHE_NAME,
+          },
+          {
+            src: image,
+            resizeMode: 'contain',
+            width: size,
+            height: size,
+          }
+        );
+
+        const composedImage = await compositeImagesAsync({
+          background,
+          foreground,
+          x: (canvasSize - size) / 2,
+          y: (canvasSize - size) / 2,
+        });
 
         // Get output path for drawable.
         const outputPath = path.join(
           androidMainPath,
-          // @ts-ignore
           DRAWABLES_CONFIGS[imageKey].modes[theme].path
         );
-        // Ensure directory exists.
+
         const folder = path.dirname(outputPath);
+        // Ensure directory exists.
         await fs.ensureDir(folder);
-        // Write image buffer to the file system.
-        await fs.writeFile(outputPath, source);
+        await fs.writeFile(outputPath, composedImage);
       }
       return null;
     })
   );
+}
+
+async function writeSplashScreenDrawablesAsync(
+  drawablePath: string,
+  projectRoot: string,
+  drawable: SplashScreenConfig['drawable']
+) {
+  if (!drawable) {
+    return;
+  }
+
+  const lightDrawablePath = path.join(drawablePath, DRAWABLES_CONFIGS.default.modes.light.path);
+  const darkDrawablePath = path.join(drawablePath, DRAWABLES_CONFIGS.default.modes.dark.path);
+
+  const lightFolder = path.dirname(lightDrawablePath);
+  await fs.ensureDir(lightFolder);
+  await fs.copyFile(path.join(projectRoot, drawable.icon), lightDrawablePath);
+
+  if (drawable.darkIcon) {
+    const darkFolder = path.dirname(darkDrawablePath);
+    await fs.ensureDir(darkFolder);
+    await fs.copyFile(path.join(projectRoot, drawable.darkIcon), darkDrawablePath);
+  }
 }

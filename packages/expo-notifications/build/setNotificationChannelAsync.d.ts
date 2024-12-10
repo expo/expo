@@ -3,6 +3,8 @@ import { NotificationChannel, NotificationChannelInput } from './NotificationCha
  * Assigns the channel configuration to a channel of a specified name (creating it if need be).
  * This method lets you assign given notification channel to a notification channel group.
  *
+ * > **Note:** After a channel has been created, you can modify only its name and description. This limitation is imposed by the Android OS.
+ *
  * > **Note:** For some settings to be applied on all Android versions, it may be necessary to duplicate the configuration across both
  * > a single notification and its respective notification channel.
  *

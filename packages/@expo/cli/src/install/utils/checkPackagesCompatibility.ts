@@ -39,7 +39,7 @@ export async function checkPackagesCompatibility(packages: string[]) {
     if (incompatiblePackages.length) {
       Log.warn(
         chalk.yellow(
-          `${chalk.bold('Warning')}: ${formatPackageNames(incompatiblePackages)} do not support the New Architecture. ${learnMore('https://docs.expo.dev/guides/new-architecture/')}`
+          `${chalk.bold('Warning')}: ${formatPackageNames(incompatiblePackages)} do${incompatiblePackages.length > 1 ? '' : 'es'} not support the New Architecture. ${learnMore('https://docs.expo.dev/guides/new-architecture/')}`
         )
       );
     }

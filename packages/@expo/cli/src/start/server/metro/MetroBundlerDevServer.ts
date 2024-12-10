@@ -103,6 +103,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private hmrServer: MetroHmrServer | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   isReactServerComponentsEnabled?: boolean;
+  isReactServerRoutesEnabled?: boolean;
 
   get name(): string {
     return 'metro';
@@ -164,7 +165,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     for (const route of manifest.apiRoutes) {
-      const filepath = route.file.startsWith('/') ? route.file : path.join(appDir, route.file);
+      const filepath = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
       const contents = await this.bundleApiRoute(filepath, { platform });
 
       const artifactFilename =
@@ -244,16 +245,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return manifest;
   }
 
-  async getServerManifestAsync({
-    environment,
-  }: Pick<ExpoMetroOptions, 'environment'> = {}): Promise<{
+  async getServerManifestAsync(): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
   }> {
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
       typeof import('expo-router/build/static/getServerManifest')
     >('expo-router/build/static/getServerManifest.js', {
-      environment: environment ?? (this.isReactServerComponentsEnabled ? 'react-server' : 'node'),
+      // Only use react-server environment when the routes are using react-server rendering by default.
+      environment: this.isReactServerRoutesEnabled ? 'react-server' : 'node',
     });
 
     return {
@@ -598,7 +598,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async nativeExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,
-      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
     >,
     files: ExportAssetMap,
     extraOptions: {
@@ -633,13 +633,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files: ExportAssetMap;
   }> {
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
-    const {
+    let {
       reactClientReferences: clientBoundaries,
       reactServerReferences: serverActionReferencesInServer,
       cssModules,
     } = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
       {
         platform: options.platform,
+        domRoot: options.domRoot,
       },
       files
     );
@@ -649,7 +650,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     debug('Evaluated client boundaries:', clientBoundaries);
 
     // Run metro bundler and create the JS bundles/source maps.
-    const bundle = await this.legacySinglePageExportBundleAsync(
+    let bundle = await this.legacySinglePageExportBundleAsync(
       {
         ...options,
         clientBoundaries,
@@ -676,13 +677,35 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     debug('React server action boundaries from client:', reactServerReferences);
 
-    await this.rscRenderer!.exportServerActionsAsync(
-      {
-        platform: options.platform,
-        entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
-      },
-      files
+    // When we export the server actions that were imported from the client, we may need to re-bundle the client with the new client boundaries.
+    const { clientBoundaries: nestedClientBoundaries } =
+      await this.rscRenderer!.exportServerActionsAsync(
+        {
+          platform: options.platform,
+          domRoot: options.domRoot,
+          entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
+        },
+        files
+      );
+
+    // TODO: Check against all modules in the initial client bundles.
+    const hasUniqueClientBoundaries = nestedClientBoundaries.some(
+      (boundary) => !clientBoundaries.includes(boundary)
     );
+
+    if (hasUniqueClientBoundaries) {
+      debug('Re-bundling client with nested client boundaries:', nestedClientBoundaries);
+      clientBoundaries = [...new Set(clientBoundaries.concat(nestedClientBoundaries))];
+      // Re-bundle the client with the new client boundaries that only exist in server actions that were imported from the client.
+      // Run metro bundler and create the JS bundles/source maps.
+      bundle = await this.legacySinglePageExportBundleAsync(
+        {
+          ...options,
+          clientBoundaries,
+        },
+        extraOptions
+      );
+    }
 
     // Inject the global CSS that was imported during the server render.
     bundle.artifacts.push(...cssModules);
@@ -707,7 +730,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (Object.keys(moduleIdToSplitBundle).length) {
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
         if (boundary in moduleIdToSplitBundle) {
-          // Account for nullish values (bundle is in main chunk).
           ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
         } else {
           throw new Error(
@@ -780,7 +802,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
-    if (!opts.mainModuleName.startsWith('/')) {
+    if (!opts.mainModuleName.startsWith('/') && !path.isAbsolute(opts.mainModuleName)) {
       opts.mainModuleName = './' + opts.mainModuleName;
     }
 
@@ -834,8 +856,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
     const { exp } = config;
     // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
-    const isReactServerComponentsEnabled = !!exp.experiments?.reactServerComponents;
+    const isReactServerComponentsEnabled =
+      !!exp.experiments?.reactServerComponentRoutes || !!exp.experiments?.reactServerFunctions;
+    const isReactServerActionsOnlyEnabled =
+      !exp.experiments?.reactServerComponentRoutes && !!exp.experiments?.reactServerFunctions;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
+    this.isReactServerRoutesEnabled = !!exp.experiments?.reactServerComponentRoutes;
 
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
@@ -984,6 +1010,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
+          useClientRouter: isReactServerActionsOnlyEnabled,
+          createModuleId: metro._createModuleId.bind(metro),
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -1022,6 +1050,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
+          useClientRouter: isReactServerActionsOnlyEnabled,
+          createModuleId: metro._createModuleId.bind(metro),
         });
         this.rscRenderer = rscMiddleware;
       }
@@ -1085,15 +1115,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               deleted,
             }: {
               isInitialUpdate?: boolean;
-              added: unknown[];
-              modified: unknown[];
-              deleted: unknown[];
+              added: {
+                module: [number | string, string];
+                sourceURL: string;
+                sourceMappingURL: string;
+              }[];
+              modified: {
+                module: [number | string, string];
+                sourceURL: string;
+                sourceMappingURL: string;
+              }[];
+              deleted: (number | string)[];
             } = update;
 
             const hasUpdate = added.length || modified.length || deleted.length;
 
             // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
             if (!isInitialUpdate && hasUpdate) {
+              // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
+              // if (typeof globalThis.__c === 'function') globalThis.__c();
+
               onReload();
             }
           }

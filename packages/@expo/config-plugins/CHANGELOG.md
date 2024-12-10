@@ -8,7 +8,66 @@
 
 ### 🐛 Bug fixes
 
+- Fix orphaned bridging header reference in prebuild. ([#33462](https://github.com/expo/expo/pull/33462) by [@EvanBacon](https://github.com/EvanBacon))
+- Resolve iOS build schemes on Windows. ([#33468](https://github.com/expo/expo/pull/33468) by [@byCedric](https://github.com/byCedric))
+- Don't apply `react-native-maps` plugin if it's not installed and the API key is not provided. ([#33530](https://github.com/expo/expo/pull/33530) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
+
+## 9.0.10 — 2024-11-24
+
+### 💡 Others
+
+- Add foregroundServiceType property to Android ManifestServiceAttributes ([#33166](https://github.com/expo/expo/pull/33166) by [@micaelomota](https://github.com/micaelomota))
+
+## 9.0.10 — 2024-11-20
+
+### 🐛 Bug fixes
+
+- Resolve config plugins using nested module specifiers on Windows. ([#33106](https://github.com/expo/expo/pull/33106) by [@byCedric](https://github.com/byCedric))
+
+## 9.0.9 — 2024-11-12
+
+### 💡 Others
+
+- Remove `DevSettingsActivity` from template and plugin. ([#32774](https://github.com/expo/expo/pull/32774) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 9.0.8 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.7 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- Remove circular import references to index files ([#32671](https://github.com/expo/expo/pull/32671) by [@wschurman](https://github.com/wschurman))
+- Sync base android manifest with template. ([#32639](https://github.com/expo/expo/pull/32639) by [@wschurman](https://github.com/wschurman))
+
+## 9.0.6 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- Avoid using path mutations in glob patterns for Windows. ([#32617](https://github.com/expo/expo/pull/32617) by [@byCedric](https://github.com/byCedric))
+
+## 9.0.5 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.4 — 2024-10-29
+
+### 💡 Others
+
+- Remove deprecation warning for config plugins using `main` entry point as plugin file. ([#32426](https://github.com/expo/expo/pull/32426) by [@byCedric](https://github.com/byCedric))
+
+## 9.0.3 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- bring back resolution from package.json main field ([#32355](https://github.com/expo/expo/pull/32355) by [@vonovak](https://github.com/vonovak))
+
+## 9.0.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
 
 ## 9.0.1 — 2024-10-22
 
@@ -24,10 +83,12 @@
 
 ### 🐛 Bug fixes
 
+- fix resolution when referring to library plugin file ([#31947](https://github.com/expo/expo/pull/31947) by [@vonovak](https://github.com/vonovak))
 - fix: more strict config plugin resolution ([#31569](https://github.com/expo/expo/pull/31569) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
+- improve invalid config error message ([#31936](https://github.com/expo/expo/pull/31936) by [@vonovak](https://github.com/vonovak))
 - Upgrade `glob@7` to `glob@10`. ([#29894](https://github.com/expo/expo/pull/29894) by [@byCedric](https://github.com/byCedric))
 - Deprecated the Android style method `getAppThemeLightNoActionBarGroup` and replaced it with `getAppThemeGroup`, which does not override the parent theme if its parent theme changes. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
 - Updated snapshots with iOS deployment target set to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))

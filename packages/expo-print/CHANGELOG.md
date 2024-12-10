@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 14.0.2 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.1 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
 ## 14.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

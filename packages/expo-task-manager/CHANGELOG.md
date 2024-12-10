@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 12.0.3 — 2024-11-13
+
+### 💡 Others
+
+- [Android] Added implementation of `executeTask` method in `TaskManagerUtils` ([#32849](https://github.com/expo/expo/pull/32849) by [@chrfalch](https://github.com/chrfalch))
+
+## 12.0.2 — 2024-11-05
+
+### 💡 Others
+
+- Correct the return type of `TaskManagerTaskExecutor`. ([#32557](https://github.com/expo/expo/pull/32557) by [@Simek](https://github.com/Simek))
+
+## 12.0.1 — 2024-10-31
+
+### 💡 Others
+
+- [android] Added implementation in package to look up TaskService instance from expo-modules-core ([#32300](https://github.com/expo/expo/pull/32300) by [@chrfalch](https://github.com/chrfalch))
+
 ## 12.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

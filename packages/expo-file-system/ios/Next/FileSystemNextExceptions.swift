@@ -37,14 +37,20 @@ internal class UnableToDeleteException: GenericException<String> {
   }
 }
 
-internal class UnableToCreateDirectoryException: GenericException<String> {
+internal class UnableToCreateException: GenericException<String> {
   override var reason: String {
-    "Unable to create directory: \(param)"
+    "Unable to create file or directory: \(param)"
   }
 }
 
-internal class UnableToCreateFileException: GenericException<String> {
+internal class UnableToReadHandleException: GenericException<String> {
   override var reason: String {
-    "Unable to create file: \(param)"
+    "Unable to read from a file handle: \(param)"
+  }
+}
+
+internal class DestinationAlreadyExistsException: Exception {
+  override var reason: String {
+    "Destination already exists"
   }
 }

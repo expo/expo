@@ -17,7 +17,7 @@ describe(checkPackagesCompatibility, () => {
 
     expect(Log.warn).toHaveBeenCalledTimes(1);
     expect(Log.warn).toHaveBeenCalledWith(
-      expect.stringContaining('react-native-code-push do not support the New Architecture')
+      expect.stringContaining('react-native-code-push does not support the New Architecture')
     );
   });
 

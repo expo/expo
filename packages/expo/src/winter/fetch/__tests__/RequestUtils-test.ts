@@ -7,57 +7,11 @@ import { ReadableStream } from 'web-streams-polyfill';
 
 import { type NativeHeadersType } from '../NativeRequest';
 import {
-  convertFormData,
   convertReadableStreamToUint8ArrayAsync,
-  createBoundary,
   normalizeBodyInitAsync,
   normalizeHeadersInit,
   overrideHeaders,
 } from '../RequestUtils';
-
-describe(convertFormData, () => {
-  it('should convert react-native FormData to a string with boundary', () => {
-    const formData = new RNFormData();
-    formData.append('foo', 'foo');
-    formData.append('bar', 'bar');
-    const boundary = '----ExpoFetchFormBoundary0000000000000000';
-    const { body, boundary: resultBoundary } = convertFormData(formData, boundary);
-    expect(body).toMatchInlineSnapshot(`
-      "------ExpoFetchFormBoundary0000000000000000
-      content-disposition: form-data; name="foo"
-
-      foo
-      ------ExpoFetchFormBoundary0000000000000000
-      content-disposition: form-data; name="bar"
-
-      bar
-      ------ExpoFetchFormBoundary0000000000000000--
-      "
-    `);
-    expect(resultBoundary).toBe(boundary);
-  });
-
-  it('should throw an error if the react-native FormData passing an uri', () => {
-    const formData = new RNFormData();
-    formData.append('foo', {
-      uri: 'file:/path/to/test.jpg',
-      type: 'image/jpeg',
-      name: 'test.jpg',
-    });
-    expect(() => {
-      convertFormData(formData);
-    }).toThrow(/Unsupported FormDataPart implementation/);
-  });
-
-  it('should throw an error if passing brower compatible FormData', () => {
-    const formData = new globalThis.FormData();
-    formData.append('foo', 'foo');
-    formData.append('blob', new Blob());
-    expect(() => {
-      convertFormData(formData);
-    }).toThrow(/Unsupported FormData implementation/);
-  });
-});
 
 describe(convertReadableStreamToUint8ArrayAsync, () => {
   it('should convert a readable stream to a Uint8Array', async () => {
@@ -92,12 +46,6 @@ describe(convertReadableStreamToUint8ArrayAsync, () => {
     });
 
     await expect(convertReadableStreamToUint8ArrayAsync(stream)).rejects.toThrow('Stream error');
-  });
-});
-
-describe(createBoundary, () => {
-  it('should return a boundary string with ExpoFetchFormBoundary prefix plus 16 random chars', () => {
-    expect(createBoundary()).toMatch(/^----ExpoFetchFormBoundary[\w]{16}$/);
   });
 });
 

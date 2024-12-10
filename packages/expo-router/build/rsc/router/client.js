@@ -180,7 +180,7 @@ const InnerRouter = ({ routerData }) => {
         }
         else {
             // TODO: Native
-            console.log('window.scrollTo is not available');
+            // console.log('window.scrollTo is not available');
         }
     });
     const children = componentIds.reduceRight((acc, id) => (0, react_1.createElement)(RouterSlot, { route, routerData, cachedRef, id, fallback: acc }, acc), null);
@@ -252,6 +252,9 @@ function useRouter_UNSTABLE() {
         },
         dismiss() {
             throw new Error('router.dismiss() is not supported in React Server Components yet');
+        },
+        dismissTo() {
+            throw new Error('router.dismissTo() is not supported in React Server Components yet');
         },
         dismissAll() {
             throw new Error('router.dismissAll() is not supported in React Server Components yet');

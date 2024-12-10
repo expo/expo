@@ -2,6 +2,7 @@ import {
   getReactNativeDirectoryCheckExcludes,
   getReactNativeDirectoryCheckEnabled,
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
+  getAppConfigFieldsNotSyncedCheckStatus,
 } from '../doctorConfig';
 
 const exp = {
@@ -136,5 +137,34 @@ describe('getReactNativeDirectoryCheckListUnknownPackagesEnabled', () => {
         expo: { doctor: { reactNativeDirectoryCheck: { listUnknownPackages: false } } },
       })
     ).toBe(false);
+  });
+});
+
+describe('appConfigFieldsNotSyncedCheck', () => {
+  const mockPackageJson = {
+    expo: {
+      doctor: {
+        appConfigFieldsNotSyncedCheck: {
+          enabled: false,
+        },
+      },
+    },
+  };
+
+  it('returns true if appConfigFieldsNotSyncedCheckEnabled is not set', () => {
+    expect(getAppConfigFieldsNotSyncedCheckStatus({ ...mockPackageJson, expo: {} })).toBe(true);
+  });
+
+  it('returns false if appConfigFieldsNotSyncedCheckEnabled is set to false', () => {
+    expect(getAppConfigFieldsNotSyncedCheckStatus(mockPackageJson)).toBe(false);
+  });
+
+  it('returns true if appConfigFieldsNotSyncedCheckEnabled is set to true', () => {
+    expect(
+      getAppConfigFieldsNotSyncedCheckStatus({
+        ...mockPackageJson,
+        expo: { doctor: { appConfigFieldsNotSyncedCheck: { enabled: true } } },
+      })
+    ).toBe(true);
   });
 });

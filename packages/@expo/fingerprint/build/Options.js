@@ -78,6 +78,7 @@ exports.DEFAULT_IGNORE_PATHS = [
 exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
 async function normalizeOptionsAsync(projectRoot, options) {
     const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
+    const ignorePathMatchObjects = await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options);
     return {
         // Defaults
         platforms: ['android', 'ios'],
@@ -93,7 +94,8 @@ async function normalizeOptionsAsync(projectRoot, options) {
             config?.enableReactImportsPatcher ??
             (0, ExpoVersions_1.satisfyExpoVersion)(projectRoot, '<52.0.0') ??
             false,
-        ignorePathMatchObjects: await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options),
+        ignorePathMatchObjects,
+        ignoreDirMatchObjects: (0, Path_1.buildDirMatchObjects)(ignorePathMatchObjects),
     };
 }
 exports.normalizeOptionsAsync = normalizeOptionsAsync;

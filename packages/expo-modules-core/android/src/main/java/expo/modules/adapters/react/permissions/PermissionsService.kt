@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.InternalModule
 import expo.modules.core.interfaces.LifecycleEventListener
@@ -59,7 +58,12 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     mAskedPermissionsCache = context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
   }
 
-  override fun getPermissionsWithPromise(promise: Promise, vararg permissions: String) {
+  override fun getPermissionsWithPromise(
+    promise:
+    @Suppress("DEPRECATION")
+    expo.modules.core.Promise,
+    vararg permissions: String
+  ) {
     getPermissions(
       PermissionsResponseListener { permissionsMap: MutableMap<String, PermissionsResponse> ->
         val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
@@ -86,7 +90,12 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     )
   }
 
-  override fun askForPermissionsWithPromise(promise: Promise, vararg permissions: String) {
+  override fun askForPermissionsWithPromise(
+    promise:
+    @Suppress("DEPRECATION")
+    expo.modules.core.Promise,
+    vararg permissions: String
+  ) {
     askForPermissions(
       PermissionsResponseListener {
         getPermissionsWithPromise(promise, *permissions)
@@ -165,7 +174,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
         return requestedPermissions!!.contains(permission)
       }
       return false
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
       return false
     }
   }
@@ -206,7 +215,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   private fun canAskAgain(permission: String): Boolean {
     return mActivityProvider?.currentActivity?.let {
       ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
-    } ?: false
+    } == true
   }
 
   private fun parseNativeResult(permissionsString: Array<out String>, grantResults: IntArray): Map<String, PermissionsResponse> {

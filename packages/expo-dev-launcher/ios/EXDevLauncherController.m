@@ -47,7 +47,7 @@
 @interface EXDevLauncherController ()
 
 @property (nonatomic, weak) UIWindow *window;
-@property (nonatomic, weak) id<EXDevLauncherControllerDelegate> delegate;
+@property (nonatomic, weak) ExpoDevLauncherReactDelegateHandler * delegate;
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
@@ -56,7 +56,7 @@
 @property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
-@property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
+@property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, strong) EXDevLauncherAppDelegate *appDelegate;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
@@ -84,7 +84,6 @@
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
-    self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     __weak __typeof(self) weakSelf = self;
@@ -209,7 +208,7 @@
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
-  NSMutableDictionary *launchOptions = [self.launchOptions mutableCopy];
+  NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
   NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
 
   if (deepLink) {
@@ -275,20 +274,28 @@
     return;
   }
 
+  void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      typeof(self) self = weakSelf;
+      if (!self) {
+        return;
+      }
+      
+      [self navigateToLauncher];
+    });
+  };
+  
+  NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
+  if (initialUrl) {
+    [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
+    return;
+  }
+
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
-    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
-       __weak typeof(self) weakSelf = self;
-       dispatch_async(dispatch_get_main_queue(), ^{
-         typeof(self) self = weakSelf;
-         if (!self) {
-           return;
-         }
-
-         [self navigateToLauncher];
-       });
-    }];
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
     return;
   }
   [self navigateToLauncher];
@@ -323,10 +330,13 @@
 
   self.manifest = nil;
   self.manifestURL = nil;
+  self.networkInterceptor = nil;
 
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
 
   [self _removeInitModuleObserver];
+  // Reset app react host
+  [self.delegate destroyReactInstance];
 
   _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
 
@@ -401,7 +411,7 @@
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
 
   // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (![_appDelegate.rootViewFactory.bridge isValid]) {
+  if (_appDelegate.rootViewFactory.reactHost == nil) {
     [self navigateToLauncher];
   }
 
@@ -576,6 +586,7 @@
     if (![bundleUrl.scheme isEqualToString:@"file"]) {
       [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
     }
+    self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
     UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
@@ -604,6 +615,10 @@
 
 - (BOOL)isAppRunning
 {
+  if([_appBridge isProxy]){
+    return [self.delegate isReactInstanceValid];
+  }
+
   return [_appBridge isValid];
 }
 
@@ -799,6 +814,26 @@
     return;
   }
   [self loadApp:appUrl onSuccess:nil onError:nil];
+}
+
++ (NSURL *)initialUrlFromProcessInfo
+{
+  NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+  NSArray *arguments = [processInfo arguments];
+  BOOL nextIsUrl = NO;
+  
+  for (NSString *arg in arguments) {
+    if (nextIsUrl) {
+      NSURL *url = [NSURL URLWithString:arg];
+      if (url) {
+        return url;
+      }
+    }
+    if ([arg isEqualToString:@"--initialUrl"]) {
+      nextIsUrl = YES;
+    }
+  }
+  return nil;
 }
 
 @end

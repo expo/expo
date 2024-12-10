@@ -24,12 +24,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/BarCodeScannerScreen'));
-    },
-    name: 'BarCodeScanner',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/ModalScreen'));
     },
     name: 'Modal',
@@ -435,6 +429,12 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/LivePhotoScreen'));
     },
     name: 'LivePhoto',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/MeshGradientScreen'));
+    },
+    name: 'MeshGradient',
   },
   ...ImageScreens,
   ...VideoScreens,

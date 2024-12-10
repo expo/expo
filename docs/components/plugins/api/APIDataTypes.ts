@@ -1,4 +1,4 @@
-import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
+import { TypeDocKind } from './APISectionUtils';
 
 // Generic data type
 
@@ -14,6 +14,7 @@ export type GeneratedData = EnumDefinitionData &
 // Shared data types
 
 export type CommentData = {
+  name?: string;
   summary: CommentContentData[];
   returns?: string;
   blockTags?: CommentTagData[];
@@ -22,6 +23,7 @@ export type CommentData = {
 
 export type CommentTagData = {
   tag: string;
+  name?: string;
   content: CommentContentData[];
 };
 
@@ -36,6 +38,10 @@ export type TypeDefinitionData = {
   name?: string;
   type: string;
   types?: TypeDefinitionData[];
+  element?: {
+    name: string;
+    type: string;
+  };
   elements?: TypeDefinitionData[];
   elementType?: {
     name?: string;

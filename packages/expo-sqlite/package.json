@@ -1,6 +1,6 @@
 {
   "name": "expo-sqlite",
-  "version": "15.0.0",
+  "version": "15.0.3",
   "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -11,10 +11,11 @@
       "default": "./build/index.js",
       "types": "./build/index.d.ts"
     },
-    "./async-storage": {
-      "default": "./async-storage.js",
-      "types": "./async-storage.d.ts"
-    }
+    "./kv-store": {
+      "default": "./kv-store.js",
+      "types": "./kv-store.d.ts"
+    },
+    "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
     "build": "expo-module build",
@@ -29,7 +30,9 @@
     "react-native",
     "expo",
     "sqlite",
-    "sql"
+    "sql",
+    "storage",
+    "async-storage"
   ],
   "repository": {
     "type": "git",
@@ -49,7 +52,7 @@
   "devDependencies": {
     "@testing-library/react-native": "^12.5.2",
     "@types/better-sqlite3": "^7.6.6",
-    "better-sqlite3": "^11.0.0",
+    "better-sqlite3": "^11.6.0",
     "expo-module-scripts": "^4.0.0",
     "react-error-boundary": "^4.0.11"
   },

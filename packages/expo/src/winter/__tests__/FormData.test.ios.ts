@@ -1,5 +1,5 @@
 /* eslint-disable no-global-assign */
-import { installFormDataPatch } from '../FormData';
+import { installFormDataPatch, type ExpoFormData } from '../FormData';
 
 const jestFormDataPolyfill = FormData;
 
@@ -47,6 +47,16 @@ describe('FormData', () => {
       expect(a.get('a')).toBe('d');
       a.delete('a');
       expect(a.get('a')).toBe(null);
+    });
+
+    it(`supports react-native local uri`, () => {
+      const a = new FormData() as ExpoFormData;
+      a.append('a', { uri: 'file:///path/to/test.jpg', type: 'image/jpeg', name: 'test.jpg' });
+      expect(a.get('a')).toEqual({
+        uri: 'file:///path/to/test.jpg',
+        type: 'image/jpeg',
+        name: 'test.jpg',
+      });
     });
   });
 

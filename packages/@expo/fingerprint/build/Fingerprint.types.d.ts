@@ -23,19 +23,38 @@ export interface Fingerprint {
      */
     hash: string;
 }
-export interface FingerprintDiffItem {
+export type FingerprintDiffItem = {
     /**
      * The operation type of the diff item.
      */
-    op: 'added' | 'removed' | 'changed';
+    op: 'added';
     /**
-     * The source of the diff item.
-     *   - When type is 'added', the source is the new source.
-     *   - When type is 'removed', the source is the old source.
-     *   - When type is 'changed', the source is the new source.
+     * The added source.
      */
-    source: FingerprintSource;
-}
+    addedSource: FingerprintSource;
+} | {
+    /**
+     * The operation type of the diff item.
+     */
+    op: 'removed';
+    /**
+     * The removed source.
+     */
+    removedSource: FingerprintSource;
+} | {
+    /**
+     * The operation type of the diff item.
+     */
+    op: 'changed';
+    /**
+     * The source before.
+     */
+    beforeSource: FingerprintSource;
+    /**
+     * The source after.
+     */
+    afterSource: FingerprintSource;
+};
 export type Platform = 'android' | 'ios';
 export interface Options {
     /**
@@ -111,6 +130,10 @@ export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
     sourceSkips: NonNullable<Options['sourceSkips']>;
     enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
     ignorePathMatchObjects: IMinimatch[];
+    /**
+     * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
+     */
+    ignoreDirMatchObjects: IMinimatch[];
 };
 export interface HashSourceFile {
     type: 'file';

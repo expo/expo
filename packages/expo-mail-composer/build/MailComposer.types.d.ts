@@ -1,4 +1,26 @@
 /**
+ * Represents a mail client available on the device.
+ */
+export type MailClient = {
+    /**
+     * The display name of the mail client.
+     */
+    label: string;
+    /**
+     * The package name of the mail client application.
+     * You can use this package name with the `getApplicationIconAsync` or `openApplication` functions from
+     * `expo-intent-launcher` to retrieve the app’s icon or open the mail client directly.
+     * @platform android
+     */
+    packageName?: string;
+    /**
+     * The URL scheme of the mail client.
+     * You can use this URL with the `openURL` function from `expo-linking` to open the mail client.
+     * @platform ios
+     */
+    url?: string;
+};
+/**
  * A map defining the data to fill the mail.
  */
 export type MailComposerOptions = {

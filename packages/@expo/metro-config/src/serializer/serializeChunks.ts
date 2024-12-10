@@ -31,6 +31,7 @@ import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
+import { toPosixPath } from '../utils/filePath';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -244,13 +245,15 @@ export class Chunk {
 
   private serializeToCodeWithTemplates(
     serializerConfig: Partial<SerializerConfigT>,
-    options: Partial<Parameters<typeof baseJSBundleWithDependencies>[3]> = {}
+    options: Partial<Parameters<typeof baseJSBundleWithDependencies>[3]> & {
+      preModules?: Set<Module>;
+    } = {}
   ) {
     const entryFile = this.name;
 
     // TODO: Disable all debugId steps when a dev server is enabled. This is an export-only feature.
 
-    const preModules = [...this.preModules.values()];
+    const preModules = [...(options.preModules ?? this.preModules).values()];
     const dependencies = [...this.deps];
 
     const jsSplitBundle = baseJSBundleWithDependencies(entryFile, preModules, dependencies, {
@@ -260,7 +263,7 @@ export class Chunk {
           path.relative(this.options.projectRoot, entryFile)
         ) ?? [],
       runModule: this.options.runModule && !this.isVendor && !this.isAsync,
-      modulesOnly: this.options.modulesOnly || this.preModules.size === 0,
+      modulesOnly: this.options.modulesOnly || preModules.length === 0,
       platform: this.getPlatform(),
       baseUrl: getBaseUrlOption(this.graph, this.options),
       splitChunks: !!this.options.serializerOptions?.splitChunks,
@@ -367,19 +370,20 @@ export class Chunk {
 
   private serializeToCode(
     serializerConfig: Partial<SerializerConfigT>,
-    { debugId, chunks }: { debugId: string; chunks: Chunk[] }
+    { debugId, chunks, preModules }: { debugId: string; chunks: Chunk[]; preModules: Set<Module> }
   ) {
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
       sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
       computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
       debugId,
+      preModules,
     });
   }
 
   private boolishTransformOption(name: string) {
     const value = this.graph.transformOptions?.customTransformOptions?.[name];
-    return value === true || value === 'true';
+    return value === true || value === 'true' || value === '1';
   }
 
   async serializeToAssetsAsync(
@@ -388,22 +392,26 @@ export class Chunk {
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
-    let outputFile = this.getFilenameForConfig(serializerConfig);
+    const outputFile = this.getFilenameForConfig(serializerConfig);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
 
-    let premodules = [...this.preModules];
+    let finalPreModules = [...this.preModules];
     if (unstable_beforeAssetSerializationPlugins) {
       for (const plugin of unstable_beforeAssetSerializationPlugins) {
-        premodules = plugin({ graph: this.graph, premodules, debugId });
+        finalPreModules = plugin({
+          graph: this.graph,
+          premodules: finalPreModules,
+          debugId,
+        });
       }
-      this.preModules = new Set(premodules);
-
-      // If the premodules have changed, we need to recompute the output file hash.
-      outputFile = this.getFilenameForConfig(serializerConfig);
     }
 
-    const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
+    const jsCode = this.serializeToCode(serializerConfig, {
+      chunks,
+      debugId,
+      preModules: new Set(finalPreModules),
+    });
 
     const relativeEntry = path.relative(this.options.projectRoot, this.name);
 
@@ -498,7 +506,7 @@ export class Chunk {
       this.options.sourceMapUrl
     ) {
       const modules = [
-        ...this.preModules,
+        ...finalPreModules,
         ...getSortedModules([...this.deps], {
           createModuleId: this.options.createModuleId,
         }),
@@ -506,11 +514,14 @@ export class Chunk {
         // TODO: Make this user-configurable.
 
         // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-        if (module.path.startsWith('/')) {
+        if (path.isAbsolute(module.path)) {
           return {
             ...module,
             path:
-              '/' + path.relative(this.options.serverRoot ?? this.options.projectRoot, module.path),
+              '/' +
+              toPosixPath(
+                path.relative(this.options.serverRoot ?? this.options.projectRoot, module.path)
+              ),
           };
         }
         return module;

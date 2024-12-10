@@ -28,7 +28,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
 import expo.modules.manifests.core.Manifest
-import expo.modules.splashscreen.singletons.SplashScreen
+import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import host.exp.exponent.Constants
 import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
@@ -133,11 +133,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       }
     }
 
-    /*
-     *
-     * Lifecycle
-     *
-     */
+  /*
+   *
+   * Lifecycle
+   *
+   */
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -223,6 +223,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         forceCache
       ).start(this)
     }
+    ExponentNotificationManager(this).maybeCreateExpoPersistentNotificationChannel()
     kernel.setOptimisticActivity(this, taskId)
   }
 
@@ -344,11 +345,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-    /*
-     *
-     * Experience Loading
-     *
-     */
+  /*
+   *
+   * Experience Loading
+   *
+   */
   fun startLoading() {
     isLoading = true
     showOrReconfigureManagedAppSplashScreen(manifest)
@@ -636,11 +637,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     PushNotificationHelper.instance.removeNotifications(this, unreadNotifications)
   }
 
-    /*
-     *
-     * Notification
-     *
-     */
+  /*
+   *
+   * Notification
+   *
+   */
   private fun addNotification() {
     if (manifestUrl == null || manifest == null) {
       return
@@ -684,7 +685,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancel(PERSISTENT_EXPONENT_NOTIFICATION_ID)
 
-    ExponentNotificationManager(this).maybeCreateExpoPersistentNotificationChannel()
     notificationBuilder =
       NotificationCompat.Builder(
         this,
@@ -717,7 +717,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
    * @param isFromNotification true if this is the result of the user taking an
    * action in the notification view.
    */
-  fun dismissNuxViewIfVisible(isFromNotification: Boolean) {
+  private fun dismissNuxViewIfVisible(isFromNotification: Boolean) {
     if (nuxOverlayView == null) {
       return
     }
@@ -742,11 +742,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-    /*
-     *
-     * Errors
-     *
-     */
+  /*
+   *
+   * Errors
+   *
+   */
   override fun onError(intent: Intent) {
     if (manifestUrl != null) {
       intent.putExtra(ErrorActivity.MANIFEST_URL_KEY, manifestUrl)

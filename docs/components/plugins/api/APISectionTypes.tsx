@@ -1,16 +1,17 @@
+import { mergeClasses } from '@expo/styleguide';
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import { Fragment, ReactNode } from 'react';
 
-import { APIBox } from '~/components/plugins/APIBox';
-import { APIDataType } from '~/components/plugins/api/APIDataType';
+import { APIDataType } from './APIDataType';
 import {
   PropData,
   TypeDeclarationContentData,
   TypeDefinitionData,
   TypeGeneralData,
   TypeSignaturesData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   resolveTypeName,
   renderFlags,
@@ -23,12 +24,14 @@ import {
   ParamsTableHeadRow,
   renderDefaultValue,
   renderIndexSignature,
-  STYLES_APIBOX,
   getTagNamesList,
   H3Code,
   getCommentContent,
   listParams,
-} from '~/components/plugins/api/APISectionUtils';
+} from './APISectionUtils';
+import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
+
+import { APIBox } from '~/components/plugins/APIBox';
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN, RawH4 } from '~/ui/components/Text';
 
@@ -137,7 +140,7 @@ const renderType = (
   if (type.declaration) {
     // Object Types
     return (
-      <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
@@ -156,6 +159,36 @@ const renderType = (
               </div>
             ))
           : null}
+        {type.declaration.signatures && type.declaration.signatures[0].type && (
+          <div className="mt-4 flex flex-row items-start gap-2">
+            <div className="flex flex-row items-center gap-2">
+              <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
+              <CALLOUT tag="span" theme="secondary" weight="medium">
+                Returns:
+              </CALLOUT>
+            </div>
+            <CALLOUT>
+              <APIDataType
+                typeDefinition={type.declaration.signatures[0].type}
+                sdkVersion={sdkVersion}
+              />
+            </CALLOUT>
+          </div>
+        )}
+      </div>
+    );
+  } else if (type.elements) {
+    return (
+      <div key={`type-tuple-${name}`} className={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} sticky />
+        <APISectionPlatformTags comment={comment} />
+        <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
+        </H3Code>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <CALLOUT className={STYLES_SECONDARY}>
+          Tuple: <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
+        </CALLOUT>
       </div>
     );
   } else if (type.types && ['union', 'intersection'].includes(type.type)) {
@@ -170,7 +203,7 @@ const renderType = (
 
     if (propTypes.length) {
       return (
-        <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
+        <div key={`prop-type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
@@ -181,10 +214,8 @@ const renderType = (
           <CommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' || type.type === 'union' ? (
             <>
-              <CALLOUT>
-                <SPAN theme="secondary" weight="medium">
-                  Type:{' '}
-                </SPAN>
+              <CALLOUT className={STYLES_SECONDARY}>
+                Type:{' '}
                 {type.types
                   .filter(type =>
                     ['reference', 'union', 'intersection', 'intrinsic', 'literal'].includes(
@@ -197,14 +228,12 @@ const renderType = (
                       {type.type === 'union' ? ' or ' : ' '}
                     </Fragment>
                   ))}
-                <SPAN theme="secondary">
-                  {type.type === 'union'
-                    ? propMethodDefinitions.length > 2
-                      ? 'an anonymous method defined as described below'
-                      : 'object shaped as below'
-                    : 'extended by'}
-                  :
-                </SPAN>
+                {type.type === 'union'
+                  ? propMethodDefinitions.length > 2
+                    ? 'an anonymous method defined as described below'
+                    : 'object shaped as below'
+                  : 'extended by'}
+                :
               </CALLOUT>
               <br />
             </>
@@ -223,7 +252,7 @@ const renderType = (
     } else if (literalTypes.length) {
       const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
-        <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+        <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
@@ -238,21 +267,13 @@ const renderType = (
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <CommentTextBlock comment={comment} includePlatforms={false} />
-          <CALLOUT>
-            <SPAN theme="secondary" weight="medium">
-              Acceptable values are:{' '}
-            </SPAN>
+          <CALLOUT className={STYLES_SECONDARY}>
+            Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
-              <span key={`${name}-literal-type-${index}`}>
+              <Fragment key={`${name}-literal-type-${index}`}>
                 <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
-                {index + 1 !== literalTypes.length ? (
-                  <CALLOUT tag="span" theme="quaternary">
-                    {' | '}
-                  </CALLOUT>
-                ) : (
-                  ''
-                )}
-              </span>
+                {index + 1 !== literalTypes.length ? ' | ' : ''}
+              </Fragment>
             ))}
           </CALLOUT>
         </div>
@@ -263,7 +284,9 @@ const renderType = (
     ['array', 'reference'].includes(type.type)
   ) {
     return (
-      <div key={`record-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
+      <div
+        key={`record-definition-${name}`}
+        className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
@@ -282,7 +305,7 @@ const renderType = (
     );
   } else if (type.type === 'intrinsic') {
     return (
-      <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`generic-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
@@ -301,7 +324,7 @@ const renderType = (
     );
   } else if (type.type === 'conditional' && type.checkType) {
     return (
-      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
@@ -346,7 +369,7 @@ const renderType = (
     }
 
     return (
-      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>

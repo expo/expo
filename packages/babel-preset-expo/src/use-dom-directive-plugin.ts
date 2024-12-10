@@ -6,16 +6,16 @@ import crypto from 'crypto';
 import { basename } from 'path';
 import url from 'url';
 
-import { getIsProd } from './common';
+import { getIsProd, getPossibleProjectRoot } from './common';
 
 export function expoUseDomDirectivePlugin(
   api: ConfigAPI & { types: typeof types }
 ): babel.PluginObj {
   const { types: t } = api;
 
-  // TODO: Is exporting
   const isProduction = api.caller(getIsProd);
   const platform = api.caller((caller) => (caller as any)?.platform);
+  const projectRoot = api.caller(getPossibleProjectRoot);
 
   return {
     name: 'expo-use-dom-directive',
@@ -43,11 +43,13 @@ export function expoUseDomDirectivePlugin(
           return;
         }
 
+        let displayName: string = 'Component';
         // Assert that a default export must exist and that no other exports should be present.
         // NOTE: In the future we could support other exports with extraction.
 
         let hasDefaultExport = false;
         // Collect all of the exports
+
         path.traverse({
           ExportNamedDeclaration(path) {
             const declaration = path.node.declaration;
@@ -65,8 +67,12 @@ export function expoUseDomDirectivePlugin(
               'Modules with the "use dom" directive only support a single default export.'
             );
           },
-          ExportDefaultDeclaration() {
+          ExportDefaultDeclaration(path) {
             hasDefaultExport = true;
+
+            if (t.isFunctionDeclaration(path.node.declaration) && path.node.declaration.id) {
+              displayName = path.node.declaration.id.name;
+            }
           },
         });
 
@@ -76,56 +82,74 @@ export function expoUseDomDirectivePlugin(
           );
         }
 
-        const outputKey = url.pathToFileURL(filePath).href;
+        // Assert that _layout routes cannot be used in DOM components.
+        const fileBasename = basename(filePath);
 
-        const proxyModule: string[] = [
-          `import React from 'react';`,
-          `import { WebView } from 'expo/dom/internal';`,
-        ];
-
-        if (isProduction) {
-          // MUST MATCH THE EXPORT COMMAND!
-          const hash = crypto.createHash('sha1').update(outputKey).digest('hex');
-          const outputName = `www.bundle/${hash}.html`;
-
-          if (platform === 'ios') {
-            proxyModule.push(`const source = { uri: "${outputName}" };`);
-          } else if (platform === 'android') {
-            proxyModule.push(`const source = { uri: "file:///android_asset/${outputName}" };`);
-          } else {
-            throw new Error(
-              'production "use dom" directive is not supported yet for platform: ' + platform
+        if (
+          projectRoot &&
+          // Detecting if the file is in the router root would be extensive as it would cause a more complex
+          // cache key for each file. Instead, let's just check if the file is in the project root and is not a node_module,
+          // then we can assert that users should not use `_layout` or `+api` with "use dom".
+          filePath.includes(projectRoot) &&
+          !filePath.match(/node_modules/)
+        ) {
+          if (fileBasename.match(/^_layout\.[jt]sx?$/)) {
+            throw path.buildCodeFrameError(
+              'Layout routes cannot be marked as DOM components because they cannot render native views.'
             );
+          } else if (
+            // No API routes
+            fileBasename.match(/\+api\.[jt]sx?$/)
+          ) {
+            throw path.buildCodeFrameError('API routes cannot be marked as DOM components.');
           }
-        } else {
-          proxyModule.push(
-            // Add the basename to improve the Safari debug preview option.
-            `const source = { uri: new URL("/_expo/@dom/${basename(filePath)}?file=" + ${JSON.stringify(outputKey)}, require("react-native/Libraries/Core/Devtools/getDevServer")().url).toString() };`
-          );
         }
 
-        proxyModule.push(
-          `
-export default React.forwardRef((props, ref) => {
-  return React.createElement(WebView, { ref, ...props, source });
-});`
-        );
+        const outputKey = url.pathToFileURL(filePath).href;
 
         // Removes all imports using babel API, that will disconnect import bindings from the program.
         // plugin-transform-typescript TSX uses the bindings to remove type imports.
         // If the DOM component has `import React from 'react';`,
         // the plugin-transform-typescript treats it as an typed import and removes it.
-        // That will futher cause undefined `React` error.
+        // That will further cause undefined `React` error.
         path.traverse({
           ImportDeclaration(path) {
             path.remove();
           },
         });
-        // Clear the body
         path.node.body = [];
         path.node.directives = [];
 
-        path.pushContainer('body', template.ast(proxyModule.join('\n')));
+        // Create template with declaration first
+        const proxyModuleTemplate = `
+          import React from 'react';
+          import { WebView } from 'expo/dom/internal';
+          ${
+            isProduction
+              ? `const filePath = "${crypto.createHash('sha1').update(outputKey).digest('hex')}.html";`
+              : `const filePath = "${fileBasename}?file=" + ${JSON.stringify(outputKey)};`
+          }
+          const _Expo_DOMProxyComponent = React.forwardRef((props, ref) => {
+            return React.createElement(WebView, { ref, ...props, filePath });
+          });
+          if (__DEV__) _Expo_DOMProxyComponent.displayName = ${JSON.stringify(`DOM(${displayName})`)};
+          export default _Expo_DOMProxyComponent;
+        `;
+
+        // Convert template to AST and push to body
+        const ast = template.ast(proxyModuleTemplate);
+        const results = path.pushContainer('body', ast);
+
+        // Find and register the component declaration
+        results.forEach((nodePath) => {
+          if (
+            t.isVariableDeclaration(nodePath.node) &&
+            'name' in nodePath.node.declarations[0]?.id &&
+            nodePath.node.declarations[0].id.name === '_Expo_DOMProxyComponent'
+          ) {
+            path.scope.registerDeclaration(nodePath);
+          }
+        });
 
         assertExpoMetadata(state.file.metadata);
 

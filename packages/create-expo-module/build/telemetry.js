@@ -1,15 +1,38 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.eventCreateExpoModule = exports.logEventAsync = exports.getTelemetryClient = void 0;
-const getUserState_1 = require("@expo/config/build/getUserState");
 const json_file_1 = __importDefault(require("@expo/json-file"));
 const rudder_sdk_node_1 = __importDefault(require("@expo/rudder-sdk-node"));
 const crypto_1 = __importDefault(require("crypto"));
 const getenv_1 = require("getenv");
-const os_1 = __importDefault(require("os"));
+const os_1 = __importStar(require("os"));
+const path = __importStar(require("path"));
 const packageJson = require('../package.json');
 /** If telemetry is disabled by the user */
 const EXPO_NO_TELEMETRY = (0, getenv_1.boolish)('EXPO_NO_TELEMETRY', false);
@@ -32,9 +55,27 @@ function getTelemetryClient() {
     return client;
 }
 exports.getTelemetryClient = getTelemetryClient;
+// The ~/.expo directory is used to store authentication sessions,
+// which are shared between EAS CLI and Expo CLI.
+function getExpoHomeDirectory() {
+    const home = (0, os_1.homedir)();
+    if (process.env.__UNSAFE_EXPO_HOME_DIRECTORY) {
+        return process.env.__UNSAFE_EXPO_HOME_DIRECTORY;
+    }
+    else if ((0, getenv_1.boolish)('EXPO_STAGING', false)) {
+        return path.join(home, '.expo-staging');
+    }
+    else if ((0, getenv_1.boolish)('EXPO_LOCAL', false)) {
+        return path.join(home, '.expo-local');
+    }
+    return path.join(home, '.expo');
+}
+function getUserStatePath() {
+    return path.join(getExpoHomeDirectory(), 'state.json');
+}
 /** Get the randomly generated anonymous ID from the persistent storage, see @expo/cli */
 async function getTelemetryIdAsync() {
-    const settings = new json_file_1.default((0, getUserState_1.getUserStatePath)(), {
+    const settings = new json_file_1.default(getUserStatePath(), {
         ensureDir: true,
         jsonParseErrorDefault: {},
         cantReadFileDefault: {},

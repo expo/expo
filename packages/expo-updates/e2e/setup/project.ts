@@ -29,6 +29,7 @@ function getExpoDependencyChunks({
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
+    ['@expo/image-utils'],
     [
       'babel-preset-expo',
       'expo-application',
@@ -50,10 +51,12 @@ function getExpoDependencyChunks({
     ...(includeTV
       ? [
           [
+            'expo-audio',
             'expo-av',
             'expo-blur',
             'expo-image',
             'expo-linear-gradient',
+            'expo-linking',
             'expo-localization',
             'expo-crypto',
             'expo-network',
@@ -362,8 +365,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.76.0-0rc4',
-        '@react-native-tvos/config-tv': '^0.0.11',
+        'react-native': 'npm:react-native-tvos@~0.76.1-0',
+        '@react-native-tvos/config-tv': '^0.0.13',
       },
       expo: {
         install: {

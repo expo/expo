@@ -1,18 +1,39 @@
 ---
 title: Using React DOM in Expo native apps
 sidebar_title: DOM components
-description: Learn about rendering React DOM elements in Expo native apps.
+description: Learn about rendering React DOM components in Expo native apps using the 'use dom' directive.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-> Experimentally available in **SDK 52 and above**. To try out the latest DOM components features, you can install the [canary release](/versions/unversioned/#canary-releases).
-
-> **warning** **Warning:** DOM components are an experimental feature. The public API (`expo/dom`, `dom` prop), prop transport system, asset handling, and export embedding system are subject to breaking changes. Use `WebViews` directly for a production-ready approach.
+> **info** Available in **SDK 52 and above**.
 
 Expo offers a novel approach to work with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app by moving on a per-component basis.
 
 While the Expo native runtime generally does not support elements like `<div>` or `<img>`, there may be instances where you need to quickly incorporate web components. In such cases, DOM components provide a useful solution.
+
+## Prerequisites
+
+<Collapsible summary="Your project must use Expo CLI and extend the Expo Metro Config">
+
+If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`), then you're all set, and you can skip this step.
+
+If you don't have the `expo` package in your project yet, then install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
+
+<Terminal cmd={['$ npx install-expo-modules@latest']} />
+
+If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
+
+</Collapsible>
+
+<Collapsible summary="Expo Metro Runtime, React DOM, and React Native Web">
+
+If you are using Expo Router and Expo Web, you can skip this step. Otherwise, install the following packages:
+
+<Terminal cmd={['$ npx expo install @expo/metro-runtime react-dom react-native-web']} />
+
+</Collapsible>
 
 ## Usage
 
@@ -55,7 +76,7 @@ export default function App() {
 - Fast Refresh and HMR.
 - Embedded exports for offline support.
 - Assets are unified across web and native.
-- DOM Component bundles can be introspected in [Expo Atlas](/guides/analyzing-bundles/#analyzing-bundle-size-with-atlas) for debugging.
+- DOM component bundles can be introspected in [Expo Atlas](/guides/analyzing-bundles/#analyzing-bundle-size-with-atlas) for debugging.
 - Access to all web functionality without needing a native rebuild.
 - Runtime error overlay in development.
 - Supports Expo Go.
@@ -154,9 +175,11 @@ getDeviceName(): Promise<string> {
 }
 ```
 
-Think of these functions like React Server Actions, but instead of residing on the server, they live locally in the native app and communicate with the DOM component. This approach provides a powerful way to add truly native functionality to your DOM components.
+Think of these functions like React Server Functions, but instead of residing on the server, they live locally in the native app and communicate with the DOM component. This approach provides a powerful way to add truly native functionality to your DOM components.
 
 ## Passing refs
+
+> **warning** **Warning:** This is experimental and may change in the future.
 
 You can use the `useDOMImperativeHandle` hook inside a DOM component to accept ref calls from the native side. This hook is similar to React's [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle) hook, but it does not need a ref object to be passed to it.
 
@@ -210,6 +233,8 @@ export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
 });
 ```
 
+React is meant to have a unilateral data flow, so the concept of using callbacks to go back up the tree is not idiomatic. Expect the behavior to be flakey and possibly phased out in the future with newer versions of React. The preferred way to send data back up the tree is to use native actions, which update the state and then pass it back to the DOM component.
+
 ## Feature detection
 
 Since DOM components are used to run websites, you might need extra qualifiers to better support certain libraries. You can detect if a component is running in a DOM component with the following code:
@@ -220,19 +245,19 @@ const IS_DOM = typeof ReactNativeWebView !== 'undefined';
 
 ## Public assets
 
-The contents of the root **public** directory are copied to the native app's binary to support the use of public assets in DOM components. Since these public assets will be served from the local filesystem, use the `process.env.EXPO_DOM_BASE_URL` prefix to reference the correct path. For example:
+> **warning** **Warning:** This is experimental and may change in the future. Public assets are not supported in EAS Update. Use `require()` to load local assets instead.
+
+The contents of the root **public** directory are copied to the native app's binary to support the use of public assets in DOM components. Since these public assets will be served from the local filesystem, use the `process.env.EXPO_BASE_URL` prefix to reference the correct path. For example:
 
 ```tsx
-<img src={`${process.env.EXPO_DOM_BASE_URL}/img.png`} />
+<img src={`${process.env.EXPO_BASE_URL}img.png`} />
 ```
-
-{/* TODO: This is likely to change. */}
 
 ## Debugging
 
 By default, all `console.log` methods are extended in WebViews to forward logs to the terminal. This makes it fast and easy to see what's happening in your DOM components.
 
-Expo also enables WebView inspection and debugging when bundling in development mode. You can open **Safari** > **Develop** > **Simulator** > **MyComponent.tsx** to see the webview's console and inspect elements.
+Expo also enables WebView inspection and debugging when bundling in development mode. You can open **Safari** > **Develop** > **Simulator** > **MyComponent.tsx** to see the WebView's console and inspect elements.
 
 ## Manual WebViews
 
@@ -245,6 +270,42 @@ export default function App() {
   return <WebView source={{ html: '<h1>Hello, world!</h1>' }} />;
 }
 ```
+
+## Routing
+
+Expo Router APIs such as `<Link />`, and `useRouter` can be used in DOM components to navigate between routes.
+
+```tsx my-component.tsx (web)
+'use dom';
+import Link from 'expo-router/link';
+
+export default function DOMComponent() {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+      <Link href="/about">About</Link>
+    </div>
+  );
+}
+```
+
+APIs that synchronously return routing info such as `useLocalSearchParams()`, `useGlobalSearchParams()`, `usePathname()`, `useSegments()`, `useRootNavigation()`, and `useRootNavigationState()` are not automatically supported. Instead, read these values outside of DOM components and supply them as props.
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+import { usePathname } from 'expo-router';
+
+export default function App() {
+  const pathname = usePathname();
+  return <DOMComponent pathname={pathname} />;
+}
+```
+
+The `router.canGoBack()` and `router.canDismiss()` functions are also unsupported and require manual marshalling, this ensures no extraneous render cycles are triggered.
+
+Avoid using standard web `<a />` anchor elements for navigation as these will change the DOM component origin in a way that users may not be able to navigate back from. Prefer launching `WebBrowser`s if you want to present external websites.
+
+Since DOM components cannot render native children, layout routes (`_layout`) can never be DOM components. You can render DOM components from layout routes to create headers, backgrounds, and more, but the layout route itself should always be native.
 
 ## Measuring DOM components
 
@@ -336,9 +397,9 @@ export default function DOMComponent({
 
 Built-in DOM support only renders websites as single-page applications (no SSR or SSG). This is because search engine optimization and indexing are unnecessary for embedded JS code.
 
-When a module is marked with `'use dom'`, it is replaced with a proxy reference imported at runtime. This feature is primarily achieved through a series of bundler and CLI techniques. You can always use WebView with standard approach by passing raw HTML to a `WebView` component.
+When a module is marked with `'use dom'`, it is replaced with a proxy reference imported at runtime. This feature is primarily achieved through a series of bundler and CLI techniques.
 
-If desired, you can use a WebView with the standard approach by passing raw HTML to a WebView component.
+If desired, you can still use a WebView with the standard approach by passing raw HTML to a `WebView` component.
 
 DOM components rendered within websites or other DOM components will behave as regular components, and the `dom` prop will be ignored. This is because web content is passed directly through and not wrapped in an `iframe`.
 
@@ -346,23 +407,23 @@ Overall, this system shares many similarities with Expo's React Server Component
 
 ## Considerations
 
-We recommend building truly native apps using universal primitives such as `View`, `Image`, and `Text`. DOM Components only support standard JavaScript, which is slower to parse and start up than optimized Hermes bytecode.
+We recommend building truly native apps using universal primitives such as `View`, `Image`, and `Text`. DOM components only support standard JavaScript, which is slower to parse and start up than optimized Hermes bytecode.
 
 Data can be sent between DOM components and native components only through an asynchronous JSON transport system. Avoid relying on data across JS engines and deep linking to nested URLs in DOM components, as they do not currently support full reconciliation with Expo Router.
 
-While DOM Components are not exclusive to Expo Router, they are developed and tested against Expo Router apps to provide the best experience when used with Expo Router.
+While DOM components are not exclusive to Expo Router, they are developed and tested against Expo Router apps to provide the best experience when used with Expo Router.
 
 If you have a global state for sharing data, it will not be accessible across JS engines.
 
-While native modules in the Expo SDK can be optimized to support DOM Components, this optimization has not been implemented yet. Use native actions and props to share native functionality with DOM components.
+While native modules in the Expo SDK can be optimized to support DOM components, this optimization has not been implemented yet. Use native actions and props to share native functionality with DOM components.
 
-DOM Components and websites in general are less optimal than native views but there are some reasonable uses for them. For example, the web is conceptually the best way to render rich-text and markdown. The web also has very good WebGL support, with the caveat that devices in low-power mode will often throttle web frame rates to preserve battery.
+DOM components and websites in general are less optimal than native views but there are some reasonable uses for them. For example, the web is conceptually the best way to render rich-text and markdown. The web also has very good WebGL support, with the caveat that devices in low-power mode will often throttle web frame rates to preserve battery.
 
 Many large apps also use some web content for auxiliary routes such as blog posts, rich-text (for example, long-form posts on X), settings pages, help pages, and other less frequently visited parts of the app.
 
 ## Server Components
 
-DOM Components currently only render as single-page applications and don't support static rendering or React Server Components (RSC). When the project uses React Server Components,`'use dom'` will work the same as `'use client'` regardless of the platform. RSC Payloads can be passed as properties to DOM Components. However, they cannot be hydrated correctly on native platforms as they'll be rendered for a native runtime.
+DOM components currently only render as single-page applications and don't support static rendering or React Server Components (RSC). When the project uses React Server Components, `'use dom'` will work the same as `'use client'` regardless of the platform. RSC Payloads can be passed as properties to DOM components. However, they cannot be hydrated correctly on native platforms as they'll be rendered for a native runtime.
 
 ## Limitations
 

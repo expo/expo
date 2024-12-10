@@ -1,6 +1,6 @@
 import { ModConfig } from '@expo/config-plugins';
 import JsonFile, { JSONObject } from '@expo/json-file';
-import deepmerge from 'deepmerge';
+import deepMerge from 'deepmerge';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
@@ -296,7 +296,11 @@ export async function modifyConfigAsync(
   }
 
   // Attempt to write to a function-like dynamic config, when used with a static config
-  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function') {
+  if (
+    config.staticConfigPath &&
+    config.dynamicConfigObjectType === 'function' &&
+    !modifications.hasOwnProperty('plugins') // We don't know what plugins are in dynamic configs
+  ) {
     const outputConfig = mergeConfigModifications(config, modifications);
 
     if (isDryRun) {
@@ -335,19 +339,79 @@ export async function modifyConfigAsync(
   };
 }
 
-/** Merge the config modifications, using an optional possible top-level `expo` object. */
+/**
+ * Merge the config modifications, using an optional possible top-level `expo` object.
+ * Note, changes in the plugins are merged differently to avoid duplicate entries.
+ */
 function mergeConfigModifications(
   config: ProjectConfig,
-  modifications: Partial<ExpoConfig>
+  { plugins, ...modifications }: Partial<ExpoConfig>
 ): AppJSONConfig {
-  if (!config.rootConfig.expo) {
-    return deepmerge(config.rootConfig, modifications);
+  const modifiedExpoConfig: ExpoConfig = !config.rootConfig.expo
+    ? deepMerge(config.rootConfig, modifications)
+    : deepMerge(config.rootConfig.expo, modifications);
+
+  if (plugins?.length) {
+    // When adding plugins, ensure the config has a plugin list
+    if (!modifiedExpoConfig.plugins) {
+      modifiedExpoConfig.plugins = [];
+    }
+
+    // Create a plugin lookup map
+    const existingPlugins: Record<string, any> = Object.fromEntries(
+      modifiedExpoConfig.plugins.map((definition) =>
+        typeof definition === 'string' ? [definition, undefined] : definition
+      )
+    );
+
+    for (const plugin of plugins) {
+      // Unpack the plugin definition, using either the short (string) or normal (array) notation
+      const [pluginName, pluginProps] = Array.isArray(plugin) ? plugin : [plugin];
+      // Abort if the plugin definition is empty
+      if (!pluginName) continue;
+
+      // Add the plugin if it doesn't exist yet, including its properties
+      if (!(pluginName in existingPlugins)) {
+        modifiedExpoConfig.plugins.push(plugin);
+        continue;
+      }
+
+      // If the plugin has properties, and it exists, merge the properties
+      if (pluginProps) {
+        modifiedExpoConfig.plugins = modifiedExpoConfig.plugins.map((existingPlugin) => {
+          const [existingPluginName] = Array.isArray(existingPlugin)
+            ? existingPlugin
+            : [existingPlugin];
+
+          // Do not modify other plugins
+          if (existingPluginName !== pluginName) {
+            return existingPlugin;
+          }
+
+          // Add the props to the existing plugin entry
+          if (typeof existingPlugin === 'string') {
+            return [existingPlugin, pluginProps];
+          }
+
+          // Merge the props to the existing plugin properties
+          if (Array.isArray(existingPlugin) && existingPlugin[0]) {
+            return [existingPlugin[0], deepMerge(existingPlugin[1] ?? {}, pluginProps)];
+          }
+
+          return existingPlugin;
+        });
+        continue;
+      }
+
+      // If the same plugin exists with properties, and the modification does not contain properties, ignore
+    }
   }
 
-  return {
-    ...config.rootConfig,
-    expo: deepmerge(config.rootConfig.expo, modifications),
-  };
+  const finalizedConfig = !config.rootConfig.expo
+    ? modifiedExpoConfig
+    : { ...config.rootConfig, expo: modifiedExpoConfig };
+
+  return finalizedConfig as AppJSONConfig;
 }
 
 function isMatchingObject<T extends Record<string, any>>(

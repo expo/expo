@@ -6,17 +6,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveAppProjectConfigAsync = exports.resolveDependencyConfigAsync = exports.findDependencyRootsAsync = exports.createReactNativeConfigAsync = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("../autolinking/utils");
+const fileUtils_1 = require("../fileUtils");
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
-const utils_1 = require("../autolinking/utils");
-const fileUtils_1 = require("../fileUtils");
 /**
  * Create config for react-native core autolinking.
  */
 async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths, }) {
     const projectConfig = await (0, config_1.loadConfigAsync)(projectRoot);
-    const dependencyRoots = await findDependencyRootsAsync(projectRoot, searchPaths);
+    const dependencyRoots = {
+        ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
+        ...findProjectLocalDependencyRoots(projectConfig),
+    };
     const reactNativePath = dependencyRoots['react-native'];
     const dependencyConfigs = await Promise.all(Object.entries(dependencyRoots).map(async ([name, packageRoot]) => {
         const config = await resolveDependencyConfigAsync(platform, name, packageRoot, projectConfig);
@@ -61,11 +64,26 @@ async function findDependencyRootsAsync(projectRoot, searchPaths) {
     return results;
 }
 exports.findDependencyRootsAsync = findDependencyRootsAsync;
+/**
+ * Find local dependencies that specified in the `react-native.config.js` file.
+ */
+function findProjectLocalDependencyRoots(projectConfig) {
+    if (!projectConfig?.dependencies) {
+        return {};
+    }
+    const results = {};
+    for (const [name, config] of Object.entries(projectConfig.dependencies)) {
+        if (typeof config.root === 'string') {
+            results[name] = config.root;
+        }
+    }
+    return results;
+}
 async function resolveDependencyConfigAsync(platform, name, packageRoot, projectConfig) {
     const libraryConfig = await (0, config_1.loadConfigAsync)(packageRoot);
     const reactNativeConfig = {
         ...libraryConfig?.dependency,
-        ...projectConfig?.dependencies[name],
+        ...projectConfig?.dependencies?.[name],
     };
     if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
         // Package defines platforms would be a platform host package.
@@ -104,7 +122,7 @@ async function resolveAppProjectConfigAsync(projectRoot, platform) {
         if (gradle == null || manifest == null) {
             return {};
         }
-        const packageName = await (0, androidResolver_1.parsePackageNameAsync)(path_1.default.join(androidDir, manifest), path_1.default.join(androidDir, gradle));
+        const packageName = await (0, androidResolver_1.parsePackageNameAsync)(androidDir, manifest, gradle);
         return {
             android: {
                 packageName: packageName ?? '',

@@ -68,7 +68,7 @@ To disable using our Maven cache server for your builds set the `EAS_BUILD_DISAB
 
 EAS Build serves most CocoaPods artifacts from a cache server. This improves the consistency of `pod install` times and generally improves speed. The cache will be bypassed automatically if you provide your own **.netrc** or **.curlrc** files.
 
-To use our CocoaPods cache server for your builds set the `EAS_BUILD_DISABLE_COCOAPODS_CACHE` env variable value to `"1"` in **eas.json**.
+To disable using our CocoaPods cache server for your builds set the `EAS_BUILD_DISABLE_COCOAPODS_CACHE` env variable value to `"1"` in **eas.json**.
 
 {/* prettier-ignore */}
 ```json eas.json

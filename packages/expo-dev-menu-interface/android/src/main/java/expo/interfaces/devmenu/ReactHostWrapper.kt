@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package expo.interfaces.devmenu
 
 import com.facebook.react.JSEngineResolutionAlgorithm
@@ -8,32 +6,24 @@ import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.LifecycleState
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.runtime.ReactHostImpl
+import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import java.lang.reflect.Field
 
 /**
  * An abstract wrapper to host [ReactNativeHost] and [ReactHost],
  * so that call-sites do not have to handle the difference between legacy bridge and bridgeless mode.
  */
-class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHost: ReactHost?) {
+class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHostProvider: () -> ReactHost?) {
   lateinit var reactNativeHost: ReactNativeHost
   lateinit var reactHost: ReactHost
 
   init {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      this.reactHost = requireNotNull(reactHost)
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
+      this.reactHost = requireNotNull(reactHostProvider())
     } else {
       this.reactNativeHost = reactNativeHost
-    }
-  }
-
-  override fun hashCode(): Int {
-    return if (isBridgelessMode) {
-      reactHost.hashCode()
-    } else {
-      reactNativeHost.hashCode()
     }
   }
 
@@ -72,7 +62,7 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHost: ReactHost?) 
       }
     }
 
-  val isBridgelessMode = ReactFeatureFlags.enableBridgelessArchitecture
+  val isBridgelessMode = ReactNativeFeatureFlags.enableBridgelessArchitecture
 
   val jsExecutorName: String
     get() {
@@ -122,5 +112,25 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHost: ReactHost?) 
     } else {
       reactNativeHost.clear()
     }
+  }
+
+  override fun hashCode(): Int {
+    return if (isBridgelessMode) {
+      reactHost.hashCode()
+    } else {
+      reactNativeHost.hashCode()
+    }
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as ReactHostWrapper
+
+    if (reactNativeHost != other.reactNativeHost) return false
+    if (reactHost != other.reactHost) return false
+
+    return true
   }
 }

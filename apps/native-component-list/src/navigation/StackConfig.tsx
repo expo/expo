@@ -5,8 +5,6 @@ import { ThemeType } from 'ThemeProvider';
 import * as React from 'react';
 import { View, Platform, TouchableOpacity, StyleSheet } from 'react-native';
 
-import ThemeToggler from '../../../common/ThemeToggler';
-
 export default function getStackConfig(navigation: BottomTabNavigationProp<any>, theme: ThemeType) {
   return {
     cardStyle: {
@@ -45,7 +43,8 @@ export default function getStackConfig(navigation: BottomTabNavigationProp<any>,
               color={theme.icon.info}
             />
           </TouchableOpacity>
-          <ThemeToggler />
+          {/* This toggler does not work properly, it only updates the navigation and not the body UI */}
+          {/* <ThemeToggler /> */}
         </View>
       ),
     }),

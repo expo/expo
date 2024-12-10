@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#25292e',
-     /* @tutinfo Modify container styles to remove <CODE>justifyContent</CODE> property. */
+    /* @tutinfo Modify container styles to remove <CODE>justifyContent</CODE> property. */
     alignItems: 'center',
     /* @end */
   },
@@ -131,16 +131,16 @@ const styles = StyleSheet.create({
 
 Let's divide the code into multiple files as we add more components to this screen. Throughout this tutorial, we'll use the components directory to create custom components.
 
-1. Inside the **components** directory, create a **ImageViewer.tsx** file.
+1. Create a **components** directory, and inside it, create the **ImageViewer.tsx** file.
 2. Move the code to display the image in this file along with the `image` styles.
 
 {/* prettier-ignore */}
 ```tsx components/ImageViewer.tsx|collapseHeight=280
 import { StyleSheet } from "react-native";
-import { Image } from "expo-image";
+import { Image, type ImageSource } from "expo-image";
 
 type Props = {
-  imgSource: string;
+  imgSource: ImageSource;
 };
 
 export default function ImageViewer({ imgSource }: Props) {
@@ -204,9 +204,9 @@ The `@` symbol is a custom [path alias](/guides/typescript/#path-aliases-optiona
 
 ## Create buttons using Pressable
 
-React Native includes a few different components for handling touch events, but[`<Pressable>`](https://reactnative.dev/docs/pressable) is recommended for its flexibility. It can detect single taps, long presses, trigger separate events when the button is pushed in and released, and more.
+React Native includes a few different components for handling touch events, but [`<Pressable>`](https://reactnative.dev/docs/pressable) is recommended for its flexibility. It can detect single taps, long presses, trigger separate events when the button is pushed in and released, and more.
 
-In the design, there are two buttons we need to create. Each has a different style and label. Let's start by creating a reusable component for these buttons. Create a **Button.tsx** file inside the components directory with the following code:
+In the design, there are two buttons we need to create. Each has a different style and label. Let's start by creating a reusable component for these buttons. Create a **Button.tsx** file inside the **components** directory with the following code:
 
 {/* prettier-ignore */}
 ```tsx components/Button.tsx|collapseHeight=280
@@ -242,9 +242,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-  },
-  buttonIcon: {
-    paddingRight: 8,
   },
   buttonLabel: {
     color: '#fff',

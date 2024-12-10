@@ -3,6 +3,6 @@
 import ExpoModulesCore
 
 internal class NoOpUpdatesEventManager: UpdatesEventManager {
-  internal weak var eventEmitter: EXEventEmitterService?
+  internal weak var observer: (any UpdatesEventManagerObserver)?
   func sendStateMachineContextEvent(context: UpdatesStateContext) {}
 }

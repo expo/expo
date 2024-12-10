@@ -47,7 +47,6 @@ import host.exp.exponent.kernel.ExponentError
 import host.exp.exponent.kernel.ExponentErrorMessage
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelConstants.AddedExperienceEventEvent
-import host.exp.exponent.kernel.KernelNetworkInterceptor
 import host.exp.exponent.kernel.KernelProvider
 import host.exp.exponent.kernel.services.ErrorRecoveryManager
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
@@ -62,6 +61,7 @@ import host.exp.expoview.Exponent.StartReactInstanceDelegate
 import host.exp.expoview.R
 import org.json.JSONException
 import org.json.JSONObject
+import versioned.host.exp.exponent.ExpoNetworkInterceptor
 import versioned.host.exp.exponent.ExponentDevBundleDownloadListener
 import versioned.host.exp.exponent.ExponentPackage
 import java.util.LinkedList
@@ -122,6 +122,8 @@ abstract class ReactNativeActivity :
   private var loadingView: LoadingView? = null
   private lateinit var reactContainerView: FrameLayout
   private val handler = Handler(Looper.getMainLooper())
+
+  private var networkInterceptor: ExpoNetworkInterceptor? = null
 
   protected open fun shouldCreateLoadingView(): Boolean {
     return true
@@ -201,10 +203,6 @@ abstract class ReactNativeActivity :
 
   // Loop until a view is added to the ReactRootView and once it happens run callback
   private fun waitForReactRootViewToHaveChildrenAndRunCallback(callback: Runnable) {
-    if (reactSurface == null) {
-      return
-    }
-
     if ((reactSurface?.view?.childCount ?: 0) > 0) {
       callback.run()
     } else {
@@ -279,7 +277,7 @@ abstract class ReactNativeActivity :
   override fun onPause() {
     super.onPause()
     if (!isCrashed) {
-      KernelNetworkInterceptor.onPause()
+      networkInterceptor?.onPause()
       reactHost?.onHostPause()
       // TODO: use onHostPause(activity)
     }
@@ -288,13 +286,14 @@ abstract class ReactNativeActivity :
   override fun onResume() {
     if (!isCrashed) {
       reactHost?.onHostResume(this, this)
-      KernelNetworkInterceptor.onResume(reactHost)
+      networkInterceptor?.onResume()
     }
     super.onResume()
   }
 
   override fun onDestroy() {
     super.onDestroy()
+    destroyReactHost()
     handler.removeCallbacksAndMessages(null)
     EventBus.getDefault().unregister(this)
   }
@@ -315,9 +314,9 @@ abstract class ReactNativeActivity :
   open val isDebugModeEnabled: Boolean
     get() = manifest?.isDevelopmentMode() ?: false
 
-  open fun destroyReactHost() {
+  open fun destroyReactHost(reason: String = "Destroy Activity") {
     if (!isCrashed) {
-      reactHost?.onHostDestroy()
+      reactHost?.destroy(reason, null)
     }
   }
 
@@ -373,25 +372,30 @@ abstract class ReactNativeActivity :
       )
     )
 
+    val mainModuleName = if (delegate.isDebugModeEnabled) {
+      manifest?.getMainModuleName()
+    } else {
+      null
+    }
+
     val nativeHost = ExpoGoReactNativeHost(
       application,
-      instanceManagerBuilderProperties,
-      manifest!!.getMainModuleName()
+      instanceManagerBuilderProperties
     )
 
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
     val hostWrapper = ReactNativeHostWrapper(application, nativeHost)
-    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper, devBundleDownloadListener)
-    reactNativeHost = nativeHost
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
-      val mainModuleName = manifest!!.getMainModuleName()
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName)
+      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName!!, nativeHost)
       DefaultDevLoadingViewImplementation.setDevLoadingEnabled(true)
     } else {
       waitForReactAndFinishLoading()
     }
+
+    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper, devBundleDownloadListener)
+    reactNativeHost = nativeHost
 
     val bundle = Bundle()
     val exponentProps = JSONObject()
@@ -462,7 +466,13 @@ abstract class ReactNativeActivity :
     surface.start()
     reactSurface = surface
     reactHost.onHostResume(this, this)
-    KernelNetworkInterceptor.start(manifest!!, reactHost)
+
+    val buildProps = (manifest!!.getPluginProperties("expo-build-properties")?.get("android") as? Map<*, *>)
+      ?.mapKeys { it.key.toString() }
+    val enableNetworkInspector = buildProps?.get("networkInspector") as? Boolean ?: true
+    if (enableNetworkInspector && reactHost.devSupportManager.devSupportEnabled) {
+      networkInterceptor = ExpoNetworkInterceptor(Uri.parse(manifest!!.getBundleURL()))
+    }
     return reactHost
   }
 
