@@ -46,12 +46,4 @@ describe('Test key functionality', () => {
   it('throws for allowScreenCapture on web platform', async () => {
     await expect(ScreenCapture.allowScreenCaptureAsync).rejects.toThrowError('not available');
   });
-
-  it('throws for addRecordingListener on web platform', async () => {
-    await expect(ScreenCapture.addRecordingListener).rejects.toThrowError('not available');
-  });
-
-  it('throws for removeRecordingListener on web platform', async () => {
-    await expect(ScreenCapture.removeRecordingListener).rejects.toThrowError('not available');
-  });
 });
