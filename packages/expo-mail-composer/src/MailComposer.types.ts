@@ -8,17 +8,11 @@ export type MailClient = {
   label: string;
   /**
    * The package name of the mail client application.
-   * You can use this package name with the `openPackage` function from `expo-intent-launcher` to open the mail client.
+   * You can use this package name with the `getApplicationIconAsync` or `openApplication` functions from
+   * `expo-intent-launcher` to retrieve the app’s icon or open the mail client directly.
    * @platform android
    */
   packageName?: string;
-  /**
-   * The icon of the mail client application as a base64-encoded PNG image string.
-   * The string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image` `<Image>`
-   * component's `source` prop.
-   * @platform android
-   */
-  icon?: string;
   /**
    * The URL scheme of the mail client.
    * You can use this URL with the `openURL` function from `expo-linking` to open the mail client.

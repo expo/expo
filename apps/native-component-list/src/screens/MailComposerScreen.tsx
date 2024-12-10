@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { openPackage } from 'expo-intent-launcher';
+import { openApplication, getApplicationIconAsync } from 'expo-intent-launcher';
 import { openURL } from 'expo-linking';
 import * as MailComposer from 'expo-mail-composer';
 import React from 'react';
@@ -10,6 +10,33 @@ import MonoText from '../components/MonoText';
 
 export default function MailComposerScreen() {
   const [status, setStatus] = React.useState<MailComposer.MailComposerStatus | null>(null);
+  const [clients, setClients] = React.useState<(MailComposer.MailClient & { icon?: string })[]>([]);
+
+  React.useEffect(() => {
+    // Retrieve mail clients
+    const fetchedClients = MailComposer.getClients();
+
+    // If platform Android, load icons
+    const loadIcons = async () => {
+      if (Platform.OS === 'android') {
+        const updatedClients = await Promise.all(
+          fetchedClients.map(async (client) => {
+            if (client.packageName) {
+              const icon = await getApplicationIconAsync(client.packageName);
+              return { ...client, icon };
+            }
+            return client;
+          })
+        );
+        setClients(updatedClients);
+      } else {
+        // No icons are required / supported on iOS
+        setClients(fetchedClients);
+      }
+    };
+
+    loadIcons();
+  }, []);
 
   const sendMailAsync = async () => {
     try {
@@ -28,13 +55,13 @@ export default function MailComposerScreen() {
 
   return (
     <View style={styles.container}>
-      {MailComposer.getClients().map(({ label, packageName, icon, url }) => (
+      {clients.map(({ label, packageName, icon, url }) => (
         <View style={styles.clientContainer} key={label}>
           {icon && <Image style={styles.image} source={icon} />}
           <Text>{label}</Text>
           <Button
             onPress={Platform.select({
-              android: () => packageName && openPackage(packageName),
+              android: () => packageName && openApplication(packageName),
               ios: () => url && openURL(url),
             })}
             title="Open client"

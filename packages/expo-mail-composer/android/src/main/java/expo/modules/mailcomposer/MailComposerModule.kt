@@ -2,18 +2,12 @@ package expo.modules.mailcomposer
 
 import android.content.Intent
 import android.content.pm.LabeledIntent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.AdaptiveIconDrawable
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Base64
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.io.ByteArrayOutputStream
 
 class MailComposerModule : Module() {
   private val context
@@ -46,10 +40,7 @@ class MailComposerModule : Module() {
           .putBccRecipients(Intent.EXTRA_BCC)
           .putSubject(Intent.EXTRA_SUBJECT)
           .putBody(Intent.EXTRA_TEXT, options.isHtml == true)
-          .putAttachments(
-            Intent.EXTRA_STREAM,
-            application
-          )
+          .putAttachments(Intent.EXTRA_STREAM, application)
 
         LabeledIntent(
           mailIntentBuilder.build(),
@@ -94,35 +85,7 @@ class MailComposerModule : Module() {
       val appInfo = pm.getApplicationInfo(packageName, 0)
       val appName = pm.getApplicationLabel(appInfo).toString()
 
-      // Get the app icon as a base64-encoded string
-      val iconDrawable = resolveInfo.loadIcon(pm)
-      val iconBase64 = iconDrawable?.let { drawable ->
-        val bitmap = when (drawable) {
-          is BitmapDrawable -> drawable.bitmap
-          is AdaptiveIconDrawable -> {
-            // Create a bitmap from AdaptiveIconDrawable
-            val bitmap = Bitmap.createBitmap(
-              drawable.intrinsicWidth,
-              drawable.intrinsicHeight,
-              Bitmap.Config.ARGB_8888
-            )
-            val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            bitmap
-          }
-          else -> null
-        }
-
-        bitmap?.let {
-          val outputStream = ByteArrayOutputStream()
-          it.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-          val iconBytes = outputStream.toByteArray()
-          "data:image/png;base64," + Base64.encodeToString(iconBytes, Base64.NO_WRAP)
-        } ?: ""
-      } ?: ""
-
-      MailClient(label = appName, packageName = packageName, icon = iconBase64)
+      MailClient(label = appName, packageName = packageName)
     }
   }
 
