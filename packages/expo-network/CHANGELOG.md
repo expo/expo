@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Added `netInfo` null check. ([#33559](https://github.com/expo/expo/pull/33559)) by [@pchalupa](https://github.com/pchalupa)
+- On `Android`, Prevent crash from the `networkCallback` calling `fetchNetworkState`.
 
 ### 💡 Others
 
