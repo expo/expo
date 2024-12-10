@@ -124,7 +124,12 @@ class NetworkModule : Module() {
         return result
       }
     } catch (e: Exception) {
-      throw NetworkAccessException(e)
+      result.apply {
+        putString("type", NetworkStateType.UNKNOWN.value)
+        putBoolean("isInternetReachable", false)
+        putBoolean("isConnected", false)
+      }
+      return result
     }
   }
 
