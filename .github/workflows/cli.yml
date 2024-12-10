@@ -212,23 +212,25 @@ jobs:
       - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
-      - name: 🎭 Get installed Playwright version for cache key
-        run: echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
+      - name: 🎭 Get Playwright information
+        id: playwright-info
+        shell: bash
+        run: |
+          echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
         with:
-          path: |
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
       - name: 🎭 Install Playwright Browsers
         run: bun playwright install --with-deps chromium
         working-directory: packages/@expo/cli
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
 
       - name: 🧪 E2E (playwright) Test CLI
-        run: yarn test:playwright
         working-directory: packages/@expo/cli
+        run: yarn test:playwright
 
       - name: 🗄️ Upload playwright report
         uses: actions/upload-artifact@v4
@@ -304,18 +306,18 @@ jobs:
       - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
-      - name: 🎭 Get installed Playwright version for cache key
-        id: playwright-cache
+      - name: 🎭 Get Playwright information
+        id: playwright-info
         shell: bash
         run: |
-          echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
+          echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
           echo "dir=$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
         with:
-          path: ${{ steps.playwright-cache.outputs.dir }}
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+          path: ${{ steps.playwright-info.outputs.dir }}
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
       - name: 🎭 Install Playwright Browsers
         run: bun playwright install --with-deps chromium
         working-directory: packages/@expo/cli
