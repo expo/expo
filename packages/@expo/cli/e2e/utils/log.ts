@@ -2,7 +2,7 @@ import { boolish } from 'getenv';
 import { format } from 'node:util';
 
 /** If the verbose logging should be enabled by default, based on `EXPO_E2E_VERBOSE` or GitHub Actions running in debug mode */
-export const EXPO_E2E_VERBOSE = boolish('RUNNER_DEBUG', boolish('EXPO_E2E_VERBOSE', false));
+const EXPO_E2E_VERBOSE = boolish('RUNNER_DEBUG', boolish('EXPO_E2E_VERBOSE', false));
 
 export function createVerboseLogger({
   prefix = 'verbose',
@@ -13,13 +13,13 @@ export function createVerboseLogger({
 
   /** Log verbose output which is outputted as group in cases of errors, or when verbose is enabled */
   function log(...args: any[]) {
-    logs += prefixLines(prefix, format(...args));
+    logs += prefixLines(prefix, format(...args)) + '\n';
   }
 
   return Object.assign(log, {
     /** Log output prefixed by a tag */
     tag(tag: string, ...args: any[]) {
-      logs += prefixLines(`${prefix} ${tag}`, format(...args));
+      logs += prefixLines(`${prefix} ${tag}`, format(...args)) + '\n';
     },
     /** Log encountered errors and mark the logger to output as error */
     error(error: any) {
@@ -42,6 +42,6 @@ export function createVerboseLogger({
   });
 }
 
-export function prefixLines(prefix: string, output: string) {
+function prefixLines(prefix: string, output: string) {
   return `[${prefix}] ${output.split('\n').join(`\n[${prefix}] `)}`;
 }
