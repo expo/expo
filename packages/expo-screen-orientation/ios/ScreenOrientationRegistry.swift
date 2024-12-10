@@ -17,8 +17,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public var currentScreenOrientation: UIInterfaceOrientation
   var orientationControllers: [ScreenOrientationController] = []
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
-  private let queue = DispatchQueue(label: "expo.screenorientationregistry.controllerInterfaceMasks", attributes: .concurrent)
-  
+  private let queue = DispatchQueue(label: "expo.screenorientationregistry", attributes: .concurrent)
   @objc
   public var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
@@ -136,7 +135,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       for moduleMask in controllerInterfaceMasks {
         mask = mask.intersection(moduleMask.value)
       }
-      
+
       return mask
     }
   }
@@ -207,7 +206,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
     queue.async(flags: .barrier) {
       self.currentScreenOrientation = newScreenOrientation
-      
+
       for controller in self.orientationControllers {
         controller.screenOrientationDidChange(newScreenOrientation)
       }
