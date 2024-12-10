@@ -300,6 +300,9 @@ redirects[eas-update/environment-variables]=eas/environment-variables
 # After moving common questions from Expo Router FAQ to Introduction
 redirects[router/reference/faq]=router/introduction
 
+# After migrating Prebuild page info to CNG page
+redirects[workflow/prebuild]=workflow/continuous-native-generation
+
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

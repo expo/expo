@@ -156,11 +156,7 @@ const general = [
     ),
     makeGroup(
       'Custom native code',
-      [
-        makePage('workflow/customizing.mdx'),
-        makePage('workflow/prebuild.mdx'),
-        makePage('guides/adopting-prebuild.mdx'),
-      ],
+      [makePage('workflow/customizing.mdx'), makePage('guides/adopting-prebuild.mdx')],
       { expanded: false }
     ),
     makeGroup(
