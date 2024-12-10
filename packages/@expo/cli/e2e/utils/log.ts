@@ -32,7 +32,7 @@ export function createVerboseLogger({
 
       if (verbose !== false && hasError) {
         console.error(logs);
-      } else if (verbose !== false && EXPO_E2E_VERBOSE) {
+      } else if (verbose || EXPO_E2E_VERBOSE) {
         console.warn(logs);
       }
 
