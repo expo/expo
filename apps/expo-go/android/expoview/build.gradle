@@ -126,7 +126,7 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
   implementation "androidx.lifecycle:lifecycle-process:2.8.7"
 
-    testImplementation 'junit:junit:4.13.2'
+  testImplementation 'junit:junit:4.13.2'
 
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
