@@ -96,9 +96,10 @@ class NetworkModule : Module() {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) { // use getActiveNetworkInfo before api level 29
         val netInfo = connectivityManager.activeNetworkInfo
         val connectionType = getConnectionType(netInfo)
+        val isInternetReachable = netInfo?.isConnected ?: false
 
         result.apply {
-          putBoolean("isInternetReachable", netInfo!!.isConnected)
+          putBoolean("isInternetReachable", isInternetReachable)
           putString("type", connectionType.value)
           putBoolean("isConnected", connectionType.isDefined)
         }
