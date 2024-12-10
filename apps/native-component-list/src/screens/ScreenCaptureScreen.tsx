@@ -8,10 +8,10 @@ import TitleSwitch from '../components/TitledSwitch';
 
 function useScreenCapture({
   onScreenshot,
-  onRecording,
+  onScreenRecording,
 }: {
   onScreenshot: () => void;
-  onRecording: (props: { isCaptured: boolean }) => void;
+  onScreenRecording: (props: { isCaptured: boolean }) => void;
 }) {
   const hasPermissions = async () => {
     const { status } = await ScreenCapture.requestPermissionsAsync();
@@ -20,12 +20,12 @@ function useScreenCapture({
 
   React.useEffect(() => {
     let screenshotListener: ScreenCapture.Subscription;
-    let recordingListener: ScreenCapture.Subscription;
+    let screenRecordingListener: ScreenCapture.Subscription;
 
     const addListenerAsync = async () => {
       if (await hasPermissions()) {
         screenshotListener = ScreenCapture.addScreenshotListener(onScreenshot);
-        recordingListener = ScreenCapture.addRecordingListener(onRecording);
+        screenRecordingListener = ScreenCapture.addScreenRecordingListener(onScreenRecording);
       } else {
         alert('Permissions needed to capture screenshot events are missing!');
       }
@@ -35,13 +35,13 @@ function useScreenCapture({
 
     return () => {
       screenshotListener?.remove();
-      recordingListener?.remove();
+      screenRecordingListener?.remove();
     };
   }, []);
 }
 
 type Timestamp = {
-  type: 'screenshot' | 'recording';
+  type: 'screenshot' | 'screen-recording';
   timestamp: Date;
   isCaptured?: boolean;
 };
@@ -63,9 +63,9 @@ export default function ScreenCaptureScreen() {
       setTimestamps((timestamps) =>
         timestamps.concat([{ type: 'screenshot', timestamp: new Date() }])
       ),
-    onRecording: ({ isCaptured }) => {
+    onScreenRecording: ({ isCaptured }) => {
       setTimestamps((timestamps) =>
-        timestamps.concat([{ type: 'recording', timestamp: new Date(), isCaptured }])
+        timestamps.concat([{ type: 'screen-recording', timestamp: new Date(), isCaptured }])
       );
     },
   });
@@ -88,7 +88,11 @@ export default function ScreenCaptureScreen() {
         renderItem={({ item }) => (
           <MonoText>
             {item.timestamp.toLocaleTimeString()} - {item.type}
-            {item.type === 'recording' ? (item.isCaptured ? ' - Started' : ' - Stopped') : ''}
+            {item.type === 'screen-recording'
+              ? item.isCaptured
+                ? ' - Started'
+                : ' - Stopped'
+              : ''}
           </MonoText>
         )}
       />

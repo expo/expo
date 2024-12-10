@@ -54,16 +54,16 @@ export declare function usePreventScreenCapture(key?: string): void;
 export declare function addScreenshotListener(listener: () => void): EventSubscription;
 /**
  * Adds a listener that will fire whenever the app starts or stops to be recorded.
- * On Android, the `addRecordingListener` method has no effect.
+ * On Android, the `addScreenRecordingListener` method has no effect.
  *
  * @param listener The function that will be executed when the user takes a screen recording.
  * This function accepts a single boolean argument that indicates whether the screen recording
  * started or stopped.
  * @platform ios 11+
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
- * `remove()` or passing it to `removeRecordingListener`.
+ * `remove()` or passing it to `removeScreenRecordingListener`.
  */
-export declare function addRecordingListener(listener: (props: {
+export declare function addScreenRecordingListener(listener: (props: {
     isCaptured: boolean;
 }) => void): EventSubscription;
 /**
@@ -88,10 +88,10 @@ export declare function removeScreenshotListener(subscription: EventSubscription
  * Removes the subscription you provide, so that you are no longer listening for screen recordings.
  * You can also call `remove()` on that `Subscription` object.
  *
- * @param subscription Subscription returned by `addRecordingListener`.
+ * @param subscription Subscription returned by `addScreenRecordingListener`.
  * @platform ios 11+
  */
-export declare function removeRecordingListener(subscription: EventSubscription): void;
+export declare function removeScreenRecordingListener(subscription: EventSubscription): void;
 /**
  * Checks user's permissions for detecting when a screenshot is taken.
  * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.

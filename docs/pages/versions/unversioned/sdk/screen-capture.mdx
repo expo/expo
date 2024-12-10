@@ -140,7 +140,7 @@ export default function App() {
   const [sensitiveContentVisible, setSensitiveContentVisible] = useState(true);
 
   useEffect(() => {
-    const subscription = ScreenCapture.addRecordingListener(({ isCaptured }) => {
+    const subscription = ScreenCapture.addScreenRecordingListener(({ isCaptured }) => {
       if (isCaptured) {
         // Hide sensitive content
         setSensitiveContentVisible(false);
