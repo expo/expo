@@ -12,7 +12,7 @@ class AppDelegate: ExpoAppDelegate {
 
     // Tell `ExpoAppDelegate` to skip calling the React Native instance setup from `RCTAppDelegate`.
     self.shouldCallReactNativeSetup = false
-    
+
     FirebaseApp.configure()
 
     if application.applicationState != UIApplication.State.background {
