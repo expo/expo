@@ -136,6 +136,7 @@ const general = [
   makeSection('Development process', [
     makePage('workflow/overview.mdx'),
     makePage('workflow/configuration.mdx'),
+    makePage('workflow/continuous-native-generation.mdx'),
     makePage('workflow/using-libraries.mdx'),
     makePage('guides/apple-privacy.mdx'),
     makePage('guides/permissions.mdx'),
@@ -156,7 +157,6 @@ const general = [
     makeGroup(
       'Custom native code',
       [
-        makePage('workflow/continuous-native-generation.mdx'),
         makePage('workflow/customizing.mdx'),
         makePage('workflow/prebuild.mdx'),
         makePage('guides/adopting-prebuild.mdx'),
