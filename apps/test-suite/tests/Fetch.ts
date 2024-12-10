@@ -161,6 +161,32 @@ export function test({ describe, expect, it, ...t }) {
       }
       expect(error).not.toBeNull();
     });
+
+    it('should abort streaming request', async () => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 500);
+      let error: Error | null = null;
+      try {
+        const resp = await fetch('https://httpbin.org/drip?numbytes=512&duration=2', {
+          signal: controller.signal,
+          headers: {
+            Accept: 'text/event-stream',
+          },
+        });
+        const reader = resp.body.getReader();
+        while (true) {
+          const { done } = await reader.read();
+          if (done) {
+            break;
+          }
+        }
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+    });
   });
 
   describe('Streaming', () => {
