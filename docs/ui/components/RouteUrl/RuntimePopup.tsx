@@ -30,10 +30,10 @@ export function RuntimePopup<T extends string>({
         aria-label="Runtime URL format selector"
         title="Select runtime URL format"
         className={mergeClasses(
-          'flex items-center justify-center text-default h-10 px-10 m-0 min-w-[100px] rounded-none border-l indent-0 border-l-default shadow-xs appearance-none bg-default text-sm',
+          'm-0 flex h-10 min-w-[100px] appearance-none items-center justify-center rounded-none border-l border-l-default bg-default px-10 indent-0 text-sm text-default shadow-xs',
           'hocus:bg-subtle hocus:shadow-none',
           'focus-visible:-outline-offset-2',
-          'max-md-gutters:indent-[-9999px] max-md-gutters:min-w-[unset] max-md-gutters:max-w-[60px] max-md-gutters:px-6'
+          'max-md-gutters:min-w-[unset] max-md-gutters:max-w-[60px] max-md-gutters:px-6 max-md-gutters:indent-[-9999px]'
         )}
         value={selected}
         onChange={e => {
@@ -46,9 +46,9 @@ export function RuntimePopup<T extends string>({
         ))}
       </select>
       {isLoaded && (
-        <div className="absolute inset-x-3 inset-y-0 flex items-center justify-between gap-2 text-icon-secondary pointer-events-none select-none">
+        <div className="pointer-events-none absolute inset-x-3 inset-y-0 flex select-none items-center justify-between gap-2 text-icon-secondary">
           <Icon className={ICON_CLASSES} />
-          <ChevronDownIcon className="icon-xs text-icon-secondary pointer-events-none" />
+          <ChevronDownIcon className="icon-xs pointer-events-none text-icon-secondary" />
         </div>
       )}
     </div>

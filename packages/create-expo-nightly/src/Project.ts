@@ -1,9 +1,15 @@
-import JsonFile, { JSONArray, JSONObject, JSONValue } from '@expo/json-file';
+import type { JSONArray, JSONObject, JSONValue } from '@expo/json-file';
 import fs from 'fs-extra';
 import assert from 'node:assert';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
-import { runAsync } from './Processes';
+import { setupExpoRepoAsync } from './ExpoRepo.js';
+import { REACT_NATIVE_TRANSITIVE_DEPENDENCIES } from './Packages.js';
+import { runAsync } from './Processes.js';
+
+const require = createRequire(import.meta.url);
+const { default: JsonFile } = require('@expo/json-file') as typeof import('@expo/json-file');
 
 export interface ProjectProperties {
   /** The Android applicationId and iOS bundleIdentifier. */
@@ -12,8 +18,17 @@ export interface ProjectProperties {
   /** Enable the New Architecture mode. */
   newArchEnabled: boolean;
 
+  /** react-native nightly version */
+  nightlyVersion: string;
+
   /** The template to use when creating the project. @default "blank-typescript" */
   template?: string;
+
+  /** The template version on npm. @default "canary" */
+  templateVersion?: string;
+
+  /** Whether to use local expo/expo repository rather than clone a new one */
+  useExpoRepoPath: string | undefined;
 }
 
 /**
@@ -21,50 +36,81 @@ export interface ProjectProperties {
  */
 export async function createExpoApp(
   projectRoot: string,
-  expoRepoPath: string,
   props: ProjectProperties
-) {
+): Promise<string> {
   const template = props.template ?? 'blank-typescript';
+  const templateVersion = props.templateVersion ?? 'canary';
   if (await fs.pathExists(projectRoot)) {
     throw new Error(`Project already exists at ${projectRoot}`);
   }
-  await runAsync('bunx', ['create-expo-app', projectRoot, '--no-install', `--template`, template]);
-  await setupDependenciesAsync(projectRoot);
-  await setupEntryAsync(projectRoot);
+  await runAsync('bunx', [
+    'create-expo-app',
+    projectRoot,
+    '--no-install',
+    `--template`,
+    `${template}@${templateVersion}`,
+  ]);
+
+  const expoRepoPath = await setupExpoRepoAsync(
+    projectRoot,
+    props.useExpoRepoPath,
+    props.nightlyVersion
+  );
+
+  await setupProjectPackageJsonAsync(projectRoot, expoRepoPath, props.nightlyVersion);
   await setupMetroConfigAsync(projectRoot, expoRepoPath);
   await setupAppJsonAsync(projectRoot, {
     appId: props.appId,
     newArchEnabled: props.newArchEnabled,
   });
+
+  return expoRepoPath;
 }
 
 /**
- * Purge dependencies and will setup later.
+ * Setup package.json in the project for resolutions, workspaces and so on.
  */
-async function setupDependenciesAsync(projectRoot: string) {
-  await JsonFile.mergeAsync(path.join(projectRoot, 'package.json'), {
-    dependencies: {},
+async function setupProjectPackageJsonAsync(
+  projectRoot: string,
+  expoRepoPath: string,
+  nightlyVersion: string
+) {
+  const packageJsonPath = path.join(projectRoot, 'package.json');
+  const packageJson = await JsonFile.readAsync(packageJsonPath);
+
+  const scripts: Record<string, string> = (packageJson.scripts as Record<string, string>) ?? {};
+  scripts['postinstall'] = 'bun --cwd expo postinstall';
+
+  let workspacePrefix: string;
+  const relativePath = path.relative(projectRoot, expoRepoPath);
+  if (relativePath.startsWith('..')) {
+    workspacePrefix = expoRepoPath;
+  } else {
+    workspacePrefix = relativePath;
+  }
+
+  const resolutions: Record<string, string> =
+    (packageJson.resolutions as Record<string, string>) ?? {};
+  for (const name of REACT_NATIVE_TRANSITIVE_DEPENDENCIES) {
+    resolutions[name] = `${nightlyVersion}`;
+  }
+  await JsonFile.mergeAsync(packageJsonPath, {
+    // Add workspaces
+    workspaces: [`${workspacePrefix}/packages/*`, `${workspacePrefix}/packages/@expo/*`],
+
+    // Exclude templates from autolinking
+    expo: {
+      autolinking: {
+        exclude: ['expo-face-detector', 'expo-module-template', 'expo-module-template-local'],
+      },
+    },
+
+    // Pin the versions of transitive dependencies
+    resolutions,
+
+    // Add postinstall script
+    scripts,
   });
-}
-
-/**
- * Setup the entry point for monorepo.
- */
-async function setupEntryAsync(projectRoot: string) {
-  await fs.writeFile(
-    path.join(projectRoot, 'index.js'),
-    `\
-import { registerRootComponent } from 'expo';
-
-import App from './App';
-
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
-`
-  );
-  await JsonFile.deleteKeyAsync(path.join(projectRoot, 'package.json'), 'main');
 }
 
 /**
@@ -125,19 +171,17 @@ async function setupAppJsonAsync(
   sectionAndroid.package = appId;
   sectionIos.bundleIdentifier = appId;
 
-  // Add expo-build-properties plugin
   const plugins = exp.plugins ?? [];
   assert(isJSONArray(plugins));
-  plugins.push(['expo-build-properties', { android: { newArchEnabled }, ios: { newArchEnabled } }]);
+  // Push plugins if any
 
   // Add updates config
-  exp.runtimeVersion = {
-    policy: 'appVersion',
-  };
+  exp.runtimeVersion = '1.0.0';
 
   exp.android = sectionAndroid;
   exp.ios = sectionIos;
   exp.plugins = plugins;
+  exp.newArchEnabled = newArchEnabled;
   await JsonFile.writeAsync(appJsonPath, appJson);
 }
 

@@ -41,7 +41,7 @@ export const APISectionPlatformTags = ({
   }
 
   return (
-    <div className="flex flex-row items-center mb-2">
+    <div className="mb-2 flex flex-row items-center">
       {experimentalData.length > 0 && (
         <CALLOUT tag="span" theme="secondary" className="inline-flex flex-row">
           <StatusTag status="experimental" className="!mr-0" />

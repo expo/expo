@@ -1,7 +1,7 @@
 import { Navigator, Slot } from './views/Navigator';
 export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRef, useGlobalSearchParams, useLocalSearchParams, useSegments, useRootNavigation, useRootNavigationState, } from './hooks';
 export { router, Router } from './imperative-api';
-export { Link, Redirect, LinkProps, WebAnchorProps } from './link/Link';
+export { Link, Redirect, RedirectProps, LinkProps, WebAnchorProps } from './link/Link';
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
 export { ExpoRoot } from './ExpoRoot';

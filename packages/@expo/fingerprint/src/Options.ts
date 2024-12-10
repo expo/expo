@@ -7,7 +7,7 @@ import { loadConfigAsync } from './Config';
 import { satisfyExpoVersion } from './ExpoVersions';
 import type { Config, NormalizedOptions, Options } from './Fingerprint.types';
 import { SourceSkips } from './sourcer/SourceSkips';
-import { buildPathMatchObjects } from './utils/Path';
+import { buildDirMatchObjects, buildPathMatchObjects } from './utils/Path';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
@@ -89,6 +89,11 @@ export async function normalizeOptionsAsync(
   options?: Options
 ): Promise<NormalizedOptions> {
   const config = await loadConfigAsync(projectRoot, options?.silent ?? false);
+  const ignorePathMatchObjects = await collectIgnorePathsAsync(
+    projectRoot,
+    config?.ignorePaths,
+    options
+  );
   return {
     // Defaults
     platforms: ['android', 'ios'],
@@ -105,11 +110,8 @@ export async function normalizeOptionsAsync(
       config?.enableReactImportsPatcher ??
       satisfyExpoVersion(projectRoot, '<52.0.0') ??
       false,
-    ignorePathMatchObjects: await collectIgnorePathsAsync(
-      projectRoot,
-      config?.ignorePaths,
-      options
-    ),
+    ignorePathMatchObjects,
+    ignoreDirMatchObjects: buildDirMatchObjects(ignorePathMatchObjects),
   };
 }
 

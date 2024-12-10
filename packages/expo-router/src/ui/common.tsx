@@ -1,4 +1,3 @@
-import { Slot } from '@radix-ui/react-slot';
 import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
 import { ViewProps, View, SafeAreaView } from 'react-native';
 
@@ -9,6 +8,7 @@ import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { sortRoutesWithInitial } from '../sortRoutes';
 import { Href } from '../types';
 import { routeToScreen } from '../useScreens';
+import { Slot } from './Slot';
 
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 export const ViewSlot = Slot as React.ForwardRefExoticComponent<

@@ -20,8 +20,8 @@ export const GridItem = ({
   <A
     href={href}
     className={mergeClasses(
-      'flex flex-col group items-center justify-center p-6 gap-1.5 rounded-md border border-default shadow-xs transition-all',
-      'hocus:shadow-md hocus:scale-105'
+      'group flex flex-col items-center justify-center gap-1.5 rounded-md border border-default p-6 shadow-xs transition-all',
+      'hocus:scale-105 hocus:shadow-md'
     )}
     isStyled>
     <Icon title={title} image={image} />
@@ -30,8 +30,8 @@ export const GridItem = ({
       <CALLOUT
         theme="secondary"
         className={mergeClasses(
-          'relative opacity-0 top-1.5 transition-all duration-300',
-          'group-hover:opacity-75 group-hover:top-0 group-hover:scale-100'
+          'relative top-1.5 opacity-0 transition-all duration-300',
+          'group-hover:top-0 group-hover:scale-100 group-hover:opacity-75'
         )}>
         {protocol.join(' | ')}
       </CALLOUT>

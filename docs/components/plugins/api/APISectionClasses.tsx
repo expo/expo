@@ -140,9 +140,9 @@ const renderClass = (
         includePlatforms={false}
         afterContent={
           returnComment && (
-            <div className="flex flex-col gap-2 items-start">
-              <div className="flex flex-row gap-2 items-center">
-                <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
+            <div className="flex flex-col items-start gap-2">
+              <div className="flex flex-row items-center gap-2">
+                <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
                 <CALLOUT tag="span" theme="secondary" weight="medium">
                   Returns
                 </CALLOUT>

@@ -50,6 +50,10 @@ export type Router = {
    */
   dismiss: (count?: number) => void;
   /**
+   * Dismisses screens until the provided href is reached. If the href is not found, it will instead replace the current screen with the provided href.
+   */
+  dismissTo: (href: Href, options?: NavigationOptions) => void;
+  /**
    * Returns to the first screen in the closest stack. This is similar to
    * [popToTop](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action.
    */
@@ -79,6 +83,7 @@ export const router: Router = {
   push: (href, options) => store.push(href, options),
   dismiss: (count) => store.dismiss(count),
   dismissAll: () => store.dismissAll(),
+  dismissTo: (href, options) => store.dismissTo(href, options),
   canDismiss: () => store.canDismiss(),
   replace: (href, options) => store.replace(href, options),
   back: () => store.goBack(),

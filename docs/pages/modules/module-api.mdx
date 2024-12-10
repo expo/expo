@@ -1020,17 +1020,27 @@ class ClipboardModule : Module() {
 
 </CodeBlocksTable>
 
-To subscribe to these events in JavaScript/TypeScript, you need to wrap the native module with `EventEmitter` class as shown:
+To subscribe to these events in JavaScript/TypeScript, use [`addListener`](/versions/latest/sdk/expo/#addlistenereventname-listener) on the module object returned by `requireNativeModule`. Modules are extending the built-in [`EventEmitter`](/versions/latest/sdk/expo/#eventemitter) class.
+Alternatively, you can use [`useEvent`](/versions/latest/sdk/expo/#useeventeventemitter-eventname-initialvalue) or [`useEventListener`](/versions/latest/sdk/expo/#useeventlistenereventemitter-eventname-listener) hooks.
 
 ```ts TypeScript
-import { requireNativeModule, EventEmitter, Subscription } from 'expo-modules-core';
+import { requireNativeModule, NativeModule } from 'expo';
 
-const ClipboardModule = requireNativeModule('Clipboard');
-const emitter = new EventEmitter(ClipboardModule);
+type ClipboardChangeEvent = {
+  contentTypes: string[];
+};
 
-export function addClipboardListener(listener: (event) => void): Subscription {
-  return emitter.addListener('onClipboardChanged', listener);
-}
+type ClipboardModuleEvents = {
+  onClipboardChanged(event: ClipboardChangeEvent): void;
+};
+
+declare class ClipboardModule extends NativeModule<ClipboardModuleEvents> {}
+
+const Clipboard = requireNativeModule<ClipboardModule>('Clipboard');
+
+Clipboard.addListener('onClipboardChanged', (event: ClipboardChangeEvent) => {
+  alert('Clipboard has changed');
+});
 ```
 
 </APIBox>

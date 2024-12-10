@@ -72,6 +72,20 @@ export function test({ describe, expect, it, ...t }) {
       expect(json.form).toEqual({ foo: 'foo' });
       expect(json.headers['Content-Type'].startsWith('multipart/form-data; boundary=')).toBe(true);
     });
+
+    it('should post with blob in FormData', async () => {
+      const formData = new FormData();
+      formData.append('foo', 'foo');
+      formData.append('file', new Blob(['file content'], { type: 'text/plain' }), 'file.txt');
+      const resp = await fetch('https://httpbin.org/post', {
+        method: 'POST',
+        body: formData,
+      });
+      const json = await resp.json();
+      expect(json.form.foo).toEqual('foo');
+      expect(json.files.file).toEqual('file content');
+      expect(json.headers['Content-Type'].startsWith('multipart/form-data; boundary=')).toBe(true);
+    });
   });
 
   describe('Headers', () => {

@@ -82,7 +82,7 @@ export const DiffBlock = ({
           float={collapseDeletedFiles && type === 'delete'}>
           {newPath && filenameToLinkUrl && type !== 'delete' ? (
             <SnippetAction
-              rightSlot={<ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />}
+              rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
               onClick={() => {
                 window.open(filenameToLinkUrl(newPath), '_blank');
               }}>

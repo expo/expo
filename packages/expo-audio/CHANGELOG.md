@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
+- [iOS] Add Apple TV support. ([#33365](https://github.com/expo/expo/pull/33365) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
+- Update docs and API so all units of time are returned as seconds, not milliseconds. ([#33320](https://github.com/expo/expo/pull/33320) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 0.3.0 - 2024-12-02
+
+### 🎉 New features
+
+- Support creating an `AudioPlayer` instance without using the `useAudioPlayer` hook. ([#33331](https://github.com/expo/expo/pull/33331) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.2.4 — 2024-11-19
+
+### 🎉 New features
+
+- Add support for replacing the auido source without recreating the player. ([#32981](https://github.com/expo/expo/pull/32981) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Imporve handling of `Visulaizer`. ([#33018](https://github.com/expo/expo/pull/33018) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.2.3 — 2024-10-28
 

@@ -77,7 +77,7 @@ interface RNConfigReactNativePlatformsConfig {
  * The `react-native.config.js` config from projectRoot.
  */
 export interface RNConfigReactNativeProjectConfig {
-  dependencies: Record<string, RNConfigReactNativePlatformsConfig>;
+  dependencies?: Record<string, RNConfigReactNativePlatformsConfig>;
 }
 
 /**

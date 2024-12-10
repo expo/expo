@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { AuthRequest } from './AuthRequest';
-import { AuthRequestConfig, AuthRequestPromptOptions } from './AuthRequest.types';
+import { AuthRequestConfig, AuthRequestPromptOptions, Prompt } from './AuthRequest.types';
 import { AuthSessionResult } from './AuthSession.types';
 import { DiscoveryDocument, IssuerOrDiscovery, resolveDiscoveryAsync } from './Discovery';
 
@@ -43,7 +43,8 @@ export function useLoadedAuthRequest(
   AuthRequestInstance: typeof AuthRequest
 ): AuthRequest | null {
   const [request, setRequest] = useState<AuthRequest | null>(null);
-  const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
+  const scopeString = config.scopes?.join(' ');
+  const promptString = createPromptString(config.prompt);
   const extraParamsString = useMemo(
     () => JSON.stringify(config.extraParams || {}),
     [config.extraParams]
@@ -67,15 +68,30 @@ export function useLoadedAuthRequest(
     config.clientId,
     config.redirectUri,
     config.responseType,
-    config.prompt,
     config.clientSecret,
     config.codeChallenge,
     config.state,
     config.usePKCE,
     scopeString,
+    promptString,
     extraParamsString,
   ]);
   return request;
+}
+
+/**
+ * @returns Prompt type converted to a primitive value to be used as a React hook dependency
+ */
+function createPromptString(prompt: Prompt | Prompt[] | undefined): string | undefined {
+  if (!prompt) {
+    return;
+  }
+
+  if (Array.isArray(prompt)) {
+    return prompt.join(' ');
+  }
+
+  return prompt;
 }
 
 export type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;

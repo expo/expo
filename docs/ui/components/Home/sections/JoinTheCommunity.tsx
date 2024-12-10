@@ -22,8 +22,8 @@ export function JoinTheCommunity() {
       </HeaderDescription>
       <div
         className={mergeClasses(
-          'inline-grid grid-cols-2 w-full gap-y-1.5 gap-x-8 my-4',
-          'border border-default rounded-lg p-3 shadow-xs',
+          'my-4 inline-grid w-full grid-cols-2 gap-x-8 gap-y-1.5',
+          'rounded-lg border border-default p-3 shadow-xs',
           'max-xl-gutters:grid-cols-1',
           'max-lg-gutters:grid-cols-2',
           'max-md-gutters:grid-cols-1'
@@ -113,7 +113,7 @@ function CommunityGridCell({
     <A
       href={link}
       className={mergeClasses(
-        'flex justify-between items-center bg-default p-2 pr-3 min-h-[30px] overflow-hidden relative rounded-lg transition gap-3',
+        'relative flex min-h-[30px] items-center justify-between gap-3 overflow-hidden rounded-lg bg-default p-2 pr-3 transition',
         'hocus:bg-element hocus:opacity-100',
         className
       )}
@@ -121,12 +121,12 @@ function CommunityGridCell({
       isStyled>
       <div
         className={mergeClasses(
-          'size-12 shrink-0 inline-flex justify-center items-center rounded-lg',
+          'inline-flex size-12 shrink-0 items-center justify-center rounded-lg',
           iconClassName
         )}>
         {icon}
       </div>
-      <div className="flex flex-col grow gap-0.5">
+      <div className="flex grow flex-col gap-0.5">
         <P weight="medium" className="leading-snug">
           {title}
         </P>
@@ -134,7 +134,7 @@ function CommunityGridCell({
           {description}
         </CALLOUT>
       </div>
-      <ArrowUpRightIcon className="text-icon-tertiary self-center shrink-0" />
+      <ArrowUpRightIcon className="shrink-0 self-center text-icon-tertiary" />
     </A>
   );
 }

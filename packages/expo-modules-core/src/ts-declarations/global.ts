@@ -90,5 +90,11 @@ declare global {
    */
   var expo: ExpoGlobal;
 
+  // @ts-ignore - Suppress incompatible `NodeJS.Process` type if people include process type from `@types/node`
   var process: ExpoProcess;
+
+  /**
+   * ExpoDomWebView is defined in `@expo/dom-webview` runtime.
+   */
+  var ExpoDomWebView: Record<string, any> | undefined;
 }

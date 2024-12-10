@@ -25,6 +25,7 @@ const screens = [
   'Lottie',
   'Maps',
   'MaskedView',
+  'MeshGradient',
   'Modal',
   'Picker',
   'Pressable',

@@ -49,7 +49,9 @@ export function resolveHrefStringWithSegments(
       base = `${base}/`;
     }
 
-    href = new URL(href, `http://hostname/${base}`).pathname;
+    const url = new URL(href, `http://hostname/${base}`);
+
+    href = `${url.pathname}${url.search}`;
   }
 
   return href;

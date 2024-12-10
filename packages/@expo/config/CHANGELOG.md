@@ -4,11 +4,25 @@
 
 ### 🛠 Breaking changes
 
+- Remove getAccountUsername from package exports ([#33249](https://github.com/expo/expo/pull/33249) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Drop unintentional `console.log` when modifying config. ([#33330](https://github.com/expo/expo/pull/33330) by [@byCedric](https://github.com/byCedric))
+
+## 10.0.5 — 2024-11-20
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.4 — 2024-11-14
+
+### 🐛 Bug fixes
+
+- Skip modifying the plugins array in app.json when using a dynamic app config as well ([#32882](https://github.com/expo/expo/pull/32882) by [@brentvatne](https://github.com/brentvatne))
 
 ## 10.0.3 — 2024-11-11
 

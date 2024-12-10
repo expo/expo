@@ -36,6 +36,19 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
     self.deferredRootView = EXDeferredRCTRootView()
+    // This view can potentially be displayed for a while.
+    // We should use the splashscreens view here, otherwise a black view appears in the middle of the launch sequence.
+    if let view = createSplashScreenview(), let rootView = self.deferredRootView {
+      view.translatesAutoresizingMaskIntoConstraints = false
+      // The deferredRootView needs to be dark mode aware so we set the color to be the same as the splashscreen background.
+      rootView.backgroundColor = UIColor(named: "SplashScreenBackground") ?? .white
+      rootView.addSubview(view)
+
+      NSLayoutConstraint.activate([
+        view.centerXAnchor.constraint(equalTo: rootView.centerXAnchor),
+        view.centerYAnchor.constraint(equalTo: rootView.centerYAnchor)
+      ])
+    }
     return self.deferredRootView
   }
 
@@ -79,6 +92,25 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     self.deferredRootView = nil
     self.rootViewModuleName = nil
     self.rootViewInitialProperties = nil
+  }
+
+  private func createSplashScreenview() -> UIView? {
+    var view: UIView?
+    let mainBundle = Bundle.main
+    let launchScreen = mainBundle.object(forInfoDictionaryKey: "UILaunchStoryboardName") as? String ?? "LaunchScreen"
+
+    if mainBundle.path(forResource: launchScreen, ofType: "storyboard") != nil ||
+      mainBundle.path(forResource: launchScreen, ofType: "storyboardc") != nil {
+      let launchScreenStoryboard = UIStoryboard(name: launchScreen, bundle: nil)
+      let viewController = launchScreenStoryboard.instantiateInitialViewController()
+      view = viewController?.view
+      viewController?.view = nil
+    } else if mainBundle.path(forResource: launchScreen, ofType: "nib") != nil {
+      let views = mainBundle.loadNibNamed(launchScreen, owner: self)
+      view = views?.first as? UIView
+    }
+
+    return view
   }
 
   private func getWindow() -> UIWindow {

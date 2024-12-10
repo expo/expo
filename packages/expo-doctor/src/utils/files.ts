@@ -39,19 +39,29 @@ export async function isFileIgnoredAsync(
     if (fs.existsSync(easIgnorePath) && checkEasignore) {
       return isFileIgnoredByRules(filePath, easIgnorePath, rootPath);
     } else if (fs.existsSync(gitIgnorePath)) {
-      await spawnAsync('git', ['check-ignore', '-q', filePath], {
-        cwd: path.normalize(await getRootPathAsync()),
-      });
-      return true;
-    } else {
-      // If neither .easignore nor .gitignore exists, the file is not ignored
-      return false;
+      // Try git command first for accuracy if git is available
+      try {
+        await spawnAsync('git', ['check-ignore', '-q', filePath], {
+          cwd: path.normalize(rootPath),
+        });
+        return true;
+      } catch {
+        // Fallback to parsing .gitignore manually if git command fails
+        return isFileIgnoredByRules(filePath, gitIgnorePath, rootPath);
+      }
     }
+    // If neither file exists, the file is not ignored
+    return false;
   } catch {
     return false;
   }
 }
 
 async function getRootPathAsync(): Promise<string> {
-  return (await spawnAsync('git', ['rev-parse', '--show-toplevel'])).stdout.trim();
+  try {
+    return (await spawnAsync('git', ['rev-parse', '--show-toplevel'])).stdout.trim();
+  } catch {
+    // If git is not available, return the current working directory
+    return process.cwd();
+  }
 }

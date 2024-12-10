@@ -30,6 +30,9 @@ export function cleanCopyValue(value: string) {
     .replace(/\/\*\s?@(info[^*]+|end|hide[^*]+).?\*\//g, '')
     .replace(/#\s?@(info[^#]+|end|hide[^#]+).?#/g, '')
     .replace(/<!--\s?@(info[^<>]+|end|hide[^<>]+).?-->/g, '')
+    .replace(/\/\*\s?@(tutinfo[^*]+|end|hide[^*]+).?\*\//g, '')
+    .replace(/#\s?@(tutinfo[^#]+|end|hide[^#]+).?#/g, '')
+    .replace(/<!--\s?@(tutinfo[^<>]+|end|hide[^<>]+).?-->/g, '')
     .replace(/^ +\r?\n|\n +\r?$/gm, '');
 }
 

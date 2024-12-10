@@ -43,7 +43,7 @@ export async function setMinimumIntervalAsync(minimumInterval: number): Promise<
 // @needsAudit
 /**
  * Registers background fetch task with given name. Registered tasks are saved in persistent storage and restored once the app is initialized.
- * @param taskName Name of the task to register. The task needs to be defined first - see [`TaskManager.defineTask`](taskmanager#defineTask)
+ * @param taskName Name of the task to register. The task needs to be defined first - see [`TaskManager.defineTask`](task-manager/#taskmanagerdefinetaskttaskname-taskexecutor)
  * for more details.
  * @param options An object containing the background fetch options.
  *

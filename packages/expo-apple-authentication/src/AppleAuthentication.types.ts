@@ -187,6 +187,21 @@ export type AppleAuthenticationFullName = {
 
 // @needsAudit @docsMissing
 /**
+ * A value to specify the style for formatting a name.
+ *
+ * @see [Apple
+ * Documentation](https://developer.apple.com/documentation/foundation/personnamecomponentsformatter)
+ * for more details.
+ */
+export type AppleAuthenticationFullNameFormatStyle =
+  | 'default'
+  | 'short'
+  | 'medium'
+  | 'long'
+  | 'abbreviated';
+
+// @needsAudit @docsMissing
+/**
  * An enum whose values specify scopes you can request when calling [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions).
  *
  * > Note that it is possible that you will not be granted all of the scopes which you request.

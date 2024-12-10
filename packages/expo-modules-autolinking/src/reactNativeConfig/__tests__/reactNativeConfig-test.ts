@@ -138,6 +138,32 @@ describe(createReactNativeConfigAsync, () => {
     expect(result.dependencies['react-native-test']).toBeDefined();
     expect(result.dependencies['react-native-test'].root).toBe('/app/modules/react-native-test');
   });
+
+  it('should return config if local dependencies are not specified', async () => {
+    const packageJson = {
+      name: 'test',
+      version: '1.0.0',
+      dependencies: {
+        'react-native': '0.0.1',
+      },
+    };
+    const projectConfig: RNConfigReactNativeProjectConfig = {};
+    const mockLoadReactNativeConfigAsync = loadConfigAsync as jest.MockedFunction<
+      typeof loadConfigAsync
+    >;
+    mockLoadReactNativeConfigAsync.mockResolvedValueOnce(projectConfig);
+
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/node_modules/react-native/package.json': '',
+    });
+    const result = await createReactNativeConfigAsync({
+      platform: 'ios',
+      projectRoot: '/app',
+      searchPaths: ['/app/node_modules'],
+    });
+    expect(result).toBeDefined();
+  });
 });
 
 describe(findDependencyRootsAsync, () => {

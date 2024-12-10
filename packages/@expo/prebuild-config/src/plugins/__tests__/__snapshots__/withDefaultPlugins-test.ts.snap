@@ -70,7 +70,15 @@ exports[`built-in plugins compiles mods 1`] = `
             ],
             "resources": [
               {
-                "image": [],
+                "image": [
+                  {
+                    "$": {
+                      "height": "90.333335876464844",
+                      "name": "SplashScreenLogo",
+                      "width": "100",
+                    },
+                  },
+                ],
               },
             ],
             "scenes": [
@@ -1263,7 +1271,15 @@ exports[`built-in plugins introspects mods 1`] = `
             ],
             "resources": [
               {
-                "image": [],
+                "image": [
+                  {
+                    "$": {
+                      "height": "90.333335876464844",
+                      "name": "SplashScreenLogo",
+                      "width": "100",
+                    },
+                  },
+                ],
               },
             ],
             "scenes": [
@@ -2194,7 +2210,15 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             ],
             "resources": [
               {
-                "image": [],
+                "image": [
+                  {
+                    "$": {
+                      "height": "90.333335876464844",
+                      "name": "SplashScreenLogo",
+                      "width": "100",
+                    },
+                  },
+                ],
                 "namedColor": [
                   {
                     "$": {

@@ -70,6 +70,7 @@ export function useRouter(): Router {
       push: store.push,
       dismiss: store.dismiss,
       dismissAll: store.dismissAll,
+      dismissTo: store.dismissTo,
       canDismiss: store.canDismiss,
       back: store.goBack,
       replace: store.replace,

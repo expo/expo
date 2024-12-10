@@ -155,11 +155,11 @@ const styles = react_native_1.StyleSheet.create({
         ...react_native_1.Platform.select({
             web: {
                 fontSize: 64,
-                lineHeight: 68,
+                lineHeight: 64,
             },
             default: {
                 fontSize: 56,
-                lineHeight: 60,
+                lineHeight: 56,
             },
         }),
         color: '#fff',

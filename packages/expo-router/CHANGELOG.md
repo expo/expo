@@ -8,9 +8,69 @@
 
 ### 🐛 Bug fixes
 
+- Prevent base url from being appended to external links. ([#31420](https://github.com/expo/expo/pull/31420) by [@6TELOIV](https://github.com/6teloiv))
+- Fix baseURL being removed when refreshing the app on web. ([#33481](https://github.com/expo/expo/pull/33481) by [@marklawlor](https://github.com/marklawlor))
+- Fix `fileURLtoFilePath` returning valid UNIX os paths to resolve client and server boundary entries on Windows. ([#33540](https://github.com/expo/expo/pull/33540) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+### 🐛 Bug fixes
+
+- Fix regex on `expo-router/matcher` `matchLastGroupName` allows to use it on `IOS < 16.4` ([#33350](https://github.com/expo/expo/pull/33350) by [@antonio-serrat](https://github.com/Antonio-Serat))
+- Fix pushing the same route multiple times and `__EXPO_ROUTER_key` incorrectly showing up in query parameters ([#33430](https://github.com/expo/expo/pull/33430) by [@stephentuso](https://github.com/stephentuso))
+
+## 4.0.10 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.9 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Fix using style arrays on `expo-router/ui` `<Tab>` components ([#32887](https://github.com/expo/expo/pull/32887) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.8 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Fix typed route using `\` instead of `/` in windows ([#33146](https://github.com/expo/expo/pull/33146) by [@imranbarbhuiya](https://github.com/imranbarbhuiya))
+- Fix hash links causing page reload when there is no history with a starting hash ([#33161](https://github.com/expo/expo/pull/33161) by [@marklawlor](https://github.com/marklawlor))
+- Change `react-native-screens` to have its version managed by the SDK ([#33167](https://github.com/expo/expo/pull/33167) by [@marklawlor](https://github.com/marklawlor))
+- Change CLI doctor integration to only validate `@react-navigation/*` packages ([#33168](https://github.com/expo/expo/pull/33168) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.7 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- Fix `<Link>` using a hash href causing a full page reload on web. ([#32645](https://github.com/expo/expo/pull/32645) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.6 — 2024-11-15
+
+### 🎉 New features
+
+- Add `withAnchor` and `relativeToDirectory` options to `<Redirect />`. ([#32847](https://github.com/expo/expo/pull/32847) by [@marklawlor](https://github.com/marklawlor))
+- Add `router.dismissTo(<href>)` and `<Link dismissTo href={} />` ([#32933](https://github.com/expo/expo/pull/32933) by [@marklawlor](https://github.com/marklawlor))
+
+### 🐛 Bug fixes
+
+- Add missing dependency for React Server environments. ([#33121](https://github.com/expo/expo/pull/33121) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix Typed Routes incorrectly collapsing group index routes ([#32890](https://github.com/expo/expo/pull/32890) by [@marklawlor](https://github.com/marklawlor))
+- Fix relative Hrefs not including search params ([#32931](https://github.com/expo/expo/pull/32931) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.5 — 2024-11-13
+
+- Prevent from disabling edge-to-edge ([#32854](https://github.com/expo/expo/pull/32854) by [@zoontek](https://github.com/zoontek))
+
+## 4.0.4 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.3 — 2024-11-13
+
 ### 💡 Others
 
 - Rename `experiments.reactServerActions` -> `experiments.reactServerFunctions` and other RSC flags. ([#32791](https://github.com/expo/expo/pull/32791) by [@EvanBacon](https://github.com/EvanBacon))
+- Appearance tweaks for the Unmatched route internal page. ([#32817](https://github.com/expo/expo/pull/32817) by [@Simek](https://github.com/Simek))
 
 ## 4.0.2 — 2024-11-11
 

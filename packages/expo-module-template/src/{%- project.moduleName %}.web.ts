@@ -1,10 +1,6 @@
-import { registerWebModule, NativeModule } from "expo";
+import { registerWebModule, NativeModule } from 'expo';
 
-import { ChangeEventPayload } from './<%- project.name %>.types';
-
-type <%- project.moduleName %>Events = {
-  onChange: (params: ChangeEventPayload) => void;
-}
+import { <%- project.moduleName %>Events } from './<%- project.name %>.types';
 
 class <%- project.moduleName %> extends NativeModule<<%- project.moduleName %>Events> {
   PI = Math.PI;
@@ -14,6 +10,6 @@ class <%- project.moduleName %> extends NativeModule<<%- project.moduleName %>Ev
   hello() {
     return 'Hello world! 👋';
   }
-};
+}
 
 export default registerWebModule(<%- project.moduleName %>);

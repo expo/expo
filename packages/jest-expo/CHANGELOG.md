@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 52.0.2 — 2024-11-15
+
+### 🐛 Bug fixes
+
+- Fixed error when `babel.config.js` is not existed. ([#32942](https://github.com/expo/expo/pull/32942) by [@kudo](https://github.com/kudo))
+
+## 52.0.1 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
 ## 52.0.0 — 2024-11-11
 
 ### 🐛 Bug fixes

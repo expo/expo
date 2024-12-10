@@ -13,7 +13,7 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
   }
 
   public func getPermissions() -> [AnyHashable: Any] {
-    var status: CalendarPermissionsStatus
+    var status: EXPermissionStatus
     var permissions: EKAuthorizationStatus
 
     let description = {
@@ -32,13 +32,13 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
 
     switch permissions {
     case .restricted, .denied:
-      status = .denied
+      status = EXPermissionStatusDenied
     case .notDetermined:
-      status = .notDetermined
+      status = EXPermissionStatusUndetermined
     case .fullAccess:
-      status = .granted
+      status = EXPermissionStatusGranted
     @unknown default:
-      status = .unknown
+      status = EXPermissionStatusUndetermined
     }
 
     return ["status": status.rawValue]

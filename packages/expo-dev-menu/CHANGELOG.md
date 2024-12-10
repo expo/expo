@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 6.0.13 - 2024-11-29
+
+### 💡 Others
+
+- Fixed compatibility for React Native 0.77. ([#33277](https://github.com/expo/expo/pull/33277) by [@kudo](https://github.com/kudo))
+
+## 6.0.12 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.11 — 2024-11-22
+
+### 💡 Others
+
+- Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
+
+## 6.0.10 — 2024-11-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed issue where `UIWindow` was called on off the main thread. ([#29559](https://github.com/expo/expo/pull/29559) by [@hakonk](https://github.com/hakonk))
+
+## 6.0.9 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.8 — 2024-11-11
 
 _This version does not introduce any user-facing changes._

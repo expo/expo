@@ -31,20 +31,7 @@ class MLKitBarCodeScanner {
         return@withContext results
       }
       for (barcode in result) {
-        val raw = barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
-        val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO) {
-          raw
-        } else {
-          barcode.displayValue
-        }
-        val cornerPoints = mutableListOf<Int>()
-        barcode.cornerPoints?.let { points ->
-          for (point in points) {
-            cornerPoints.addAll(listOf(point.x, point.y))
-          }
-        }
-
-        results.add(BarCodeScannerResult(barcode.format, value, raw, cornerPoints, inputImage.height, inputImage.width))
+        results.add(BarCodeScannerResultSerializer.parseBarcodeScanningResult(barcode, inputImage))
       }
       return@withContext results
     } catch (e: Exception) {

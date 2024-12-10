@@ -78,6 +78,32 @@ extension ExpoSwiftUI {
     }
 
 #if os(iOS) || os(tvOS)
+#if RCT_NEW_ARCH_ENABLED
+    /**
+     Fabric calls this function when mounting (attaching) a child component view.
+     */
+    public override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
+      var children = props.children ?? []
+      let child = Child(view: childComponentView)
+
+      children.insert(child, at: index)
+
+      props.children = children
+    }
+
+    /**
+     Fabric calls this function when unmounting (detaching) a child component view.
+     */
+    public override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
+      // Make sure the view has no superview, React Native asserts against this.
+      childComponentView.removeFromSuperview()
+
+      if let children = props.children {
+        props.children = children.filter({ $0.view != childComponentView })
+      }
+    }
+#endif // RCT_NEW_ARCH_ENABLED
+
     /**
      Setups layout constraints of the hosting controller view to match the layout set by React.
      */

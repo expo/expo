@@ -86,7 +86,7 @@ export function Code({ className, children, title }: CodeProps) {
   }
 
   const commonClasses = mergeClasses(
-    wordWrap && '!whitespace-pre-wrap !break-words',
+    wordWrap && '!break-words !whitespace-pre-wrap',
     showExpand && !isExpanded && `!overflow-hidden`
   );
 
@@ -102,7 +102,7 @@ export function Code({ className, children, title }: CodeProps) {
           style={{
             maxHeight: collapseBound,
           }}
-          className={mergeClasses('relative p-4 whitespace-pre', commonClasses)}
+          className={mergeClasses('relative whitespace-pre p-4', commonClasses)}
           {...attributes}>
           <code
             className="text-2xs text-default"
@@ -119,7 +119,7 @@ export function Code({ className, children, title }: CodeProps) {
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'whitespace-pre relative border border-secondary p-4 my-4 bg-subtle rounded-md overflow-x-auto',
+        'relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle p-4',
         preferredTheme === Themes.DARK && 'dark-theme',
         commonClasses,
         '[p+&]:mt-0'
@@ -144,7 +144,7 @@ export const CodeBlock = ({ children, theme, className, inline = false }: CodeBl
   const Element = inline ? 'span' : 'pre';
   return (
     <Element
-      className={mergeClasses('whitespace-pre m-0 px-1 py-1.5', inline && 'inline-flex !p-0')}
+      className={mergeClasses('m-0 whitespace-pre px-1 py-1.5', inline && 'inline-flex !p-0')}
       {...attributes}>
       <CODE
         className={mergeClasses(

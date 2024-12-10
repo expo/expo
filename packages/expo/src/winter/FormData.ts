@@ -6,6 +6,54 @@ type ReactNativeFormDataInternal = FormData & {
   _parts: [string, string | Blob][];
 };
 
+export type ExpoFormDataValue = string | Blob;
+export type ExpoFormDataPart =
+  | {
+      // WinterCG FormData string
+      string: string;
+      headers: { [name: string]: string };
+    }
+  | {
+      // WinterCG FormData blob in our wrapped form
+      blob: Blob;
+      headers: { [name: string]: string };
+      name?: string | undefined;
+      type?: string | undefined;
+    }
+  | {
+      // React Native proprietary local file
+      uri: string;
+      headers: { [name: string]: string };
+      name?: string | undefined;
+      type?: string | undefined;
+    };
+
+export declare class ExpoFormData {
+  constructor();
+  append(name: string, value: string): void;
+  append(name: string, value: Blob, filename?: string): void;
+  delete(name: string): void;
+  get(name: string): FormDataEntryValue | null;
+  getAll(name: string): FormDataEntryValue[];
+  has(name: string): boolean;
+  set(name: string, value: string): void;
+  set(name: string, value: Blob, filename?: string): void;
+
+  // React Native proprietary local file
+  append(name: string, value: { uri: string; name?: string; type?: string }): void;
+  set(name: string, value: { uri: string; name?: string; type?: string }): void;
+
+  // iterable
+  forEach(
+    callback: (value: FormDataEntryValue, key: string, iterable: FormData) => void,
+    thisArg?: unknown
+  ): void;
+  keys(): IterableIterator<string>;
+  values(): IterableIterator<FormDataEntryValue>;
+  entries(): IterableIterator<[string, FormDataEntryValue]>;
+  [Symbol.iterator](): IterableIterator<[string, FormDataEntryValue]>;
+}
+
 function ensureMinArgCount(name: string, args: any[], expected: number) {
   if (args.length < expected) {
     const argName = expected === 2 ? 'arguments' : 'argument';
@@ -16,29 +64,32 @@ function ensureMinArgCount(name: string, args: any[], expected: number) {
   }
 }
 
-function normalizeArgs(name: string, value: any): [string, File | string] {
-  if (typeof value !== 'object') {
+function normalizeArgs(
+  name: string,
+  value: any,
+  blobFilename: string | undefined
+): [string, File | string] {
+  if (value instanceof Blob) {
+    value = { type: value.type, name: blobFilename || 'blob', blob: value };
+  } else if (typeof value !== 'object') {
     value = String(value);
   }
-  // TODO: Add Blob normalization in the future, right now this isn't supported to ensure parity with the rest of the FormData
-  // implementation in React Native.
-  // https://github.com/facebook/react-native/blob/42dcfdd2cdb59fe545523cb57db6ee32a96b9298/packages/react-native/Libraries/Network/FormData.js#L64
-
   return [String(name), value];
 }
 
-export function installFormDataPatch(formData: typeof FormData) {
-  formData.prototype.append ??= function append(this: ReactNativeFormDataInternal, ...props) {
+export function installFormDataPatch(formData: typeof FormData): typeof ExpoFormData {
+  formData.prototype.append = function append(this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('append', props, 2);
-    const [name, value] = props;
-    this._parts.push(normalizeArgs(name, value));
+    // @ts-ignore: When inferred FormData.append from React Native types, it does not support the 3rd blobFilename argument.
+    const [name, value, blobFilename] = props;
+    this._parts.push(normalizeArgs(name, value, blobFilename));
   };
 
   // @ts-ignore: DOM.iterable is disabled for jest compat
-  formData.prototype.set ??= function set(this: ReactNativeFormDataInternal, ...props) {
+  formData.prototype.set = function set(this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('set', props, 2);
-    const [name, value] = props;
-    const args = normalizeArgs(name, value);
+    const [name, value, blobFilename] = props;
+    const args = normalizeArgs(name, value, blobFilename);
     let replaced = false;
 
     for (let i = 0; i < this._parts.length; i++) {
@@ -114,12 +165,14 @@ export function installFormDataPatch(formData: typeof FormData) {
       );
     }
     for (const part of this._parts) {
+      // @ts-ignore: part[1] could throw an error in Node.js runtime because of `File` type mismatch.
       callback.call(thisArg, part[1], part[0], this);
     }
   };
 
   // Required for RSC: https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-server/src/ReactFlightServer.js#L2117
-  formData.prototype.entries = function* entries(
+  // @ts-ignore: DOM.iterable is disabled for jest compat
+  formData.prototype.entries ??= function* entries(
     this: ReactNativeFormDataInternal
   ): IterableIterator<[string, FormDataEntryValue]> {
     for (const part of this._parts) {
@@ -129,12 +182,14 @@ export function installFormDataPatch(formData: typeof FormData) {
     }
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.keys ??= function* keys(this: ReactNativeFormDataInternal) {
     for (const part of this._parts) {
       yield part[0];
     }
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.values ??= function* values(
     this: ReactNativeFormDataInternal
   ): IterableIterator<FormDataEntryValue> {
@@ -145,7 +200,8 @@ export function installFormDataPatch(formData: typeof FormData) {
     }
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype[Symbol.iterator] = formData.prototype.entries;
 
-  return formData;
+  return formData as unknown as typeof ExpoFormData;
 }

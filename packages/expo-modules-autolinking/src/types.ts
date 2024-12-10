@@ -124,6 +124,12 @@ export interface AndroidGradlePluginDescriptor {
    * Relative path to the gradle plugin directory
    */
   sourceDir: string;
+
+  /**
+   * Whether to apply the plugin to the root project
+   * Defaults to true
+   */
+  applyToRootProject?: boolean;
 }
 
 export interface AndroidGradleAarProjectDescriptor {

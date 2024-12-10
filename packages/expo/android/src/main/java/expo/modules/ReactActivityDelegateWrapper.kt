@@ -17,10 +17,10 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.kotlin.Utils
+import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -115,8 +115,10 @@ class ReactActivityDelegateWrapper(
         reactActivityLifecycleListeners.forEach { listener ->
           listener.onContentChanged(activity)
         }
-        shouldEmitPendingResume = false
-        onResume()
+        if (shouldEmitPendingResume) {
+          shouldEmitPendingResume = false
+          onResume()
+        }
       }
       return
     }
@@ -150,7 +152,7 @@ class ReactActivityDelegateWrapper(
       // That's not ideal but works.
       val launchOptions = composeLaunchOptions()
       val reactDelegate: ReactDelegate
-      if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
         reactDelegate = ReactDelegate(
           plainActivity,
           reactHost,
@@ -193,9 +195,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onPause() {
-    // If app is stopped before delayed `loadApp`, we should cancel the pending resume
+    // If app is stopped before the delayed `loadApp`, we should cancel the pending resume
+    // and avoid propagating the pause event because the state was never resumed.
     if (shouldEmitPendingResume) {
       shouldEmitPendingResume = false
+      return
     }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
@@ -211,9 +215,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onDestroy() {
-    // If app is stopped before delayed `loadApp`, we should cancel the pending resume
+    // If app is stopped before the delayed `loadApp`, we should cancel the pending resume
+    // and avoid propagating the destroy event because the state was never resumed.
     if (shouldEmitPendingResume) {
       shouldEmitPendingResume = false
+      return
     }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onDestroy(activity)
@@ -235,7 +241,7 @@ class ReactActivityDelegateWrapper(
      *
      * TODO (@bbarthec): fix it upstream?
      */
-    if (!ReactFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
+    if (!ReactNativeFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
       val reactContextListener = object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
           delegate.reactInstanceManager.removeReactInstanceEventListener(this)

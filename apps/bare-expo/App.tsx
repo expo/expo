@@ -11,7 +11,11 @@ try {
   // do nothing
 }
 
-Splashscreen.setOptions({ fade: true });
+Splashscreen.setOptions({ fade: true, duration: 800 });
+
+// Require the `BackgroundFetchScreen` component from `native-component-list` if it's available
+// so that we load the module and register its background task on startup.
+optionalRequire(() => require('native-component-list/src/screens/BackgroundFetchScreen'));
 
 const loadAssetsAsync =
   optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??

@@ -10,6 +10,31 @@
 
 ### 💡 Others
 
+## 2.0.3 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `useImage` causing a native crash when uri is unresolvable. ([#33268](https://github.com/expo/expo/pull/33268) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixes adding a blurhash placeholder to `Image` or `ImageBackground` causing blurry version of the image. ([#33272](https://github.com/expo/expo/pull/33272) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.2 — 2024-11-22
+
+### 💡 Others
+
+- Add a warning when `children` are passed to `Image`. ([#33139](https://github.com/expo/expo/pull/33139) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.0.1 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- [Android] Fixes Gif animations never stopping even when loop count is set to 1. ([#32944](https://github.com/expo/expo/pull/32944) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `borderColor` is not applied. ([#33026](https://github.com/expo/expo/pull/33026) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `border` related props weren't applied correctly. ([#33078](https://github.com/expo/expo/pull/33078) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [Android] migrate ImageView to CSSBackgroundDrawable ([#33024](https://github.com/expo/expo/pull/33024) by [@vonovak](https://github.com/vonovak))
+
 ## 2.0.0 — 2024-11-11
 
 _This version does not introduce any user-facing changes._

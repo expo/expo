@@ -10,7 +10,7 @@ import { findActiveRoute, Navigation } from './Navigation';
 import { NavigationNode } from './types';
 
 import { HeadingManager } from '~/common/headingManager';
-import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+import { HeadingsContext } from '~/common/withHeadingManager';
 
 const prepareHeadingManager = () => {
   const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });

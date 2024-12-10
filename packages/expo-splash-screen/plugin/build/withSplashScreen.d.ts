@@ -6,6 +6,7 @@ type PluginConfig = {
     imageWidth?: number;
     enableFullScreenImage_legacy?: boolean;
     image?: string;
+    resizeMode?: 'contain' | 'cover' | 'native';
     dark?: {
         image?: string;
         backgroundColor?: string;
@@ -13,5 +14,5 @@ type PluginConfig = {
     android?: AndroidSplashConfig;
     ios?: IOSSplashConfig;
 };
-declare const _default: ConfigPlugin<PluginConfig>;
+declare const _default: ConfigPlugin<PluginConfig | null>;
 export default _default;

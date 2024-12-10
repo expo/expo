@@ -15,7 +15,7 @@ export const IconBase = ({ className, small, Icon, ...rest }: DocIconProps) => {
         'inline-block',
         small ? 'icon-sm' : 'icon-md',
         'text-icon-default',
-        '[table_&]:align-middle [li_&]:align-middle [li_&]:-mt-0.5',
+        '[li_&]:-mt-0.5 [li_&]:align-middle [table_&]:align-middle',
         className
       )}
       {...rest}

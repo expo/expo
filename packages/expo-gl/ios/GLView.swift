@@ -48,9 +48,9 @@ internal final class GLView: ExpoView, EXGLContextDelegate {
 
     // Initialize properties of our backing CAEAGLLayer
     if let eaglLayer = layer as? CAEAGLLayer {
-      eaglLayer.isOpaque = true
+      eaglLayer.isOpaque = false
       eaglLayer.drawableProperties = [
-        kEAGLDrawablePropertyRetainedBacking: true,
+        kEAGLDrawablePropertyRetainedBacking: false,
         kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8
       ]
     }

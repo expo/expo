@@ -9,9 +9,11 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
 import path from 'path';
+import url from 'url';
 
 import { logMetroError } from './metroErrorInterface';
 import { stripAnsi } from '../../../utils/ansi';
+import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
 import { getIpAddress } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
@@ -374,17 +376,33 @@ export function createServerComponentsMiddleware(
   //   );
   // }
 
+  const routerCache = new Map<
+    string,
+    typeof import('expo-router/build/rsc/router/expo-definedRouter')
+  >();
+
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
-    return ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
+    // We can only cache this if we're using the client router since it doesn't change or use HMR
+    if (routerCache.has(platform) && useClientRouter) {
+      return routerCache.get(platform)!;
+    }
+
+    const router = await ssrLoadModule<
+      typeof import('expo-router/build/rsc/router/expo-definedRouter')
+    >(
       routerModule,
       {
         environment: 'react-server',
+        // modulesOnly: true,
         platform,
       },
       {
-        hot: true,
+        hot: !useClientRouter,
       }
     );
+
+    routerCache.set(platform, router);
+    return router;
   }
 
   function getResolveClientEntry(context: {
@@ -425,7 +443,7 @@ export function createServerComponentsMiddleware(
     return (file: string, isServer: boolean) => {
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
-        const relativeFilePath = path.relative(serverRoot, file);
+        const relativeFilePath = toPosixPath(path.relative(serverRoot, file));
 
         assert(
           context.ssrManifest.has(relativeFilePath),
@@ -619,7 +637,9 @@ export function createServerComponentsMiddleware(
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
-          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options);
+          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options, {
+            hot: true,
+          });
         },
       }
     );
@@ -924,10 +944,7 @@ const getFullUrl = (url: string) => {
 };
 
 export const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
+  return url.fileURLToPath(fileURL);
 };
 
 const encodeInput = (input: string) => {

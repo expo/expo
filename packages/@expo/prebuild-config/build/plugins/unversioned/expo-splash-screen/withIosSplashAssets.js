@@ -174,6 +174,10 @@ async function generateImagesAssetsAsync({
   const items = [[anyItem, PNG_FILENAME], [darkItem, DARK_PNG_FILENAME], [tabletItem, TABLET_PNG_FILENAME], [darkTabletItem, DARK_TABLET_PNG_FILENAME]].filter(([item]) => !!item);
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }
+const lightAppearances = [{
+  appearance: 'luminosity',
+  value: 'light'
+}];
 const darkAppearances = [{
   appearance: 'luminosity',
   value: 'dark'
@@ -188,14 +192,17 @@ function buildContentsJsonImages({
   // Phone light
   (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
+    appearances: lightAppearances,
     filename: `${image}.png`,
     scale: '1x'
   }), (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
+    appearances: lightAppearances,
     filename: `${image}@2x.png`,
     scale: '2x'
   }), (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
+    appearances: lightAppearances,
     filename: `${image}@3x.png`,
     scale: '3x'
   }),

@@ -20,6 +20,7 @@ import expo.modules.kotlin.types.LazyKType
 import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
+import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
 
@@ -65,6 +66,9 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   inline fun <reified T : View> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
     val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
+
+    viewDefinitionBuilder.UseCSSProps()
+
     body.invoke(viewDefinitionBuilder)
     viewManagerDefinition = viewDefinitionBuilder.build()
   }

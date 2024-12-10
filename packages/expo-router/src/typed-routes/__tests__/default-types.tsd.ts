@@ -17,6 +17,8 @@ describe('Href', () => {
     expectAssignable<Href>('/apple?test=1');
     expectAssignable<Href>('/banana');
     expectAssignable<Href>('/banana?test=1&another=2');
+    expectAssignable<Href>('/'); // '/(group)/index
+    expectAssignable<Href>('/(group)'); // '/(group)/index
 
     expectAssignable<Href>({
       pathname: '/apple',

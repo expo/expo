@@ -17,14 +17,14 @@ export const PageTitle = ({ title, description, packageName, iconUrl, sourceCode
     <>
       <div
         className={mergeClasses(
-          'flex my-2 items-start justify-between gap-4',
+          'mt-2 flex items-start justify-between gap-4',
           'max-xl-gutters:flex-col max-xl-gutters:items-start'
         )}>
         <H1 className="!my-0">
           {iconUrl && (
             <img
               src={iconUrl}
-              className="float-left mr-3.5 relative -top-0.5 size-[42px]"
+              className="relative -top-0.5 float-left mr-3.5 size-[42px]"
               alt={`Expo ${title} icon`}
             />
           )}
@@ -40,7 +40,7 @@ export const PageTitle = ({ title, description, packageName, iconUrl, sourceCode
           {description}
         </P>
       )}
-      <span className="hidden gap-1 mt-3 mb-1 max-xl-gutters:flex">
+      <span className="mb-1 mt-3 hidden gap-1 max-xl-gutters:flex">
         <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
       </span>
     </>

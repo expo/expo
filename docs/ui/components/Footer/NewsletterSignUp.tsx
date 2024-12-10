@@ -39,9 +39,9 @@ export const NewsletterSignUp = () => {
   }
 
   return (
-    <div className="flex-1 max-w-[350px] max-md-gutters:max-w-full">
-      <CALLOUT className="text-secondary font-medium flex gap-2 items-center" id="newsletter-label">
-        <Mail01Icon className="text-icon-tertiary shrink-0" />
+    <div className="max-w-[350px] flex-1 max-md-gutters:max-w-full">
+      <CALLOUT className="flex items-center gap-2 font-medium text-secondary" id="newsletter-label">
+        <Mail01Icon className="shrink-0 text-icon-tertiary" />
         Sign up for the Expo Newsletter
       </CALLOUT>
       <form
@@ -51,7 +51,7 @@ export const NewsletterSignUp = () => {
           signUp();
         }}>
         {userSignedUp ? (
-          <LABEL className="flex items-center my-2.5 h-12">Thank you for the sign up! 💙</LABEL>
+          <LABEL className="my-2.5 flex h-12 items-center">Thank you for the sign up! 💙</LABEL>
         ) : (
           <Input
             onChange={event => {

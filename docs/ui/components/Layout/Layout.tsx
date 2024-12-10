@@ -42,14 +42,14 @@ export function Layout({
 }: LayoutProps) {
   return (
     <>
-      <header className="fixed top-0 w-full h-[60px] z-[100]">{header}</header>
+      <header className="fixed top-0 z-[100] h-[60px] w-full">{header}</header>
       <main
-        className={mergeClasses('flex items-stretch mt-[60px]', 'max-md-gutters:max-h-[unset]')}>
+        className={mergeClasses('mt-[60px] flex items-stretch', 'max-md-gutters:max-h-[unset]')}>
         {navigation && <nav className="basis-[256px] max-md-gutters:hidden">{navigation}</nav>}
         <LayoutScroll>
           <article
             className={mergeClasses(
-              'mx-auto min-h-[calc(100vh-60px)] max-w-screen-lg py-8 px-4',
+              'mx-auto min-h-[calc(100vh-60px)] max-w-screen-lg px-4 py-8',
               className
             )}>
             {children}

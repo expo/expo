@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-public class RNCSafeAreaProviderManager: Module {
+public final class RNCSafeAreaProviderManager: Module {
   public func definition() -> ModuleDefinition {
     Name("RNCSafeAreaProvider")
     Constants([
@@ -13,25 +13,36 @@ public class RNCSafeAreaProviderManager: Module {
   }
 
   private var initialWindowMetrics: [String: Any]? {
-    guard let window = UIApplication.shared.keyWindow else {
-      return [:]
-    }
+    syncOnMain {
+      guard let window = UIApplication.shared.keyWindow else {
+        return [:]
+      }
 
-    let safeAreaInsets = window.safeAreaInsets
+      let safeAreaInsets = window.safeAreaInsets
 
-    return [
-      "insets": [
-        "top": safeAreaInsets.top,
-        "right": safeAreaInsets.right,
-        "bottom": safeAreaInsets.bottom,
-        "left": safeAreaInsets.left
-      ],
-      "frame": [
-        "x": window.frame.origin.x,
-        "y": window.frame.origin.y,
-        "width": window.frame.size.width,
-        "height": window.frame.size.height
+      return [
+        "insets": [
+          "top": safeAreaInsets.top,
+          "right": safeAreaInsets.right,
+          "bottom": safeAreaInsets.bottom,
+          "left": safeAreaInsets.left
+        ],
+        "frame": [
+          "x": window.frame.origin.x,
+          "y": window.frame.origin.y,
+          "width": window.frame.size.width,
+          "height": window.frame.size.height
+        ]
       ]
-    ]
+    }
   }
+}
+
+private func syncOnMain<T>(_ closure: () -> T) -> T {
+  if !Thread.isMainThread {
+    return DispatchQueue.main.sync {
+      closure()
+    }
+  }
+  return closure()
 }

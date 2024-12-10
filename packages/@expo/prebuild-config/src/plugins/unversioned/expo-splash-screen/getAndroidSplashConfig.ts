@@ -9,6 +9,10 @@ export type SplashScreenConfig = {
   image?: string;
   backgroundColor?: string;
   resizeMode: 'contain' | 'cover' | 'native';
+  drawable?: {
+    icon: string;
+    darkIcon?: string;
+  };
   dark?: {
     backgroundColor?: string;
     xxxhdpi?: string;
@@ -44,6 +48,8 @@ export function getAndroidSplashConfig(
       backgroundColor: splash.backgroundColor,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: splash.imageWidth ?? 100,
+      dark: splash.dark,
+      drawable: splash.drawable,
     };
   }
 
@@ -59,6 +65,7 @@ export function getAndroidSplashConfig(
       image: splash.image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: 200,
+      dark: splash.dark,
     };
   }
 
@@ -73,6 +80,7 @@ export function getAndroidSplashConfig(
       backgroundColor: splash.backgroundColor,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: 200,
+      dark: splash.dark,
     };
   }
 
@@ -94,6 +102,7 @@ export function getAndroidDarkSplashConfig(
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
       resizeMode: lightTheme?.resizeMode ?? defaultResizeMode,
+      drawable: props.drawable,
     };
   }
 

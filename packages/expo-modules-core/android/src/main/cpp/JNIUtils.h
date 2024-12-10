@@ -57,7 +57,7 @@ public:
     jni::alias_ref<JavaScriptModuleObject::javaobject> jsiThis,
     jni::alias_ref<jni::HybridClass<JSIContext>::javaobject> jsiContextRef,
     jni::alias_ref<jstring> eventName,
-    jni::alias_ref<react::ReadableNativeMap::javaobject> eventBody
+    jni::alias_ref<jni::JMap<jstring, jobject>> eventBody
   );
 
 private:

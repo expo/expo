@@ -95,18 +95,33 @@ appId: dev.expo.eastestsexample # This is an example app id. Replace it with you
 - assertVisible: 'This app has two screens.*'
 ```
 
-If you want to run these flows locally to verify that they work as expected, you need to install your app on your local simulator/emulator and run `maestro test maestro/expand_test.yaml` or `maestro test maestro/home.yaml` commands in the terminal to use Maestro CLI to start the tests.
-
 </Step>
 
 <Step label="5">
+## Run Maestro tests locally
+
+To run Maestro tests locally, install the Maestro CLI by following the instructions in [Installing Maestro](https://maestro.mobile.dev/getting-started/installing-maestro).
+
+[Install your app on a local Android Emulator or iOS Simulator](/more/expo-cli/#compiling). Open a terminal, navigate to the Maestro directory, and run the following commands to start the tests with the Maestro CLI:
+
+<Terminal
+  cmd={['$ maestro test maestro/expand_test.yaml', '', '$ maestro test maestro/home.yaml']}
+/>
+
+The video below shows a successful run of the **maestro/expand_test.yaml** flow:
+
+<ContentSpotlight file="guides/local-e2e.mp4" />
+
+</Step>
+
+<Step label="6">
 ## Create a custom build workflow for running Maestro E2E tests
 
 The easiest way to run Maestro E2E tests on EAS Build is to create a [custom build workflow](/custom-builds/get-started/). This workflow will build your app and run the Maestro tests on it.
 
 Start by adding a custom build config file to your project. Create a directory **.eas/build** at the same level as **eas.json** in the project. The path and the name of both directories are important for EAS Build to identify that a project contains a custom build config.
 
-Inside, create a new config file called **build-and-maestro-test.yml**. This file defines the custom build workflow config that you want to run. Workflow contains steps that are executed during the custom build process. This custom build config will execute the [`eas/build`](custom-builds/schema/#easbuild) custom function group to create a build and then the [`eas/maestro_test`](custom-builds/schema/#easmaestro_test) which is an all-in-one custom function group that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator) and tests the app using flows specified by the `flow_path` input.
+Inside, create a new config file called **build-and-maestro-test.yml**. This file defines the custom build workflow config that you want to run. Workflow contains steps that are executed during the custom build process. This custom build config will execute the [`eas/build`](/custom-builds/schema/#easbuild) custom function group to create a build and then the [`eas/maestro_test`](/custom-builds/schema/#easmaestro_test) which is an all-in-one custom function group that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator) and tests the app using flows specified by the `flow_path` input.
 
 ```yaml .eas/build/build-and-maestro-test.yml
 build:
@@ -147,7 +162,7 @@ Now modify the **eas.json** by adding a new [build profile](/build/eas-json/#bui
 
 </Step>
 
-<Step label="6">
+<Step label="7">
 ## Build your app and run E2E tests on EAS Build
 
 To execute a custom build using the `build-and-maestro-test` profile that will build your app and run the Maestro E2E tests afterward, run the following command:

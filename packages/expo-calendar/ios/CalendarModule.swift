@@ -398,6 +398,13 @@ public class CalendarModule: Module {
       calendarEvent.endDate = parse(date: endDate)
     }
 
+    if let calendarId = event.calendarId {
+      guard let calendar = eventStore.calendar(withIdentifier: calendarId) else {
+        throw CalendarIdNotFoundException(calendarId)
+      }
+      calendarEvent.calendar = calendar
+    }
+
     calendarEvent.title = event.title
     calendarEvent.location = event.location
     calendarEvent.notes = event.notes

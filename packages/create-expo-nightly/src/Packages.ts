@@ -1,9 +1,12 @@
-import JsonFile from '@expo/json-file';
-import fs from 'fs/promises';
 import { glob } from 'glob';
+import fs from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
-import { runAsync } from './Processes';
+import { runAsync } from './Processes.js';
+
+const require = createRequire(import.meta.url);
+const { default: JsonFile } = require('@expo/json-file') as typeof import('@expo/json-file');
 
 let cachedPackages: Package[] | null = null;
 
@@ -22,6 +25,12 @@ const EXCLUDE_PACKAGES = [
   'install-expo-modules',
   'pod-install',
   'uri-scheme',
+  'patch-project',
+  'create-expo-module',
+  'create-expo-nightly',
+  '@react-native-community/cli-platform-android', // mock modules inside expo-modules-autolinkin
+  'react', // canary react inside @expo/cli
+  'react-dom', // canary react inside @expo/cli
 ];
 
 export const REACT_NATIVE_TRANSITIVE_DEPENDENCIES = [
@@ -34,26 +43,18 @@ export const REACT_NATIVE_TRANSITIVE_DEPENDENCIES = [
 
 interface Package {
   name: string;
-  version: string;
   path: string;
 }
 
 /**
- * Register linkable package in the expo repo for bun linking.
+ * Add given workspace packages to the project.
  */
-export async function registerPackageLinkingAsync(expoRepoPath: string, pkg: Package) {
-  await runAsync('bun', ['link'], { cwd: pkg.path });
-}
-
-/**
- * Add given linkable packages to the project.
- */
-export async function addLinkablePackagesToAppAsync(projectRoot: string, packages: Package[]) {
+export async function addWorkspacePackagesToAppAsync(projectRoot: string, packages: Package[]) {
   const packageJson = await JsonFile.readAsync(path.join(projectRoot, 'package.json'));
   const dependencies: Record<string, string> =
     (packageJson.dependencies as Record<string, string>) ?? {};
   for (const pkg of packages) {
-    dependencies[pkg.name] = `link:${pkg.name}`;
+    dependencies[pkg.name] = 'workspace:*';
   }
   await JsonFile.mergeAsync(path.join(projectRoot, 'package.json'), { dependencies });
 }
@@ -67,7 +68,7 @@ export async function reinstallPackagesAsync(projectRoot: string) {
     fs.rm(path.join(projectRoot, 'bun.lockb'), { force: true }),
     fs.rm(path.join(projectRoot, 'yarn.lock'), { force: true }),
   ]);
-  await runAsync('bun', ['install'], { cwd: projectRoot });
+  await runAsync('bun', ['install', '--ignore-scripts'], { cwd: projectRoot });
 }
 
 /**
@@ -87,23 +88,17 @@ export async function getExpoPackagesAsync(expoRepoPath: string): Promise<Packag
       '**/__mocks__/**',
       '**/__fixtures__/**',
       '**/e2e/**',
+      '**/build/**',
     ],
   });
-  const packages = await Promise.all(
-    paths
-      .filter((pkgPath) => {
-        for (const exclude of EXCLUDE_PACKAGES) {
-          if (pkgPath.startsWith(exclude)) {
-            return false;
-          }
-        }
-        return true;
-      })
-      .flatMap(async (packageJsonName) => {
+  const packages = (
+    await Promise.all(
+      paths.map(async (packageJsonName) => {
         const packageRoot = path.join(expoRepoPath, 'packages', path.dirname(packageJsonName));
         return await createPackageAsync(packageRoot);
       })
-  );
+    )
+  ).filter((pkg) => pkg != null) as Package[];
 
   cachedPackages = packages.sort((a, b) => a.name.localeCompare(b.name));
   return cachedPackages;
@@ -118,21 +113,22 @@ export async function getReactNativeTransitivePackagesAsync(
   const packages = await Promise.all(
     REACT_NATIVE_TRANSITIVE_DEPENDENCIES.map((name) => {
       const packageRoot = path.join(expoRepoPath, 'node_modules', name);
-      return createPackageAsync(packageRoot);
+      return Promise.resolve({ name, path: packageRoot });
     })
   );
   return packages;
 }
 
-async function createPackageAsync(packageRoot: string): Promise<Package> {
+async function createPackageAsync(packageRoot: string): Promise<Package | null> {
   const packageJsonPath = path.join(packageRoot, 'package.json');
   const packagePath = path.dirname(packageJsonPath);
   const packageJson = await JsonFile.readAsync(packageJsonPath);
   const name = packageJson.name as string;
-  const version = packageJson.version as string;
+  if (EXCLUDE_PACKAGES.includes(name)) {
+    return null;
+  }
   return {
     name,
     path: packagePath,
-    version,
   };
 }

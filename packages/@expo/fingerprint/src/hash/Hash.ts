@@ -174,7 +174,8 @@ export async function createDirHashResultsAsync(
   options: NormalizedOptions,
   depth: number = 0
 ): Promise<HashResultDir | null> {
-  if (isIgnoredPathWithMatchObjects(dirPath, options.ignorePathMatchObjects)) {
+  // Using `ignoreDirMatchObjects` as an optimization to skip the whole directory
+  if (isIgnoredPathWithMatchObjects(dirPath, options.ignoreDirMatchObjects)) {
     return null;
   }
   const dirents = (await fs.readdir(path.join(projectRoot, dirPath), { withFileTypes: true })).sort(

@@ -5,7 +5,7 @@ type CreateAppButtonProps = { href: string; name: string };
 
 export const CreateAppButton = ({ href, name }: CreateAppButtonProps) => (
   <Button
-    className="flex w-fit justify-center max-medium:min-w-full"
+    className="max-medium:min-w-full flex w-fit justify-center"
     href={href}
     openInNewTab
     rightSlot={<ArrowUpRightIcon />}>

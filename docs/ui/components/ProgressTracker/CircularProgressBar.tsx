@@ -12,7 +12,7 @@ export function CircularProgressBar({ progress }: CircularProgressBarProps) {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="flex items-center justify-center mr-1">
+    <div className="mr-1 flex items-center justify-center">
       <svg width={size} height={size}>
         {/* The background circle */}
         <circle

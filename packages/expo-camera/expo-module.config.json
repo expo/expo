@@ -5,12 +5,6 @@
     "modules": ["CameraViewModule"]
   },
   "android": {
-    "modules": ["expo.modules.camera.CameraViewModule"],
-    "gradleAarProjects": [
-      {
-        "name": "cameraview-aar",
-        "aarFilePath": "android/libs/cameraview-1.0.0.aar"
-      }
-    ]
+    "modules": ["expo.modules.camera.CameraViewModule"]
   }
 }

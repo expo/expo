@@ -13,6 +13,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
   var currentRate: Float = 0.0
   let interval: Double
+  var isPaused: Bool {
+    ref.rate != 0.0
+  }
 
   // MARK: Observers
   private var timeToken: Any?
@@ -23,8 +26,12 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var samplingEnabled = false
   private var tapInstalled = false
 
-  private var duration: Double {
-    (ref.currentItem?.duration.seconds ?? 0.0) * 1000
+  var duration: Double {
+    ref.currentItem?.duration.seconds ?? 0.0
+  }
+
+  var currentTime: Double {
+    ref.currentItem?.currentTime().seconds ?? 0.0
   }
 
   init(_ ref: AVPlayer, interval: Double) {
@@ -62,15 +69,15 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func currentStatus() -> [String: Any] {
-    let duration = ref.status == .readyToPlay ? duration : 0.0
+    let currentDuration = ref.status == .readyToPlay ? duration : 0.0
     return [
       "id": id,
-      "currentTime": (ref.currentItem?.currentTime().seconds ?? 0) * 1000,
+      "currentTime": currentTime,
       "playbackState": statusToString(status: ref.status),
       "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
       "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
       "mute": ref.isMuted,
-      "duration": duration,
+      "duration": currentDuration,
       "playing": ref.timeControlStatus == .playing,
       "loop": isLooping,
       "isLoaded": ref.currentItem?.status == .readyToPlay,
@@ -180,7 +187,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     let interval = CMTime(seconds: updateInterval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     timeToken = ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { time in
       self.updateStatus(with: [
-        "currentTime": time.seconds * 1000
+        "currentTime": time.seconds
       ])
     }
   }

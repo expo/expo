@@ -1,0 +1,95 @@
+--- apple/RNCWKProcessPoolManager.h	1985-10-26 16:15:00
++++ apple/RNCWKProcessPoolManager.h	2024-11-11 14:42:51
+@@ -10,6 +10,6 @@
+ @interface RNCWKProcessPoolManager : NSObject
+ 
+ + (instancetype) sharedManager;
+-- (WKProcessPool *)sharedProcessPool;
++- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey;
+ 
+ @end
+--- apple/RNCWKProcessPoolManager.m	1985-10-26 16:15:00
++++ apple/RNCWKProcessPoolManager.m	2024-11-11 14:42:51
+@@ -10,10 +10,30 @@
+ 
+ @interface RNCWKProcessPoolManager() {
+   WKProcessPool *_sharedProcessPool;
++  NSMutableDictionary<NSString *, WKProcessPool *> *_pools;
+ }
+ @end
+ 
+ @implementation RNCWKProcessPoolManager
++
++- (instancetype)init
++{
++  if (self = [super init]) {
++    _pools = [NSMutableDictionary new];
++  }
++  return self;
++}
++
++- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey
++{
++  if (!scopeKey) {
++    return [self sharedProcessPool];
++  }
++  if (!_pools[scopeKey]) {
++    _pools[scopeKey] = [[WKProcessPool alloc] init];
++  }
++  return _pools[scopeKey];
++}
+ 
+ + (id) sharedManager {
+   static RNCWKProcessPoolManager *_sharedManager = nil;
+--- apple/RNCWebViewImpl.h	1985-10-26 16:15:00
++++ apple/RNCWebViewImpl.h	2024-11-11 14:42:51
+@@ -46,6 +46,7 @@
+ 
+ #if !TARGET_OS_OSX
+ @interface RNCWebViewImpl : RCTView <UIEditMenuInteractionDelegate>
++@property (nonatomic, strong) NSString *scopeKey;
+ 
+ @property (nonatomic, nullable) UIEditMenuInteraction *editMenuInteraction API_AVAILABLE(ios(16.0));
+ #else
+--- apple/RNCWebViewImpl.m	1985-10-26 16:15:00
++++ apple/RNCWebViewImpl.m	2024-11-11 14:42:51
+@@ -457,7 +457,7 @@
+     wkWebViewConfig.websiteDataStore = [WKWebsiteDataStore defaultDataStore];
+   }
+   if(self.useSharedProcessPool) {
+-    wkWebViewConfig.processPool = [[RNCWKProcessPoolManager sharedManager] sharedProcessPool];
++    wkWebViewConfig.processPool = [[RNCWKProcessPoolManager sharedManager] sharedProcessPoolForScopeKey:self.scopeKey];
+   }
+   wkWebViewConfig.userContentController = [WKUserContentController new];
+ 
+--- apple/RNCWebViewManager.mm	1985-10-26 16:15:00
++++ apple/RNCWebViewManager.mm	2024-11-11 14:42:51
+@@ -32,12 +32,27 @@
+ @end
+ 
+ @implementation RNCWebViewManager
++NSString *_scopeKey;
+ 
+ RCT_EXPORT_MODULE(RNCWebView)
+ 
++- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
++                                        scopeKey:(NSString *)scopeKey
++                                    easProjectId:(NSString *)easProjectId
++                           kernelServiceDelegate:(id)kernelServiceInstance
++                                          params:(NSDictionary *)params
++{
++  if (self = [super init]) {
++    _scopeKey = scopeKey;
++  }
++  return self;
++}
++
+ - (RNCView *)view
+ {
+-  return [[RNCWebViewImpl alloc] init];
++  RNCWebViewImpl *webview = [[RNCWebViewImpl alloc] init];
++  webview.scopeKey = _scopeKey;
++  return webview;
+ }
+ 
+ RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)

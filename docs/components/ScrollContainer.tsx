@@ -28,7 +28,7 @@ export class ScrollContainer extends Component<ScrollContainerProps> {
     return (
       <div
         className={mergeClasses(
-          'size-full overflow-x-hidden overflow-y-auto',
+          'size-full overflow-y-auto overflow-x-hidden',
           this.props.className
         )}
         ref={this.scrollRef}

@@ -23,14 +23,14 @@ It's common to restrict specific routes to users who are not authenticated. This
     [
       'app/sign-in.tsx',
       <span>
-        Always accessible <LockUnlocked01Icon className="inline mb-1" />
+        Always accessible <LockUnlocked01Icon className="mb-1 inline" />
       </span>,
     ],
     ['app/(app)/_layout.tsx', <span>Protects child routes</span>],
     [
       'app/(app)/index.tsx',
       <span>
-        Requires authorization <Lock01Icon className="inline mb-1" />
+        Requires authorization <Lock01Icon className="mb-1 inline" />
       </span>,
     ],
   ]}
@@ -300,7 +300,7 @@ Another common pattern is to render a sign-in modal over the top of the app. Thi
     [
       'app/(app)/(root)/index.tsx',
       <span>
-        Requires authorization <Lock01Icon className="inline mb-1" />
+        Requires authorization <Lock01Icon className="mb-1 inline" />
       </span>,
     ],
   ]}

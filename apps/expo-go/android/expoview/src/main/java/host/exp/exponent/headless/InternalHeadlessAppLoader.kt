@@ -250,10 +250,8 @@ class InternalHeadlessAppLoader(private val context: Context) :
     val reactHost = ReactHostFactory.createFromReactNativeHost(context, wrapper)
 
     val devSupportManager = reactHost.devSupportManager
-    if (devSupportManager != null) {
-      val devSettings = devSupportManager.devSettings as DevInternalSettings
-      devSettings.setExponentActivityId(activityId)
-    }
+    val devSettings = devSupportManager.devSettings as? DevInternalSettings
+    devSettings?.setExponentActivityId(activityId)
 
     // keep a reference in app record, so it can be invalidated through AppRecord.invalidate()
     appRecord!!.setReactHost(reactHost)

@@ -18,7 +18,7 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
       openInNewTab
       href={`https://www.youtube.com/watch?v=${videoId}`}
       className={mergeClasses(
-        'flex overflow-hidden items-stretch relative border border-default rounded-lg bg-default transition shadow-xs',
+        'relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
         'hocus:shadow-sm',
         'max-sm-gutters:flex-col',
         '[&+hr]:!mt-6',
@@ -27,27 +27,27 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
       isStyled>
       <div
         className={mergeClasses(
-          'bg-element flex items-center max-w-[200px] justify-center relative border-r border-secondary',
-          'max-sm-gutters:max-w-full max-sm-gutters:border-r-0 max-sm-gutters:border-b'
+          'relative flex max-w-[200px] items-center justify-center border-r border-secondary bg-element',
+          'max-sm-gutters:max-w-full max-sm-gutters:border-b max-sm-gutters:border-r-0'
         )}>
         <img
           src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
           className="aspect-video"
           alt={title}
         />
-        <div className="size-[44px] flex items-center justify-center bg-[#000a] rounded-full absolute top-[calc(50%-22px)] right-[calc(50%-22px)]">
-          <PlaySolidIcon className="icon-lg text-palette-white ml-0.5" />
+        <div className="absolute right-[calc(50%-22px)] top-[calc(50%-22px)] flex size-[44px] items-center justify-center rounded-full bg-[#000a]">
+          <PlaySolidIcon className="icon-lg ml-0.5 text-palette-white" />
         </div>
       </div>
-      <div className="px-4 py-2 bg-default flex flex-col gap-1 justify-center">
-        <LABEL className="leading-normal flex gap-1.5 items-center">{title}</LABEL>
+      <div className="flex flex-col justify-center gap-1 bg-default px-4 py-2">
+        <LABEL className="flex items-center gap-1.5 leading-normal">{title}</LABEL>
         {description && (
-          <CALLOUT theme="secondary" className="flex gap-2 items-center">
+          <CALLOUT theme="secondary" className="flex items-center gap-2">
             {description}
           </CALLOUT>
         )}
       </div>
-      <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-md ml-auto my-auto mr-4 max-sm-gutters:hidden" />
+      <ArrowUpRightIcon className="icon-md my-auto ml-auto mr-4 shrink-0 text-icon-secondary max-sm-gutters:hidden" />
     </A>
   );
 }

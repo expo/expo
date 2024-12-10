@@ -51,7 +51,7 @@ function getNavOptions() {
 exports.getNavOptions = getNavOptions;
 function Sitemap() {
     return (<react_native_1.View style={styles.container}>
-      {!statusbar_1.hasViewControllerBasedStatusBarAppearance && <react_native_1.StatusBar barStyle="light-content"/>}
+      {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
       <react_native_1.ScrollView contentContainerStyle={styles.scroll}>
         <FileSystemView />
       </react_native_1.ScrollView>

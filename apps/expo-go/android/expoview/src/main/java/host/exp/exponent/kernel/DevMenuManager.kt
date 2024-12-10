@@ -302,9 +302,12 @@ class DevMenuManager {
   @Throws(Exception::class)
   private fun prepareSurface(initialProps: Bundle): ReactSurface {
     val surface = ReactSurfaceImpl.createWithView(kernel.applicationContext, DEV_MENU_JS_MODULE_NAME, initialProps)
-    surface.attach(kernel.reactHost as ReactHostImpl)
-    surface.start()
-    reactSurface = surface
+    val reactHost = kernel.reactHost as? ReactHostImpl
+    reactHost?.let {
+      surface.attach(it)
+      surface.start()
+      reactSurface = surface
+    }
     return surface
   }
 

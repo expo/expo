@@ -5,7 +5,7 @@ import { PropsWithChildren } from 'react';
 import { Collapsible } from '.';
 
 import { HeadingManager } from '~/common/headingManager';
-import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+import { HeadingsContext } from '~/common/withHeadingManager';
 
 const prepareHeadingManager = () => {
   const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });

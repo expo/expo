@@ -125,6 +125,7 @@ class ExpoCameraView(
   private var imageAnalysisUseCase: ImageAnalysis? = null
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
+  private var glSurface: SurfaceTexture? = null
 
   private var previewView = PreviewView(context).apply {
     elevation = 0f
@@ -145,6 +146,12 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
+  var zoom: Float = 0f
+    set(value) {
+      field = value
+      camera?.cameraControl?.setLinearZoom(value.coerceIn(0f, 1f))
+    }
+
   var autoFocus: FocusMode = FocusMode.OFF
     set(value) {
       field = value
@@ -158,6 +165,12 @@ class ExpoCameraView(
     }
 
   var videoQuality: VideoQuality = VideoQuality.VIDEO1080P
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var videoEncodingBitrate: Int? = null
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -304,8 +317,13 @@ class ExpoCameraView(
       .setFileSizeLimit(options.maxFileSize.toLong())
       .setDurationLimitMillis(options.maxDuration.toLong() * 1000)
       .build()
+
     recorder?.let {
-      if (!mute && ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+      if (!mute && ActivityCompat.checkSelfPermission(
+          context,
+          Manifest.permission.RECORD_AUDIO
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
         promise.reject(Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO))
         return
       }
@@ -340,7 +358,11 @@ class ExpoCameraView(
           }
         }
     }
-      ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
+      ?: promise.reject(
+        "E_RECORDING_FAILED",
+        "Starting video recording failed - could not create video file.",
+        null
+      )
   }
 
   @SuppressLint("UnsafeOptInUsageError")
@@ -353,11 +375,12 @@ class ExpoCameraView(
       {
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
-        previewView.scaleType = if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
-          PreviewView.ScaleType.FIT_CENTER
-        } else {
-          PreviewView.ScaleType.FILL_CENTER
-        }
+        previewView.scaleType =
+          if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
+            PreviewView.ScaleType.FIT_CENTER
+          } else {
+            PreviewView.ScaleType.FILL_CENTER
+          }
 
         val resolutionSelector = buildResolutionSelector()
         val preview = Preview.Builder()
@@ -366,6 +389,15 @@ class ExpoCameraView(
           .also {
             it.surfaceProvider = previewView.surfaceProvider
           }
+
+        glSurface?.let {
+          preview.setSurfaceProvider { request ->
+            val surface = Surface(it)
+            request.provideSurface(surface, ContextCompat.getMainExecutor(context)) {
+              surface.release()
+            }
+          }
+        }
 
         val cameraSelector = CameraSelector.Builder()
           .requireLensFacing(lensFacing.mapToCharacteristic())
@@ -398,6 +430,8 @@ class ExpoCameraView(
           camera?.let {
             observeCameraState(it.cameraInfo)
           }
+          // Set the previous zoom level after recreating the camera
+          camera?.cameraControl?.setLinearZoom(zoom.coerceIn(0f, 1f))
           this.cameraProvider = cameraProvider
         } catch (e: Exception) {
           onMountError(
@@ -431,8 +465,10 @@ class ExpoCameraView(
 
   private fun buildResolutionSelector(): ResolutionSelector {
     val strategy = if (pictureSize.isNotEmpty()) {
-      val size = Size.parseSize(pictureSize)
-      ResolutionStrategy(size, ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER)
+      val size = parseSizeSafely(pictureSize)
+      size?.let {
+        ResolutionStrategy(size, ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER)
+      } ?: ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
     } else {
       ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
     }
@@ -453,12 +489,29 @@ class ExpoCameraView(
     }
   }
 
+  private fun parseSizeSafely(size: String): Size? {
+    val pattern = Regex("\\d+x\\d+")
+    if (!pattern.matches(size)) {
+      return null
+    }
+
+    return try {
+      Size.parseSize(size)
+    } catch (e: Throwable) {
+      null
+    }
+  }
+
   private fun createVideoCapture(): VideoCapture<Recorder> {
     val preferredQuality = videoQuality.mapToQuality()
     val fallbackStrategy = FallbackStrategy.higherQualityOrLowerThan(preferredQuality)
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
-    val recorder = Recorder.Builder()
+    val recorder = Recorder.Builder().apply {
+      videoEncodingBitrate?.let {
+        setTargetVideoEncodingBitRate(it)
+      }
+    }
       .setExecutor(ContextCompat.getMainExecutor(context))
       .setQualitySelector(qualitySelector)
       .build()
@@ -482,7 +535,10 @@ class ExpoCameraView(
         previewView.width.toFloat(),
         previewView.height.toFloat()
       )
-      val action = FocusMeteringAction.Builder(meteringPointFactory.createPoint(1f, 1f), FocusMeteringAction.FLAG_AF)
+      val action = FocusMeteringAction.Builder(
+        meteringPointFactory.createPoint(1f, 1f),
+        FocusMeteringAction.FLAG_AF
+      )
         .build()
       it.cameraControl.startFocusAndMetering(action)
     }
@@ -504,7 +560,8 @@ class ExpoCameraView(
   @OptIn(ExperimentalCamera2Interop::class)
   fun getAvailablePictureSizes(): List<String> {
     return camera?.cameraInfo?.let { cameraInfo ->
-      val info = Camera2CameraInfo.from(cameraInfo).getCameraCharacteristic(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+      val info = Camera2CameraInfo.from(cameraInfo)
+        .getCameraCharacteristic(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
       info?.getOutputSizes(ImageFormat.JPEG)?.map { it.toString() }
     } ?: emptyList()
   }
@@ -570,7 +627,10 @@ class ExpoCameraView(
     barcode.referenceImageWidth = width
   }
 
-  private fun getCornerPointsAndBoundingBox(cornerPoints: List<Int>, boundingBox: BoundingBox): Pair<ArrayList<Bundle>, Bundle> {
+  private fun getCornerPointsAndBoundingBox(
+    cornerPoints: List<Int>,
+    boundingBox: BoundingBox
+  ): Pair<ArrayList<Bundle>, Bundle> {
     val density = previewView.resources.displayMetrics.density
     val convertedCornerPoints = ArrayList<Bundle>()
     for (i in cornerPoints.indices step 2) {
@@ -605,7 +665,10 @@ class ExpoCameraView(
   private fun onBarcodeScanned(barcode: BarCodeScannerResult) {
     if (shouldScanBarcodes) {
       transformBarcodeScannerResultToViewCoordinates(barcode)
-      val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barcode.cornerPoints, barcode.boundingBox)
+      val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(
+        barcode.cornerPoints,
+        barcode.boundingBox
+      )
       onBarcodeScanned(
         BarcodeScannedEvent(
           target = id,
@@ -619,7 +682,11 @@ class ExpoCameraView(
     }
   }
 
-  override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) = Unit
+  override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) {
+    glSurface = surfaceTexture
+    shouldCreateCamera = true
+    createCamera()
+  }
 
   override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
 

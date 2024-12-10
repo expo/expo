@@ -1,4 +1,4 @@
-import { runAsync } from './Processes';
+import { runAsync } from './Processes.js';
 
 /**
  * Get the version of a package's dist-tag from npm.

@@ -47,7 +47,7 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
           <H4 hideInSidebar>
             <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
           </H4>
-          <MONOSPACE theme="secondary" className="text-xs inline-flex mb-3">
+          <MONOSPACE theme="secondary" className="mb-3 inline-flex text-xs">
             {`${name}.${enumValue.name} ＝ ${renderEnumValue(
               enumValue.type.value,
               enumValue.type.name

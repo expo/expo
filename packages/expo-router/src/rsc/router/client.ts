@@ -360,6 +360,9 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     dismiss() {
       throw new Error('router.dismiss() is not supported in React Server Components yet');
     },
+    dismissTo() {
+      throw new Error('router.dismissTo() is not supported in React Server Components yet');
+    },
     dismissAll() {
       throw new Error('router.dismissAll() is not supported in React Server Components yet');
     },

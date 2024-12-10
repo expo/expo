@@ -22,7 +22,7 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
   ]
   private var previewLayer: AVCaptureVideoPreviewLayer?
   private var zxingEnabled = true
-  private var delegate: MetatDataDelegate?
+  private var delegate: MetaDataDelegate?
 
   init(session: AVCaptureSession, sessionQueue: DispatchQueue) {
     self.session = session
@@ -111,7 +111,7 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
     session.beginConfiguration()
     defer { session.commitConfiguration() }
 
-    delegate = MetatDataDelegate(
+    delegate = MetaDataDelegate(
       settings: settings,
       previewLayer: previewLayer,
       zxingBarcodeReaders: zxingBarcodeReaders,

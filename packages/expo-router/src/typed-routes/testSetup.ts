@@ -20,6 +20,7 @@ const fixtures: Record<
       '/(group)/(a,b)/folder/[slug]': () => null,
       '/(group)/(a,b)/folder/[...slug]': () => null,
       '/(c)/folder/[slug]': () => null,
+      '/(group)/index': () => null,
     },
   },
   partialGroups: {

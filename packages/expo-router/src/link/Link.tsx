@@ -4,19 +4,54 @@
 import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef } from 'react';
 import { Text, GestureResponderEvent, Platform } from 'react-native';
 
-import { Slot } from './LinkSlot';
 import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';
 import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
+import { Slot } from '../ui/Slot';
 
 export interface LinkComponent {
   (props: PropsWithChildren<LinkProps>): JSX.Element;
   /** Helper method to resolve a Href object into a string. */
   resolveHref: (href: Href) => string;
 }
+
+export type RedirectProps = {
+  /**
+   * The path of the route to navigate to. It can either be:
+   * - **string**: A full path like `/profile/settings` or a relative path like `../settings`.
+   * - **object**: An object with a `pathname` and optional `params`. The `pathname` can be
+   * a full path like `/profile/settings` or a relative path like `../settings`. The
+   * params can be an object of key-value pairs.
+   *
+   * @example
+   * ```tsx Dynamic
+   * import { Redirect } from 'expo-router';
+   *
+   * export default function RedirectToAbout() {
+   *  return (
+   *    <Redirect href="/about">About</Link>
+   *  );
+   *}
+   * ```
+   */
+  href: Href;
+
+  /**
+   * Relative URL references are either relative to the directory or the document.
+   * By default, relative paths are relative to the document.
+   *
+   * @see [Resolving relative references in Mozilla's documentation](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
+   */
+  relativeToDirectory?: boolean;
+
+  /**
+   * Replaces the initial screen with the current route.
+   */
+  withAnchor?: boolean;
+};
 
 /**
  * Redirects to the `href` as soon as the component is mounted.
@@ -41,11 +76,11 @@ export interface LinkComponent {
  * }
  * ```
  */
-export function Redirect({ href }: { href: Href }) {
+export function Redirect({ href, relativeToDirectory, withAnchor }: RedirectProps) {
   const router = useRouter();
   useFocusEffect(() => {
     try {
-      router.replace(href);
+      router.replace(href, { relativeToDirectory, withAnchor });
     } catch (error) {
       console.error(error);
     }
@@ -88,6 +123,7 @@ function ExpoRouterLink(
     href,
     replace,
     push,
+    dismissTo,
     // TODO: This does not prevent default on the anchor tag.
     relativeToDirectory,
     asChild,
@@ -115,6 +151,7 @@ function ExpoRouterLink(
   let event;
   if (push) event = 'PUSH';
   if (replace) event = 'REPLACE';
+  if (dismissTo) event = 'POP_TO';
 
   const props = useLinkToPathProps({
     href: resolvedHref,

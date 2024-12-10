@@ -461,6 +461,10 @@ export var Fields;
     Fields["Note"] = "note";
     Fields["Dates"] = "dates";
     Fields["Relationships"] = "relationships";
+    /**
+     * @platform android
+     */
+    Fields["IsFavorite"] = "isFavorite";
 })(Fields || (Fields = {}));
 /**
  * This format denotes the common calendar format used to specify how a date is calculated in `nonGregorianBirthday` fields.

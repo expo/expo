@@ -296,7 +296,11 @@ export async function modifyConfigAsync(
   }
 
   // Attempt to write to a function-like dynamic config, when used with a static config
-  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function') {
+  if (
+    config.staticConfigPath &&
+    config.dynamicConfigObjectType === 'function' &&
+    !modifications.hasOwnProperty('plugins') // We don't know what plugins are in dynamic configs
+  ) {
     const outputConfig = mergeConfigModifications(config, modifications);
 
     if (isDryRun) {

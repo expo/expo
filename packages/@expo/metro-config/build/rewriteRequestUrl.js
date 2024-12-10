@@ -36,9 +36,9 @@ function getRouterDirectoryModuleIdWithManifest(projectRoot, exp) {
 }
 function getRouterDirectory(projectRoot) {
     // more specific directories first
-    if (directoryExistsSync(path_1.default.join(projectRoot, 'src/app'))) {
+    if (directoryExistsSync(path_1.default.join(projectRoot, 'src', 'app'))) {
         debug('Using src/app as the root directory for Expo Router.');
-        return 'src/app';
+        return path_1.default.join('src', 'app');
     }
     debug('Using app as the root directory for Expo Router.');
     return 'app';

@@ -62,7 +62,7 @@ export function LaunchPartyBanner({ currentDateAsString }: Props) {
       </div>
       <div
         className={mergeClasses(
-          'flex min-w-[39.5%] items-center justify-end gap-3 bg-launch-party-banner bg-left bg-no-repeat pr-5 z-10 shrink-0',
+          'z-10 flex min-w-[39.5%] shrink-0 items-center justify-end gap-3 bg-launch-party-banner bg-left bg-no-repeat pr-5',
           'max-md-gutters:mb-4 max-md-gutters:h-[unset] max-md-gutters:min-w-[unset] max-md-gutters:bg-none max-md-gutters:px-5'
         )}>
         <Button

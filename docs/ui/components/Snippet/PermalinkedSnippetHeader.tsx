@@ -4,9 +4,7 @@ import React from 'react';
 import { SnippetHeader, SnippetHeaderProps } from './SnippetHeader';
 
 import { HeadingType } from '~/common/headingManager';
-import withHeadingManager, {
-  HeadingManagerProps,
-} from '~/components/page-higher-order/withHeadingManager';
+import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 
 export const PermalinkedSnippetHeader = withHeadingManager(
   (props: SnippetHeaderProps & HeadingManagerProps) => {

@@ -22,6 +22,8 @@ import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { importMetroConfig } from './traveling/metro-config';
+import { toPosixPath } from './utils/filePath';
+
 const debug = require('debug')('expo:metro:config') as typeof console.log;
 
 export interface LoadOptions {
@@ -143,9 +145,9 @@ export function createStableModuleIdFactory(
       // Virtual modules should be stable.
       return modulePath;
     } else if (path.isAbsolute(modulePath)) {
-      return path.relative(root, modulePath) + scope;
+      return toPosixPath(path.relative(root, modulePath)) + scope;
     } else {
-      return modulePath + scope;
+      return toPosixPath(modulePath) + scope;
     }
   };
 

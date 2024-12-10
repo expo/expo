@@ -1060,6 +1060,51 @@ it('can navigation to a relative route without losing path params', async () => 
   expect(screen.getByTestId('three')).toBeOnTheScreen();
 });
 
+it('can navigation to a relative route with query params without losing path params', async () => {
+  renderRouter(
+    {
+      _layout: () => <Slot />,
+      '(group)/[value]/one': () => <Text testID="one" />,
+      '(group)/[value]/two': () => <Text testID="two" />,
+      '(group)/[...value]/three': () => <Text testID="three" />,
+      '(group)/[...value]/four': () => <Text testID="four" />,
+    },
+    {
+      initialUrl: '/test/one',
+    }
+  );
+
+  expect(screen).toHavePathname('/test/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('./two?hello=world'));
+  expect(screen).toHavePathname('/test/two');
+  expect(screen).toHavePathnameWithParams('/test/two?hello=world');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+  expect(screen).toHaveSearchParams({
+    value: 'test',
+    hello: 'world',
+  });
+
+  act(() => router.push('./one?foo=bar'));
+  expect(screen).toHavePathname('/test/one');
+  expect(screen).toHavePathnameWithParams('/test/one?foo=bar');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+  expect(screen).toHaveSearchParams({
+    value: 'test',
+    foo: 'bar',
+  });
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/test/two');
+  expect(screen).toHavePathnameWithParams('/test/two?hello=world');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+  expect(screen).toHaveSearchParams({
+    value: 'test',
+    hello: 'world',
+  });
+});
+
 describe('shared routes with tabs', () => {
   function renderSharedTabs() {
     renderRouter({

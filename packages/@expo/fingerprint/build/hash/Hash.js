@@ -132,7 +132,8 @@ exports.createFileHashResultsAsync = createFileHashResultsAsync;
  * If the dir is excluded, returns null rather than a HashResult
  */
 async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options, depth = 0) {
-    if ((0, Path_1.isIgnoredPathWithMatchObjects)(dirPath, options.ignorePathMatchObjects)) {
+    // Using `ignoreDirMatchObjects` as an optimization to skip the whole directory
+    if ((0, Path_1.isIgnoredPathWithMatchObjects)(dirPath, options.ignoreDirMatchObjects)) {
         return null;
     }
     const dirents = (await promises_1.default.readdir(path_1.default.join(projectRoot, dirPath), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));

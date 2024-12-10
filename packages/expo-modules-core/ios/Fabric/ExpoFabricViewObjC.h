@@ -1,10 +1,9 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/Platform.h>
+
 #ifdef RCT_NEW_ARCH_ENABLED
 
-#if !TARGET_OS_OSX
-#import <UIKit/UIKit.h>
-#endif // !TARGET_OS_OSX
 #import <React/React-Core-umbrella.h>
 
 #ifdef __cplusplus
@@ -41,6 +40,18 @@
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 
+// MARK: - Derived from RCTComponentViewProtocol
+
 - (void)prepareForRecycle;
+
+/*
+ * Called for mounting (attaching) a child component view inside `self` component view.
+ */
+- (void)mountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index;
+
+/*
+ * Called for unmounting (detaching) a child component view from `self` component view.
+ */
+- (void)unmountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index;
 
 @end

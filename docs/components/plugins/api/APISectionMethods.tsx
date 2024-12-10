@@ -101,11 +101,11 @@ export const renderMethod = (
               <>
                 <div
                   className={mergeClasses(
-                    'flex flex-row gap-2 items-start',
+                    'flex flex-row items-start gap-2',
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
                   )}>
-                  <div className="flex flex-row gap-2 items-center">
-                    <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
+                  <div className="flex flex-row items-center gap-2">
+                    <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
                     <CALLOUT tag="span" theme="secondary" weight="medium">
                       Returns:
                     </CALLOUT>
@@ -115,7 +115,7 @@ export const renderMethod = (
                   </CALLOUT>
                 </div>
                 {returnComment ? (
-                  <div className="flex flex-col mt-1.5 mb-1 pl-6">
+                  <div className="mb-1 mt-1.5 flex flex-col pl-6">
                     <CommentTextBlock comment={{ summary: returnComment.content }} />
                   </div>
                 ) : undefined}

@@ -17,18 +17,18 @@ export function ApiVersionSelect() {
   return (
     <div
       className={mergeClasses(
-        'px-4 pt-3 pb-4 flex flex-col gap-1 border-b border-b-default bg-default',
+        'flex flex-col gap-1 border-b border-b-default bg-default px-4 pb-4 pt-3',
         'max-lg-gutters:sticky max-lg-gutters:top-0 max-lg-gutters:z-10'
       )}>
       <FOOTNOTE theme="tertiary">Reference version</FOOTNOTE>
-      <div className="relative bg-default border border-default rounded-md shadow-xs py-2 px-3">
+      <div className="relative rounded-md border border-default bg-default px-3 py-2 shadow-xs">
         <label className="flex flex-row items-center justify-between" htmlFor="api-version-select">
           <CALLOUT className="flex">{versionToText(version)}</CALLOUT>
           <ChevronDownIcon className="icon-sm shrink-0" />
         </label>
         <select
           id="api-version-select"
-          className="absolute opacity-0 inset-0 size-full text-xs cursor-pointer"
+          className="absolute inset-0 size-full cursor-pointer text-xs opacity-0"
           value={version}
           onChange={event => setVersion(event.target.value)}>
           {VERSIONS.map(version => (

@@ -24,9 +24,24 @@ internal class UnableToDeleteException(reason: String) :
     "Unable to delete file or directory: $reason"
   )
 
+internal class UnableToCreateException(reason: String) :
+  CodedException(
+    "Unable to create file or directory: $reason"
+  )
+
 internal class InvalidPermissionException(permission: Permission) :
   CodedException(
     "Missing '${permission.name}' permission for accessing the file."
+  )
+
+internal class UnableToReadHandleException(reason: String) :
+  CodedException(
+    "Unable to read from a file handle: '$reason'"
+  )
+
+internal class UnableToWriteHandleException(reason: String) :
+  CodedException(
+    "Unable to write to a file handle: '$reason'"
   )
 
 internal class DestinationAlreadyExistsException :

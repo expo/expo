@@ -6,21 +6,17 @@ import inquirer from 'inquirer';
 import os from 'os';
 import path from 'path';
 
-import { runReactNativeCodegenAsync } from '../Codegen';
-import { EXPO_DIR } from '../Constants';
+import { EXPO_GO_LOCAL_MODULES_DIR } from '../Constants';
 import { GitDirectory } from '../Git';
 import logger from '../Logger';
 import { downloadPackageTarballAsync } from '../Npm';
 import { PackageJson } from '../Packages';
 import { updateBundledVersionsAsync } from '../ProjectVersions';
+import { searchFilesAsync } from '../Utils';
 import * as Workspace from '../Workspace';
-import {
-  getVendoringAvailablePlatforms,
-  listAvailableVendoredModulesAsync,
-  vendorPlatformAsync,
-} from '../vendoring';
+import { listAvailableVendoredModulesAsync } from '../vendoring';
+import { copyVendoredFilesAsync } from '../vendoring/common';
 import vendoredModulesConfig from '../vendoring/config';
-import { legacyVendorModuleAsync } from '../vendoring/legacy';
 import { VendoringModuleConfig, VendoringTargetConfig } from '../vendoring/types';
 
 type ActionOptions = {
@@ -28,7 +24,6 @@ type ActionOptions = {
   listOutdated: boolean;
   target: string;
   module: string;
-  platform: string;
   commit: string;
   semverPrefix: string;
   updateDependencies?: boolean;
@@ -49,11 +44,6 @@ export default (program: Command) => {
       EXPO_GO_TARGET
     )
     .option('-m, --module <string>', 'Name of the module to update.')
-    .option(
-      '-p, --platform <string>',
-      'A platform on which the vendored module will be updated.',
-      'all'
-    )
     .option(
       '-c, --commit <string>',
       'Git reference on which to checkout when copying 3rd party module.',
@@ -93,39 +83,23 @@ async function action(options: ActionOptions) {
     const sourceDirectory = moduleConfig.rootDir
       ? path.join(downloadSourceDir, moduleConfig.rootDir)
       : downloadSourceDir;
+    const targetDirectory = path.join(EXPO_GO_LOCAL_MODULES_DIR, moduleName);
 
-    const platforms = resolvePlatforms(options.platform);
+    // Clean up previous version
+    await fs.remove(targetDirectory);
 
-    for (const platform of platforms) {
-      if (!targetConfig.platforms[platform]) {
-        continue;
-      }
-      await runCodegenIfNeeded(sourceDirectory, moduleConfig, platform);
+    // Copy files from the source to the target
+    const files = await searchFilesAsync(sourceDirectory, '**/*', {
+      ignore: ['*.tgz', ...(moduleConfig.excludeFiles ?? [])],
+    });
+    await copyVendoredFilesAsync(files, {
+      sourceDirectory,
+      targetDirectory,
+      transforms: moduleConfig.transforms ?? {},
+    });
 
-      // TODO(@tsapeta): Remove this once all vendored modules are migrated to the new system.
-      if (!targetConfig.modules[moduleName][platform]) {
-        // If the target doesn't support this platform, maybe legacy vendoring does.
-        logger.info('‼️  Using legacy vendoring for platform %s', chalk.yellow(platform));
-        await legacyVendorModuleAsync(moduleName, platform, sourceDirectory);
-        continue;
-      }
-
-      const targetDirectory = path.join(
-        targetConfig.platforms[platform].targetDirectory,
-        moduleName
-      );
-      logger.log(
-        '🎯 Vendoring for %s to %s',
-        chalk.yellow(platform),
-        chalk.magenta(targetDirectory)
-      );
-
-      // Clean up previous version
-      await fs.remove(targetDirectory);
-
-      // Delegate further steps to platform's provider
-      await vendorPlatformAsync(platform, sourceDirectory, targetDirectory, moduleConfig[platform]);
-    }
+    // Run post hook
+    await moduleConfig.postCopyFilesHookAsync?.(sourceDirectory, targetDirectory);
 
     // Update dependency versions only for Expo Go target.
     if (options.updateDependencies !== false && target === EXPO_GO_TARGET) {
@@ -252,46 +226,4 @@ async function resolveModuleNameAsync(
     },
   ]);
   return moduleName;
-}
-
-function resolvePlatforms(platform: string): string[] {
-  const all = getVendoringAvailablePlatforms();
-  return all.includes(platform) ? [platform] : all;
-}
-
-async function runCodegenIfNeeded(
-  sourceDirectory: string,
-  moduleConfig: VendoringModuleConfig,
-  platform: string
-) {
-  const packageJsonPath = path.join(
-    sourceDirectory,
-    moduleConfig.packageJsonPath ?? 'package.json'
-  );
-  const packageJson = require(packageJsonPath) as PackageJson;
-  const libs = packageJson?.codegenConfig?.libraries ?? [];
-  const fabricDisabledLibs = libs.filter((lib) => lib.type !== 'components');
-  if (!fabricDisabledLibs.length) {
-    return;
-  }
-  if (platform !== 'android' && platform !== 'ios') {
-    throw new Error(`Unsupported platform - ${platform}`);
-  }
-
-  const reactNativeRoot = path.join(EXPO_DIR, 'react-native-lab', 'react-native');
-  const codegenPkgRoot = path.join(reactNativeRoot, 'packages', 'react-native-codegen');
-
-  await Promise.all(
-    fabricDisabledLibs.map((lib) =>
-      runReactNativeCodegenAsync({
-        reactNativeRoot,
-        codegenPkgRoot,
-        outputDir: path.join(sourceDirectory, platform),
-        name: lib.name,
-        type: lib.type,
-        platform,
-        jsSrcsDir: path.join(sourceDirectory, lib.jsSrcsDir),
-      })
-    )
-  );
 }

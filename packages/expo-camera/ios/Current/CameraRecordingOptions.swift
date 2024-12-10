@@ -41,15 +41,15 @@ enum VideoCodec: String, Enumerable {
   func codecType() -> AVVideoCodecType {
     switch self {
     case .h264:
-      return .h264
+      return AVVideoCodecType.h264
     case .hevc:
-      return .hevc
+      return AVVideoCodecType.hevc
     case .jpeg:
-      return .jpeg
+      return AVVideoCodecType.jpeg
     case .appleProRes422:
-      return .proRes422
+      return AVVideoCodecType.proRes422
     case .appleProRes4444:
-      return .proRes4444
+      return AVVideoCodecType.proRes4444
     }
   }
 }

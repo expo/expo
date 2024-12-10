@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Handle gitignore checks when git is unavailable. e.g. EAS Build. ([#32130](https://github.com/expo/expo/pull/32833) by [@betomoedano](https://github.com/betomoedano))
+
 ### 💡 Others
+
+- Removed cmd.exe warning. ([#33357](https://github.com/expo/expo/pull/33357) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.12.4 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
 
 ## 1.12.3 — 2024-11-05
 

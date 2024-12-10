@@ -70,6 +70,7 @@ function useRouter() {
         push: router_store_1.store.push,
         dismiss: router_store_1.store.dismiss,
         dismissAll: router_store_1.store.dismissAll,
+        dismissTo: router_store_1.store.dismissTo,
         canDismiss: router_store_1.store.canDismiss,
         back: router_store_1.store.goBack,
         replace: router_store_1.store.replace,

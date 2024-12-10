@@ -44,8 +44,9 @@ export async function findGitHubUserFromEmailByCommits(email: string): Promise<s
   });
 
   const json = (await response.json()) as Endpoints['GET /search/commits']['response'];
-  if (json.data.total_count > 0) {
-    return json.data.items[0].author?.login ?? null;
+  const data = json.data ?? json;
+  if (data?.total_count > 0) {
+    return data.items[0].author?.html_url ?? null;
   }
 
   return null;

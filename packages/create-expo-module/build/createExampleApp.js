@@ -33,15 +33,7 @@ async function createExampleApp(data, targetDir, packageManager) {
         const templateVersion = EXPO_BETA ? 'next' : 'latest';
         const template = `expo-template-blank-typescript@${templateVersion}`;
         debug(`Using example template: ${template}`);
-        const command = [
-            'create',
-            'expo-app',
-            '--',
-            exampleProjectSlug,
-            '--template',
-            template,
-            '--yes',
-        ];
+        const command = createCommand(packageManager, exampleProjectSlug, template);
         try {
             await (0, spawn_async_1.default)(packageManager, command, {
                 cwd: targetDir,
@@ -80,6 +72,13 @@ async function createExampleApp(data, targetDir, packageManager) {
     });
 }
 exports.createExampleApp = createExampleApp;
+function createCommand(packageManager, exampleProjectSlug, template) {
+    const command = ['create', 'expo-app'];
+    if (packageManager === 'npm') {
+        command.push('--');
+    }
+    return command.concat([exampleProjectSlug, '--template', template, '--yes']);
+}
 /**
  * Copies files from one directory to another.
  */

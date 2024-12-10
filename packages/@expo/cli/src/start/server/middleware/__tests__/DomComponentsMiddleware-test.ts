@@ -42,7 +42,7 @@ describe('Check webview package installation', () => {
 
   beforeEach(() => {
     req = asRequest({
-      url: 'http://localhost:8081/_expo/@dom/hello.tsx?file=file://path/to/file.js',
+      url: 'http://localhost:8081/_expo/@dom/hello.tsx?file=file:///path/to/file.js',
       headers: { host: 'localhost:8081' },
     });
     res = createMockResponse();

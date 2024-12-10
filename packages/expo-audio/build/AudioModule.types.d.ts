@@ -50,7 +50,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     isBuffering: boolean;
     /**
-     * The current position through the audio item, in seconds.
+     * The current position through the audio item in seconds.
      */
     currentTime: number;
     /**
@@ -82,6 +82,10 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      * Pauses the player.
      */
     pause(): void;
+    /**
+     * Replaces the current audio source with a new one.
+     */
+    replace(source: AudioSource): void;
     /**
      * Seeks the playback by the given number of seconds.
      * @param seconds The number of seconds to seek by.

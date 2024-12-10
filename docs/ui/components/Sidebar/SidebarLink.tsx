@@ -8,6 +8,7 @@ import { NavigationRoute } from '~/types/common';
 
 type SidebarLinkProps = PropsWithChildren<{
   info: NavigationRoute;
+  className?: string;
 }>;
 
 const HEAD_NAV_HEIGHT = 160;
@@ -22,7 +23,7 @@ const isLinkInViewport = (element: HTMLAnchorElement) => {
   );
 };
 
-export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
+export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => {
   const router = useRouter();
   const ref = useRef<HTMLAnchorElement>(null);
 
@@ -44,39 +45,38 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
   const isExternal = info.href.startsWith('http');
 
   return (
-    <div className="flex min-h-8 items-center p-1 pr-0">
-      <LinkBase
-        href={info.href as string}
-        ref={ref}
+    <LinkBase
+      href={info.href as string}
+      ref={ref}
+      className={mergeClasses(
+        'group -ml-2.5 flex w-full scroll-m-[60px] items-center p-1 pr-0 text-xs text-secondary decoration-0',
+        'hocus:text-link [&_svg]:hocus:text-icon-info',
+        isSelected && 'text-link [&_svg]:text-icon-info',
+        info.isDeprecated && 'line-through',
+        className
+      )}
+      {...customDataAttributes}>
+      <div
         className={mergeClasses(
-          'group text-xs flex decoration-0 text-secondary items-center scroll-m-[60px] w-full -ml-2.5',
-          'hocus:text-link hocus:[&_svg]:text-icon-tertiary',
-          isSelected && 'text-link',
-          info.isDeprecated && 'line-through'
+          'mx-1.5 my-2 size-1.5 shrink-0 self-start rounded-full',
+          isSelected && 'bg-palette-blue11'
         )}
-        {...customDataAttributes}>
+      />
+      {children}
+      {info.isNew && (
         <div
           className={mergeClasses(
-            'size-1.5 shrink-0 rounded-full my-2 mx-1.5 self-start',
-            isSelected && 'bg-palette-blue11'
-          )}
-        />
-        {children}
-        {info.isNew && (
-          <div
-            className={mergeClasses(
-              'inline-flex ml-2 -mt-px border border-palette-blue10 text-palette-white text-[11px] font-semibold rounded-full px-[5px] leading-none items-center h-[17px]',
-              isSelected
-                ? 'bg-palette-blue10 text-palette-white dark:text-palette-black'
-                : 'bg-none border-palette-blue10 text-palette-blue10 dark:border-palette-blue9 dark:text-palette-blue9'
-            )}>
-            NEW
-          </div>
-        )}
-        {isExternal && (
-          <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto group-hover:text-icon-info" />
-        )}
-      </LinkBase>
-    </div>
+            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-blue10 px-[5px] text-[11px] font-semibold leading-none text-palette-white',
+            isSelected
+              ? 'bg-palette-blue10 text-palette-white dark:text-palette-black'
+              : 'border-palette-blue10 bg-none text-palette-blue10 dark:border-palette-blue9 dark:text-palette-blue9'
+          )}>
+          NEW
+        </div>
+      )}
+      {isExternal && (
+        <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary group-hover:text-icon-info" />
+      )}
+    </LinkBase>
   );
 };

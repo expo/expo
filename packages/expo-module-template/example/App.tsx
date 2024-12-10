@@ -2,9 +2,8 @@ import { useEvent } from 'expo';
 import <%- project.name %>, { <%- project.viewName %> } from '<%- project.slug %>';
 import { Button, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
-
 export default function App() {
-  const onChangePayload = useEvent(<%- project.name %>, "onChange");
+  const onChangePayload = useEvent(<%- project.name %>, 'onChange');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -20,7 +19,7 @@ export default function App() {
           <Button
             title="Set value"
             onPress={async () => {
-              await <%- project.name %>.setValueAsync("Hello from JS!");
+              await <%- project.name %>.setValueAsync('Hello from JS!');
             }}
           />
         </Group>

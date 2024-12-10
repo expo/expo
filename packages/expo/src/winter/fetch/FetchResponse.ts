@@ -9,6 +9,8 @@ const ConcreteNativeResponse = ExpoFetchModule.NativeResponse as typeof NativeRe
  * A response implementation for the `fetch.Response` API.
  */
 export class FetchResponse extends ConcreteNativeResponse implements Response {
+  private streamingStarted = false;
+
   get body(): ReadableStream<Uint8Array> | null {
     const response = this;
     return new ReadableStream({
@@ -18,16 +20,23 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
         });
 
         response.addListener('didComplete', () => {
+          response.removeAllRegisteredListeners();
           controller.close();
         });
 
         response.addListener('didFailWithError', (error: string) => {
+          response.removeAllRegisteredListeners();
           controller.error(new Error(error));
         });
-
-        response.startStreaming();
+      },
+      pull() {
+        if (!response.streamingStarted) {
+          response.startStreaming();
+          response.streamingStarted = true;
+        }
       },
       cancel(reason) {
+        response.removeAllRegisteredListeners();
         response.cancelStreaming(String(reason));
       },
     });
@@ -80,5 +89,11 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
 
   clone(): FetchResponse {
     throw new Error('Not implemented');
+  }
+
+  private removeAllRegisteredListeners() {
+    this.removeAllListeners('didReceiveResponseData');
+    this.removeAllListeners('didComplete');
+    this.removeAllListeners('didFailWithError');
   }
 }

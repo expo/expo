@@ -40,9 +40,7 @@ async function setSplashDrawableAsync({
           // TODO: Ensure these keys don't get out of sync
           'android:drawable': '@color/splashscreen_background'
         }
-      },
-      // Only include the image if resizeMode native is in-use.
-      {
+      }, {
         bitmap: [{
           $: {
             'android:gravity': 'center',

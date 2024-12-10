@@ -49,6 +49,7 @@ target 'Expo Go' do
       'expo-insights',
       'expo-face-detector',
       'expo-splash-screen',
+      'expo-audio'
     ],
     includeTests: true,
     flags: {

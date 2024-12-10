@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Changed `export` to `export type` for TS type declarations. ([#33446](https://github.com/expo/expo/pull/33446) by [@j-piasecki](https://github.com/j-piasecki))
+
 ### 💡 Others
 
 ## 13.0.5 — 2024-10-29

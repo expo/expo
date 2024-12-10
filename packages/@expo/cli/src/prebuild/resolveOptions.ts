@@ -41,6 +41,20 @@ export function resolvePackageManagerOptions(args: any) {
 export function resolveTemplateOption(template: string): ResolvedTemplateOption {
   assert(template, 'template is required');
 
+  if (
+    // Expands github shorthand (owner/repo) to full URLs
+    template.includes('/') &&
+    !(
+      template.startsWith('@') || // Scoped package
+      template.startsWith('.') || // Relative path
+      template.startsWith(path.sep) || // Absolute path
+      // Contains a protocol
+      /^[a-z][-a-z0-9\\.\\+]*:/.test(template)
+    )
+  ) {
+    template = `https://github.com/${template}`;
+  }
+
   if (template.startsWith('https://') || template.startsWith('http://')) {
     if (!validateUrl(template)) {
       throw new CommandError('BAD_ARGS', 'Invalid URL provided as a template');

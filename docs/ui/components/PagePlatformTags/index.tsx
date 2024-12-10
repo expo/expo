@@ -8,7 +8,7 @@ type Props = {
 
 export function PagePlatformTags({ platforms }: Props) {
   return (
-    <div className="inline-flex mt-3 flex-wrap gap-y-1.5">
+    <div className="mt-3 inline-flex flex-wrap gap-y-1.5">
       {platforms
         .sort((a, b) => a.localeCompare(b))
         .map(platform => {

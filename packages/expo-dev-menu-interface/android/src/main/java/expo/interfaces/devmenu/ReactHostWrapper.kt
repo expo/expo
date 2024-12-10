@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package expo.interfaces.devmenu
 
 import com.facebook.react.JSEngineResolutionAlgorithm
@@ -8,9 +6,9 @@ import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.LifecycleState
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.runtime.ReactHostImpl
+import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import java.lang.reflect.Field
 
 /**
@@ -22,7 +20,7 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHostProvider: () -
   lateinit var reactHost: ReactHost
 
   init {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
       this.reactHost = requireNotNull(reactHostProvider())
     } else {
       this.reactNativeHost = reactNativeHost
@@ -64,7 +62,7 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHostProvider: () -
       }
     }
 
-  val isBridgelessMode = ReactFeatureFlags.enableBridgelessArchitecture
+  val isBridgelessMode = ReactNativeFeatureFlags.enableBridgelessArchitecture
 
   val jsExecutorName: String
     get() {

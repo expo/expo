@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@expo/config": "~10.0.0"
+    "@expo/config": "~10.0.4"
   },
   "scripts": {
     "eas-build-pre-install": "./scripts/eas-build-pre-install.sh",

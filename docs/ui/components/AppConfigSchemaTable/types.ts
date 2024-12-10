@@ -33,4 +33,5 @@ export type FormattedProperty = {
   bareWorkflow?: string;
   subproperties: FormattedProperty[];
   parent?: string;
+  enum?: string[];
 };
