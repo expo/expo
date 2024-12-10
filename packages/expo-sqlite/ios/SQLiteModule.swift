@@ -493,7 +493,7 @@ public final class SQLiteModule: Module {
       return String(cString: text)
     case SQLITE_BLOB:
       guard let blob = exsqlite3_column_blob(instance, index) else {
-        throw InvalidConvertibleException("Null blob")
+        return Data()
       }
       let size = exsqlite3_column_bytes(instance, index)
       return Data(bytes: blob, count: Int(size))
