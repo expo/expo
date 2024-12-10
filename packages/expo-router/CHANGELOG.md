@@ -10,6 +10,7 @@
 
 - Prevent base url from being appended to external links. ([#31420](https://github.com/expo/expo/pull/31420) by [@6TELOIV](https://github.com/6teloiv))
 - Fix baseURL being removed when refreshing the app on web. ([#33481](https://github.com/expo/expo/pull/33481) by [@marklawlor](https://github.com/marklawlor))
+- Fix `fileURLtoFilePath` returning valid UNIX os paths to resolve client and server boundary entries on Windows. ([#33540](https://github.com/expo/expo/pull/33540) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
