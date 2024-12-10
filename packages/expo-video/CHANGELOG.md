@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Dispatch current player item changes on main queue to fix KVO-related crashes. ([#33123](https://github.com/expo/expo/pull/33123) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 - Fixed `generateThumbnailsAsync` not being available on Android in the types. ([#33491](https://github.com/expo/expo/pull/33491) by [@hirbod](https://github.com/hirbod))
