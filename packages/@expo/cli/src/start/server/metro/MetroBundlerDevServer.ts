@@ -69,6 +69,7 @@ import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddlewa
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   convertPathToModuleSpecifier,
+  createBundleUrlOsPath,
   createBundleUrlPath,
   ExpoMetroOptions,
   getAsyncRoutesFromExpoConfig,
@@ -510,7 +511,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     // Use fully qualified URL with all options to represent the file path that's used for source maps and HMR. This prevents collisions.
-    const filename = createBundleUrlPath({
+    const filename = createBundleUrlOsPath({
       ...opts,
       mainModuleName: resolvedEntryFilePath,
     });
