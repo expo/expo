@@ -47,7 +47,7 @@ export const Callout = ({
 
   const extractedType = extractType(contentChildren);
   const finalType = ['warning', 'error', 'info'].includes(extractedType) ? extractedType : type;
-  const Icon = icon || getCalloutIcon(finalType);
+  const Icon = icon ?? getCalloutIcon(finalType);
 
   return (
     <blockquote

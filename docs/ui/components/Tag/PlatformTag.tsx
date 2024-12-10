@@ -1,10 +1,10 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { PlatformIcon } from './PlatformIcon';
-import { TagProps } from './Tag';
-
 import { PlatformName } from '~/types/common';
 import { formatName, getPlatformName, getTagClasses } from '~/ui/components/Tag/helpers';
+
+import { PlatformIcon } from './PlatformIcon';
+import { TagProps } from './types';
 
 type PlatformTagProps = Omit<TagProps, 'name'> & {
   platform: PlatformName;

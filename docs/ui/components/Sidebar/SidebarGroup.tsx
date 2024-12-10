@@ -15,14 +15,16 @@ import { Phone01Icon } from '@expo/styleguide-icons/outline/Phone01Icon';
 import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
 import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 
-import { SidebarNodeProps } from './Sidebar';
-import { SidebarLink, SidebarSection, SidebarTitle } from './index';
-
 import { reportEasTutorialCompleted } from '~/providers/Analytics';
 import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
 import { NavigationRoute } from '~/types/common';
 import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 import { CircularProgressBar } from '~/ui/components/ProgressTracker/CircularProgressBar';
+
+import { SidebarLink } from './SidebarLink';
+import { SidebarSection } from './SidebarSection';
+import { SidebarTitle } from './SidebarTitle';
+import { SidebarNodeProps } from './types';
 
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
@@ -150,10 +152,10 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
       {!shouldSkipTitle(route, parentRoute) && title && (
         <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
       )}
-      {(route.children || []).map(child =>
+      {(route.children ?? []).map(child =>
         child.type === 'page' ? (
           <SidebarLink key={`${route.name}-${child.name}`} info={child}>
-            {child.sidebarTitle || child.name}
+            {child.sidebarTitle ?? child.name}
           </SidebarLink>
         ) : (
           <SidebarSection
@@ -175,7 +177,7 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
     return true;
   } else if (
     info.children &&
-    ((info.children[0] || {}).sidebarTitle || (info.children[0] || {}).name) === info.name
+    (info.children[0]?.sidebarTitle || info.children[0]?.name) === info.name
   ) {
     // If the first child post in the group has the same name as the group, then hide the
     // group title, lest we be very repetitive

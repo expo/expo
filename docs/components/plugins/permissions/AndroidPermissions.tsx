@@ -1,11 +1,11 @@
 import { mergeClasses } from '@expo/styleguide';
 import { useMemo } from 'react';
 
-import { androidPermissions, AndroidPermission, PermissionReference } from './data';
-
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { CODE, P, createPermalinkedComponent } from '~/ui/components/Text';
+
+import { androidPermissions, AndroidPermission, PermissionReference } from './data';
 
 // TODO(cedric): all commented code is related to the "granter" column.
 // This column defines if the permission is granted by the system or user (requires notification).

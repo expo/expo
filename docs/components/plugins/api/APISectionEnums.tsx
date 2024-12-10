@@ -1,12 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { H2, H4, MONOSPACE } from '~/ui/components/Text';
+
 import { EnumDefinitionData, EnumValueData } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
-import { CommentTextBlock, getTagNamesList, H3Code, BoxSectionHeader } from './APISectionUtils';
+import { getTagNamesList, H3Code, BoxSectionHeader } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { STYLES_APIBOX } from './styles';
-
-import { H2, H4, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -37,7 +38,7 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
             {name}
           </MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock comment={comment} includePlatforms={false} />
         <BoxSectionHeader text={`${name} Values`} className="!mb-0 !border-b-0" />
       </div>
       {children.sort(sortByValue).map((enumValue: EnumValueData) => (
@@ -53,7 +54,7 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
               enumValue.type.name
             )}`}
           </MONOSPACE>
-          <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
+          <APICommentTextBlock comment={enumValue.comment} includePlatforms={false} />
         </div>
       ))}
     </div>

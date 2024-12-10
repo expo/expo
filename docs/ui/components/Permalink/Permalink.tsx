@@ -1,11 +1,11 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
 import type { PropsWithChildren } from 'react';
 
-import { PermalinkBase } from './PermalinkBase';
-
 import { AdditionalProps } from '~/common/headingManager';
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink/PermalinkIcon';
+
+import { PermalinkBase } from './PermalinkBase';
 
 type Props = PropsWithChildren<{
   // Sidebar heading level override

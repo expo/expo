@@ -37,7 +37,6 @@ export const FeedbackDialog = ({ pathname }: Props) => {
     })
       .then(res => res.json())
       .then(res => {
-        console.log(res);
         if (res.errors) {
           setErrors(res.errors);
         } else {

@@ -1,27 +1,27 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
+import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
+
 import {
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
   TypeDefinitionData,
+  TypeDocKind,
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   BoxSectionHeader,
-  CommentTextBlock,
   extractDefaultPropValue,
   getCommentOrSignatureComment,
   getH3CodeWithBaseNestingLevel,
   getTagNamesList,
-  renderTypeOrSignatureType,
   resolveTypeName,
-  TypeDocKind,
 } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
-
-import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -56,7 +56,7 @@ const renderInheritedProps = (
     return (
       <>
         {exposeInSidebar ? <H3>Inherited Props</H3> : <H4>Inherited Props</H4>}
-        <UL>{inheritedProps.map(i => renderInheritedProp(i, sdkVersion))}</UL>
+        <UL>{inheritedProps.map(prop => renderInheritedProp(prop, sdkVersion))}</UL>
       </>
     );
   }
@@ -108,7 +108,7 @@ export const renderProp = (
   const { comment, name, type, flags, signatures } = { ...propData, ...propData.getSignature };
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
   const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
-  const extractedSignatures = signatures || type?.declaration?.signatures;
+  const extractedSignatures = signatures ?? type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
 
   return (
@@ -131,14 +131,18 @@ export const renderProp = (
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
         <>Type:</>{' '}
-        {renderTypeOrSignatureType({ type, signatures: extractedSignatures, sdkVersion })}
+        <APITypeOrSignatureType
+          type={type}
+          signatures={extractedSignatures}
+          sdkVersion={sdkVersion}
+        />
         {defaultValue && defaultValue !== UNKNOWN_VALUE && (
           <>
             &emsp;&bull;&emsp;Default: <CODE>{defaultValue}</CODE>
           </>
         )}
       </div>
-      <CommentTextBlock comment={extractedComment} includePlatforms={false} />
+      <APICommentTextBlock comment={extractedComment} includePlatforms={false} />
     </div>
   );
 };
@@ -163,7 +167,7 @@ const APISectionProps = ({
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
           <BoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
-          {baseProp && baseProp.comment && <CommentTextBlock comment={baseProp.comment} />}
+          {baseProp?.comment && <APICommentTextBlock comment={baseProp.comment} />}
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>

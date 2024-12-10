@@ -1,7 +1,7 @@
-import { PlatformTag } from './PlatformTag';
-
 import { PlatformName } from '~/types/common';
 import { DEMI, CALLOUT } from '~/ui/components/Text';
+
+import { PlatformTag } from './PlatformTag';
 
 type PlatformTagsProps = {
   prefix?: string;
@@ -9,7 +9,9 @@ type PlatformTagsProps = {
 };
 
 export const PlatformTags = ({ prefix, platforms }: PlatformTagsProps) => {
-  if (!platforms?.length) return null;
+  if (!platforms?.length) {
+    return null;
+  }
 
   return (
     <CALLOUT tag="span" className="inline-flex items-center">

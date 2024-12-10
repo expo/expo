@@ -22,7 +22,7 @@ import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 import { CODE } from '~/ui/components/Text';
 import { TextTheme } from '~/ui/components/Text/types';
 
-// @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
+// @ts-expect-error Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
 
 const attributes = {

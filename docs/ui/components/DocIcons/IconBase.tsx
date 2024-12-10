@@ -7,7 +7,9 @@ export type DocIconProps = HTMLAttributes<SVGSVGElement> & {
 };
 
 export const IconBase = ({ className, small, Icon, ...rest }: DocIconProps) => {
-  if (!Icon) return null;
+  if (!Icon) {
+    return null;
+  }
 
   return (
     <Icon

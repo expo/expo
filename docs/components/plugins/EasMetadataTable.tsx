@@ -1,6 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import assert from 'assert';
+import assert from 'node:assert';
 import { ComponentType, Fragment, ReactNode, useId } from 'react';
 
 import { Table, Row as TableRow, Cell as TableCell } from '~/ui/components/Table';

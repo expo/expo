@@ -17,8 +17,8 @@ import { Header } from '~/ui/components/Header';
 import { PagePlatformTags } from '~/ui/components/PagePlatformTags';
 import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
-import { Sidebar } from '~/ui/components/Sidebar';
 import { versionToText } from '~/ui/components/Sidebar/ApiVersionSelect';
+import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
 import {
   TableOfContentsWithManager,
   TableOfContentsHandles,
@@ -67,7 +67,9 @@ export default function DocumentationPage({
       }
     });
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   });
 
   const handleResize = () => {
@@ -92,7 +94,9 @@ export default function DocumentationPage({
       sidebar={sidebarElement}
       sidebarActiveGroup={sidebarActiveGroup}
       isMobileMenuVisible={isMobileMenuVisible}
-      setMobileMenuVisible={newState => setMobileMenuVisible(newState)}
+      setMobileMenuVisible={newState => {
+        setMobileMenuVisible(newState);
+      }}
     />
   );
 

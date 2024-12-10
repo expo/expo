@@ -3,7 +3,7 @@ import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon'
 import packageJson from '~/package.json';
 
 export type VersionSelectorProps = {
-  version?: string | undefined;
+  version?: string;
   setVersion: (version: string) => void;
   availableVersions: string[];
 };
@@ -24,7 +24,9 @@ export const VersionSelector = ({
         id="version-menu"
         className="m-0 mt-1 min-h-[40px] w-full cursor-pointer appearance-none rounded-md border border-default bg-default px-3 py-2 text-xs text-default shadow-xs"
         value={version}
-        onChange={e => setVersion(e.target.value)}>
+        onChange={event => {
+          setVersion(event.target.value);
+        }}>
         {availableVersions.map(version => (
           <option key={version} value={version}>
             {version === 'unversioned'

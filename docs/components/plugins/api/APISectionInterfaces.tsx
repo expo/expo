@@ -1,6 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { APIDataType } from './APIDataType';
+import { Cell, Row, Table } from '~/ui/components/Table';
+import { H2, BOLD, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
+
 import {
   CommentData,
   InterfaceDefinitionData,
@@ -9,13 +11,10 @@ import {
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { renderMethod } from './APISectionMethods';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
-  CommentTextBlock,
   getTagData,
   parseCommentContent,
   renderFlags,
-  renderParamRow,
   ParamsTableHeadRow,
   resolveTypeName,
   renderDefaultValue,
@@ -24,10 +23,11 @@ import {
   getCommentContent,
   BoxSectionHeader,
 } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APIDataType } from './components/APIDataType';
+import { APIParamRow } from './components/APIParamRow';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
-
-import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -40,21 +40,25 @@ const renderInterfaceComment = (
   signatures?: MethodSignatureData[],
   defaultValue?: string
 ) => {
-  if (signatures && signatures.length) {
+  if (signatures?.length) {
     const { type, parameters, comment: signatureComment } = signatures[0];
     const defaultTag = getTagData('default', signatureComment);
     const initValue =
-      defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined);
+      defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined);
     return (
       <>
-        {parameters?.length ? parameters.map(param => renderParamRow(param, sdkVersion)) : null}
+        {parameters?.length
+          ? parameters.map(param => (
+              <APIParamRow key={param.name} param={param} sdkVersion={sdkVersion} />
+            ))
+          : null}
         <DEMI>Returns</DEMI>
         <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
         {signatureComment && (
           <>
             <br />
             <APISectionDeprecationNote comment={comment} />
-            <CommentTextBlock
+            <APICommentTextBlock
               inlineHeaders
               comment={signatureComment}
               afterContent={renderDefaultValue(initValue)}
@@ -66,11 +70,11 @@ const renderInterfaceComment = (
   } else {
     const defaultTag = getTagData('default', comment);
     const initValue =
-      defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined);
+      defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined);
     return (
       <>
         <APISectionDeprecationNote comment={comment} />
-        <CommentTextBlock
+        <APICommentTextBlock
           inlineHeaders
           comment={comment}
           afterContent={renderDefaultValue(initValue)}
@@ -87,7 +91,7 @@ const renderInterfacePropertyRow = (
 ): JSX.Element => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
-    defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : '')
+    defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : '')
   );
   return (
     <Row key={name}>
@@ -109,7 +113,9 @@ const renderInterface = (
 ): JSX.Element | null => {
   const interfaceChildren = children?.filter(child => !child?.inheritedFrom) || [];
 
-  if (!interfaceChildren.length) return null;
+  if (!interfaceChildren.length) {
+    return null;
+  }
 
   const interfaceMethods = interfaceChildren.filter(child => child.signatures);
   const interfaceFields = interfaceChildren.filter(child => !child.signatures);
@@ -137,7 +143,7 @@ const renderInterface = (
           ))}
         </CALLOUT>
       ) : null}
-      <CommentTextBlock comment={comment} includePlatforms={false} />
+      <APICommentTextBlock comment={comment} includePlatforms={false} />
       {interfaceMethods.length ? (
         <>
           <BoxSectionHeader text={`${name} Methods`} />
@@ -151,7 +157,9 @@ const renderInterface = (
           <BoxSectionHeader text={`${name} Properties`} />
           <Table>
             <ParamsTableHeadRow />
-            <tbody>{interfaceFields.map(f => renderInterfacePropertyRow(f, sdkVersion))}</tbody>
+            <tbody>
+              {interfaceFields.map(field => renderInterfacePropertyRow(field, sdkVersion))}
+            </tbody>
           </Table>
           <br />
         </>
@@ -164,7 +172,7 @@ const APISectionInterfaces = ({ data, sdkVersion }: APISectionInterfacesProps) =
   data?.length ? (
     <>
       <H2 key="interfaces-header">Interfaces</H2>
-      {data.map(d => renderInterface(d, sdkVersion))}
+      {data.map(entity => renderInterface(entity, sdkVersion))}
     </>
   ) : null;
 

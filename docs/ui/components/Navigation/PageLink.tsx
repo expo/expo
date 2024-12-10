@@ -1,8 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { NavigationRenderProps } from './types';
-
 import { A, CALLOUT } from '~/ui/components/Text';
+
+import { NavigationRenderProps } from './types';
 
 export function PageLink({ route, isActive }: NavigationRenderProps) {
   if (route.type !== 'page') {
@@ -25,7 +25,7 @@ export function PageLink({ route, isActive }: NavigationRenderProps) {
       <CALLOUT
         className={mergeClasses('text-secondary', isActive && 'font-medium text-default')}
         tag="span">
-        {route.sidebarTitle || route.name}
+        {route.sidebarTitle ?? route.name}
       </CALLOUT>
     </A>
   );
