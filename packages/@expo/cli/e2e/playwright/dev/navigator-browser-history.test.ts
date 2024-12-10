@@ -41,7 +41,7 @@ test.describe(inputDir, () => {
   test('navigator browser history', async ({ page }) => {
     page.on('console', (msg) => console.log(msg.text()));
 
-    await page.goto(`${expoStart.url}/`);
+    await page.goto(`${expoStart.url}`);
 
     // <Stack> in the browser currently works by setting hidden
     // screens to `display: none`, so we could just use 'home-content'
