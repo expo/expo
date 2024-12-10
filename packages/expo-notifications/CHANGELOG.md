@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `DateTriggerInput` to only accept an object ([#33551](https://github.com/expo/expo/pull/33551) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
