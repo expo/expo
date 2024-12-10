@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed crash when multiple thread access same member in swift
 - Fixed event listeners on web. ([#33361](https://github.com/expo/expo/pull/33361) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others

@@ -17,6 +17,8 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public var currentScreenOrientation: UIInterfaceOrientation
   var orientationControllers: [ScreenOrientationController] = []
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
+  private let queue = DispatchQueue(label: "expo.screenorientationregistry.controllerInterfaceMasks", attributes: .concurrent)
+  
   @objc
   public var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
@@ -110,7 +112,9 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public func setMask(_ mask: UIInterfaceOrientationMask, forController controller: any ScreenOrientationController) {
     let controllerIdentifier = ObjectIdentifier(controller)
 
-    controllerInterfaceMasks[controllerIdentifier] = mask
+    queue.async(flags: .barrier) {
+      self.controllerInterfaceMasks[controllerIdentifier] = mask
+    }
     enforceDesiredDeviceOrientation(withOrientationMask: mask)
   }
 
@@ -121,18 +125,20 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    */
   @objc
   public func requiredOrientationMask() -> UIInterfaceOrientationMask {
-    if controllerInterfaceMasks.isEmpty {
-      return []
+    return queue.sync {
+      if controllerInterfaceMasks.isEmpty {
+        return []
+      }
+        
+      // We want to apply an orientation mask which is an intersection of locks applied by the modules.
+      var mask = doesDeviceHaveNotch ? UIInterfaceOrientationMask.allButUpsideDown : UIInterfaceOrientationMask.all
+
+      for moduleMask in controllerInterfaceMasks {
+        mask = mask.intersection(moduleMask.value)
+      }
+      
+      return mask
     }
-
-    // We want to apply an orientation mask which is an intersection of locks applied by the modules.
-    var mask = doesDeviceHaveNotch ? UIInterfaceOrientationMask.allButUpsideDown : UIInterfaceOrientationMask.all
-
-    for moduleMask in controllerInterfaceMasks {
-      mask = mask.intersection(moduleMask.value)
-    }
-
-    return mask
   }
 
   // MARK: - Events
@@ -199,21 +205,27 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    Called at the end of the screen orientation change. Notifies the controllers about the orientation change.
    */
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
-    currentScreenOrientation = newScreenOrientation
-
-    for controller in orientationControllers {
-      controller.screenOrientationDidChange(newScreenOrientation)
+    queue.async(flags: .barrier) {
+      self.currentScreenOrientation = newScreenOrientation
+      
+      for controller in self.orientationControllers {
+        controller.screenOrientationDidChange(newScreenOrientation)
+      }
     }
   }
 
   public func registerController(_ controller: ScreenOrientationController) {
-    orientationControllers.append(controller)
+    queue.sync {
+      self.orientationControllers.append(controller)
+    }
   }
 
   public func unregisterController(_ controller: ScreenOrientationController) {
     let controllerIdentifier = ObjectIdentifier(controller)
 
-    controllerInterfaceMasks.removeValue(forKey: controllerIdentifier)
-    orientationControllers.removeAll(where: { $0 === controller })
+    queue.sync {
+      self.controllerInterfaceMasks.removeValue(forKey: controllerIdentifier)
+      self.orientationControllers.removeAll(where: { $0 === controller })
+    }
   }
 }
