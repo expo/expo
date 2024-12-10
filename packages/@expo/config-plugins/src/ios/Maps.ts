@@ -177,35 +177,36 @@ const withMapsCocoaPods: ConfigPlugin<{ useGoogleMaps: boolean }> = (config, { u
 
 const withGoogleMapsAppDelegate: ConfigPlugin<{ apiKey: string | null }> = (config, { apiKey }) => {
   return withAppDelegate(config, (config) => {
+    if (
+      !apiKey ||
+      !isReactNativeMapsAutolinked(config) ||
+      !isReactNativeMapsInstalled(config.modRequest.projectRoot)
+    ) {
+      config.modResults.contents = removeGoogleMapsAppDelegateImport(
+        config.modResults.contents
+      ).contents;
+      config.modResults.contents = removeGoogleMapsAppDelegateInit(
+        config.modResults.contents
+      ).contents;
+      return config;
+    }
+
     if (['objc', 'objcpp'].includes(config.modResults.language)) {
-      if (
-        apiKey &&
-        isReactNativeMapsAutolinked(config) &&
-        isReactNativeMapsInstalled(config.modRequest.projectRoot)
-      ) {
-        try {
-          config.modResults.contents = addGoogleMapsAppDelegateImport(
-            config.modResults.contents
-          ).contents;
-          config.modResults.contents = addGoogleMapsAppDelegateInit(
-            config.modResults.contents,
-            apiKey
-          ).contents;
-        } catch (error: any) {
-          if (error.code === 'ERR_NO_MATCH') {
-            throw new Error(
-              `Cannot add Google Maps to the project's AppDelegate because it's malformed. Please report this with a copy of your project AppDelegate.`
-            );
-          }
-          throw error;
+      try {
+        config.modResults.contents = addGoogleMapsAppDelegateImport(
+          config.modResults.contents
+        ).contents;
+        config.modResults.contents = addGoogleMapsAppDelegateInit(
+          config.modResults.contents,
+          apiKey
+        ).contents;
+      } catch (error: any) {
+        if (error.code === 'ERR_NO_MATCH') {
+          throw new Error(
+            `Cannot add Google Maps to the project's AppDelegate because it's malformed. Please report this with a copy of your project AppDelegate.`
+          );
         }
-      } else {
-        config.modResults.contents = removeGoogleMapsAppDelegateImport(
-          config.modResults.contents
-        ).contents;
-        config.modResults.contents = removeGoogleMapsAppDelegateInit(
-          config.modResults.contents
-        ).contents;
+        throw error;
       }
     } else {
       throw new Error(
