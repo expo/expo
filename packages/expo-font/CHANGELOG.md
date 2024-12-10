@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix crash when accessing resource from multiple threads
+- [iOS] Fix crash when accessing resource from multiple threads ([#33574](https://github.com/expo/expo/pull/33574) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
