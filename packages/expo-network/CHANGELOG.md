@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Added `netInfo` null check. ([#33559](https://github.com/expo/expo/pull/33559)) by [@pchalupa](https://github.com/pchalupa)
+
 ### 💡 Others
 
 ## 7.0.3 - 2024-12-02
