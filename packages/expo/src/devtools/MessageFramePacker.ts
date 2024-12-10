@@ -22,7 +22,7 @@
  *
  */
 
-import { blobToArrayBufferAsync } from './blobUtils';
+import { blobToArrayBufferAsync } from '../utils/blobUtils';
 
 type MessageKeyTypeBase = string | object;
 type PayloadType = Uint8Array | string | number | null | undefined | object | ArrayBuffer | Blob;
