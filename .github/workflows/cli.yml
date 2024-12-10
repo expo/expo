@@ -85,7 +85,7 @@ jobs:
         run: yarn install --prefer-offline --frozen-lockfile
         env:
           YARN_IGNORE_SCRIPTS: 'true'
-      
+
       - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
@@ -169,24 +169,33 @@ jobs:
       - name: 🧪 E2E Test CLI
         working-directory: packages/@expo/cli
         run: yarn test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
-  
+
   playwright-ubuntu:
     runs-on: ubuntu-22.04
     steps:
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
+
+      - name: 🔎 Find Yarn Cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       - name: ♻️ Restore Yarn Cache
         uses: actions/cache@v4
         with:
@@ -196,29 +205,130 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
-      
-      - name: Build Expo CLI
+        run: yarn install --prefer-offline --frozen-lockfile
+        env:
+          YARN_IGNORE_SCRIPTS: 'true'
+
+      - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
-        
-      - name: 🎭 Get installed Playwright version for cache key
-        run: echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
+
+      - name: 🎭 Get Playwright information
+        id: playwright-info
+        shell: bash
+        run: |
+          echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
         with:
-          path: |
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
       - name: 🎭 Install Playwright Browsers
         run: bun playwright install --with-deps chromium
         working-directory: packages/@expo/cli
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
 
-      - name: E2E (playwright) Test CLI
-        run: yarn test:playwright
+      - name: 🧪 E2E (playwright) Test CLI
         working-directory: packages/@expo/cli
-      - uses: actions/upload-artifact@v4
+        run: yarn test:playwright
+
+      - name: 🗄️ Upload playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: packages/@expo/cli/playwright-report/
+          retention-days: 30
+
+  playwright-windows:
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    env:
+      # Change bun, npm, and yarn caches to the much faster D:\ drive
+      # See: https://github.com/twpayne/chezmoi/pull/4064
+      BUN_INSTALL_CACHE_DIR: D:\_temp\bun
+      NPM_CACHE_LOCATION: D:\_temp\npm
+      YARN_CACHE_FOLDER: D:\_temp\yarn
+      # Change playwright browser cache to the much faster D:\ drive
+      PLAYWRIGHT_BROWSERS_PATH: D:\_temp\playwright-browsers
+      # Change the Expo E2E project directory to the same drive as the repository,
+      # allowing to run Expo from source (avoiding Metro's multi-drive limitation)
+      EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
+    steps:
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+
+      - name: 🪟 Setup Windows
+        shell: bash
+        # Configure Git to use LF line endlings
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+      - name: 🔎 Find Yarn Cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: ♻️ Restore Yarn Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: 🧶 Install node modules in root dir
+        # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
+        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
+        env:
+          YARN_IGNORE_SCRIPTS: 'true'
+
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+
+      - name: 🎭 Get Playwright information
+        id: playwright-info
+        shell: bash
+        run: |
+          echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
+          echo "dir=$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
+      - name: 🎭 Cache Playwright browser binaries
+        uses: actions/cache@v4
+        id: playwright-browser-cache
+        with:
+          path: ${{ steps.playwright-info.outputs.dir }}
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
+      - name: 🎭 Install Playwright Browsers
+        run: bun playwright install --with-deps chromium
+        working-directory: packages/@expo/cli
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+
+      - name: 🧪 E2E (playwright) Test CLI
+        working-directory: packages/@expo/cli
+        run: yarn test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+
+      - name: 🗄️ Upload playwright report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report

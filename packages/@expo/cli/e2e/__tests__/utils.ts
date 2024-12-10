@@ -1,16 +1,11 @@
 /* eslint-env jest */
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
-import mockedSpawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
-import assert from 'assert';
-import execa from 'execa';
-import findProcess from 'find-process';
-import fs from 'fs';
 import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
-import path from 'path';
-import treeKill from 'tree-kill';
-import { promisify } from 'util';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { copySync } from '../../src/utils/dir';
 import { toPosixPath } from '../../src/utils/filePath';
@@ -18,6 +13,7 @@ import { executeBunAsync } from '../utils/expo';
 import { createVerboseLogger } from '../utils/log';
 import { createPackageTarball } from '../utils/package';
 import { TEMP_DIR, getTemporaryPath } from '../utils/path';
+import { executeAsync } from '../utils/process';
 
 export { getTemporaryPath } from '../utils/path';
 
@@ -25,58 +21,9 @@ export const bin = require.resolve('../../build/bin/cli');
 
 export const projectRoot = getTemporaryPath();
 
-export function execute(...args: string[]) {
-  return execaLog('node', [bin, ...args], { cwd: projectRoot });
-}
-
-export function execaLog(command: string, args: string[], options: execa.Options) {
-  //   console.log(`Running: ${command} ${args.join(' ')}`);
-  return execa(command, args, options);
-}
-
+/** Get the directory relative to the default project root */
 export function getRoot(...args: string[]) {
   return path.join(projectRoot, ...args);
-}
-
-export async function abortingSpawnAsync(
-  cmd: string,
-  args: string[],
-  options?: SpawnOptions
-): Promise<SpawnResult> {
-  const spawnAsync = jest.requireActual('@expo/spawn-async') as typeof mockedSpawnAsync;
-
-  const promise = spawnAsync(cmd, args, options);
-  promise.child.stdout?.pipe(process.stdout);
-  promise.child.stderr?.pipe(process.stderr);
-
-  // TODO: Not sure how to do this yet...
-  // const unsub = addJestInterruptedListener(() => {
-  //   promise.child.kill('SIGINT');
-  // });
-  try {
-    return await promise;
-  } catch (e) {
-    const error = e as Error;
-    if (isSpawnResult(error)) {
-      const spawnError = error as SpawnResult;
-      if (spawnError.stdout) error.message += `\n------\nSTDOUT:\n${spawnError.stdout}`;
-      if (spawnError.stderr) error.message += `\n------\nSTDERR:\n${spawnError.stderr}`;
-    }
-    throw error;
-  } finally {
-    // unsub();
-  }
-}
-
-function isSpawnResult(errorOrResult: Error): errorOrResult is Error & SpawnResult {
-  return 'pid' in errorOrResult && 'stdout' in errorOrResult && 'stderr' in errorOrResult;
-}
-
-export async function installAsync(projectRoot: string, pkgs: string[] = []) {
-  return abortingSpawnAsync('bun', ['install', ...pkgs], {
-    cwd: projectRoot,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
 }
 
 /**
@@ -134,13 +81,13 @@ export async function createFromFixtureAsync(
 
   if (fs.existsSync(projectRoot)) {
     if (reuseExisting) {
-      log.tag('existing', 'Reusing existing fixture project:', projectRoot);
+      log('Reusing existing fixture project:', projectRoot);
       log.exit();
 
       // bail out early, this is good for local testing.
       return projectRoot;
     } else {
-      log.tag('existing', 'Clearing existing fixture project:', projectRoot);
+      log('Clearing existing fixture project:', projectRoot);
       await fs.promises.rm(projectRoot, { recursive: true, force: true });
     }
   }
@@ -262,35 +209,16 @@ export async function setupTestProjectWithOptionsAsync(
 /** Returns a list of loaded modules relative to the repo root. Useful for preventing lazy loading from breaking unexpectedly.   */
 export async function getLoadedModulesAsync(statement: string): Promise<string[]> {
   const repoRoot = path.join(__dirname, '../../../../');
-  const results = await execa(
+  const results = await executeAsync(__dirname, [
     'node',
-    [
-      '-e',
-      [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join(';'),
-    ],
-    { cwd: __dirname }
-  );
+    '-e',
+    [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join(';'),
+  ]);
   const loadedModules = JSON.parse(results.stdout.trim()) as string[];
   return loadedModules
     .map((value) => toPosixPath(path.relative(repoRoot, value)))
     .filter((value) => !value.includes('/ms-vscode.js-debug/')) // Ignore injected vscode debugger scripts
     .sort();
-}
-
-const pTreeKill = promisify(treeKill);
-
-export async function ensurePortFreeAsync(port: number) {
-  const [portProcess] = await findProcess('port', port);
-  if (!portProcess) {
-    return;
-  }
-  console.log(`Killing process ${portProcess.name} on port ${port}...`);
-  try {
-    await pTreeKill(portProcess.pid);
-    console.log(`Killed process ${portProcess.name} on port ${port}`);
-  } catch (error: any) {
-    console.log(`Failed to kill process ${portProcess.name} on port ${port}: ${error.message}`);
-  }
 }
 
 export async function getPage(output: string, route: string): Promise<string> {

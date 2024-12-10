@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
-import execa from 'execa';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
-import { bin, ExpoServeLocalCommand } from '../../utils/command-instance';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -12,82 +12,57 @@ const projectRoot = getRouterE2ERoot();
 const testName = '03-server-actions-only';
 const inputDir = 'dist-' + testName;
 
-test.beforeAll(async () => {
-  // Could take 45s depending on how fast the bundler resolves
-  test.setTimeout(560 * 1000);
-});
-
-let serveCmd: ExpoServeLocalCommand;
-
-test.beforeAll('bundle and serve', async () => {
-  console.time('expo export');
-  await execa('node', [bin, 'export', '-p', 'web', '--output-dir', inputDir], {
+test.describe(inputDir, () => {
+  const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
       NODE_ENV: 'production',
-      EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_SRC: testName,
-      EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
-      E2E_ROUTER_JS_ENGINE: 'hermes',
-      EXPO_USE_METRO_REQUIRE: '1',
-      E2E_CANARY_ENABLED: '1',
-      //   E2E_RSC_ENABLED: '1',
       TEST_SECRET_VALUE: 'test-secret',
-      CI: '1',
     },
-    stdio: 'inherit',
-  });
-  console.timeEnd('expo export');
-
-  serveCmd = new ExpoServeLocalCommand(projectRoot, {
-    NODE_ENV: 'production',
-    TEST_SECRET_VALUE: 'test-secret',
   });
 
-  console.time('npx serve');
-  await serveCmd.startAsync([inputDir, '--port=' + randomPort()]);
-  console.timeEnd('npx serve');
-  console.log('Server running:', serveCmd.url);
-});
+  test.beforeAll('bundle and serve', async () => {
+    console.time('expo export');
+    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'single',
+        E2E_ROUTER_SRC: testName,
+        EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
+        E2E_ROUTER_JS_ENGINE: 'hermes',
+        EXPO_USE_METRO_REQUIRE: '1',
+        E2E_CANARY_ENABLED: '1',
+        //   E2E_RSC_ENABLED: '1',
+        TEST_SECRET_VALUE: 'test-secret',
+        CI: '1',
+      },
+    });
+    console.timeEnd('expo export');
 
-function randomPort() {
-  return Math.floor(Math.random() * 1000 + 3000);
-}
+    console.time('expo serve');
+    await expoServe.startAsync([inputDir]);
+    console.timeEnd('expo serve');
+  });
+  test.afterAll('Close server', async () => {
+    await expoServe.stopAsync();
+  });
 
-test.afterAll('Close server', async () => {
-  await serveCmd.stopAsync();
-});
-
-test.describe(inputDir, () => {
   // This test generally ensures no errors are thrown during an export loading.
   test('loads without hydration errors', async ({ page }) => {
+    // Listen for console logs and errors
+    const pageErrors = pageCollectErrors(page);
+
     console.time('Open page');
     // Navigate to the app
-    await page.goto(serveCmd.url!);
-
+    await page.goto(expoServe.url.href);
     console.timeEnd('Open page');
-
-    // Listen for console errors
-    const errorLogs: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        errorLogs.push(msg.text());
-      }
-    });
-
-    // Listen for uncaught exceptions and console errors
-    const errors: string[] = [];
-    page.on('pageerror', (error) => {
-      errors.push(error.message);
-    });
 
     console.time('hydrate');
     // Wait for the app to load
     await page.waitForSelector('[data-testid="index-text"]');
     console.timeEnd('hydrate');
 
-    expect(errorLogs).toEqual([]);
-    expect(errors).toEqual([]);
+    expect(pageErrors.all).toEqual([]);
 
     await expect(page.locator('[data-testid="secret-text"]')).toHaveText('Secret: test-secret');
     await expect(page.locator('[data-testid="server-contents"]')).toHaveText('Hello!');
