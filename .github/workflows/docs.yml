@@ -45,7 +45,7 @@ jobs:
       - name: 🧶 Yarn install
         working-directory: docs
         if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: 🧪 Run Docs tests
         working-directory: docs
         run: yarn test
