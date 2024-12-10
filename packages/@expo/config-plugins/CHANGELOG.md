@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Only add `UISupportedInterfaceOrientations~ipad` if tablet support is also enabled. ([#32361](https://github.com/expo/expo/pull/32361) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 9.0.10 — 2024-11-24
 
 ### 💡 Others
