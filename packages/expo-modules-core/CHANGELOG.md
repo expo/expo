@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Changed `import` to `import type` for TS type declarations. ([#33447](https://github.com/expo/expo/pull/33447) by [@j-piasecki](https://github.com/j-piasecki))
+- Declare specific ExpoProcessEnv interface to allow usage of Typescript's Module Augmentation feature. ([#33567](https://github.com/expo/expo/pull/33567) by [@noelblaschke](https://github.com/noelblaschke))
 
 ### 💡 Others
 
