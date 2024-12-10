@@ -10,6 +10,7 @@
 
 - Fix orphaned bridging header reference in prebuild. ([#33462](https://github.com/expo/expo/pull/33462) by [@EvanBacon](https://github.com/EvanBacon))
 - Resolve iOS build schemes on Windows. ([#33468](https://github.com/expo/expo/pull/33468) by [@byCedric](https://github.com/byCedric))
+- Don't apply `react-native-maps` plugin if it's not installed and the API key is not provided. ([#33530](https://github.com/expo/expo/pull/33530) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
