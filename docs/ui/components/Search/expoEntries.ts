@@ -4,12 +4,12 @@ import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { CredentialIcon } from '@expo/styleguide-icons/custom/CredentialIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { Smartphone01Icon } from '@expo/styleguide-icons/custom/Smartphone01Icon';
+import { BracketsXIcon } from '@expo/styleguide-icons/outline/BracketsXIcon';
 import { Cube02Icon } from '@expo/styleguide-icons/outline/Cube02Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
 import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
-import { Key01Icon } from '@expo/styleguide-icons/outline/Key01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
@@ -90,7 +90,7 @@ export const entries: ExpoItemType[] = [
   {
     label: 'Project Environment Variables',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/environment-variables',
-    Icon: Key01Icon,
+    Icon: BracketsXIcon,
   },
   {
     label: 'Project Settings',
