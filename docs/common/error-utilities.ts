@@ -138,7 +138,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issues/',
-  '/guides/userinterface/': '/ui-programming/user-interface-libraries/',
   '/introduction/why-not-expo/': '/faq/#limitations',
   '/next-steps/community/': '/',
   '/workflow/expo-go/': '/get-started/set-up-your-environment/',
@@ -437,4 +436,13 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After moving common questions from Expo Router FAQ to Introduction
   '/router/reference/faq/': '/router/introduction/',
+
+  // After removing UI programming section
+  '/ui-programming/image-background/': '/tutorial/overview/',
+  '/ui-programming/implementing-a-checkbox/': '/versions/latest/sdk/checkbox/',
+  '/ui-programming/z-index/': '/tutorial/overview',
+  '/ui-programming/using-svgs/': '/versions/latest/sdk/svg/',
+  '/ui-programming/react-native-toast/': '/tutorial/overview/',
+  '/ui-programming/react-native-styling-buttons/': '/tutorial/overview/',
+  '/ui-programming/user-interface-libraries/': '/tutorial/overview/',
 };
