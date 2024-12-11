@@ -7,14 +7,17 @@ import { resolveSource } from './utils/resolveSource';
 export const PLAYBACK_STATUS_UPDATE = 'playbackStatusUpdate';
 export const AUDIO_SAMPLE_UPDATE = 'audioSampleUpdate';
 export const RECORDING_STATUS_UPDATE = 'recordingStatusUpdate';
+// @docsMissing
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);
     return useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
 }
+// @docsMissing
 export function useAudioPlayerStatus(player) {
     const currentStatus = useMemo(() => player.currentStatus, [player.id]);
     return useEvent(player, PLAYBACK_STATUS_UPDATE, currentStatus);
 }
+// @docsMissing
 export function useAudioSampleListener(player, listener) {
     player.setAudioSamplingEnabled(true);
     useEffect(() => {
@@ -27,6 +30,7 @@ export function useAudioSampleListener(player, listener) {
         };
     }, [player.id]);
 }
+// @docsMissing
 export function useAudioRecorder(options, statusListener) {
     const platformOptions = createRecordingOptions(options);
     const recorder = useReleasingSharedObject(() => {
@@ -40,6 +44,7 @@ export function useAudioRecorder(options, statusListener) {
     }, [recorder.id]);
     return recorder;
 }
+// @docsMissing
 export function useAudioRecorderState(recorder, interval = 500) {
     const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
@@ -53,22 +58,28 @@ export function useAudioRecorderState(recorder, interval = 500) {
 /**
  * Creates an instance of an `AudioPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-updateinterval) hook instead. See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-updateinterval) hook instead.
+ * > See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
  * @param source
+ * @param updateInterval
  */
 export function createAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);
     return new AudioModule.AudioPlayer(parsedSource, updateInterval);
 }
+// @docsMissing
 export async function setIsAudioActiveAsync(active) {
     return await AudioModule.setIsAudioActiveAsync(active);
 }
+// @docsMissing
 export async function setAudioModeAsync(mode) {
     return await AudioModule.setAudioModeAsync(mode);
 }
+// @docsMissing
 export async function requestRecordingPermissionsAsync() {
     return await AudioModule.requestRecordingPermissionsAsync();
 }
+// @docsMissing
 export async function getRecordingPermissionsAsync() {
     return await AudioModule.getRecordingPermissionsAsync();
 }
