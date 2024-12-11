@@ -4,6 +4,12 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <EXNotifications/EXNotificationsDelegate.h>
 
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+#import <EXNotifications/EXNotifications-Swift.h>
+#else
+#import "EXNotifications-Swift.h"
+#endif
+
 @interface EXNotificationCenterDelegate ()
 
 @property (nonatomic, strong) NSPointerArray *delegates;
@@ -38,7 +44,8 @@ EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
     return YES;
   }
 
-  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
+  EXNotificationCenterManager *manager = [EXNotificationCenterManager shared];
+  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:manager];
   return YES;
 }
 

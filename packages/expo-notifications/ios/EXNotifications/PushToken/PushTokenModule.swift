@@ -6,23 +6,19 @@ import MachO
 
 let onDevicePushTokenEventName = "onDevicePushToken"
 
-public class PushTokenModule: Module {
-  var promiseNotYetResolved: Promise?
-
-  @objc
-  public func onExpoNotificationsRegistrationResult(notification: Notification) {
-    guard let userInfo = notification.userInfo else {
-      return
-    }
-    if let error = userInfo["error"] as? (any Error) {
-      promiseNotYetResolved?.reject(error)
-      promiseNotYetResolved = nil
-    } else if let deviceToken = userInfo["deviceToken"] as? String {
-      promiseNotYetResolved?.resolve(deviceToken)
-      promiseNotYetResolved = nil
-      self.sendEvent(onDevicePushTokenEventName, ["devicePushToken": deviceToken])
-    }
+public class PushTokenModule: Module, NotificationRegistrationSuccessDelegate, NotificationRegistrationFailureDelegate {
+  public func didRegister(_ deviceToken: String) {
+    promiseNotYetResolved?.resolve(deviceToken)
+    promiseNotYetResolved = nil
+    self.sendEvent(onDevicePushTokenEventName, ["devicePushToken": deviceToken])
   }
+
+  public func didFailRegistration(_ error: any Error) {
+    promiseNotYetResolved?.reject(error)
+    promiseNotYetResolved = nil
+  }
+
+  var promiseNotYetResolved: Promise?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoPushTokenManager")
@@ -30,22 +26,17 @@ public class PushTokenModule: Module {
     Events([onDevicePushTokenEventName])
 
     OnStartObserving(onDevicePushTokenEventName) {
-      NotificationCenter.default.addObserver(
-        self,
-        selector: #selector(onExpoNotificationsRegistrationResult),
-        name: PushTokenAppDelegateSubscriber.ExpoNotificationsRegistrationResult,
-        object: nil
-      )
+      NotificationCenterManager.shared.addDelegate(self)
     }
 
     OnStopObserving(onDevicePushTokenEventName) {
-      // swiftlint:disable:next notification_center_detachment
-      NotificationCenter.default.removeObserver(self)
+      NotificationCenterManager.shared.removeDelegate(self)
     }
 
     AsyncFunction("getDevicePushTokenAsync") { (promise: Promise) in
       if promiseNotYetResolved != nil {
         promise.reject("E_AWAIT_PROMISE", "Another async call to this method is in progress. Await the first Promise.")
+        return
       }
       promiseNotYetResolved = promise
       UIApplication.shared.registerForRemoteNotifications()

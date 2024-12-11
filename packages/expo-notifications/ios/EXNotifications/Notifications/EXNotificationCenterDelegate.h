@@ -17,15 +17,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXNotificationCenterDelegate : EXSingletonModule <UIApplicationDelegate, UNUserNotificationCenterDelegate, EXNotificationCenterDelegate>
+@interface EXNotificationCenterDelegate : EXSingletonModule <UIApplicationDelegate, EXNotificationCenterDelegate>
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions;
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
 
+/*
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler;
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler;
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(nullable UNNotification *)notification;
-
+ */
 @property (nonatomic, strong, nullable) UNNotificationResponse *lastNotificationResponse;
 
 @end
