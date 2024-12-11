@@ -51,7 +51,7 @@ There are three different visibility settings:
 
 In addition to setting strings as values, you can also upload files as the value of an environment variable.
 
-One common use case of using file environment variable is passing a git ignored **google-services.json** configuration file to a build job. During the job run, the file will be created in a location outside of the project directory and the path to the file will be assigned to the environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`). For example, you can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or EAS Workflows job.
+One common use case of using file environment variable is passing a git ignored **google-services.json** configuration file to a build job. During the job run, the file will be created in a location outside of the project directory and the path to the file will be assigned to the environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`). For example, you can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or workflow job.
 
 ```js app.config.js
 export default {
