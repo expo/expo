@@ -15,7 +15,7 @@ export class FileHookTransform extends Transform {
 
   _transform(chunk: any, _encoding: BufferEncoding, callback: TransformCallback): void {
     const result = this.transformFn(this.source, chunk, _encoding);
-    this.push(result, _encoding);
+    this.push(result);
     callback();
   }
 }
