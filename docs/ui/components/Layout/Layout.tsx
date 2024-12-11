@@ -1,10 +1,9 @@
 import { mergeClasses } from '@expo/styleguide';
 import { type PropsWithChildren, type ReactNode } from 'react';
 
-import { Sidebar } from '../Sidebar';
-
 import { Header } from '~/ui/components/Header';
 import { LayoutScroll } from '~/ui/components/Layout';
+import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
 
 type LayoutProps = PropsWithChildren<{
   /**

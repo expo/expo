@@ -1,12 +1,12 @@
 import { LinkBase, LinkBaseProps, mergeClasses } from '@expo/styleguide';
 import { PropsWithChildren, ComponentType, Children, isValidElement } from 'react';
 
-import { TextComponentProps, TextElement, TextTheme } from './types';
-
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
 import { Permalink } from '~/ui/components/Permalink';
 
-export { AnchorContext } from './withAnchor';
+import { TextComponentProps, TextElement, TextTheme } from './types';
+
+export { AnchorContext } from './AnchorContext';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -26,7 +26,7 @@ export const createPermalinkedComponent = (
     className?: string;
   }
 ) => {
-  const { baseNestingLevel, iconSize = 'sm', sidebarType = HeadingType.Text } = options || {};
+  const { baseNestingLevel, iconSize = 'sm', sidebarType = HeadingType.TEXT } = options ?? {};
   return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = Children.map(children, child => {
       if (isValidElement(child) && child?.props?.href) {

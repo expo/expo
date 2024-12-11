@@ -2,27 +2,26 @@ import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import ReactMarkdown from 'react-markdown';
 
-import { ClassDefinitionData, GeneratedData, PropData } from './APIDataTypes';
+import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
+
+import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { renderMethod } from './APISectionMethods';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
 import { renderProp } from './APISectionProps';
 import {
-  CommentTextBlock,
   H3Code,
   getTagData,
   getTagNamesList,
   mdComponents,
   resolveTypeName,
-  TypeDocKind,
   getCommentContent,
   BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
   extractDefaultPropValue,
 } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
-
-import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -135,7 +134,7 @@ const renderClass = (
           )}
         </CALLOUT>
       )}
-      <CommentTextBlock
+      <APICommentTextBlock
         comment={comment}
         includePlatforms={false}
         afterContent={

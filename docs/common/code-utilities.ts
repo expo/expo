@@ -3,7 +3,7 @@ import { Language, Prism } from 'prism-react-renderer';
 import { Children, ReactElement, ReactNode, isValidElement } from 'react';
 
 // Read more: https://github.com/FormidableLabs/prism-react-renderer#custom-language-support
-async function initPrism() {
+async function initPrismAsync() {
   (typeof global !== 'undefined' ? global : window).Prism = Prism;
   await import('~/ui/components/Snippet/prism-bash' as Language);
   await import('prismjs/components/prism-diff' as Language);
@@ -16,7 +16,7 @@ async function initPrism() {
   await import('prismjs/components/prism-ruby' as Language);
 }
 
-await initPrism();
+await initPrismAsync();
 
 export const EXPAND_SNIPPET_BOUND = 408;
 export const LANGUAGES_REMAP: Record<string, string> = {
@@ -89,7 +89,7 @@ export function replaceHashCommentsWithAnnotations(value: string) {
 export function replaceSlashCommentsWithAnnotations(value: string) {
   return value
     .replace(
-      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @info (.*?)\*\/[\n\r\s]*<\/span>\s*/g,
+      /<span clas{2}="token (com{2}ent|plain-text)">(\s*)\/\* @info (.*?)\*\/\s*<\/span>\s*/g,
       (match, type, beforeWhitespace, content) => {
         return content
           ? `${beforeWhitespace}<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
@@ -99,7 +99,7 @@ export function replaceSlashCommentsWithAnnotations(value: string) {
       }
     )
     .replace(
-      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @hide (.*?)\*\/([\n\r\s]*)<\/span>\s*/g,
+      /<span clas{2}="token (com{2}ent|plain-text)">(\s*)\/\* @hide (.*?)\*\/(\s*)<\/span>\s*/g,
       (match, type, beforeWhitespace, content, afterWhitespace) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${beforeWhitespace}${escapeHtml(
           content
@@ -107,7 +107,7 @@ export function replaceSlashCommentsWithAnnotations(value: string) {
       }
     )
     .replace(
-      /\s*<span class="token (comment|plain-text)">[\n\r\s]*\/\* @end \*\/([\n\r\s]*)<\/span>/g,
+      /\s*<span clas{2}="token (com{2}ent|plain-text)">\s*\/\* @end \*\/(\s*)<\/span>/g,
       (match, type, afterWhitespace) => `</span>${afterWhitespace}`
     );
 }
@@ -115,7 +115,7 @@ export function replaceSlashCommentsWithAnnotations(value: string) {
 export function replaceSlashCommentsWithAnnotationsForTutorial(value: string) {
   return value
     .replace(
-      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @tutinfo (.*?)\*\/[\n\r\s]*<\/span>\s*/g,
+      /<span clas{2}="token (com{2}ent|plain-text)">(\s*)\/\* @tutinfo (.*?)\*\/\s*<\/span>\s*/g,
       (match, type, beforeWhitespace, content) => {
         return content
           ? `${beforeWhitespace}<span class="tutorial-code-annotation with-tooltip" data-tippy-content="${escapeHtml(
@@ -125,7 +125,7 @@ export function replaceSlashCommentsWithAnnotationsForTutorial(value: string) {
       }
     )
     .replace(
-      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @hide (.*?)\*\/([\n\r\s]*)<\/span>\s*/g,
+      /<span clas{2}="token (com{2}ent|plain-text)">(\s*)\/\* @hide (.*?)\*\/(\s*)<\/span>\s*/g,
       (match, type, beforeWhitespace, content, afterWhitespace) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${beforeWhitespace}${escapeHtml(
           content
@@ -133,7 +133,7 @@ export function replaceSlashCommentsWithAnnotationsForTutorial(value: string) {
       }
     )
     .replace(
-      /\s*<span class="token (comment|plain-text)">[\n\r\s]*\/\* @end \*\/([\n\r\s]*)<\/span>/g,
+      /\s*<span clas{2}="token (com{2}ent|plain-text)">\s*\/\* @end \*\/(\s*)<\/span>/g,
       (match, type, afterWhitespace) => `</span>${afterWhitespace}`
     );
 }
@@ -164,7 +164,7 @@ export function parseValue(value: string) {
 }
 
 export function getRootCodeBlockProps(children: ReactNode, className?: string) {
-  if (className && className.startsWith('language')) {
+  if (className?.startsWith('language')) {
     return { className, children };
   }
 
@@ -185,11 +185,11 @@ export function getRootCodeBlockProps(children: ReactNode, className?: string) {
 export function findPropInChildren(element: ReactElement, propToFind: string): string | null {
   if (!element || typeof element !== 'object') return null;
 
-  if (element.props && element.props[propToFind]) {
+  if (element.props?.[propToFind]) {
     return element.props[propToFind];
   }
 
-  if (element.props && element.props.children) {
+  if (element.props?.children) {
     const children = element.props.children;
 
     if (Array.isArray(children)) {
@@ -213,7 +213,7 @@ export function getCollapseHeight(params?: Record<string, string>) {
 export function getCodeData(value: string, className?: string) {
   // mdx will add the class `language-foo` to codeblocks with the tag `foo`
   // if this class is present, we want to slice out `language-`
-  let lang = className && className.split('-').at(-1)?.toLowerCase();
+  let lang = className?.split('-').at(-1)?.toLowerCase();
   if (!lang) {
     return value;
   }
@@ -227,7 +227,7 @@ export function getCodeData(value: string, className?: string) {
     throw new Error(`docs currently do not support language: ${lang}`);
   }
 
-  const rawHtml = Prism.highlight(value, grammar, lang as Language);
+  const rawHtml = Prism.highlight(value, grammar, lang);
   if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
     return replaceHashCommentsWithAnnotations(rawHtml);
   } else if (['xml', 'html'].includes(lang)) {

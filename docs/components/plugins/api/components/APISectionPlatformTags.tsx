@@ -1,10 +1,11 @@
-import { CommentData, CommentTagData } from './APIDataTypes';
-import { getAllTagData, getCommentContent } from './APISectionUtils';
-
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
-import { PlatformTags, StatusTag } from '~/ui/components/Tag';
+import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
+import { StatusTag } from '~/ui/components/Tag/StatusTag';
 import { CALLOUT } from '~/ui/components/Text';
+
+import { CommentData, CommentTagData } from '../APIDataTypes';
+import { getAllTagData, getCommentContent } from '../APISectionUtils';
 
 type Props = {
   comment?: CommentData;
@@ -25,7 +26,7 @@ export const APISectionPlatformTags = ({
   const { version } = usePageApiVersion();
 
   const isCompatibleVersion = ['unversioned', 'latest', 'v52.0.0'].includes(version);
-  const platformsData = platforms || getAllTagData('platform', comment);
+  const platformsData = platforms ?? getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
 
   const platformNames = userProvidedPlatforms

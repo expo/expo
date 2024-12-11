@@ -1,13 +1,14 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { APIDataType } from './APIDataType';
+import { H2, P, MONOSPACE } from '~/ui/components/Text';
+
 import { ConstantDefinitionData } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
-import { CommentTextBlock, getTagNamesList, H3Code } from './APISectionUtils';
+import { getTagNamesList, H3Code } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APIDataType } from './components/APIDataType';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
-
-import { H2, P, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -37,7 +38,7 @@ const renderConstant = (
       </P>
     )}
     {comment && (
-      <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
+      <APICommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
     )}
   </div>
 );

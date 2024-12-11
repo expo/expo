@@ -30,7 +30,9 @@ export function ApiVersionSelect() {
           id="api-version-select"
           className="absolute inset-0 size-full cursor-pointer text-xs opacity-0"
           value={version}
-          onChange={event => setVersion(event.target.value)}>
+          onChange={event => {
+            setVersion(event.target.value);
+          }}>
           {VERSIONS.map(version => (
             <option key={version} value={version}>
               {versionToText(version)}

@@ -18,7 +18,7 @@ export const FileStatus = ({ type }: FileStatusProps) => {
         'inline-flex h-[21px] items-center gap-1 rounded-sm border px-1.5 py-1 text-3xs font-semibold',
         getStatusTheme(type)
       )}>
-      {STATUS_LABELS[type as keyof typeof STATUS_LABELS]}
+      {STATUS_LABELS[type]}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { PlatformTag } from '~/ui/components/Tag';
+import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 import { FOOTNOTE } from '~/ui/components/Text';
 import * as Tooltip from '~/ui/components/Tooltip';
 

@@ -1,12 +1,12 @@
 import { mergeClasses } from '@expo/styleguide';
 import ReactMarkdown from 'react-markdown';
 
+import { Callout } from '~/ui/components/Callout';
+import { BOLD } from '~/ui/components/Text';
+
 import { CommentData } from './APIDataTypes';
 import { getCommentContent, getTagData, mdComponents } from './APISectionUtils';
 import { ELEMENT_SPACING } from './styles';
-
-import { Callout } from '~/ui/components/Callout';
-import { BOLD } from '~/ui/components/Text';
 
 type Props = {
   comment?: CommentData;

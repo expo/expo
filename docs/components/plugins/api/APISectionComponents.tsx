@@ -1,5 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { H2, DEMI, P, CODE, MONOSPACE } from '~/ui/components/Text';
+
 import {
   CommentData,
   GeneratedData,
@@ -9,16 +11,14 @@ import {
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import APISectionProps from './APISectionProps';
 import {
-  CommentTextBlock,
   resolveTypeName,
   getComponentName,
   getTagNamesList,
   H3Code,
   getPossibleComponentPropsNames,
 } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { ELEMENT_SPACING, STYLES_APIBOX } from './styles';
-
-import { H2, DEMI, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];
@@ -43,7 +43,7 @@ const getComponentTypeParameters = ({
 }: Partial<GeneratedData>) => {
   if (extendedTypes?.length) {
     return extendedTypes[0];
-  } else if (signatures?.length && signatures[0]?.parameters && signatures[0].parameters.length) {
+  } else if (signatures?.length && signatures[0]?.parameters?.length) {
     return signatures?.[0].parameters[0].type;
   }
   return type;
@@ -82,8 +82,8 @@ const renderComponent = (
           </CODE>
         </P>
       )}
-      <CommentTextBlock comment={extractedComment} />
-      {componentsProps && componentsProps.length ? (
+      <APICommentTextBlock comment={extractedComment} />
+      {componentsProps?.length ? (
         <APISectionProps
           sdkVersion={sdkVersion}
           data={componentsProps}

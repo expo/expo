@@ -1,12 +1,11 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
-import { APIDataType } from './APIDataType';
+import { CALLOUT, H2, MONOSPACE } from '~/ui/components/Text';
+
 import { AccessorDefinitionData, MethodDefinitionData, PropData } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
-  CommentTextBlock,
   getMethodName,
   renderParams,
   resolveTypeName,
@@ -14,9 +13,10 @@ import {
   getTagData,
   getAllTagData,
 } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APIDataType } from './components/APIDataType';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
-
-import { CALLOUT, H2, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -93,7 +93,7 @@ export const renderMethod = (
             <br />
           </>
         )}
-        <CommentTextBlock
+        <APICommentTextBlock
           comment={comment}
           includePlatforms={false}
           afterContent={
@@ -116,7 +116,7 @@ export const renderMethod = (
                 </div>
                 {returnComment ? (
                   <div className="mb-1 mt-1.5 flex flex-col pl-6">
-                    <CommentTextBlock comment={{ summary: returnComment.content }} />
+                    <APICommentTextBlock comment={{ summary: returnComment.content }} />
                   </div>
                 ) : undefined}
               </>

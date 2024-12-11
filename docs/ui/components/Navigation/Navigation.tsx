@@ -1,12 +1,12 @@
 import { useRouter } from 'next/compat/router';
 import React, { FC, useMemo } from 'react';
 
+import { LayoutScroll, usePersistScroll } from '~/ui/components/Layout';
+
 import { GroupList } from './GroupList';
 import { PageLink } from './PageLink';
 import { SectionList } from './SectionList';
 import { NavigationNode, NavigationRenderProps, NavigationType } from './types';
-
-import { LayoutScroll, usePersistScroll } from '~/ui/components/Layout';
 
 export type NavigationProps = {
   /** The tree of navigation nodes to render in the sidebar */
@@ -37,7 +37,9 @@ function navigationRenderer(
   route: NavigationNode,
   activeRoutes: Record<NavigationType, NavigationNode | null>
 ) {
-  if (route.hidden) return null;
+  if (route.hidden) {
+    return null;
+  }
   const Component = renderers[route.type];
   const routeKey = `${route.type}-${route.name}`;
   const isActive = activeRoutes[route.type] === route;
@@ -69,7 +71,9 @@ export function findActiveRoute(routes: NavigationNode[], pathname?: string) {
 
   for (const route of routes) {
     // Try to exit early on hidden routes
-    if (route.hidden) continue;
+    if (route.hidden) {
+      continue;
+    }
 
     switch (route.type) {
       case 'page':

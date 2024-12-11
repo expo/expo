@@ -82,7 +82,7 @@ const SnackEmbed = ({
     embedProps['data-snack-theme'] = 'light';
   }
 
-  const embedStyle = style ? style! : {};
+  const embedStyle = style ? style : {};
 
   return (
     <div

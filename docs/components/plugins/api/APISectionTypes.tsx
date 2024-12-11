@@ -2,7 +2,10 @@ import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import { Fragment, ReactNode } from 'react';
 
-import { APIDataType } from './APIDataType';
+import { APIBox } from '~/components/plugins/APIBox';
+import { Cell, Row, Table } from '~/ui/components/Table';
+import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN, RawH4 } from '~/ui/components/Text';
+
 import {
   PropData,
   TypeDeclarationContentData,
@@ -11,13 +14,10 @@ import {
   TypeSignaturesData,
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   resolveTypeName,
   renderFlags,
-  CommentTextBlock,
   parseCommentContent,
-  renderTypeOrSignatureType,
   getCommentOrSignatureComment,
   getTagData,
   renderParams,
@@ -29,11 +29,11 @@ import {
   getCommentContent,
   listParams,
 } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APIDataType } from './components/APIDataType';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
+import { APITypeOrSignatureType } from './components/APITypeOrSignatureType';
 import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
-
-import { APIBox } from '~/components/plugins/APIBox';
-import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN, RawH4 } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -57,13 +57,12 @@ const renderTypeDeclarationTable = (
 ): ReactNode => (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     {index && index > 0 ? <br /> : undefined}
-    <CommentTextBlock comment={comment} />
+    <APICommentTextBlock comment={comment} />
     <Table>
       <ParamsTableHeadRow />
       <tbody>
         {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
-        {indexSignature?.parameters &&
-          indexSignature.parameters.map(param => renderTypePropertyRow(param, sdkVersion))}
+        {indexSignature?.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
       </tbody>
     </Table>
   </Fragment>
@@ -75,7 +74,7 @@ const renderTypeMethodEntry = (
 ): ReactNode => {
   const baseSignature = signatures?.[0];
 
-  if (baseSignature && baseSignature.type) {
+  if (baseSignature?.type) {
     return (
       <APIBox
         key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
@@ -84,10 +83,10 @@ const renderTypeMethodEntry = (
           <MONOSPACE>
             {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
             {` => `}
-            {renderTypeOrSignatureType({ type: baseSignature.type, sdkVersion })}
+            <APITypeOrSignatureType type={baseSignature.type} sdkVersion={sdkVersion} />
           </MONOSPACE>
         </RawH4>
-        <CommentTextBlock comment={comment} />
+        <APICommentTextBlock comment={comment} />
         <Table>
           <ParamsTableHeadRow mainCellLabel="Parameter" />
           <tbody>
@@ -106,7 +105,7 @@ const renderTypePropertyRow = (
 ): JSX.Element => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
-    defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined)
+    defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined)
   );
   const commentData = getCommentOrSignatureComment(comment, signatures);
   const hasDeprecationNote = Boolean(getTagData('deprecated', comment));
@@ -118,11 +117,16 @@ const renderTypePropertyRow = (
         {kind && renderIndexSignature(kind)}
       </Cell>
       <Cell fitContent>
-        {renderTypeOrSignatureType({ type, signatures, allowBlock: true, sdkVersion })}
+        <APITypeOrSignatureType
+          allowBlock
+          type={type}
+          signatures={signatures}
+          sdkVersion={sdkVersion}
+        />
       </Cell>
       <Cell fitContent>
         <APISectionDeprecationNote comment={comment} />
-        <CommentTextBlock
+        <APICommentTextBlock
           inlineHeaders
           comment={commentData}
           afterContent={renderDefaultValue(initValue)}
@@ -149,17 +153,17 @@ const renderType = (
             {type.declaration.signatures ? '()' : ''}
           </MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock comment={comment} includePlatforms={false} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration, sdkVersion)}
         {type.declaration.signatures
           ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
               <div key={`type-definition-signature-${name}`}>
-                <CommentTextBlock comment={comment} />
+                <APICommentTextBlock comment={comment} />
                 {parameters && renderParams(parameters, sdkVersion)}
               </div>
             ))
           : null}
-        {type.declaration.signatures && type.declaration.signatures[0].type && (
+        {type.declaration.signatures?.[0].type && (
           <div className="mt-4 flex flex-row items-start gap-2">
             <div className="flex flex-row items-center gap-2">
               <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
@@ -185,7 +189,7 @@ const renderType = (
         <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
           <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT className={STYLES_SECONDARY}>
           Tuple: <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
         </CALLOUT>
@@ -211,7 +215,7 @@ const renderType = (
               {name}
             </MONOSPACE>
           </H3Code>
-          <CommentTextBlock comment={comment} includePlatforms={false} />
+          <APICommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' || type.type === 'union' ? (
             <>
               <CALLOUT className={STYLES_SECONDARY}>
@@ -266,7 +270,7 @@ const renderType = (
             </SPAN>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
-          <CommentTextBlock comment={comment} includePlatforms={false} />
+          <APICommentTextBlock comment={comment} includePlatforms={false} />
           <CALLOUT className={STYLES_SECONDARY}>
             Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
@@ -300,7 +304,7 @@ const renderType = (
           </SPAN>
           <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
         </CALLOUT>
-        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock comment={comment} includePlatforms={false} />
       </div>
     );
   } else if (type.type === 'intrinsic') {
@@ -313,7 +317,7 @@ const renderType = (
             {name}
           </MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
           <SPAN theme="secondary" weight="medium">
             Type:{' '}
@@ -332,7 +336,7 @@ const renderType = (
             {name}&lt;{type.checkType.name}&gt;
           </MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
           <SPAN theme="secondary" weight="medium">
             Generic:{' '}
@@ -377,7 +381,7 @@ const renderType = (
             {name}
           </MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
           String union of <CODE>{resolveTypeName(possibleData[0], sdkVersion)}</CODE> values.
         </CALLOUT>

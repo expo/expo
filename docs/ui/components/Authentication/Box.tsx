@@ -1,10 +1,10 @@
 import type { PropsWithChildren } from 'react';
 
-import { CreateAppButton } from './CreateAppButton';
-import { Icon } from './Icon';
-
 import { APIBox } from '~/components/plugins/APIBox';
 import { H3 } from '~/ui/components/Text';
+
+import { CreateAppButton } from './CreateAppButton';
+import { Icon } from './Icon';
 
 type BoxProps = PropsWithChildren<{
   name: string;

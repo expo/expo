@@ -99,14 +99,16 @@ type MarkdownComponent = Record<keyof typeof markdownStyles, any>;
 export const markdownComponents: MarkdownComponent = Object.keys(markdownStyles).reduce(
   (all, key) => ({
     ...all,
-    [key]: markdownStyles[key] ? createMarkdownComponent(markdownStyles[key]!) : null,
+    [key]: key && markdownStyles[key] ? createMarkdownComponent(markdownStyles[key]) : null,
   }),
   {}
 );
 
 function componentName({ Component }: Config) {
-  if (typeof Component === 'string') return Component;
-  return Component.displayName || Component.name || 'Anonymous';
+  if (typeof Component === 'string') {
+    return Component;
+  }
+  return Component.displayName ?? Component.name ?? 'Anonymous';
 }
 
 function createMarkdownComponent(config: Config): ComponentType<ComponentProps> {

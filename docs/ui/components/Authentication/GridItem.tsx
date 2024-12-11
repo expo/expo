@@ -1,8 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { Icon } from './Icon';
-
 import { A, CALLOUT, RawH4 } from '~/ui/components/Text';
+
+import { Icon } from './Icon';
 
 type GridItemProps = React.PropsWithChildren<{
   title: string;

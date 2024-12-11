@@ -1,9 +1,9 @@
 import { mergeClasses } from '@expo/styleguide';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
-import { TagProps } from './Tag';
-
 import { formatName, getTagClasses } from '~/ui/components/Tag/helpers';
+
+import { TagProps } from './types';
 
 type StatusTagProps = Omit<TagProps, 'name'> & {
   status: 'deprecated' | 'experimental' | string;

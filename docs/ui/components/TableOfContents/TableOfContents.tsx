@@ -62,7 +62,9 @@ export const TableOfContents = forwardRef<
 
   function handleContentScroll(contentScrollPosition: number) {
     for (const { ref, slug } of headings) {
-      if (!ref || !ref.current) continue;
+      if (!ref?.current) {
+        continue;
+      }
 
       setShowScrollTop(contentScrollPosition > 120);
 
@@ -166,7 +168,9 @@ export const TableOfContents = forwardRef<
           <TableOfContentsLink
             key={heading.slug}
             heading={heading}
-            onClick={event => handleLinkClick(event, heading)}
+            onClick={event => {
+              handleLinkClick(event, heading);
+            }}
             isActive={isActive}
             ref={isActive ? activeItemRef : undefined}
             shortenCode

@@ -1,8 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
 import type { PropsWithChildren } from 'react';
 
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { H3Code } from '~/components/plugins/api/APISectionUtils';
+import { APISectionPlatformTags } from '~/components/plugins/api/components/APISectionPlatformTags';
 import { STYLES_APIBOX, STYLES_APIBOX_WRAPPER } from '~/components/plugins/api/styles';
 import { PlatformName } from '~/types/common';
 import { MONOSPACE } from '~/ui/components/Text';

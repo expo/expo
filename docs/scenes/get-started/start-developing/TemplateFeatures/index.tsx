@@ -1,6 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
 import { useState } from 'react';
 
+import { HEADLINE } from '~/ui/components/Text';
+
 import { Content } from './Content';
 import { Tab } from './Tab';
 import Animations from './features/animations.mdx';
@@ -9,8 +11,6 @@ import Images from './features/images.mdx';
 import Navigation from './features/navigation.mdx';
 import Platforms from './features/platforms.mdx';
 import Themes from './features/themes.mdx';
-
-import { HEADLINE } from '~/ui/components/Text';
 
 export function TemplateFeatures() {
   const [selected, setSelected] = useState('navigation');
@@ -28,32 +28,44 @@ export function TemplateFeatures() {
           )}>
           <Tab
             title="File-based routing"
-            onClick={() => setSelected('navigation')}
+            onClick={() => {
+              setSelected('navigation');
+            }}
             isSelected={selected === 'navigation'}
           />
           <Tab
             title="Android, iOS, and web support"
-            onClick={() => setSelected('platforms')}
+            onClick={() => {
+              setSelected('platforms');
+            }}
             isSelected={selected === 'platforms'}
           />
           <Tab
             title="Images"
-            onClick={() => setSelected('images')}
+            onClick={() => {
+              setSelected('images');
+            }}
             isSelected={selected === 'images'}
           />
           <Tab
             title="Custom fonts"
-            onClick={() => setSelected('fonts')}
+            onClick={() => {
+              setSelected('fonts');
+            }}
             isSelected={selected === 'fonts'}
           />
           <Tab
             title="Light and dark modes"
-            onClick={() => setSelected('themes')}
+            onClick={() => {
+              setSelected('themes');
+            }}
             isSelected={selected === 'themes'}
           />
           <Tab
             title="Animations"
-            onClick={() => setSelected('animations')}
+            onClick={() => {
+              setSelected('animations');
+            }}
             isSelected={selected === 'animations'}
           />
         </div>

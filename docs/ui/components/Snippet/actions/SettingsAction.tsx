@@ -1,11 +1,11 @@
 import { Themes } from '@expo/styleguide';
 import { DotsVerticalIcon } from '@expo/styleguide-icons/outline/DotsVerticalIcon';
 
-import { Checkbox } from '../../Form/Checkbox';
-import { SnippetAction, SnippetActionProps } from '../SnippetAction';
-
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 import * as Dropdown from '~/ui/components/Dropdown';
+
+import { Checkbox } from '../../Form/Checkbox';
+import { SnippetAction, SnippetActionProps } from '../SnippetAction';
 
 export const SettingsAction = ({ ...rest }: SnippetActionProps) => {
   const { preferredTheme, setPreferredTheme, wordWrap, setWordWrap } =

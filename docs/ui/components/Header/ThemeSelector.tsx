@@ -24,11 +24,17 @@ export const ThemeSelector = () => {
           'max-lg-gutters:w-auto max-lg-gutters:min-w-[100px] max-lg-gutters:px-2 max-lg-gutters:pl-8 max-lg-gutters:indent-0 max-lg-gutters:text-secondary'
         )}
         value={themeName}
-        onChange={e => {
-          const option = e.target.value;
-          if (option === 'auto') setAutoMode();
-          if (option === 'dark') setDarkMode();
-          if (option === 'light') setLightMode();
+        onChange={event => {
+          const option = event.target.value;
+          if (option === 'auto') {
+            setAutoMode();
+          }
+          if (option === 'dark') {
+            setDarkMode();
+          }
+          if (option === 'light') {
+            setLightMode();
+          }
         }}>
         <option value="auto">Auto</option>
         <option value="light">Light</option>

@@ -81,9 +81,9 @@ export const chunkArray = (array: any[], chunkSize: number) => {
 };
 
 export function listMissingHashLinkTargets(apiName?: string) {
-  const contentLinks = document.querySelectorAll(
+  const contentLinks = document.querySelectorAll<HTMLAnchorElement>(
     `div.size-full.overflow-x-hidden.overflow-y-auto a`
-  ) as NodeListOf<HTMLAnchorElement>;
+  );
 
   const wantedHashes = Array.from(contentLinks)
     .map(link => {
@@ -98,8 +98,10 @@ export function listMissingHashLinkTargets(apiName?: string) {
   const missingEntries = wantedHashes.filter(hash => !availableIDs.includes(hash));
 
   if (missingEntries.length) {
+    /* eslint-disable no-console */
     console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
     console.table(missingEntries);
     console.groupEnd();
+    /* eslint-enable no-console */
   }
 }
