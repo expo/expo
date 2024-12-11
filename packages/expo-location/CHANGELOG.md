@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- On Android, remove dependency on `smart-location-lib`. ([#33609](https://github.com/expo/expo/pull/33609) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 18.0.4 - 2024-12-10
 
 _This version does not introduce any user-facing changes._
