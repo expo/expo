@@ -241,6 +241,10 @@ export interface ExpoConfig {
      */
     experiments?: {
         /**
+         * Set up an asset prefix to configure the asset URL for all bundled assets. This can be used to externally host assets on a CDN or other non-standard location. The asset prefix needs to be a fully qualified URL. For example: 'https://cdn.awesome.app/'.
+         */
+        assetPrefix?: string;
+        /**
          * Export a website relative to a subpath of a domain. The path will be prepended as-is to links to all bundled resources. Prefix the path with a `/` (recommended) to load all resources relative to the server root. If the path **does not** start with a `/` then resources will be loaded relative to the code that requests them, this could lead to unexpected behavior. Example '/subpath'. Defaults to '' (empty string).
          */
         baseUrl?: string;

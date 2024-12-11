@@ -19,7 +19,7 @@ function md5Hash(data) {
 function assertHashedAssetData(data) {
     (0, node_assert_1.default)('fileHashes' in data, 'Assets must have hashed files. Ensure the expo-asset plugin is installed.');
 }
-async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, platform, publicPath) {
+async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, platform, publicPath, assetPrefix) {
     const data = await (0, Assets_1.getAssetData)(assetPath, localPath, assetDataPlugins, platform, publicPath);
     assertHashedAssetData(data);
     // NOTE(EvanBacon): This is where we modify the asset to include a hash in the name for web cache invalidation.
@@ -28,6 +28,11 @@ async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, pla
         // TODO: Prevent one multi-res image from updating the hash in all images.
         // @ts-expect-error: name is typed as readonly.
         data.name = `${data.name}.${md5Hash(data.fileHashes)}`;
+    }
+    // Support assets hosted remotely on a different server
+    if (assetPrefix) {
+        // @ts-expect-error: httpServerLocation is typed as readonly.
+        data.httpServerLocation = `${assetPrefix}${data.httpServerLocation}`;
     }
     return data;
 }
