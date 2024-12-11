@@ -18,6 +18,6 @@ export declare function renderHtml({ pathname, isExporting, htmlHead, searchPara
     } | null>;
     resolveClientEntry: ResolveClientEntry;
     loadModule: (id: string) => Promise<any>;
-}): Promise<ReadableStream<any> | null>;
+}): Promise<ReadableStream<Uint8Array> | null>;
 export {};
 //# sourceMappingURL=html-renderer.d.ts.map

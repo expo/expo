@@ -188,7 +188,6 @@ const rectifyHtml = () => {
         },
     });
 };
-const filePathToFileURL = (filePath) => 'file://' + encodeURI(filePath);
 // for filePath
 const joinPath = (...paths) => {
     const isAbsolute = paths[0]?.startsWith('/');
@@ -240,14 +239,18 @@ const encodeInput = (input) => {
 };
 const encoder = new TextEncoder();
 const trailer = '</body></html>';
-// Extracted cuz ESM in Node.js is stupid
+/**
+ * Injects RSC payload into the HTML stream.
+ * @param rscStream - The ReadableStream containing the RSC payload.
+ * @returns A TransformStream that injects the RSC payload into the HTML stream.
+ */
 function injectRSCPayload(rscStream) {
     const decoder = new TextDecoder();
     let resolveFlightDataPromise;
     const flightDataPromise = new Promise((resolve) => (resolveFlightDataPromise = resolve));
     let started = false;
     return new TransformStream({
-        transform(chunk, controller) {
+        async transform(chunk, controller) {
             let buf = decoder.decode(chunk);
             if (buf.endsWith(trailer)) {
                 buf = buf.slice(0, -trailer.length);
@@ -272,6 +275,15 @@ function injectRSCPayload(rscStream) {
         },
     });
 }
+/**
+ * Asynchronously processes a ReadableStream of chunks, attempting to decode each chunk as a UTF-8 string.
+ * If decoding fails (e.g., due to binary data), the chunk is encoded as a base64 string and written as a Uint8Array.
+ *
+ * @param {ReadableStream<Uint8Array>} rscStream - The ReadableStream of Uint8Array chunks to process.
+ * @param {TransformStreamDefaultController<Uint8Array>} controller - The controller to which the processed chunks are written.
+ *
+ * @throws {Error} If an error occurs during decoding or encoding of the chunks.
+ */
 async function writeRSCStream(rscStream, controller) {
     const decoder = new TextDecoder('utf-8', { fatal: true });
     for await (const chunk of rscStream) {
@@ -280,7 +292,7 @@ async function writeRSCStream(rscStream, controller) {
         try {
             writeChunk(JSON.stringify(decoder.decode(chunk, { stream: true })), controller);
         }
-        catch (err) {
+        catch {
             const base64 = JSON.stringify(btoa(String.fromCodePoint(...chunk)));
             writeChunk(`Uint8Array.from(atob(${base64}), m => m.codePointAt(0))`, controller);
         }
@@ -290,13 +302,19 @@ async function writeRSCStream(rscStream, controller) {
         writeChunk(JSON.stringify(remaining), controller);
     }
 }
+/**
+ * Writes a chunk of data to the controller, escaping it for safe inclusion in a script tag.
+ * @param {string} chunk - The chunk of data to write.
+ * @param {WritableStreamDefaultWriter<string>} controller - The controller to which the chunk is written.
+ */
 function writeChunk(chunk, controller) {
     controller.enqueue(encoder.encode(`<script>${escapeScript(`(self.__FLIGHT_DATA||=[]).push(${chunk})`)}</script>`));
 }
-// Escape closing script tags and HTML comments in JS content.
-// https://www.w3.org/TR/html52/semantics-scripting.html#restrictions-for-contents-of-script-elements
-// Avoid replacing </script with <\/script as it would break the following valid JS: 0</script/ (i.e. regexp literal).
-// Instead, escape the s character.
+/**
+ * Escapes closing script tags and HTML comments in JavaScript content to prevent breaking out of the script context.
+ * @param {string} script - The script content to escape.
+ * @returns {string} - The escaped script content.
+ */
 function escapeScript(script) {
     return script.replace(/<!--/g, '<\\!--').replace(/<\/(script)/gi, '</\\$1');
 }
