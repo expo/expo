@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- On Android, remove dependency on `io.nlopez.smartlocation`.
+- On Android, remove dependency on `smart-location-lib`.
 
 ## 18.0.4 - 2024-12-10
 

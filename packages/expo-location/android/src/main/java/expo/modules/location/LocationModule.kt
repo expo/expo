@@ -334,7 +334,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
   private fun getProviderStatus(): LocationProviderStatus {
     val manager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    
+
     val isGpsAvailable = manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     val isNetworkAvailable = manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     val isLocationServicesEnabled = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) || manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
@@ -699,7 +699,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       locations?.let { location ->
         location.let {
           val results = it.mapNotNull { address ->
-            val newLocation = Location("gps")
+            val newLocation = Location(LocationManager.GPS_PROVIDER)
             newLocation.latitude = address.latitude
             newLocation.longitude = address.longitude
             GeocodeResponse.from(newLocation)
