@@ -923,11 +923,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
-    if (isReactServerComponentsEnabled && useServerRendering) {
-      throw new CommandError(
-        `Experimental server component support does not support 'web.output: ${exp.web!.output}' yet. Use 'web.output: "single"' during the experimental phase.`
-      );
-    }
+    // if (isReactServerComponentsEnabled && useServerRendering) {
+    //   throw new CommandError(
+    //     `Experimental server component support does not support 'web.output: ${exp.web!.output}' yet. Use 'web.output: "single"' during the experimental phase.`
+    //   );
+    // }
 
     const instanceMetroOptions = {
       isExporting: !!options.isExporting,

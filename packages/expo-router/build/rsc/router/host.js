@@ -21,6 +21,7 @@ const errors_1 = require("./errors");
 const fetch_1 = require("./fetch");
 const utils_1 = require("./utils");
 const getDevServer_1 = require("../../getDevServer");
+const root_wrap_1 = require("./root-wrap");
 const url_1 = require("../../head/url");
 const { createFromFetch, encodeReply } = client_1.default;
 // TODO: Maybe this could be a bundler global instead.
@@ -267,6 +268,6 @@ exports.Children = Children;
  * ServerRoot for SSR
  * This is not a public API.
  */
-const ServerRoot = ({ elements, children }) => (0, react_1.createElement)(ElementsContext.Provider, { value: elements }, children);
+const ServerRoot = ({ elements, children }) => (0, react_1.createElement)(root_wrap_1.RootWrap, null, (0, react_1.createElement)(ElementsContext.Provider, { value: elements }, children));
 exports.ServerRoot = ServerRoot;
 //# sourceMappingURL=host.js.map
