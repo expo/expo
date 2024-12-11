@@ -43,7 +43,7 @@ There are three different visibility settings:
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Plain text | Visible on the website, in EAS CLI, and in logs.                                                                                             |
 | Sensitive  | Obfuscated in build and workflow jobs logs. You can use a toggle to make them visible on the website. They're also readable in EAS CLI. |
-| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in build and EAS Workflows jobs logs.  |
+| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in build and workflow jobs logs.  |
 
 > **warning** Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**. Secret type environment variables are intended to be used to provide values to an EAS Build or EAS Workflows job so that they may be used to alter how a job runs. For example, a good use case is setting an `NPM_TOKEN` to install private packages from npm, or a setting a Sentry API key to create a release and upload your source maps. Secrets do not provide any additional security for values that you end up embedding in your application itself.
 
