@@ -30,7 +30,7 @@ They are available in jobs that run on EAS servers and updates, together with pr
 Currently EAS supports three environments for environment variables: `development`, `preview` and `production`.
 Environments are independent sets of environment variables that can be used to customize your app in different contexts.
 For example, you might want to use different API keys for development and production, or different bundle identifiers for different App Store releases.
-Environments allows you to do so. Every EAS Build and EAS Workflows job runs using environment variables from one of the available environments.
+Environments allows you to do so. Every EAS Build and Workflows job runs using environment variables from one of the available environments.
 You can also use environments for updates, allowing you to use the same set of environment variables for your build jobs. You can do this when publishing an update by providing the `--environment` flag.
 
 Environment variables can be assigned to multiple environments and have the same value across all of them, or be created for a single environment, so that you can set a specific value for a single environment.
