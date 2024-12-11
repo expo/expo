@@ -5,6 +5,7 @@ import { useEffect, useState, createRef, type PropsWithChildren, useRef } from '
 
 import * as RoutesUtils from '~/common/routes';
 import { appendSectionToRoute, isRouteActive } from '~/common/routes';
+import { versionToText } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationHead from '~/components/DocumentationHead';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
@@ -17,7 +18,6 @@ import { Header } from '~/ui/components/Header';
 import { PagePlatformTags } from '~/ui/components/PagePlatformTags';
 import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
-import { versionToText } from '~/ui/components/Sidebar/ApiVersionSelect';
 import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
 import {
   TableOfContentsWithManager,

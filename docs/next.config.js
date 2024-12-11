@@ -36,9 +36,10 @@ const removeConsole =
 
 /** @type {import('next').NextConfig}  */
 export default {
+  transpilePackages: ['@radix-ui/react-select'],
   trailingSlash: true,
   experimental: {
-    esmExternals: true,
+    esmExternals: false,
     // note(simek): would be nice enhancement, but it breaks the `@next/font` styles currently,
     // and results in font face swap on every page reload
     optimizeCss: false,
