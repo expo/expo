@@ -185,7 +185,7 @@ public final class SecureStoreModule: Module {
       kSecAttrGeneric as String: encodedKey,
       kSecAttrAccount as String: encodedKey
     ]
-    
+
     if let appGroup = options.appGroup {
       query[kSecAttrAccessGroup as String] = appGroup
     }
