@@ -2,6 +2,7 @@
 
 import Foundation
 import ExpoModulesCore
+import FirebaseCore
 
 @UIApplicationMain
 class AppDelegate: ExpoAppDelegate {
@@ -9,6 +10,8 @@ class AppDelegate: ExpoAppDelegate {
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
     ExpoGoReactNativeFeatureFlags.setup()
+
+    FirebaseApp.configure()
 
     if application.applicationState != UIApplication.State.background {
       // App launched in foreground
