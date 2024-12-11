@@ -277,16 +277,23 @@ const injectScript = (
 };
 
 // HACK for now, do we want to use HTML parser?
-const rectifyHtml = () => {
+/**
+ * A TransformStream that buffers HTML chunks and processes them when a closing tag is detected.
+ * This is useful for ensuring that HTML is properly rectified before further processing.
+ * @returns {TransformStream<Uint8Array, Uint8Array>} A TransformStream that buffers and processes HTML chunks.
+ */
+const rectifyHtml = (): TransformStream<Uint8Array, Uint8Array> => {
   const pending: Uint8Array[] = [];
   const decoder = new TextDecoder();
   let timer: ReturnType<typeof setTimeout> | undefined;
+
   return new TransformStream({
     transform(chunk, controller) {
       if (!(chunk instanceof Uint8Array)) {
         throw new Error('Unknown chunk type');
       }
       pending.push(chunk);
+      // Check if the chunk ends with a closing tag
       if (/<\/\w+>$/.test(decoder.decode(chunk))) {
         clearTimeout(timer);
         timer = setTimeout(() => {
