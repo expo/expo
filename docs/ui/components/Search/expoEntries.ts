@@ -88,16 +88,6 @@ export const entries: ExpoItemType[] = [
     Icon: CredentialIcon,
   },
   {
-    label: 'Project Environment Variables',
-    url: 'https://expo.dev/accounts/[account]/projects/[project]/environment-variables',
-    Icon: BracketsXIcon,
-  },
-  {
-    label: 'Project Settings',
-    url: 'https://expo.dev/accounts/[account]/projects/[project]/settings',
-    Icon: Settings01Icon,
-  },
-  {
     label: 'Project Workflows',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/workflows',
     Icon: Dataflow01Icon,
@@ -106,5 +96,15 @@ export const entries: ExpoItemType[] = [
     label: 'Project Push Notifications',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/push-notifications',
     Icon: NotificationBoxIcon,
+  },
+  {
+    label: 'Project Environment Variables',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/environment-variables',
+    Icon: BracketsXIcon,
+  },
+  {
+    label: 'Project Settings',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/settings',
+    Icon: Settings01Icon,
   },
 ];
