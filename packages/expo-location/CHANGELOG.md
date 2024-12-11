@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] `startLocationUpdatesAsync` should not require background permissions ([#33617](https://github.com/expo/expo/pull/33617) by [@andrejpavlovic](https://github.com/andrejpavlovic)
+
 ### 💡 Others
 
 ## 18.0.4 - 2024-12-10
