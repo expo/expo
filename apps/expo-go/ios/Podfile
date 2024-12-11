@@ -30,7 +30,14 @@ target 'Expo Go' do
   # Required by firebase core versions 9.x / 10.x (included with SDK 47)
   # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
   pod 'FirebaseCore', :modular_headers => true
+  pod 'FirebaseCrashlytics', :modular_headers => true
+  pod 'FirebaseAnalytics', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
+
+  pod 'FirebaseInstallations', :modular_headers => true
+  pod 'GoogleDataTransport', :modular_headers => true
+  pod 'nanopb', :modular_headers => true
+  pod 'FirebaseCoreExtension', :modular_headers => true
 
   # Expo modules
   use_expo_modules!({
