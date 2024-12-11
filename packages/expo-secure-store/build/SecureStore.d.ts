@@ -72,6 +72,14 @@ export type SecureStoreOptions = {
      * @platform ios
      */
     keychainAccessible?: KeychainAccessibilityConstant;
+    /**
+     * App group identifier, used for sharing data between apps.
+     * Support for an app group identifier requires configuration in entitlements. Learn more about configuring entitlements in [iOS capabilities](https://docs.expo.dev/build-reference/ios-capabilities/).
+     *
+     * @see Apple's documentation on [shared keychain items](https://developer.apple.com/documentation/security/sharing-access-to-keychain-items-among-a-collection-of-apps).
+     * @platform ios
+     */
+    appGroup?: string;
 };
 /**
  * Returns whether the SecureStore API is enabled on the current device. This does not check the app
