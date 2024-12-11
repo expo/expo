@@ -1,3 +1,4 @@
+// @docsMissing
 export type AudioSource =
   | string
   | {
@@ -20,8 +21,10 @@ export type RecordingInput = {
   uid: string;
 };
 
+// @docsMissing
 export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
 
+// @docsMissing
 export type AudioStatus = {
   id: number;
   currentTime: number;
@@ -38,6 +41,7 @@ export type AudioStatus = {
   shouldCorrectPitch: boolean;
 };
 
+// @docsMissing
 export type RecordingStatus = {
   id: number;
   isFinished: boolean;
@@ -46,6 +50,7 @@ export type RecordingStatus = {
   url: string | null;
 };
 
+// @docsMissing
 export type RecorderState = {
   canRecord: boolean;
   isRecording: boolean;
@@ -55,6 +60,10 @@ export type RecorderState = {
   url: string | null;
 };
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export type AndroidOutputFormat =
   | 'default'
   | '3gp'
@@ -65,8 +74,16 @@ export type AndroidOutputFormat =
   | 'mpeg2ts'
   | 'webm';
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export type AndroidAudioEncoder = 'default' | 'amr_nb' | 'amr_wb' | 'aac' | 'he_aac' | 'aac_eld';
 
+// @docsMissing
+/**
+ * @platform ios
+ */
 export enum IOSOutputFormat {
   LINEARPCM = 'lpcm',
   AC3 = 'ac-3',
@@ -104,6 +121,7 @@ export enum IOSOutputFormat {
   ENHANCEDAC3 = 'ec-3',
 }
 
+// @docsMissing
 export enum AudioQuality {
   MIN = 0,
   LOW = 0x20,
@@ -112,6 +130,7 @@ export enum AudioQuality {
   MAX = 0x7f,
 }
 
+// @docsMissing
 export type BitRateStrategy = 'constant' | 'longTermAverage' | 'variableConstrained' | 'variable';
 
 export type RecordingOptions = {
@@ -141,23 +160,34 @@ export type RecordingOptions = {
   bitRate: number;
   /**
    * Recording options for the Android platform.
+   * @platform android
    */
   android: RecordingOptionsAndroid;
   /**
    * Recording options for the iOS platform.
+   * @platform ios
    */
   ios: RecordingOptionsIos;
   /**
    * Recording options for the Web platform.
+   * @platform web
    */
   web?: RecordingOptionsWeb;
 };
 
+// @docsMissing
+/**
+ * @platform web
+ */
 export type RecordingOptionsWeb = {
   mimeType?: string;
   bitsPerSecond?: number;
 };
 
+// @docsMissing
+/**
+ * @platform ios
+ */
 export type RecordingOptionsIos = {
   /**
    * The desired file extension.
@@ -205,6 +235,10 @@ export type RecordingOptionsIos = {
   linearPCMIsFloat?: boolean;
 };
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export type RecordingOptionsAndroid = {
   /**
    * The desired file extension.
@@ -236,6 +270,7 @@ export type RecordingOptionsAndroid = {
   maxFileSize?: number;
 };
 
+// @docsMissing
 export type AudioMode = {
   playsInSilentMode: boolean;
   interruptionMode: InterruptionMode;
@@ -244,4 +279,5 @@ export type AudioMode = {
   shouldRouteThroughEarpiece: boolean;
 };
 
+// @docsMissing
 export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
