@@ -22,6 +22,7 @@
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
     "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resources"
   },
+  "packageManager": "yarn@4.5.3",
   "dependencies": {
     "@expo/styleguide": "^9.0.1",
     "@expo/styleguide-base": "^2.0.1",
@@ -115,5 +116,31 @@
     "unist-builder": "^4.0.0",
     "unist-util-visit": "^5.0.0",
     "user-agent-data-types": "^0.4.2"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "bracketSameLine": true,
+    "trailingComma": "es5",
+    "arrowParens": "avoid",
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ],
+    "tailwindFunctions": [
+      "mergeClasses"
+    ]
+  },
+  "browserslist": [
+    ">0.3%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "postcss": {
+    "plugins": {
+      "postcss-import": {},
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
   }
 }
