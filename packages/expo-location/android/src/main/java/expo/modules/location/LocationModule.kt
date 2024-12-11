@@ -20,6 +20,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.app.ActivityCompat
+import androidx.core.location.LocationManagerCompat
 import androidx.core.os.bundleOf
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -337,7 +338,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
     val isGpsAvailable = manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     val isNetworkAvailable = manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    val isLocationServicesEnabled = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) || manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    val isLocationServicesEnabled = LocationManagerCompat.isLocationEnabled(manager)
     val isPassiveAvailable = manager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)
 
     return LocationProviderStatus().apply {
