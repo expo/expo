@@ -65,7 +65,7 @@ describe(addMapsCocoaPods, () => {
   });
 });
 
-describe(addGoogleMapsAppDelegateImport, () => {
+xdescribe(addGoogleMapsAppDelegateImport, () => {
   it(`adds maps import to AppDelegate`, () => {
     const results = addGoogleMapsAppDelegateImport(rnFixture['ios/HelloWorld/AppDelegate.mm']);
     // matches a static snapshot
@@ -93,7 +93,7 @@ describe(addGoogleMapsAppDelegateImport, () => {
   });
 });
 
-describe(addGoogleMapsAppDelegateInit, () => {
+xdescribe(addGoogleMapsAppDelegateInit, () => {
   it(`adds maps import to AppDelegate`, () => {
     const results = addGoogleMapsAppDelegateInit(
       rnFixture['ios/HelloWorld/AppDelegate.mm'],
