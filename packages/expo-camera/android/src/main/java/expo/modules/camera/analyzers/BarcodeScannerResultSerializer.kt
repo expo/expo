@@ -2,6 +2,8 @@ package expo.modules.camera.analyzers
 
 import android.os.Bundle
 import android.util.Pair
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 
 object BarCodeScannerResultSerializer {
@@ -14,6 +16,23 @@ object BarCodeScannerResultSerializer {
       putParcelableArrayList("cornerPoints", cornerPointsAndBoundingBox.first)
       putBundle("bounds", cornerPointsAndBoundingBox.second)
     }
+
+  fun parseBarcodeScanningResult(barcode: Barcode, inputImage: InputImage? = null): BarCodeScannerResult {
+    val raw = barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
+    val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO) {
+      raw
+    } else {
+      barcode.displayValue
+    }
+    val cornerPoints = mutableListOf<Int>()
+    barcode.cornerPoints?.let { points ->
+      for (point in points) {
+        cornerPoints.addAll(listOf(point.x, point.y))
+      }
+    }
+
+    return BarCodeScannerResult(barcode.format, value, raw, cornerPoints, inputImage?.height ?: 0, inputImage?.width ?: 0)
+  }
 
   private fun getCornerPointsAndBoundingBox(
     cornerPoints: List<Int>,

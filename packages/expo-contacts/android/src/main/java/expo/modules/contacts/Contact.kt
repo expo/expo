@@ -58,11 +58,13 @@ class Contact(var contactId: String) {
   var relationships: MutableList<RelationshipModel> = ArrayList()
   var urlAddresses: MutableList<UrlAddressModel> = ArrayList()
   var extraNames: MutableList<ExtraNameModel> = ArrayList()
+  var isFavorite: Boolean = false
 
   fun fromCursor(cursor: Cursor) {
     rawContactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.RAW_CONTACT_ID))
     val mimeType = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE))
     val name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
+    isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(ContactsContract.Data.STARRED)) == 1
     if (!TextUtils.isEmpty(name) && TextUtils.isEmpty(displayName)) {
       displayName = name
     }
@@ -196,6 +198,7 @@ class Contact(var contactId: String) {
     var op = ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
       .withValue(RawContacts.ACCOUNT_TYPE, null)
       .withValue(RawContacts.ACCOUNT_NAME, null)
+      .withValue(RawContacts.STARRED, isFavorite)
     ops.add(op.build())
     op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
       .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
@@ -349,6 +352,8 @@ class Contact(var contactId: String) {
         ?.let { putString("department", it) }
 
       putBoolean("imageAvailable", hasPhoto)
+
+      putBoolean("isFavorite", isFavorite)
     }
 
     if (fieldSet.contains("image") && photoUri != null) {
@@ -503,6 +508,10 @@ class Contact(var contactId: String) {
         }
         contactData.add(image)
       }
+      val isFavoriteValue = ContentValues().apply {
+        put("isFavorite", if (isFavorite) 1 else 0)
+      }
+      contactData.add(isFavoriteValue)
       for (map in baseModels) {
         for (item in map) {
           contactData.add(item.contentValues)

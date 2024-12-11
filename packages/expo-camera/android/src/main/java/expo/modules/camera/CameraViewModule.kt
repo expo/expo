@@ -3,6 +3,8 @@ package expo.modules.camera
 import android.Manifest
 import android.graphics.Bitmap
 import android.util.Log
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import expo.modules.camera.analyzers.BarCodeScannerResultSerializer
 import expo.modules.camera.analyzers.MLKitBarCodeScanner
 import expo.modules.camera.records.BarcodeSettings
@@ -45,6 +47,12 @@ class CameraViewModule : Module() {
     Name("ExpoCamera")
 
     Events("onModernBarcodeScanned")
+
+    // Aligned with iOS which has the same property. Will always be true on Android since
+    // the Google code scanner's min sdk is 21 - and our min sdk is currently 24.
+    Property("isModernBarcodeScannerAvailable") {
+      true
+    }
 
     AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
@@ -100,6 +108,27 @@ class CameraViewModule : Module() {
           }
         }
       )
+    }
+
+    AsyncFunction("launchScanner") { settings: BarcodeSettings ->
+      val reactContext = appContext.reactContext
+        ?: throw Exceptions.ReactContextLost()
+      val options = GmsBarcodeScannerOptions.Builder()
+        .setBarcodeFormats(
+          settings.barcodeTypes.first().mapToBarcode(),
+          *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
+        )
+        .build()
+
+      val scanner = GmsBarcodeScanning.getClient(reactContext, options)
+      scanner.startScan()
+        .addOnSuccessListener { barcode ->
+          val result = BarCodeScannerResultSerializer.parseBarcodeScanningResult(barcode)
+          sendEvent("onModernBarcodeScanned", BarCodeScannerResultSerializer.toBundle(result, 1.0f))
+        }
+        .addOnFailureListener {
+          throw CameraExceptions.BarcodeScanningFailedException()
+        }
     }
 
     OnDestroy {

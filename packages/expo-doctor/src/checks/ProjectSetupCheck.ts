@@ -17,7 +17,7 @@ export class ProjectSetupCheck implements DoctorCheck {
      * this check when running on an EAS Build worker, where we may or may not
      * have git. */
 
-    if (fs.existsSync(path.join(projectRoot, 'modules')) && !process.env.EAS_BUILD) {
+    if (fs.existsSync(path.join(projectRoot, 'modules'))) {
       // Glob returns matching files and `git check-ignore` checks files, as
       // well, but we want to check if the path is gitignored, so we pick vital
       // files to match off of (e.g., .podspec, build.gradle).

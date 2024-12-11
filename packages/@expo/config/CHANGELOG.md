@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Remove getAccountUsername from package exports ([#33249](https://github.com/expo/expo/pull/33249) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Drop unintentional `console.log` when modifying config. ([#33330](https://github.com/expo/expo/pull/33330) by [@byCedric](https://github.com/byCedric))
 
 ## 10.0.5 — 2024-11-20
 

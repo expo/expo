@@ -31,6 +31,7 @@ const native_1 = require("@react-navigation/native");
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
 const createMemoryHistory_1 = require("./createMemoryHistory");
+const getPathFromState_1 = require("./getPathFromState");
 const serverLocationContext_1 = require("../global-state/serverLocationContext");
 /**
  * Find the matching navigation state that changed between 2 navigation states
@@ -246,14 +247,17 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
                     if (focusedRoute &&
                         focusedRoute.name === route.name &&
                         (0, fast_deep_equal_1.default)({ ...focusedRoute.params }, { ...route.params })) {
-                        path = route.path;
+                        // START FORK - Ensure paths coming from events (e.g refresh) have the base URL
+                        // path = route.path;
+                        path = (0, getPathFromState_1.appendBaseUrl)(route.path);
+                        // END FORK
                     }
                 }
             }
             if (path == null) {
                 path = getPathFromStateRef.current(state, configRef.current);
             }
-            // START FORK - ExpoRouter manually handles hashes
+            // START FORK - ExpoRouter manually handles hashes. This code is intentionally removed
             // const previousRoute = previousStateRef.current
             //   ? findFocusedRoute(previousStateRef.current)
             //   : undefined;

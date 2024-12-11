@@ -17,8 +17,18 @@ const sortedSupportedExpoSdks = SupportedExpoSdks.sort();
 
 const supportedSdksString = `${sortedSupportedExpoSdks.map((sdk) => semver.major(sdk)).join('')}`;
 
+const isSupportedSdkVersion = (sdkVersion: string) => {
+  for (const supportedSdk of sortedSupportedExpoSdks) {
+    if (semver.satisfies(sdkVersion, `~${supportedSdk}`)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 export default {
   IOSClientReleaseType,
   IsIOSRestrictedBuild,
+  isSupportedSdkVersion,
   supportedSdksString,
 };

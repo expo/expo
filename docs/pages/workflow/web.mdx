@@ -5,6 +5,9 @@ description: Learn how to develop your app for the web so you can build a univer
 hideTOC: true
 ---
 
+import { RouterLogo } from '@expo/styleguide';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
@@ -98,22 +101,26 @@ The app can be exported as a production website with:
   title="File-based routing"
   description="Build routes and navigation with Expo Router."
   href="/router/introduction"
+  Icon={RouterLogo}
 />
 
 <BoxLink
   title="Static rendering and SEO"
   description="Render your website as static HTML with Expo Router to improve SEO and performance."
   href="/router/reference/static-rendering"
+  Icon={RouterLogo}
 />
 
 <BoxLink
   title="Publish websites"
   description="Export your website and upload to any web host."
   href="/distribution/publishing-websites"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Customizing the JavaScript bundler"
   description="Customize Metro bundler for your project."
   href="/guides/customizing-metro"
+  Icon={BookOpen02Icon}
 />

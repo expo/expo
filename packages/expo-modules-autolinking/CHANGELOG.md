@@ -8,7 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- Fix incorrect `__dirname` in `react-native-config.(js|ts)` ([#33532](https://github.com/expo/expo/pull/33532) by [@satya164](https://github.com/satya164))
+
 ### 💡 Others
+
+- [Android] Introduced the Gradle plugin to improve the autolinking setup. ([#33402](https://github.com/expo/expo/pull/33402) by [@lukmccall](https://github.com/lukmccall))
+- Added library `android.sourceDir` support for react-native-config. ([#33473](https://github.com/expo/expo/pull/33473) by [@kudo](https://github.com/kudo))
+
+## 2.0.3 - 2024-12-02
+
+_This version does not introduce any user-facing changes._
 
 ## 2.0.2 — 2024-11-13
 

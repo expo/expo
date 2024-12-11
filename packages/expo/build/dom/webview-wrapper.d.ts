@@ -1,6 +1,7 @@
 import React from 'react';
 import type { DOMProps } from './dom.types';
 interface Props {
+    children?: any;
     dom: DOMProps;
     filePath: string;
 }

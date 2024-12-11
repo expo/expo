@@ -205,6 +205,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * Generates thumbnails from the currently played asset. The thumbnails are references to native images,
    * thus they can be used as a source of the `Image` component from `expo-image`.
+   * @platform android
    * @platform ios
    */
   generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;

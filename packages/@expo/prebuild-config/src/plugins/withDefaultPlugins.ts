@@ -16,6 +16,7 @@ import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';
 import { withAndroidIcons } from './icons/withAndroidIcons';
 import { withIosIcons } from './icons/withIosIcons';
 import { withSdk52ReactNative77CompatAndroid } from './sdk52/ReactNative77CompatPlugin';
+import { withSdk52ReactNative78CompatAndroid } from './sdk52/ReactNative78CompatPlugin';
 import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
 import withContacts from './unversioned/expo-contacts';
@@ -113,6 +114,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     // Dangerous -- these plugins run in reverse order.
     AndroidConfig.GoogleServices.withGoogleServicesFile,
     withSdk52ReactNative77CompatAndroid,
+    withSdk52ReactNative78CompatAndroid,
 
     // Modify colors.xml and styles.xml
     AndroidConfig.StatusBar.withStatusBar,

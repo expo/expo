@@ -14,6 +14,7 @@ export type GeneratedData = EnumDefinitionData &
 // Shared data types
 
 export type CommentData = {
+  name?: string;
   summary: CommentContentData[];
   returns?: string;
   blockTags?: CommentTagData[];
@@ -22,6 +23,7 @@ export type CommentData = {
 
 export type CommentTagData = {
   tag: string;
+  name?: string;
   content: CommentContentData[];
 };
 

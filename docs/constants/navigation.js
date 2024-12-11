@@ -256,7 +256,6 @@ const general = [
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
       makePage('router/reference/troubleshooting.mdx'),
-      makePage('router/reference/faq.mdx'),
     ]),
     makeGroup('Migration', [
       makePage('router/migrate/from-react-navigation.mdx'),
@@ -418,14 +417,14 @@ const general = [
   makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
   makeSection('Push notifications', [
     makePage('push-notifications/overview.mdx'),
+    makePage('push-notifications/what-you-need-to-know.mdx'),
     makePage('push-notifications/push-notifications-setup.mdx'),
     makePage('push-notifications/sending-notifications.mdx'),
     makePage('push-notifications/receiving-notifications.mdx'),
-    makePage('push-notifications/fcm-credentials.mdx'),
     makeGroup(
       'Reference',
       [
-        makePage('push-notifications/obtaining-a-device-token-for-fcm-or-apns.mdx'),
+        makePage('push-notifications/fcm-credentials.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
         makePage('push-notifications/faq.mdx'),
       ],

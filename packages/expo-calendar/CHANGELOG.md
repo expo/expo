@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [ios][calendar] Use EXPermissionStatus instead of CalendarPermissionsStatus in calendar permissions requesters ([#33453](https://github.com/expo/expo/pull/33453) by [@ryanduffin](https://github.com/ryanduffin)
+
 ## 14.0.4 - 2024-11-29
 
 ### 🐛 Bug fixes

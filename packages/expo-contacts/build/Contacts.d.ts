@@ -357,6 +357,11 @@ export type Contact = {
      * @platform ios
      */
     socialProfiles?: SocialProfile[];
+    /**
+     * Whether the contact is starred.
+     * @platform android
+     */
+    isFavorite?: boolean;
 };
 /**
  * The return value for queried contact operations like `getContactsAsync`.
@@ -799,7 +804,11 @@ export declare enum Fields {
     ExtraNames = "extraNames",
     Note = "note",
     Dates = "dates",
-    Relationships = "relationships"
+    Relationships = "relationships",
+    /**
+     * @platform android
+     */
+    IsFavorite = "isFavorite"
 }
 /**
  * This format denotes the common calendar format used to specify how a date is calculated in `nonGregorianBirthday` fields.

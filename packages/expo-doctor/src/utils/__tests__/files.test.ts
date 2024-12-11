@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
 import { isFileIgnoredAsync, existsAndIsNotIgnoredAsync } from '../files';
@@ -70,5 +71,32 @@ describe(existsAndIsNotIgnoredAsync, () => {
     });
     const result = await existsAndIsNotIgnoredAsync('ignored-file.txt');
     expect(result).toBe(false);
+  });
+});
+
+describe('gitignore fallback behavior', () => {
+  beforeEach(() => {
+    vol.reset();
+    jest.resetAllMocks();
+  });
+
+  it('correctly identifies ignored files when git is not available', async () => {
+    vol.fromJSON({
+      '.gitignore': '/ios\n/android',
+      'ios/Podfile': 'content',
+      'android/build.gradle': 'content',
+      'src/App.js': 'content',
+    });
+
+    // Mock git command to fail as if git wasn't available
+    jest.mocked(spawnAsync).mockRejectedValue(new Error('git not available'));
+
+    const iosIgnored = await isFileIgnoredAsync('ios/Podfile');
+    const androidIgnored = await isFileIgnoredAsync('android/build.gradle');
+    const srcNotIgnored = await isFileIgnoredAsync('src/App.js');
+
+    expect(iosIgnored).toBe(true);
+    expect(androidIgnored).toBe(true);
+    expect(srcNotIgnored).toBe(false);
   });
 });

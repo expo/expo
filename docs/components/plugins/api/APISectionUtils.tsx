@@ -774,6 +774,16 @@ export const getAllTagData = (tagName: string, comment?: CommentData) =>
             } as CommentContentData,
           ],
         };
+      } else if (tag.content.length === 0 && tag.name) {
+        return {
+          tag: tag.tag,
+          content: [
+            {
+              kind: 'text',
+              text: '`' + tag.name + '`',
+            } as CommentContentData,
+          ],
+        };
       }
       return tag;
     })
@@ -871,7 +881,7 @@ export const CommentTextBlock = ({
         <BoxSectionHeader text="Example" className="!mt-1" Icon={CodeSquare01Icon} />
       )}
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
-        {getCommentContent(example.content)}
+        {getCommentContent(example.content ?? example.name)}
       </ReactMarkdown>
     </div>
   ));

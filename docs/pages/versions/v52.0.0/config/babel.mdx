@@ -31,6 +31,10 @@ module.exports = function (api) {
 };
 ```
 
+4. If you make a change to the **babel.config.js** file, you need to restart the Metro bundler to apply the changes and use `--clear` option from Expo CLI to clear the Metro bundler cache:
+
+<Terminal cmd={['$ npx expo start --clear']} />
+
 ## babel-preset-expo
 
 [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo) is the default preset used in Expo projects. It extends the default React Native preset (`@react-native/babel-preset`) and adds support for decorators, tree-shaking web libraries, and loading font icons.

@@ -1,4 +1,6 @@
 'use strict';
+import { fetch } from 'expo/fetch';
+import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import * as FS from 'expo-file-system';
 import { File, Directory } from 'expo-file-system/next';
@@ -292,7 +294,6 @@ export async function test({ describe, expect, it, ...t }) {
           src.create();
           const dst = new File(testDirectory, 'file2.txt');
           dst.create();
-          // @ts-expect-error
           expect(() => src.copy(dst)).toThrow();
         });
       });
@@ -371,7 +372,6 @@ export async function test({ describe, expect, it, ...t }) {
           src.create();
           const dst = new File(testDirectory, 'file2.txt');
           dst.create();
-          // @ts-expect-error
           expect(() => src.move(dst)).toThrow();
         });
       });
@@ -664,6 +664,56 @@ export async function test({ describe, expect, it, ...t }) {
       await writer.write(new Uint8Array(alphabet.split('').map((char) => char.charCodeAt(0))));
       writer.close();
       expect(src.text()).toBe(alphabet);
+    });
+
+    it('Returns correct file type', async () => {
+      const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
+      const src = new File(asset.localUri);
+      expect(src.type).toBe('image/jpeg');
+      const src2 = new File(testDirectory, 'file.txt');
+      src2.write('abcde');
+      expect(src2.type).toBe('text/plain');
+    });
+
+    it('Exposes a file as blob', async () => {
+      const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
+      const src = new File(asset.localUri);
+
+      const blob = src.blob();
+
+      expect(blob.size).toBe(src.size);
+    });
+
+    // You can also use something like container twostoryrobot/simple-file-upload to test if the file is saved correctly
+    it('Supports sending a file using blob', async () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+      const blob = src.blob();
+
+      const response = await fetch('https://httpbin.org/anything', {
+        method: 'POST',
+        body: blob,
+      });
+      const body = await response.json();
+      expect(body.data).toEqual('abcde');
+    });
+
+    // You can also use this docker image: twostoryrobot/simple-file-upload to test e2e blob upload.
+    it('Supports sending a file using blob with formdata', async () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+
+      const formData = new FormData();
+      const blob = src.blob();
+
+      formData.append('data', blob);
+
+      const response = await fetch('https://httpbin.org/anything', {
+        method: 'POST',
+        body: formData,
+      });
+      const body = await response.json();
+      expect(body.files.data).toEqual('abcde');
     });
   });
 

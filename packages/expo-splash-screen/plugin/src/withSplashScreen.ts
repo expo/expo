@@ -20,30 +20,39 @@ type PluginConfig = {
   ios?: IOSSplashConfig;
 };
 
-const withSplashScreen: ConfigPlugin<PluginConfig> = (config, props) => {
+const withSplashScreen: ConfigPlugin<PluginConfig | null> = (config, props) => {
+  if (!props) {
+    config = withAndroidSplashScreen(config, null);
+    config = withIosSplashScreen(config, null);
+    return config;
+  }
+
   const resizeMode = props?.resizeMode || 'contain';
+
+  const { ios: iosProps, android: androidProps, ...otherProps } = props;
+
   const android: AndroidSplashConfig = {
-    ...props,
-    ...props?.android,
-    resizeMode,
+    ...otherProps,
+    ...androidProps,
+    resizeMode: androidProps?.resizeMode || resizeMode,
     dark: {
-      ...props?.android?.dark,
-      ...props?.dark,
+      ...otherProps?.dark,
+      ...androidProps?.dark,
     },
   };
   const ios: IOSSplashConfig = {
-    ...props,
-    ...props?.ios,
-    resizeMode: resizeMode === 'native' ? 'contain' : resizeMode,
+    ...otherProps,
+    ...iosProps,
+    resizeMode: iosProps?.resizeMode || (resizeMode === 'native' ? 'contain' : resizeMode),
     dark: {
-      ...props?.ios?.dark,
-      ...props?.dark,
+      ...otherProps?.dark,
+      ...iosProps?.dark,
     },
   };
 
   // Need to pass null here if we don't receive any props. This means that the plugin has not been used.
   // This only happens on Android. On iOS, if you don't use the plugin, this function won't be called.
-  config = withAndroidSplashScreen(config, props ? android : null);
+  config = withAndroidSplashScreen(config, android);
   config = withIosSplashScreen(config, ios);
   return config;
 };

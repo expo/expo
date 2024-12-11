@@ -15,6 +15,7 @@ import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { exportEagerAsync } from '../../export/embed/exportEager';
+import { simctlAsync } from '../../start/platforms/ios/simctl';
 
 const debug = require('debug')('expo:run:ios');
 
@@ -68,6 +69,16 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const launchInfo = await getLaunchInfoForBinaryAsync(binaryPath);
   const isCustomBinary = !!options.binary;
+
+  // Always close the app before launching on a simulator. Otherwise certain cached resources like the splashscreen will not be available.
+  if (props.isSimulator) {
+    try {
+      await simctlAsync(['terminate', props.device.udid, launchInfo.bundleId]);
+    } catch (error) {
+      // If we failed it's likely that the app was not running to begin with and we will get an `invalid device` error
+      debug('Failed to terminate app (possibly because it was not running):', error);
+    }
+  }
 
   // Start the dev server which creates all of the required info for
   // launching the app on a simulator.

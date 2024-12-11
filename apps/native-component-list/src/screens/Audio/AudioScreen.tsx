@@ -19,6 +19,14 @@ export const AudioScreens = [
     },
   },
   {
+    name: 'Expo Audio createAudioPlayer',
+    route: 'audio/expo-audio-createAudioPlayer',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./expo-audio/CreateAudioPlayerScreen'));
+    },
+  },
+  {
     name: 'Expo AV Player',
     route: 'audio/expo-av',
     options: {},

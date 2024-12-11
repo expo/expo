@@ -10,7 +10,6 @@ import { Log } from './utils/log';
 import { logNewSection } from './utils/ora';
 import { endTimer, formatMilliseconds, startTimer } from './utils/timer';
 import { ltSdkVersion } from './utils/versions';
-import { warnUponCmdExe } from './warnings/windows';
 
 interface DoctorCheckRunnerJob {
   check: DoctorCheck;
@@ -114,8 +113,6 @@ export async function runChecksAsync(
 }
 
 export async function actionAsync(projectRoot: string) {
-  await warnUponCmdExe();
-
   try {
     const projectConfig = getConfig(projectRoot);
 

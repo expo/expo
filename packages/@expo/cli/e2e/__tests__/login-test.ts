@@ -1,8 +1,8 @@
 /* eslint-env jest */
-import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 
-import { execute, getLoadedModulesAsync, projectRoot } from './utils';
+import { getLoadedModulesAsync, projectRoot } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -27,7 +27,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo login --help`', async () => {
-  const results = await execute('login', '--help');
+  const results = await executeExpoAsync(projectRoot, ['login', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -47,32 +47,24 @@ it('runs `npx expo login --help`', async () => {
 });
 
 it('throws on invalid project root', async () => {
-  expect.assertions(1);
-  try {
-    await execute('very---invalid', 'login');
-  } catch (e) {
-    const error = e as ExecaError;
-    expect(error.stderr).toMatch(/Invalid project root: \//);
-  }
+  await expect(
+    executeExpoAsync(projectRoot, ['very---invalid', 'login'], { verbose: false })
+  ).rejects.toThrow(/^Invalid project root: .*very---invalid$/m);
 });
 
 it('runs `npx expo login` and throws due to CI', async () => {
-  expect.assertions(2);
-  try {
-    console.log(await execute('login'));
-  } catch (e) {
-    const error = e as ExecaError;
-    expect(error.stderr).toMatch(/Input is required/);
-    expect(error.stderr).toMatch(/Use the EXPO_TOKEN environment variable to authenticate in CI/);
-  }
+  await expect(executeExpoAsync(projectRoot, ['login'], { verbose: false })).rejects.toThrow(
+    /Input is required/
+  );
+  await expect(executeExpoAsync(projectRoot, ['login'], { verbose: false })).rejects.toThrow(
+    /Use the EXPO_TOKEN environment variable to authenticate in CI/
+  );
 });
 
 it('runs `npx expo login` and throws due to invalid credentials', async () => {
-  expect.assertions(1);
-  try {
-    console.log(await execute('login', '--username', 'bacon', '--password', 'invalid'));
-  } catch (e) {
-    const error = e as ExecaError;
-    expect(error.stderr).toMatch(/Your username, email, or password was incorrect/);
-  }
+  await expect(
+    executeExpoAsync(projectRoot, ['login', '--username=bacon', '--password=invalid'], {
+      verbose: false,
+    })
+  ).rejects.toThrow(/Your username, email, or password was incorrect/);
 });

@@ -14,6 +14,7 @@ jest.mock('../../user/UserSettings', () => ({
   getSession: jest.fn(),
 }));
 jest.mock('../../../utils/fetch', () => ({
+  ...jest.requireActual('../../../utils/fetch'),
   fetch: jest.fn(jest.requireActual('../../../utils/fetch').fetch),
 }));
 

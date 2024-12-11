@@ -4,6 +4,10 @@ import * as AudioModule from './AudioModule.web';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
+export function createAudioPlayer(source = null, updateInterval = 500) {
+    const parsedSource = resolveSource(source);
+    return new AudioModule.AudioPlayerWeb(parsedSource, updateInterval);
+}
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);
     const player = useMemo(() => new AudioModule.AudioPlayerWeb(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);

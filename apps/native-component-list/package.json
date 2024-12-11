@@ -32,10 +32,10 @@
     }
   },
   "dependencies": {
-    "@dotlottie/react-player": "^1.6.19",
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo/react-native-action-sheet": "^3.8.0",
     "@expo/styleguide-base": "^1.0.1",
+    "@lottiefiles/dotlottie-react": "^0.10.1",
     "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.2.0",
@@ -148,7 +148,7 @@
     "react-native-svg": "15.8.0",
     "react-native-view-shot": "4.0.2",
     "react-native-web": "~0.19.13",
-    "react-native-webview": "13.12.2",
+    "react-native-webview": "13.12.5",
     "regl": "^1.3.0",
     "three": "^0.137.4",
     "url": "^0.11.0",

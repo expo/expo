@@ -169,6 +169,13 @@ async function generateImagesAssetsAsync({
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }
 
+const lightAppearances: ContentsJsonAppearance[] = [
+  {
+    appearance: 'luminosity',
+    value: 'light',
+  } as ContentsJsonAppearance,
+];
+
 const darkAppearances: ContentsJsonAppearance[] = [
   {
     appearance: 'luminosity',
@@ -191,16 +198,19 @@ export function buildContentsJsonImages({
     // Phone light
     createContentsJsonItem({
       idiom: 'universal',
+      appearances: lightAppearances,
       filename: `${image}.png`,
       scale: '1x',
     }),
     createContentsJsonItem({
       idiom: 'universal',
+      appearances: lightAppearances,
       filename: `${image}@2x.png`,
       scale: '2x',
     }),
     createContentsJsonItem({
       idiom: 'universal',
+      appearances: lightAppearances,
       filename: `${image}@3x.png`,
       scale: '3x',
     }),

@@ -20,7 +20,8 @@ export async function resolveDependencyConfigImplAndroidAsync(
     // Skip autolinking for this package.
     return null;
   }
-  const androidDir = path.join(packageRoot, 'android');
+  const sourceDir = reactNativeConfig?.sourceDir || 'android';
+  const androidDir = path.join(packageRoot, sourceDir);
   const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: true });
   if (!manifest && !gradle) {
     return null;

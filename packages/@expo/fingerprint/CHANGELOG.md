@@ -10,6 +10,15 @@
 
 ### 💡 Others
 
+- Remove extraneous arg from command help doc ([#33512](https://github.com/expo/expo/pull/33512) by [@wschurman](https://github.com/wschurman))
+
+## 0.11.3 - 2024-12-02
+
+### 🐛 Bug fixes
+
+- Fixed `USE_RNCORE_AUTOLINKING_FROM_EXPO does not exist and no fallback value provided.` error. ([#33323](https://github.com/expo/expo/pull/33323) by [@kudo](https://github.com/kudo))
+- Fixed a directory be entirely ignored even if there is negated pattern like `!**/dir/file`. ([#33324](https://github.com/expo/expo/pull/33324) by [@kudo](https://github.com/kudo))
+
 ## 0.11.2 — 2024-11-04
 
 ### 🎉 New features

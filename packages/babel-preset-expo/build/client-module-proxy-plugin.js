@@ -134,7 +134,8 @@ function reactClientReferencesPlugin(api) {
                         return;
                     }
                     // HACK: Mock out the polyfill that doesn't run through the normal bundler pipeline.
-                    if (filePath.endsWith('@react-native/js-polyfills/console.js')) {
+                    if (filePath.endsWith('@react-native/js-polyfills/console.js') ||
+                        filePath.endsWith('@react-native\\js-polyfills\\console.js')) {
                         // Clear the body
                         path.node.body = [];
                         path.node.directives = [];
