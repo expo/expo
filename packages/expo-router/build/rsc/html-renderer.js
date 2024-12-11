@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderHtml = void 0;
 // Support loading other modules in the Node runtime.
-require("./runtime");
+require("@expo/metro-runtime");
 const react_1 = require("react");
 const server_edge_1 = require("react-dom/server.edge");
 const client_edge_1 = require("react-server-dom-webpack/client.edge");

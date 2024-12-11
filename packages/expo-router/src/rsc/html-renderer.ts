@@ -1,7 +1,7 @@
 // SSR middleware:
 
 // Support loading other modules in the Node runtime.
-import './runtime';
+import '@expo/metro-runtime';
 
 import type {
   default as ReactType,

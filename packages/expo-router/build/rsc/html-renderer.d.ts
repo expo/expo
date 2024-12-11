@@ -1,4 +1,4 @@
-import './runtime';
+import '@expo/metro-runtime';
 type ResolveClientEntry = (id: string) => {
     id: string;
     chunks: string[];
