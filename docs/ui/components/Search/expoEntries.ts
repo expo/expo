@@ -6,10 +6,12 @@ import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { Smartphone01Icon } from '@expo/styleguide-icons/custom/Smartphone01Icon';
 import { Cube02Icon } from '@expo/styleguide-icons/outline/Cube02Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
+import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 import { Key01Icon } from '@expo/styleguide-icons/outline/Key01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
 import type { ComponentType, HTMLAttributes } from 'react';
 
@@ -86,13 +88,23 @@ export const entries: ExpoItemType[] = [
     Icon: CredentialIcon,
   },
   {
-    label: 'Project Secrets',
-    url: 'https://expo.dev/accounts/[account]/projects/[project]/secrets',
+    label: 'Project Environment Variables',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/environment-variables',
     Icon: Key01Icon,
   },
   {
     label: 'Project Settings',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/settings',
     Icon: Settings01Icon,
+  },
+  {
+    label: 'Project Workflows',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/workflows',
+    Icon: Dataflow01Icon,
+  },
+  {
+    label: 'Project Push Notifications',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/push-notifications',
+    Icon: NotificationBoxIcon,
   },
 ];
