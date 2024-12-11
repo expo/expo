@@ -167,7 +167,7 @@ export function test({ describe, expect, it, ...t }) {
       setTimeout(() => controller.abort(), 500);
       let error: Error | null = null;
       try {
-        const resp = await fetch('https://httpbin.org/drip?numbytes=512&duration=2', {
+        const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=2', {
           signal: controller.signal,
           headers: {
             Accept: 'text/event-stream',
