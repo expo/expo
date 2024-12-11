@@ -18,7 +18,8 @@ const val generatedFilesSrcDir = "generated/expo/src/main/java"
 
 open class ExpoAutolinkingPlugin : Plugin<Project> {
   override fun apply(project: Project) {
-    val gradleExtension = project.gradle.extensions.getByType(ExpoGradleExtension::class.java)
+    val gradleExtension = project.gradle.extensions.findByType(ExpoGradleExtension::class.java)
+      ?: throw IllegalStateException("`ExpoGradleExtension` not found. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
     val config = gradleExtension.config
 
     project.logger.quiet("")
@@ -36,7 +37,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     project.logger.quiet("")
 
     // Creates a task that generates a list of expo modules.
-    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.options)
+    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.options, gradleExtension.hash)
 
     // Ensures that the task is executed before the build.
     project.tasks
@@ -66,9 +67,9 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     return project.layout.buildDirectory.file(packageListRelativePath)
   }
 
-  fun createGeneratePackagesListTask(project: Project, options: AutolinkingOptions): TaskProvider<GeneratePackagesListTask> {
+  fun createGeneratePackagesListTask(project: Project, options: AutolinkingOptions, hash: String): TaskProvider<GeneratePackagesListTask> {
     return project.tasks.register("generatePackagesList", GeneratePackagesListTask::class.java) {
-      it.hash.set(project.extensions.getByType(ExpoGradleExtension::class.java).hash)
+      it.hash.set(hash)
       it.namespace.set(generatedPackageListNamespace)
       it.outputFile.set(getPackageListFile(project))
       it.workingDir = project.rootDir
