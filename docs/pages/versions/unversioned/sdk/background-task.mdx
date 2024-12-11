@@ -1,6 +1,7 @@
 ---
-title: BackgroundTask
-description: A universal library that provides an API for running background tasks.
+sidebar_title: BackgroundTask
+title: Background Task
+description: A library that provides an API for running background tasks.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-background-task'
 packageName: 'expo-background-task'
 platforms: ['android', 'ios']
@@ -10,14 +11,13 @@ isNew: true
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';
 
-`expo-background-task` provides an API to run deferrable background tasks in a way that optimises battery and power consumption for the end user. This module is using the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS and the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android to schedule tasks, and the [Expo TaskManager](task-manager.mdx) Native API for running JavaScript tasks.
+`expo-background-task` provides an API to run deferrable background tasks in a way that optimises battery and power consumption for the end user. This module uses the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS and the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android to schedule tasks. It also uses the [expo-task-manager](task-manager.mdx) Native API for running JavaScript tasks.
 
-## Background Tasks
+## Background tasks
 
-A background task is a deferrable unit of work that is performed in the background, outside the lifecycle of your app. This is useful for tasks that need to be executed when the app is not active, such as syncing data with a server, fetching new content, or even checking if there are any [Expo Updates](updates.mdx) pending.
+A background task is a deferrable unit of work that is performed in the background, outside the lifecycle of your app. This is useful for tasks that need to be executed when the app is not active, such as syncing data with a server, fetching new content, or even checking if there are any [Expo Updates](updates.mdx).
 
 ### When are background tasks run?
 
@@ -25,7 +25,7 @@ The Expo Background Task API leverages each platform to execute tasks at the mos
 
 This means that the task may not run immediately after it is scheduled, but it will run at some point in the future if the system decides so.
 
-A background task will only run if the battery has enough charge (or the device is plugged into power) and the network is available. Without these conditions, the task won't execute.
+A background task will only run if the battery has enough charge (or the device is plugged into power) and the network is available. Without these conditions, the task won't execute. The exact behavior will vary depending on the operating system.
 
 ### When will they stop?
 
@@ -47,7 +47,7 @@ On iOS, the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgr
 
 ### iOS&ensp;<PlatformTags platforms={['ios']} />
 
-The [`Background Tasks`](https://developer.apple.com/documentation/backgroundtasks) API on iOS is only available when running on a device.
+The [`Background Tasks`](https://developer.apple.com/documentation/backgroundtasks) API on iOS is not available on simulators, it is only available when running on a physical device.
 
 ## Installation
 
@@ -61,9 +61,9 @@ To be able to run background tasks on iOS, you need to add the `processing` valu
 
 <Collapsible summary="Configure UIBackgroundModes manually on iOS">
 
-If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native iOS project, then you'll need to add the following to your **Expo.plist** file:
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)), then you'll need to add the following to your **Info.plist** file:
 
-```xml ios/project-name/Supporting/Expo.plist
+```xml ios/project-name/Supporting/Info.plist
 <key>UIBackgroundModes</key>
   <array>
     <string>processing</string>
@@ -77,9 +77,7 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 Below is an example that demonstrates how to use `expo-background-task`.
 
-<SnackInline label="Background Task Usage" dependencies={['expo-background-task', 'expo-task-manager']}>
-
-```tsx
+```tsx App.tsx
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import { useEffect, useState } from 'react';
@@ -87,9 +85,9 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 
 const BACKGROUND_TASK_IDENTIFIER = 'background-task';
 
-// Register / create the task so that it is available also when the background task screen
-// is not visible. Remember that this needs to be called in the global scope,
-// not in a React component (like in this example)
+// Register and create the task so that it is available also when the background task screen
+// (a React component defined later in this example) is not visible.
+// Note: This needs to be called in the global scope, not in a React component.
 TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
   try {
     const now = Date.now();
@@ -171,23 +169,9 @@ const styles = StyleSheet.create({
 });
 ```
 
-</SnackInline>
-
 ## Testing background tasks
 
-Background tasks can be difficult to test because they can happen inconsistently. Fortunately, Expo BackgroundTask contains some tools that help make testing background tasks easier.
-
-Expo BackgroundTask has a convenient helper on iOS that triggers executing the background task worker. This will only work in `debug` mode:
-
-```ts
-import * as BackgroundTask from 'expo-background-task';
-
-export const triggerBackgroundTask = async () => {
-  await BackgroundTask.triggerTaskWorkerForTestingAsync();
-};
-```
-
-> Make sure the task is defined and registered in your app for it to work.
+Background tasks can be difficult to test because they can be triggered inconsistently by the system. Fortunately, Expo Background Task contains some tools that help make testing background tasks easier.
 
 ### Android&ensp;<PlatformTags platforms={['android']} />
 
@@ -199,9 +183,19 @@ On Android, the easiest way to test background tasks is to register a task. When
 
 On iOS, testing background tasks is done by [simulating](https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development#Launch-a-Task) the launch of the task. This can be done by calling the `triggerTaskWorkerForTestingAsync` method in JavaScript.
 
+Expo Background Task has a convenient helper on iOS that triggers executing the background task worker. This will only work in `debug` mode:
+
+```ts
+import * as BackgroundTask from 'expo-background-task';
+
+export const triggerBackgroundTask = async () => {
+  await BackgroundTask.triggerTaskWorkerForTestingAsync();
+};
+```
+
 ## Multiple background tasks
 
-Since the Background Tasks API on iOS and the WorkManager API on Android limit the number of tasks that can be scheduled for a single app, Expo BackgroundTask uses a single worker on both platforms. While you can define multiple JavaScript background tasks, they will all run through this single worker.
+Since the Background Tasks API on iOS and the WorkManager API on Android limit the number of tasks that can be scheduled for a single app, Expo Background Task uses a single worker on both platforms. While you can define multiple JavaScript background tasks, they will all run through this single worker.
 
 On Android, the first registered background task determines the minimum interval for execution.
 
