@@ -18,6 +18,10 @@ export async function getExpoConfigSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
+  if (options.sourceSkips & SourceSkips.ExpoConfigAll) {
+    return [];
+  }
+
   if (!resolveFrom.silent(path.resolve(projectRoot), 'expo/config')) {
     return [];
   }
