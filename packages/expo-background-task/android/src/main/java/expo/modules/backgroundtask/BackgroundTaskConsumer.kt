@@ -84,10 +84,8 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
       val ourTasks = tasks.filter { it.getString("taskType") == BACKGROUND_TASK_TYPE }
       if (ourTasks.isEmpty()) {
         Log.i(TAG, "didUnregister: ${task?.name} - stopping worker, no more $BACKGROUND_TASK_TYPE tasks running.")
-        taskCoroutineScope.launch {
-          // We should just stop the worker
-          BackgroundTaskScheduler.stopWorker(context)
-        }
+        // We should just stop the worker
+        BackgroundTaskScheduler.stopWorker(context)
       } else {
         Log.i(TAG, "didRegister: Leaving worker running.")
       }
