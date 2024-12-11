@@ -12,7 +12,7 @@ import org.gradle.internal.authentication.DefaultDigestAuthentication
 import org.gradle.internal.authentication.DefaultHttpHeaderAuthentication
 
 internal fun MavenArtifactRepository.applyAuthentication(authenticationType: String?) {
-  if (authentication == null) {
+  if (authenticationType == null) {
     return
   }
 
