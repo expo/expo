@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add an option to configure `appGroup` for shared keychain access. ([#33622](https://github.com/expo/expo/pull/33622) by [@nathan-ahn](https://github.com/nathan-ahn))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
