@@ -213,11 +213,22 @@ Promise.resolve(new Response(new ReadableStream({
   .map((line) => line.trim())
   .join('');
 
+/**
+ * Injects a script into the HTML stream.
+ * @param urlForFakeFetch - The URL for the fake fetch.
+ * @param mainJsPath - The path to the main JavaScript file (for DEV only, pass `''` for PRD).
+ * @returns A TransformStream that injects the script into the HTML stream.
+ */
 const injectScript = (
   urlForFakeFetch: string,
   mainJsPath: string // for DEV only, pass `''` for PRD
-) => {
-  const modifyHead = (data: string) => {
+): TransformStream<Uint8Array, Uint8Array> => {
+  /**
+   * Modifies the head of the HTML to include the prefetch script.
+   * @param data - The HTML data.
+   * @returns The modified HTML data.
+   */
+  const modifyHead = (data: string): string => {
     const matchPrefetched = data.match(
       // HACK This is very brittle
       /(.*<script[^>]*>\nglobalThis\.__EXPO_PREFETCHED__ = {\n)(.*?)(\n};.*)/s
@@ -245,11 +256,13 @@ const injectScript = (
     }
     return data;
   };
+
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
   let headSent = false;
   let data = '';
-  return new TransformStream({
+
+  return new TransformStream<Uint8Array, Uint8Array>({
     transform(chunk, controller) {
       if (!(chunk instanceof Uint8Array)) {
         throw new Error('Unknown chunk type');
