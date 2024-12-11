@@ -169,8 +169,7 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
   "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
   "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
-  "ios/basicprebuild/AppDelegate.h",
-  "ios/basicprebuild/AppDelegate.mm",
+  "ios/basicprebuild/AppDelegate.swift",
   "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
   "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
   "ios/basicprebuild/Images.xcassets/Contents.json",
@@ -180,7 +179,6 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "ios/basicprebuild/Supporting/Expo.plist",
   "ios/basicprebuild/basicprebuild-Bridging-Header.h",
   "ios/basicprebuild/basicprebuild.entitlements",
-  "ios/basicprebuild/main.m",
   "metro.config.js",
   "package.json",
 ]
