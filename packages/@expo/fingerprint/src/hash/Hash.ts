@@ -5,6 +5,7 @@ import pLimit from 'p-limit';
 import path from 'path';
 import { pipeline, type Readable } from 'stream';
 
+import { FileHookTransform } from './FileHookTransform';
 import { ReactImportsPatchTransform } from './ReactImportsPatcher';
 import type {
   DebugInfoDir,
@@ -64,6 +65,16 @@ export async function createFingerprintSourceAsync(
   let result: HashResult | null = null;
   switch (source.type) {
     case 'contents':
+      if (typeof options.fileHookTransform === 'function') {
+        source.contents = options.fileHookTransform(
+          {
+            type: 'contents',
+            id: source.id,
+          },
+          source.contents,
+          'utf8'
+        );
+      }
       result = await createContentsHashResultsAsync(source, options);
       break;
     case 'file':
@@ -135,6 +146,20 @@ export async function createFileHashResultsAsync(
         (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))
       ) {
         const transform = new ReactImportsPatchTransform();
+        stream = pipeline(stream, transform, (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+      }
+      if (typeof options.fileHookTransform === 'function') {
+        const transform = new FileHookTransform(
+          {
+            type: 'file',
+            filePath,
+          },
+          options.fileHookTransform
+        );
         stream = pipeline(stream, transform, (err) => {
           if (err) {
             reject(err);

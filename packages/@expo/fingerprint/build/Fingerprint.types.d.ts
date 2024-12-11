@@ -115,13 +115,31 @@ export interface Options {
      * Whether to include verbose debug info in source output. Useful for debugging.
      */
     debug?: boolean;
+    /**
+     * A custom hook function to transform file content sources before hashing.
+     */
+    fileHookTransform?: FileHookTransformFunction;
 }
 type SourceSkipsKeys = keyof typeof SourceSkips;
 /**
  * Supported options from fingerprint.config.js
  */
-export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'ignorePaths' | 'extraSources' | 'enableReactImportsPatcher' | 'useRNCoreAutolinkingFromExpo' | 'debug'> & {
+export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'ignorePaths' | 'extraSources' | 'enableReactImportsPatcher' | 'useRNCoreAutolinkingFromExpo' | 'debug' | 'fileHookTransform'> & {
     sourceSkips?: SourceSkips | SourceSkipsKeys[];
+};
+/**
+ * Hook function to transform file content sources before hashing.
+ */
+export type FileHookTransformFunction = (source: FileHookTransformSource, chunk: Buffer | string, encoding: BufferEncoding) => Buffer | string;
+/**
+ * The `source` parameter for `FileHookTransformFunction`.
+ */
+export type FileHookTransformSource = {
+    type: 'file';
+    filePath: string;
+} | {
+    type: 'contents';
+    id: string;
 };
 export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
     platforms: NonNullable<Options['platforms']>;

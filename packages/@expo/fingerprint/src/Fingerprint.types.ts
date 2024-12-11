@@ -134,6 +134,11 @@ export interface Options {
    * Whether to include verbose debug info in source output. Useful for debugging.
    */
   debug?: boolean;
+
+  /**
+   * A custom hook function to transform file content sources before hashing.
+   */
+  fileHookTransform?: FileHookTransformFunction;
 }
 
 type SourceSkipsKeys = keyof typeof SourceSkips;
@@ -150,9 +155,32 @@ export type Config = Pick<
   | 'enableReactImportsPatcher'
   | 'useRNCoreAutolinkingFromExpo'
   | 'debug'
+  | 'fileHookTransform'
 > & {
   sourceSkips?: SourceSkips | SourceSkipsKeys[];
 };
+
+/**
+ * Hook function to transform file content sources before hashing.
+ */
+export type FileHookTransformFunction = (
+  source: FileHookTransformSource,
+  chunk: Buffer | string,
+  encoding: BufferEncoding
+) => Buffer | string;
+
+/**
+ * The `source` parameter for `FileHookTransformFunction`.
+ */
+export type FileHookTransformSource =
+  | {
+      type: 'file';
+      filePath: string;
+    }
+  | {
+      type: 'contents';
+      id: string;
+    };
 
 //#region internal types
 

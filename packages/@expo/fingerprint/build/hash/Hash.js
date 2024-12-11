@@ -10,6 +10,7 @@ const promises_1 = __importDefault(require("fs/promises"));
 const p_limit_1 = __importDefault(require("p-limit"));
 const path_1 = __importDefault(require("path"));
 const stream_1 = require("stream");
+const FileHookTransform_1 = require("./FileHookTransform");
 const ReactImportsPatcher_1 = require("./ReactImportsPatcher");
 const Path_1 = require("../utils/Path");
 const Predicates_1 = require("../utils/Predicates");
@@ -42,6 +43,12 @@ async function createFingerprintSourceAsync(source, limiter, projectRoot, option
     let result = null;
     switch (source.type) {
         case 'contents':
+            if (typeof options.fileHookTransform === 'function') {
+                source.contents = options.fileHookTransform({
+                    type: 'contents',
+                    id: source.id,
+                }, source.contents, 'utf8');
+            }
             result = await createContentsHashResultsAsync(source, options);
             break;
         case 'file':
@@ -99,6 +106,17 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
                 options.platforms.includes('ios') &&
                 (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))) {
                 const transform = new ReactImportsPatcher_1.ReactImportsPatchTransform();
+                stream = (0, stream_1.pipeline)(stream, transform, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                });
+            }
+            if (typeof options.fileHookTransform === 'function') {
+                const transform = new FileHookTransform_1.FileHookTransform({
+                    type: 'file',
+                    filePath,
+                }, options.fileHookTransform);
                 stream = (0, stream_1.pipeline)(stream, transform, (err) => {
                     if (err) {
                         reject(err);
