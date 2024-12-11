@@ -330,51 +330,55 @@ for more details.
       <div
         class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
-        <h3
-          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-          data-heading="true"
+        <div
+          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
         >
-          <a
-            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-            href="#buttonstyle"
-            id="buttonstyle"
+          <h3
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+            data-heading="true"
           >
-            <span
-              class="inline"
+            <a
+              class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+              href="#buttonstyle"
+              id="buttonstyle"
             >
-              <code
-                class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
-                data-text="true"
+              <span
+                class="inline"
               >
-                buttonStyle
-              </code>
-            </span>
-            <svg
-              aria-label="permalink"
-              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </a>
-        </h3>
+                <code
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  data-text="true"
+                >
+                  buttonStyle
+                </code>
+              </span>
+              <svg
+                aria-label="permalink"
+                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </a>
+          </h3>
+        </div>
         <div
           class="text-[14px] font-medium text-secondary mb-3.5"
         >
@@ -402,51 +406,55 @@ for more details.
       <div
         class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
-        <h3
-          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-          data-heading="true"
+        <div
+          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
         >
-          <a
-            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-            href="#buttontype"
-            id="buttontype"
+          <h3
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+            data-heading="true"
           >
-            <span
-              class="inline"
+            <a
+              class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+              href="#buttontype"
+              id="buttontype"
             >
-              <code
-                class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
-                data-text="true"
+              <span
+                class="inline"
               >
-                buttonType
-              </code>
-            </span>
-            <svg
-              aria-label="permalink"
-              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </a>
-        </h3>
+                <code
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  data-text="true"
+                >
+                  buttonType
+                </code>
+              </span>
+              <svg
+                aria-label="permalink"
+                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </a>
+          </h3>
+        </div>
         <div
           class="text-[14px] font-medium text-secondary mb-3.5"
         >
@@ -474,51 +482,55 @@ for more details.
       <div
         class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
-        <h3
-          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-          data-heading="true"
+        <div
+          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
         >
-          <a
-            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-            href="#cornerradius"
-            id="cornerradius"
+          <h3
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+            data-heading="true"
           >
-            <span
-              class="inline"
+            <a
+              class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+              href="#cornerradius"
+              id="cornerradius"
             >
-              <code
-                class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
-                data-text="true"
+              <span
+                class="inline"
               >
-                cornerRadius
-              </code>
-            </span>
-            <svg
-              aria-label="permalink"
-              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </a>
-        </h3>
+                <code
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  data-text="true"
+                >
+                  cornerRadius
+                </code>
+              </span>
+              <svg
+                aria-label="permalink"
+                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </a>
+          </h3>
+        </div>
         <div
           class="text-[14px] font-medium text-secondary mb-3.5"
         >
@@ -550,51 +562,55 @@ for more details.
       <div
         class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
-        <h3
-          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-          data-heading="true"
+        <div
+          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
         >
-          <a
-            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-            href="#onpress"
-            id="onpress"
+          <h3
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+            data-heading="true"
           >
-            <span
-              class="inline"
+            <a
+              class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+              href="#onpress"
+              id="onpress"
             >
-              <code
-                class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
-                data-text="true"
+              <span
+                class="inline"
               >
-                onPress
-              </code>
-            </span>
-            <svg
-              aria-label="permalink"
-              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </a>
-        </h3>
+                <code
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  data-text="true"
+                >
+                  onPress
+                </code>
+              </span>
+              <svg
+                aria-label="permalink"
+                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </a>
+          </h3>
+        </div>
         <div
           class="text-[14px] font-medium text-secondary mb-3.5"
         >
@@ -641,51 +657,55 @@ in here.
       <div
         class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
-        <h3
-          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-          data-heading="true"
+        <div
+          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
         >
-          <a
-            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-            href="#style"
-            id="style"
+          <h3
+            class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+            data-heading="true"
           >
-            <span
-              class="inline"
+            <a
+              class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+              href="#style"
+              id="style"
             >
-              <code
-                class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
-                data-text="true"
+              <span
+                class="inline"
               >
-                style
-              </code>
-            </span>
-            <svg
-              aria-label="permalink"
-              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </a>
-        </h3>
+                <code
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  data-text="true"
+                >
+                  style
+                </code>
+              </span>
+              <svg
+                aria-label="permalink"
+                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </a>
+          </h3>
+        </div>
         <div
           class="text-[14px] font-medium text-secondary mb-3.5"
         >
@@ -886,51 +906,55 @@ properties.
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#formatfullnamefullname-formatstyle"
-        id="formatfullnamefullname-formatstyle"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#formatfullnamefullname-formatstyle"
+          id="formatfullnamefullname-formatstyle"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            formatFullName(fullName, formatStyle)
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              formatFullName(fullName, formatStyle)
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
     >
@@ -1113,51 +1137,55 @@ properties.
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#getcredentialstateasyncuser"
-        id="getcredentialstateasyncuser"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#getcredentialstateasyncuser"
+          id="getcredentialstateasyncuser"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            getCredentialStateAsync(user)
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              getCredentialStateAsync(user)
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
     >
@@ -1389,51 +1417,55 @@ value depending on the state of the credential.
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#isavailableasync"
-        id="isavailableasync"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#isavailableasync"
+          id="isavailableasync"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            isAvailableAsync()
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              isAvailableAsync()
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -1532,51 +1564,55 @@ value depending on the state of the credential.
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#refreshasyncoptions"
-        id="refreshasyncoptions"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#refreshasyncoptions"
+          id="refreshasyncoptions"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            refreshAsync(options)
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              refreshAsync(options)
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
     >
@@ -1773,51 +1809,55 @@ refresh operation.
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#signinasyncoptions"
-        id="signinasyncoptions"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#signinasyncoptions"
+          id="signinasyncoptions"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            signInAsync(options)
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              signInAsync(options)
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
     >
@@ -2061,51 +2101,55 @@ sign-in operation.
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#signoutasyncoptions"
-        id="signoutasyncoptions"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#signoutasyncoptions"
+          id="signoutasyncoptions"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            signOutAsync(options)
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              signOutAsync(options)
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
     >
@@ -2376,51 +2420,55 @@ sign-out operation.
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#addrevokelistenerlistener"
-        id="addrevokelistenerlistener"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#addrevokelistenerlistener"
+          id="addrevokelistenerlistener"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            addRevokeListener(listener)
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              addRevokeListener(listener)
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
     >
@@ -2568,51 +2616,55 @@ sign-out operation.
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
-        href="#appleauthenticationcredential"
-        id="appleauthenticationcredential"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
+          href="#appleauthenticationcredential"
+          id="appleauthenticationcredential"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium"
-            data-text="true"
+          <span
+            class="inline"
           >
-            AppleAuthenticationCredential
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium"
+              data-text="true"
+            >
+              AppleAuthenticationCredential
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -3113,51 +3165,55 @@ developers.
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
-        href="#appleauthenticationfullname"
-        id="appleauthenticationfullname"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
+          href="#appleauthenticationfullname"
+          id="appleauthenticationfullname"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium"
-            data-text="true"
+          <span
+            class="inline"
           >
-            AppleAuthenticationFullName
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium"
+              data-text="true"
+            >
+              AppleAuthenticationFullName
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -3467,51 +3523,55 @@ may be
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#appleauthenticationfullnameformatstyle"
-        id="appleauthenticationfullnameformatstyle"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#appleauthenticationfullnameformatstyle"
+          id="appleauthenticationfullnameformatstyle"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            AppleAuthenticationFullNameFormatStyle
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              AppleAuthenticationFullNameFormatStyle
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
       data-text="true"
@@ -3634,51 +3694,55 @@ for more details.
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
-        href="#appleauthenticationrefreshoptions"
-        id="appleauthenticationrefreshoptions"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
+          href="#appleauthenticationrefreshoptions"
+          id="appleauthenticationrefreshoptions"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium"
-            data-text="true"
+          <span
+            class="inline"
           >
-            AppleAuthenticationRefreshOptions
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium"
+              data-text="true"
+            >
+              AppleAuthenticationRefreshOptions
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -3944,51 +4008,55 @@ OAuth 2.0 protocol
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
-        href="#appleauthenticationsigninoptions"
-        id="appleauthenticationsigninoptions"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
+          href="#appleauthenticationsigninoptions"
+          id="appleauthenticationsigninoptions"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium"
-            data-text="true"
+          <span
+            class="inline"
           >
-            AppleAuthenticationSignInOptions
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium"
+              data-text="true"
+            >
+              AppleAuthenticationSignInOptions
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -4271,51 +4339,55 @@ OAuth 2.0 protocol
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
-        href="#appleauthenticationsignoutoptions"
-        id="appleauthenticationsignoutoptions"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
+          href="#appleauthenticationsignoutoptions"
+          id="appleauthenticationsignoutoptions"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium"
-            data-text="true"
+          <span
+            class="inline"
           >
-            AppleAuthenticationSignOutOptions
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium"
+              data-text="true"
+            >
+              AppleAuthenticationSignOutOptions
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -4510,51 +4582,55 @@ OAuth 2.0 protocol
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
-        href="#subscription"
-        id="subscription"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
+          href="#subscription"
+          id="subscription"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium"
-            data-text="true"
+          <span
+            class="inline"
           >
-            Subscription
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium"
+              data-text="true"
+            >
+              Subscription
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -4687,51 +4763,55 @@ After calling this function, the listener will no longer receive any events from
     <div
       class="px-5 pt-4"
     >
-      <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-        data-heading="true"
+      <div
+        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
       >
-        <a
-          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-          href="#appleauthenticationbuttonstyle"
-          id="appleauthenticationbuttonstyle"
+        <h3
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+          data-heading="true"
         >
-          <span
-            class="inline"
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+            href="#appleauthenticationbuttonstyle"
+            id="appleauthenticationbuttonstyle"
           >
-            <code
-              class="leading-[1.6154] text-default font-medium wrap-anywhere"
-              data-text="true"
+            <span
+              class="inline"
             >
-              AppleAuthenticationButtonStyle
-            </code>
-          </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </a>
-      </h3>
+              <code
+                class="leading-[1.6154] text-default font-medium wrap-anywhere"
+                data-text="true"
+              >
+                AppleAuthenticationButtonStyle
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </h3>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -4751,7 +4831,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 !mb-0 !border-b-0"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
         data-text="true"
       >
         <span
@@ -4952,51 +5032,55 @@ After calling this function, the listener will no longer receive any events from
     <div
       class="px-5 pt-4"
     >
-      <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-        data-heading="true"
+      <div
+        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
       >
-        <a
-          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-          href="#appleauthenticationbuttontype"
-          id="appleauthenticationbuttontype"
+        <h3
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+          data-heading="true"
         >
-          <span
-            class="inline"
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+            href="#appleauthenticationbuttontype"
+            id="appleauthenticationbuttontype"
           >
-            <code
-              class="leading-[1.6154] text-default font-medium wrap-anywhere"
-              data-text="true"
+            <span
+              class="inline"
             >
-              AppleAuthenticationButtonType
-            </code>
-          </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </a>
-      </h3>
+              <code
+                class="leading-[1.6154] text-default font-medium wrap-anywhere"
+                data-text="true"
+              >
+                AppleAuthenticationButtonType
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </h3>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -5016,7 +5100,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 !mb-0 !border-b-0"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
         data-text="true"
       >
         <span
@@ -5198,7 +5282,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <div
-        class="mb-3.5 flex flex-row items-center"
+        class="mb-3.5 flex flex-row items-start"
       >
         <span
           class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -5212,7 +5296,7 @@ After calling this function, the listener will no longer receive any events from
              
           </span>
           <div
-            class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-[7px] py-0.5 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+            class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
           >
             <svg
               class="translate-z icon-xs mt-[-0.5px] text-palette-blue12 opacity-80"
@@ -5259,51 +5343,55 @@ After calling this function, the listener will no longer receive any events from
     <div
       class="px-5 pt-4"
     >
-      <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-        data-heading="true"
+      <div
+        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
       >
-        <a
-          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-          href="#appleauthenticationcredentialstate"
-          id="appleauthenticationcredentialstate"
+        <h3
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+          data-heading="true"
         >
-          <span
-            class="inline"
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+            href="#appleauthenticationcredentialstate"
+            id="appleauthenticationcredentialstate"
           >
-            <code
-              class="leading-[1.6154] text-default font-medium wrap-anywhere"
-              data-text="true"
+            <span
+              class="inline"
             >
-              AppleAuthenticationCredentialState
-            </code>
-          </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </a>
-      </h3>
+              <code
+                class="leading-[1.6154] text-default font-medium wrap-anywhere"
+                data-text="true"
+              >
+                AppleAuthenticationCredentialState
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </h3>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -5376,7 +5464,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 !mb-0 !border-b-0"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
         data-text="true"
       >
         <span
@@ -5614,53 +5702,57 @@ for more details.
     <div
       class="px-5 pt-4"
     >
-      <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-        data-heading="true"
+      <div
+        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
       >
-        <a
-          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-          href="#appleauthenticationoperation"
-          id="appleauthenticationoperation"
+        <h3
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+          data-heading="true"
         >
-          <span
-            class="inline"
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+            href="#appleauthenticationoperation"
+            id="appleauthenticationoperation"
           >
-            <code
-              class="leading-[1.6154] text-default font-medium wrap-anywhere"
-              data-text="true"
+            <span
+              class="inline"
             >
-              AppleAuthenticationOperation
-            </code>
-          </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </a>
-      </h3>
+              <code
+                class="leading-[1.6154] text-default font-medium wrap-anywhere"
+                data-text="true"
+              >
+                AppleAuthenticationOperation
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </h3>
+      </div>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 !mb-0 !border-b-0"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
         data-text="true"
       >
         <span
@@ -5904,51 +5996,55 @@ for more details.
     <div
       class="px-5 pt-4"
     >
-      <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-        data-heading="true"
+      <div
+        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
       >
-        <a
-          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-          href="#appleauthenticationscope"
-          id="appleauthenticationscope"
+        <h3
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+          data-heading="true"
         >
-          <span
-            class="inline"
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+            href="#appleauthenticationscope"
+            id="appleauthenticationscope"
           >
-            <code
-              class="leading-[1.6154] text-default font-medium wrap-anywhere"
-              data-text="true"
+            <span
+              class="inline"
             >
-              AppleAuthenticationScope
-            </code>
-          </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </a>
-      </h3>
+              <code
+                class="leading-[1.6154] text-default font-medium wrap-anywhere"
+                data-text="true"
+              >
+                AppleAuthenticationScope
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </h3>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -6064,7 +6160,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 !mb-0 !border-b-0"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
         data-text="true"
       >
         <span
@@ -6192,51 +6288,55 @@ for more details.
     <div
       class="px-5 pt-4"
     >
-      <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-        data-heading="true"
+      <div
+        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
       >
-        <a
-          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-          href="#appleauthenticationuserdetectionstatus"
-          id="appleauthenticationuserdetectionstatus"
+        <h3
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+          data-heading="true"
         >
-          <span
-            class="inline"
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+            href="#appleauthenticationuserdetectionstatus"
+            id="appleauthenticationuserdetectionstatus"
           >
-            <code
-              class="leading-[1.6154] text-default font-medium wrap-anywhere"
-              data-text="true"
+            <span
+              class="inline"
             >
-              AppleAuthenticationUserDetectionStatus
-            </code>
-          </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </a>
-      </h3>
+              <code
+                class="leading-[1.6154] text-default font-medium wrap-anywhere"
+                data-text="true"
+              >
+                AppleAuthenticationUserDetectionStatus
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </h3>
+      </div>
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
@@ -6297,7 +6397,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 !mb-0 !border-b-0"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
         data-text="true"
       >
         <span
@@ -6540,51 +6640,55 @@ exports[`APISection expo-pedometer 1`] = `
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#getpermissionsasync"
-        id="getpermissionsasync"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#getpermissionsasync"
+          id="getpermissionsasync"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            getPermissionsAsync()
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              getPermissionsAsync()
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -6664,84 +6768,88 @@ exports[`APISection expo-pedometer 1`] = `
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#getstepcountasyncstart-end"
-        id="getstepcountasyncstart-end"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
+      >
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#getstepcountasyncstart-end"
+          id="getstepcountasyncstart-end"
+        >
+          <span
+            class="inline"
+          >
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              getStepCountAsync(start, end)
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+      <div
+        class="mb-3.5 flex flex-row items-start"
       >
         <span
-          class="inline"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
+          data-text="true"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <div
+            class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
           >
-            getStepCountAsync(start, end)
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
-    <div
-      class="mb-3.5 flex flex-row items-center"
-    >
-      <span
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
-        data-text="true"
-      >
-        <div
-          class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-[7px] py-0.5 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
-        >
-          <svg
-            class="translate-z icon-xs mt-[-0.5px] text-palette-blue12 opacity-80"
-            fill="none"
-            role="img"
-            viewBox="0 0 24 24"
-          >
-            <g
-              id="apple-custom-icon"
+            <svg
+              class="translate-z icon-xs mt-[-0.5px] text-palette-blue12 opacity-80"
+              fill="none"
+              role="img"
+              viewBox="0 0 24 24"
             >
-              <path
-                d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
-                fill="currentColor"
-                id="Vector"
-              />
-            </g>
-          </svg>
-          <span
-            class="text-2xs font-normal !leading-[16px] [table_&]:text-3xs"
-          >
-            iOS
-          </span>
-        </div>
-      </span>
+              <g
+                id="apple-custom-icon"
+              >
+                <path
+                  d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
+                  fill="currentColor"
+                  id="Vector"
+                />
+              </g>
+            </svg>
+            <span
+              class="text-2xs font-normal !leading-[16px] [table_&]:text-3xs"
+            >
+              iOS
+            </span>
+          </div>
+        </span>
+      </div>
     </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
@@ -7020,51 +7128,55 @@ a start date that is more than seven days in the past returns only the available
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#isavailableasync"
-        id="isavailableasync"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#isavailableasync"
+          id="isavailableasync"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            isAvailableAsync()
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              isAvailableAsync()
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -7157,51 +7269,55 @@ available on this device.
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#requestpermissionsasync"
-        id="requestpermissionsasync"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#requestpermissionsasync"
+          id="requestpermissionsasync"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            requestPermissionsAsync()
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              requestPermissionsAsync()
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -7281,51 +7397,55 @@ available on this device.
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#watchstepcountcallback"
-        id="watchstepcountcallback"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#watchstepcountcallback"
+          id="watchstepcountcallback"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            watchStepCount(callback)
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              watchStepCount(callback)
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
     >
@@ -7601,51 +7721,55 @@ On iOS, the
   <div
     class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#permissionresponse"
-        id="permissionresponse"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#permissionresponse"
+          id="permissionresponse"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            PermissionResponse
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              PermissionResponse
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -7889,51 +8013,55 @@ in order to enable/disable the permission.
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
-        href="#pedometerresult"
-        id="pedometerresult"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
+          href="#pedometerresult"
+          id="pedometerresult"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium"
-            data-text="true"
+          <span
+            class="inline"
           >
-            PedometerResult
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium"
+              data-text="true"
+            >
+              PedometerResult
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs"
     >
@@ -8005,52 +8133,56 @@ in order to enable/disable the permission.
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
-        href="#pedometerupdatecallback"
-        id="pedometerupdatecallback"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
+          href="#pedometerupdatecallback"
+          id="pedometerupdatecallback"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium"
-            data-text="true"
+          <span
+            class="inline"
           >
-            PedometerUpdateCallback
-            ()
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium"
+              data-text="true"
+            >
+              PedometerUpdateCallback
+              ()
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -8164,51 +8296,55 @@ in order to enable/disable the permission.
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#permissionexpiration"
-        id="permissionexpiration"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#permissionexpiration"
+          id="permissionexpiration"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            PermissionExpiration
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              PermissionExpiration
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
       data-text="true"
@@ -8252,51 +8388,55 @@ in order to enable/disable the permission.
   <div
     class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
-        href="#subscription"
-        id="subscription"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8 break-words wrap-anywhere"
+          href="#subscription"
+          id="subscription"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium"
-            data-text="true"
+          <span
+            class="inline"
           >
-            Subscription
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium"
+              data-text="true"
+            >
+              Subscription
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -8429,53 +8569,57 @@ After calling this function, the listener will no longer receive any events from
     <div
       class="px-5 pt-4"
     >
-      <h3
-        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-        data-heading="true"
+      <div
+        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
       >
-        <a
-          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-          href="#permissionstatus"
-          id="permissionstatus"
+        <h3
+          class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+          data-heading="true"
         >
-          <span
-            class="inline"
+          <a
+            class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+            href="#permissionstatus"
+            id="permissionstatus"
           >
-            <code
-              class="leading-[1.6154] text-default font-medium wrap-anywhere"
-              data-text="true"
+            <span
+              class="inline"
             >
-              PermissionStatus
-            </code>
-          </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </a>
-      </h3>
+              <code
+                class="leading-[1.6154] text-default font-medium wrap-anywhere"
+                data-text="true"
+              >
+                PermissionStatus
+              </code>
+            </span>
+            <svg
+              aria-label="permalink"
+              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </a>
+        </h3>
+      </div>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 !mb-0 !border-b-0"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
         data-text="true"
       >
         <span

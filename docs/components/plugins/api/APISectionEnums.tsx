@@ -32,14 +32,16 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
     <div key={`enum-definition-${name}`} className={mergeClasses(STYLES_APIBOX, '!p-0')}>
       <div className="px-5 pt-4">
         <APISectionDeprecationNote comment={comment} />
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
-            {name}
-          </MONOSPACE>
-        </H3Code>
-        <APISectionPlatformTags comment={comment} />
+        <div className="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0">
+          <H3Code tags={getTagNamesList(comment)}>
+            <MONOSPACE weight="medium" className="wrap-anywhere">
+              {name}
+            </MONOSPACE>
+          </H3Code>
+          <APISectionPlatformTags comment={comment} />
+        </div>
         <APICommentTextBlock comment={comment} includePlatforms={false} />
-        <BoxSectionHeader text={`${name} Values`} className="!mb-0 !border-b-0" />
+        <BoxSectionHeader text={`${name} Values`} className="mb-0 mt-2 border-b-0" />
       </div>
       {children.sort(sortByValue).map((enumValue: EnumValueData) => (
         <div className="border-t border-t-secondary p-5 pb-0 pt-4" key={enumValue.name}>

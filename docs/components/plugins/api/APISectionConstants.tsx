@@ -25,13 +25,15 @@ const renderConstant = (
     key={`constant-definition-${name}`}
     className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
     <APISectionDeprecationNote comment={comment} sticky />
-    <H3Code tags={getTagNamesList(comment)}>
-      <MONOSPACE weight="medium" className="wrap-anywhere">
-        {apiName ? `${apiName}.` : ''}
-        {name}
-      </MONOSPACE>
-    </H3Code>
-    <APISectionPlatformTags comment={comment} />
+    <div className="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1">
+      <H3Code tags={getTagNamesList(comment)}>
+        <MONOSPACE weight="medium" className="wrap-anywhere">
+          {apiName ? `${apiName}.` : ''}
+          {name}
+        </MONOSPACE>
+      </H3Code>
+      <APISectionPlatformTags comment={comment} />
+    </div>
     {type && (
       <P className={STYLES_SECONDARY}>
         Type: <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />

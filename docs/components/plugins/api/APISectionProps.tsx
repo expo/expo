@@ -16,7 +16,7 @@ import {
   extractDefaultPropValue,
   getCommentOrSignatureComment,
   getH3CodeWithBaseNestingLevel,
-  getTagNamesList,
+  getTagNamesList, H3Code,
   resolveTypeName,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
@@ -116,17 +116,19 @@ export const renderProp = (
       key={`prop-entry-${name}`}
       className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!pb-4 [&>*:last-child]:!mb-0')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
-      <HeaderComponent tags={getTagNamesList(comment)}>
-        <MONOSPACE
-          weight="medium"
-          className={mergeClasses(
-            'wrap-anywhere',
-            !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
-          )}>
-          {name}
-        </MONOSPACE>
-      </HeaderComponent>
-      <APISectionPlatformTags comment={comment} />
+      <div className="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1">
+        <HeaderComponent tags={getTagNamesList(comment)}>
+          <MONOSPACE
+            weight="medium"
+            className={mergeClasses(
+              'wrap-anywhere',
+              !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
+            )}>
+            {name}
+          </MONOSPACE>
+        </HeaderComponent>
+        <APISectionPlatformTags comment={comment} />
+      </div>
       <div className={mergeClasses(STYLES_SECONDARY, extractedComment && ELEMENT_SPACING)}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}

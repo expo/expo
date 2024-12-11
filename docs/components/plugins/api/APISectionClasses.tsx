@@ -96,12 +96,14 @@ const renderClass = (
       key={`class-definition-${name}`}
       className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" className="wrap-anywhere">
-          {name}
-        </MONOSPACE>
-      </H3Code>
-      <APISectionPlatformTags comment={comment} />
+      <div className="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1">
+        <H3Code tags={getTagNamesList(comment)}>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
+        </H3Code>
+        <APISectionPlatformTags comment={comment} />
+      </div>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <CALLOUT className="mb-3">
           <SPAN theme="secondary" weight="medium">
