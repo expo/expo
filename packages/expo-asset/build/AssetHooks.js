@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { Asset } from './Asset';
+// import { useEffect, useState } from 'react';
 // @needsAudit
 /**
  * Downloads and stores one or more assets locally.
@@ -22,11 +21,12 @@ import { Asset } from './Asset';
  * ```
  */
 export function useAssets(moduleIds) {
-    const [assets, setAssets] = useState();
-    const [error, setError] = useState();
-    useEffect(() => {
-        Asset.loadAsync(moduleIds).then(setAssets).catch(setError);
-    }, []);
-    return [assets, error];
+    // const [assets, setAssets] = useState<Asset[]>();
+    // const [error, setError] = useState<Error>();
+    // useEffect(() => {
+    //   Asset.loadAsync(moduleIds).then(setAssets).catch(setError);
+    // }, []);
+    // return [assets, error];
+    return [undefined, undefined];
 }
 //# sourceMappingURL=AssetHooks.js.map

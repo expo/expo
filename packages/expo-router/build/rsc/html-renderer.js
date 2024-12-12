@@ -104,8 +104,19 @@ Promise.resolve(new Response(new ReadableStream({
     .split('\n')
     .map((line) => line.trim())
     .join('');
+/**
+ * Injects a script into the HTML stream.
+ * @param urlForFakeFetch - The URL for the fake fetch.
+ * @param mainJsPath - The path to the main JavaScript file (for DEV only, pass `''` for PRD).
+ * @returns A TransformStream that injects the script into the HTML stream.
+ */
 const injectScript = (urlForFakeFetch, mainJsPath // for DEV only, pass `''` for PRD
 ) => {
+    /**
+     * Modifies the head of the HTML to include the prefetch script.
+     * @param data - The HTML data.
+     * @returns The modified HTML data.
+     */
     const modifyHead = (data) => {
         const matchPrefetched = data.match(
         // HACK This is very brittle
@@ -163,6 +174,11 @@ const injectScript = (urlForFakeFetch, mainJsPath // for DEV only, pass `''` for
     });
 };
 // HACK for now, do we want to use HTML parser?
+/**
+ * A TransformStream that buffers HTML chunks and processes them when a closing tag is detected.
+ * This is useful for ensuring that HTML is properly rectified before further processing.
+ * @returns {TransformStream<Uint8Array, Uint8Array>} A TransformStream that buffers and processes HTML chunks.
+ */
 const rectifyHtml = () => {
     const pending = [];
     const decoder = new TextDecoder();
@@ -173,6 +189,7 @@ const rectifyHtml = () => {
                 throw new Error('Unknown chunk type');
             }
             pending.push(chunk);
+            // Check if the chunk ends with a closing tag
             if (/<\/\w+>$/.test(decoder.decode(chunk))) {
                 clearTimeout(timer);
                 timer = setTimeout(() => {

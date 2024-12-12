@@ -148,6 +148,7 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
         }
         const componentIds = (0, common_1.getComponentIds)(pathname);
         const input = (0, common_1.getInputString)(pathname);
+        // const html = await getRootReactComponent(new URL(pathname, 'https://n'));
         const html = (0, react_1.createElement)(client_1.ServerRouter, { route: { path: pathname, query: searchParams.toString(), hash: '' } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(host_1.Slot, { id, fallback: acc }, acc), null));
         return {
             input,

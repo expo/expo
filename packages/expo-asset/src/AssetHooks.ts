@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 
 import { Asset } from './Asset';
 
@@ -24,12 +24,13 @@ import { Asset } from './Asset';
  * ```
  */
 export function useAssets(moduleIds: number | number[]): [Asset[] | undefined, Error | undefined] {
-  const [assets, setAssets] = useState<Asset[]>();
-  const [error, setError] = useState<Error>();
+  // const [assets, setAssets] = useState<Asset[]>();
+  // const [error, setError] = useState<Error>();
 
-  useEffect(() => {
-    Asset.loadAsync(moduleIds).then(setAssets).catch(setError);
-  }, []);
+  // useEffect(() => {
+  //   Asset.loadAsync(moduleIds).then(setAssets).catch(setError);
+  // }, []);
 
-  return [assets, error];
+  // return [assets, error];
+  return [undefined, undefined];
 }

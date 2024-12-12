@@ -1,4 +1,11 @@
 "use strict";
+/**
+ * Copyright © 2023 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+// import '@expo/metro-runtime';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -26,14 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBuildTimeServerManifestAsync = exports.getManifest = exports.getStaticContent = void 0;
-/**
- * Copyright © 2023 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-require("@expo/metro-runtime");
+exports.getBuildTimeServerManifestAsync = exports.getManifest = exports.getStaticContent = exports.getRootReactComponent = void 0;
 const native_1 = require("@react-navigation/native");
 const Font = __importStar(require("expo-font/build/server"));
 const react_1 = __importDefault(require("react"));
@@ -71,6 +71,29 @@ function resetReactNavigationContexts() {
     const contexts = '__react_navigation__elements_contexts';
     global[contexts] = new Map();
 }
+async function getRootReactComponent(location) {
+    const headContext = {};
+    const ref = react_1.default.createRef();
+    const { 
+    // NOTE: The `element` that's returned adds two extra Views and
+    // the seemingly unused `RootTagContext.Provider`.
+    element, getStyleElement, } = react_native_web_1.AppRegistry.getApplication('App', {
+        initialProps: {
+            location,
+            context: _ctx_1.ctx,
+            wrapper: ({ children }) => (
+            // <Root>
+            <div id="root">{children}</div>
+            // {/* </Root> */}
+            ),
+        },
+    });
+    // const Root = getRootComponent();
+    return (<head_1.Head.Provider context={headContext}>
+      <native_1.ServerContainer ref={ref}>{element}</native_1.ServerContainer>
+    </head_1.Head.Provider>);
+}
+exports.getRootReactComponent = getRootReactComponent;
 async function getStaticContent(location) {
     const headContext = {};
     const ref = react_1.default.createRef();

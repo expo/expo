@@ -57,7 +57,7 @@ const INITIAL_METRICS = process.env.EXPO_OS === 'web' || isTestEnv
     }
     : undefined;
 function RootWrap({ children }) {
-    return (<react_native_safe_area_context_1.SafeAreaProvider initialMetrics={INITIAL_METRICS}>
+    return (<react_native_safe_area_context_1.SafeAreaProvider testID={__DEV__ ? 'safe-area' : undefined} initialMetrics={INITIAL_METRICS}>
       {children}
       {/* <Try catch={RootErrorBoundary}>{children}</Try> */}
     </react_native_safe_area_context_1.SafeAreaProvider>);

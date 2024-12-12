@@ -132,9 +132,9 @@ export async function logMetroErrorWithStack(
         lineItem = chalk.dim(lineItem);
       }
       // Never show the internal module system.
-      if (!frame.subtitle.match(/\/metro-require\/require\.js/)) {
-        stackLines.push(lineItem);
-      }
+      // if (!frame.subtitle.match(/\/metro-require\/require\.js/)) {
+      stackLines.push(lineItem);
+      // }
     });
 
     Log.log();

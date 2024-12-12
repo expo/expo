@@ -24,6 +24,7 @@ import { getPathMapping } from '../path';
 import type { PathSpec } from '../path';
 import { defineEntries, rerender } from '../server';
 import type { BuildConfig, RenderEntries, GetBuildConfig, GetSsrConfig } from '../server';
+import { getRootReactComponent } from '../../static/getLegacySSRRoot';
 
 type RoutePropsForLayout = Omit<RouteProps, 'searchParams'> & {
   children: ReactNode;
@@ -210,6 +211,7 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
     }
     const componentIds = getComponentIds(pathname);
     const input = getInputString(pathname);
+    // const html = await getRootReactComponent(new URL(pathname, 'https://n'));
     const html = createElement(
       ServerRouter as FunctionComponent<Omit<ComponentProps<typeof ServerRouter>, 'children'>>,
       { route: { path: pathname, query: searchParams.toString(), hash: '' } },

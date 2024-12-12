@@ -33,7 +33,6 @@ const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const useDomComponentNavigation_1 = require("./link/useDomComponentNavigation");
 const statusbar_1 = require("./utils/statusbar");
-const SplashScreen = __importStar(require("./views/Splash"));
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
@@ -52,7 +51,7 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      */
     const wrapper = ({ children }) => {
         return (<ParentWrapper>
-        <react_native_safe_area_context_1.SafeAreaProvider 
+        <react_native_safe_area_context_1.SafeAreaProvider testID={'xxx'} 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
@@ -108,19 +107,20 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         serverUrl,
     });
     (0, useDomComponentNavigation_1.useDomComponentNavigation)(store);
-    if (store.shouldShowTutorial()) {
-        SplashScreen.hideAsync();
-        if (process.env.NODE_ENV === 'development') {
-            const Tutorial = require('./onboard/Tutorial').Tutorial;
-            return (<WrapperComponent>
-          <Tutorial />
-        </WrapperComponent>);
-        }
-        else {
-            // Ensure tutorial styles are stripped in production.
-            return null;
-        }
-    }
+    // if (store.shouldShowTutorial()) {
+    //   SplashScreen.hideAsync();
+    //   if (process.env.NODE_ENV === 'development') {
+    //     const Tutorial = require('./onboard/Tutorial').Tutorial;
+    //     return (
+    //       <WrapperComponent>
+    //         <Tutorial />
+    //       </WrapperComponent>
+    //     );
+    //   } else {
+    //     // Ensure tutorial styles are stripped in production.
+    //     return null;
+    //   }
+    // }
     const Component = store.rootComponent;
     return (<NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
             enabled: false,

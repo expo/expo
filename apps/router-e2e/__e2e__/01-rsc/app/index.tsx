@@ -1,6 +1,10 @@
 // import Ionicons from '@expo/vector-icons/Ionicons';
 // import { Link } from 'expo-router/build/rsc/exports';
 
+import React from 'react';
+import { renderChildren } from '../components/server-func';
+import { MyComp } from '../components/client-comp';
+
 // import { Counter } from '../components/counter';
 // import { Pokemon } from '../components/pokemon';
 // import { Image, Text, ScrollView } from '../lib/react-native';
@@ -40,5 +44,11 @@
 // };
 
 export default function Index() {
-  return <div>Hey</div>;
+  return (
+    <>
+      <div>Hey2</div>
+      <MyComp />
+      <React.Suspense fallback={null}>{renderChildren()}</React.Suspense>
+    </>
+  );
 }

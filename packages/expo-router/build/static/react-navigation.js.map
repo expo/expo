@@ -1,0 +1,1 @@
+{"version":3,"file":"react-navigation.js","sourceRoot":"","sources":["../../src/static/react-navigation.tsx"],"names":[],"mappings":"AAAA,YAAY,CAAC;;;;AAEb,qDAA2D;AAElD,gGAFA,wBAAe,OAEA","sourcesContent":["'use client';\n\nimport { ServerContainer } from '@react-navigation/native';\n\nexport { ServerContainer };\n"]}

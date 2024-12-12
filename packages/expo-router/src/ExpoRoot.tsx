@@ -51,6 +51,7 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
     return (
       <ParentWrapper>
         <SafeAreaProvider
+          testID={'xxx'}
           // SSR support
           initialMetrics={INITIAL_METRICS}>
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
@@ -121,20 +122,20 @@ function ContextNavigator({
 
   useDomComponentNavigation(store);
 
-  if (store.shouldShowTutorial()) {
-    SplashScreen.hideAsync();
-    if (process.env.NODE_ENV === 'development') {
-      const Tutorial = require('./onboard/Tutorial').Tutorial;
-      return (
-        <WrapperComponent>
-          <Tutorial />
-        </WrapperComponent>
-      );
-    } else {
-      // Ensure tutorial styles are stripped in production.
-      return null;
-    }
-  }
+  // if (store.shouldShowTutorial()) {
+  //   SplashScreen.hideAsync();
+  //   if (process.env.NODE_ENV === 'development') {
+  //     const Tutorial = require('./onboard/Tutorial').Tutorial;
+  //     return (
+  //       <WrapperComponent>
+  //         <Tutorial />
+  //       </WrapperComponent>
+  //     );
+  //   } else {
+  //     // Ensure tutorial styles are stripped in production.
+  //     return null;
+  //   }
+  // }
 
   const Component = store.rootComponent;
 

@@ -61,7 +61,7 @@ const INITIAL_METRICS =
 
 export function RootWrap({ children }) {
   return (
-    <SafeAreaProvider initialMetrics={INITIAL_METRICS}>
+    <SafeAreaProvider testID={__DEV__ ? 'safe-area' : undefined} initialMetrics={INITIAL_METRICS}>
       {children}
       {/* <Try catch={RootErrorBoundary}>{children}</Try> */}
     </SafeAreaProvider>
