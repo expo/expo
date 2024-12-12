@@ -165,7 +165,7 @@ export function test({ describe, expect, it, ...t }) {
     it('should abort streaming request', async () => {
       const controller = new AbortController();
       setTimeout(() => controller.abort(), 500);
-      let error: Error | null = null;
+      let error: unknown | null = null;
       try {
         const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=2', {
           signal: controller.signal,
@@ -181,11 +181,10 @@ export function test({ describe, expect, it, ...t }) {
           }
         }
       } catch (e: unknown) {
-        if (e instanceof Error) {
-          error = e;
-        }
+        error = e;
       }
       expect(error).not.toBeNull();
+      expect(error).toBeInstanceOf(Error);
     });
   });
 
