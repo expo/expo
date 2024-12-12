@@ -42,6 +42,9 @@ export async function getPackageJsonScriptSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ) {
+  if (options.sourceSkips & SourceSkips.PackageJsonScriptsAll) {
+    return [];
+  }
   let packageJson;
   try {
     packageJson = require(resolveFrom(path.resolve(projectRoot), './package.json'));
