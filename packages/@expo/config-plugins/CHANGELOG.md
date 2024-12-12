@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Allow `version` to be overridden on iOS and Android. ([#33637](https://github.com/expo/expo/pull/33637) by [@Titozzz](https://github.com/Titozzz))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
