@@ -26,7 +26,10 @@ export function getVersion(config: Pick<ExpoConfig, 'version' | 'ios'>) {
   return config.ios?.version || config.version || '1.0.0';
 }
 
-export function setVersion(config: Pick<ExpoConfig, 'version'>, infoPlist: InfoPlist): InfoPlist {
+export function setVersion(
+  config: Pick<ExpoConfig, 'version' | 'ios'>,
+  infoPlist: InfoPlist
+): InfoPlist {
   return {
     ...infoPlist,
     CFBundleShortVersionString: getVersion(config),
