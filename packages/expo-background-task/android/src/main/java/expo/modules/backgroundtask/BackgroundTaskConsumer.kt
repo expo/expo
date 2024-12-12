@@ -3,6 +3,7 @@ package expo.modules.backgroundtask
 import android.content.Context
 import android.util.Log
 import com.facebook.react.common.build.ReactBuildConfig
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskConsumerInterface
