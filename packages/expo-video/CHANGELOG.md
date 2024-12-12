@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Added an option to `generateThumbnailsAsync` to set the maximum size of generated thumbnails. ([#33599](https://github.com/expo/expo/pull/33599) by [@tsapeta](https://github.com/tsapeta))
+- [tvOS] Added title, artist, and subTitle, to the TV player.
 
 ### 🐛 Bug fixes
 
