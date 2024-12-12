@@ -1,9 +1,21 @@
-// Set the environment to production or development
-// lots of tools use this to determine if they should run in a dev mode.
+import env from '@expo/env';
+
+/**
+ * Set the environment to production or development
+ * lots of tools use this to determine if they should run in a dev mode.
+ */
 export function setNodeEnv(mode: 'development' | 'production') {
   process.env.NODE_ENV = process.env.NODE_ENV || mode;
   process.env.BABEL_ENV = process.env.BABEL_ENV || process.env.NODE_ENV;
 
   // @ts-expect-error: Add support for external React libraries being loaded in the same process.
   globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
+}
+
+/**
+ * Load the dotenv files into the current `process.env` scope.
+ * Note, this requires `NODE_ENV` being set through `setNodeEnv`.
+ */
+export function loadEnvFiles(projectRoot: string, options?: Parameters<typeof env.load>[1]) {
+  return env.load(projectRoot, options);
 }
