@@ -130,7 +130,24 @@ export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'igno
 /**
  * Hook function to transform file content sources before hashing.
  */
-export type FileHookTransformFunction = (source: FileHookTransformSource, chunk: Buffer | string, encoding: BufferEncoding) => Buffer | string;
+export type FileHookTransformFunction = (
+/**
+ * Source from HashSourceFile or HashSourceContents.
+ */
+source: FileHookTransformSource, 
+/**
+ * The chunk of file content.
+ * When the stream reaches the end, the chunk will be null.
+ */
+chunk: Buffer | string | null, 
+/**
+ * Indicates the end of the file.
+ */
+isEndOfFile: boolean, 
+/**
+ * The encoding of the chunk.
+ */
+encoding: BufferEncoding) => Buffer | string | null;
 /**
  * The `source` parameter for `FileHookTransformFunction`.
  */

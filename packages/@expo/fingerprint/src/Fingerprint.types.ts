@@ -164,10 +164,27 @@ export type Config = Pick<
  * Hook function to transform file content sources before hashing.
  */
 export type FileHookTransformFunction = (
+  /**
+   * Source from HashSourceFile or HashSourceContents.
+   */
   source: FileHookTransformSource,
-  chunk: Buffer | string,
+
+  /**
+   * The chunk of file content.
+   * When the stream reaches the end, the chunk will be null.
+   */
+  chunk: Buffer | string | null,
+
+  /**
+   * Indicates the end of the file.
+   */
+  isEndOfFile: boolean,
+
+  /**
+   * The encoding of the chunk.
+   */
   encoding: BufferEncoding
-) => Buffer | string;
+) => Buffer | string | null;
 
 /**
  * The `source` parameter for `FileHookTransformFunction`.

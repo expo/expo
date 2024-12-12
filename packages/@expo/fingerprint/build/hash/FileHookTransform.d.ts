@@ -10,4 +10,5 @@ export declare class FileHookTransform extends Transform {
     private readonly transformFn;
     constructor(source: FileHookTransformSource, transformFn: FileHookTransformFunction);
     _transform(chunk: any, _encoding: BufferEncoding, callback: TransformCallback): void;
+    _flush(callback: TransformCallback): void;
 }

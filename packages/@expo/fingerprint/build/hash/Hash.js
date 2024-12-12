@@ -44,10 +44,11 @@ async function createFingerprintSourceAsync(source, limiter, projectRoot, option
     switch (source.type) {
         case 'contents':
             if (typeof options.fileHookTransform === 'function') {
-                source.contents = options.fileHookTransform({
-                    type: 'contents',
-                    id: source.id,
-                }, source.contents, 'utf8');
+                source.contents =
+                    options.fileHookTransform({
+                        type: 'contents',
+                        id: source.id,
+                    }, source.contents, true /* isEndOfFile */, 'utf8') ?? '';
             }
             result = await createContentsHashResultsAsync(source, options);
             break;

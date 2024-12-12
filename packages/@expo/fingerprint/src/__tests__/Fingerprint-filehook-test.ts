@@ -1,5 +1,6 @@
-import { createHash } from 'crypto';
+import { createHash, randomFill } from 'crypto';
 import { vol } from 'memfs';
+import { promisify } from 'node:util';
 import pLimit from 'p-limit';
 import path from 'path';
 
@@ -16,7 +17,12 @@ describe('FileHookTransform', () => {
   const mockHook = jest
     .fn()
     .mockImplementation(
-      (source: FileHookTransformSource, chunk: Buffer | string, encoding: BufferEncoding) => chunk
+      (
+        source: FileHookTransformSource,
+        chunk: Buffer | string | null,
+        isEndOfFile: boolean,
+        encoding: BufferEncoding
+      ) => chunk
     ) as jest.MockedFunction<FileHookTransformFunction>;
 
   afterEach(() => {
@@ -33,11 +39,57 @@ describe('FileHookTransform', () => {
 
     const options = await normalizeOptionsAsync('/app', { fileHookTransform: mockHook });
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
-    expect(mockHook).toHaveBeenCalledTimes(1);
+    expect(mockHook).toHaveBeenCalledTimes(2);
     expect(mockHook.mock.calls[0][0]).toEqual({ type: 'file', filePath });
     expect(mockHook.mock.calls[0][1].toString()).toEqual(contents);
+    expect(mockHook.mock.calls[0][2]).toBe(false);
+    expect(mockHook.mock.calls[1][0]).toEqual({ type: 'file', filePath });
+    expect(mockHook.mock.calls[1][1]).toBe(null);
+    expect(mockHook.mock.calls[1][2]).toBe(true);
     const expectHex = createHash(options.hashAlgorithm).update(contents).digest('hex');
     expect(result.hex).toBe(expectHex);
+  });
+
+  it('should allow chunk buffering in the file hook', async () => {
+    let recvBuffer = Buffer.alloc(0);
+
+    const mockChunkBufferHook = jest
+      .fn()
+      .mockImplementation(
+        (
+          source: FileHookTransformSource,
+          chunk: Buffer | string | null,
+          isEndOfFile: boolean,
+          encoding: BufferEncoding
+        ) => {
+          if (chunk != null) {
+            const buffer = typeof chunk === 'string' ? Buffer.from(chunk, encoding) : chunk;
+            recvBuffer = Buffer.concat([recvBuffer, buffer]);
+          }
+
+          if (!isEndOfFile) {
+            return null;
+          }
+          return recvBuffer;
+        }
+      ) as jest.MockedFunction<FileHookTransformFunction>;
+
+    const filePath = 'assets/icon.png';
+    // Creating a large file to simulate multiple chunks in the stream
+    const fileSize = 1024 * 1024;
+    const contents = await createRandomBufferAsync(fileSize);
+    const limiter = pLimit(1);
+    vol.mkdirSync('/app/assets', { recursive: true });
+    vol.writeFileSync(path.join('/app', filePath), contents);
+
+    const options = await normalizeOptionsAsync('/app', { fileHookTransform: mockChunkBufferHook });
+    const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
+    const expectHex = createHash(options.hashAlgorithm).update(contents).digest('hex');
+    expect(result.hex).toBe(expectHex);
+
+    expect(recvBuffer.byteLength).toBe(fileSize);
+    const expectHex2 = createHash(options.hashAlgorithm).update(recvBuffer).digest('hex');
+    expect(result.hex).toBe(expectHex2);
   });
 
   it('should call hook function from createFingerprintAsync', async () => {
@@ -53,8 +105,14 @@ describe('FileHookTransform', () => {
     const mockExpoConfigHook = jest
       .fn()
       .mockImplementation(
-        (source: FileHookTransformSource, chunk: Buffer | string, encoding: BufferEncoding) => {
+        (
+          source: FileHookTransformSource,
+          chunk: Buffer | string | null,
+          isEndOfFile: boolean,
+          encoding: BufferEncoding
+        ) => {
           if (source.type === 'contents' && source.id === 'expoConfig') {
+            expect(isEndOfFile).toBe(true);
             return 'EMPTYCONFIG';
           }
           return chunk;
@@ -74,3 +132,24 @@ describe('FileHookTransform', () => {
     expect(expoConfig?.hash).toBe(expectHex);
   });
 });
+
+const randomFillAsync = promisify(randomFill);
+/**
+ * Create a buffer filled with random data.
+ */
+async function createRandomBufferAsync(size: number): Promise<Buffer> {
+  const chunkSize = 65536; // Maximum size per randomFill operation
+  const buffer = Buffer.alloc(size); // Allocate the buffer
+
+  let offset = 0;
+
+  while (offset < size) {
+    const remainingSize = size - offset;
+    const currentChunkSize = Math.min(chunkSize, remainingSize);
+
+    await randomFillAsync(buffer.subarray(offset, offset + currentChunkSize));
+    offset += currentChunkSize;
+  }
+
+  return buffer;
+}

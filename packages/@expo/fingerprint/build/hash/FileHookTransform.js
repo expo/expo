@@ -14,8 +14,17 @@ class FileHookTransform extends stream_1.Transform {
         this.transformFn = transformFn;
     }
     _transform(chunk, _encoding, callback) {
-        const result = this.transformFn(this.source, chunk, _encoding);
-        this.push(result);
+        const result = this.transformFn(this.source, chunk, false /* isEndOfFile */, _encoding);
+        if (result) {
+            this.push(result);
+        }
+        callback();
+    }
+    _flush(callback) {
+        const result = this.transformFn(this.source, null, true /* isEndOfFile */, 'utf8');
+        if (result) {
+            this.push(result);
+        }
         callback();
     }
 }
