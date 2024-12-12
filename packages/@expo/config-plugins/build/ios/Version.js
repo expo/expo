@@ -17,14 +17,15 @@ function _iosPlugins() {
 }
 const withVersion = exports.withVersion = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setVersion, {
   infoPlistProperty: 'CFBundleShortVersionString',
-  expoConfigProperty: 'version'
+  expoConfigProperty: 'version | ios.version',
+  expoPropertyGetter: getVersion
 }, 'withVersion');
 const withBuildNumber = exports.withBuildNumber = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setBuildNumber, {
   infoPlistProperty: 'CFBundleVersion',
   expoConfigProperty: 'ios.buildNumber'
 }, 'withBuildNumber');
 function getVersion(config) {
-  return config.version || '1.0.0';
+  return config.ios?.version || config.version || '1.0.0';
 }
 function setVersion(config, infoPlist) {
   return {
