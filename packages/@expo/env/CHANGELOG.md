@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Refactor environment loading to remove package state and allow to fetch locally defined environment variables.
+
 ## 0.4.0 — 2024-10-22
 
 _This version does not introduce any user-facing changes._

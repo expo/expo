@@ -1,161 +1,117 @@
-import { vol, fs } from 'memfs';
+import { vol } from 'memfs';
+import console from 'node:console';
+import process from 'node:process';
 
-import { createControlledEnvironment, getFiles } from '../env';
+// import { createControlledEnvironment, getFiles } from '../env';
+import { getEnvFiles, LOADED_ENV_NAME, loadProjectEnv, parseProjectEnv } from '../index-new';
+
+jest.mock('node:console', () => {
+  const console = jest.requireActual('node:console');
+  return { ...console, error: jest.fn(console.error), warn: jest.fn(console.warn) };
+});
 
 /** The original reference to `process.env`, containing the actual environment variables. */
 const originalEnv = process.env as Readonly<NodeJS.ProcessEnv>;
-/** Mock the environment variables, to be edited within tests */
-function mockEnv() {
-  process.env = { ...originalEnv } as NodeJS.ProcessEnv;
-}
 
 beforeEach(() => {
   vol.reset();
-  mockEnv();
+  // Mock the environment variables, to be edited within tests
+  process.env = { ...originalEnv } as NodeJS.ProcessEnv;
 });
 afterAll(() => {
   // Clear the mocked environment, reusing the original object instance
   process.env = originalEnv;
 });
 
-describe(getFiles, () => {
-  const originalError = console.error;
-  beforeEach(() => {
-    console.error = jest.fn();
-    mockEnv();
-  });
-  afterEach(() => {
-    console.error = originalError;
-  });
-
+describe(getEnvFiles, () => {
   it(`gets development files`, () => {
-    expect(getFiles('development')).toEqual([
+    expect(getEnvFiles({ mode: 'development' })).toEqual([
       '.env.development.local',
       '.env.local',
       '.env.development',
       '.env',
     ]);
   });
+
   it(`gets production files`, () => {
-    expect(getFiles('production')).toEqual([
+    expect(getEnvFiles({ mode: 'production' })).toEqual([
       '.env.production.local',
       '.env.local',
       '.env.production',
       '.env',
     ]);
   });
+
   it(`gets test files`, () => {
     // important
-    expect(getFiles('test')).toEqual(['.env.test.local', '.env.test', '.env']);
+    expect(getEnvFiles({ mode: 'test' })).toEqual(['.env.test.local', '.env.test', '.env']);
   });
+
   it(`gets no files when dotenv is disabled`, () => {
     process.env.EXPO_NO_DOTENV = '1';
 
-    expect(getFiles('test')).toEqual([]);
-    expect(getFiles('development')).toEqual([]);
-    expect(getFiles('production')).toEqual([]);
+    expect(getEnvFiles({ mode: 'test' })).toEqual([]);
+    expect(getEnvFiles({ mode: 'development' })).toEqual([]);
+    expect(getEnvFiles({ mode: 'production' })).toEqual([]);
+  });
+
+  it(`uses NODE_ENV as mode by default`, () => {
+    process.env.NODE_ENV = 'development';
+
+    expect(getEnvFiles()).toEqual([
+      '.env.development.local',
+      '.env.local',
+      '.env.development',
+      '.env',
+    ]);
   });
 
   it(`errors if NODE_ENV is not set`, () => {
-    getFiles(undefined);
+    delete process.env.NODE_ENV;
+    jest.mocked(console.error).mockImplementation();
 
-    expect(console.error).toBeCalledTimes(2);
-    expect(console.error).toBeCalledWith(
+    getEnvFiles();
+
+    expect(console.error).toHaveBeenCalledWith(
       expect.stringContaining('The NODE_ENV environment variable is required but was not specified')
     );
-    expect(console.error).toBeCalledWith(
-      expect.stringContaining('Proceeding without mode-specific .env')
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('Using only .env.local and .env')
     );
   });
   it(`warns if NODE_ENV is not valid`, () => {
-    const warnSpy = jest.spyOn(console, 'warn');
+    process.env.NODE_ENV = 'invalid';
+    jest.mocked(console.warn).mockImplementation();
 
-    expect(() => getFiles('invalid')).not.toThrow();
-    expect(warnSpy).toBeCalledWith(
-      expect.stringContaining('"NODE_ENV=invalid" is non-conventional')
+    expect(() => getEnvFiles()).not.toThrow();
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('NODE_ENV="invalid" is non-conventional')
     );
-    expect(warnSpy).toBeCalledWith(
+    expect(console.warn).toHaveBeenCalledWith(
       expect.stringContaining('Use "development", "test", or "production"')
     );
-
-    warnSpy.mockClear();
   });
   it(`does not warn if NODE_ENV is not valid when in silent mode`, () => {
-    const warnSpy = jest.spyOn(console, 'warn');
+    process.env.NODE_ENV = 'invalid';
+    jest.mocked(console.warn).mockImplementation();
 
-    expect(() => getFiles('invalid', { silent: true })).not.toThrow();
-    expect(warnSpy).not.toBeCalled();
-
-    warnSpy.mockClear();
+    expect(() => getEnvFiles({ silent: true })).not.toThrow();
+    expect(console.warn).not.toHaveBeenCalled();
   });
 });
 
-describe('get', () => {
-  beforeEach(() => {
-    mockEnv();
-  });
-
-  it(`memoizes`, () => {
-    const envRuntime = createControlledEnvironment();
-    vol.fromJSON(
-      {
-        '.env': 'FOO=default',
-      },
-      '/'
-    );
-    expect(envRuntime.get('/')).toEqual({
-      env: {
-        FOO: 'default',
-      },
+describe(parseProjectEnv, () => {
+  it('parses .env file without mutating system environment variables', () => {
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+    expect(parseProjectEnv('/')).toEqual({
+      env: { FOO: 'bar' },
       files: ['/.env'],
     });
-
-    fs.writeFileSync('/.env', 'FOO=changed');
-
-    expect(envRuntime.get('/')).toEqual({
-      env: {
-        FOO: 'default',
-      },
-      files: ['/.env'],
-    });
-    expect(envRuntime.get('/', { force: true })).toEqual({
-      env: {
-        FOO: 'changed',
-      },
-      files: ['/.env'],
-    });
-  });
-});
-describe('_getForce', () => {
-  const originalError = console.error;
-  beforeEach(() => {
-    mockEnv();
-    console.error = jest.fn();
-  });
-  afterEach(() => {
-    console.error = originalError;
-  });
-
-  it(`returns the value of the environment variable`, () => {
-    const envRuntime = createControlledEnvironment();
-    vol.fromJSON(
-      {
-        '.env': 'FOO=bar',
-      },
-      '/'
-    );
-
-    expect(envRuntime._getForce('/')).toEqual({
-      env: {
-        FOO: 'bar',
-      },
-      files: ['/.env'],
-    });
+    expect(process.env['FOO']).toBeUndefined();
   });
 
   it(`cascades env files (development)`, () => {
     process.env.NODE_ENV = 'development';
-    const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
         '.env': 'FOO=default',
@@ -168,17 +124,16 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({
+    expect(parseProjectEnv('/')).toEqual({
+      files: ['/.env.development.local', '/.env.local', '/.env.development', '/.env'],
       env: {
         FOO: 'dev-local',
       },
-      files: ['/.env.development.local', '/.env.local', '/.env.development', '/.env'],
     });
   });
 
   it(`cascades env files (production)`, () => {
     process.env.NODE_ENV = 'production';
-    const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
         '.env': 'FOO=default',
@@ -189,7 +144,7 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({
+    expect(parseProjectEnv('/')).toEqual({
       files: ['/.env.production.local', '/.env.local', '/.env.production', '/.env'],
       env: {
         FOO: 'prod-local',
@@ -199,7 +154,6 @@ describe('_getForce', () => {
 
   it(`cascades env files (test)`, () => {
     process.env.NODE_ENV = 'test'; // Jest is setting `NODE_ENV=test`, just for clarity
-    const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
         '.env': 'FOO=default',
@@ -208,7 +162,7 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({
+    expect(parseProjectEnv('/')).toEqual({
       files: ['/.env'],
       env: {
         FOO: 'default',
@@ -218,7 +172,7 @@ describe('_getForce', () => {
 
   it(`cascades env files (default)`, () => {
     delete process.env.NODE_ENV; // Jest is setting `NODE_ENV=test`, make sure to unset it
-    const envRuntime = createControlledEnvironment();
+    jest.mocked(console.error).mockImplementation();
     vol.fromJSON(
       {
         '.env': 'FOO=default',
@@ -227,20 +181,19 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({
+    expect(parseProjectEnv('/')).toEqual({
       files: ['/.env.local', '/.env'],
       env: {
         FOO: 'default-local',
       },
     });
-    expect(console.error).toBeCalledWith(
-      expect.stringContaining('Proceeding without mode-specific .env')
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('Using only .env.local and .env')
     );
   });
 
   it('expands variables', () => {
     process.env.USER_DEFINED = 'user-defined';
-    const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
         '.env': 'TEST_EXPAND=${USER_DEFINED}',
@@ -248,7 +201,7 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({
+    expect(parseProjectEnv('/')).toEqual({
       files: ['/.env'],
       env: {
         TEST_EXPAND: 'user-defined',
@@ -259,7 +212,6 @@ describe('_getForce', () => {
   it('expands variables from cascading env files (development)', () => {
     process.env.USER_DEFINED = 'user-defined';
     process.env.NODE_ENV = 'development';
-    const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
         '.env': ['TEST_EXPAND=.env', 'TEST_VALUE_ENV=test'].join('\n'),
@@ -272,7 +224,7 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({
+    expect(parseProjectEnv('/')).toEqual({
       files: ['/.env.local', '/.env.development', '/.env'],
       env: {
         TEST_EXPAND: 'user-defined',
@@ -284,7 +236,6 @@ describe('_getForce', () => {
 
   it('expands variables safely without recursive loop', () => {
     process.env.USER_DEFINED = 'user-defined';
-    const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
         // This should not expand to itself, causing a recursive loop
@@ -293,7 +244,7 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({
+    expect(parseProjectEnv('/')).toEqual({
       files: ['/.env'],
       env: {
         TEST_EXPAND: '${TEST_EXPAND}',
@@ -301,9 +252,8 @@ describe('_getForce', () => {
     });
   });
 
-  it(`skips modifying the environment with dotenv if disabled with EXPO_NO_DOTENV`, () => {
+  it(`skips parsing the environment with dotenv if disabled with EXPO_NO_DOTENV`, () => {
     process.env.EXPO_NO_DOTENV = '1';
-    const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
         '.env': 'FOO=default',
@@ -312,32 +262,18 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({ env: {}, files: [] });
+    expect(parseProjectEnv('/')).toEqual({ env: {}, files: [] });
   });
 
-  it(`does not return the env var if the initial the value of the environment variable`, () => {
-    const envRuntime = createControlledEnvironment();
-    process.env.FOO = 'not-bar';
-
-    vol.fromJSON(
-      {
-        '.env': 'FOO=bar',
-      },
-      '/'
-    );
-
-    expect(envRuntime._getForce('/')).toEqual({ env: {}, files: ['/.env'] });
-  });
-
-  it(`Does not fail when no files are available`, () => {
+  it(`does not fail when no files are available`, () => {
     vol.fromJSON({}, '/');
-    expect(createControlledEnvironment()._getForce('/')).toEqual({
+    expect(parseProjectEnv('/')).toEqual({
       env: {},
       files: [],
     });
   });
 
-  it(`Does not assert on invalid env files`, () => {
+  it(`does not assert on invalid env files`, () => {
     vol.fromJSON(
       {
         '.env': 'ˆ˙•ª∆ø…ˆ',
@@ -345,7 +281,49 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(createControlledEnvironment()._getForce('/')).toEqual({ env: {}, files: ['/.env'] });
+    expect(parseProjectEnv('/')).toEqual({ env: {}, files: ['/.env'] });
+  });
+});
+
+describe(loadProjectEnv, () => {
+  it('parses .env file with mutating system environment variables', () => {
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    expect(loadProjectEnv('/')).toEqual({
+      result: 'loaded',
+      env: { FOO: 'bar' },
+      files: ['/.env'],
+      loaded: ['FOO'],
+    });
+
+    expect(process.env['FOO']).toBe('bar');
+  });
+
+  it('does not mutate when the system environment is marked as loaded', () => {
+    process.env[LOADED_ENV_NAME] = JSON.stringify(['FOO']);
+    process.env.FOO = 'previous';
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    expect(loadProjectEnv('/')).toEqual({
+      result: 'skipped',
+      loaded: ['FOO'],
+    });
+    expect(process.env['FOO']).toBe('previous');
+  });
+
+  it('mutates without overwriting after previous mutation when using force', () => {
+    process.env[LOADED_ENV_NAME] = JSON.stringify(['FOO']);
+    process.env.FOO = 'previous';
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    expect(loadProjectEnv('/', { force: true })).toEqual({
+      result: 'loaded',
+      env: { FOO: 'previous' },
+      files: ['/.env'],
+      loaded: [],
+    });
+    expect(process.env['FOO']).toBe('previous');
   });
 });
 
