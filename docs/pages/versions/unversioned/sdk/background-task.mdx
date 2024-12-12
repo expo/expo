@@ -11,7 +11,7 @@ isNew: true
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { PlatformTags } from '~/ui/components/Tag';
+import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 `expo-background-task` provides an API to run deferrable background tasks in a way that optimises battery and power consumption for the end user. This module uses the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS and the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android to schedule tasks. It also uses the [expo-task-manager](task-manager.mdx) Native API for running JavaScript tasks.
 
