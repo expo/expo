@@ -1,7 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 import BackgroundTasks
 
-@objc(BackgroundTaskScheduler)
+@objc
 public class BackgroundTaskScheduler: NSObject {
   /**
    Tries to schedule the worker task to run
