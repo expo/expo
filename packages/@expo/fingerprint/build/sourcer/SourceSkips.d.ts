@@ -22,9 +22,9 @@ export declare enum SourceSkips {
     ExpoConfigAssets = 128,
     /**
      * Skip the whole ExpoConfig.
-     * Please the other ExpoConfig source skips when possible and use this flag with caution.
-     * This will potentially skip some native changes.
-     * E.g., add a new config plugin, change app icon, or change the app name.
+     * Prefer the other ExpoConfig source skips when possible and use this flag with caution.
+     * This will potentially ignore some native changes that should be part of most fingerprints.
+     * E.g., adding a new config plugin, changing the app icon, or changing the app name.
      */
     ExpoConfigAll = 256,
     /**
