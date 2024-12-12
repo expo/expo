@@ -18,7 +18,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </span>
       <svg
         aria-label="permalink"
-        class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+        class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
         fill="none"
         height="24"
         viewBox="0 0 24 24"
@@ -43,53 +43,57 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !shadow-none"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !shadow-none"
   >
-    <h3
-      class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
-      data-heading="true"
+    <div
+      class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
     >
-      <a
-        class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
-        href="#appleauthenticationbutton"
-        id="appleauthenticationbutton"
+      <h3
+        class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
+        data-heading="true"
       >
-        <span
-          class="inline"
+        <a
+          class="relative inline-flex items-center gap-1.5 text-[inherit] decoration-0 scroll-m-8"
+          href="#appleauthenticationbutton"
+          id="appleauthenticationbutton"
         >
-          <code
-            class="leading-[1.6154] text-default font-medium wrap-anywhere"
-            data-text="true"
+          <span
+            class="inline"
           >
-            AppleAuthenticationButton
-          </code>
-        </span>
-        <svg
-          aria-label="permalink"
-          class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
-          fill="none"
-          height="24"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-            stroke="#9B9B9B"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-        </svg>
-      </a>
-    </h3>
+            <code
+              class="leading-[1.6154] text-default font-medium wrap-anywhere"
+              data-text="true"
+            >
+              AppleAuthenticationButton
+            </code>
+          </span>
+          <svg
+            aria-label="permalink"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </a>
+      </h3>
+    </div>
     <p
       class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
       data-text="true"
@@ -298,7 +302,7 @@ for more details.
             </span>
             <svg
               aria-label="permalink"
-              class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+              class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -328,10 +332,10 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
-          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+          class="flex flex-wrap justify-between max-md-gutters:flex-col"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -354,7 +358,7 @@ for more details.
               </span>
               <svg
                 aria-label="permalink"
-                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -404,10 +408,10 @@ for more details.
         </p>
       </div>
       <div
-        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
-          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+          class="flex flex-wrap justify-between max-md-gutters:flex-col"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -430,7 +434,7 @@ for more details.
               </span>
               <svg
                 aria-label="permalink"
-                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -480,10 +484,10 @@ for more details.
         </p>
       </div>
       <div
-        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
-          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+          class="flex flex-wrap justify-between max-md-gutters:flex-col"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -506,7 +510,7 @@ for more details.
               </span>
               <svg
                 aria-label="permalink"
-                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -560,10 +564,10 @@ for more details.
         </p>
       </div>
       <div
-        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
-          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+          class="flex flex-wrap justify-between max-md-gutters:flex-col"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -586,7 +590,7 @@ for more details.
               </span>
               <svg
                 aria-label="permalink"
-                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -655,10 +659,10 @@ in here.
         </p>
       </div>
       <div
-        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
-          class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+          class="flex flex-wrap justify-between max-md-gutters:flex-col"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -681,7 +685,7 @@ in here.
               </span>
               <svg
                 aria-label="permalink"
-                class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+                class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -815,7 +819,7 @@ properties.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -879,7 +883,7 @@ properties.
       </span>
       <svg
         aria-label="permalink"
-        class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+        class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
         fill="none"
         height="24"
         viewBox="0 0 24 24"
@@ -904,10 +908,10 @@ properties.
     </a>
   </h2>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -930,7 +934,7 @@ properties.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -1135,10 +1139,10 @@ properties.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -1161,7 +1165,7 @@ properties.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -1415,10 +1419,10 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -1441,7 +1445,7 @@ value depending on the state of the credential.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -1562,10 +1566,10 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -1588,7 +1592,7 @@ value depending on the state of the credential.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -1807,10 +1811,10 @@ refresh operation.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -1833,7 +1837,7 @@ refresh operation.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -2099,10 +2103,10 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -2125,7 +2129,7 @@ sign-in operation.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -2393,7 +2397,7 @@ sign-out operation.
       </span>
       <svg
         aria-label="permalink"
-        class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+        class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
         fill="none"
         height="24"
         viewBox="0 0 24 24"
@@ -2418,10 +2422,10 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -2444,7 +2448,7 @@ sign-out operation.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -2589,7 +2593,7 @@ sign-out operation.
       </span>
       <svg
         aria-label="permalink"
-        class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+        class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
         fill="none"
         height="24"
         viewBox="0 0 24 24"
@@ -2614,10 +2618,10 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -2640,7 +2644,7 @@ sign-out operation.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -3163,10 +3167,10 @@ developers.
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -3189,7 +3193,7 @@ developers.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -3521,10 +3525,10 @@ may be
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -3547,7 +3551,7 @@ may be
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -3692,10 +3696,10 @@ for more details.
     </p>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -3718,7 +3722,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -4006,10 +4010,10 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -4032,7 +4036,7 @@ OAuth 2.0 protocol
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -4337,10 +4341,10 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -4363,7 +4367,7 @@ OAuth 2.0 protocol
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -4580,10 +4584,10 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -4606,7 +4610,7 @@ OAuth 2.0 protocol
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -4733,7 +4737,7 @@ After calling this function, the listener will no longer receive any events from
       </span>
       <svg
         aria-label="permalink"
-        class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+        class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
         fill="none"
         height="24"
         viewBox="0 0 24 24"
@@ -4758,13 +4762,13 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-4"
+      class="px-5 pt-3"
     >
       <div
-        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -4787,7 +4791,7 @@ After calling this function, the listener will no longer receive any events from
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -4830,20 +4834,9 @@ After calling this function, the listener will no longer receive any events from
         </a>
         .
       </p>
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
-        data-text="true"
-      >
-        <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] flex flex-row items-center gap-2 font-medium text-tertiary"
-          data-text="true"
-        >
-          AppleAuthenticationButtonStyle Values
-        </span>
-      </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -4866,7 +4859,7 @@ After calling this function, the listener will no longer receive any events from
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -4891,7 +4884,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE ＝ 0
@@ -4904,7 +4897,7 @@ After calling this function, the listener will no longer receive any events from
       </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -4927,7 +4920,7 @@ After calling this function, the listener will no longer receive any events from
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -4952,7 +4945,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
@@ -4965,7 +4958,7 @@ After calling this function, the listener will no longer receive any events from
       </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -4988,7 +4981,7 @@ After calling this function, the listener will no longer receive any events from
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5013,7 +5006,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.BLACK ＝ 2
@@ -5027,13 +5020,13 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-4"
+      class="px-5 pt-3"
     >
       <div
-        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -5056,7 +5049,7 @@ After calling this function, the listener will no longer receive any events from
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -5099,20 +5092,9 @@ After calling this function, the listener will no longer receive any events from
         </a>
         .
       </p>
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
-        data-text="true"
-      >
-        <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] flex flex-row items-center gap-2 font-medium text-tertiary"
-          data-text="true"
-        >
-          AppleAuthenticationButtonType Values
-        </span>
-      </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5135,7 +5117,7 @@ After calling this function, the listener will no longer receive any events from
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5160,7 +5142,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
@@ -5173,7 +5155,7 @@ After calling this function, the listener will no longer receive any events from
       </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5196,7 +5178,7 @@ After calling this function, the listener will no longer receive any events from
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5221,7 +5203,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationButtonType.CONTINUE ＝ 1
@@ -5234,7 +5216,7 @@ After calling this function, the listener will no longer receive any events from
       </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5257,7 +5239,7 @@ After calling this function, the listener will no longer receive any events from
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5282,7 +5264,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <div
-        class="mb-3.5 flex flex-row items-start"
+        class="mb-4 flex flex-row items-start [table_&]:mb-2.5"
       >
         <span
           class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -5296,10 +5278,10 @@ After calling this function, the listener will no longer receive any events from
              
           </span>
           <div
-            class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+            class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
           >
             <svg
-              class="translate-z icon-xs mt-[-0.5px] text-palette-blue12 opacity-80"
+              class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -5315,7 +5297,7 @@ After calling this function, the listener will no longer receive any events from
               </g>
             </svg>
             <span
-              class="text-2xs font-normal !leading-[16px] [table_&]:text-3xs"
+              class="whitespace-nowrap !text-3xs font-normal !leading-none"
             >
               iOS 13.2+
             </span>
@@ -5324,7 +5306,7 @@ After calling this function, the listener will no longer receive any events from
         </span>
       </div>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
@@ -5338,13 +5320,13 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-4"
+      class="px-5 pt-3"
     >
       <div
-        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -5367,7 +5349,7 @@ After calling this function, the listener will no longer receive any events from
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -5463,20 +5445,9 @@ for more details.
           </p>
         </div>
       </blockquote>
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
-        data-text="true"
-      >
-        <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] flex flex-row items-center gap-2 font-medium text-tertiary"
-          data-text="true"
-        >
-          AppleAuthenticationCredentialState Values
-        </span>
-      </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5499,7 +5470,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5524,14 +5495,14 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationCredentialState.REVOKED ＝ 0
       </code>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5554,7 +5525,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5579,14 +5550,14 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationCredentialState.AUTHORIZED ＝ 1
       </code>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5609,7 +5580,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5634,14 +5605,14 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationCredentialState.NOT_FOUND ＝ 2
       </code>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5664,7 +5635,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5689,7 +5660,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationCredentialState.TRANSFERRED ＝ 3
@@ -5697,13 +5668,13 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-4"
+      class="px-5 pt-3"
     >
       <div
-        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -5726,7 +5697,7 @@ for more details.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -5751,20 +5722,9 @@ for more details.
           </a>
         </h3>
       </div>
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
-        data-text="true"
-      >
-        <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] flex flex-row items-center gap-2 font-medium text-tertiary"
-          data-text="true"
-        >
-          AppleAuthenticationOperation Values
-        </span>
-      </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5787,7 +5747,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5812,7 +5772,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationOperation.IMPLICIT ＝ 0
@@ -5825,7 +5785,7 @@ for more details.
       </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5848,7 +5808,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5873,14 +5833,14 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGIN ＝ 1
       </code>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5903,7 +5863,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5928,14 +5888,14 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationOperation.REFRESH ＝ 2
       </code>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -5958,7 +5918,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -5983,7 +5943,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGOUT ＝ 3
@@ -5991,13 +5951,13 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-4"
+      class="px-5 pt-3"
     >
       <div
-        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6020,7 +5980,7 @@ for more details.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -6159,20 +6119,9 @@ for more details.
           </p>
         </div>
       </blockquote>
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
-        data-text="true"
-      >
-        <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] flex flex-row items-center gap-2 font-medium text-tertiary"
-          data-text="true"
-        >
-          AppleAuthenticationScope Values
-        </span>
-      </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -6195,7 +6144,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -6220,14 +6169,14 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationScope.FULL_NAME ＝ 0
       </code>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -6250,7 +6199,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -6275,7 +6224,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationScope.EMAIL ＝ 1
@@ -6283,13 +6232,13 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-4"
+      class="px-5 pt-3"
     >
       <div
-        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6312,7 +6261,7 @@ for more details.
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -6396,20 +6345,9 @@ for more details.
           </p>
         </div>
       </blockquote>
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
-        data-text="true"
-      >
-        <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] flex flex-row items-center gap-2 font-medium text-tertiary"
-          data-text="true"
-        >
-          AppleAuthenticationUserDetectionStatus Values
-        </span>
-      </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -6432,7 +6370,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -6457,7 +6395,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
@@ -6470,7 +6408,7 @@ for more details.
       </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -6493,7 +6431,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -6518,7 +6456,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
@@ -6531,7 +6469,7 @@ for more details.
       </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -6554,7 +6492,7 @@ for more details.
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -6579,7 +6517,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
@@ -6613,7 +6551,7 @@ exports[`APISection expo-pedometer 1`] = `
       </span>
       <svg
         aria-label="permalink"
-        class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+        class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
         fill="none"
         height="24"
         viewBox="0 0 24 24"
@@ -6638,10 +6576,10 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6664,7 +6602,7 @@ exports[`APISection expo-pedometer 1`] = `
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -6766,10 +6704,10 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6792,7 +6730,7 @@ exports[`APISection expo-pedometer 1`] = `
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -6817,17 +6755,17 @@ exports[`APISection expo-pedometer 1`] = `
         </a>
       </h3>
       <div
-        class="mb-3.5 flex flex-row items-start"
+        class="mb-4 flex flex-row items-start [table_&]:mb-2.5"
       >
         <span
           class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
           data-text="true"
         >
           <div
-            class="mr-2 inline-flex select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+            class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
           >
             <svg
-              class="translate-z icon-xs mt-[-0.5px] text-palette-blue12 opacity-80"
+              class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -6843,7 +6781,7 @@ exports[`APISection expo-pedometer 1`] = `
               </g>
             </svg>
             <span
-              class="text-2xs font-normal !leading-[16px] [table_&]:text-3xs"
+              class="whitespace-nowrap !text-3xs font-normal !leading-none"
             >
               iOS
             </span>
@@ -7126,10 +7064,10 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -7152,7 +7090,7 @@ a start date that is more than seven days in the past returns only the available
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -7267,10 +7205,10 @@ available on this device.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -7293,7 +7231,7 @@ available on this device.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -7395,10 +7333,10 @@ available on this device.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -7421,7 +7359,7 @@ available on this device.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -7694,7 +7632,7 @@ On iOS, the
       </span>
       <svg
         aria-label="permalink"
-        class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+        class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
         fill="none"
         height="24"
         viewBox="0 0 24 24"
@@ -7719,10 +7657,10 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -7745,7 +7683,7 @@ On iOS, the
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -7986,7 +7924,7 @@ in order to enable/disable the permission.
       </span>
       <svg
         aria-label="permalink"
-        class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+        class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
         fill="none"
         height="24"
         viewBox="0 0 24 24"
@@ -8011,10 +7949,10 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8037,7 +7975,7 @@ in order to enable/disable the permission.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -8131,10 +8069,10 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8158,7 +8096,7 @@ in order to enable/disable the permission.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -8294,10 +8232,10 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8320,7 +8258,7 @@ in order to enable/disable the permission.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -8386,10 +8324,10 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
   >
     <div
-      class="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1"
+      class="flex flex-wrap justify-between max-md-gutters:flex-col"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8412,7 +8350,7 @@ in order to enable/disable the permission.
           </span>
           <svg
             aria-label="permalink"
-            class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+            class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -8539,7 +8477,7 @@ After calling this function, the listener will no longer receive any events from
       </span>
       <svg
         aria-label="permalink"
-        class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+        class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
         fill="none"
         height="24"
         viewBox="0 0 24 24"
@@ -8564,13 +8502,13 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-6 rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-4"
+      class="px-5 pt-3"
     >
       <div
-        class="grid grid-cols-auto-min-2 items-baseline gap-2 max-md-gutters:grid-cols-1 [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8593,7 +8531,7 @@ After calling this function, the listener will no longer receive any events from
             </span>
             <svg
               aria-label="permalink"
-              class="icon-md invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -8618,20 +8556,9 @@ After calling this function, the listener will no longer receive any events from
           </a>
         </h3>
       </div>
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 mb-0 mt-2 border-b-0"
-        data-text="true"
-      >
-        <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] flex flex-row items-center gap-2 font-medium text-tertiary"
-          data-text="true"
-        >
-          PermissionStatus Values
-        </span>
-      </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -8654,7 +8581,7 @@ After calling this function, the listener will no longer receive any events from
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -8679,7 +8606,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -8692,7 +8619,7 @@ After calling this function, the listener will no longer receive any events from
       </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -8715,7 +8642,7 @@ After calling this function, the listener will no longer receive any events from
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -8740,7 +8667,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -8753,7 +8680,7 @@ After calling this function, the listener will no longer receive any events from
       </p>
     </div>
     <div
-      class="border-t border-t-secondary p-5 pb-0 pt-4"
+      class="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
     >
       <h4
         class="text-default text-[16px] font-semibold leading-relaxed tracking-[-0.011rem] mb-2 mt-6 [&_code]:text-[90%] group"
@@ -8776,7 +8703,7 @@ After calling this function, the listener will no longer receive any events from
           </span>
           <svg
             aria-label="permalink"
-            class="invisible inline-flex group-hover:visible group-focus-visible:visible icon-sm"
+            class="invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible icon-sm"
             fill="none"
             height="24"
             viewBox="0 0 24 24"
@@ -8801,7 +8728,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-3 inline-flex text-xs"
+        class="text-secondary mb-2 inline-flex text-xs"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"

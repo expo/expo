@@ -7,7 +7,7 @@ export const STYLES_SECONDARY = mergeClasses('text-[14px] font-medium text-secon
 export const STYLES_OPTIONAL = mergeClasses('pt-5 !text-[13px] text-secondary');
 
 export const STYLES_APIBOX = mergeClasses(
-  'mb-6 rounded-lg border border-secondary p-5 shadow-xs',
+  'mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs',
   '[&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0',
   '[&_h3]:mb-1.5',
   '[&_li]:mb-0',

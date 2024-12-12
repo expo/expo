@@ -125,7 +125,7 @@ const renderInterface = (
       key={`interface-definition-${name}`}
       className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <div className="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1">
+      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium" className="wrap-anywhere">
             {name}

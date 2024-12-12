@@ -1,5 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { APISectionPlatformTags } from '~/components/plugins/api/components/APISectionPlatformTags';
 import { H2, DEMI, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 import {
@@ -63,11 +64,14 @@ const renderComponent = (
       key={`component-definition-${resolvedName}`}
       className={mergeClasses(STYLES_APIBOX, '!shadow-none')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
-      <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" className="wrap-anywhere">
-          {resolvedName}
-        </MONOSPACE>
-      </H3Code>
+      <div className="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0">
+        <H3Code tags={getTagNamesList(comment)}>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {resolvedName}
+          </MONOSPACE>
+        </H3Code>
+        <APISectionPlatformTags comment={comment} />
+      </div>
       {resolvedType && resolvedTypeParameters && (
         <P className={ELEMENT_SPACING}>
           <DEMI theme="secondary">Type:</DEMI>{' '}

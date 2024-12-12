@@ -45,7 +45,7 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
         <span className="inline">{children}</span>
         <PermalinkIcon
           className={mergeClasses(
-            'icon-md invisible inline-flex group-hover:visible group-focus-visible:visible',
+            'icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible',
             props.nestingLevel >= 4 && 'icon-sm'
           )}
         />

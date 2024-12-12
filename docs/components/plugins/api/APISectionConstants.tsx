@@ -25,7 +25,7 @@ const renderConstant = (
     key={`constant-definition-${name}`}
     className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
     <APISectionDeprecationNote comment={comment} sticky />
-    <div className="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1">
+    <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">
           {apiName ? `${apiName}.` : ''}

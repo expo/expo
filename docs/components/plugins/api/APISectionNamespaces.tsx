@@ -44,7 +44,7 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
   return (
     <div key={`class-definition-${name}`} className={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <div className="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1">
+      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium" className="wrap-anywhere">
             {name}

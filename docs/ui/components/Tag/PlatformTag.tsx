@@ -16,7 +16,7 @@ export const PlatformTag = ({ platform, className }: PlatformTagProps) => {
   return (
     <div
       className={mergeClasses(
-        'mr-2 inline-flex select-none items-center gap-1 rounded-full border border-default bg-element px-[7px] py-0.5',
+        'mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border border-default bg-element px-[7px] py-0.5',
         'last:mr-0',
         '[table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5',
         '[h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0',
@@ -24,7 +24,7 @@ export const PlatformTag = ({ platform, className }: PlatformTagProps) => {
         className
       )}>
       <PlatformIcon platform={platformName} />
-      <span className={mergeClasses('text-2xs font-normal !leading-[16px]', '[table_&]:text-3xs')}>
+      <span className={mergeClasses('whitespace-nowrap !text-3xs font-normal !leading-none')}>
         {formatName(platform)}
       </span>
     </div>

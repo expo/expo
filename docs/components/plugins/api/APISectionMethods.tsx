@@ -70,7 +70,7 @@ export const renderMethod = (
         key={`method-signature-${method.name || name}-${parameters?.length ?? 0}`}
         className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="grid grid-cols-auto-min-2 gap-2 max-md-gutters:grid-cols-1">
+        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
           <HeaderComponent>
             <MONOSPACE
               weight="medium"

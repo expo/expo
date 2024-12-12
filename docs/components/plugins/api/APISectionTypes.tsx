@@ -146,7 +146,7 @@ const renderType = (
     return (
       <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1">
+        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
           <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
             <MONOSPACE weight="medium">
               {name}
@@ -187,7 +187,7 @@ const renderType = (
     return (
       <div key={`type-tuple-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1">
+        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
           <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
             <MONOSPACE weight="medium">{name}</MONOSPACE>
           </H3Code>
@@ -213,7 +213,7 @@ const renderType = (
       return (
         <div key={`prop-type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
-          <div className="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1">
+          <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
             <H3Code tags={getTagNamesList(comment)}>
               <MONOSPACE weight="medium" className="wrap-anywhere">
                 {name}
@@ -264,7 +264,7 @@ const renderType = (
       return (
         <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
-          <div className="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1">
+          <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
             <H3Code tags={getTagNamesList(comment)}>
               <MONOSPACE weight="medium" className="wrap-anywhere">
                 {name}
@@ -301,7 +301,7 @@ const renderType = (
         className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
         <APISectionDeprecationNote comment={comment} sticky />
 
-        <div className="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1">
+        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium" className="wrap-anywhere">
               {name}
@@ -322,7 +322,7 @@ const renderType = (
     return (
       <div key={`generic-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1">
+        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium" className="wrap-anywhere">
               {name}
@@ -343,7 +343,7 @@ const renderType = (
     return (
       <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1">
+        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium" className="wrap-anywhere">
               {name}&lt;{type.checkType.name}&gt;
@@ -390,7 +390,7 @@ const renderType = (
     return (
       <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="grid grid-cols-auto-min-2 items-center max-md-gutters:grid-cols-1">
+        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium" className="wrap-anywhere">
               {name}
