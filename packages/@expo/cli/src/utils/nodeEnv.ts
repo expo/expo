@@ -1,4 +1,4 @@
-import env from '@expo/env';
+import * as env from '@expo/env';
 
 /**
  * Set the environment to production or development
