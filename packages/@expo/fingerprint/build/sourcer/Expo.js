@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoCNGPatchSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
+exports.getConfigPluginProps = exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoCNGPatchSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const promises_1 = __importDefault(require("fs/promises"));
@@ -56,6 +56,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     // external files in config
     const isAndroid = options.platforms.includes('android');
     const isIos = options.platforms.includes('ios');
+    const splashScreenPluginProps = getConfigPluginProps(expoConfig, 'expo-splash-screen');
     const externalFiles = [
         // icons
         expoConfig.icon,
@@ -64,7 +65,26 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
         isAndroid ? expoConfig.android?.adaptiveIcon?.foregroundImage : undefined,
         isAndroid ? expoConfig.android?.adaptiveIcon?.backgroundImage : undefined,
         expoConfig.notification?.icon,
-        // splash images
+        // expo-splash-screen images
+        splashScreenPluginProps?.image,
+        splashScreenPluginProps?.dark?.image,
+        isAndroid ? splashScreenPluginProps?.android?.image : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.mdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.hdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.xhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.xxhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.xxxhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.image : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.mdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.hdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.xhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.xxhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.xxxhdpi : undefined,
+        isIos ? splashScreenPluginProps?.ios?.image : undefined,
+        isIos ? splashScreenPluginProps?.ios?.tabletImage : undefined,
+        isIos ? splashScreenPluginProps?.ios?.dark?.image : undefined,
+        isIos ? splashScreenPluginProps?.ios?.dark?.tabletImage : undefined,
+        // legacy splash images
         expoConfig.splash?.image,
         isAndroid ? expoConfig.android?.splash?.image : undefined,
         isAndroid ? expoConfig.android?.splash?.mdpi : undefined,
@@ -269,4 +289,20 @@ function sortExpoAutolinkingAndroidConfig(config) {
     return config;
 }
 exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
+/**
+ * Get the props for a config-plugin
+ */
+function getConfigPluginProps(config, pluginName) {
+    const plugin = (config.plugins ?? []).find((plugin) => {
+        if (Array.isArray(plugin)) {
+            return plugin[0] === pluginName;
+        }
+        return plugin === pluginName;
+    });
+    if (Array.isArray(plugin)) {
+        return (plugin[1] ?? null);
+    }
+    return null;
+}
+exports.getConfigPluginProps = getConfigPluginProps;
 //# sourceMappingURL=Expo.js.map
