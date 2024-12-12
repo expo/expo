@@ -72,7 +72,7 @@ class BackgroundTaskScheduler {
 
       // Enqueue the work
       return try {
-        val operation = workManager.enqueueUniquePeriodicWork(
+        workManager.enqueueUniquePeriodicWork(
           WORKER_IDENTIFIER,
           ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
           workRequest
