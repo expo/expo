@@ -541,19 +541,6 @@ const learn = [
     ],
     { expanded: true }
   ),
-  makeSection(
-    'UI programming',
-    [
-      makePage('ui-programming/image-background.mdx'),
-      makePage('ui-programming/implementing-a-checkbox.mdx'),
-      makePage('ui-programming/z-index.mdx'),
-      makePage('ui-programming/using-svgs.mdx'),
-      makePage('ui-programming/react-native-toast.mdx'),
-      makePage('ui-programming/react-native-styling-buttons.mdx'),
-      makePage('ui-programming/user-interface-libraries.mdx'),
-    ],
-    { expanded: true }
-  ),
   makeSection('More', [makePage('additional-resources/index.mdx')]),
 ];
 
