@@ -410,6 +410,17 @@ export default ({ config }) => {
       })
     );
   });
+
+  it('should return empty sources when SourceSkips.ExpoConfigAll is set', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.mkdirSync('/app/assets');
+    vol.writeFileSync('/app/assets/icon.png', 'PNG data');
+    const sources = await getExpoConfigSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.ExpoConfigAll })
+    );
+    expect(sources).toEqual([]);
+  });
 });
 
 describe(getExpoCNGPatchSourcesAsync, () => {

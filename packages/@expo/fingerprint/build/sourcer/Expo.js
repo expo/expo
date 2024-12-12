@@ -16,6 +16,9 @@ const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAll) {
+        return [];
+    }
     if (!resolve_from_1.default.silent(path_1.default.resolve(projectRoot), 'expo/config')) {
         return [];
     }
