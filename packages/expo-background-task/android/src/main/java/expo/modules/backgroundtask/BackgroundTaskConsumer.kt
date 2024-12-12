@@ -38,8 +38,6 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
     if (isBackgrounded || ReactBuildConfig.DEBUG) {
       Log.i(TAG, "Executing task '${task?.name}'")
       taskManagerUtils.executeTask(task, null, callback)
-    } else {
-      Log.w(TAG, "Task was not executed since the app was not in the background or in Debug mode.")
     }
   }
 
