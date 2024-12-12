@@ -89,7 +89,8 @@ export async function queryAllInspectorAppsAsync(
   metroServerOrigin: string
 ): Promise<MetroInspectorProxyApp[]> {
   const resp = await fetch(`${metroServerOrigin}/json/list`);
-  const apps: MetroInspectorProxyApp[] = transformApps(await resp.json());
+  // The newst runtime will be at the end of the list, that's why we reverse it.
+  const apps: MetroInspectorProxyApp[] = transformApps(await resp.json()).reverse();
   const results: MetroInspectorProxyApp[] = [];
   for (const app of apps) {
     // Only use targets with better reloading support
