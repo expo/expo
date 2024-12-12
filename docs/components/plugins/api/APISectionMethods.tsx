@@ -70,23 +70,25 @@ export const renderMethod = (
         key={`method-signature-${method.name || name}-${parameters?.length ?? 0}`}
         className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <APISectionPlatformTags comment={comment} />
-        <HeaderComponent>
-          <MONOSPACE
-            weight="medium"
-            className={mergeClasses(
-              'wrap-anywhere',
-              !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
-            )}>
-            {getMethodName(
-              method as MethodDefinitionData,
-              apiName,
-              name,
-              parameters,
-              typeParameter
-            )}
-          </MONOSPACE>
-        </HeaderComponent>
+        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
+          <HeaderComponent>
+            <MONOSPACE
+              weight="medium"
+              className={mergeClasses(
+                'wrap-anywhere',
+                !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
+              )}>
+              {getMethodName(
+                method as MethodDefinitionData,
+                apiName,
+                name,
+                parameters,
+                typeParameter
+              )}
+            </MONOSPACE>
+          </HeaderComponent>
+          <APISectionPlatformTags comment={comment} />
+        </div>
         {parameters && parameters.length > 0 && (
           <>
             {renderParams(parameters, sdkVersion)}

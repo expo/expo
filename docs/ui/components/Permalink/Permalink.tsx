@@ -36,7 +36,7 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
       <LinkBase
         className={mergeClasses(
           'relative inline-flex items-center gap-1.5 text-[inherit] decoration-0',
-          props.additionalProps?.sidebarType === 'text' ? 'scroll-m-6' : 'scroll-m-12',
+          props.additionalProps?.sidebarType === 'text' ? 'scroll-m-5' : 'scroll-m-8',
           props.additionalProps?.className
         )}
         href={'#' + heading.slug}
@@ -45,7 +45,7 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
         <span className="inline">{children}</span>
         <PermalinkIcon
           className={mergeClasses(
-            'icon-md invisible inline-flex group-hover:visible group-focus-visible:visible',
+            'icon-md invisible inline-flex shrink-0 group-hover:visible group-focus-visible:visible',
             props.nestingLevel >= 4 && 'icon-sm'
           )}
         />

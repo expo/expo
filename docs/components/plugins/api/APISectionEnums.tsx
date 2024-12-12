@@ -4,7 +4,7 @@ import { H2, H4, MONOSPACE } from '~/ui/components/Text';
 
 import { EnumDefinitionData, EnumValueData } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import { getTagNamesList, H3Code, BoxSectionHeader } from './APISectionUtils';
+import { getTagNamesList, H3Code } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { STYLES_APIBOX } from './styles';
@@ -30,25 +30,28 @@ const renderEnumValue = (value: any, fallback?: string) =>
 function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefinitionData }) {
   return (
     <div key={`enum-definition-${name}`} className={mergeClasses(STYLES_APIBOX, '!p-0')}>
-      <div className="px-5 pt-4">
+      <div className="min-h-[56px] px-5 pt-3">
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} />
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
-            {name}
-          </MONOSPACE>
-        </H3Code>
+        <div className="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col">
+          <H3Code tags={getTagNamesList(comment)}>
+            <MONOSPACE weight="medium" className="wrap-anywhere">
+              {name}
+            </MONOSPACE>
+          </H3Code>
+          <APISectionPlatformTags comment={comment} />
+        </div>
         <APICommentTextBlock comment={comment} includePlatforms={false} />
-        <BoxSectionHeader text={`${name} Values`} className="!mb-0 !border-b-0" />
       </div>
       {children.sort(sortByValue).map((enumValue: EnumValueData) => (
-        <div className="border-t border-t-secondary p-5 pb-0 pt-4" key={enumValue.name}>
+        <div
+          className="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
+          key={enumValue.name}>
           <APISectionDeprecationNote comment={enumValue.comment} />
-          <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" disableFallback />
           <H4 hideInSidebar>
             <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
           </H4>
-          <MONOSPACE theme="secondary" className="mb-3 inline-flex text-xs">
+          <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" disableFallback />
+          <MONOSPACE theme="secondary" className="mb-2 inline-flex text-xs">
             {`${name}.${enumValue.name} ＝ ${renderEnumValue(
               enumValue.type.value,
               enumValue.type.name

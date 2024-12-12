@@ -21,7 +21,7 @@ import {
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
-import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
+import { STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -116,18 +116,20 @@ export const renderProp = (
       key={`prop-entry-${name}`}
       className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!pb-4 [&>*:last-child]:!mb-0')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
-      <APISectionPlatformTags comment={comment} />
-      <HeaderComponent tags={getTagNamesList(comment)}>
-        <MONOSPACE
-          weight="medium"
-          className={mergeClasses(
-            'wrap-anywhere',
-            !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
-          )}>
-          {name}
-        </MONOSPACE>
-      </HeaderComponent>
-      <div className={mergeClasses(STYLES_SECONDARY, extractedComment && ELEMENT_SPACING)}>
+      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
+        <HeaderComponent tags={getTagNamesList(comment)}>
+          <MONOSPACE
+            weight="medium"
+            className={mergeClasses(
+              'wrap-anywhere',
+              !exposeInSidebar && 'inline-block prose-code:mb-0'
+            )}>
+            {name}
+          </MONOSPACE>
+        </HeaderComponent>
+        <APISectionPlatformTags comment={comment} />
+      </div>
+      <div className={mergeClasses(STYLES_SECONDARY, extractedComment && 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
         <>Type:</>{' '}
