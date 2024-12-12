@@ -350,7 +350,7 @@ for more details.
                 class="inline"
               >
                 <code
-                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere inline-block prose-code:mb-0"
                   data-text="true"
                 >
                   buttonStyle
@@ -384,7 +384,7 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-3.5"
+          class="text-[14px] font-medium text-secondary mb-2.5"
         >
           Type:
            
@@ -426,7 +426,7 @@ for more details.
                 class="inline"
               >
                 <code
-                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere inline-block prose-code:mb-0"
                   data-text="true"
                 >
                   buttonType
@@ -460,7 +460,7 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-3.5"
+          class="text-[14px] font-medium text-secondary mb-2.5"
         >
           Type:
            
@@ -502,7 +502,7 @@ for more details.
                 class="inline"
               >
                 <code
-                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere inline-block prose-code:mb-0"
                   data-text="true"
                 >
                   cornerRadius
@@ -536,7 +536,7 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-3.5"
+          class="text-[14px] font-medium text-secondary mb-2.5"
         >
           Optional • 
           Type:
@@ -582,7 +582,7 @@ for more details.
                 class="inline"
               >
                 <code
-                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere inline-block prose-code:mb-0"
                   data-text="true"
                 >
                   onPress
@@ -616,7 +616,7 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-3.5"
+          class="text-[14px] font-medium text-secondary mb-2.5"
         >
           Type:
            
@@ -677,7 +677,7 @@ in here.
                 class="inline"
               >
                 <code
-                  class="leading-[1.6154] text-default font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
+                  class="leading-[1.6154] text-default font-medium wrap-anywhere inline-block prose-code:mb-0"
                   data-text="true"
                 >
                   style
@@ -711,7 +711,7 @@ in here.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-3.5"
+          class="text-[14px] font-medium text-secondary mb-2.5"
         >
           Optional • 
           Type:
@@ -4765,10 +4765,10 @@ After calling this function, the listener will no longer receive any events from
     class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-3"
+      class="min-h-[56px] px-5 pt-3"
     >
       <div
-        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -5023,10 +5023,10 @@ After calling this function, the listener will no longer receive any events from
     class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-3"
+      class="min-h-[56px] px-5 pt-3"
     >
       <div
-        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -5264,7 +5264,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <div
-        class="mb-4 flex flex-row items-start [table_&]:mb-2.5"
+        class="flex flex-row items-start [table_&]:mb-2.5"
       >
         <span
           class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -5323,10 +5323,10 @@ After calling this function, the listener will no longer receive any events from
     class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-3"
+      class="min-h-[56px] px-5 pt-3"
     >
       <div
-        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -5671,10 +5671,10 @@ for more details.
     class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-3"
+      class="min-h-[56px] px-5 pt-3"
     >
       <div
-        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -5954,10 +5954,10 @@ for more details.
     class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-3"
+      class="min-h-[56px] px-5 pt-3"
     >
       <div
-        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6235,10 +6235,10 @@ for more details.
     class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-3"
+      class="min-h-[56px] px-5 pt-3"
     >
       <div
-        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6755,7 +6755,7 @@ exports[`APISection expo-pedometer 1`] = `
         </a>
       </h3>
       <div
-        class="mb-4 flex flex-row items-start [table_&]:mb-2.5"
+        class="flex flex-row items-start [table_&]:mb-2.5"
       >
         <span
           class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -8505,10 +8505,10 @@ After calling this function, the listener will no longer receive any events from
     class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
   >
     <div
-      class="px-5 pt-3"
+      class="min-h-[56px] px-5 pt-3"
     >
       <div
-        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
+        class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"

@@ -30,9 +30,9 @@ const renderEnumValue = (value: any, fallback?: string) =>
 function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefinitionData }) {
   return (
     <div key={`enum-definition-${name}`} className={mergeClasses(STYLES_APIBOX, '!p-0')}>
-      <div className="px-5 pt-3">
+      <div className="min-h-[56px] px-5 pt-3">
         <APISectionDeprecationNote comment={comment} />
-        <div className="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0">
+        <div className="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col">
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium" className="wrap-anywhere">
               {name}
