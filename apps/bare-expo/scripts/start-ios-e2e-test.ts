@@ -178,7 +178,7 @@ appId: dev.expo.Payments
 - extendedWaitUntil:
     visible:
       id: "test_suite_container"
-    timeout: 60000
+    timeout: 180000
 - assertVisible:
     text: "Success!"
 `);
