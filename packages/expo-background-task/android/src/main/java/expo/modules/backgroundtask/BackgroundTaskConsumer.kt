@@ -101,11 +101,11 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   }
 
   override fun onHostDestroy() {
-      try {
-        taskCoroutineScope.cancel(ModuleDestroyedException())
-      } catch (e: IllegalStateException) {
-        Log.e(TAG, "The scope does not have a job in it")
-      }
+    try {
+      taskCoroutineScope.cancel(ModuleDestroyedException())
+    } catch (e: IllegalStateException) {
+      Log.e(TAG, "The scope does not have a job in it")
+    }
   }
 
   private fun getIntervalMinutes(): Long {
