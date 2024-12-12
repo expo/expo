@@ -10,26 +10,15 @@ import ExpoModulesCore
 class VideoManager {
   static var shared = VideoManager()
 
-  private static var managerQueue = DispatchQueue(label: "com.expo.video.manager.managerQueue")
   private var videoViews = NSHashTable<VideoView>.weakObjects()
   private var videoPlayers = NSHashTable<VideoPlayer>.weakObjects()
 
   func register(videoPlayer: VideoPlayer) {
-    Self.managerQueue.async { [weak self, weak videoPlayer] in
-      guard let self = self, let videoPlayer = videoPlayer else {
-        return
-      }
-      self.videoPlayers.add(videoPlayer)
-    }
+    videoPlayers.add(videoPlayer)
   }
 
   func unregister(videoPlayer: VideoPlayer) {
-    Self.managerQueue.async { [weak self, weak videoPlayer] in
-      guard let self = self, let videoPlayer = videoPlayer else {
-        return
-      }
-      self.videoPlayers.remove(videoPlayer)
-    }
+    videoPlayers.remove(videoPlayer)
   }
 
   func register(videoView: VideoView) {
@@ -61,15 +50,7 @@ class VideoManager {
 
   // MARK: - Audio Session Management
 
-  // This function usually takes less than 5ms to execute, but in some cases (initial setup) it takes up to 70ms
-  // Because of this we dispatch it on another queue to minimize the load on main queue.
   internal func setAppropriateAudioSessionOrWarn() {
-    Self.managerQueue.async { [weak self] in
-      self?.setAudioSession()
-    }
-  }
-
-  private func setAudioSession() {
     let audioSession = AVAudioSession.sharedInstance()
     let audioMixingMode = findAudioMixingMode()
     var audioSessionCategoryOptions: AVAudioSession.CategoryOptions = audioSession.categoryOptions

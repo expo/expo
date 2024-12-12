@@ -205,31 +205,10 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * Generates thumbnails from the currently played asset. The thumbnails are references to native images,
    * thus they can be used as a source of the `Image` component from `expo-image`.
-   * @platform android
    * @platform ios
    */
-  generateThumbnailsAsync(
-    times: number | number[],
-    options?: VideoThumbnailOptions
-  ): Promise<VideoThumbnail[]>;
+  generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
 }
-
-/**
- * Additional options for video thumbnails generation.
- */
-export type VideoThumbnailOptions = {
-  /**
-   * If provided, the generated thumbnail will not exceed this width in pixels, preserving its aspect ratio.
-   * @platform ios
-   */
-  maxWidth?: number;
-
-  /**
-   * If provided, the generated thumbnail will not exceed this height in pixels, preserving its aspect ratio.
-   * @platform ios
-   */
-  maxHeight?: number;
-};
 
 /**
  * Describes the current status of the player.
@@ -268,6 +247,7 @@ export type VideoSource =
        * When undefined the player will display information contained in the video metadata.
        * @platform android
        * @platform ios
+       * @platform tvos
        */
       metadata?: VideoMetadata;
 
@@ -304,20 +284,22 @@ export type VideoMetadata = {
    * Secondary text that will be displayed under the title.
    * @platform android
    * @platform ios
+   * @platform tvos
    */
   artist?: string;
   /**
-   * The title of the video.
+   * The uri of the video artwork.
+   * @platform android
+   * @platform ios
+   */
+  artwork?: string;
+  /**
+   * The text dispayed above the title on the player
    * @platform android
    * @platform ios
    * @platform tvos
    */
   subTitle?: string;
-  /**
-   * The text that appears above the title in the player
-   * @platform tvos
-   */
-  artwork?: string;
 };
 
 /**

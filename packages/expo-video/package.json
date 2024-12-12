@@ -1,7 +1,7 @@
 {
   "name": "expo-video",
   "title": "Expo Video",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A cross-platform, performant video component for React Native and Expo with Web support",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,5 +37,6 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  }
+  },
+  "gitHead": "728158f99d680cf64fb06f08301d3806c18c6f63"
 }
