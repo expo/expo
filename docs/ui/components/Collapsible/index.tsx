@@ -68,7 +68,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
         data-testid={testID}>
         <summary
           className={mergeClasses(
-            'group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3',
+            'group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3',
             '[details[open]>&]:rounded-b-none',
             '[&_h4]:my-0',
             '[&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug'
