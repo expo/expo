@@ -12,7 +12,7 @@ public class BackgroundTaskModule: Module {
     }
 
     AsyncFunction("triggerTaskWorkerForTestingAsync") {
-      BackgroundTaskScheduler.triggerTaskForTesting()
+      BackgroundTaskTester().triggerBackgroundTaskTest()
     }
 
     AsyncFunction("registerTaskAsync") { (name: String, options: [String: Any]) in

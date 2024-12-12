@@ -92,6 +92,7 @@ export default function BackgroundTaskScreen() {
       />
       <Button
         buttonStyle={styles.button}
+        disabled={!isRegistered}
         title="Trigger Background Tasks (DEBUG)"
         onPress={() => BackgroundTask.triggerTaskWorkerForTestingAsync()}
       />

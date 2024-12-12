@@ -40,8 +40,14 @@ EX_REGISTER_SINGLETON_MODULE(BackgroundTaskAppDelegate)
 
       // Callback when the scheduler calls us
       [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXTaskService class]] runTasksWithReason:EXTaskLaunchReasonBackgroundTask userInfo:nil completionHandler: ^(UIBackgroundFetchResult res) {
-        // We're done executing the task.
-        NSLog(@"Expo Background Tasks - done running background work");
+        // We're done executing task(s).
+        NSLog(@"Expo Background Tasks - done running background work - rescheduling worker");
+        
+        NSError* error;
+        [BackgroundTaskScheduler tryScheduleWorkerAndReturnError:&error];
+        if (error != nil) {
+          NSLog(@"Could not reschedule the worker after task finished: %@", [error localizedDescription]);
+        }
         dispatch_group_leave(taskGroup);
       }];
       

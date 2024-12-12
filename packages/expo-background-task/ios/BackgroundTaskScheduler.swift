@@ -1,12 +1,13 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 import BackgroundTasks
 
-@objc
+@objc(BackgroundTaskScheduler)
 public class BackgroundTaskScheduler: NSObject {
   /**
    Tries to schedule the worker task to run
    */
-  public static func tryScheduleWorker() throws {
+  @objc public static func tryScheduleWorker() throws {
+    print("BackgroundTaskScheduler: tryScheduleWorker")
     // Create request
     let request = BGProcessingTaskRequest(identifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
 
@@ -35,26 +36,10 @@ public class BackgroundTaskScheduler: NSObject {
   }
 
   /**
-   Calls a private iOS API if we're in debug mode to invoke the BGTaskScheduler's worker.
-   NOTE: This code is only compiled when we're in DEBUG mode!
-   */
-  public static func triggerTaskForTesting() {
-#if DEBUG && !targetEnvironment(simulator)
-    let selector = NSSelectorFromString("_simulateLaunchForTaskWithIdentifier:")
-    if let method = BGTaskScheduler.shared.method(for: selector) {
-      print("BackgroundTaskScheduler: calling _simulateLaunchForTaskWithIdentifier method on BGTaskScheduler")
-      let implementation = unsafeBitCast(method, to: (@convention(c) (Any?, Selector, String) -> Void).self)
-      implementation(BGTaskScheduler.shared, selector, BackgroundTaskConstants.BackgroundWorkerIdentifier)
-    } else {
-      print("BackgroundTaskScheduler: _simulateLaunchForTaskWithIdentifier method not found on BGTaskScheduler.")
-    }
-#endif
-  }
-
-  /**
    Cancels the worker task
    */
   public static func stopWorker() {
+    print("BackgroundTaskScheduler: stopWorker")
     BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
   }
 
