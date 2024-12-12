@@ -12,6 +12,7 @@ import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
 import expo.modules.interfaces.taskManager.TaskServiceProviderHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 const val BACKGROUND_TASK_TYPE = "expo-background-task"
@@ -99,7 +100,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   }
 
   override fun onHostDestroy() {
-    // Do nothing
+    taskCoroutineScope.cancel()
   }
 
   private fun getIntervalMinutes(): Long {
