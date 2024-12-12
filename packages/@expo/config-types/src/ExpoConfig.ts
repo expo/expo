@@ -341,6 +341,11 @@ export interface IOS {
    */
   buildNumber?: string;
   /**
+   * Your app short version. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+   * If provided, this will override the value of the top level `version` key on iOS.
+   */
+  version?: string;
+  /**
    * The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present. Requires `expo-system-ui` be installed in your project to work on iOS.
    */
   backgroundColor?: string;
@@ -575,6 +580,11 @@ export interface Android {
    * Version number required by Google Play. Increment by one for each release. Must be a positive integer. [Learn more](https://developer.android.com/studio/publish/versioning.html)
    */
   versionCode?: number;
+  /**
+   * Your app version name. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+   * If provided, this will override the value of the top level `version` key on Android.
+   */
+  version?: string;
   /**
    * The background color for your Android app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present.
    */
