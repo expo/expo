@@ -7,7 +7,8 @@ export const withVersion = createInfoPlistPluginWithPropertyGuard(
   setVersion,
   {
     infoPlistProperty: 'CFBundleShortVersionString',
-    expoConfigProperty: 'version',
+    expoConfigProperty: 'version | ios.version',
+    expoPropertyGetter: getVersion,
   },
   'withVersion'
 );
@@ -21,8 +22,8 @@ export const withBuildNumber = createInfoPlistPluginWithPropertyGuard(
   'withBuildNumber'
 );
 
-export function getVersion(config: Pick<ExpoConfig, 'version'>) {
-  return config.version || '1.0.0';
+export function getVersion(config: Pick<ExpoConfig, 'version' | 'ios'>) {
+  return config.ios?.version || config.version || '1.0.0';
 }
 
 export function setVersion(config: Pick<ExpoConfig, 'version'>, infoPlist: InfoPlist): InfoPlist {
