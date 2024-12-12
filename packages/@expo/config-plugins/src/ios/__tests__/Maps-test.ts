@@ -65,6 +65,7 @@ describe(addMapsCocoaPods, () => {
   });
 });
 
+// TODO: Bring back these tests when the config plugin supports AppDelegate in Swift
 xdescribe(addGoogleMapsAppDelegateImport, () => {
   it(`adds maps import to AppDelegate`, () => {
     const results = addGoogleMapsAppDelegateImport(rnFixture['ios/HelloWorld/AppDelegate.mm']);
@@ -93,6 +94,7 @@ xdescribe(addGoogleMapsAppDelegateImport, () => {
   });
 });
 
+// TODO: Bring back these tests when the config plugin supports AppDelegate in Swift
 xdescribe(addGoogleMapsAppDelegateInit, () => {
   it(`adds maps import to AppDelegate`, () => {
     const results = addGoogleMapsAppDelegateInit(
