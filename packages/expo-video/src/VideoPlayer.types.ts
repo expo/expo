@@ -301,6 +301,7 @@ export type VideoMetadata = {
    * The title of the video.
    * @platform android
    * @platform ios
+   * @platform tvos
    */
   title?: string;
   /**
@@ -310,9 +311,15 @@ export type VideoMetadata = {
    */
   artist?: string;
   /**
-   * The uri of the video artwork.
+   * The title of the video.
    * @platform android
    * @platform ios
+   * @platform tvos
+   */
+  subTitle?: string;
+  /**
+   * The text that appears above the title in the player
+   * @platform tvos
    */
   artwork?: string;
 };
