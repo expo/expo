@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed ignorePaths does not ignore files inside local modules. ([#33597](https://github.com/expo/expo/pull/33597) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Remove extraneous arg from command help doc ([#33512](https://github.com/expo/expo/pull/33512) by [@wschurman](https://github.com/wschurman))
