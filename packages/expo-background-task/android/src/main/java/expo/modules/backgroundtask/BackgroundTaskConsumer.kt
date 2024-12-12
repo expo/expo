@@ -105,12 +105,8 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   }
 
   private fun getIntervalMinutes(): Long {
-    val options = if (task != null) task!!.options else null
-
-    if (options != null && options.containsKey("minimumInterval")) {
-      // minimumInterval option is in minutes
-      return (options["minimumInterval"] as Number).toLong()
-    }
-    return DEFAULT_INTERVAL_MINUTES
+    val options = task?.options as? Map<String, Any?>
+    return (options?.get("minimumInterval") as? Number)?.toLong()
+      ?: DEFAULT_INTERVAL_MINUTES
   }
 }
