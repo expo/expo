@@ -14,7 +14,7 @@ exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
   <div
-    class="flex flex-row items-start max-md-gutters:mb-2.5 [table_&]:mb-2.5"
+    class="mb-3 flex flex-row items-start [table_&]:mb-2.5"
   >
     <span
       class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"

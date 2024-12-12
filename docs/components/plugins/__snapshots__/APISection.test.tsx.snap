@@ -5264,7 +5264,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <div
-        class="flex flex-row items-start max-md-gutters:mb-2.5 [table_&]:mb-2.5"
+        class="flex flex-row items-start [table_&]:mb-2.5 mb-1"
       >
         <span
           class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -6755,7 +6755,7 @@ exports[`APISection expo-pedometer 1`] = `
         </a>
       </h3>
       <div
-        class="flex flex-row items-start max-md-gutters:mb-2.5 [table_&]:mb-2.5"
+        class="mb-3 flex flex-row items-start [table_&]:mb-2.5"
       >
         <span
           class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
