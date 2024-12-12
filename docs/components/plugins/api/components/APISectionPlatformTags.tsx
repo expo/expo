@@ -1,3 +1,5 @@
+import { mergeClasses } from '@expo/styleguide';
+
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
@@ -13,6 +15,7 @@ type Props = {
   platforms?: CommentTagData[];
   userProvidedPlatforms?: string[];
   disableFallback?: boolean;
+  className?: string;
 };
 
 export const APISectionPlatformTags = ({
@@ -20,6 +23,7 @@ export const APISectionPlatformTags = ({
   platforms,
   prefix,
   userProvidedPlatforms,
+  className,
   disableFallback = false,
 }: Props) => {
   const { platforms: defaultPlatforms } = usePageMetadata();
@@ -42,7 +46,7 @@ export const APISectionPlatformTags = ({
   }
 
   return (
-    <div className="flex flex-row items-start max-md-gutters:mb-2.5 [table_&]:mb-2.5">
+    <div className={mergeClasses('mb-3 flex flex-row items-start [table_&]:mb-2.5', className)}>
       {experimentalData.length > 0 && (
         <CALLOUT tag="span" theme="secondary" className="inline-flex flex-row">
           <StatusTag status="experimental" className="!mr-0" />
