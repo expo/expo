@@ -12,5 +12,8 @@ internal struct VideoMetadata: Record {
 
   @Field
   var artwork: URL? = nil
+    
+  @Field
+  var subTitle: String? = nil
 }
 // swiftlint:enable redundant_optional_initialization
