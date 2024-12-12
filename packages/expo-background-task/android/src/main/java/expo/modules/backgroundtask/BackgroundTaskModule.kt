@@ -31,6 +31,8 @@ class BackgroundTaskModule : Module() {
           val appScopeKey = it.packageName
           BackgroundTaskScheduler.runTasks(it, appScopeKey)
         } ?: throw MissingContextException()
+      } else {
+        throw TestMethodNotAvailableInProductionBuild()
       }
     }
 
