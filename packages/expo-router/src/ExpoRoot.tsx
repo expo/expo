@@ -78,7 +78,7 @@ const initialUrl =
  * @param url initial location
  * @returns Object with serverContext and serverUrl
  */
-function getServerContextValues(url: URL): { serverContext: ServerContextType, serverUrl: string } {
+function getServerContextValues(url: URL): { serverContext: ServerContextType; serverUrl: string } {
   const serverContextValue: ServerContextType = {
     location: {
       pathname: url.pathname,
