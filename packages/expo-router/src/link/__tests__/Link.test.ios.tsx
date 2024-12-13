@@ -141,6 +141,7 @@ it('strips web-only href attributes', () => {
   );
 });
 
+<<<<<<< HEAD
 it('can preserve the initialRoute', () => {
   renderRouter({
     index: function MyIndexRoute() {
@@ -201,4 +202,30 @@ it('can preserve the initialRoute with shared groups', () => {
   expect(screen.getByTestId('orange')).toBeDefined();
   act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
+=======
+it('supports array styles', () => {
+  const { getByTestId } = render(
+    <Link testID="link" href="https://www.example.com/foo" style={[{ color: 'red' }]}>
+      Foo
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node.props.style).toStrictEqual([{ color: 'red' }]);
+});
+
+it('children supports array styles', () => {
+  const { getByTestId } = render(
+    <Link
+      testID="link"
+      href="https://www.example.com/foo"
+      asChild
+      style={[{ borderColor: 'blue' }]}>
+      <Pressable style={[{ backgroundColor: 'red' }]}>
+        <Text>Foo</Text>
+      </Pressable>
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node.props.style).toStrictEqual({ backgroundColor: 'red', borderColor: 'blue' });
+>>>>>>> d1ebb6f7e9 ([router] Fix array styles with Link children)
 });

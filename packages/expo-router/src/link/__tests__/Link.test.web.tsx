@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 import { render } from '@testing-library/react';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Link } from '../Link';
 
@@ -188,4 +188,26 @@ describe('base url relative links', () => {
     const node = getByTestId('link');
     expect(node.getAttribute('href')).toBe('https://www.example.com/foo');
   });
+});
+
+it('supports array styles', () => {
+  const { getByTestId } = render(
+    <Link testID="link" href="https://www.example.com/foo" style={[{ color: 'red' }]}>
+      Foo
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node.getAttribute('style')).toBe('color: rgb(255, 0, 0);');
+});
+
+it('children supports array styles', () => {
+  const { getByTestId } = render(
+    <Link testID="link" href="https://www.example.com/foo" asChild>
+      <Pressable style={[{ backgroundColor: 'red' }]}>
+        <Text>Foo</Text>
+      </Pressable>
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node.getAttribute('style')).toBe('background-color: rgb(255, 0, 0);');
 });

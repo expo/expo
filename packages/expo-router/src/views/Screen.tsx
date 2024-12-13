@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 
+import { Href } from '../types';
 import { useNavigation } from '../useNavigation';
 
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
@@ -12,6 +13,7 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
    * @example `/(root)` maps to a layout route `/app/(root).tsx`.
    */
   name?: string;
+  href?: Href;
   initialParams?: Record<string, any>;
   options?: TOptions;
 };
@@ -19,8 +21,12 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
 const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
 
 /** Component for setting the current screen's options dynamically. */
-export function Screen<TOptions extends object = object>({ name, options }: ScreenProps<TOptions>) {
-  const navigation = useNavigation(name);
+export function Screen<TOptions extends object = object>({
+  name,
+  href,
+  options,
+}: ScreenProps<TOptions>) {
+  const navigation = useNavigation(href || name);
 
   useLayoutEffect(() => {
     if (
