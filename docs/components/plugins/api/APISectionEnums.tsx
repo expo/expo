@@ -47,7 +47,6 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
           className="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
           key={enumValue.name}>
           <APISectionDeprecationNote comment={enumValue.comment} />
-
           <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
             <H4 hideInSidebar>
               <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
