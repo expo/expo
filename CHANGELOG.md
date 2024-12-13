@@ -2357,6 +2357,8 @@ Package-specific changes not released in any SDK will be added here just before 
   - Fixed clipboard listener is called twice on Android. ([#19723](https://github.com/expo/expo/pull/19723) by [@lukmccall](https://github.com/lukmccall))
   - Fixed clipboard listener can crash the application during initialization on Android. ([#19723](https://github.com/expo/expo/pull/19723) by [@lukmccall](https://github.com/lukmccall))
   - Fixed the `ImageFormat` or the `StringFormat` not working in the release builds on Android. ([#20155](https://github.com/expo/expo/pull/20155) by [@lukmccall](https://github.com/lukmccall))
+  - **`expo-checkbox`**
+  - Fixed: Addressed an issue where accessibilityState was not updating correctly on value changes. by [@brtsyf](https://github.com/brtsyf))
 - **`expo-constants`**
   - Fix the list of platform keys in expo-module.config.json ([#20017](https://github.com/expo/expo/pull/20017) by [@alanjhughes](https://github.com/alanjhughes))
 - **`expo-camera`**
