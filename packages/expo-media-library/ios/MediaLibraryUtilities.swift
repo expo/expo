@@ -527,20 +527,6 @@ func readSizeFrom(url: URL) -> CGSize? {
   return CGSize(width: abs(size.width), height: abs(size.height))
 }
 
-func getFileSize(from fileUrl: URL) -> Int? {
-  do {
-    let resources = try fileUrl.resourceValues(forKeys: [.fileSizeKey])
-    return resources.fileSize
-  } catch {
-    log.error("Failed to get file size for \(fileUrl.absoluteString)")
-    return nil
-  }
-}
-
-func getMimeType(from pathExtension: String) -> String? {
-  return UTType(filenameExtension: pathExtension)?.preferredMIMEType
-}
-
 func getFileExtension(from fileName: String) -> String {
   return ".\(URL(fileURLWithPath: fileName).pathExtension)"
 }

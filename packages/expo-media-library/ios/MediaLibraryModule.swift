@@ -363,6 +363,8 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     let fileExt = getFileExtension(from: fileName).replacingOccurrences(of: ".", with: "")
     let tempId = UUID().uuidString
     let fileUrl = tempDir.appendingPathComponent(tempId).appendingPathExtension(fileExt)
+    var width = CGFloat(asset.pixelWidth);
+    var height = CGFloat(asset.pixelHeight);
     PHAssetResourceManager.default().writeData(for: videoResource, toFile: fileUrl, options: nil) { error in
       guard error == nil else {
         promise.resolve(result)
@@ -370,23 +372,23 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
       let avAsset = AVAsset(url: fileUrl)
       let duration = avAsset.duration.seconds
-      var pairedVideoAsset: [String: Any?] = [
+      // The video resouece of a paired photo may have different dimensions from the original photo
+      if let videoSize = readSizeFrom(url: fileUrl) {
+        width = videoSize.width;
+        height = videoSize.height;
+      }
+      let pairedVideoAsset: [String: Any?] = [
         "id": tempId,
         "filename": fileName,
         "uri": fileUrl.absoluteString,
-        "mediaType": "video",
+        "mediaType": "pairedVideo",
         "mediaSubtypes": [],
-        "width": asset.pixelWidth,
-        "height": asset.pixelHeight,
+        "width": width,
+        "height": height,
         "duration": duration,
         "creationTime": exportDate(asset.creationDate),
-        "modificationTime": exportDate(asset.modificationDate),
-        "subType": "pairedVideo"
+        "modificationTime": exportDate(asset.modificationDate)
       ]
-      if #available(iOS 16, *) {
-        pairedVideoAsset["width"] = videoResource.pixelWidth
-        pairedVideoAsset["height"] = videoResource.pixelHeight
-      }
       var updatedResult = result
       updatedResult["pairedVideoAsset"] = pairedVideoAsset
       promise.resolve(updatedResult)

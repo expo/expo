@@ -13,7 +13,7 @@ export type PermissionResponse = EXPermissionResponse & {
  * @platform android 13+
  */
 export type GranularPermission = 'audio' | 'photo' | 'video';
-export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
+export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown' | 'pairedVideo';
 /**
  * Represents the possible types of media that the app will ask the OS to get access to when calling [`presentPermissionsPickerAsync()`](#medialibrarypresentpermissionspickerasyncmediatypes).
  * @platform android 14+
@@ -120,18 +120,12 @@ export type AssetInfo = Asset & {
      * This field is available if the `mediaType` is `"photo"`, and the `mediaSubtypes` includes `"livePhoto"`.
      * @platform ios
      */
-    pairedVideoAsset?: PairedVideoAsset | null;
+    pairedVideoAsset?: Asset | null;
 };
 /**
  * Represents a video component of a Live Photo on iOS. This is the paired video asset that
  * accompanies a Live Photo's still image, containing the motion content.
  */
-export type PairedVideoAsset = Asset & {
-    /**
-     * Constant value 'pairedVideo' indicating this is extracted from a Live Photo
-     */
-    subType: 'pairedVideo';
-};
 /**
  * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
  * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
