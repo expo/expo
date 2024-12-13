@@ -1,6 +1,6 @@
 // Copyright © 2024 650 Industries.
 
-import React from 'react';
+import React,{ useCallback } from 'react';
 import { StyleSheet, Image, Pressable, Platform } from 'react-native';
 
 import type { CheckboxProps } from './Checkbox.types';
@@ -17,9 +17,12 @@ export default function ExpoCheckbox({
   value,
   ...other
 }: CheckboxProps) {
-  const handleChange = () => {
-    onValueChange?.(!value);
-  };
+  
+  const handlePress = useCallback(() => {
+    if (!disabled) {
+      onValueChange?.(!value);
+    }
+  }, [onValueChange, value, disabled]);
 
   return (
     <Pressable
@@ -36,7 +39,7 @@ export default function ExpoCheckbox({
         disabled && styles.disabled,
         value && disabled && styles.checkedAndDisabled,
       ]}
-      onPress={handleChange}>
+      onPress={handlePress}>
       {value && (
         <Image
           source={{
