@@ -9,6 +9,7 @@ import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Ico
 import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
 import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
+import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { PaletteIcon } from '@expo/styleguide-icons/outline/PaletteIcon';
 import { Phone01Icon } from '@expo/styleguide-icons/outline/Phone01Icon';
@@ -205,6 +206,8 @@ function getIconElement(iconName?: string) {
       return EasMetadataIcon;
     case 'EAS Insights':
       return DataIcon;
+    case 'EAS Workflows':
+      return Dataflow01Icon;
     case 'Expo Modules API':
       return CpuChip01Icon;
     case 'Expo Router':
