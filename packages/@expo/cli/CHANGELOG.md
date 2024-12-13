@@ -15,7 +15,7 @@
 - Add minor fixes to nested server actions. ([#32925](https://github.com/expo/expo/pull/32925) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix a build error when running `expo run:ios` consecutively without closing the app. ([#33236](https://github.com/expo/expo/pull/33236) by [@alanjhughes](https://github.com/alanjhughes))
 - Load `.env` files in `expo start` before resolving options making these env vars available in dynamic app manifests. ([#33629](https://github.com/expo/expo/pull/33629) by [@byCedric](https://github.com/byCedric))
-- Bump `@react-native/dev-middleware` to resolve ignored `node_module/*` entry points.
+- Bump `@react-native/dev-middleware` to resolve ignored `node_module/*` entry points. ([#33656](https://github.com/expo/expo/pull/33656) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
