@@ -177,8 +177,8 @@ appId: dev.expo.Payments
 - openLink: bareexpo://test-suite/run?tests=${testCase}
 - extendedWaitUntil:
     visible:
-      id: "test_suite_container"
-    timeout: 30000
+      id: "test_suite_text_results"
+    timeout: 120000
 - assertVisible:
     text: "Success!"
 `);
