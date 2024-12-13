@@ -123,10 +123,6 @@ export type AssetInfo = Asset & {
     pairedVideoAsset?: Asset | null;
 };
 /**
- * Represents a video component of a Live Photo on iOS. This is the paired video asset that
- * accompanies a Live Photo's still image, containing the motion content.
- */
-/**
  * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
  * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
  * */
