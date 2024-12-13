@@ -81,7 +81,7 @@ const initialUrl =
 function getServerContextValues(url: URL): { serverContext: ServerContextType, serverUrl: string } {
   const serverContextValue: ServerContextType = {
     location: {
-      pathname: url.pathname + url.hash,
+      pathname: url.pathname,
       search: url.search,
     },
   };

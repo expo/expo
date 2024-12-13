@@ -78,7 +78,7 @@ const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'un
 function getServerContextValues(url) {
     const serverContextValue = {
         location: {
-            pathname: url.pathname + url.hash,
+            pathname: url.pathname,
             search: url.search,
         },
     };
