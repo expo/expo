@@ -363,8 +363,8 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     let fileExt = getFileExtension(from: fileName).replacingOccurrences(of: ".", with: "")
     let tempId = UUID().uuidString
     let fileUrl = tempDir.appendingPathComponent(tempId).appendingPathExtension(fileExt)
-    var width = CGFloat(asset.pixelWidth);
-    var height = CGFloat(asset.pixelHeight);
+    var width = CGFloat(asset.pixelWidth)
+    var height = CGFloat(asset.pixelHeight)
     PHAssetResourceManager.default().writeData(for: videoResource, toFile: fileUrl, options: nil) { error in
       guard error == nil else {
         promise.resolve(result)
@@ -374,8 +374,8 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       let duration = avAsset.duration.seconds
       // The video resouece of a paired photo may have different dimensions from the original photo
       if let videoSize = readSizeFrom(url: fileUrl) {
-        width = videoSize.width;
-        height = videoSize.height;
+        width = videoSize.width
+        height = videoSize.height
       }
       let pairedVideoAsset: [String: Any?] = [
         "id": tempId,
