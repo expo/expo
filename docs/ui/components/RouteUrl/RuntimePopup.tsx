@@ -36,8 +36,8 @@ export function RuntimePopup<T extends string>({
           'max-md-gutters:min-w-[unset] max-md-gutters:max-w-[60px] max-md-gutters:px-6 max-md-gutters:indent-[-9999px]'
         )}
         value={selected}
-        onChange={e => {
-          onSelect(e.target.value as T);
+        onChange={event => {
+          onSelect(event.target.value as T);
         }}>
         {items.map((item, index) => (
           <option key={String(index)} value={item.id}>

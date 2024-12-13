@@ -690,7 +690,7 @@ export async function test({ describe, expect, it, ...t }) {
       src.write('abcde');
       const blob = src.blob();
 
-      const response = await fetch('https://httpbin.org/anything', {
+      const response = await fetch('https://httpbin.test.k6.io/anything', {
         method: 'POST',
         body: blob,
       });
@@ -708,7 +708,7 @@ export async function test({ describe, expect, it, ...t }) {
 
       formData.append('data', blob);
 
-      const response = await fetch('https://httpbin.org/anything', {
+      const response = await fetch('https://httpbin.test.k6.io/anything', {
         method: 'POST',
         body: formData,
       });

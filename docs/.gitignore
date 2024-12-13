@@ -1,12 +1,25 @@
-.cache
-.next
+# general
 node_modules
-out/
 *.tsbuildinfo
 .eslintcache
 
 # copied in next.config.js
-pages/versions/latest/
+pages/versions/latest
 
 # staticly generated constants
 public/static/constants
+
+# next.js
+.cache
+.next
+.swc
+out
+
+# yarn berry
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

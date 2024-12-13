@@ -25,12 +25,11 @@ type Props = PropsWithChildren<{
 
 export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: Props) {
   const childrenArray = Array.isArray(children) ? children : [children];
-  const codeBlocks = childrenArray.filter(
-    ({ props }) =>
-      props.children.props.className && props.children.props.className.startsWith('language-')
+  const codeBlocks = childrenArray.filter(({ props }) =>
+    props.children.props.className?.startsWith('language-')
   );
   const tabNames =
-    tabs ||
+    tabs ??
     codeBlocks.map(child => {
       const className = child.props.children.props.className;
       return MDX_CLASS_NAME_TO_TAB_NAME[className] || className.replace('language-', '');

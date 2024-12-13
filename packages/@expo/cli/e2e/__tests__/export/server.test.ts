@@ -1,12 +1,12 @@
 /* eslint-env jest */
-import execa from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
+import { executeExpoAsync } from '../../utils/expo';
 import { processFindPrefixedValue } from '../../utils/process';
 import { createBackgroundServer } from '../../utils/server';
-import { bin, findProjectFiles, getRouterE2ERoot } from '../utils';
+import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -16,8 +16,7 @@ describe('server-output', () => {
 
   beforeAll(async () => {
     console.time('export-server');
-    await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-server'], {
-      cwd: projectRoot,
+    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', 'dist-server'], {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',

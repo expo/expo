@@ -1,19 +1,17 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
 import semver from 'semver';
 
 import {
-  bin,
-  execute,
   projectRoot,
   getRoot,
   setupTestProjectWithOptionsAsync,
   getLoadedModulesAsync,
   findProjectFiles,
 } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 import { createPackageTarball } from '../utils/package';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -40,7 +38,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo prebuild --help`', async () => {
-  const results = await execute('prebuild', '--help');
+  const results = await executeExpoAsync(projectRoot, ['prebuild', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -66,15 +64,17 @@ it('runs `npx expo prebuild --help`', async () => {
 });
 
 it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
-  const projectName = 'basic-prebuild-assert-no-expo';
-  const projectRoot = getRoot(projectName);
+  const projectRoot = getRoot('basic-prebuild-assert-no-expo');
+
   // Create the project root aot
   await fs.mkdir(projectRoot, { recursive: true });
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
   await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
-  await expect(execute('prebuild', projectName, '--no-install')).rejects.toThrowError(
+  await expect(
+    executeExpoAsync(projectRoot, ['prebuild', '--no-install'], { verbose: false })
+  ).rejects.toThrow(
     /Cannot determine which native SDK version your project uses because the module `expo` is not installed\. Please install it with `yarn add expo` and try again./
   );
 });
@@ -146,21 +146,21 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
 
 // This tests contains assertions related to ios files, making it incompatible with Windows
 itNotWindows('runs `npx expo prebuild`', async () => {
-  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank', {
+    reuseExisting: false,
+  });
+
   const templateTarball = await createPackageTarball(
     projectRoot,
     'templates/expo-template-bare-minimum'
   );
 
-  console.log('Using local template:', templateTarball.relativePath);
-
-  await execa(
-    'node',
-    [bin, 'prebuild', '--no-install', '--template', templateTarball.relativePath],
-    {
-      cwd: projectRoot,
-    }
-  );
+  await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--no-install',
+    '--template',
+    templateTarball.relativePath,
+  ]);
 
   // Clean up the tarballs to avoid `.tarballs` being validated
   await fs.rm(path.dirname(templateTarball.absolutePath), { force: true, recursive: true });
@@ -188,26 +188,30 @@ itNotWindows('runs `npx expo prebuild`', async () => {
 
 // This tests contains assertions related to ios files, making it incompatible with Windows
 itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`', async () => {
-  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
-
   const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
-  await execa('node', [bin, 'prebuild', '--no-install', '--template', npmTemplatePackage], {
-    cwd: projectRoot,
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank', {
+    reuseExisting: false,
   });
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
-  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--no-install',
+    '--template',
+    npmTemplatePackage,
+  ]);
 
   await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
 
   // Added new packages
-  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-    'expo',
-    'react',
-    'react-native',
-  ]);
+  expect(pkg.read().dependencies).toMatchObject({
+    expo: expect.any(String),
+    react: expect.any(String),
+    'react-native': expect.any(String),
+  });
 
   // Updated scripts
-  expect(pkg.scripts).toStrictEqual({
+  expect(pkg.read().scripts).toMatchObject({
     android: 'expo run:android',
     ios: 'expo run:ios',
   });
@@ -220,8 +224,10 @@ itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0
 itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'github-template-prebuild',
-    'with-blank'
+    'with-blank',
+    { reuseExisting: false }
   );
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
   const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
   const expoSdkVersion = semver.minVersion(expoPackage)?.major;
@@ -230,23 +236,18 @@ itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   }
 
   const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
-  console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
 
-  await execa('node', [bin, 'prebuild', '--no-install', '--template', templateUrl], {
-    cwd: projectRoot,
-  });
-
-  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  await executeExpoAsync(projectRoot, ['prebuild', '--no-install', '--template', templateUrl]);
 
   // Added new packages
-  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-    'expo',
-    'react',
-    'react-native',
-  ]);
+  expect(pkg.read().dependencies).toMatchObject({
+    expo: expect.any(String),
+    react: expect.any(String),
+    'react-native': expect.any(String),
+  });
 
   // Updated scripts
-  expect(pkg.scripts).toStrictEqual({
+  expect(pkg.read().scripts).toMatchObject({
     android: 'expo run:android',
     ios: 'expo run:ios',
   });

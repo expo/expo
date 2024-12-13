@@ -96,7 +96,7 @@ function getMessage(event: ErrorEvent) {
     return event.message;
   }
 
-  if (event.exception && event.exception.values) {
+  if (event.exception?.values) {
     const value = event.exception.values[0].value;
     if (value) {
       return value;
@@ -107,11 +107,11 @@ function getMessage(event: ErrorEvent) {
 }
 
 function maybeResetReportedErrorsCache() {
-  const timestamp = parseInt(localStorage.getItem(TIMESTAMP_KEY) || '', 10);
-  const now = new Date().getTime();
+  const timestamp = parseInt(localStorage.getItem(TIMESTAMP_KEY) ?? '', 10);
+  const now = Date.now();
 
   if (!timestamp) {
-    localStorage.setItem(TIMESTAMP_KEY, new Date().getTime().toString());
+    localStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
   } else if (now - timestamp >= ONE_DAY_MS) {
     localStorage.removeItem(REPORTED_ERRORS_KEY);
     localStorage.removeItem(TIMESTAMP_KEY);

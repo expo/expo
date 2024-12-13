@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- On `Android`, parse the `pictureSize` prop safely to prevent invalid values causing exceptions. ([#33566](https://github.com/expo/expo/pull/33566) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 16.0.8 - 2024-11-29
 
 _This version does not introduce any user-facing changes._

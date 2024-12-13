@@ -178,8 +178,23 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      * @platform android
      * @platform ios
      */
-    generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
+    generateThumbnailsAsync(times: number | number[], options?: VideoThumbnailOptions): Promise<VideoThumbnail[]>;
 }
+/**
+ * Additional options for video thumbnails generation.
+ */
+export type VideoThumbnailOptions = {
+    /**
+     * If provided, the generated thumbnail will not exceed this width in pixels, preserving its aspect ratio.
+     * @platform ios
+     */
+    maxWidth?: number;
+    /**
+     * If provided, the generated thumbnail will not exceed this height in pixels, preserving its aspect ratio.
+     * @platform ios
+     */
+    maxHeight?: number;
+};
 /**
  * Describes the current status of the player.
  * - `idle`: The player is not playing or loading any videos.

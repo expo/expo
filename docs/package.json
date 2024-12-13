@@ -22,6 +22,7 @@
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
     "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resources"
   },
+  "packageManager": "yarn@4.5.3",
   "dependencies": {
     "@expo/styleguide": "^9.0.1",
     "@expo/styleguide-base": "^2.0.1",
@@ -32,6 +33,7 @@
     "@mdx-js/react": "^2.2.1",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^1.0.0",
+    "@radix-ui/react-select": "2.1.1",
     "@radix-ui/react-tooltip": "^1.1.1",
     "@reach/tabs": "^0.18.0",
     "@sentry/react": "^8.38.0",
@@ -91,8 +93,9 @@
     "eslint-config-universe": "^14.0.0",
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-mdx": "^3.1.5",
-    "eslint-plugin-tailwindcss": "^3.17.4",
-    "eslint-plugin-testing-library": "^6.4.0",
+    "eslint-plugin-tailwindcss": "^3.17.5",
+    "eslint-plugin-testing-library": "^6.5.0",
+    "eslint-plugin-unicorn": "^56.0.1",
     "fs-extra": "^11.2.0",
     "http-server": "^14.1.1",
     "jest": "^29.7.0",
@@ -115,5 +118,31 @@
     "unist-builder": "^4.0.0",
     "unist-util-visit": "^5.0.0",
     "user-agent-data-types": "^0.4.2"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "bracketSameLine": true,
+    "trailingComma": "es5",
+    "arrowParens": "avoid",
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ],
+    "tailwindFunctions": [
+      "mergeClasses"
+    ]
+  },
+  "browserslist": [
+    ">0.3%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "postcss": {
+    "plugins": {
+      "postcss-import": {},
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
   }
 }

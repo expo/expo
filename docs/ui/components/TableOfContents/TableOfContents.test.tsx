@@ -1,11 +1,11 @@
 import { jest } from '@jest/globals';
 import GithubSlugger from 'github-slugger';
 
-import { TableOfContents } from './TableOfContents';
-
 import { HeadingManager, HeadingType } from '~/common/headingManager';
 import { renderWithHeadings } from '~/common/test-utilities';
 import { HeadingsContext } from '~/common/withHeadingManager';
+
+import { TableOfContents } from './TableOfContents';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -18,7 +18,7 @@ const prepareHeadingManager = () => {
   headingManager.addHeading('Level 3 subheading', 3, {});
   headingManager.addHeading('Code heading depth 1', 0, {
     sidebarDepth: 1,
-    sidebarType: HeadingType.InlineCode,
+    sidebarType: HeadingType.INLINE_CODE,
   });
 
   return headingManager;

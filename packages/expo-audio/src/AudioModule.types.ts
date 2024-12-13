@@ -142,13 +142,16 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   remove(): void;
 }
 
+// @docsMissing
 export type AudioSample = {
   channels: AudioSampleChannel[];
   timestamp: number;
 };
 
+// @docsMissing
 export type AudioSampleChannel = { frames: number[] };
 
+// @docsMissing
 export type AudioEvents = {
   playbackStatusUpdate(status: AudioStatus): void;
   audioSampleUpdate(data: AudioSample): void;
@@ -238,6 +241,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   recordForDuration(seconds: number): void;
 }
 
+// @docsMissing
 export type RecordingEvents = {
   recordingStatusUpdate: (status: RecordingStatus) => void;
 };

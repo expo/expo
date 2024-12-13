@@ -1,8 +1,9 @@
-import { test, Page, WebSocket, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
-import { ExpoStartCommand } from '../../utils/command-instance';
+import { createExpoStart } from '../../utils/expo';
+import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -11,15 +12,9 @@ const projectRoot = getRouterE2ERoot();
 const inputDir = 'router-misc';
 
 test.describe(inputDir, () => {
-  test.beforeAll(async () => {
-    // Could take 45s depending on how fast the bundler resolves
-    test.setTimeout(560 * 1000);
-  });
-
-  let expo: ExpoStartCommand;
-
-  test.beforeEach(async () => {
-    expo = new ExpoStartCommand(projectRoot, {
+  const expoStart = createExpoStart({
+    cwd: projectRoot,
+    env: {
       NODE_ENV: 'production',
       EXPO_USE_STATIC: 'single',
       E2E_ROUTER_JS_ENGINE: 'hermes',
@@ -28,11 +23,20 @@ test.describe(inputDir, () => {
 
       // Ensure CI is disabled otherwise the file watcher won't run.
       CI: '0',
-    });
+    },
   });
 
+  test.beforeEach(async () => {
+    console.time('expo start');
+    await expoStart.startAsync();
+    console.timeEnd('expo start');
+
+    console.time('Eagerly bundled JS');
+    await expoStart.fetchBundleAsync('/');
+    console.timeEnd('Eagerly bundled JS');
+  });
   test.afterEach(async () => {
-    await expo.stopAsync();
+    await expoStart.stopAsync();
   });
 
   test('url hash and search params are parsed correctly when both are set in URL', async ({ page }) => {
@@ -49,13 +53,11 @@ test.describe(inputDir, () => {
     expect(page.url()).toEqual(`${expo.url}/hash-support?foo=bar#my-hash`);
   });
 
-  test('url hash being set multiple times', async ({ page }) => {
-    await expo.startAsync(['--port=8085']);
-    console.log('Server running:', expo.url);
-    await expo.fetchAsync('/');
-    page.on('console', (msg) => console.log(msg.text()));
+  test('url hash', async ({ page }) => {
+    // Listen for console logs and errors
+    const pageErrors = pageCollectErrors(page);
 
-    await page.goto(`${expo.url}/hash-support#my-hash`);
+    await page.goto(new URL('/hash-support#my-hash', expoStart.url).href);
 
     // Ensure the initial hash is correct
     await expect(page.locator('[data-testid="hash"]')).toHaveText('my-hash');
@@ -63,16 +65,37 @@ test.describe(inputDir, () => {
     // Update the hash
     page.locator('[data-testid="set-hash-test"]').click();
     await expect(page.locator('[data-testid="hash"]')).toHaveText('test');
-    expect(page.url()).toEqual(`${expo.url}/hash-support#test`);
+    expect(page.url()).toEqual(new URL('/hash-support#test', expoStart.url).href);
 
     // Updating the hash multiple times will not duplicate the hash
     page.locator('[data-testid="set-hash-test"]').click();
     await expect(page.locator('[data-testid="hash"]')).toHaveText('test');
-    expect(page.url()).toEqual(`${expo.url}/hash-support#test`);
+    expect(page.url()).toEqual(new URL('/hash-support#test', expoStart.url).href);
 
     // Clear the hash
     page.locator('[data-testid="clear-hash"]').click();
     await expect(page.locator('[data-testid="hash"]')).toHaveText('');
-    expect(page.url()).toEqual(`${expo.url}/hash-support`);
+    expect(page.url()).toEqual(new URL('/hash-support', expoStart.url).href);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('url hash stays when setting other params', async ({ page }) => {
+    console.log('Server running:', expoStart.url);
+    await expoStart.fetchAsync('/');
+    page.on('console', (msg) => console.log(msg.text()));
+
+    await page.goto(`${expoStart.url.href}hash-support#my-hash`);
+
+    // Ensure the initial hash and param is correct
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('my-hash');
+    await expect(page.locator('[data-testid="foo-param"]')).not.toHaveText('bar');
+    expect(page.url()).toEqual(`${expoStart.url.href}hash-support#my-hash`);
+
+    // Update other params
+    page.locator('[data-testid="set-param-test"]').click();
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('my-hash');
+    await expect(page.locator('[data-testid="foo-param"]')).toHaveText('bar');
+    expect(page.url()).toEqual(`${expoStart.url.href}hash-support?foo=bar#my-hash`);
   });
 });

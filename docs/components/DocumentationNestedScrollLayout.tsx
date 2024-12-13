@@ -9,7 +9,8 @@ import {
 } from 'react';
 
 import { ScrollContainer } from '~/components/ScrollContainer';
-import { SidebarHead, SidebarFooter } from '~/ui/components/Sidebar';
+import { SidebarFooter } from '~/ui/components/Sidebar/SidebarFooter';
+import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
 
 type Props = PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
@@ -98,7 +99,7 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
     );
   }
 
-  private scrollHandler = () => {
+  private readonly scrollHandler = () => {
     this.props.onContentScroll && this.props.onContentScroll(this.getContentScrollTop());
   };
 }

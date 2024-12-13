@@ -2,27 +2,26 @@ import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import ReactMarkdown from 'react-markdown';
 
-import { ClassDefinitionData, GeneratedData, PropData } from './APIDataTypes';
+import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
+
+import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { renderMethod } from './APISectionMethods';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
 import { renderProp } from './APISectionProps';
 import {
-  CommentTextBlock,
   H3Code,
   getTagData,
   getTagNamesList,
   mdComponents,
   resolveTypeName,
-  TypeDocKind,
   getCommentContent,
   BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
   extractDefaultPropValue,
 } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
-
-import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -97,12 +96,14 @@ const renderClass = (
       key={`class-definition-${name}`}
       className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <APISectionPlatformTags comment={comment} />
-      <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" className="wrap-anywhere">
-          {name}
-        </MONOSPACE>
-      </H3Code>
+      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
+        <H3Code tags={getTagNamesList(comment)}>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
+        </H3Code>
+        <APISectionPlatformTags comment={comment} />
+      </div>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <CALLOUT className="mb-3">
           <SPAN theme="secondary" weight="medium">
@@ -135,7 +136,7 @@ const renderClass = (
           )}
         </CALLOUT>
       )}
-      <CommentTextBlock
+      <APICommentTextBlock
         comment={comment}
         includePlatforms={false}
         afterContent={

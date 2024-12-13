@@ -32,7 +32,6 @@ Generate fingerprint for a project
 
   Options
   --platform <string>                  Platform to generate a fingerprint for
-  --workflow <string>                  Workflow to use for fingerprint generation, and auto-detected if not provided
   --debug                              Whether to include verbose debug information in output
   -h, --help                           Output usage information
     `,

@@ -143,7 +143,7 @@ const executeCommand = async (
       excludeProtected: true,
       excludeExternals: true,
       pretty: !MINIFY_JSON,
-      commentStyle: 'All',
+      commentStyle: 'block',
       jsDocCompatibility: false,
       preserveLinkText: true,
       sourceLinkExternal: false,

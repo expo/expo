@@ -1,22 +1,21 @@
 import ReactMarkdown from 'react-markdown';
 
-import { ClassDefinitionData, GeneratedData, PropData } from './APIDataTypes';
+import { H2, MONOSPACE } from '~/ui/components/Text';
+
+import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { renderMethod } from './APISectionMethods';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
-  CommentTextBlock,
   getTagData,
   getTagNamesList,
   mdComponents,
-  TypeDocKind,
   H3Code,
   getCommentContent,
   BoxSectionHeader,
 } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { STYLES_APIBOX } from './styles';
-
-import { H2, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionNamespacesProps = {
   data: GeneratedData[];
@@ -45,13 +44,15 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
   return (
     <div key={`class-definition-${name}`} className={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <APISectionPlatformTags comment={comment} />
-      <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" className="wrap-anywhere">
-          {name}
-        </MONOSPACE>
-      </H3Code>
-      <CommentTextBlock comment={comment} includePlatforms={false} />
+      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
+        <H3Code tags={getTagNamesList(comment)}>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
+        </H3Code>
+        <APISectionPlatformTags comment={comment} />
+      </div>
+      <APICommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
           <BoxSectionHeader text="Returns" />

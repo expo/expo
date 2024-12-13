@@ -89,7 +89,7 @@ export const isRouteActive = (
     }
   }
 
-  const linkUrl = stripVersionFromPath(info?.as || info?.href);
+  const linkUrl = stripVersionFromPath(info?.as ?? info?.href);
   return linkUrl === stripVersionFromPath(pathname) || linkUrl === stripVersionFromPath(asPath);
 };
 

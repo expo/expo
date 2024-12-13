@@ -3,15 +3,23 @@ package expo.modules.intentlauncher
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.AdaptiveIconDrawable
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import androidx.core.os.bundleOf
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException
+import expo.modules.intentlauncher.exceptions.PackageNotFoundException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import java.io.ByteArrayOutputStream
 
 private const val REQUEST_CODE = 12
 private const val ATTR_EXTRA = "extra"
@@ -40,7 +48,7 @@ class IntentLauncherModule : Module() {
           }
       }
 
-      // `setData` and `setType` are exclusive, so we need to use `setDateAndType` in that case.
+      // `setData` and `setType` are exclusive, so we need to use `setDataAndType` in that case.
       if (params.data != null && params.type != null) {
         intent.setDataAndType(Uri.parse(params.data), params.type)
       } else {
@@ -68,6 +76,47 @@ class IntentLauncherModule : Module() {
       } catch (e: Throwable) {
         promise.reject(e.toCodedException())
       }
+    }
+
+    Function("openApplication") { packageName: String ->
+      val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
+        ?: throw PackageNotFoundException(packageName)
+      appContext.throwingActivity.startActivity(launchIntent)
+    }
+
+    AsyncFunction("getApplicationIcon") { packageName: String ->
+      val pm = context.packageManager
+      val appInfo = try {
+        pm.getApplicationInfo(packageName, 0)
+      } catch (e: PackageManager.NameNotFoundException) {
+        throw PackageNotFoundException(packageName)
+      }
+
+      // Get the app icon as a base64-encoded string
+      val iconDrawable = pm.getApplicationIcon(appInfo)
+      val bitmap = when (iconDrawable) {
+        is BitmapDrawable -> iconDrawable.bitmap
+        is AdaptiveIconDrawable -> {
+          // Create a bitmap from AdaptiveIconDrawable
+          val bitmap = Bitmap.createBitmap(
+            iconDrawable.intrinsicWidth,
+            iconDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+          )
+          val canvas = Canvas(bitmap)
+          iconDrawable.setBounds(0, 0, canvas.width, canvas.height)
+          iconDrawable.draw(canvas)
+          bitmap
+        }
+        else -> null
+      }
+
+      bitmap?.let {
+        val outputStream = ByteArrayOutputStream()
+        it.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        val iconBytes = outputStream.toByteArray()
+        "data:image/png;base64," + Base64.encodeToString(iconBytes, Base64.NO_WRAP)
+      } ?: ""
     }
 
     OnActivityResult { _, payload ->

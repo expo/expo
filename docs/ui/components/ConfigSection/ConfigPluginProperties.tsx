@@ -1,10 +1,10 @@
 import type { PropsWithChildren } from 'react';
 import ReactMarkdown from 'react-markdown';
 
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { mdComponents } from '~/components/plugins/api/APISectionUtils';
+import { APISectionPlatformTags } from '~/components/plugins/api/components/APISectionPlatformTags';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { StatusTag } from '~/ui/components/Tag';
+import { StatusTag } from '~/ui/components/Tag/StatusTag';
 import { P, CODE, H3 } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<{

@@ -1,4 +1,9 @@
-import { buildDirMatchObjects, buildPathMatchObjects, isIgnoredPath } from '../Path';
+import {
+  buildDirMatchObjects,
+  buildPathMatchObjects,
+  isIgnoredPath,
+  normalizeFilePath,
+} from '../Path';
 
 describe(isIgnoredPath, () => {
   it('should support file pattern', () => {
@@ -40,6 +45,21 @@ describe(isIgnoredPath, () => {
     expect(isIgnoredPath('../node_modules/chalk/package.json', ignorePaths)).toBe(true);
     expect(isIgnoredPath('../../node_modules/chalk/package.json', ignorePaths)).toBe(true);
     expect(isIgnoredPath('../../../node_modules/chalk/package.json', ignorePaths)).toBe(true);
+    expect(
+      isIgnoredPath(
+        '../../packages/@expo/config-plugins/node_modules/chalk/package.json',
+        ignorePaths
+      )
+    ).toBe(true);
+  });
+
+  it('should match .cxx from parent directories', () => {
+    const ignorePaths = ['**/android/.cxx/**/*'];
+    expect(isIgnoredPath('node_modules/module/android/.cxx/file', ignorePaths)).toBe(true);
+    expect(isIgnoredPath('../node_modules/module/android/.cxx/file', ignorePaths)).toBe(true);
+    expect(isIgnoredPath('../../node_modules/module/android/.cxx/file', ignorePaths)).toBe(true);
+    expect(isIgnoredPath('../../modules/local-module/android/.cxx/file', ignorePaths)).toBe(true);
+    expect(isIgnoredPath('../../packages/local-module/android/.cxx/file', ignorePaths)).toBe(true);
   });
 });
 
@@ -66,5 +86,29 @@ describe(buildDirMatchObjects, () => {
     const dirMatchObjects = buildDirMatchObjects(ignorePathMatchObjects);
     const dirPatterns = dirMatchObjects.map((obj) => obj.pattern);
     expect(dirPatterns).toEqual([]);
+  });
+});
+
+describe(normalizeFilePath, () => {
+  it('should normalize the file path for empty options', () => {
+    const options = {};
+    expect(normalizeFilePath('app.json', options)).toBe('app.json');
+    expect(normalizeFilePath('/app.json', options)).toBe('/app.json');
+    expect(normalizeFilePath('/dir/app.json', options)).toBe('/dir/app.json');
+    expect(normalizeFilePath('dir/app.json', options)).toBe('dir/app.json');
+    expect(normalizeFilePath('../dir/app.json', options)).toBe('../dir/app.json');
+    expect(normalizeFilePath('../../dir/app.json', options)).toBe('../../dir/app.json');
+  });
+
+  it('should normalize the file path for `stripParentPrefix` option', () => {
+    const options = { stripParentPrefix: true };
+    expect(normalizeFilePath('app.json', options)).toBe('app.json');
+    expect(normalizeFilePath('/app.json', options)).toBe('/app.json');
+    expect(normalizeFilePath('/dir/app.json', options)).toBe('/dir/app.json');
+    expect(normalizeFilePath('dir/app.json', options)).toBe('dir/app.json');
+    expect(normalizeFilePath('../dir/app.json', options)).toBe('dir/app.json');
+    expect(normalizeFilePath('../../dir/app.json', options)).toBe('dir/app.json');
+    expect(normalizeFilePath('../../node_modules/module', options)).toBe('node_modules/module');
+    expect(normalizeFilePath('../../packages/module', options)).toBe('packages/module');
   });
 });

@@ -6,7 +6,7 @@ import {
 import assert from 'node:assert';
 import { stripVTControlCharacters } from 'node:util';
 
-import { processFindPrefixedValue } from './process';
+import { executeAsync, processFindPrefixedValue } from './process';
 import {
   type BackgroundServer,
   type BackgroundServerOptions,
@@ -14,6 +14,20 @@ import {
 } from './server';
 
 const EXPO_CLI_BIN = require.resolve('../../build/bin/cli');
+
+/** Execute the Expo CLI, from source and with verbose logging on unexpected errors */
+export const executeExpoAsync: typeof executeAsync = (cwd, flags, options) =>
+  executeAsync(cwd, flags, {
+    command: ['node', EXPO_CLI_BIN],
+    ...options,
+  });
+
+/** Install any (dev) dependencies with Bun and verbose logging on unexpected errors */
+export const executeBunAsync: typeof executeAsync = (cwd, flags, options) =>
+  executeAsync(cwd, flags, {
+    command: ['bun'],
+    ...options,
+  });
 
 /** Create a managed background server running `expo serve` from source */
 export function createExpoServe(options: Partial<BackgroundServerOptions> = {}) {
