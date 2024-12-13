@@ -5,11 +5,18 @@ import type { NativeResponse } from './NativeRequest';
 
 const ConcreteNativeResponse = ExpoFetchModule.NativeResponse as typeof NativeResponse;
 
+export type AbortSubscriptionCleanupFunction = () => void;
+
 /**
  * A response implementation for the `fetch.Response` API.
  */
 export class FetchResponse extends ConcreteNativeResponse implements Response {
   private streamingStarted = false;
+
+  constructor(private readonly abortCleanupFunction: AbortSubscriptionCleanupFunction) {
+    super();
+    this.addListener('readyForJSFinalization', this.finalize);
+  }
 
   get body(): ReadableStream<Uint8Array> | null {
     const response = this;
@@ -20,12 +27,10 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
         });
 
         response.addListener('didComplete', () => {
-          response.removeAllRegisteredListeners();
           controller.close();
         });
 
         response.addListener('didFailWithError', (error: string) => {
-          response.removeAllRegisteredListeners();
           controller.error(new Error(error));
         });
       },
@@ -36,7 +41,6 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
         }
       },
       cancel(reason) {
-        response.removeAllRegisteredListeners();
         response.cancelStreaming(String(reason));
       },
     });
@@ -91,9 +95,13 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     throw new Error('Not implemented');
   }
 
-  private removeAllRegisteredListeners() {
+  private finalize = (): void => {
+    this.removeListener('readyForJSFinalization', this.finalize);
+
+    this.abortCleanupFunction();
+
     this.removeAllListeners('didReceiveResponseData');
     this.removeAllListeners('didComplete');
     this.removeAllListeners('didFailWithError');
-  }
+  };
 }
