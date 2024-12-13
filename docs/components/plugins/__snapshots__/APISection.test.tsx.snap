@@ -3572,11 +3572,9 @@ may be
       data-text="true"
     >
       <span
-        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-        data-text="true"
+        class="text-xs font-medium text-tertiary"
       >
-        Literal Type:
-         
+        Literal Type: 
       </span>
       <code
         class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
@@ -8282,11 +8280,9 @@ in order to enable/disable the permission.
       data-text="true"
     >
       <span
-        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-        data-text="true"
+        class="text-xs font-medium text-tertiary"
       >
-        Literal Type:
-         
+        Literal Type: 
       </span>
       multiple types
     </p>

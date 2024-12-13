@@ -4,7 +4,7 @@ import { Fragment, ReactNode } from 'react';
 
 import { APIBox } from '~/components/plugins/APIBox';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN, RawH4 } from '~/ui/components/Text';
+import { H2, BOLD, CODE, MONOSPACE, CALLOUT, RawH4 } from '~/ui/components/Text';
 
 import {
   PropData,
@@ -271,9 +271,7 @@ const renderType = (
             <APISectionPlatformTags comment={comment} />
           </div>
           <CALLOUT className="mb-3">
-            <SPAN theme="secondary" weight="medium">
-              Literal Type:{' '}
-            </SPAN>
+            <span className={STYLES_SECONDARY}>Literal Type: </span>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <APICommentTextBlock comment={comment} includePlatforms={false} />
@@ -300,7 +298,6 @@ const renderType = (
         key={`record-definition-${name}`}
         className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
         <APISectionDeprecationNote comment={comment} sticky />
-
         <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium" className="wrap-anywhere">
@@ -310,9 +307,7 @@ const renderType = (
           <APISectionPlatformTags comment={comment} />
         </div>
         <CALLOUT className="mb-3">
-          <SPAN theme="secondary" weight="medium">
-            Type:{' '}
-          </SPAN>
+          <span className={STYLES_SECONDARY}>Type: </span>
           <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
         </CALLOUT>
         <APICommentTextBlock comment={comment} includePlatforms={false} />
@@ -332,9 +327,7 @@ const renderType = (
         </div>
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
-          <SPAN theme="secondary" weight="medium">
-            Type:{' '}
-          </SPAN>
+          <span className={STYLES_SECONDARY}>Type: </span>
           <CODE>{type.name}</CODE>
         </CALLOUT>
       </div>
@@ -353,18 +346,14 @@ const renderType = (
         </div>
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
-          <SPAN theme="secondary" weight="medium">
-            Generic:{' '}
-          </SPAN>
+          <span className={STYLES_SECONDARY}>Generic: </span>
           <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>}
           </CODE>
         </CALLOUT>
         <CALLOUT>
-          <SPAN theme="secondary" weight="medium">
-            Type:{' '}
-          </SPAN>
+          <span className={STYLES_SECONDARY}>Type: </span>
           <CODE>
             {type.checkType.name}
             {typeParameter && (
