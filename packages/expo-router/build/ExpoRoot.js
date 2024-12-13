@@ -70,39 +70,44 @@ function AutoStatusBar() {
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
+/**
+ * Gets server context and serverUrl for a given URL
+ * @param url
+ * @returns Object with serverContext and serverUrl
+ */
+function getServerContextValues(url) {
+    const serverContextValue = {
+        location: {
+            pathname: url.pathname + url.hash,
+            search: url.search,
+        },
+    };
+    return {
+        serverContext: serverContextValue,
+        serverUrl: url.pathname + url.search + url.hash,
+    };
+}
 function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, linking = {}, }) {
-    // location and linking.getInitialURL are both used to initialize the router state
-    //  - location is used on web and during static rendering
-    //  - linking.getInitialURL is used on native
-    const serverContext = (0, react_1.useMemo)(() => {
-        let contextType = {};
-        if (initialLocation instanceof URL) {
-            contextType = {
-                location: {
-                    pathname: initialLocation.pathname + initialLocation.hash,
-                    search: initialLocation.search,
-                },
-            };
-        }
-        else if (typeof initialLocation === 'string') {
-            // The initial location is a string, so we need to parse it into a URL.
-            const url = new URL(initialLocation, 'http://placeholder.base');
-            contextType = {
-                location: {
-                    pathname: url.pathname,
-                    search: url.search,
-                },
-            };
-        }
-        return contextType;
-    }, []);
-    /*
+    /* location and linking.getInitialURL are both used to initialize the router state
+     *   - location is used on web and during static rendering
+     *   - linking.getInitialURL is used on native
+     *
      * The serverUrl is an initial URL used in server rendering environments.
      * e.g Static renders, units tests, etc
      */
-    const serverUrl = serverContext.location
-        ? `${serverContext.location.pathname}${serverContext.location.search}`
-        : undefined;
+    const { serverContext, serverUrl } = (0, react_1.useMemo)(() => {
+        if (initialLocation instanceof URL) {
+            return getServerContextValues(initialLocation);
+        }
+        else if (typeof initialLocation === 'string') {
+            return getServerContextValues(new URL(initialLocation, 'http://placeholder.base'));
+        }
+        const defaultServerContext = {};
+        return {
+            serverContext: defaultServerContext,
+            serverUrl: undefined,
+        };
+    }, []);
     const store = (0, router_store_1.useInitializeExpoRouter)(context, {
         ...linking,
         serverUrl,
