@@ -2,22 +2,14 @@ import ExpoModulesCore
 import Foundation
 
 public class PushTokenAppDelegateSubscriber: ExpoAppDelegateSubscriber {
-  public static let ExpoNotificationsRegistrationResult = Notification.Name("ExpoNotificationsRegistrationResult")
+  let notificationCenterManager = NotificationCenterManager.shared
 
   public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    NotificationCenter.default.post(
-      name: PushTokenAppDelegateSubscriber.ExpoNotificationsRegistrationResult,
-      object: nil,
-      userInfo: ["deviceToken": dataToString(deviceToken)]
-    )
+    notificationCenterManager.didRegister(dataToString(deviceToken))
   }
 
   public func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
-    NotificationCenter.default.post(
-      name: PushTokenAppDelegateSubscriber.ExpoNotificationsRegistrationResult,
-      object: nil,
-      userInfo: ["error": error]
-    )
+    notificationCenterManager.didFailRegistration(error)
   }
 }
 
