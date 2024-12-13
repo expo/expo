@@ -14,6 +14,7 @@
 
 @property (nonatomic, strong) NSPointerArray *delegates;
 @property (nonatomic, strong) NSMutableArray<UNNotificationResponse *> *pendingNotificationResponses;
+@property (nonatomic, weak) EXNotificationCenterManager *notificationCenterManager;
 
 @end
 
@@ -26,6 +27,7 @@ EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
   if (self = [super init]) {
     _delegates = [NSPointerArray weakObjectsPointerArray];
     _pendingNotificationResponses = [NSMutableArray array];
+    _notificationCenterManager = [EXNotificationCenterManager shared];
   }
   return self;
 }
@@ -44,8 +46,7 @@ EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
     return YES;
   }
 
-  EXNotificationCenterManager *manager = [EXNotificationCenterManager shared];
-  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:manager];
+  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
   return YES;
 }
 
@@ -97,35 +98,8 @@ EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-  __block int delegatesCalled = 0;
-  __block int delegatesCompleted = 0;
-  __block BOOL delegatingCompleted = NO;
-  __block UNNotificationPresentationOptions optionsSum = UNNotificationPresentationOptionNone;
-  __block void (^completionHandlerCaller)(void) = ^{
-    if (delegatingCompleted && delegatesCompleted == delegatesCalled) {
-      completionHandler(optionsSum);
-    }
-  };
-
-  for (int i = 0; i < _delegates.count; i++) {
-    id pointer = [_delegates pointerAtIndex:i];
-    if ([pointer respondsToSelector:@selector(userNotificationCenter:willPresentNotification:withCompletionHandler:)]) {
-      [pointer userNotificationCenter:center willPresentNotification:notification withCompletionHandler:^(UNNotificationPresentationOptions options) {
-        @synchronized (self) {
-          delegatesCompleted += 1;
-          optionsSum = optionsSum | options;
-          completionHandlerCaller();
-        }
-      }];
-      @synchronized (self) {
-        delegatesCalled += 1;
-      }
-    }
-  }
-  @synchronized (self) {
-    delegatingCompleted = YES;
-    completionHandlerCaller();
-  }
+  // Delegate to the new Swift code
+  [_notificationCenterManager userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
@@ -176,12 +150,8 @@ EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(UNNotification *)notification
 {
-  for (int i = 0; i < _delegates.count; i++) {
-    id pointer = [_delegates pointerAtIndex:i];
-    if ([pointer respondsToSelector:@selector(userNotificationCenter:openSettingsForNotification:)]) {
-      [pointer userNotificationCenter:center openSettingsForNotification:notification];
-    }
-  }
+  // Delegate to the new Swift manager
+  [_notificationCenterManager userNotificationCenter:center openSettingsForNotification:notification];
 }
 
 # pragma mark - EXNotificationCenterDelegate

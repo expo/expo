@@ -2,25 +2,26 @@ import ExpoModulesCore
 import Foundation
 
 /**
- Protocols that NotificationCenterManager delegates may implement
+ Protocol that NotificationCenterManager delegates may implement
  */
-public protocol NotificationPresentationDelegate: AnyObject {
-  func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
-}
-
-public protocol NotificationResponseDelegate: AnyObject {
-  func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void)
-}
-public protocol NotificationSettingsDelegate: AnyObject {
+public protocol NotificationDelegate: AnyObject {
+  func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool
+  func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool
   func openSettings(_ notification: UNNotification?)
-}
-
-public protocol NotificationRegistrationSuccessDelegate: AnyObject {
   func didRegister(_ deviceToken: String)
+  func didFailRegistration(_ error: Error)
 }
 
-public protocol NotificationRegistrationFailureDelegate: AnyObject {
-  func didFailRegistration(_ error: Error)
+public extension NotificationDelegate {
+  func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
+    return false
+  }
+  func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
+    return false
+  }
+  func openSettings(_ notification: UNNotification?) {}
+  func didRegister(_ deviceToken: String) {}
+  func didFailRegistration(_ error: Error) {}
 }
 
 /**
@@ -30,15 +31,20 @@ public protocol NotificationRegistrationFailureDelegate: AnyObject {
 @objc(EXNotificationCenterManager)
 public class NotificationCenterManager: NSObject,
   UNUserNotificationCenterDelegate,
-  NotificationRegistrationFailureDelegate,
-  NotificationRegistrationSuccessDelegate {
+  NotificationDelegate {
   @objc
   public static let shared = NotificationCenterManager()
 
-  var delegates: [AnyObject] = []
+  var delegates: [NotificationDelegate] = []
   var pendingResponses: [UNNotificationResponse] = []
   let userNotificationCenter: UNUserNotificationCenter = UNUserNotificationCenter.current()
 
+  // TODO: Once Swift conversion is complete, the old EXNotificationDelegate class will be removed, and
+  // we will need to add the initialization code below.
+  // For now, we allow EXNotificationDelegate to add itself as the user notification delegate, and call the
+  // shared instance of this class.
+  //
+  /*
   private override init() {
     super.init()
     if UNUserNotificationCenter.current().delegate != nil {
@@ -53,13 +59,15 @@ public class NotificationCenterManager: NSObject,
     }
     UNUserNotificationCenter.current().delegate = self
   }
+   */
 
-  public func addDelegate(_ delegate: AnyObject) {
+  public func addDelegate(_ delegate: NotificationDelegate) {
     delegates.append(delegate)
-    if let delegate = delegate as? NotificationResponseDelegate {
-      for pendingResponse in pendingResponses {
-        delegate.didReceive(pendingResponse, completionHandler: {})
-      }
+    var handled = false
+    for pendingResponse in pendingResponses {
+      handled = delegate.didReceive(pendingResponse, completionHandler: {})
+    }
+    if handled {
       pendingResponses.removeAll()
     }
   }
@@ -74,17 +82,13 @@ public class NotificationCenterManager: NSObject,
 
   public func didFailRegistration(_ error: any Error) {
     for delegate in delegates {
-      if let delegate = delegate as? NotificationRegistrationFailureDelegate {
-        delegate.didFailRegistration(error)
-      }
+      delegate.didFailRegistration(error)
     }
   }
 
   public func didRegister(_ deviceToken: String) {
     for delegate in delegates {
-      if let delegate = delegate as? NotificationRegistrationSuccessDelegate {
-        delegate.didRegister(deviceToken)
-      }
+      delegate.didRegister(deviceToken)
     }
   }
 
@@ -95,12 +99,16 @@ public class NotificationCenterManager: NSObject,
     willPresent notification: UNNotification,
     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
   ) {
+    var handled = false
     for delegate in delegates {
-      if let delegate = delegate as? NotificationPresentationDelegate {
-        delegate.willPresent(notification, completionHandler: completionHandler)
-      }
+      handled = handled || delegate.willPresent(notification, completionHandler: completionHandler)
     }
-    completionHandler([])
+    if !handled {
+      // TODO: For now, until all code is converted to Swift,
+      // ensure notification is presented even if handlers are not registered
+      // Later revisit this
+      completionHandler([.badge, .banner, .sound])
+    }
   }
 
   public func userNotificationCenter(
@@ -110,10 +118,7 @@ public class NotificationCenterManager: NSObject,
   ) {
     var handled = false
     for delegate in delegates {
-      if let delegate = delegate as? NotificationResponseDelegate {
-        delegate.didReceive(response, completionHandler: completionHandler)
-      }
-      handled = true
+      handled = handled || delegate.didReceive(response, completionHandler: completionHandler)
     }
     if !handled {
       pendingResponses.append(response)
@@ -123,9 +128,7 @@ public class NotificationCenterManager: NSObject,
 
   public func userNotificationCenter(_ center: UNUserNotificationCenter, openSettingsFor notification: UNNotification?) {
     for delegate in delegates {
-      if let delegate = delegate as? NotificationSettingsDelegate {
-        delegate.openSettings(notification)
-      }
+      delegate.openSettings(notification)
     }
   }
 }

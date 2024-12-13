@@ -6,18 +6,7 @@ import MachO
 
 let onDevicePushTokenEventName = "onDevicePushToken"
 
-public class PushTokenModule: Module, NotificationRegistrationSuccessDelegate, NotificationRegistrationFailureDelegate {
-  public func didRegister(_ deviceToken: String) {
-    promiseNotYetResolved?.resolve(deviceToken)
-    promiseNotYetResolved = nil
-    self.sendEvent(onDevicePushTokenEventName, ["devicePushToken": deviceToken])
-  }
-
-  public func didFailRegistration(_ error: any Error) {
-    promiseNotYetResolved?.reject(error)
-    promiseNotYetResolved = nil
-  }
-
+public class PushTokenModule: Module, NotificationDelegate {
   var promiseNotYetResolved: Promise?
 
   public func definition() -> ModuleDefinition {
@@ -47,5 +36,16 @@ public class PushTokenModule: Module, NotificationRegistrationSuccessDelegate, N
       UIApplication.shared.unregisterForRemoteNotifications()
     }
     .runOnQueue(.main)
+  }
+
+  public func didRegister(_ deviceToken: String) {
+    promiseNotYetResolved?.resolve(deviceToken)
+    promiseNotYetResolved = nil
+    self.sendEvent(onDevicePushTokenEventName, ["devicePushToken": deviceToken])
+  }
+
+  public func didFailRegistration(_ error: any Error) {
+    promiseNotYetResolved?.reject(error)
+    promiseNotYetResolved = nil
   }
 }

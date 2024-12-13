@@ -4,27 +4,17 @@ import ExpoModulesCore
 import UIKit
 import MachO
 
-public class PresentationModule: Module, NotificationPresentationDelegate {
+public class PresentationModule: Module, NotificationDelegate {
   var presentedNotifications: Set<String> = []
-
-  public func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-    let identifier = notification.request.identifier
-    if presentedNotifications.contains(identifier) {
-      presentedNotifications.remove(identifier)
-      completionHandler([.badge, .sound, .banner]) // .alert is deprecated
-    } else {
-      completionHandler([])
-    }
-  }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationPresenter")
 
-    OnStartObserving {
+    OnCreate {
       NotificationCenterManager.shared.addDelegate(self)
     }
 
-    OnStopObserving {
+    OnDestroy {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
@@ -37,7 +27,7 @@ public class PresentationModule: Module, NotificationPresentationDelegate {
         }
         let content = try NotificationBuilder.content(notificationSpec, appContext: appContext)
         var request: UNNotificationRequest?
-        try EXNotificationObjcWrapper.tryExecute {
+        try EXUtilities.catchException {
           request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
         }
         guard let request = request else {
@@ -71,6 +61,16 @@ public class PresentationModule: Module, NotificationPresentationDelegate {
     AsyncFunction("dismissAllNotificationsAsync") {
       UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
+  }
+
+  public func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
+    let identifier = notification.request.identifier
+    if presentedNotifications.contains(identifier) {
+      presentedNotifications.remove(identifier)
+      completionHandler([.badge, .sound, .banner]) // .alert is deprecated
+      return true
+    }
+    return false
   }
 
   func serializeNotifications(_ notifications: [UNNotification]) -> [[AnyHashable: Any]] {
