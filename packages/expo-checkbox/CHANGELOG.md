@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-
+  - Fixed: Addressed an issue where accessibilityState was not updating correctly on value changes. by [@brtsyf](https://github.com/brtsyf))
 ### 💡 Others
 
 ## 4.0.0 — 2024-10-22
