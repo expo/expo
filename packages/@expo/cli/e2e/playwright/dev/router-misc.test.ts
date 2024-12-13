@@ -40,17 +40,16 @@ test.describe(inputDir, () => {
   });
 
   test('url hash and search params are parsed correctly when both are set in URL', async ({ page }) => {
-    await expo.startAsync(['--port=8085']);
-    console.log('Server running:', expo.url);
-    await expo.fetchAsync('/');
-    page.on('console', (msg) => console.log(msg.text()));
+    await expoStart.fetchAsync('/');
 
-    await page.goto(`${expo.url}/hash-support?foo=bar#my-hash`);
+    const url = new URL('/hash-support?foo=bar#my-hash', expoStart.url).href;
+
+    await page.goto(url)
 
     // Ensure the hash and param are correct
     await expect(page.locator('[data-testid="hash"]')).toHaveText('my-hash');
     await expect(page.locator('[data-testid="foo-param"]')).toHaveText('bar');
-    expect(page.url()).toEqual(`${expo.url}/hash-support?foo=bar#my-hash`);
+    expect(page.url()).toEqual(url);
   });
 
   test('url hash', async ({ page }) => {

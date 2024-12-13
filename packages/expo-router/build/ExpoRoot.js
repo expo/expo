@@ -72,7 +72,7 @@ const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'un
     : undefined;
 /**
  * Gets server context and serverUrl for a given URL
- * @param url
+ * @param url initial location
  * @returns Object with serverContext and serverUrl
  */
 function getServerContextValues(url) {

@@ -75,7 +75,7 @@ const initialUrl =
 
 /**
  * Gets server context and serverUrl for a given URL
- * @param url 
+ * @param url initial location
  * @returns Object with serverContext and serverUrl
  */
 function getServerContextValues(url: URL): { serverContext: ServerContextType, serverUrl: string } {
