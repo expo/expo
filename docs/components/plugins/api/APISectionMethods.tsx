@@ -16,7 +16,7 @@ import {
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
-import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -107,10 +107,8 @@ export const renderMethod = (
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
                   )}>
                   <div className="flex flex-row items-center gap-2">
-                    <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
-                    <CALLOUT tag="span" theme="secondary" weight="medium">
-                      Returns:
-                    </CALLOUT>
+                    <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+                    <span className={STYLES_SECONDARY}>Returns:</span>
                   </div>
                   <CALLOUT>
                     <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />

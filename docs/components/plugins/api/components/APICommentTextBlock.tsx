@@ -4,12 +4,12 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
 
+import { BoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { Callout } from '~/ui/components/Callout';
 import { Tag } from '~/ui/components/Tag/Tag';
 import { DEMI } from '~/ui/components/Text';
 
 import {
-  BoxSectionHeader,
   CommentTextBlockProps,
   getAllTagData,
   getCommentContent,
@@ -17,7 +17,7 @@ import {
   mdComponents,
   parseCommentContent,
 } from '../APISectionUtils';
-import { ELEMENT_SPACING } from '../styles';
+import { ELEMENT_SPACING, STYLES_SECONDARY } from '../styles';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
 
 export const APICommentTextBlock = ({
@@ -79,7 +79,7 @@ export const APICommentTextBlock = ({
       )}
       {paramTags && (
         <>
-          <DEMI theme="secondary">Only for:&ensp;</DEMI>
+          <span className={STYLES_SECONDARY}>Only for:&ensp;</span>
           {paramTags.map(tag => (
             <Tag key={tag} name={tag.split('-')[1]} />
           ))}

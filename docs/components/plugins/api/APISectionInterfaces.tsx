@@ -1,5 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { BoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, BOLD, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
 
@@ -15,19 +16,18 @@ import {
   getTagData,
   parseCommentContent,
   renderFlags,
-  ParamsTableHeadRow,
   resolveTypeName,
   renderDefaultValue,
   getTagNamesList,
   H3Code,
   getCommentContent,
-  BoxSectionHeader,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
 import { APIParamRow } from './components/APIParamRow';
+import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
-import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -135,9 +135,7 @@ const renderInterface = (
       </div>
       {extendedTypes?.length ? (
         <CALLOUT className={ELEMENT_SPACING}>
-          <CALLOUT tag="span" theme="secondary" weight="medium">
-            Extends:{' '}
-          </CALLOUT>
+          <span className={STYLES_SECONDARY}>Extends: </span>
           {extendedTypes.map(extendedType => (
             <CODE key={`extend-${extendedType.name}`}>
               {resolveTypeName(extendedType, sdkVersion)}
@@ -158,7 +156,7 @@ const renderInterface = (
         <>
           <BoxSectionHeader text={`${name} Properties`} />
           <Table>
-            <ParamsTableHeadRow />
+            <APIParamsTableHeadRow />
             <tbody>
               {interfaceFields.map(field => renderInterfacePropertyRow(field, sdkVersion))}
             </tbody>

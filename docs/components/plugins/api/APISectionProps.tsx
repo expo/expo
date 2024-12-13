@@ -1,5 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { BoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
 import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
 
@@ -12,7 +13,6 @@ import {
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
-  BoxSectionHeader,
   extractDefaultPropValue,
   getCommentOrSignatureComment,
   getH3CodeWithBaseNestingLevel,
@@ -132,7 +132,7 @@ export const renderProp = (
       <div className={mergeClasses(STYLES_SECONDARY, extractedComment && 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
-        <>Type:</>{' '}
+        Type:{' '}
         <APITypeOrSignatureType
           type={type}
           signatures={extractedSignatures}

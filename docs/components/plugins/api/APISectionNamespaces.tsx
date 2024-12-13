@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 
+import { BoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { H2, MONOSPACE } from '~/ui/components/Text';
 
 import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
@@ -11,7 +12,6 @@ import {
   mdComponents,
   H3Code,
   getCommentContent,
-  BoxSectionHeader,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';

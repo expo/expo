@@ -21,7 +21,6 @@ import {
   getCommentOrSignatureComment,
   getTagData,
   renderParams,
-  ParamsTableHeadRow,
   renderDefaultValue,
   renderIndexSignature,
   getTagNamesList,
@@ -31,6 +30,7 @@ import {
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
+import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { APITypeOrSignatureType } from './components/APITypeOrSignatureType';
 import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
@@ -59,7 +59,7 @@ const renderTypeDeclarationTable = (
     {index && index > 0 ? <br /> : undefined}
     <APICommentTextBlock comment={comment} />
     <Table>
-      <ParamsTableHeadRow />
+      <APIParamsTableHeadRow mainCellLabel="Property" />
       <tbody>
         {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
         {indexSignature?.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
@@ -88,7 +88,7 @@ const renderTypeMethodEntry = (
         </RawH4>
         <APICommentTextBlock comment={comment} />
         <Table>
-          <ParamsTableHeadRow mainCellLabel="Parameter" />
+          <APIParamsTableHeadRow mainCellLabel="Parameter" />
           <tbody>
             {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
           </tbody>
@@ -168,10 +168,8 @@ const renderType = (
         {type.declaration.signatures?.[0].type && (
           <div className="mt-4 flex flex-row items-start gap-2">
             <div className="flex flex-row items-center gap-2">
-              <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
-              <CALLOUT tag="span" theme="secondary" weight="medium">
-                Returns:
-              </CALLOUT>
+              <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+              <span className={STYLES_SECONDARY}>Returns:</span>
             </div>
             <CALLOUT>
               <APIDataType
@@ -284,7 +282,9 @@ const renderType = (
             {literalTypes.map((lt, index) => (
               <Fragment key={`${name}-literal-type-${index}`}>
                 <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
-                {index + 1 !== literalTypes.length ? ' | ' : ''}
+                {index + 1 !== literalTypes.length ? (
+                  <span className="text-quaternary"> | </span>
+                ) : null}
               </Fragment>
             ))}
           </CALLOUT>

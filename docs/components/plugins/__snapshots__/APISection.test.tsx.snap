@@ -43,7 +43,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !shadow-none"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !shadow-none"
   >
     <div
       class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
@@ -95,7 +95,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       <span
@@ -121,7 +121,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </code>
     </p>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
@@ -132,7 +132,7 @@ available via the provided properties.
     
 
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       You should only attempt to render this if 
@@ -168,7 +168,7 @@ a warning in development mode (
     
 
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       The properties of this component extend from 
@@ -222,14 +222,14 @@ button.
     
 
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Make sure to attach height and width via the style props as without these styles, the button will
 not appear on the screen.
     </p>
     <blockquote
-      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3"
       data-testid="callout-container"
     >
       <div
@@ -257,7 +257,7 @@ not appear on the screen.
         class="w-full leading-normal text-default last:mb-0"
       >
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           <span
@@ -292,7 +292,7 @@ for more details.
         >
           AppleAuthenticationButtonProps
           <a
-            class="border border-solid rounded-md whitespace-nowrap text-xs border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 flex flex-row items-center gap-2 font-medium text-tertiary"
+            class="border border-solid rounded-md whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-5 flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
             href="#appleauthenticationbuttonprops"
             id="appleauthenticationbuttonprops"
           >
@@ -332,7 +332,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -384,7 +384,7 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-2.5"
+          class="text-xs font-medium text-tertiary mb-2.5"
         >
           Type:
            
@@ -401,14 +401,14 @@ for more details.
           </code>
         </div>
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           The Apple-defined color scheme to use to display the button.
         </p>
       </div>
       <div
-        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -460,7 +460,7 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-2.5"
+          class="text-xs font-medium text-tertiary mb-2.5"
         >
           Type:
            
@@ -477,14 +477,14 @@ for more details.
           </code>
         </div>
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
         </p>
       </div>
       <div
-        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -536,7 +536,7 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-2.5"
+          class="text-xs font-medium text-tertiary mb-2.5"
         >
           Optional • 
           Type:
@@ -549,7 +549,7 @@ for more details.
           </code>
         </div>
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           The border radius to use when rendering the button. This works similarly to
@@ -564,7 +564,7 @@ for more details.
         </p>
       </div>
       <div
-        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -616,7 +616,7 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-2.5"
+          class="text-xs font-medium text-tertiary mb-2.5"
         >
           Type:
            
@@ -639,7 +639,7 @@ for more details.
           </code>
         </div>
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           The method to call when the user presses the button. You should call 
@@ -659,7 +659,7 @@ in here.
         </p>
       </div>
       <div
-        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -711,7 +711,7 @@ in here.
           </h3>
         </div>
         <div
-          class="text-[14px] font-medium text-secondary mb-2.5"
+          class="text-xs font-medium text-tertiary mb-2.5"
         >
           Optional • 
           Type:
@@ -782,7 +782,7 @@ in here.
           </code>
         </div>
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           The custom style to apply to the button. Should not include 
@@ -908,7 +908,7 @@ properties.
     </a>
   </h2>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -972,17 +972,17 @@ properties.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -1021,7 +1021,7 @@ properties.
               class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 The full name object with the tokenized portions
@@ -1040,9 +1040,8 @@ properties.
               >
                 formatStyle
               </span>
-              <br />
               <span
-                class="pt-5 !text-[13px] text-secondary"
+                class="flex !text-3xs text-tertiary"
               >
                 (optional)
               </span>
@@ -1066,7 +1065,7 @@ properties.
               class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 The style in which the name should be formatted
@@ -1078,7 +1077,7 @@ properties.
     </div>
     <br />
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Creates a locale-aware string representation of a person's name from an object representing the tokenized portions of a user's full name
@@ -1090,7 +1089,7 @@ properties.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -1109,8 +1108,7 @@ properties.
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -1131,7 +1129,7 @@ properties.
       class="mb-1 mt-1.5 flex flex-col pl-6"
     >
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         A locale-aware string representation of a person's name
@@ -1139,7 +1137,7 @@ properties.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -1203,17 +1201,17 @@ properties.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -1247,7 +1245,7 @@ properties.
               class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 The unique identifier for the user whose credential state you'd like to check.
@@ -1272,7 +1270,7 @@ This should come from the user field of an
     </div>
     <br />
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
@@ -1310,7 +1308,7 @@ This should come from the user field of an
         
 
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           <span
@@ -1332,7 +1330,7 @@ This should come from the user field of an
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -1351,8 +1349,7 @@ This should come from the user field of an
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -1398,7 +1395,7 @@ This should come from the user field of an
       class="mb-1 mt-1.5 flex flex-col pl-6"
     >
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         A promise that fulfills with an 
@@ -1419,7 +1416,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -1471,7 +1468,7 @@ value depending on the state of the credential.
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Determine if the current device's operating system supports Apple authentication.
@@ -1483,7 +1480,7 @@ value depending on the state of the credential.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -1502,8 +1499,7 @@ value depending on the state of the credential.
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -1544,7 +1540,7 @@ value depending on the state of the credential.
       class="mb-1 mt-1.5 flex flex-col pl-6"
     >
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         A promise that fulfills with 
@@ -1566,7 +1562,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -1630,17 +1626,17 @@ value depending on the state of the credential.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -1679,7 +1675,7 @@ value depending on the state of the credential.
               class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 An 
@@ -1703,7 +1699,7 @@ value depending on the state of the credential.
     </div>
     <br />
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       An operation that refreshes the logged-in user’s credentials.
@@ -1716,7 +1712,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -1735,8 +1731,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -1782,7 +1777,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       class="mb-1 mt-1.5 flex flex-col pl-6"
     >
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         A promise that fulfills with an 
@@ -1811,7 +1806,7 @@ refresh operation.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -1875,17 +1870,17 @@ refresh operation.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -1904,9 +1899,8 @@ refresh operation.
               >
                 options
               </span>
-              <br />
               <span
-                class="pt-5 !text-[13px] text-secondary"
+                class="flex !text-3xs text-tertiary"
               >
                 (optional)
               </span>
@@ -1930,7 +1924,7 @@ refresh operation.
               class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 An optional 
@@ -1954,7 +1948,7 @@ refresh operation.
     </div>
     <br />
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Sends a request to the operating system to initiate the Apple authentication flow, which will
@@ -1963,7 +1957,7 @@ present a modal to the user over your app and allow them to sign in.
     
 
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       You can request access to the user's full name and email address in this method, which allows you
@@ -1973,7 +1967,7 @@ of these options at runtime.
     
 
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Additionally, you will only receive Apple Authentication Credentials the first time users sign
@@ -2008,7 +2002,7 @@ the user, since this remains the same for apps released by the same developer.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -2027,8 +2021,7 @@ the user, since this remains the same for apps released by the same developer.
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -2074,7 +2067,7 @@ the user, since this remains the same for apps released by the same developer.
       class="mb-1 mt-1.5 flex flex-col pl-6"
     >
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         A promise that fulfills with an 
@@ -2103,7 +2096,7 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -2167,17 +2160,17 @@ sign-in operation.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -2216,7 +2209,7 @@ sign-in operation.
               class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 An 
@@ -2240,7 +2233,7 @@ sign-in operation.
     </div>
     <br />
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       An operation that ends the authenticated session.
@@ -2249,7 +2242,7 @@ Calling this method will show the sign in modal before actually signing the user
     
 
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       It is not recommended to use this method to sign out the user as it works counterintuitively.
@@ -2287,7 +2280,7 @@ from using
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -2306,8 +2299,7 @@ from using
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -2353,7 +2345,7 @@ from using
       class="mb-1 mt-1.5 flex flex-col pl-6"
     >
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         A promise that fulfills with an 
@@ -2422,7 +2414,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -2486,12 +2478,12 @@ sign-out operation.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
@@ -2533,13 +2525,13 @@ sign-out operation.
     </div>
     <br />
     <div
-      class="flex flex-row items-start gap-2 mb-3.5"
+      class="flex flex-row items-start gap-2 mb-3"
     >
       <div
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -2558,8 +2550,7 @@ sign-out operation.
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -2618,7 +2609,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -2670,7 +2661,7 @@ sign-out operation.
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       The object type returned from a successful call to 
@@ -2714,7 +2705,7 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3"
       data-testid="callout-container"
     >
       <div
@@ -2742,7 +2733,7 @@ which contains all of the pertinent user and credential information.
         class="w-full leading-normal text-default last:mb-0"
       >
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           <span
@@ -2779,17 +2770,17 @@ for more details.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
-              Name
+              Property
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -2833,7 +2824,7 @@ for more details.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 A short-lived session token used by your app for proof of authorization when interacting with
@@ -2885,7 +2876,7 @@ the app's server counterpart. Unlike
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 The user's email address. Might not be present if you didn't request the 
@@ -2944,7 +2935,7 @@ an Apple domain.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 The user's name. May be 
@@ -3011,7 +3002,7 @@ your app.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 A JSON Web Token (JWT) that securely communicates information about the user to your app.
@@ -3050,7 +3041,7 @@ your app.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 A value that indicates whether the user appears to the system to be a real person.
@@ -3094,7 +3085,7 @@ your app.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 An arbitrary string that your app provided as 
@@ -3152,7 +3143,7 @@ will be
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 An identifier associated with the authenticated user. You can use this to check if the user is
@@ -3167,7 +3158,7 @@ developers.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -3219,7 +3210,7 @@ developers.
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       An object representing the tokenized portions of the user's full name. Any of all of the fields
@@ -3245,17 +3236,17 @@ may be
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
-              Name
+              Property
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -3525,7 +3516,7 @@ may be
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -3595,13 +3586,13 @@ may be
       </code>
     </p>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       A value to specify the style for formatting a name.
     </p>
     <blockquote
-      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3"
       data-testid="callout-container"
     >
       <div
@@ -3629,7 +3620,7 @@ may be
         class="w-full leading-normal text-default last:mb-0"
       >
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           <span
@@ -3654,7 +3645,7 @@ for more details.
       </div>
     </blockquote>
     <p
-      class="tracking-[-0.006rem] text-[14px] font-medium text-secondary"
+      class="tracking-[-0.006rem] text-xs font-medium text-tertiary"
       data-text="true"
     >
       Acceptable values are:
@@ -3665,28 +3656,44 @@ for more details.
       >
         'default'
       </code>
-       | 
+      <span
+        class="text-quaternary"
+      >
+         | 
+      </span>
       <code
         class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
         data-text="true"
       >
         'short'
       </code>
-       | 
+      <span
+        class="text-quaternary"
+      >
+         | 
+      </span>
       <code
         class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
         data-text="true"
       >
         'medium'
       </code>
-       | 
+      <span
+        class="text-quaternary"
+      >
+         | 
+      </span>
       <code
         class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
         data-text="true"
       >
         'long'
       </code>
-       | 
+      <span
+        class="text-quaternary"
+      >
+         | 
+      </span>
       <code
         class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
         data-text="true"
@@ -3696,7 +3703,7 @@ for more details.
     </p>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -3748,7 +3755,7 @@ for more details.
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3767,7 +3774,7 @@ for more details.
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3"
       data-testid="callout-container"
     >
       <div
@@ -3795,7 +3802,7 @@ You must include the ID string of the user whose credentials you'd like to refre
         class="w-full leading-normal text-default last:mb-0"
       >
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           <span
@@ -3832,17 +3839,17 @@ for more details.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
-              Name
+              Property
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -3861,9 +3868,8 @@ for more details.
               >
                 requestedScopes
               </span>
-              <br />
               <span
-                class="pt-5 !text-[13px] text-secondary"
+                class="flex !text-3xs text-tertiary"
               >
                 (optional)
               </span>
@@ -3888,7 +3894,7 @@ for more details.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3932,9 +3938,8 @@ requests they will be
               >
                 state
               </span>
-              <br />
               <span
-                class="pt-5 !text-[13px] text-secondary"
+                class="flex !text-3xs text-tertiary"
               >
                 (optional)
               </span>
@@ -3953,7 +3958,7 @@ requests they will be
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4010,7 +4015,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -4062,7 +4067,7 @@ OAuth 2.0 protocol
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -4081,7 +4086,7 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3"
       data-testid="callout-container"
     >
       <div
@@ -4109,7 +4114,7 @@ None of these options are required.
         class="w-full leading-normal text-default last:mb-0"
       >
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           <span
@@ -4146,17 +4151,17 @@ for more details.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
-              Name
+              Property
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -4175,9 +4180,8 @@ for more details.
               >
                 nonce
               </span>
-              <br />
               <span
-                class="pt-5 !text-[13px] text-secondary"
+                class="flex !text-3xs text-tertiary"
               >
                 (optional)
               </span>
@@ -4196,7 +4200,7 @@ for more details.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
@@ -4225,9 +4229,8 @@ for more details.
               >
                 requestedScopes
               </span>
-              <br />
               <span
-                class="pt-5 !text-[13px] text-secondary"
+                class="flex !text-3xs text-tertiary"
               >
                 (optional)
               </span>
@@ -4252,7 +4255,7 @@ for more details.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -4296,9 +4299,8 @@ requests they will be
               >
                 state
               </span>
-              <br />
               <span
-                class="pt-5 !text-[13px] text-secondary"
+                class="flex !text-3xs text-tertiary"
               >
                 (optional)
               </span>
@@ -4317,7 +4319,7 @@ requests they will be
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4341,7 +4343,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -4393,7 +4395,7 @@ OAuth 2.0 protocol
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -4412,7 +4414,7 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3"
       data-testid="callout-container"
     >
       <div
@@ -4440,7 +4442,7 @@ You must include the ID string of the user to sign out.
         class="w-full leading-normal text-default last:mb-0"
       >
         <p
-          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
           data-text="true"
         >
           <span
@@ -4477,17 +4479,17 @@ for more details.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
-              Name
+              Property
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -4506,9 +4508,8 @@ for more details.
               >
                 state
               </span>
-              <br />
               <span
-                class="pt-5 !text-[13px] text-secondary"
+                class="flex !text-3xs text-tertiary"
               >
                 (optional)
               </span>
@@ -4527,7 +4528,7 @@ for more details.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4584,7 +4585,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -4636,7 +4637,7 @@ OAuth 2.0 protocol
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       A subscription object that allows to conveniently remove an event listener from the emitter.
@@ -4654,17 +4655,17 @@ OAuth 2.0 protocol
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
-              Name
+              Property
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -4709,7 +4710,7 @@ OAuth 2.0 protocol
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 Removes an event listener for which the subscription has been created.
@@ -4762,7 +4763,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[56px] px-5 pt-3"
@@ -4817,7 +4818,7 @@ After calling this function, the listener will no longer receive any events from
         </h3>
       </div>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         An enum whose values control which pre-defined color scheme to use when rendering an 
@@ -4890,7 +4891,7 @@ After calling this function, the listener will no longer receive any events from
         AppleAuthenticationButtonStyle.WHITE ＝ 0
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         White button with black text.
@@ -4951,7 +4952,7 @@ After calling this function, the listener will no longer receive any events from
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         White button with a black outline and black text.
@@ -5012,7 +5013,7 @@ After calling this function, the listener will no longer receive any events from
         AppleAuthenticationButtonStyle.BLACK ＝ 2
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         Black button with white text.
@@ -5020,7 +5021,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[56px] px-5 pt-3"
@@ -5075,7 +5076,7 @@ After calling this function, the listener will no longer receive any events from
         </h3>
       </div>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         An enum whose values control which pre-defined text to use when rendering an 
@@ -5148,7 +5149,7 @@ After calling this function, the listener will no longer receive any events from
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         "Sign in with Apple"
@@ -5209,7 +5210,7 @@ After calling this function, the listener will no longer receive any events from
         AppleAuthenticationButtonType.CONTINUE ＝ 1
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         "Continue with Apple"
@@ -5271,8 +5272,7 @@ After calling this function, the listener will no longer receive any events from
           data-text="true"
         >
           <span
-            class="leading-[1.6154] font-medium text-secondary !text-inherit !font-medium"
-            data-text="true"
+            class="text-xs font-medium text-tertiary [table_&]:!text-2xs"
           >
             Only for:
              
@@ -5312,7 +5312,7 @@ After calling this function, the listener will no longer receive any events from
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         "Sign up with Apple"
@@ -5320,7 +5320,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[56px] px-5 pt-3"
@@ -5375,7 +5375,7 @@ After calling this function, the listener will no longer receive any events from
         </h3>
       </div>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         An enum whose values specify state of the credential when checked with 
@@ -5393,7 +5393,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+        class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3"
         data-testid="callout-container"
       >
         <div
@@ -5421,7 +5421,7 @@ After calling this function, the listener will no longer receive any events from
           class="w-full leading-normal text-default last:mb-0"
         >
           <p
-            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
             data-text="true"
           >
             <span
@@ -5668,7 +5668,7 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[56px] px-5 pt-3"
@@ -5778,7 +5778,7 @@ for more details.
         AppleAuthenticationOperation.IMPLICIT ＝ 0
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         An operation that depends on the particular kind of credential provider.
@@ -5951,7 +5951,7 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[56px] px-5 pt-3"
@@ -6006,7 +6006,7 @@ for more details.
         </h3>
       </div>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         An enum whose values specify scopes you can request when calling 
@@ -6056,7 +6056,7 @@ for more details.
           
 
           <p
-            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
             data-text="true"
           >
             Note that it is possible that you will not be granted all of the scopes which you request.
@@ -6067,7 +6067,7 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+        class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3"
         data-testid="callout-container"
       >
         <div
@@ -6095,7 +6095,7 @@ You will still need to handle null values for any fields you request.
           class="w-full leading-normal text-default last:mb-0"
         >
           <p
-            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
             data-text="true"
           >
             <span
@@ -6232,7 +6232,7 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[56px] px-5 pt-3"
@@ -6287,13 +6287,13 @@ for more details.
         </h3>
       </div>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+        class="mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3"
         data-testid="callout-container"
       >
         <div
@@ -6321,7 +6321,7 @@ for more details.
           class="w-full leading-normal text-default last:mb-0"
         >
           <p
-            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
             data-text="true"
           >
             <span
@@ -6401,7 +6401,7 @@ for more details.
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         The system does not support this determination and there is no data.
@@ -6462,7 +6462,7 @@ for more details.
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         The system has not determined whether the user might be a real person.
@@ -6523,7 +6523,7 @@ for more details.
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         The user appears to be a real person.
@@ -6576,7 +6576,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -6628,19 +6628,19 @@ exports[`APISection expo-pedometer 1`] = `
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Checks user's permissions for accessing pedometer.
     </p>
     <div
-      class="flex flex-row items-start gap-2 mb-3.5"
+      class="flex flex-row items-start gap-2 mb-3"
     >
       <div
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -6659,8 +6659,7 @@ exports[`APISection expo-pedometer 1`] = `
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -6704,7 +6703,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -6802,17 +6801,17 @@ exports[`APISection expo-pedometer 1`] = `
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -6853,7 +6852,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 A date indicating the start of the range over which to measure steps.
@@ -6894,7 +6893,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 A date indicating the end of the range over which to measure steps.
@@ -6906,7 +6905,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
     <br />
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Get the step count between two dates.
@@ -6918,7 +6917,7 @@ exports[`APISection expo-pedometer 1`] = `
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -6937,8 +6936,7 @@ exports[`APISection expo-pedometer 1`] = `
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -6984,7 +6982,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="mb-1 mt-1.5 flex flex-col pl-6"
     >
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         Returns a promise that fulfills with a 
@@ -7004,7 +7002,7 @@ exports[`APISection expo-pedometer 1`] = `
       
 
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         As 
@@ -7051,7 +7049,7 @@ exports[`APISection expo-pedometer 1`] = `
           
 
           <p
-            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
             data-text="true"
           >
             Only the past seven days worth of data is stored and available for you to retrieve. Specifying
@@ -7064,7 +7062,7 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -7116,7 +7114,7 @@ a start date that is more than seven days in the past returns only the available
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Returns whether the pedometer is enabled on the device.
@@ -7128,7 +7126,7 @@ a start date that is more than seven days in the past returns only the available
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -7147,8 +7145,7 @@ a start date that is more than seven days in the past returns only the available
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -7189,7 +7186,7 @@ a start date that is more than seven days in the past returns only the available
       class="mb-1 mt-1.5 flex flex-col pl-6"
     >
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         Returns a promise that fulfills with a 
@@ -7205,7 +7202,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -7257,19 +7254,19 @@ available on this device.
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Asks the user to grant permissions for accessing pedometer.
     </p>
     <div
-      class="flex flex-row items-start gap-2 mb-3.5"
+      class="flex flex-row items-start gap-2 mb-3"
     >
       <div
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -7288,8 +7285,7 @@ available on this device.
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -7333,7 +7329,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -7397,17 +7393,17 @@ available on this device.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -7446,7 +7442,7 @@ available on this device.
               class="border-r border-secondary p-4 text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 A callback that is invoked when new step count data is available. The callback is
@@ -7471,7 +7467,7 @@ provided with a single argument that is
     </div>
     <br />
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Subscribe to pedometer updates.
@@ -7483,7 +7479,7 @@ provided with a single argument that is
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -7502,8 +7498,7 @@ provided with a single argument that is
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -7524,7 +7519,7 @@ provided with a single argument that is
       class="mb-1 mt-1.5 flex flex-col pl-6"
     >
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         Returns a 
@@ -7582,7 +7577,7 @@ provided with a single argument that is
           
 
           <p
-            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
             data-text="true"
           >
             Pedometer updates will not be delivered while the app is in the background. As an alternative, on Android, use another solution based on
@@ -7657,7 +7652,7 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 mb-5 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-secondary py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -7709,7 +7704,7 @@ On iOS, the
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       An object obtained by permissions get and request functions.
@@ -7719,7 +7714,7 @@ On iOS, the
       data-text="true"
     >
       <span
-        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] flex flex-row items-center gap-2 font-medium text-tertiary"
+        class="tracking-[-0.006rem] flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
         data-text="true"
       >
         PermissionResponse Properties
@@ -7738,17 +7733,17 @@ On iOS, the
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -7782,7 +7777,7 @@ On iOS, the
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 Indicates if user can be asked again for specific permission.
@@ -7823,7 +7818,7 @@ in order to enable/disable the permission.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 Determines time when the permission expires.
@@ -7857,7 +7852,7 @@ in order to enable/disable the permission.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 A convenience boolean that indicates if the permission is granted.
@@ -7896,7 +7891,7 @@ in order to enable/disable the permission.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 Determines the status of the permission.
@@ -7949,7 +7944,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -8013,17 +8008,17 @@ in order to enable/disable the permission.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
-              Name
+              Property
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -8057,7 +8052,7 @@ in order to enable/disable the permission.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 Number of steps taken between the given dates.
@@ -8069,7 +8064,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -8122,7 +8117,7 @@ in order to enable/disable the permission.
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Callback function providing event result as an argument.
@@ -8141,12 +8136,12 @@ in order to enable/disable the permission.
               class="even:bg-subtle even:[&_summary]:bg-element"
             >
               <th
-                class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
               >
                 Parameter
               </th>
               <th
-                class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
               >
                 Type
               </th>
@@ -8193,7 +8188,7 @@ in order to enable/disable the permission.
         class="flex flex-row items-center gap-2"
       >
         <svg
-          class="translate-z icon-sm inline-block text-icon-secondary"
+          class="translate-z icon-sm relative -mt-0.5 inline-block text-icon-tertiary"
           fill="none"
           role="img"
           stroke="currentColor"
@@ -8212,8 +8207,7 @@ in order to enable/disable the permission.
           </g>
         </svg>
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
-          data-text="true"
+          class="text-xs font-medium text-tertiary"
         >
           Returns:
         </span>
@@ -8232,7 +8226,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -8297,13 +8291,13 @@ in order to enable/disable the permission.
       multiple types
     </p>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       Permission expiration time. Currently, all permissions are granted permanently.
     </p>
     <p
-      class="tracking-[-0.006rem] text-[14px] font-medium text-secondary"
+      class="tracking-[-0.006rem] text-xs font-medium text-tertiary"
       data-text="true"
     >
       Acceptable values are:
@@ -8314,7 +8308,11 @@ in order to enable/disable the permission.
       >
         'never'
       </code>
-       | 
+      <span
+        class="text-quaternary"
+      >
+         | 
+      </span>
       <code
         class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
         data-text="true"
@@ -8324,7 +8322,7 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -8376,7 +8374,7 @@ in order to enable/disable the permission.
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+      class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
       data-text="true"
     >
       A subscription object that allows to conveniently remove an event listener from the emitter.
@@ -8394,17 +8392,17 @@ in order to enable/disable the permission.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
-              Name
+              Property
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-r border-secondary px-4 py-3.5 font-medium text-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -8449,7 +8447,7 @@ in order to enable/disable the permission.
               class="border-r border-secondary p-4 text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+                class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
                 data-text="true"
               >
                 Removes an event listener for which the subscription has been created.
@@ -8502,7 +8500,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-tertiary max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[56px] px-5 pt-3"
@@ -8612,7 +8610,7 @@ After calling this function, the listener will no longer receive any events from
         PermissionStatus.DENIED ＝ "denied"
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         User has denied the permission.
@@ -8673,7 +8671,7 @@ After calling this function, the listener will no longer receive any events from
         PermissionStatus.GRANTED ＝ "granted"
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         User has granted the permission.
@@ -8734,7 +8732,7 @@ After calling this function, the listener will no longer receive any events from
         PermissionStatus.UNDETERMINED ＝ "undetermined"
       </code>
       <p
-        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
         data-text="true"
       >
         User hasn't granted or denied the permission yet.
