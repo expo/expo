@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Load `.env` files in `expo start` before resolving options making these env vars available in dynamic app manifests. ([#33629](https://github.com/expo/expo/pull/33629) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.22.5 — 2024-12-10
