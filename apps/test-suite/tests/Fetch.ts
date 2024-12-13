@@ -164,10 +164,11 @@ export function test({ describe, expect, it, ...t }) {
 
     it('should abort streaming request', async () => {
       const controller = new AbortController();
-      setTimeout(() => controller.abort(), 500);
+      setTimeout(() => controller.abort(), 5000);
       let error: Error | null = null;
+      let hasReceivedChunk = false;
       try {
-        const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=2', {
+        const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=60', {
           signal: controller.signal,
           headers: {
             Accept: 'text/event-stream',
@@ -176,6 +177,7 @@ export function test({ describe, expect, it, ...t }) {
         const reader = resp.body.getReader();
         while (true) {
           const { done } = await reader.read();
+          hasReceivedChunk = true;
           if (done) {
             break;
           }
@@ -186,6 +188,38 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(error).not.toBeNull();
+      expect(hasReceivedChunk).toBe(true);
+    });
+
+    // Same as the previous test but abort at 0ms,
+    // that to ensure the request is aborted before receiving any chunks.
+    it('should abort streaming request before receiving chunks', async () => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 0);
+      let error: Error | null = null;
+      let hasReceivedChunk = false;
+      try {
+        const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=60', {
+          signal: controller.signal,
+          headers: {
+            Accept: 'text/event-stream',
+          },
+        });
+        const reader = resp.body.getReader();
+        while (true) {
+          const { done } = await reader.read();
+          hasReceivedChunk = true;
+          if (done) {
+            break;
+          }
+        }
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(hasReceivedChunk).toBe(false);
     });
   });
 
