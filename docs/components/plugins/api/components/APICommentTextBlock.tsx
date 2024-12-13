@@ -1,16 +1,18 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
+import type { ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
 
-import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { Callout } from '~/ui/components/Callout';
 import { Tag } from '~/ui/components/Tag/Tag';
 import { DEMI } from '~/ui/components/Text';
 
+import { MDComponents } from '../types';
+import { APIBoxSectionHeader } from './APIBoxSectionHeader';
+import { CommentData } from '../APIDataTypes';
 import {
-  CommentTextBlockProps,
   getAllTagData,
   getCommentContent,
   getTagData,
@@ -20,6 +22,16 @@ import {
 import { ELEMENT_SPACING, STYLES_SECONDARY } from '../styles';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
 
+type Props = {
+  comment?: CommentData;
+  components?: MDComponents;
+  beforeContent?: ReactNode;
+  afterContent?: ReactNode;
+  includePlatforms?: boolean;
+  inlineHeaders?: boolean;
+  emptyCommentFallback?: string;
+};
+
 export const APICommentTextBlock = ({
   comment,
   beforeContent,
@@ -27,7 +39,7 @@ export const APICommentTextBlock = ({
   includePlatforms = true,
   inlineHeaders = false,
   emptyCommentFallback,
-}: CommentTextBlockProps) => {
+}: Props) => {
   const content = comment?.summary ? getCommentContent(comment.summary) : undefined;
 
   if (emptyCommentFallback && !content?.length) {

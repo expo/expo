@@ -1,6 +1,5 @@
 import { slug } from 'github-slugger';
-import { type ComponentType, type PropsWithChildren, type ReactNode } from 'react';
-import { type Components } from 'react-markdown';
+import { type ComponentType, type ReactNode } from 'react';
 
 import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
@@ -44,16 +43,11 @@ import {
 import { APIParamRow } from './components/APIParamRow';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY } from './styles';
+import { CodeComponentProps, MDComponents } from './types';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
-
-export type MDComponents = Components;
-export type CodeComponentProps = PropsWithChildren<{
-  className?: string;
-  node: { data?: { meta?: string } };
-}>;
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -386,10 +380,10 @@ export const renderParams = (parameters: MethodParamData[], sdkVersion: string) 
     <Table>
       <APIParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
       <tbody>
-        {parameters?.map(p => (
+        {parameters?.map(param => (
           <APIParamRow
-            key={p.name}
-            param={p}
+            key={param.name}
+            param={param}
             sdkVersion={sdkVersion}
             showDescription={hasDescription}
           />
@@ -432,16 +426,6 @@ export const renderIndexSignature = (kind: TypeDocKind) =>
       (index signature)
     </A>
   );
-
-export type CommentTextBlockProps = {
-  comment?: CommentData;
-  components?: MDComponents;
-  beforeContent?: ReactNode;
-  afterContent?: ReactNode;
-  includePlatforms?: boolean;
-  inlineHeaders?: boolean;
-  emptyCommentFallback?: string;
-};
 
 export const parseCommentContent = (content?: string): string =>
   content?.length ? content.replace(/&ast;/g, '*').replace(/\t/g, '') : '';
