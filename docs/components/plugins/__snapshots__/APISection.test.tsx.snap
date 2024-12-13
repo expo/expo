@@ -4842,7 +4842,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           WHITE
@@ -4883,7 +4883,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE ＝ 0
@@ -4903,7 +4903,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           WHITE_OUTLINE
@@ -4944,7 +4944,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
@@ -4964,7 +4964,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           BLACK
@@ -5005,7 +5005,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.BLACK ＝ 2
@@ -5100,7 +5100,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           SIGN_IN
@@ -5141,7 +5141,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
@@ -5161,7 +5161,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           CONTINUE
@@ -5202,7 +5202,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationButtonType.CONTINUE ＝ 1
@@ -5222,7 +5222,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           SIGN_UP
@@ -5304,7 +5304,7 @@ After calling this function, the listener will no longer receive any events from
         </span>
       </div>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
@@ -5452,7 +5452,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           REVOKED
@@ -5493,7 +5493,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationCredentialState.REVOKED ＝ 0
@@ -5507,7 +5507,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           AUTHORIZED
@@ -5548,7 +5548,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationCredentialState.AUTHORIZED ＝ 1
@@ -5562,7 +5562,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           NOT_FOUND
@@ -5603,7 +5603,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationCredentialState.NOT_FOUND ＝ 2
@@ -5617,7 +5617,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           TRANSFERRED
@@ -5658,7 +5658,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationCredentialState.TRANSFERRED ＝ 3
@@ -5729,7 +5729,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           IMPLICIT
@@ -5770,7 +5770,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationOperation.IMPLICIT ＝ 0
@@ -5790,7 +5790,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           LOGIN
@@ -5831,7 +5831,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGIN ＝ 1
@@ -5845,7 +5845,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           REFRESH
@@ -5886,7 +5886,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationOperation.REFRESH ＝ 2
@@ -5900,7 +5900,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           LOGOUT
@@ -5941,7 +5941,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGOUT ＝ 3
@@ -6126,7 +6126,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           FULL_NAME
@@ -6167,7 +6167,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationScope.FULL_NAME ＝ 0
@@ -6181,7 +6181,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           EMAIL
@@ -6222,7 +6222,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationScope.EMAIL ＝ 1
@@ -6352,7 +6352,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           UNSUPPORTED
@@ -6393,7 +6393,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
@@ -6413,7 +6413,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           UNKNOWN
@@ -6454,7 +6454,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
@@ -6474,7 +6474,7 @@ for more details.
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           LIKELY_REAL
@@ -6515,7 +6515,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
@@ -8559,7 +8559,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           DENIED
@@ -8600,7 +8600,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -8620,7 +8620,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           GRANTED
@@ -8661,7 +8661,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -8681,7 +8681,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <code
-          class="leading-[1.6154] text-default !text-inherit"
+          class="leading-[1.6154] text-default !text-inherit !font-medium"
           data-text="true"
         >
           UNDETERMINED
@@ -8722,7 +8722,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-secondary mb-2 inline-flex text-xs"
+        class="text-tertiary mb-2 inline-flex text-2xs"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"

@@ -1,5 +1,5 @@
 import { slug } from 'github-slugger';
-import { type ComponentType, type PropsWithChildren } from 'react';
+import { type ComponentType, type PropsWithChildren, type ReactNode } from 'react';
 import { type Components } from 'react-markdown';
 
 import { HeadingType } from '~/common/headingManager';
@@ -160,7 +160,7 @@ const renderUnion = (types: TypeDefinitionData[], { sdkVersion }: { sdkVersion: 
 export const resolveTypeName = (
   typeDefinition: TypeDefinitionData,
   sdkVersion: string
-): string | JSX.Element | (string | JSX.Element)[] => {
+): ReactNode => {
   if (!typeDefinition) {
     return 'undefined';
   }
@@ -338,9 +338,23 @@ export const resolveTypeName = (
         ));
     } else if (type === 'indexedAccess') {
       if (indexType?.name) {
-        return `${objectType?.name}[${indexType?.name}]`;
+        return (
+          <>
+            {objectType?.name}
+            <span className="text-quaternary">[</span>
+            {indexType?.name}
+            <span className="text-quaternary">]</span>
+          </>
+        );
       }
-      return `${objectType?.name}['${indexType?.value}']`;
+      return (
+        <>
+          {objectType?.name}
+          <span className="text-quaternary">[</span>
+          {indexType?.value}
+          <span className="text-quaternary">]</span>
+        </>
+      );
     } else if (type === 'typeOperator') {
       if (target && operator && ['readonly', 'keyof'].includes(operator)) {
         return (
@@ -422,8 +436,8 @@ export const renderIndexSignature = (kind: TypeDocKind) =>
 export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
-  beforeContent?: JSX.Element;
-  afterContent?: JSX.Element;
+  beforeContent?: ReactNode;
+  afterContent?: ReactNode;
   includePlatforms?: boolean;
   inlineHeaders?: boolean;
   emptyCommentFallback?: string;
