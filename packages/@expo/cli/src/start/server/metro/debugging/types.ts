@@ -29,3 +29,11 @@ export type DebuggerRequest<M extends CdpMessage = CdpMessage> = Pick<
   'id' | 'method' | 'params'
 >;
 export type DebuggerResponse<M extends CdpMessage = CdpMessage> = Pick<M, 'result'>;
+
+export type WrappedEvent = {
+  event: 'wrappedEvent';
+  payload: {
+    pageId: string;
+    wrappedEvent: any;
+  };
+};

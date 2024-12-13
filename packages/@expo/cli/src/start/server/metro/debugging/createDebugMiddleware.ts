@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { WebSocketServer } from 'ws';
 
+import { attachDeviceTerminalLogs } from './attachDeviceTerminalLogs';
 import { createHandlersFactory } from './createHandlersFactory';
 import { Log } from '../../../../log';
 import { env } from '../../../../utils/env';
@@ -28,6 +29,8 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
       enableOpenDebuggerRedirect: env.EXPO_DEBUG,
     },
   });
+
+  attachDeviceTerminalLogs(websocketEndpoints['/inspector/device']);
 
   // NOTE(cedric): add a temporary websocket to handle Network-related CDP events
   websocketEndpoints['/inspector/network'] = createNetworkWebsocket(

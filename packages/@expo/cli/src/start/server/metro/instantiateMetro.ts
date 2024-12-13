@@ -59,7 +59,7 @@ class LogRespectingTerminal extends Terminal {
 }
 
 // Share one instance of Terminal for all instances of Metro.
-const terminal = new LogRespectingTerminal(process.stdout);
+export const terminal = new LogRespectingTerminal(process.stdout);
 
 export async function loadMetroConfigAsync(
   projectRoot: string,
