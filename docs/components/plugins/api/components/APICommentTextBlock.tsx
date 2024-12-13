@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
 
-import { BoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { Callout } from '~/ui/components/Callout';
 import { Tag } from '~/ui/components/Tag/Tag';
 import { DEMI } from '~/ui/components/Text';
@@ -50,7 +50,7 @@ export const APICommentTextBlock = ({
           Example
         </DEMI>
       ) : (
-        <BoxSectionHeader text="Example" className="!mt-1" Icon={CodeSquare01Icon} />
+        <APIBoxSectionHeader text="Example" className="!mt-1" Icon={CodeSquare01Icon} />
       )}
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {getCommentContent(example.content ?? example.name)}

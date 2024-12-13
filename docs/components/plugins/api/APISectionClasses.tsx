@@ -2,7 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import ReactMarkdown from 'react-markdown';
 
-import { BoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
 import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
@@ -155,7 +155,7 @@ const renderClass = (
       />
       {properties?.length ? (
         <>
-          <BoxSectionHeader
+          <APIBoxSectionHeader
             text={`${name} Properties`}
             exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
@@ -177,7 +177,7 @@ const renderClass = (
       ) : null}
       {methods?.length > 0 && (
         <>
-          <BoxSectionHeader
+          <APIBoxSectionHeader
             text={`${name} Methods`}
             exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}

@@ -11,7 +11,7 @@ import { TextElement } from '~/ui/components/Text/types';
 
 import { DEFAULT_BASE_NESTING_LEVEL } from '../APISectionUtils';
 
-export const BoxSectionHeader = ({
+export const APIBoxSectionHeader = ({
   text,
   Icon,
   exposeInSidebar,

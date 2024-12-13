@@ -1,6 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { BoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, BOLD, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
 
@@ -144,17 +144,17 @@ const renderInterface = (
         </CALLOUT>
       ) : null}
       <APICommentTextBlock comment={comment} includePlatforms={false} />
-      {interfaceMethods.length ? (
+      {interfaceMethods.length > 0 && (
         <>
-          <BoxSectionHeader text={`${name} Methods`} />
+          <APIBoxSectionHeader text={`${name} Methods`} />
           {interfaceMethods.map(method =>
             renderMethod(method, { exposeInSidebar: false, sdkVersion })
           )}
         </>
-      ) : undefined}
-      {interfaceFields.length ? (
+      )}
+      {interfaceFields.length > 0 && (
         <>
-          <BoxSectionHeader text={`${name} Properties`} />
+          <APIBoxSectionHeader text={`${name} Properties`} />
           <Table>
             <APIParamsTableHeadRow />
             <tbody>
@@ -163,7 +163,7 @@ const renderInterface = (
           </Table>
           <br />
         </>
-      ) : undefined}
+      )}
     </div>
   );
 };

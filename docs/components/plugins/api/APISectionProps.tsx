@@ -1,6 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { BoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
 import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
 
@@ -168,7 +168,7 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <BoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
+          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
           {baseProp?.comment && <APICommentTextBlock comment={baseProp.comment} />}
         </div>
       )}
