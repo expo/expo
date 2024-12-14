@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix @react-native-firebase/messaging overriding Expo Notifications
+
 ### 💡 Others
 
 ### ⚠️ Notices
