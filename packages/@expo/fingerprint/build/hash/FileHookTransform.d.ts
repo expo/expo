@@ -8,7 +8,14 @@ import type { FileHookTransformSource, FileHookTransformFunction } from '../Fing
 export declare class FileHookTransform extends Transform {
     private readonly source;
     private readonly transformFn;
-    constructor(source: FileHookTransformSource, transformFn: FileHookTransformFunction);
-    _transform(chunk: any, _encoding: BufferEncoding, callback: TransformCallback): void;
+    private readonly debug;
+    private _isTransformed;
+    constructor(source: FileHookTransformSource, transformFn: FileHookTransformFunction, debug: boolean | undefined);
+    /**
+     * Indicates whether the file content has been transformed.
+     * @returns boolean value if `debug` is true, otherwise the value would be undefined.
+     */
+    get isTransformed(): boolean | undefined;
+    _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback): void;
     _flush(callback: TransformCallback): void;
 }

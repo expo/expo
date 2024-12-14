@@ -43,13 +43,6 @@ async function createFingerprintSourceAsync(source, limiter, projectRoot, option
     let result = null;
     switch (source.type) {
         case 'contents':
-            if (typeof options.fileHookTransform === 'function') {
-                source.contents =
-                    options.fileHookTransform({
-                        type: 'contents',
-                        id: source.id,
-                    }, source.contents, true /* isEndOfFile */, 'utf8') ?? '';
-            }
             result = await createContentsHashResultsAsync(source, options);
             break;
         case 'file':
@@ -100,6 +93,9 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
             }
             let resolved = false;
             const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
+            const fileHookTransform = options.fileHookTransform
+                ? new FileHookTransform_1.FileHookTransform({ type: 'file', filePath }, options.fileHookTransform, options.debug)
+                : null;
             let stream = (0, fs_1.createReadStream)(path_1.default.join(projectRoot, filePath), {
                 highWaterMark: 1024,
             });
@@ -113,12 +109,8 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
                     }
                 });
             }
-            if (typeof options.fileHookTransform === 'function') {
-                const transform = new FileHookTransform_1.FileHookTransform({
-                    type: 'file',
-                    filePath,
-                }, options.fileHookTransform);
-                stream = (0, stream_1.pipeline)(stream, transform, (err) => {
+            if (fileHookTransform) {
+                stream = (0, stream_1.pipeline)(stream, fileHookTransform, (err) => {
                     if (err) {
                         reject(err);
                     }
@@ -127,11 +119,19 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
             stream.on('close', () => {
                 if (!resolved) {
                     const hex = hasher.digest('hex');
+                    const isTransformed = fileHookTransform?.isTransformed;
+                    const debugInfo = options.debug
+                        ? {
+                            path: filePath,
+                            hash: hex,
+                            ...(isTransformed ? { isTransformed } : undefined),
+                        }
+                        : undefined;
                     resolve({
                         type: 'file',
                         id: filePath,
                         hex,
-                        ...(options.debug ? { debugInfo: { path: filePath, hash: hex } } : undefined),
+                        ...(debugInfo ? { debugInfo } : undefined),
                     });
                     resolved = true;
                 }
@@ -190,12 +190,29 @@ exports.createDirHashResultsAsync = createDirHashResultsAsync;
  * Create `HashResult` for a `HashSourceContents`
  */
 async function createContentsHashResultsAsync(source, options) {
+    let isTransformed = undefined;
+    if (options.fileHookTransform) {
+        const transformedContents = options.fileHookTransform({
+            type: 'contents',
+            id: source.id,
+        }, source.contents, true /* isEndOfFile */, 'utf8') ?? '';
+        if (options.debug) {
+            isTransformed = transformedContents !== source.contents;
+        }
+        source.contents = transformedContents;
+    }
     const hex = (0, crypto_1.createHash)(options.hashAlgorithm).update(source.contents).digest('hex');
+    const debugInfo = options.debug
+        ? {
+            hash: hex,
+            ...(isTransformed ? { isTransformed } : undefined),
+        }
+        : undefined;
     return {
         type: 'contents',
         id: source.id,
         hex,
-        ...(options.debug ? { debugInfo: { hash: hex } } : undefined),
+        ...(debugInfo ? { debugInfo } : undefined),
     };
 }
 exports.createContentsHashResultsAsync = createContentsHashResultsAsync;

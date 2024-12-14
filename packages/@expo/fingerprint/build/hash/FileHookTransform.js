@@ -8,13 +8,27 @@ const stream_1 = require("stream");
 class FileHookTransform extends stream_1.Transform {
     source;
     transformFn;
-    constructor(source, transformFn) {
+    debug;
+    _isTransformed = undefined;
+    constructor(source, transformFn, debug) {
         super();
         this.source = source;
         this.transformFn = transformFn;
+        this.debug = debug;
     }
-    _transform(chunk, _encoding, callback) {
-        const result = this.transformFn(this.source, chunk, false /* isEndOfFile */, _encoding);
+    /**
+     * Indicates whether the file content has been transformed.
+     * @returns boolean value if `debug` is true, otherwise the value would be undefined.
+     */
+    get isTransformed() {
+        return this._isTransformed;
+    }
+    //#region - Transform implementations
+    _transform(chunk, encoding, callback) {
+        const result = this.transformFn(this.source, chunk, false /* isEndOfFile */, encoding);
+        if (this.debug) {
+            this._isTransformed ||= chunk !== result;
+        }
         if (result) {
             this.push(result);
         }

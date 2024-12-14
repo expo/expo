@@ -7,7 +7,7 @@ import path from 'path';
 import { createFingerprintAsync } from '../Fingerprint';
 import type { FileHookTransformSource, FileHookTransformFunction } from '../Fingerprint.types';
 import { normalizeOptionsAsync } from '../Options';
-import { createFileHashResultsAsync } from '../hash/Hash';
+import { createContentsHashResultsAsync, createFileHashResultsAsync } from '../hash/Hash';
 
 jest.mock('fs');
 jest.mock('fs/promises');
@@ -130,6 +130,60 @@ describe('FileHookTransform', () => {
     expect(expoConfig?.contents).toBe('EMPTYCONFIG');
     const expectHex = createHash(options.hashAlgorithm).update('EMPTYCONFIG').digest('hex');
     expect(expoConfig?.hash).toBe(expectHex);
+  });
+});
+
+describe('FileHookTransform - debugInfo.isTransformed', () => {
+  const mockHook = jest
+    .fn()
+    .mockImplementation(
+      (
+        source: FileHookTransformSource,
+        chunk: Buffer | string | null,
+        isEndOfFile: boolean,
+        encoding: BufferEncoding
+      ) => {
+        // transform anything to empty string
+        return '';
+      }
+    ) as jest.MockedFunction<FileHookTransformFunction>;
+
+  afterEach(() => {
+    mockHook.mockClear();
+    vol.reset();
+  });
+
+  it('should contain `isTransformed` value in debugInfo from createFileHashResultsAsync in debug mode', async () => {
+    const filePath = 'assets/icon.png';
+    const contents = await createRandomBufferAsync(4096);
+    const limiter = pLimit(1);
+    vol.mkdirSync('/app/assets', { recursive: true });
+    vol.writeFileSync(path.join('/app', filePath), contents);
+
+    const options = await normalizeOptionsAsync('/app', {
+      fileHookTransform: mockHook,
+      debug: true,
+    });
+    const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
+    expect(result.debugInfo?.path).toBe(filePath);
+    expect(result.debugInfo?.isTransformed).toBe(true);
+  });
+
+  it('should contain `isTransformed` value in debugInfo from createContentsHashResultsAsync in debug mode', async () => {
+    const options = await normalizeOptionsAsync('/app', {
+      fileHookTransform: mockHook,
+      debug: true,
+    });
+    const result = await createContentsHashResultsAsync(
+      {
+        type: 'contents',
+        id: 'stubId',
+        contents: 'stubContents',
+        reasons: [],
+      },
+      options
+    );
+    expect(result.debugInfo?.isTransformed).toBe(true);
   });
 });
 

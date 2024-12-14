@@ -199,6 +199,8 @@ export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents;
 export interface DebugInfoFile {
     path: string;
     hash: string;
+    /** Indicates whether the source is transformed by `fileHookTransform` */
+    isTransformed?: boolean;
 }
 export interface DebugInfoDir {
     path: string;
@@ -207,6 +209,8 @@ export interface DebugInfoDir {
 }
 export interface DebugInfoContents {
     hash: string;
+    /** Indicates whether the source is transformed by `fileHookTransform` */
+    isTransformed?: boolean;
 }
 export type DebugInfo = DebugInfoFile | DebugInfoDir | DebugInfoContents;
 export interface HashResultFile {

@@ -65,18 +65,6 @@ export async function createFingerprintSourceAsync(
   let result: HashResult | null = null;
   switch (source.type) {
     case 'contents':
-      if (options.fileHookTransform) {
-        source.contents =
-          options.fileHookTransform(
-            {
-              type: 'contents',
-              id: source.id,
-            },
-            source.contents,
-            true /* isEndOfFile */,
-            'utf8'
-          ) ?? '';
-      }
       result = await createContentsHashResultsAsync(source, options);
       break;
     case 'file':
@@ -139,6 +127,13 @@ export async function createFileHashResultsAsync(
 
       let resolved = false;
       const hasher = createHash(options.hashAlgorithm);
+      const fileHookTransform: FileHookTransform | null = options.fileHookTransform
+        ? new FileHookTransform(
+            { type: 'file', filePath },
+            options.fileHookTransform,
+            options.debug
+          )
+        : null;
       let stream: Readable = createReadStream(path.join(projectRoot, filePath), {
         highWaterMark: 1024,
       });
@@ -154,15 +149,8 @@ export async function createFileHashResultsAsync(
           }
         });
       }
-      if (options.fileHookTransform) {
-        const transform = new FileHookTransform(
-          {
-            type: 'file',
-            filePath,
-          },
-          options.fileHookTransform
-        );
-        stream = pipeline(stream, transform, (err) => {
+      if (fileHookTransform) {
+        stream = pipeline(stream, fileHookTransform, (err) => {
           if (err) {
             reject(err);
           }
@@ -171,11 +159,19 @@ export async function createFileHashResultsAsync(
       stream.on('close', () => {
         if (!resolved) {
           const hex = hasher.digest('hex');
+          const isTransformed = fileHookTransform?.isTransformed;
+          const debugInfo = options.debug
+            ? {
+                path: filePath,
+                hash: hex,
+                ...(isTransformed ? { isTransformed } : undefined),
+              }
+            : undefined;
           resolve({
             type: 'file',
             id: filePath,
             hex,
-            ...(options.debug ? { debugInfo: { path: filePath, hash: hex } } : undefined),
+            ...(debugInfo ? { debugInfo } : undefined),
           });
           resolved = true;
         }
@@ -259,12 +255,36 @@ export async function createContentsHashResultsAsync(
   source: HashSourceContents,
   options: NormalizedOptions
 ): Promise<HashResultContents> {
+  let isTransformed = undefined;
+  if (options.fileHookTransform) {
+    const transformedContents =
+      options.fileHookTransform(
+        {
+          type: 'contents',
+          id: source.id,
+        },
+        source.contents,
+        true /* isEndOfFile */,
+        'utf8'
+      ) ?? '';
+    if (options.debug) {
+      isTransformed = transformedContents !== source.contents;
+    }
+    source.contents = transformedContents;
+  }
+
   const hex = createHash(options.hashAlgorithm).update(source.contents).digest('hex');
+  const debugInfo = options.debug
+    ? {
+        hash: hex,
+        ...(isTransformed ? { isTransformed } : undefined),
+      }
+    : undefined;
   return {
     type: 'contents',
     id: source.id,
     hex,
-    ...(options.debug ? { debugInfo: { hash: hex } } : undefined),
+    ...(debugInfo ? { debugInfo } : undefined),
   };
 }
 
