@@ -13,8 +13,8 @@ export class FileHookTransform extends Transform {
     super();
   }
 
-  _transform(chunk: any, _encoding: BufferEncoding, callback: TransformCallback): void {
-    const result = this.transformFn(this.source, chunk, false /* isEndOfFile */, _encoding);
+  _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback): void {
+    const result = this.transformFn(this.source, chunk, false /* isEndOfFile */, encoding);
     if (result) {
       this.push(result);
     }

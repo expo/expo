@@ -65,7 +65,7 @@ export async function createFingerprintSourceAsync(
   let result: HashResult | null = null;
   switch (source.type) {
     case 'contents':
-      if (typeof options.fileHookTransform === 'function') {
+      if (options.fileHookTransform) {
         source.contents =
           options.fileHookTransform(
             {
@@ -154,7 +154,7 @@ export async function createFileHashResultsAsync(
           }
         });
       }
-      if (typeof options.fileHookTransform === 'function') {
+      if (options.fileHookTransform) {
         const transform = new FileHookTransform(
           {
             type: 'file',
