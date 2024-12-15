@@ -2,9 +2,9 @@ import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import { createRequire } from 'node:module';
 
-import APISection from './APISection';
-
 import { renderWithHeadings } from '~/common/test-utilities';
+
+import APISection from './APISection';
 
 const require = createRequire(import.meta.url);
 

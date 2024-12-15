@@ -46,7 +46,7 @@ Sentry.init({
   replaysOnErrorSampleRate: 0.05,
 });
 
-import('@sentry/react').then(lazyLoadedSentry => {
+await import('@sentry/react').then(lazyLoadedSentry => {
   Sentry.addIntegration(lazyLoadedSentry.replayIntegration());
 });
 

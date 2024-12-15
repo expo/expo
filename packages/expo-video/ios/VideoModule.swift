@@ -287,7 +287,7 @@ public final class VideoModule: Module {
         player.pointer.seek(to: CMTime.zero)
       }
 
-      AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?) -> [VideoThumbnail] in
+      AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?, options: VideoThumbnailOptions?) -> [VideoThumbnail] in
         guard let times, !times.isEmpty else {
           return []
         }
@@ -295,7 +295,11 @@ public final class VideoModule: Module {
           // TODO: We should throw here as nothing is playing
           return []
         }
-        return try await generateThumbnails(asset: asset, times: times)
+        return try await generateThumbnails(
+          asset: asset,
+          times: times,
+          options: options ?? .default
+        )
       }
     }
 

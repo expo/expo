@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 
-import { PageTitle } from './PageTitle';
-
 import { renderWithTestRouter } from '~/common/test-utilities';
+
+import { PageTitle } from './PageTitle';
 
 describe('PageTitle', () => {
   test('displays npm registry link', () => {

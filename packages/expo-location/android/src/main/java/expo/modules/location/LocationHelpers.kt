@@ -16,8 +16,6 @@ import expo.modules.location.records.LocationLastKnownOptions
 import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationResponse
 import expo.modules.location.records.PermissionRequestResponse
-import io.nlopez.smartlocation.location.config.LocationAccuracy
-import io.nlopez.smartlocation.location.config.LocationParams
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -110,16 +108,16 @@ class LocationHelpers {
 
     private fun mapOptionsToLocationParams(options: LocationOptions): LocationParams {
       val accuracy = options.accuracy
-      val locationParamsBuilder = buildLocationParamsForAccuracy(accuracy)
+      val locationParams = buildLocationParamsForAccuracy(accuracy)
 
       options.timeInterval?.let {
-        locationParamsBuilder.setInterval(it)
+        locationParams.interval = it
       }
       options.distanceInterval?.let {
-        locationParamsBuilder.setDistance(it.toFloat())
+        locationParams.distance = it.toFloat()
       }
 
-      return locationParamsBuilder.build()
+      return locationParams
     }
 
     private fun mapAccuracyToPriority(accuracy: Int): Int {
@@ -131,42 +129,15 @@ class LocationHelpers {
       }
     }
 
-    private fun buildLocationParamsForAccuracy(accuracy: Int): LocationParams.Builder {
+    private fun buildLocationParamsForAccuracy(accuracy: Int): LocationParams {
       return when (accuracy) {
-        LocationModule.ACCURACY_LOWEST -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.LOWEST)
-          .setDistance(3000f)
-          .setInterval(10000)
-
-        LocationModule.ACCURACY_LOW -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.LOW)
-          .setDistance(1000f)
-          .setInterval(5000)
-
-        LocationModule.ACCURACY_BALANCED -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.MEDIUM)
-          .setDistance(100f)
-          .setInterval(3000)
-
-        LocationModule.ACCURACY_HIGH -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.HIGH)
-          .setDistance(50f)
-          .setInterval(2000)
-
-        LocationModule.ACCURACY_HIGHEST -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.HIGH)
-          .setDistance(25f)
-          .setInterval(1000)
-
-        LocationModule.ACCURACY_BEST_FOR_NAVIGATION -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.HIGH)
-          .setDistance(0f)
-          .setInterval(500)
-
-        else -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.MEDIUM)
-          .setDistance(100f)
-          .setInterval(3000)
+        LocationModule.ACCURACY_LOWEST -> LocationParams(accuracy = LocationAccuracy.LOWEST, distance = 3000f, interval = 10000)
+        LocationModule.ACCURACY_LOW -> LocationParams(accuracy = LocationAccuracy.LOW, distance = 1000f, interval = 5000)
+        LocationModule.ACCURACY_BALANCED -> LocationParams(accuracy = LocationAccuracy.MEDIUM, distance = 100f, interval = 3000)
+        LocationModule.ACCURACY_HIGH -> LocationParams(accuracy = LocationAccuracy.HIGH, distance = 50f, interval = 2000)
+        LocationModule.ACCURACY_HIGHEST -> LocationParams(accuracy = LocationAccuracy.HIGH, distance = 25f, interval = 1000)
+        LocationModule.ACCURACY_BEST_FOR_NAVIGATION -> LocationParams(accuracy = LocationAccuracy.HIGH, distance = 0f, interval = 500)
+        else -> LocationParams(accuracy = LocationAccuracy.MEDIUM, distance = 100f, interval = 3000)
       }
     }
 

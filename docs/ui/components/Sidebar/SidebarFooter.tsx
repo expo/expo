@@ -4,10 +4,10 @@ import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
 import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
 import { useRouter } from 'next/compat/router';
 
+import { getPageSection } from '~/common/routes';
+
 import { SidebarSingleEntry } from './SidebarSingleEntry';
 import { ArchiveIcon } from './icons/Archive';
-
-import { getPageSection } from '~/common/routes';
 
 type SideBarFooterProps = {
   isMobileMenuVisible?: boolean;

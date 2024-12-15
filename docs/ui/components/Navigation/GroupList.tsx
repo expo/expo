@@ -1,8 +1,8 @@
 import type { PropsWithChildren } from 'react';
 
-import { NavigationRenderProps } from '.';
-
 import { CALLOUT } from '~/ui/components/Text';
+
+import { NavigationRenderProps } from './types';
 
 type GroupListProps = PropsWithChildren<NavigationRenderProps>;
 

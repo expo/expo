@@ -9,26 +9,28 @@ export function test({ describe, expect, it, ...t }) {
     setupTestTimeout(t);
 
     it('should support redirect and contain basic properties', async () => {
-      const resp = await fetch('https://httpbin.org/redirect-to?url=https://httpbin.org/get');
+      const resp = await fetch(
+        'https://httpbin.test.k6.io/redirect-to?url=https://httpbin.test.k6.io/get'
+      );
       expect(resp.status).toBe(200);
-      expect(resp.url).toBe('https://httpbin.org/get');
+      expect(resp.url).toBe('https://httpbin.test.k6.io/get');
       expect(resp.ok).toBe(true);
     });
 
     it('should process json', async () => {
-      const resp = await fetch('https://httpbin.org/get');
+      const resp = await fetch('https://httpbin.test.k6.io/get');
       const json = await resp.json();
-      expect(json.url).toBe('https://httpbin.org/get');
+      expect(json.url).toMatch(/^https?:\/\/httpbin\.test\.k6\.io\/get$/);
     });
 
     it('should process text', async () => {
-      const resp = await fetch('https://httpbin.org/xml');
+      const resp = await fetch('https://httpbin.test.k6.io/xml');
       const xml = await resp.text();
       expect(xml).toContain(`<?xml version='1.0'`);
     });
 
     it('should process arrayBuffer', async () => {
-      const resp = await fetch('https://httpbin.org/bytes/20');
+      const resp = await fetch('https://httpbin.test.k6.io/bytes/20');
       const buffer = await resp.arrayBuffer();
       expect(buffer.byteLength).toBe(20);
     });
@@ -38,7 +40,7 @@ export function test({ describe, expect, it, ...t }) {
     setupTestTimeout(t);
 
     it('should post with json', async () => {
-      const resp = await fetch('https://httpbin.org/post', {
+      const resp = await fetch('https://httpbin.test.k6.io/post', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -50,7 +52,7 @@ export function test({ describe, expect, it, ...t }) {
     });
 
     it('should post with x-www-form-urlencoded', async () => {
-      const resp = await fetch('https://httpbin.org/post', {
+      const resp = await fetch('https://httpbin.test.k6.io/post', {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -64,7 +66,7 @@ export function test({ describe, expect, it, ...t }) {
     it('should post with FormData without files', async () => {
       const formData = new FormData();
       formData.append('foo', 'foo');
-      const resp = await fetch('https://httpbin.org/post', {
+      const resp = await fetch('https://httpbin.test.k6.io/post', {
         method: 'POST',
         body: formData,
       });
@@ -77,7 +79,7 @@ export function test({ describe, expect, it, ...t }) {
       const formData = new FormData();
       formData.append('foo', 'foo');
       formData.append('file', new Blob(['file content'], { type: 'text/plain' }), 'file.txt');
-      const resp = await fetch('https://httpbin.org/post', {
+      const resp = await fetch('https://httpbin.test.k6.io/post', {
         method: 'POST',
         body: formData,
       });
@@ -92,7 +94,7 @@ export function test({ describe, expect, it, ...t }) {
     setupTestTimeout(t);
 
     it('should process request and response headers', async () => {
-      const resp = await fetch('https://httpbin.org/get', {
+      const resp = await fetch('https://httpbin.test.k6.io/get', {
         headers: {
           'X-Test': 'test',
         },
@@ -108,12 +110,12 @@ export function test({ describe, expect, it, ...t }) {
 
     it('should include cookies when credentials are set to include', async () => {
       await fetch(
-        'https://httpbin.org/response-headers?Set-Cookie=foo=bar;Path=/;SameSite=None;Secure',
+        'https://httpbin.test.k6.io/response-headers?Set-Cookie=foo=bar;Path=/;SameSite=None;Secure',
         {
           credentials: 'include',
         }
       );
-      const resp = await fetch('https://httpbin.org/cookies', {
+      const resp = await fetch('https://httpbin.test.k6.io/cookies', {
         credentials: 'include',
       });
       const json = await resp.json();
@@ -122,12 +124,12 @@ export function test({ describe, expect, it, ...t }) {
 
     it('should not include cookies when credentials are set to omit', async () => {
       await fetch(
-        'https://httpbin.org/response-headers?Set-Cookie=foo=bar;Path=/;SameSite=None;Secure',
+        'https://httpbin.test.k6.io/response-headers?Set-Cookie=foo=bar;Path=/;SameSite=None;Secure',
         {
           credentials: 'include',
         }
       );
-      const resp = await fetch('https://httpbin.org/cookies', {
+      const resp = await fetch('https://httpbin.test.k6.io/cookies', {
         credentials: 'omit',
       });
       const json = await resp.json();
@@ -139,7 +141,7 @@ export function test({ describe, expect, it, ...t }) {
     setupTestTimeout(t);
 
     it('should process 404', async () => {
-      const resp = await fetch('https://httpbin.org/status/404');
+      const resp = await fetch('https://httpbin.test.k6.io/status/404');
       expect(resp.status).toBe(404);
       expect(resp.ok).toBe(false);
     });
@@ -149,7 +151,7 @@ export function test({ describe, expect, it, ...t }) {
       setTimeout(() => controller.abort(), 500);
       let error: Error | null = null;
       try {
-        await fetch('https://httpbin.org/delay/3', {
+        await fetch('https://httpbin.test.k6.io/delay/3', {
           signal: controller.signal,
         });
       } catch (e: unknown) {
@@ -159,13 +161,73 @@ export function test({ describe, expect, it, ...t }) {
       }
       expect(error).not.toBeNull();
     });
+
+    it('should abort streaming request', async () => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 5000);
+      let error: Error | null = null;
+      let hasReceivedChunk = false;
+      try {
+        const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=60', {
+          signal: controller.signal,
+          headers: {
+            Accept: 'text/event-stream',
+          },
+        });
+        const reader = resp.body.getReader();
+        while (true) {
+          const { done } = await reader.read();
+          hasReceivedChunk = true;
+          if (done) {
+            break;
+          }
+        }
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(hasReceivedChunk).toBe(true);
+    });
+
+    // Same as the previous test but abort at 0ms,
+    // that to ensure the request is aborted before receiving any chunks.
+    it('should abort streaming request before receiving chunks', async () => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 0);
+      let error: Error | null = null;
+      let hasReceivedChunk = false;
+      try {
+        const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=60', {
+          signal: controller.signal,
+          headers: {
+            Accept: 'text/event-stream',
+          },
+        });
+        const reader = resp.body.getReader();
+        while (true) {
+          const { done } = await reader.read();
+          hasReceivedChunk = true;
+          if (done) {
+            break;
+          }
+        }
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(hasReceivedChunk).toBe(false);
+    });
   });
 
   describe('Streaming', () => {
     setupTestTimeout(t);
 
     it('should stream response', async () => {
-      const resp = await fetch('https://httpbin.org/drip?numbytes=512&duration=2', {
+      const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=2', {
         headers: {
           Accept: 'text/event-stream',
         },
@@ -190,32 +252,32 @@ export function test({ describe, expect, it, ...t }) {
 
     it('should process multiple requests concurrently', async () => {
       const resps = await Promise.all([
-        fetch('https://httpbin.org/get'),
-        fetch('https://httpbin.org/post', {
+        fetch('https://httpbin.test.k6.io/get'),
+        fetch('https://httpbin.test.k6.io/post', {
           method: 'POST',
           body: 'test',
           headers: { 'Content-Type': 'text/plain' },
         }),
-        fetch('https://httpbin.org/patch', {
+        fetch('https://httpbin.test.k6.io/patch', {
           method: 'PATCH',
           body: 'test',
           headers: { 'Content-Type': 'text/plain' },
         }),
-        fetch('https://httpbin.org/put', {
+        fetch('https://httpbin.test.k6.io/put', {
           method: 'PUT',
           body: 'test',
           headers: { 'Content-Type': 'text/plain' },
         }),
-        fetch('https://httpbin.org/delete', { method: 'DELETE' }),
+        fetch('https://httpbin.test.k6.io/delete', { method: 'DELETE' }),
       ]);
 
       const jsons = await Promise.all(resps.map((resp) => resp.json()));
       expect(jsons.length).toBe(5);
-      expect(jsons[0].url).toBe('https://httpbin.org/get');
-      expect(jsons[1].url).toBe('https://httpbin.org/post');
-      expect(jsons[2].url).toBe('https://httpbin.org/patch');
-      expect(jsons[3].url).toBe('https://httpbin.org/put');
-      expect(jsons[4].url).toBe('https://httpbin.org/delete');
+      expect(jsons[0].url).toMatch(/^https?:\/\/httpbin\.test\.k6\.io\/get$/);
+      expect(jsons[1].url).toMatch(/^https?:\/\/httpbin\.test\.k6\.io\/post$/);
+      expect(jsons[2].url).toMatch(/^https?:\/\/httpbin\.test\.k6\.io\/patch$/);
+      expect(jsons[3].url).toMatch(/^https?:\/\/httpbin\.test\.k6\.io\/put$/);
+      expect(jsons[4].url).toMatch(/^https?:\/\/httpbin\.test\.k6\.io\/delete$/);
     });
   });
 
@@ -299,7 +361,7 @@ function setupTestTimeout(t: Record<string, any>, timeout: number = 30000) {
   let originalTimeout;
 
   t.beforeAll(() => {
-    // Increase the timeout in general because httpbin.org can be slow.
+    // Increase the timeout in general because httpbin.test.k6.io can be slow.
     originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
   });

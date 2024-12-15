@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import { getConfig } from 'expo/config';
+import { getConfig, type ExpoConfig } from 'expo/config';
 import fs from 'fs';
 import { vol, fs as volFS } from 'memfs';
 import path from 'path';
@@ -10,6 +10,7 @@ import { HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
 import { SourceSkips } from '../../sourcer/SourceSkips';
 import {
+  getConfigPluginProps,
   getEasBuildSourcesAsync,
   getExpoAutolinkingAndroidSourcesAsync,
   getExpoAutolinkingIosSourcesAsync,
@@ -222,6 +223,31 @@ describe(getExpoConfigSourcesAsync, () => {
     );
   });
 
+  it('should contain external splash image from expo-splash-screen plugin properties', async () => {
+    vol.fromJSON(require('./fixtures/ExpoDefault52Project.json'));
+    vol.mkdirSync('/app/assets/images', { recursive: true });
+    vol.writeFileSync('/app/assets/images/splash-icon.png', 'PNG data');
+
+    const config = {
+      exp: JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString()).expo,
+    };
+    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+    mockSpawnAsync.mockResolvedValueOnce({
+      output: [],
+      stdout: JSON.stringify({ config, loadedModules: [] }),
+      stderr: '',
+      signal: null,
+      status: 0,
+    });
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: './assets/images/splash-icon.png',
+      })
+    );
+  });
+
   it('should contain extra files from config plugins', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     const config = await getConfig('/app', { skipSDKVersionRequirement: true });
@@ -410,6 +436,17 @@ export default ({ config }) => {
       })
     );
   });
+
+  it('should return empty sources when SourceSkips.ExpoConfigAll is set', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.mkdirSync('/app/assets');
+    vol.writeFileSync('/app/assets/icon.png', 'PNG data');
+    const sources = await getExpoConfigSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.ExpoConfigAll })
+    );
+    expect(sources).toEqual([]);
+  });
 });
 
 describe(getExpoCNGPatchSourcesAsync, () => {
@@ -475,5 +512,97 @@ describe('sortExpoAutolinkingConfig', () => {
     expect(result.modules[1].projects[2].name).toBe(
       'expo-modules-core$android-annotation-processor'
     );
+  });
+});
+
+describe(getConfigPluginProps, () => {
+  it('should return null from config without plugins', () => {
+    const config: ExpoConfig = {
+      name: 'test',
+      slug: 'test',
+      version: '1.0.0',
+    };
+    expect(getConfigPluginProps(config, 'test')).toBeNull();
+  });
+
+  it('should return null from unmatched plugins', () => {
+    const config: ExpoConfig = {
+      name: 'test',
+      slug: 'test',
+      version: '1.0.0',
+      plugins: ['plugin1', ['plugin2', { prop: 'value' }], ['plugin3', 'stringProp']],
+    };
+    expect(getConfigPluginProps(config, 'test')).toBeNull();
+  });
+
+  it('should return null from plugins without props', () => {
+    const config: ExpoConfig = {
+      name: 'test',
+      slug: 'test',
+      version: '1.0.0',
+      plugins: ['plugin1', ['plugin2', { prop: 'value' }], ['plugin3', 'stringProp'], 'test'],
+    };
+    expect(getConfigPluginProps(config, 'test')).toBeNull();
+  });
+
+  it('should return object from plugins with object props', () => {
+    const config: ExpoConfig = {
+      name: 'test',
+      slug: 'test',
+      version: '1.0.0',
+      plugins: [
+        'plugin1',
+        ['plugin2', { prop: 'value' }],
+        ['plugin3', 'stringProp'],
+        ['test', { foo: 'foo' }],
+      ],
+    };
+    expect(getConfigPluginProps(config, 'test')).toEqual({ foo: 'foo' });
+  });
+
+  it('should return array of object from plugins with array of object props', () => {
+    const config: ExpoConfig = {
+      name: 'test',
+      slug: 'test',
+      version: '1.0.0',
+      plugins: [
+        'plugin1',
+        ['plugin2', { prop: 'value' }],
+        ['plugin3', 'stringProp'],
+        ['test', [{ foo: 'foo' }]],
+      ],
+    };
+    expect(getConfigPluginProps(config, 'test')).toEqual([{ foo: 'foo' }]);
+  });
+
+  it('should return string from plugins with string props', () => {
+    const config: ExpoConfig = {
+      name: 'test',
+      slug: 'test',
+      version: '1.0.0',
+      plugins: [
+        'plugin1',
+        ['plugin2', { prop: 'value' }],
+        ['plugin3', 'stringProp'],
+        ['test', 'test'],
+      ],
+    };
+    expect(getConfigPluginProps(config, 'test')).toEqual('test');
+  });
+
+  it('should return the first matched plugin', () => {
+    const config: ExpoConfig = {
+      name: 'test',
+      slug: 'test',
+      version: '1.0.0',
+      plugins: [
+        'plugin1',
+        ['plugin2', { prop: 'value' }],
+        ['plugin3', 'stringProp'],
+        ['test', 'test'],
+        ['test', [{ foo: 'foo' }]],
+      ],
+    };
+    expect(getConfigPluginProps(config, 'test')).toEqual('test');
   });
 });

@@ -290,7 +290,7 @@ const general = [
     makePage('eas/environment-variables.mdx'),
     makePage('eas/using-environment-variables.mdx'),
   ]),
-  makeSection('Workflows', [
+  makeSection('EAS Workflows', [
     makePage('workflows/get-started.mdx'),
     makePage('workflows/triggers.mdx'),
     makePage('workflows/jobs.mdx'),
@@ -534,19 +534,6 @@ const learn = [
       makePage('tutorial/eas/team-development.mdx'),
       makePage('tutorial/eas/using-github.mdx'),
       makePage('tutorial/eas/next-steps.mdx'),
-    ],
-    { expanded: true }
-  ),
-  makeSection(
-    'UI programming',
-    [
-      makePage('ui-programming/image-background.mdx'),
-      makePage('ui-programming/implementing-a-checkbox.mdx'),
-      makePage('ui-programming/z-index.mdx'),
-      makePage('ui-programming/using-svgs.mdx'),
-      makePage('ui-programming/react-native-toast.mdx'),
-      makePage('ui-programming/react-native-styling-buttons.mdx'),
-      makePage('ui-programming/user-interface-libraries.mdx'),
     ],
     { expanded: true }
   ),

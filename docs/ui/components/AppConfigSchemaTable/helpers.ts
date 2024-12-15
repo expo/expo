@@ -72,7 +72,7 @@ export function createDescription(propertyEntry: [string, Property]) {
   if (description) {
     propertyDescription += description;
   }
-  if (meta && meta.regexHuman) {
+  if (meta?.regexHuman) {
     propertyDescription += `\n\n` + meta.regexHuman;
   }
 

@@ -35,6 +35,9 @@ async function getBareIosSourcesAsync(projectRoot, options) {
 }
 exports.getBareIosSourcesAsync = getBareIosSourcesAsync;
 async function getPackageJsonScriptSourcesAsync(projectRoot, options) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.PackageJsonScriptsAll) {
+        return [];
+    }
     let packageJson;
     try {
         packageJson = require((0, resolve_from_1.default)(path_1.default.resolve(projectRoot), './package.json'));

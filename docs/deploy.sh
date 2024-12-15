@@ -96,7 +96,6 @@ redirects[next-steps/additional-resources]=additional-resources
 redirects[get-started/create-a-new-app]=get-started/create-a-project
 redirects[guides/config-plugins]=config-plugins/introduction
 redirects[workflow/debugging]=debugging/runtime-issues
-redirects[guides/userinterface]=ui-programming/user-interface-libraries
 redirects[workflow/expo-go]=get-started/set-up-your-environment
 redirects[guides/splash-screens]=develop/user-interface/splash-screen
 redirects[guides/app-icons]=develop/user-interface/app-icons
@@ -302,6 +301,15 @@ redirects[router/reference/faq]=router/introduction
 
 # After migrating Prebuild page info to CNG page
 redirects[workflow/prebuild]=workflow/continuous-native-generation
+
+# After removing UI programming section
+redirects[ui-programming/image-background]=tutorial/overview
+redirects[ui-programming/implementing-a-checkbox]=versions/latest/sdk/checkbox
+redirects[ui-programming/z-index]=tutorial/overview
+redirects[ui-programming/using-svgs]=versions/latest/sdk/svg
+redirects[ui-programming/react-native-toast]=tutorial/overview
+redirects[ui-programming/react-native-styling-buttons]=tutorial/overview
+redirects[ui-programming/user-interface-libraries]=tutorial/overview
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
