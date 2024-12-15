@@ -190,7 +190,7 @@ const general = [
       'Web',
       [
         makePage('workflow/web.mdx'),
-        makePage('distribution/publishing-websites.mdx'),
+        makePage('guides/publishing-websites.mdx'),
         makePage('guides/dom-components.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
         makePage('guides/tailwind.mdx'),

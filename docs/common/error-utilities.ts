@@ -453,4 +453,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflows/jobs/': '/eas-workflows/jobs/',
   '/workflows/control-flow/': '/eas-workflows/control-flow/',
   '/workflows/variables/': '/eas-workflows/variables/',
+
+  // After adding distribution section under EAS
+  '/distribution/publishing-websites/': '/guides/publishing-websites/',
 };
