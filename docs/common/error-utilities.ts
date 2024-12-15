@@ -445,4 +445,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/ui-programming/react-native-toast/': '/tutorial/overview/',
   '/ui-programming/react-native-styling-buttons/': '/tutorial/overview/',
   '/ui-programming/user-interface-libraries/': '/tutorial/overview/',
+
+  // After renaming "workflows" to "eas-workflows"
+  // Since Next.js considers workflow/... and workflows/... as the same directory names
+  '/workflows/get-started/': '/eas-workflows/get-started/',
+  '/workflows/triggers/': '/eas-workflows/triggers/',
+  '/workflows/jobs/': '/eas-workflows/jobs/',
+  '/workflows/control-flow/': '/eas-workflows/control-flow/',
+  '/workflows/variables/': '/eas-workflows/variables/',
 };
