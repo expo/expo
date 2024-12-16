@@ -18,7 +18,7 @@
 
 ### 💡 Others
 
-- Remove "shortcut" from `rel="icon"` from favicon injection.
+- Remove "shortcut" from `rel="icon"` from favicon injection. ([#33696](https://github.com/expo/expo/pull/33696) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 52.0.18 - 2024-12-10
 
