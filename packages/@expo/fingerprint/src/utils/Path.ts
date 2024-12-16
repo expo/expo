@@ -81,7 +81,9 @@ export function isIgnoredPathWithMatchObjects(
       // As long as previous match result is true and not matched from the current negate pattern, we should early return.
       return false;
     }
-    result ||= currMatch;
+    if (!minimatchObj.negate) {
+      result ||= currMatch;
+    }
   }
   return result;
 }
