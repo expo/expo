@@ -2,7 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
+import { H2, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
 
 import {
   CommentData,
@@ -96,7 +96,7 @@ const renderInterfacePropertyRow = (
   return (
     <Row key={name}>
       <Cell fitContent>
-        <BOLD>{name}</BOLD>
+        <DEMI>{name}</DEMI>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell fitContent>
@@ -127,7 +127,7 @@ const renderInterface = (
       <APISectionDeprecationNote comment={comment} sticky />
       <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
         <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
+          <MONOSPACE weight="medium" className="wrap-anywhere !text-base">
             {name}
           </MONOSPACE>
         </H3Code>

@@ -31,7 +31,7 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
     props.id
   );
 
-  const isDeepNested = props.nestingLevel >= 4;
+  const isDeepNested = props.nestingLevel >= 3;
 
   return (
     <PermalinkBase component={component} className="group flex gap-1">
@@ -39,7 +39,7 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
       <Button
         theme="quaternary"
         className={mergeClasses(
-          'relative my-auto inline-flex size-[26px] justify-center p-0 transition-all duration-default',
+          'relative my-auto inline-flex size-[25px] justify-center p-0 transition-all duration-default',
           'invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100',
           isDeepNested && 'size-[22px]',
           props.additionalProps?.sidebarType === 'text' ? 'scroll-m-5' : 'scroll-m-8',

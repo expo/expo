@@ -3,7 +3,7 @@
 exports[`APICommentTextBlock basic comment 1`] = `
 <div>
   <p
-    class="text-default font-normal text-base [&_strong]:break-words mb-3"
+    class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
     data-text="true"
   >
     This is the basic comment.
@@ -48,7 +48,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
     </span>
   </div>
   <p
-    class="text-default font-normal text-base [&_strong]:break-words mb-3"
+    class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
     data-text="true"
   >
     Gets the referrer URL of the installed app with the 
@@ -59,7 +59,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
       target="_blank"
     >
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 break-words !inline"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
         data-text="true"
       >
         Install Referrer API

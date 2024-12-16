@@ -16,7 +16,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           name
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[26px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
           href="#name"
           id="name"
         >
@@ -25,7 +25,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             <svg
               aria-label="permalink"
-              class="icon-sm shrink-0"
+              class="shrink-0 icon-xs"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -68,7 +68,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </div>
       <p
-        class="text-default font-normal text-base [&_strong]:break-words mb-3"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
         data-text="true"
       >
         Name of your app.
@@ -142,7 +142,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="text-default font-normal text-base [&_strong]:break-words mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
             data-text="true"
           >
             Edit the 'Display Name' field in Xcode
@@ -163,7 +163,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           androidNavigationBar
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[26px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
           href="#androidnavigationbar"
           id="androidnavigationbar"
         >
@@ -172,7 +172,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             <svg
               aria-label="permalink"
-              class="icon-sm shrink-0"
+              class="shrink-0 icon-xs"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -215,7 +215,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </div>
       <p
-        class="text-default font-normal text-base [&_strong]:break-words mb-3"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
         data-text="true"
       >
         Configuration for the bottom navigation bar on Android.
@@ -289,7 +289,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="text-default font-normal text-base [&_strong]:break-words mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
             data-text="true"
           >
             Set this property using AppConstants.java.
@@ -365,7 +365,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="text-default font-normal text-base [&_strong]:break-words mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
             data-text="true"
           >
             Set this property using just Xcode
@@ -451,7 +451,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <p
-          class="text-default font-normal text-base [&_strong]:break-words mb-3"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
           data-text="true"
         >
           Determines how and when the navigation bar is shown.
@@ -525,7 +525,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
           >
             <p
-              class="text-default font-normal text-base [&_strong]:break-words mb-3"
+              class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
               data-text="true"
             >
               Set this property using Xcode.
@@ -611,7 +611,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </span>
           </div>
           <p
-            class="text-default font-normal text-base [&_strong]:break-words mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
             data-text="true"
           >
             Test sub-sub-property
@@ -697,7 +697,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <p
-          class="text-default font-normal text-base [&_strong]:break-words mb-3"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
           data-text="true"
         >
           Specifies the background color of the navigation bar.
@@ -705,12 +705,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         
 
         <p
-          class="text-default font-normal text-base [&_strong]:break-words mb-3"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
           data-text="true"
         >
           6 character long hex color string, eg: 
           <code
-            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 break-words !inline"
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
             data-text="true"
           >
             '#000000'
@@ -731,7 +731,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           intentFilters
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-[26px] justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
           href="#intentfilters"
           id="intentfilters"
         >
@@ -740,7 +740,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             <svg
               aria-label="permalink"
-              class="icon-sm shrink-0"
+              class="shrink-0 icon-xs"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -783,7 +783,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </div>
       <p
-        class="text-default font-normal text-base [&_strong]:break-words mb-3"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
         data-text="true"
       >
         Configuration for setting an array of custom intent filters in Android manifest.
@@ -857,7 +857,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="text-default font-normal text-base [&_strong]:break-words mb-3"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
             data-text="true"
           >
             This is set in AndroidManifest.xml directly.
@@ -971,7 +971,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <p
-          class="text-default font-normal text-base [&_strong]:break-words mb-3"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-3"
           data-text="true"
         >
           You may also use an intent filter to set your app as the default handler for links

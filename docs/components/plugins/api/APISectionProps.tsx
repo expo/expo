@@ -114,7 +114,7 @@ export const renderProp = (
   return (
     <div
       key={`prop-entry-${name}`}
-      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!pb-4 [&>*:last-child]:!mb-0')}>
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!py-3 [&>*:last-child]:!mb-0')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
       <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
         <HeaderComponent tags={getTagNamesList(comment)}>

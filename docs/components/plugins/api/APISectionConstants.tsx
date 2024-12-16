@@ -27,7 +27,7 @@ const renderConstant = (
     <APISectionDeprecationNote comment={comment} sticky />
     <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
       <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" className="wrap-anywhere">
+        <MONOSPACE weight="medium" className="wrap-anywhere !heading-base">
           {apiName ? `${apiName}.` : ''}
           {name}
         </MONOSPACE>

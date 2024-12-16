@@ -17,7 +17,7 @@ export const STYLES_APIBOX = mergeClasses(
   'max-lg-gutters:px-4'
 );
 
-export const STYLES_APIBOX_NESTED = mergeClasses('mb-4 px-5 pb-0 pt-4 shadow-none [&_h4]:mt-0');
+export const STYLES_APIBOX_NESTED = mergeClasses('mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0');
 
 export const STYLES_APIBOX_WRAPPER = mergeClasses(
   'mb-3.5 px-5 pt-4',
