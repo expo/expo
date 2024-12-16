@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- `launchFallbackUpdateFromDisk` should be called from a background thread.
+
 ### 💡 Others
 
 ## 0.26.10 - 2024-12-05
