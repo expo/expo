@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Introduced `fileHookTransform` to support contents or file chunk customization before hashing. ([#33610](https://github.com/expo/expo/pull/33610) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Fixed ignorePaths does not ignore files inside local modules. ([#33597](https://github.com/expo/expo/pull/33597) by [@kudo](https://github.com/kudo))
