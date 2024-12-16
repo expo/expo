@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [next] Add blob support and `.blob()` function. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 18.0.6 — 2024-12-16
+
+### 🎉 New features
+
+- [next] Add blob support and `.blob()` function. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
 
 ## 18.0.5 — 2024-12-10
 

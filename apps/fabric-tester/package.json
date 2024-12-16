@@ -9,11 +9,11 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~52.0.0",
+    "expo": "~52.0.19",
     "expo-apple-authentication": "~7.1.0",
     "expo-av": "~15.0.0",
     "expo-blur": "~14.0.0",
-    "expo-camera": "~16.0.0",
+    "expo-camera": "~16.0.10",
     "expo-dev-client": "~5.0.0",
     "expo-image": "^2.0.0",
     "expo-linear-gradient": "~14.0.0",

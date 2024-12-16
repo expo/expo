@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Make exported sourcemap paths relative on Windows. ([#33503](https://github.com/expo/expo/pull/33503) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 0.19.8 — 2024-12-16
+
+### 🐛 Bug fixes
+
+- Make exported sourcemap paths relative on Windows. ([#33503](https://github.com/expo/expo/pull/33503) by [@byCedric](https://github.com/byCedric))
 
 ## 0.19.7 — 2024-12-10
 
