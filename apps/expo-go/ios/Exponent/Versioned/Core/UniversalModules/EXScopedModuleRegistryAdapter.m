@@ -14,13 +14,14 @@
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXExpoUserNotificationCenterProxy.h"
-
+/*
 #import "EXScopedNotificationsEmitter.h"
 #import "EXScopedNotificationsHandlerModule.h"
 #import "EXScopedNotificationBuilder.h"
 #import "EXScopedNotificationSchedulerModule.h"
 #import "EXScopedNotificationPresentationModule.h"
 #import "EXScopedNotificationCategoriesModule.h"
+ */
 #import "EXScopedServerRegistrationModule.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
@@ -73,6 +74,9 @@ if (params[@"fileSystemDirectories"]) {
   [moduleRegistry registerExportedModule:taskManagerModule];
 #endif
 
+  // TODO: rework the new Swift Notification code for ExpoGo
+
+/*
 #if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
   EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerExportedModule:notificationsEmmitter];
@@ -105,6 +109,7 @@ if (params[@"fileSystemDirectories"]) {
   [EXScopedNotificationCategoriesModule maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:experienceStableLegacyId
                                                                                                            scopeKey:scopeKey];
 #endif
+ */
 
 #if __has_include(<EXNotifications/EXServerRegistrationModule.h>)
   EXScopedServerRegistrationModule *serverRegistrationModule = [[EXScopedServerRegistrationModule alloc] initWithScopeKey:scopeKey];
