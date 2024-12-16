@@ -437,7 +437,6 @@ const RENAMED_PAGES: Record<string, string> = {
   // After moving common questions from Expo Router FAQ to Introduction
   '/router/reference/faq/': '/router/introduction/',
 
-
   // After migrating Prebuild page info to CNG page
   '/workflow/prebuild/': '/workflow/continuous-native-generation/',
 
