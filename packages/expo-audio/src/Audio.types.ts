@@ -1,5 +1,7 @@
 export type AudioSource =
   | string
+  | number
+  | null
   | {
       /**
        * A string representing the resource identifier for the audio,
@@ -7,12 +9,16 @@ export type AudioSource =
        */
       uri?: string;
       /**
+       * The asset ID of a local audio asset, acquired with the `require` function.
+       * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
+       */
+      assetId?: number;
+      /**
        * An object representing the HTTP headers to send along with the request for a remote audio source.
        * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
        */
       headers?: Record<string, string>;
-    }
-  | null;
+    };
 
 export type RecordingInput = {
   name: string;

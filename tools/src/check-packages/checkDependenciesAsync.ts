@@ -43,6 +43,7 @@ const IGNORED_PACKAGES = [
   'expo-store-review', // package: expo-constants
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
   'expo-video', // package: @react-native/assets-registry
+  'expo-audio', // package: @react-native/assets-registry
 ];
 
 /**
