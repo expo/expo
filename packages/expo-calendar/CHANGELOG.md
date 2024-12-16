@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- feat: Allow nullable dates for getRemindersAsync ([#33264](https://github.com/expo/expo/pull/33264) by [@TomAtterton](https://github.com/TomAtterton))
+- Allow nullable dates for `getRemindersAsync` ([#33264](https://github.com/expo/expo/pull/33264) by [@TomAtterton](https://github.com/TomAtterton))
 
 ### 🐛 Bug fixes
 
