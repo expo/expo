@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed ignorePaths does not ignore files inside local modules. ([#33597](https://github.com/expo/expo/pull/33597) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint on Windows. ([#33627](https://github.com/expo/expo/pull/33627) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

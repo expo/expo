@@ -1,4 +1,5 @@
 import minimatch, { type IMinimatch } from 'minimatch';
+import process from 'node:process';
 import path from 'path';
 
 /**
@@ -109,4 +110,13 @@ export function normalizeFilePath(filePath: string, options: { stripParentPrefix
     return filePath.replace(STRIP_PARENT_PREFIX_REGEX, '');
   }
   return filePath;
+}
+
+const REGEXP_REPLACE_SLASHES = /\\/g;
+
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+export function toPosixPath(filePath: string): string {
+  return process.platform === 'win32' ? filePath.replace(REGEXP_REPLACE_SLASHES, '/') : filePath;
 }

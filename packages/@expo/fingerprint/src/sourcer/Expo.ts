@@ -11,6 +11,7 @@ import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
 import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { toPosixPath } from '../utils/Path';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 
@@ -134,7 +135,7 @@ export async function getExpoConfigSourcesAsync(
   // config plugins
   const configPluginModules: HashSource[] = loadedModules.map((modulePath) => ({
     type: 'file',
-    filePath: modulePath,
+    filePath: toPosixPath(modulePath),
     reasons: ['expoConfigPlugins'],
   }));
   results.push(...configPluginModules);
@@ -261,14 +262,14 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
     const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
     for (const module of config.modules) {
       for (const project of module.projects) {
-        const filePath = path.relative(projectRoot, project.sourceDir);
+        const filePath = toPosixPath(path.relative(projectRoot, project.sourceDir));
         project.sourceDir = filePath; // use relative path for the dir
         debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
         results.push({ type: 'dir', filePath, reasons });
       }
       if (module.plugins) {
         for (const plugin of module.plugins) {
-          const filePath = path.relative(projectRoot, plugin.sourceDir);
+          const filePath = toPosixPath(path.relative(projectRoot, plugin.sourceDir));
           plugin.sourceDir = filePath; // use relative path for the dir
           debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
           results.push({ type: 'dir', filePath, reasons });
@@ -324,7 +325,7 @@ export async function getExpoAutolinkingIosSourcesAsync(
     const config = JSON.parse(stdout);
     for (const module of config.modules) {
       for (const pod of module.pods) {
-        const filePath = path.relative(projectRoot, pod.podspecDir);
+        const filePath = toPosixPath(path.relative(projectRoot, pod.podspecDir));
         pod.podspecDir = filePath; // use relative path for the dir
         debug(`Adding expo-modules-autolinking ios dir - ${chalk.dim(filePath)}`);
         results.push({ type: 'dir', filePath, reasons });
