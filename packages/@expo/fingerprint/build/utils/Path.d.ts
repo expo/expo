@@ -27,3 +27,7 @@ export declare function isIgnoredPathWithMatchObjects(filePath: string, matchObj
 export declare function normalizeFilePath(filePath: string, options: {
     stripParentPrefix?: boolean;
 }): string;
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+export declare function toPosixPath(filePath: string): string;

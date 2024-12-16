@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeFilePath = exports.isIgnoredPathWithMatchObjects = exports.buildDirMatchObjects = exports.buildPathMatchObjects = exports.isIgnoredPath = void 0;
+exports.toPosixPath = exports.normalizeFilePath = exports.isIgnoredPathWithMatchObjects = exports.buildDirMatchObjects = exports.buildPathMatchObjects = exports.isIgnoredPath = void 0;
 const minimatch_1 = __importDefault(require("minimatch"));
+const node_process_1 = __importDefault(require("node:process"));
 const path_1 = __importDefault(require("path"));
 /**
  * Indicate the given `filePath` should be excluded by the `ignorePaths`.
@@ -100,4 +101,12 @@ function normalizeFilePath(filePath, options) {
     return filePath;
 }
 exports.normalizeFilePath = normalizeFilePath;
+const REGEXP_REPLACE_SLASHES = /\\/g;
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+function toPosixPath(filePath) {
+    return node_process_1.default.platform === 'win32' ? filePath.replace(REGEXP_REPLACE_SLASHES, '/') : filePath;
+}
+exports.toPosixPath = toPosixPath;
 //# sourceMappingURL=Path.js.map

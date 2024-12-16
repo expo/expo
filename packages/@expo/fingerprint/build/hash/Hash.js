@@ -158,11 +158,11 @@ async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options,
     const dirents = (await promises_1.default.readdir(path_1.default.join(projectRoot, dirPath), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));
     const results = (await Promise.all(dirents.map(async (dirent) => {
         if (dirent.isDirectory()) {
-            const filePath = path_1.default.join(dirPath, dirent.name);
+            const filePath = (0, Path_1.toPosixPath)(path_1.default.join(dirPath, dirent.name));
             return await createDirHashResultsAsync(filePath, limiter, projectRoot, options, depth + 1);
         }
         else if (dirent.isFile()) {
-            const filePath = path_1.default.join(dirPath, dirent.name);
+            const filePath = (0, Path_1.toPosixPath)(path_1.default.join(dirPath, dirent.name));
             return await createFileHashResultsAsync(filePath, limiter, projectRoot, options);
         }
         return null;

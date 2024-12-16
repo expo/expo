@@ -20,7 +20,7 @@ import type {
   HashSourceContents,
   NormalizedOptions,
 } from '../Fingerprint.types';
-import { isIgnoredPathWithMatchObjects } from '../utils/Path';
+import { isIgnoredPathWithMatchObjects, toPosixPath } from '../utils/Path';
 import { nonNullish } from '../utils/Predicates';
 import { profile } from '../utils/Profile';
 
@@ -209,7 +209,7 @@ export async function createDirHashResultsAsync(
     await Promise.all(
       dirents.map(async (dirent) => {
         if (dirent.isDirectory()) {
-          const filePath = path.join(dirPath, dirent.name);
+          const filePath = toPosixPath(path.join(dirPath, dirent.name));
           return await createDirHashResultsAsync(
             filePath,
             limiter,
@@ -218,7 +218,7 @@ export async function createDirHashResultsAsync(
             depth + 1
           );
         } else if (dirent.isFile()) {
-          const filePath = path.join(dirPath, dirent.name);
+          const filePath = toPosixPath(path.join(dirPath, dirent.name));
           return await createFileHashResultsAsync(filePath, limiter, projectRoot, options);
         }
 
