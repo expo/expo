@@ -59,45 +59,39 @@ internal struct VideoTrack: Record, Equatable {
     }
     // The information about the track is separated with ,
     let details = hlsHeaderLine.split(separator: ",")
-    var bandwidth: Int?
-    var averageBandwidth: Int?
-    var resolution: String?
-    var mimeType: String?
-    var frameRate: Float?
-
-    for detail in details {
-      let pair = detail.split(separator: "=", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-      guard pair.count == 2 else { continue }
-
-      let key = pair[0]
-      let value = pair[1].trimmingCharacters(in: CharacterSet(charactersIn: "\"")) // Remove possible double quotes
-
-      switch key {
-      case "BANDWIDTH":
-        bandwidth = Int(value)
-      case "AVERAGE-BANDWIDTH":
-        averageBandwidth = Int(value)
-      case "CODECS":
-        mimeType = codecsToMimeType(codecs: value)
-      case "RESOLUTION":
-        resolution = value
-      case "FRAME-RATE":
-        frameRate = Float(value)
-      default:
-        break
+      .reduce(into: [String: String]()) { dict, detail in
+        let pair = detail.split(separator: "=", maxSplits: 1).map {
+          String($0).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        if pair.count == 2 {
+          let (key, value) = (pair[0], pair[1])
+          // Remove possible double quotes
+          dict[key] = value.trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+        }
       }
+    guard let resolution = details["RESOLUTION"] else {
+      return nil
     }
 
-    if let resolution = resolution {
-      let dimensions = resolution.split(separator: "x")
-      if dimensions.count == 2, let width = Int(dimensions[0]), let height = Int(dimensions[1]) {
-        let size = VideoSize(width: width, height: height)
-        // Use the default Andorid behavior for reporting the bitrate
-        let passedBandwidth = bandwidth ?? averageBandwidth
-        return VideoTrack(id: idLine, size: size, mimeType: mimeType, bitrate: passedBandwidth, frameRate: frameRate)
-      }
+    let dimensions = resolution.split(separator: "x").map { Int($0) }
+    guard dimensions.count == 2, let width = dimensions[0], let height = dimensions[1] else {
+      return nil
     }
-    return nil
+
+    let size = VideoSize(width: width, height: height)
+    let mimeType = codecsToMimeType(codecs: details["CODECS"])
+    var bitrate: Int? = nil
+    var frameRate: Float? = nil
+
+    // Use the default Andorid behavior for reporting the bitrate
+    if let bitrateString = details["BANDWIDTH"] ?? details["AVERAGE-BANDWIDTH"] {
+      bitrate = Int(bitrateString)
+    }
+    if let frameRateString = details["FRAME-RATE"] {
+      frameRate = Float(frameRateString)
+    }
+
+    return VideoTrack(id: idLine, size: size, mimeType: mimeType, bitrate: bitrate, frameRate: frameRate)
   }
 
   // I'm not aware of any built in conversion functions. For HLS sources we only need to worry about a few formats though.

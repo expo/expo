@@ -77,16 +77,21 @@ export default function VideoEventsScreen() {
           Status: {JSON.stringify(status)} {'\n'}
           Playback rate: {playbackRate} {'\n'}
           {error && 'Error: ' + error.message} {'\n'}
-          Current Video track: {'{'}
-          {`{\n\tid: "${videoTrack?.id}",\n\tmimeType: "${videoTrack?.mimeType}",\n\tisSupported: ${videoTrack?.isSupported},\n\tsize: "${videoTrack?.size.width}x${videoTrack?.size.height}",\n\tbitrate: ${videoTrack?.bitrate}\n\tframe rate: ${videoTrack?.frameRate}`}
-          {'\n}'}
+          Current Video track: {'{\n'}
+          {`\tid: "${videoTrack?.id}",\n`}
+          {`\tmimeType: "${videoTrack?.mimeType}",\n`}
+          {`\tisSupported: ${videoTrack?.isSupported},\n`}
+          {`\tsize: "${videoTrack?.size.width}x${videoTrack?.size.height}",\n`}
+          {`\tbitrate: ${videoTrack?.bitrate}\n`}
+          {`\tframe rate: ${videoTrack?.frameRate}\n`}
+          {`}`}
         </ConsoleBox>
 
         <Text style={styles.switchTitle}>Tracks:</Text>
         <ConsoleBox style={myStyles.metadataContainer}>
-          Available Video Tracks: {videoTracksToString(loadedMetadata?.availableVideoTracks)}{' '}
+          Available Video Tracks: {videoTracksToString(loadedMetadata?.availableVideoTracks)}
           {'\n\n'}
-          Available Subtitle Tracks:{' '}
+          Available Subtitle Tracks:
           {subtitleTracksToString(loadedMetadata?.availableSubtitleTracks)}
         </ConsoleBox>
       </ScrollView>

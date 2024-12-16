@@ -63,17 +63,9 @@ class VideoPlayerItem: AVPlayerItem {
   }
 
   private func parseM3U8(_ content: String) -> [VideoTrack] {
-    var tracks = [VideoTrack]()
     let lines = content.components(separatedBy: "\n")
-
-    for i in 0...lines.count - 2 {
-      let line = lines[i]
-      let nextLine = lines[i + 1] // This line should contain the id of the video stream if the previous line describes a video stream
-
-      if let track = VideoTrack.from(hlsHeaderLine: line, idLine: nextLine) {
-        tracks.append(track)
-      }
+    return zip(lines, lines.dropFirst()).compactMap { line, nextLine in
+      VideoTrack.from(hlsHeaderLine: line, idLine: nextLine)
     }
-    return tracks
   }
 }

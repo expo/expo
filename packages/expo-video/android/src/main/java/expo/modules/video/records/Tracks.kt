@@ -9,9 +9,9 @@ import java.io.Serializable
 import java.util.Locale
 
 class SubtitleTrack(
-  @Field var id: String,
-  @Field var language: String?,
-  @Field var label: String?
+  @Field val id: String,
+  @Field val language: String?,
+  @Field val label: String?
 ) : Record, Serializable {
   companion object {
     fun fromFormat(format: Format?): SubtitleTrack? {
@@ -31,17 +31,19 @@ class SubtitleTrack(
 
 @OptIn(UnstableApi::class)
 class VideoTrack(
-  @Field var id: String,
-  @Field var size: VideoSize,
-  @Field var mimeType: String?,
-  @Field var isSupported: Boolean = true,
-  @Field var bitrate: Int? = null,
-  @Field var frameRate: Float? = null,
+  @Field val id: String,
+  @Field val size: VideoSize,
+  @Field val mimeType: String?,
+  @Field val isSupported: Boolean = true,
+  @Field val bitrate: Int? = null,
+  @Field val frameRate: Float? = null,
   var format: Format? = null
 ) : Record, Serializable {
   companion object {
     fun fromFormat(format: Format?, isSupported: Boolean): VideoTrack? {
-      format ?: return null
+      if (format == null) {
+        return null
+      }
       val id = format.id ?: return null
       val size = VideoSize(format)
       val mimeType = format.sampleMimeType
