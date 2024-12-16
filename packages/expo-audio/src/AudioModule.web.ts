@@ -12,7 +12,7 @@ import {
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { RecordingPresets } from './RecordingConstants';
-import resolveAssetSource from './resolveAssetSource';
+import resolveAssetSource from './utils/resolveAssetSource';
 
 const nextId = (() => {
   let id = 0;
