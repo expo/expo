@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Remove "shortcut" from `rel="icon"` from favicon injection.
+
 ## 52.0.18 - 2024-12-10
 
 _This version does not introduce any user-facing changes._
