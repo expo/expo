@@ -174,7 +174,7 @@ Here are a few community examples of difficult native features converted into si
 
 - [The entire Firebase suite](https://rnfirebase.io/): Here you can see the entire native Firebase suite going from a multi-step native configuration process across multiple IDEs, down to basic JSON configuration.
 
-- [Cross-platform Home screen Widgets](https://github.com/gaishimo/eas-widget-example): This Expo config plugin can generate a home screen widget for Android and iOS.
+- [Cross-platform home screen widgets](https://github.com/gaishimo/eas-widget-example): This Expo config plugin can generate a home screen widget for Android and iOS.
 
 - [Notification extension and code signing](https://github.com/OneSignal/onesignal-expo-plugin): This Expo config plugin generates a notification extension target on iOS and it augments the EAS credentials service to keep zero-config code signing working.
 
@@ -230,7 +230,7 @@ Cross-platform configurations such as the app icon, name, splash screen, and so 
 
 </Collapsible>
 
-<Collapsible summary="How to manage dependency side-effects with Prebuild?">
+<Collapsible summary="How can I manage dependency side-effects with Prebuild?">
 
 Many complex native packages require additional setup beyond installing and [autolinking](/more/glossary-of-terms#autolinking). For example, a camera library requires permission settings to be added **AndroidManifest.xml** for Android and **Info.plist** for iOS. This additional setup can be considered a configuration side effect of a package. Pasting the required side effect code into your project's native files can lead to difficult native compilation errors, and it's also code that you now own and maintain.
 
