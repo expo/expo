@@ -7,11 +7,11 @@ sidebar_title: Continuous Native Generation
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-As native your project grows, the complexity from third-party dependencies increases, complicating upgrades and slowing down developer momentum. This discourages adding advanced native functionality and leads to less powerful apps. In cross-platform apps, this complexity is multiplied across each platform.
+A single native project on its own is complicated to maintain, scale, and update. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies. As native your project grows, the complexity from third-party dependencies increases, complicating upgrades and slowing down developer momentum. This discourages adding advanced native functionality and leads to less powerful apps. In cross-platform apps, this complexity is multiplied across each platform.
 
-To address this, we introduced **Continuous Native Generation** as a concept, which generates short-lived native projects from inputs like configuration and code, resulting in a compatible native project that can be compiled into a native app.
+As your project grows, the complexity involved with each third-party dependency increases and makes the app nearly impossible to upgrade &mdash; this drastically slows down developer momentum, discourages adding complex native functionality, and leads to less powerful apps. To combat these issues, we formalized a process called **Continuous Native Generation (CNG)**.
 
-This concept describes the process of [Expo Prebuild](#usage), which is a command to create native projects for React Native apps, provided by [Expo CLI](/more/expo-cli/). However, CNG is not limited to React Native or cross-platform apps.
+Continuous Native Generation is an abstract concept that describes the process of generating ephemeral native projects from a set of inputs. The inputs are typically a combination of configuration and code, and the output is a native project that can be compiled into a native app. We coined this term to describe the process used by [Expo Prebuild](/workflow/prebuild) to generate native projects for React Native apps, however, the concept is not limited to React Native or cross-platform apps.
 
 ## CNG in React Native apps
 
