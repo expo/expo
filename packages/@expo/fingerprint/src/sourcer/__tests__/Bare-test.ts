@@ -64,6 +64,30 @@ describe(getPackageJsonScriptSourcesAsync, () => {
     });
   });
 
+  it('should return empty sources when SourceSkips.PackageJsonScriptsAll is set', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const scripts = {
+        android: 'expo start --android',
+        ios: 'expo start --ios',
+        web: 'expo start --web',
+      };
+      jest.doMock(
+        '/app/package.json',
+        () => ({
+          scripts: { ...scripts },
+        }),
+        {
+          virtual: true,
+        }
+      );
+      const sources = await getPackageJsonScriptSourcesAsync(
+        '/app',
+        await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.PackageJsonScriptsAll })
+      );
+      expect(sources).toEqual([]);
+    });
+  });
+
   it('by default, should not touch pacakge.json scripts if items contain "run" with custom scripts', async () => {
     await jest.isolateModulesAsync(async () => {
       const scripts = {

@@ -2,10 +2,10 @@ import { mergeClasses } from '@expo/styleguide';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import type { PropsWithChildren } from 'react';
 
-import { NavigationRenderProps } from '.';
-
 import { Collapsible } from '~/ui/components/Collapsible';
 import { CALLOUT } from '~/ui/components/Text';
+
+import { NavigationRenderProps } from './types';
 
 type SectionListProps = PropsWithChildren<NavigationRenderProps>;
 
@@ -17,7 +17,7 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
   return (
     <Collapsible
       className="mb-3 pt-3"
-      open={isActive || route.expanded}
+      open={isActive ?? route.expanded}
       summary={
         <div className="mx-4 flex select-none items-center">
           <ChevronDownIcon

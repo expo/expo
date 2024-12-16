@@ -18,9 +18,9 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
     const [tooltipVisible, setTooltipVisible] = useState(false);
 
     // preset for monospace, tail ellipsis, and removing extra bits like details of function signatures
-    const isCode = type === HeadingType.InlineCode;
+    const isCode = type === HeadingType.INLINE_CODE;
     // preset for monospace, tail ellipsis, don't touch the title otherwise
-    const isCodeOrFilePath = isCode || type === HeadingType.CodeFilePath;
+    const isCodeOrFilePath = isCode || type === HeadingType.CODE_FILE_PATH;
 
     const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
@@ -78,13 +78,17 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
 function trimCodedTitle(str: string) {
   if (!str.includes('...')) {
     const dotIdx = str.indexOf('.');
-    if (dotIdx > 0) str = str.substring(dotIdx + 1);
+    if (dotIdx > 0) {
+      str = str.substring(dotIdx + 1);
+    }
   }
 
   str = str.replace(/<.+>/g, '');
 
   const parIdx = str.indexOf('(');
-  if (parIdx > 0) str = str.substring(0, parIdx + 1) + ')';
+  if (parIdx > 0) {
+    str = str.substring(0, parIdx + 1) + ')';
+  }
 
   return str;
 }
@@ -94,7 +98,7 @@ function trimCodedTitle(str: string) {
  * @param {HTMLElement} el HTML element to check
  */
 function isOverflowing(el: HTMLElement) {
-  if (!el || !el.children) {
+  if (!el?.children) {
     return false;
   }
 

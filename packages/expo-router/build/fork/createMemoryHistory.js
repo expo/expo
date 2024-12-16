@@ -60,25 +60,25 @@ function createMemoryHistory() {
             const id = window.history.state?.id ?? (0, non_secure_1.nanoid)();
             // Need to keep the hash part of the path if there was no previous history entry
             // or the previous history entry had the same path
-            const pathWithHash = path;
-            // ------- START OF FORK
-            // if (!items.length || items.findIndex((item) => item.id === id) < 0) {
-            //   // There are two scenarios for creating an array with only one history record:
-            //   // - When loaded id not found in the items array, this function by default will replace
-            //   //   the first item. We need to keep only the new updated object, otherwise it will break
-            //   //   the page when navigating forward in history.
-            //   // - This is the first time any state modifications are done
-            //   //   So we need to push the entry as there's nothing to replace
-            //   pathWithHash = pathWithHash + location.hash;
-            //   items = [{ path: pathWithHash, state, id }];
-            //   index = 0;
-            // } else {
-            //   if (items[index].path === path) {
-            //     pathWithHash = pathWithHash + location.hash;
-            //   }
-            //   items[index] = { path, state, id };
-            // }
-            // ------- END OF FORK
+            let pathWithHash = path;
+            const hash = pathWithHash.includes('#') ? '' : location.hash;
+            if (!items.length || items.findIndex((item) => item.id === id) < 0) {
+                // There are two scenarios for creating an array with only one history record:
+                // - When loaded id not found in the items array, this function by default will replace
+                //   the first item. We need to keep only the new updated object, otherwise it will break
+                //   the page when navigating forward in history.
+                // - This is the first time any state modifications are done
+                //   So we need to push the entry as there's nothing to replace
+                pathWithHash = pathWithHash + hash;
+                items = [{ path: pathWithHash, state, id }];
+                index = 0;
+            }
+            else {
+                if (items[index].path === path) {
+                    pathWithHash = pathWithHash + hash;
+                }
+                items[index] = { path, state, id };
+            }
             window.history.replaceState({ id }, '', pathWithHash);
         },
         // `history.go(n)` is asynchronous, there are couple of things to keep in mind:

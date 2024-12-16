@@ -8,8 +8,10 @@
 
 ### 🐛 Bug fixes
 
+- Ensure `uuid.v4`and`uuid.v5` is available on old react native architecture. ([#33621](https://github.com/expo/expo/pull/33621) by [@andrejpavlovic](https://github.com/andrejpavlovic))
 - Changed `import` to `import type` for TS type declarations. ([#33447](https://github.com/expo/expo/pull/33447) by [@j-piasecki](https://github.com/j-piasecki))
 - Declare specific ExpoProcessEnv interface to allow usage of Typescript's Module Augmentation feature. ([#33567](https://github.com/expo/expo/pull/33567) by [@noelblaschke](https://github.com/noelblaschke))
+- [macOS] Allow SwiftUI views to work on macOS ([#33506](https://github.com/expo/expo/pull/33506) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 

@@ -1,5 +1,15 @@
 import ExpoMailComposer from './ExpoMailComposer';
-import { MailComposerOptions, MailComposerResult } from './MailComposer.types';
+import { MailClient, MailComposerOptions, MailComposerResult } from './MailComposer.types';
+
+/**
+ * Retrieves a list of available email clients installed on the device.
+ * This can be used to present options to the user for sending emails through their preferred email client,
+ * or to open an email client so the user can access their mailbox — for example, to open a confirmation email sent by your app.
+ * @returns An array of available mail clients.
+ */
+export function getClients(): MailClient[] {
+  return ExpoMailComposer.getClients();
+}
 
 // @needsAudit
 /**

@@ -7,8 +7,8 @@ import { LightboxImage } from './LightboxImage';
 
 const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
 
-const PLAYER_WIDTH = '100%' as const;
-const PLAYER_HEIGHT = '100%' as const;
+const PLAYER_WIDTH = '100%';
+const PLAYER_HEIGHT = '100%';
 
 type ContentSpotlightProps = {
   alt?: string;

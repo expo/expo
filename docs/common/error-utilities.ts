@@ -19,7 +19,7 @@ export function getRedirectPath(redirectPath: string): string {
   }
 
   // Add a trailing slash if there is not one
-  if (redirectPath[redirectPath.length - 1] !== '/') {
+  if (!redirectPath.endsWith('/')) {
     redirectPath = `${redirectPath}/`;
   }
 
@@ -52,9 +52,9 @@ export function getRedirectPath(redirectPath: string): string {
   }
 
   // If a page is missing for react-native paths we redirect to react-native docs
-  if (redirectPath.match(/\/versions\/.*\/react-native\//)) {
+  if (/\/versions\/.*\/react-native\//.test(redirectPath)) {
     const pathParts = redirectPath.split('/');
-    const page = pathParts[pathParts.length - 2];
+    const page = pathParts.at(-2);
     redirectPath = `https://reactnative.dev/docs/${page}`;
   }
 
@@ -81,11 +81,11 @@ function isVersionDocumented(path: string) {
 }
 
 function pathIncludesHtmlExtension(path: string) {
-  return !!path.match(/\.html$/);
+  return !!path.endsWith('.html');
 }
 
 function pathIncludesIndexHtml(path: string) {
-  return !!path.match(/index\.html$/);
+  return !!path.endsWith('index.html');
 }
 
 const VERSION_PART_PATTERN = `(latest|unversioned|v\\d+\\.\\d+.\\d+)`;
@@ -95,7 +95,7 @@ const REACT_NATIVE_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/react-native`;
 
 // Check if path is valid (matches /versions/some-valid-version-here/)
 function isVersionedPath(path: string) {
-  return !!path.match(new RegExp(VERSIONED_PATH_PATTERN));
+  return new RegExp(VERSIONED_PATH_PATTERN).test(path);
 }
 
 // Replace an unsupported SDK version with latest
@@ -118,7 +118,7 @@ function pathRequiresVersioning(path: string) {
   const isExpoSdkIndexPage = path.match(new RegExp(VERSIONED_PATH_PATTERN + '/$'));
   const isReactNativeApiPage = path.match(new RegExp(REACT_NATIVE_PATH_PATTERN));
 
-  return isExpoSdkIndexPage || isExpoSdkPage || isReactNativeApiPage;
+  return isExpoSdkIndexPage ?? isExpoSdkPage ?? isReactNativeApiPage;
 }
 
 function removeVersionFromPath(path: string) {
@@ -127,7 +127,7 @@ function removeVersionFromPath(path: string) {
 
 // Not sure why this happens but sometimes the URL ends in /null
 function endsInNull(path: string) {
-  return !!path.match(/\/null$/);
+  return path.endsWith('/null');
 }
 
 // Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
@@ -138,7 +138,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issues/',
-  '/guides/userinterface/': '/ui-programming/user-interface-libraries/',
   '/introduction/why-not-expo/': '/faq/#limitations',
   '/next-steps/community/': '/',
   '/workflow/expo-go/': '/get-started/set-up-your-environment/',
@@ -437,4 +436,13 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After moving common questions from Expo Router FAQ to Introduction
   '/router/reference/faq/': '/router/introduction/',
+
+  // After removing UI programming section
+  '/ui-programming/image-background/': '/tutorial/overview/',
+  '/ui-programming/implementing-a-checkbox/': '/versions/latest/sdk/checkbox/',
+  '/ui-programming/z-index/': '/tutorial/overview',
+  '/ui-programming/using-svgs/': '/versions/latest/sdk/svg/',
+  '/ui-programming/react-native-toast/': '/tutorial/overview/',
+  '/ui-programming/react-native-styling-buttons/': '/tutorial/overview/',
+  '/ui-programming/user-interface-libraries/': '/tutorial/overview/',
 };

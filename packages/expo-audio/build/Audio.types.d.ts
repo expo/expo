@@ -1,15 +1,20 @@
-export type AudioSource = string | {
+export type AudioSource = string | number | null | {
     /**
      * A string representing the resource identifier for the audio,
      * which could be an HTTPS address, a local file path, or the name of a static audio file resource.
      */
     uri?: string;
     /**
+     * The asset ID of a local audio asset, acquired with the `require` function.
+     * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
+     */
+    assetId?: number;
+    /**
      * An object representing the HTTP headers to send along with the request for a remote audio source.
      * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
      */
     headers?: Record<string, string>;
-} | null;
+};
 export type RecordingInput = {
     name: string;
     type: string;
@@ -46,8 +51,17 @@ export type RecorderState = {
     metering?: number;
     url: string | null;
 };
+/**
+ * @platform android
+ */
 export type AndroidOutputFormat = 'default' | '3gp' | 'mpeg4' | 'amrnb' | 'amrwb' | 'aac_adts' | 'mpeg2ts' | 'webm';
+/**
+ * @platform android
+ */
 export type AndroidAudioEncoder = 'default' | 'amr_nb' | 'amr_wb' | 'aac' | 'he_aac' | 'aac_eld';
+/**
+ * @platform ios
+ */
 export declare enum IOSOutputFormat {
     LINEARPCM = "lpcm",
     AC3 = "ac-3",
@@ -119,21 +133,30 @@ export type RecordingOptions = {
     bitRate: number;
     /**
      * Recording options for the Android platform.
+     * @platform android
      */
     android: RecordingOptionsAndroid;
     /**
      * Recording options for the iOS platform.
+     * @platform ios
      */
     ios: RecordingOptionsIos;
     /**
      * Recording options for the Web platform.
+     * @platform web
      */
     web?: RecordingOptionsWeb;
 };
+/**
+ * @platform web
+ */
 export type RecordingOptionsWeb = {
     mimeType?: string;
     bitsPerSecond?: number;
 };
+/**
+ * @platform ios
+ */
 export type RecordingOptionsIos = {
     /**
      * The desired file extension.
@@ -180,6 +203,9 @@ export type RecordingOptionsIos = {
      */
     linearPCMIsFloat?: boolean;
 };
+/**
+ * @platform android
+ */
 export type RecordingOptionsAndroid = {
     /**
      * The desired file extension.

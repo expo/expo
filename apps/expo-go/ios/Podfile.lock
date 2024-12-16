@@ -292,16 +292,83 @@ PODS:
   - EXUpdatesInterface (1.0.0):
     - ExpoModulesCore
   - FBLazyVector (0.76.3)
+  - FirebaseAnalytics (11.4.0):
+    - FirebaseAnalytics/AdIdSupport (= 11.4.0)
+    - FirebaseCore (~> 11.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - FirebaseAnalytics/AdIdSupport (11.4.0):
+    - FirebaseCore (~> 11.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleAppMeasurement (= 11.4.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
   - FirebaseCore (11.3.0):
     - FirebaseCoreInternal (~> 11.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/Logger (~> 8.0)
+  - FirebaseCoreExtension (11.4.1):
+    - FirebaseCore (~> 11.0)
   - FirebaseCoreInternal (11.3.0):
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
+  - FirebaseCrashlytics (11.3.0):
+    - FirebaseCore (~> 11.0)
+    - FirebaseInstallations (~> 11.0)
+    - FirebaseRemoteConfigInterop (~> 11.0)
+    - FirebaseSessions (~> 11.0)
+    - GoogleDataTransport (~> 10.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
+  - FirebaseInstallations (11.4.0):
+    - FirebaseCore (~> 11.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - PromisesObjC (~> 2.4)
+  - FirebaseRemoteConfigInterop (11.6.0)
+  - FirebaseSessions (11.3.0):
+    - FirebaseCore (~> 11.0)
+    - FirebaseCoreExtension (~> 11.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleDataTransport (~> 10.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - nanopb (~> 3.30910.0)
+    - PromisesSwift (~> 2.1)
   - fmt (9.1.0)
   - glog (0.3.5)
   - Google-Maps-iOS-Utils (6.0.0):
     - GoogleMaps (~> 9.0)
+  - GoogleAppMeasurement (11.4.0):
+    - GoogleAppMeasurement/AdIdSupport (= 11.4.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - GoogleAppMeasurement/AdIdSupport (11.4.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 11.4.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - GoogleAppMeasurement/WithoutAdIdSupport (11.4.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
   - GoogleMaps (9.1.1):
     - GoogleMaps/Maps (= 9.1.1)
   - GoogleMaps/Base (9.1.1)
@@ -400,7 +467,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - MBProgressHUD (1.2.0)
+  - nanopb (3.30910.0):
+    - nanopb/decode (= 3.30910.0)
+    - nanopb/encode (= 3.30910.0)
+  - nanopb/decode (3.30910.0)
+  - nanopb/encode (3.30910.0)
   - Nimble (13.0.0)
+  - PromisesObjC (2.4.0)
+  - PromisesSwift (2.4.0):
+    - PromisesObjC (= 2.4.0)
   - Quick (7.3.1)
   - RCT-Folly (2024.01.01.00):
     - boost
@@ -2570,16 +2645,22 @@ DEPENDENCIES:
   - EXUpdates/Tests (from `../../../packages/expo-updates/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - FBLazyVector (from `../../../react-native-lab/react-native/packages/react-native/Libraries/FBLazyVector`)
+  - FirebaseAnalytics
   - FirebaseCore
+  - FirebaseCoreExtension
+  - FirebaseCrashlytics
+  - FirebaseInstallations
   - fmt (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (from `https://github.com/googlemaps/google-maps-ios-utils.git`)
+  - GoogleDataTransport
   - GoogleMaps (~> 9.0)
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
   - lottie-react-native (from `../../../node_modules/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
+  - nanopb
   - RCT-Folly (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../../../react-native-lab/react-native/packages/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
@@ -2665,8 +2746,16 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - CocoaLumberjack
+    - FirebaseAnalytics
     - FirebaseCore
+    - FirebaseCoreExtension
     - FirebaseCoreInternal
+    - FirebaseCrashlytics
+    - FirebaseInstallations
+    - FirebaseRemoteConfigInterop
+    - FirebaseSessions
+    - GoogleAppMeasurement
+    - GoogleDataTransport
     - GoogleMaps
     - GoogleUtilities
     - libavif
@@ -2674,7 +2763,10 @@ SPEC REPOS:
     - libwebp
     - lottie-ios
     - MBProgressHUD
+    - nanopb
     - Nimble
+    - PromisesObjC
+    - PromisesSwift
     - Quick
     - ReachabilitySwift
     - SDWebImage
@@ -3015,10 +3107,10 @@ SPEC CHECKSUMS:
   EXImageLoader: 759063a65ab016b836f73972d3bb25404888713d
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: f30a0c5d3d6cad8db9c01bab579e0aa0df5d3cb2
-  EXNotifications: c5b96ad5fffef5515c9cfc7887ae10f8720c70a5
+  EXNotifications: 3b6c5a91673a5fe7eae005c1fa79889f645111aa
   Expo: 148aac4ce0da148c63447d09ae41ddb153f35506
   ExpoAppleAuthentication: 218e275c9bf19963247a198c450ce3852e6a9342
-  ExpoAsset: 8138f2a9ec55ae1ad7c3871448379f7d97692d15
+  ExpoAsset: 6e707be0cb7e792faa06e42d8ebc85600921af89
   ExpoBackgroundFetch: a3080ab72736b60441adf5f452919426c62e0533
   ExpoBattery: 71bb388c37c3bcd0e87077e06e95780ea34fa6c8
   ExpoBlur: 562b3da84d3cd79016c411671eaf71a404266415
@@ -3074,14 +3166,22 @@ SPEC CHECKSUMS:
   EXUpdates: c35f6924eb729c633c472eca04a8f04b1f26948e
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   FBLazyVector: be7314029d6ec6b90f0f75ce1195b8130ed9ac4f
+  FirebaseAnalytics: 3feef9ae8733c567866342a1000691baaa7cad49
   FirebaseCore: 8542de610f35f86196ba26cdb2544565a5157c8e
+  FirebaseCoreExtension: f1bc67a4702931a7caa097d8e4ac0a1b0d16720e
   FirebaseCoreInternal: ac26d09a70c730e497936430af4e60fb0c68ec4e
+  FirebaseCrashlytics: ba7b6a55dc10393f6583d87d8600d0d3ab2671d8
+  FirebaseInstallations: 6ef4a1c7eb2a61ee1f74727d7f6ce2e72acf1414
+  FirebaseRemoteConfigInterop: e75e348953352a000331eb77caf01e424248e176
+  FirebaseSessions: 655ff17f3cc1a635cbdc2d69b953878001f9e25b
   fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
+  GoogleAppMeasurement: 987769c4ca6b968f2479fbcc9fe3ce34af454b8e
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: fc27a3c4b51c81f907a3e55b33fd71bae214c9f1
+  hermes-engine: 699c9e93f5af5892ce55dabed81ca70680bb356d
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3089,7 +3189,10 @@ SPEC CHECKSUMS:
   lottie-ios: a881093fab623c467d3bce374367755c272bdd59
   lottie-react-native: 11758dbe03b5749b8139852912353559239b43c2
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
+  nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
+  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
   RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
   RCTDeprecation: 2c5e1000b04ab70b53956aa498bf7442c3c6e497
@@ -3185,6 +3288,6 @@ SPEC CHECKSUMS:
   Yoga: 3deb2471faa9916c8a82dda2a22d3fba2620ad37
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 640a6a74acfd58d09119af8207a10b6297b9048b
+PODFILE CHECKSUM: 41170803c4b54e7f7d591cc4ec29423a94466ce3
 
 COCOAPODS: 1.15.2

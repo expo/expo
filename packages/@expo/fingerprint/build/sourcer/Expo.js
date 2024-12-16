@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoCNGPatchSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
+exports.getConfigPluginProps = exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoCNGPatchSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const promises_1 = __importDefault(require("fs/promises"));
@@ -14,8 +14,12 @@ const semver_1 = __importDefault(require("semver"));
 const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
 const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
+const Path_1 = require("../utils/Path");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAll) {
+        return [];
+    }
     if (!resolve_from_1.default.silent(path_1.default.resolve(projectRoot), 'expo/config')) {
         return [];
     }
@@ -53,6 +57,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     // external files in config
     const isAndroid = options.platforms.includes('android');
     const isIos = options.platforms.includes('ios');
+    const splashScreenPluginProps = getConfigPluginProps(expoConfig, 'expo-splash-screen');
     const externalFiles = [
         // icons
         expoConfig.icon,
@@ -61,7 +66,26 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
         isAndroid ? expoConfig.android?.adaptiveIcon?.foregroundImage : undefined,
         isAndroid ? expoConfig.android?.adaptiveIcon?.backgroundImage : undefined,
         expoConfig.notification?.icon,
-        // splash images
+        // expo-splash-screen images
+        splashScreenPluginProps?.image,
+        splashScreenPluginProps?.dark?.image,
+        isAndroid ? splashScreenPluginProps?.android?.image : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.mdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.hdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.xhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.xxhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.xxxhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.image : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.mdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.hdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.xhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.xxhdpi : undefined,
+        isAndroid ? splashScreenPluginProps?.android?.dark?.xxxhdpi : undefined,
+        isIos ? splashScreenPluginProps?.ios?.image : undefined,
+        isIos ? splashScreenPluginProps?.ios?.tabletImage : undefined,
+        isIos ? splashScreenPluginProps?.ios?.dark?.image : undefined,
+        isIos ? splashScreenPluginProps?.ios?.dark?.tabletImage : undefined,
+        // legacy splash images
         expoConfig.splash?.image,
         isAndroid ? expoConfig.android?.splash?.image : undefined,
         isAndroid ? expoConfig.android?.splash?.mdpi : undefined,
@@ -86,7 +110,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     // config plugins
     const configPluginModules = loadedModules.map((modulePath) => ({
         type: 'file',
-        filePath: modulePath,
+        filePath: (0, Path_1.toPosixPath)(modulePath),
         reasons: ['expoConfigPlugins'],
     }));
     results.push(...configPluginModules);
@@ -184,14 +208,14 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
         const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
         for (const module of config.modules) {
             for (const project of module.projects) {
-                const filePath = path_1.default.relative(projectRoot, project.sourceDir);
+                const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, project.sourceDir));
                 project.sourceDir = filePath; // use relative path for the dir
                 debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
                 results.push({ type: 'dir', filePath, reasons });
             }
             if (module.plugins) {
                 for (const plugin of module.plugins) {
-                    const filePath = path_1.default.relative(projectRoot, plugin.sourceDir);
+                    const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, plugin.sourceDir));
                     plugin.sourceDir = filePath; // use relative path for the dir
                     debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
                     results.push({ type: 'dir', filePath, reasons });
@@ -236,7 +260,7 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options, expoAutol
         const config = JSON.parse(stdout);
         for (const module of config.modules) {
             for (const pod of module.pods) {
-                const filePath = path_1.default.relative(projectRoot, pod.podspecDir);
+                const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, pod.podspecDir));
                 pod.podspecDir = filePath; // use relative path for the dir
                 debug(`Adding expo-modules-autolinking ios dir - ${chalk_1.default.dim(filePath)}`);
                 results.push({ type: 'dir', filePath, reasons });
@@ -266,4 +290,20 @@ function sortExpoAutolinkingAndroidConfig(config) {
     return config;
 }
 exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
+/**
+ * Get the props for a config-plugin
+ */
+function getConfigPluginProps(config, pluginName) {
+    const plugin = (config.plugins ?? []).find((plugin) => {
+        if (Array.isArray(plugin)) {
+            return plugin[0] === pluginName;
+        }
+        return plugin === pluginName;
+    });
+    if (Array.isArray(plugin)) {
+        return (plugin[1] ?? null);
+    }
+    return null;
+}
+exports.getConfigPluginProps = getConfigPluginProps;
 //# sourceMappingURL=Expo.js.map

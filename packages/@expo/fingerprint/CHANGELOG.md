@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
+- Introduced `fileHookTransform` to support contents or file chunk customization before hashing. ([#33610](https://github.com/expo/expo/pull/33610) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
+
+- Fixed ignorePaths does not ignore files inside local modules. ([#33597](https://github.com/expo/expo/pull/33597) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint on Windows. ([#33627](https://github.com/expo/expo/pull/33627) by [@kudo](https://github.com/kudo))
+- Fixed negate `!` pattern ignore all paths in `.fingerprintignore`. ([#33671](https://github.com/expo/expo/pull/33671) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Remove extraneous arg from command help doc ([#33512](https://github.com/expo/expo/pull/33512) by [@wschurman](https://github.com/wschurman))
+- Added `ExpoConfigAll` and `PackageJsonScriptsAll` in `SourceSkips`. ([#33598](https://github.com/expo/expo/pull/33598) by [@kudo](https://github.com/kudo))
+- Added image sources from `expo-splash-screen` config-plugin properties. ([#33607](https://github.com/expo/expo/pull/33607) by [@kudo](https://github.com/kudo))
 
 ## 0.11.3 - 2024-12-02
 

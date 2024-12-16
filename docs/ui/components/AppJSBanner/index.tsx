@@ -3,9 +3,9 @@ import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIco
 import { isBefore } from 'date-fns/isBefore';
 import { useRouter } from 'next/compat/router';
 
-import { AppJSIcon } from './AppJSIcon';
-
 import { CALLOUT, HEADLINE } from '~/ui/components/Text';
+
+import { AppJSIcon } from './AppJSIcon';
 
 export function AppJSBanner() {
   const router = useRouter();

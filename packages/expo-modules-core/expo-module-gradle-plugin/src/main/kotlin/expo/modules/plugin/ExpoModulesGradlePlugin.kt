@@ -2,13 +2,14 @@
 
 package expo.modules.plugin
 
+import expo.modules.plugin.gradle.ExpoGradleHelperExtension
+import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
 
 private const val defaultKotlinVersion = "1.9.24"
 private const val defaultKSPVersion = "1.9.24-1.0.20"
-
 
 abstract class ExpoModulesGradlePlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -21,6 +22,19 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       applyDefaultDependencies()
       applyDefaultAndroidSdkVersions()
     }
+
+    // Adds the expoGradleHelper extension to the gradle instance if it doesn't exist.
+    // If it does exist, that means it was added by a different project.
+    synchronized(lock) {
+      with(project.gradle.extensions) {
+        if (findByType(ExpoGradleHelperExtension::class.java) == null) {
+          create("expoGradleHelper", ExpoGradleHelperExtension::class.java)
+        }
+      }
+    }
+
+    // Creates a user-facing extension that provides access to the `ExpoGradleHelperExtension`.
+    project.extensions.create("expoModule", ExpoModuleExtension::class.java, project)
   }
 
   private fun getKotlinVersion(project: Project): String {
@@ -45,5 +59,9 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       "2.0.21" -> "2.0.21-1.0.28"
       else -> defaultKSPVersion
     }
+  }
+
+  companion object {
+    private val lock = Any()
   }
 }

@@ -52,7 +52,7 @@ type PlatformProps = Omit<Props, 'title'>;
 
 const PlatformsSection = (props: Props) => (
   <>
-    <H4 className="mb-1">{props.title || 'Platform Compatibility'}</H4>
+    <H4 className="mb-1">{props.title ?? 'Platform Compatibility'}</H4>
     <Table className="table-fixed max-sm-gutters:table-auto">
       <TableHead>
         <Row>

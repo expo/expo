@@ -5,11 +5,11 @@ import { Home02DuotoneIcon } from '@expo/styleguide-icons/duotone/Home02DuotoneI
 import { Stars02DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars02DuotoneIcon';
 import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 
-import { ApiVersionSelect } from './ApiVersionSelect';
-
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
 import { Search } from '~/ui/components/Search';
 import { SidebarSingleEntry } from '~/ui/components/Sidebar/SidebarSingleEntry';
+
+import { ApiVersionSelect } from './ApiVersionSelect';
 
 type SidebarHeadProps = {
   sidebarActiveGroup: string;

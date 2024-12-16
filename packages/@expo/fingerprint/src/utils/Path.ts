@@ -1,4 +1,5 @@
 import minimatch, { type IMinimatch } from 'minimatch';
+import process from 'node:process';
 import path from 'path';
 
 /**
@@ -72,14 +73,17 @@ export function isIgnoredPathWithMatchObjects(
 ): boolean {
   let result = false;
   for (const minimatchObj of matchObjects) {
-    const normalizedFilePath = normalizeFilePath(filePath);
+    const stripParentPrefix = minimatchObj.pattern.startsWith('**/');
+    const normalizedFilePath = normalizeFilePath(filePath, { stripParentPrefix });
     const currMatch = minimatchObj.match(normalizedFilePath);
     if (minimatchObj.negate && result && !currMatch) {
       // Special handler for negate (!pattern).
       // As long as previous match result is true and not matched from the current negate pattern, we should early return.
       return false;
     }
-    result ||= currMatch;
+    if (!minimatchObj.negate) {
+      result ||= currMatch;
+    }
   }
   return result;
 }
@@ -92,15 +96,29 @@ function isSubDirectory(parent: string, child: string): boolean {
   return !relative.startsWith('..') && !path.isAbsolute(relative);
 }
 
-const STRIP_NODE_MODULES_PREFIX_REGEX = /^(\.\.\/)+(node_modules\/)/g;
+const STRIP_PARENT_PREFIX_REGEX = /^(\.\.\/)+/g;
 
 /**
  * Normalize the given `filePath` to be used for matching against `ignorePaths`.
  *
- * - When people use fingerprint inside a monorepo, they may get source files from parent directories.
+ * @param filePath The file path to normalize.
+ * @param options.stripParentPrefix
+ *   When people use fingerprint inside a monorepo, they may get source files from parent directories.
  *   However, minimatch '**' doesn't match the parent directories.
  *   We need to strip the `../` prefix to match the node_modules from parent directories.
  */
-function normalizeFilePath(filePath: string) {
-  return filePath.replace(STRIP_NODE_MODULES_PREFIX_REGEX, '$2');
+export function normalizeFilePath(filePath: string, options: { stripParentPrefix?: boolean }) {
+  if (options.stripParentPrefix) {
+    return filePath.replace(STRIP_PARENT_PREFIX_REGEX, '');
+  }
+  return filePath;
+}
+
+const REGEXP_REPLACE_SLASHES = /\\/g;
+
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+export function toPosixPath(filePath: string): string {
+  return process.platform === 'win32' ? filePath.replace(REGEXP_REPLACE_SLASHES, '/') : filePath;
 }

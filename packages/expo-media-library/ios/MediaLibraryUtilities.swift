@@ -267,13 +267,13 @@ func assetType(for localUri: URL) -> PHAssetMediaType {
   switch type {
   case .image:
     return .image
-  case .video:
+  case .video, .movie:
     return .video
   case .audio:
     return .audio
   case _ where type.conforms(to: .image):
     return .image
-  case _ where type.conforms(to: .video):
+  case _ where type.conforms(to: .video) || type.conforms(to: .movie):
     return .video
   case _ where type.conforms(to: .audio):
     return .audio

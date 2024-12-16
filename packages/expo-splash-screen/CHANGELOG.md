@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.29.18 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.17 - 2024-12-10
+
+### 🎉 New features
+
 - On Android, add support for providing vector drawables as the splashscreen icon. ([#33507](https://github.com/expo/expo/pull/33507) by [@alanjhughes](https://github.com/alanjhughes))
 
-### 🐛 Bug fixes
+## 0.29.16 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.15 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.14 - 2024-12-05
 
 ### 💡 Others
 

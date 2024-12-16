@@ -1,7 +1,8 @@
 import { render } from '@testing-library/react';
 
 import type { CommentData } from './APIDataTypes';
-import { CommentTextBlock, resolveTypeName } from './APISectionUtils';
+import { resolveTypeName } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
 
 describe('APISectionUtils.resolveTypeName', () => {
   test('void', () => {
@@ -481,7 +482,7 @@ describe('APISectionUtils.resolveTypeName', () => {
 
 describe('APISectionUtils.CommentTextBlock component', () => {
   test('no comment', () => {
-    const { container } = render(<CommentTextBlock comment={undefined} />);
+    const { container } = render(<APICommentTextBlock comment={undefined} />);
     expect(container).toMatchSnapshot();
   });
 
@@ -490,7 +491,7 @@ describe('APISectionUtils.CommentTextBlock component', () => {
       summary: [{ kind: 'text', text: 'This is the basic comment.' }],
     };
 
-    const { container } = render(<CommentTextBlock comment={comment} />);
+    const { container } = render(<APICommentTextBlock comment={comment} />);
     expect(container).toMatchSnapshot();
   });
 
@@ -557,7 +558,7 @@ describe('APISectionUtils.CommentTextBlock component', () => {
       ],
     };
 
-    const { container } = render(<CommentTextBlock comment={comment} />);
+    const { container } = render(<APICommentTextBlock comment={comment} />);
     expect(container).toMatchSnapshot();
   });
 });

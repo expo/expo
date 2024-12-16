@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isIgnoredPathWithMatchObjects = exports.buildDirMatchObjects = exports.buildPathMatchObjects = exports.isIgnoredPath = void 0;
+exports.toPosixPath = exports.normalizeFilePath = exports.isIgnoredPathWithMatchObjects = exports.buildDirMatchObjects = exports.buildPathMatchObjects = exports.isIgnoredPath = void 0;
 const minimatch_1 = __importDefault(require("minimatch"));
+const node_process_1 = __importDefault(require("node:process"));
 const path_1 = __importDefault(require("path"));
 /**
  * Indicate the given `filePath` should be excluded by the `ignorePaths`.
@@ -63,14 +64,17 @@ exports.buildDirMatchObjects = buildDirMatchObjects;
 function isIgnoredPathWithMatchObjects(filePath, matchObjects) {
     let result = false;
     for (const minimatchObj of matchObjects) {
-        const normalizedFilePath = normalizeFilePath(filePath);
+        const stripParentPrefix = minimatchObj.pattern.startsWith('**/');
+        const normalizedFilePath = normalizeFilePath(filePath, { stripParentPrefix });
         const currMatch = minimatchObj.match(normalizedFilePath);
         if (minimatchObj.negate && result && !currMatch) {
             // Special handler for negate (!pattern).
             // As long as previous match result is true and not matched from the current negate pattern, we should early return.
             return false;
         }
-        result ||= currMatch;
+        if (!minimatchObj.negate) {
+            result ||= currMatch;
+        }
     }
     return result;
 }
@@ -82,15 +86,29 @@ function isSubDirectory(parent, child) {
     const relative = path_1.default.relative(parent, child);
     return !relative.startsWith('..') && !path_1.default.isAbsolute(relative);
 }
-const STRIP_NODE_MODULES_PREFIX_REGEX = /^(\.\.\/)+(node_modules\/)/g;
+const STRIP_PARENT_PREFIX_REGEX = /^(\.\.\/)+/g;
 /**
  * Normalize the given `filePath` to be used for matching against `ignorePaths`.
  *
- * - When people use fingerprint inside a monorepo, they may get source files from parent directories.
+ * @param filePath The file path to normalize.
+ * @param options.stripParentPrefix
+ *   When people use fingerprint inside a monorepo, they may get source files from parent directories.
  *   However, minimatch '**' doesn't match the parent directories.
  *   We need to strip the `../` prefix to match the node_modules from parent directories.
  */
-function normalizeFilePath(filePath) {
-    return filePath.replace(STRIP_NODE_MODULES_PREFIX_REGEX, '$2');
+function normalizeFilePath(filePath, options) {
+    if (options.stripParentPrefix) {
+        return filePath.replace(STRIP_PARENT_PREFIX_REGEX, '');
+    }
+    return filePath;
 }
+exports.normalizeFilePath = normalizeFilePath;
+const REGEXP_REPLACE_SLASHES = /\\/g;
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+function toPosixPath(filePath) {
+    return node_process_1.default.platform === 'win32' ? filePath.replace(REGEXP_REPLACE_SLASHES, '/') : filePath;
+}
+exports.toPosixPath = toPosixPath;
 //# sourceMappingURL=Path.js.map

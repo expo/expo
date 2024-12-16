@@ -25,14 +25,17 @@ export function useLocalStorage<T>(args: Args<T>): [T, (arg: T) => void, () => v
 
   useEffect(
     function persistOnChange() {
-      if (isLocalStorageAvailable() && value !== undefined)
+      if (isLocalStorageAvailable() && value !== undefined) {
         localStorage.setItem(persistenceKey, JSON.stringify(value));
+      }
     },
     [value]
   );
 
   function removeValue() {
-    if (isLocalStorageAvailable()) localStorage.removeItem(persistenceKey);
+    if (isLocalStorageAvailable()) {
+      localStorage.removeItem(persistenceKey);
+    }
   }
 
   return [value ?? defaultValue, setValue, removeValue];

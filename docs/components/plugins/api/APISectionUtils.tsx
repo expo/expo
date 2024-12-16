@@ -1,33 +1,12 @@
 import { mergeClasses } from '@expo/styleguide';
-import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { slug } from 'github-slugger';
-import type { ComponentType, PropsWithChildren } from 'react';
-import ReactMarkdown, { type Components } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkSupsub from 'remark-supersub';
-
-import { APIDataType } from './APIDataType';
-import {
-  CommentContentData,
-  CommentData,
-  DefaultPropsDefinitionData,
-  MethodDefinitionData,
-  MethodParamData,
-  MethodSignatureData,
-  PropData,
-  TypeDefinitionData,
-  TypeParameterData,
-  TypePropertyDataFlags,
-  TypeSignaturesData,
-} from './APIDataTypes';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
-import { ELEMENT_SPACING, STYLES_OPTIONAL } from './styles';
+import { type ComponentType, type PropsWithChildren } from 'react';
+import { type Components } from 'react-markdown';
 
 import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
 import { Callout } from '~/ui/components/Callout';
-import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { Tag } from '~/ui/components/Tag';
+import { HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import {
   A,
   BOLD,
@@ -46,23 +25,24 @@ import {
 } from '~/ui/components/Text';
 import { TextElement } from '~/ui/components/Text/types';
 
-const isDev = process.env.NODE_ENV === 'development';
+import {
+  CommentContentData,
+  CommentData,
+  DefaultPropsDefinitionData,
+  MethodDefinitionData,
+  MethodParamData,
+  MethodSignatureData,
+  PropData,
+  TypeDefinitionData,
+  TypeDocKind,
+  TypeParameterData,
+  TypePropertyDataFlags,
+  TypeSignaturesData,
+} from './APIDataTypes';
+import { APIParamRow } from './components/APIParamRow';
+import { ELEMENT_SPACING, STYLES_OPTIONAL } from './styles';
 
-export enum TypeDocKind {
-  Namespace = 4,
-  Enum = 8,
-  Variable = 32,
-  Function = 64,
-  Class = 128,
-  Interface = 256,
-  Property = 1024,
-  Method = 2048,
-  Parameter = 32768,
-  TypeParameter = 131072,
-  Accessor = 262144,
-  TypeAlias = 2097152,
-  TypeAlias_Legacy = 4194304,
-}
+const isDev = process.env.NODE_ENV === 'development';
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
 
@@ -323,7 +303,9 @@ const renderWithLink = ({
 }) => {
   const replacedName = replaceableTypes[name] ?? name;
 
-  if (name.includes('.')) return name;
+  if (name.includes('.')) {
+    return name;
+  }
 
   if (typePackage && packageLinks[typePackage]) {
     return (
@@ -445,7 +427,7 @@ export const resolveTypeName = (
       return elementType.name + type;
     } else if (elementType?.declaration) {
       if (type === 'array') {
-        const { parameters, type: paramType } = elementType.declaration.indexSignature || {};
+        const { parameters, type: paramType } = elementType.declaration.indexSignature ?? {};
         if (parameters && paramType) {
           return (
             <>
@@ -460,7 +442,7 @@ export const resolveTypeName = (
     } else if (type === 'union' && types?.length) {
       return renderUnion(types, { sdkVersion });
     } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
-      const unionTypes = elementType?.types || [];
+      const unionTypes = elementType?.types ?? [];
       return (
         <>
           <span className="text-quaternary">(</span>
@@ -553,56 +535,22 @@ export const resolveTypeName = (
           </>
         );
       }
-      return operator || 'undefined';
+      return operator ?? 'undefined';
     } else if (type === 'intrinsic') {
-      return name || 'undefined';
+      return name ?? 'undefined';
     } else if (type === 'rest' && elementType) {
       return `...${resolveTypeName(elementType, sdkVersion)}`;
     } else if (value === null) {
       return 'null';
     }
     return 'undefined';
-  } catch (e) {
-    console.warn('Type resolve has failed!', e);
+  } catch (error) {
+    console.warn('Type resolve has failed!', error);
     return 'undefined';
   }
 };
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
-
-export const renderParamRow = (
-  { comment, name, type, flags, defaultValue }: MethodParamData,
-  sdkVersion: string,
-  showDescription?: boolean
-): JSX.Element => {
-  const defaultData = getTagData('default', comment);
-  const initValue = parseCommentContent(
-    defaultValue || (defaultData ? getCommentContent(defaultData.content) : '')
-  );
-  return (
-    <Row key={`param-${name}`}>
-      <Cell>
-        <BOLD>
-          {flags?.isRest ? '...' : ''}
-          {parseParamName(name)}
-        </BOLD>
-        {renderFlags(flags, initValue)}
-      </Cell>
-      <Cell>
-        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
-      </Cell>
-      {showDescription && (
-        <Cell>
-          <CommentTextBlock
-            comment={comment}
-            afterContent={renderDefaultValue(initValue)}
-            emptyCommentFallback="-"
-          />
-        </Cell>
-      )}
-    </Row>
-  );
-};
 
 export const ParamsTableHeadRow = ({ hasDescription = true, mainCellLabel = 'Name' }) => (
   <TableHead>
@@ -650,11 +598,20 @@ export const BoxSectionHeader = ({
 };
 
 export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
-  const hasDescription = Boolean(parameters.find(param => param.comment));
+  const hasDescription = Boolean(parameters.some(param => param.comment));
   return (
     <Table>
       <ParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
-      <tbody>{parameters?.map(p => renderParamRow(p, sdkVersion, hasDescription))}</tbody>
+      <tbody>
+        {parameters?.map(p => (
+          <APIParamRow
+            key={p.name}
+            param={p}
+            sdkVersion={sdkVersion}
+            showDescription={hasDescription}
+          />
+        ))}
+      </tbody>
     </Table>
   );
 };
@@ -678,45 +635,6 @@ export const renderDefaultValue = (defaultValue?: string) =>
       <CODE className="!text-[90%]">{defaultValue}</CODE>
     </div>
   ) : undefined;
-
-export const renderTypeOrSignatureType = ({
-  type,
-  signatures,
-  allowBlock = false,
-  sdkVersion,
-}: {
-  type?: TypeDefinitionData;
-  signatures?: MethodSignatureData[] | TypeSignaturesData[];
-  allowBlock?: boolean;
-  sdkVersion: string;
-}) => {
-  if (signatures && signatures.length) {
-    return (
-      <CODE key={`signature-type-${signatures[0].name}`}>
-        <span className="text-quaternary">(</span>
-        {signatures?.map(({ parameters }) =>
-          parameters?.map((param, index) => (
-            <span key={`signature-param-${param.name}`}>
-              {param.name}
-              {param.flags?.isOptional && '?'}
-              <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
-              {parameters?.length !== index + 1 ? <span className="text-quaternary">, </span> : ''}
-            </span>
-          ))
-        )}
-        <span className="text-quaternary">{') =>'}</span>{' '}
-        {signatures[0].type ? resolveTypeName(signatures[0].type, sdkVersion) : 'void'}
-      </CODE>
-    );
-  } else if (type) {
-    if (allowBlock) {
-      return <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />;
-    }
-
-    return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type, sdkVersion)}</CODE>;
-  }
-  return undefined;
-};
 
 export const renderFlags = (flags?: TypePropertyDataFlags, defaultValue?: string) =>
   (flags?.isOptional || defaultValue) && (
@@ -751,12 +669,12 @@ export type CommentTextBlockProps = {
 };
 
 export const parseCommentContent = (content?: string): string =>
-  content && content.length ? content.replace(/&ast;/g, '*').replace(/\t/g, '') : '';
+  content?.length ? content.replace(/&ast;/g, '*').replace(/\t/g, '') : '';
 
 export const getCommentOrSignatureComment = (
   comment?: CommentData,
   signatures?: MethodSignatureData[] | TypeSignaturesData[]
-) => comment || (signatures && signatures[0]?.comment);
+) => comment ?? signatures?.[0]?.comment;
 
 export const getTagData = (tagName: string, comment?: CommentData) =>
   getAllTagData(tagName, comment)?.[0];
@@ -827,15 +745,6 @@ export const getMethodName = (
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const PARAM_TAGS_REGEX = /@tag-\S*/g;
-
-const getParamTags = (shortText?: string) => {
-  if (!shortText || !shortText.includes('@tag-')) {
-    return undefined;
-  }
-  return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
-};
-
 export const getCommentContent = (content: CommentContentData[]) => {
   return content
     .map(entry => {
@@ -848,85 +757,10 @@ export const getCommentContent = (content: CommentContentData[]) => {
     .trim();
 };
 
-export const CommentTextBlock = ({
-  comment,
-  beforeContent,
-  afterContent,
-  includePlatforms = true,
-  inlineHeaders = false,
-  emptyCommentFallback,
-}: CommentTextBlockProps) => {
-  const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
-
-  if (emptyCommentFallback && (!content || !content.length)) {
-    return <span className="text-quaternary">{emptyCommentFallback}</span>;
-  }
-
-  const paramTags = content ? getParamTags(content) : undefined;
-  const parsedContent = (
-    <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
-      {parseCommentContent(paramTags ? content?.replaceAll(PARAM_TAGS_REGEX, '') : content)}
-    </ReactMarkdown>
-  );
-
-  const examples = getAllTagData('example', comment);
-  const exampleText = examples?.map((example, index) => (
-    <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:mb-0')}>
-      {inlineHeaders ? (
-        <DEMI className="mb-1.5 flex flex-row items-center gap-1.5 text-secondary">
-          <CodeSquare01Icon className="icon-sm" />
-          Example
-        </DEMI>
-      ) : (
-        <BoxSectionHeader text="Example" className="!mt-1" Icon={CodeSquare01Icon} />
-      )}
-      <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
-        {getCommentContent(example.content ?? example.name)}
-      </ReactMarkdown>
-    </div>
-  ));
-
-  const see = getTagData('see', comment);
-  const seeText = see && (
-    <Callout className={`!${ELEMENT_SPACING}`}>
-      <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
-        {`**See:** ` + getCommentContent(see.content)}
-      </ReactMarkdown>
-    </Callout>
-  );
-
-  const hasPlatforms = (getAllTagData('platform', comment)?.length || 0) > 0;
-
-  return (
-    <>
-      {includePlatforms && hasPlatforms && (
-        <APISectionPlatformTags
-          comment={comment}
-          prefix={emptyCommentFallback ? 'Only for:' : undefined}
-        />
-      )}
-      {paramTags && (
-        <>
-          <DEMI theme="secondary">Only for:&ensp;</DEMI>
-          {paramTags.map(tag => (
-            <Tag key={tag} name={tag.split('-')[1]} />
-          ))}
-        </>
-      )}
-      {beforeContent}
-      {parsedContent}
-      {afterContent}
-      {afterContent && !exampleText && <br />}
-      {seeText}
-      {exampleText}
-    </>
-  );
-};
-
 const getMonospaceHeader = (element: ComponentType<any>, baseNestingLevel: number) => {
   return createPermalinkedComponent(element, {
     baseNestingLevel,
-    sidebarType: HeadingType.InlineCode,
+    sidebarType: HeadingType.INLINE_CODE,
   });
 };
 
@@ -936,7 +770,9 @@ export function getH3CodeWithBaseNestingLevel(baseNestingLevel: number) {
 export const H3Code = getH3CodeWithBaseNestingLevel(3);
 
 export const getComponentName = (name?: string, children: PropData[] = []) => {
-  if (name && name !== 'default') return name;
+  if (name && name !== 'default') {
+    return name;
+  }
   const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
   return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
