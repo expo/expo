@@ -1,4 +1,4 @@
-import resolveAssetSource from './resolveAssetSource';
+import resolveAssetSource from '../resolveAssetSource';
 export function resolveSource(source) {
     if (typeof source === 'string') {
         return { uri: source };
