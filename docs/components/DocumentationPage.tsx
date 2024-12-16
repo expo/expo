@@ -2,6 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, createRef, type PropsWithChildren, useRef } from 'react';
+import { InlineHelp } from 'ui/components/InlineHelp';
 
 import * as RoutesUtils from '~/common/routes';
 import { appendSectionToRoute, isRouteActive } from '~/common/routes';
@@ -12,7 +13,6 @@ import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScr
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
-import { Callout } from '~/ui/components/Callout';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { PagePlatformTags } from '~/ui/components/PagePlatformTags';
@@ -146,11 +146,11 @@ export default function DocumentationPage({
           'max-lg-gutters:px-4 max-lg-gutters:pb-12 max-lg-gutters:pt-5'
         )}>
         {version && version === 'unversioned' && (
-          <Callout type="default" size="sm" className="!mb-5 !inline-flex w-full">
+          <InlineHelp type="default" size="sm" className="!mb-5 !inline-flex w-full">
             This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
             <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
             {versionToText(LATEST_VERSION)}).
-          </Callout>
+          </InlineHelp>
         )}
         {title && (
           <PageTitle

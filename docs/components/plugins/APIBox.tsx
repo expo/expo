@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import type { PropsWithChildren } from 'react';
 
-import { getH3CodeWithBaseNestingLevel } from '~/components/plugins/api/APISectionUtils';
+import { getCodeHeadingWithBaseNestingLevel } from '~/components/plugins/api/APISectionUtils';
 import { APISectionPlatformTags } from '~/components/plugins/api/components/APISectionPlatformTags';
 import {
   STYLES_APIBOX,
@@ -9,7 +9,7 @@ import {
   STYLES_APIBOX_WRAPPER,
 } from '~/components/plugins/api/styles';
 import { PlatformName } from '~/types/common';
-import { MONOSPACE } from '~/ui/components/Text';
+import { MONOSPACE, RawH3 } from '~/ui/components/Text';
 
 type APIBoxProps = PropsWithChildren<{
   header?: string;
@@ -25,7 +25,7 @@ export const APIBox = ({
   className,
   headerNestingLevel = 3,
 }: APIBoxProps) => {
-  const HeadingElement = getH3CodeWithBaseNestingLevel(headerNestingLevel);
+  const HeadingElement = getCodeHeadingWithBaseNestingLevel(headerNestingLevel, RawH3);
   return (
     <div
       className={mergeClasses(

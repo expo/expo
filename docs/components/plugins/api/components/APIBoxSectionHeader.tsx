@@ -28,7 +28,7 @@ export const APIBoxSectionHeader = ({
   return (
     <CALLOUT
       className={mergeClasses(
-        '-mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2',
+        '-mx-5 my-4 flex border-y border-palette-gray4 bg-subtle px-5 py-2 text-2xs font-medium text-tertiary',
         'max-lg-gutters:-mx-4',
         className
       )}>
@@ -41,7 +41,10 @@ export const APIBoxSectionHeader = ({
 };
 
 function createInheritPermalink(baseNestingLevel: number) {
-  return createPermalinkedComponent(createTextComponent(TextElement.SPAN, 'text-inherit'), {
-    baseNestingLevel,
-  });
+  return createPermalinkedComponent(
+    createTextComponent(TextElement.SPAN, 'text-inherit inline-flex items-center'),
+    {
+      baseNestingLevel,
+    }
+  );
 }

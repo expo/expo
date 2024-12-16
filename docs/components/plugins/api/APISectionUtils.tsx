@@ -3,7 +3,7 @@ import { type ComponentType, type ReactNode } from 'react';
 
 import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
-import { Callout } from '~/ui/components/Callout';
+import { InlineHelp } from '~/ui/components/InlineHelp';
 import { HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import {
   A,
@@ -53,14 +53,18 @@ const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
 export const mdComponents: MDComponents = {
-  blockquote: ({ children }) => <Callout size="sm">{children}</Callout>,
+  blockquote: ({ children }) => (
+    <InlineHelp size="sm" className="shadow-none">
+      {children}
+    </InlineHelp>
+  ),
   code: ({ className, children, node }: CodeComponentProps) => {
     return className ? (
       <PrismCodeBlock className={className} title={node?.data?.meta}>
         {children}
       </PrismCodeBlock>
     ) : (
-      <CODE className="!inline">{children}</CODE>
+      <CODE className="break-words !inline">{children}</CODE>
     );
   },
   pre: ({ children }) => <>{children}</>,
@@ -516,17 +520,26 @@ export const getCommentContent = (content: CommentContentData[]) => {
     .trim();
 };
 
-const getMonospaceHeader = (element: ComponentType<any>, baseNestingLevel: number) => {
+const getMonospaceHeader = (
+  element: ComponentType<any>,
+  baseNestingLevel: number,
+  className: string | undefined = undefined
+) => {
   return createPermalinkedComponent(element, {
     baseNestingLevel,
     sidebarType: HeadingType.INLINE_CODE,
+    className,
   });
 };
 
-export function getH3CodeWithBaseNestingLevel(baseNestingLevel: number) {
-  return getMonospaceHeader(RawH3, baseNestingLevel);
+export function getCodeHeadingWithBaseNestingLevel(
+  baseNestingLevel: number,
+  Element: ComponentType<any>,
+  className: string | undefined = undefined
+) {
+  return getMonospaceHeader(Element, baseNestingLevel, className);
 }
-export const H3Code = getH3CodeWithBaseNestingLevel(3);
+export const H3Code = getCodeHeadingWithBaseNestingLevel(3, RawH3);
 
 export const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') {

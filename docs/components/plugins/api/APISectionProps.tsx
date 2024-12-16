@@ -2,7 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
-import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
+import { CODE, H2, H3, H4, LI, MONOSPACE, RawH3, UL } from '~/ui/components/Text';
 
 import {
   DefaultPropsDefinitionData,
@@ -15,7 +15,7 @@ import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
   extractDefaultPropValue,
   getCommentOrSignatureComment,
-  getH3CodeWithBaseNestingLevel,
+  getCodeHeadingWithBaseNestingLevel,
   getTagNamesList,
   resolveTypeName,
 } from './APISectionUtils';
@@ -107,7 +107,7 @@ export const renderProp = (
 ) => {
   const { comment, name, type, flags, signatures } = { ...propData, ...propData.getSignature };
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
-  const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
+  const HeaderComponent = getCodeHeadingWithBaseNestingLevel(baseNestingLevel, RawH3);
   const extractedSignatures = signatures ?? type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
 
@@ -121,7 +121,7 @@ export const renderProp = (
           <MONOSPACE
             weight="medium"
             className={mergeClasses(
-              'wrap-anywhere',
+              'wrap-anywhere !heading-base',
               !exposeInSidebar && 'inline-block prose-code:mb-0'
             )}>
             {name}

@@ -47,16 +47,14 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
           className="border-t border-t-secondary px-5 pb-0 pt-3 [&_h4]:mb-0.5"
           key={enumValue.name}>
           <APISectionDeprecationNote comment={enumValue.comment} />
-          <H4 hideInSidebar>
-            <MONOSPACE className="!text-inherit !font-medium">{enumValue.name}</MONOSPACE>
-          </H4>
-          <APISectionPlatformTags
-            comment={enumValue.comment}
-            prefix="Only for:"
-            className="mb-1"
-            disableFallback
-          />
-          <MONOSPACE theme="tertiary" className="mb-2 inline-flex text-2xs">
+
+          <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
+            <H4 hideInSidebar>
+              <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
+            </H4>
+            <APISectionPlatformTags comment={enumValue.comment} disableFallback />
+          </div>
+          <MONOSPACE theme="secondary" className="mb-2 inline-flex text-2xs">
             {`${name}.${enumValue.name} ＝ ${renderEnumValue(
               enumValue.type.value,
               enumValue.type.name

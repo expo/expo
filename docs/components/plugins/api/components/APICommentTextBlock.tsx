@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
+import { InlineHelp } from 'ui/components/InlineHelp';
 
-import { Callout } from '~/ui/components/Callout';
 import { Tag } from '~/ui/components/Tag/Tag';
 import { DEMI } from '~/ui/components/Text';
 
@@ -62,7 +62,7 @@ export const APICommentTextBlock = ({
           Example
         </DEMI>
       ) : (
-        <APIBoxSectionHeader text="Example" className="!mt-1" Icon={CodeSquare01Icon} />
+        <APIBoxSectionHeader text="Example" className="!mb-3 !mt-1" Icon={CodeSquare01Icon} />
       )}
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {getCommentContent(example.content ?? example.name)}
@@ -72,11 +72,14 @@ export const APICommentTextBlock = ({
 
   const see = getTagData('see', comment);
   const seeText = see && (
-    <Callout className={`!${ELEMENT_SPACING}`}>
+    <InlineHelp
+      className={mergeClasses('shadow-none', `!${ELEMENT_SPACING}`)}
+      size="sm"
+      type="info-light">
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {`**See:** ` + getCommentContent(see.content)}
       </ReactMarkdown>
-    </Callout>
+    </InlineHelp>
   );
 
   const hasPlatforms = (getAllTagData('platform', comment)?.length || 0) > 0;

@@ -11,9 +11,9 @@ import {
   type ReactNode,
 } from 'react';
 
-type CalloutType = 'default' | 'warning' | 'error' | 'info';
+type CalloutType = 'default' | 'warning' | 'error' | 'info' | 'info-light';
 
-type CalloutProps = PropsWithChildren<{
+type Props = PropsWithChildren<{
   type?: CalloutType;
   className?: string;
   icon?: ComponentType<HTMLAttributes<SVGSVGElement>> | string;
@@ -35,13 +35,7 @@ const extractType = (childrenArray: ReactNode[]) => {
   return false;
 };
 
-export const Callout = ({
-  type = 'default',
-  size = 'md',
-  icon,
-  children,
-  className,
-}: CalloutProps) => {
+export const InlineHelp = ({ type = 'default', size = 'md', icon, children, className }: Props) => {
   const content = Children.toArray(children).filter(child => isValidElement(child))[0];
   const contentChildren = Children.toArray(isValidElement(content) && content?.props?.children);
 
@@ -53,6 +47,7 @@ export const Callout = ({
     <blockquote
       className={mergeClasses(
         'mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs',
+        size === 'sm' && 'px-3 py-2.5',
         '[table_&]:last:mb-0',
         '[&_code]:bg-element',
         getCalloutColor(finalType),
@@ -62,11 +57,16 @@ export const Callout = ({
       )}
       data-testid="callout-container">
       <div
-        className={mergeClasses('mt-1 select-none', '[table_&]:mt-0.5', size === 'sm' && 'mt-0.5')}>
+        className={mergeClasses('mt-1 select-none', '[table_&]:mt-0.5', size === 'sm' && 'mt-1')}>
         {typeof icon === 'string' ? (
           icon
         ) : (
-          <Icon className={mergeClasses('icon-sm', getCalloutIconColor(finalType))} />
+          <Icon
+            className={mergeClasses(
+              size === 'sm' ? 'icon-xs' : 'icon-sm',
+              getCalloutIconColor(finalType)
+            )}
+          />
         )}
       </div>
       <div
@@ -102,6 +102,8 @@ function getCalloutColor(type: CalloutType) {
         `[&_code]:border-palette-blue5 [&_code]:bg-palette-blue4`,
         `dark:selection:bg-palette-yellow6`
       );
+    case 'info-light':
+      return mergeClasses('bg-default');
     default:
       return null;
   }
@@ -126,6 +128,8 @@ function getCalloutIconColor(type: CalloutType) {
       return 'text-danger';
     case 'info':
       return 'text-info';
+    case 'info-light':
+      return 'text-icon-secondary';
     default:
       return 'text-icon-default';
   }

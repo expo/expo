@@ -166,7 +166,7 @@ const renderType = (
             ))
           : null}
         {type.declaration.signatures?.[0].type && (
-          <div className="mt-4 flex flex-row items-start gap-2">
+          <div className="mt-3.5 flex flex-row items-start gap-2">
             <div className="flex flex-row items-center gap-2">
               <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
               <span className={STYLES_SECONDARY}>Returns:</span>
