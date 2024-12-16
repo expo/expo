@@ -46,6 +46,18 @@ describe(isIgnoredPath, () => {
     expect(isIgnoredPath('/app/ios/Podfile.lock', ignorePaths)).toBe(true);
   });
 
+  it('should support matching only current folder', () => {
+    const ignorePaths = ['ios/**/*', '!ios/Podfile', '!ios/Podfile.lock'];
+    expect(isIgnoredPath('ios/HelloWorld/AppDelegate.mm', ignorePaths)).toBe(true);
+    expect(isIgnoredPath('ios/Podfile', ignorePaths)).toBe(false);
+    expect(isIgnoredPath('ios/Podfile.lock', ignorePaths)).toBe(false);
+    expect(isIgnoredPath('android/src/main/java/com/test/Test.kt', ignorePaths)).toBe(false);
+    expect(isIgnoredPath('node_modules/module/ios/Test.m', ignorePaths)).toBe(false);
+    expect(
+      isIgnoredPath('node_modules/module/android/src/main/java/com/test/Test.kt', ignorePaths)
+    ).toBe(false);
+  });
+
   it('should match node_modules from parent directories', () => {
     const ignorePaths = ['**/node_modules/chalk/**/*'];
     expect(isIgnoredPath('node_modules/chalk/package.json', ignorePaths)).toBe(true);
