@@ -17,6 +17,9 @@ export {
   BufferOptions,
   AudioMixingMode,
   VideoThumbnailOptions,
+  VideoSize,
+  SubtitleTrack,
+  VideoTrack,
 } from './VideoPlayer.types';
 
 export {
