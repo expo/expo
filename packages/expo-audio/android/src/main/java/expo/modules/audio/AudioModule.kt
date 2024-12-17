@@ -373,7 +373,7 @@ class AudioModule : Module() {
   }
 
   private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {
-    audioManager.setMode(if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL)
+    audioManager.mode = if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL
     audioManager.setSpeakerphoneOn(!playThroughEarpiece)
   }
 
