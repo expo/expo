@@ -95,7 +95,7 @@ export function parseEnvFiles(
 
   // Iterate over each dotenv file in lowest prio to highest prio order.
   // This step won't write to the process.env, but will overwrite the parsed envs.
-  envFiles.reverse().forEach((envFile) => {
+  [...envFiles].reverse().forEach((envFile) => {
     try {
       const envFileContent = fs.readFileSync(envFile, 'utf8');
       const envFileParsed = dotenv.parse(envFileContent);
