@@ -146,7 +146,7 @@ const renderInterface = (
       <APICommentTextBlock comment={comment} includePlatforms={false} />
       {interfaceMethods.length > 0 && (
         <>
-          <APIBoxSectionHeader text={`${name} Methods`} />
+          <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar baseNestingLevel={99} />
           {interfaceMethods.map(method =>
             renderMethod(method, { exposeInSidebar: false, sdkVersion })
           )}
@@ -154,7 +154,7 @@ const renderInterface = (
       )}
       {interfaceFields.length > 0 && (
         <>
-          <APIBoxSectionHeader text={`${name} Properties`} />
+          <APIBoxSectionHeader text={`${name} Properties`} exposeInSidebar baseNestingLevel={99} />
           <Table>
             <APIParamsTableHeadRow />
             <tbody>

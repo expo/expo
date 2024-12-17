@@ -1,7 +1,6 @@
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, PropsWithChildren } from 'react';
-
-import { Callout } from '~/ui/components/Callout';
+import { InlineHelp } from 'ui/components/InlineHelp';
 
 type Props = PropsWithChildren<{
   showForQuery?: string;
@@ -18,7 +17,7 @@ export default function RedirectNotification({ showForQuery = 'redirected', chil
   }, [router?.query]);
 
   if (visible) {
-    return <Callout type="warning">{children}</Callout>;
+    return <InlineHelp type="warning">{children}</InlineHelp>;
   }
 
   return null;

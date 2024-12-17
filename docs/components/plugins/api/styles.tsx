@@ -7,7 +7,7 @@ export const STYLES_SECONDARY = mergeClasses('text-xs font-medium text-tertiary'
 export const STYLES_OPTIONAL = mergeClasses('flex !text-3xs text-tertiary');
 
 export const STYLES_APIBOX = mergeClasses(
-  'mb-5 rounded-lg border border-secondary px-5 py-4 shadow-xs',
+  'mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs',
   '[&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0',
   '[&_h3]:mb-1.5',
   '[&_li]:mb-0',

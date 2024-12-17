@@ -3,7 +3,7 @@
 exports[`APICommentTextBlock basic comment 1`] = `
 <div>
   <p
-    class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
+    class="text-default font-normal text-base [&_strong]:break-words mb-3"
     data-text="true"
   >
     This is the basic comment.
@@ -48,7 +48,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
     </span>
   </div>
   <p
-    class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3"
+    class="text-default font-normal text-base [&_strong]:break-words mb-3"
     data-text="true"
   >
     Gets the referrer URL of the installed app with the 
@@ -59,7 +59,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
       target="_blank"
     >
       <code
-        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !inline"
+        class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 break-words !inline"
         data-text="true"
       >
         Install Referrer API
@@ -72,7 +72,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
     class="mb-3 last:[&>*]:mb-0"
   >
     <p
-      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] -mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2 max-lg-gutters:-mx-4 !mt-1"
+      class="tracking-[-0.006rem] -mx-5 my-4 flex border-y border-palette-gray4 bg-subtle px-5 py-2 text-2xs font-medium text-tertiary max-lg-gutters:-mx-4 !mb-3 !mt-1"
       data-text="true"
     >
       <span
