@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import * as dotenv from 'dotenv';
 import { expand as dotenvExpand } from 'dotenv-expand';
 import { boolish } from 'getenv';
@@ -146,14 +147,17 @@ export function loadEnvFiles(
   envFiles: string[],
   {
     force,
+    silent = false,
     systemEnv = process.env,
   }: Parameters<typeof parseEnvFiles>[1] & {
     /** If the environment variables should be applied to the system environment, regardless of previous mutations */
     force?: boolean;
+    /** If possible misconfiguration warnings should be logged, or only logged as debug log */
+    silent?: boolean;
   } = {}
 ) {
   if (!force && systemEnv[LOADED_ENV_NAME]) {
-    return { result: 'skipped', loaded: JSON.parse(systemEnv[LOADED_ENV_NAME]) };
+    return { result: 'skipped' as const, loaded: JSON.parse(systemEnv[LOADED_ENV_NAME]) };
   }
 
   const parsed = parseEnvFiles(envFiles, { systemEnv });
@@ -171,7 +175,7 @@ export function loadEnvFiles(
   // Mark the environment as loaded
   systemEnv[LOADED_ENV_NAME] = JSON.stringify(loadedEnvKeys);
 
-  return { result: 'loaded', ...parsed, loaded: loadedEnvKeys };
+  return { result: 'loaded' as const, ...parsed, loaded: loadedEnvKeys };
 }
 
 /**
@@ -236,4 +240,101 @@ export function loadProjectEnv(
     getEnvFiles(options).map((envFile) => path.join(projectRoot, envFile)),
     options
   );
+}
+
+/** Log the loaded environment info from the loaded results */
+export function logLoadedEnv(
+  envInfo: ReturnType<typeof loadEnvFiles>,
+  options: Parameters<typeof loadEnvFiles>[1] = {}
+) {
+  // Skip when running in force mode, or no environment variables are loaded
+  if (options.force || !envInfo.loaded.length) return envInfo;
+
+  // Log the loaded environment files, when not skipped
+  if (envInfo.result === 'loaded') {
+    console.log(
+      chalk.gray('env: load', envInfo.files.map((file) => path.basename(file)).join(' '))
+    );
+  }
+
+  // Log the loaded environment variables
+  console.log(chalk.gray('env: export', envInfo.loaded.join(' ')));
+
+  return envInfo;
+}
+
+// Legacy API - for backwards compatibility
+
+let memo: ReturnType<typeof parseEnvFiles> | null = null;
+
+/**
+ * Get the environment variables without mutating the environment.
+ * This returns memoized values unless the `force` property is provided.
+ *
+ * @deprecated use {@link parseProjectEnv} instead
+ */
+export function get(
+  projectRoot: string,
+  {
+    force,
+    silent,
+  }: {
+    force?: boolean;
+    silent?: boolean;
+  } = {}
+) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return { env: {}, files: [] };
+  }
+  if (force || !memo) {
+    memo = parseProjectEnv(projectRoot, { silent });
+  }
+  return memo;
+}
+
+/**
+ * Load environment variables from .env files and mutate the current `process.env` with the results.
+ *
+ * @deprecated use {@link loadProjectEnv} instead
+ */
+export function load(
+  projectRoot: string,
+  options: {
+    force?: boolean;
+    silent?: boolean;
+  } = {}
+) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return process.env;
+  }
+
+  const envInfo = get(projectRoot, options);
+
+  // Port the result of `get` to the newer result object
+  logLoadedEnv({ ...envInfo, result: 'loaded', loaded: Object.keys(envInfo.env) }, options);
+
+  for (const key of Object.keys(envInfo.env)) {
+    // Avoid creating a new object, mutate it instead as this causes problems in Bun
+    process.env[key] = envInfo.env[key];
+  }
+
+  return process.env;
+}
+
+/**
+ * Get a list of all `.env*` files based on the `NODE_ENV` mode.
+ * This returns a list of files, in order of highest priority to lowest priority.
+ *
+ * @deprecated use {@link getEnvFiles} instead
+ * @see https://github.com/bkeepers/dotenv/tree/v3.1.4#customizing-rails
+ */
+export function getFiles(mode: string | undefined, { silent = false }: { silent?: boolean } = {}) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return [];
+  }
+
+  return getEnvFiles({ mode, silent });
 }
