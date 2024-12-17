@@ -2,6 +2,15 @@
 
 const path = require('path');
 
+/**
+ * Load the dotenv files into the current system environment.
+ * The `target` has to be specified in order to load the correct environment variables.
+ *   - server - All environment variables from `.env*` files are loaded into system variables
+ *   - client - Only `EXPO_PUBLIC_` prefixed environment variables are loaded.
+ *
+ * @param {object} options
+ * @param {"server"|"client"} options.target
+ */
 function load(options) {
   try {
     const expoPath = path.dirname(require.resolve('expo/package.json'));
@@ -23,8 +32,19 @@ function load(options) {
      */
     const expoEnv = require(require.resolve('@expo/env', { paths: [expoCliPath] }));
 
-    // Auto-load the environment variables from the possible project root
-    expoEnv.load(getPossibleProjectRoot(), options);
+    // Parse the environment variables from dotenv
+    const envInfo = expoEnv.parseProjectEnv(getPossibleProjectRoot());
+    // Apply the environment variables to the current `process.env` - when not defined
+    // Possibly filter environment variables with `EXPO_PUBLIC_` when targeting clients
+    for (const key in envInfo.env) {
+      if (options.target === 'client' && !key.startsWith('EXPO_PUBLIC_')) {
+        continue;
+      }
+
+      if (typeof process.env[key] === 'undefined') {
+        process.env[key] = envInfo.env[key];
+      }
+    }
   } catch (error) {
     console.warn('env: failed to load environment variables from dotenv files', error);
   }

@@ -6,4 +6,4 @@ global.__DEV__ = true;
 global.ShadowRoot = function () {};
 
 // Ensure the environment variables from dotenv files are loaded before the first test runs
-require('./setup-env').load({ silent: true, prefix: 'EXPO_PUBLIC_' });
+require('./setup-env').load({ target: 'client' });
