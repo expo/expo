@@ -32,7 +32,7 @@ export enum BackgroundTaskResult {
 /**
  * Options for registering a background task
  */
-export interface BackgroundTaskOptions {
+export type BackgroundTaskOptions = {
   /**
    * Inexact interval in minutes between subsequent repeats of the background tasks. The final
    * interval may differ from the specified one to minimize wakeups and battery usage.
@@ -41,4 +41,4 @@ export interface BackgroundTaskOptions {
    * @platform android
    */
   minimumInterval?: number;
-}
+};
