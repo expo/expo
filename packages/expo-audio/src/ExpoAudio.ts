@@ -19,6 +19,11 @@ export const PLAYBACK_STATUS_UPDATE = 'playbackStatusUpdate';
 export const AUDIO_SAMPLE_UPDATE = 'audioSampleUpdate';
 export const RECORDING_STATUS_UPDATE = 'recordingStatusUpdate';
 
+const replace = AudioModule.AudioPlayer.prototype.replace;
+AudioModule.AudioPlayer.prototype.replace = function (source: AudioSource) {
+  return replace.call(this, resolveSource(source));
+};
+
 // @docsMissing
 export function useAudioPlayer(
   source: AudioSource = null,
@@ -39,11 +44,11 @@ export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
 
 // @docsMissing
 export function useAudioSampleListener(player: AudioPlayer, listener: (data: AudioSample) => void) {
-  player.setAudioSamplingEnabled(true);
   useEffect(() => {
     if (!player.isAudioSamplingSupported) {
       return;
     }
+    player.setAudioSamplingEnabled(true);
     const subscription = player.addListener(AUDIO_SAMPLE_UPDATE, listener);
     return () => {
       subscription.remove();

@@ -7,6 +7,10 @@ import { resolveSource } from './utils/resolveSource';
 export const PLAYBACK_STATUS_UPDATE = 'playbackStatusUpdate';
 export const AUDIO_SAMPLE_UPDATE = 'audioSampleUpdate';
 export const RECORDING_STATUS_UPDATE = 'recordingStatusUpdate';
+const replace = AudioModule.AudioPlayer.prototype.replace;
+AudioModule.AudioPlayer.prototype.replace = function (source) {
+    return replace.call(this, resolveSource(source));
+};
 // @docsMissing
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);
@@ -19,11 +23,11 @@ export function useAudioPlayerStatus(player) {
 }
 // @docsMissing
 export function useAudioSampleListener(player, listener) {
-    player.setAudioSamplingEnabled(true);
     useEffect(() => {
         if (!player.isAudioSamplingSupported) {
             return;
         }
+        player.setAudioSamplingEnabled(true);
         const subscription = player.addListener(AUDIO_SAMPLE_UPDATE, listener);
         return () => {
             subscription.remove();
