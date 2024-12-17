@@ -48,7 +48,7 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
           key={enumValue.name}>
           <APISectionDeprecationNote comment={enumValue.comment} />
           <H4 hideInSidebar>
-            <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
+            <MONOSPACE className="!text-inherit !font-medium">{enumValue.name}</MONOSPACE>
           </H4>
           <APISectionPlatformTags
             comment={enumValue.comment}
@@ -56,7 +56,7 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
             className="mb-1"
             disableFallback
           />
-          <MONOSPACE theme="secondary" className="mb-2 inline-flex text-xs">
+          <MONOSPACE theme="tertiary" className="mb-2 inline-flex text-2xs">
             {`${name}.${enumValue.name} ＝ ${renderEnumValue(
               enumValue.type.value,
               enumValue.type.name

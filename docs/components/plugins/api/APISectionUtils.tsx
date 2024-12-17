@@ -1,7 +1,5 @@
-import { mergeClasses } from '@expo/styleguide';
 import { slug } from 'github-slugger';
-import { type ComponentType, type PropsWithChildren } from 'react';
-import { type Components } from 'react-markdown';
+import { type ComponentType, type ReactNode } from 'react';
 
 import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
@@ -11,19 +9,14 @@ import {
   A,
   BOLD,
   CODE,
+  createPermalinkedComponent,
   H4,
   LI,
   OL,
   P,
   RawH3,
   UL,
-  createPermalinkedComponent,
-  DEMI,
-  CALLOUT,
-  createTextComponent,
-  SPAN,
 } from '~/ui/components/Text';
-import { TextElement } from '~/ui/components/Text/types';
 
 import {
   CommentContentData,
@@ -39,18 +32,22 @@ import {
   TypePropertyDataFlags,
   TypeSignaturesData,
 } from './APIDataTypes';
+import {
+  hardcodedTypeLinks,
+  nonLinkableTypes,
+  omittableTypes,
+  packageLinks,
+  replaceableTypes,
+  sdkVersionHardcodedTypeLinks,
+} from './APIStaticData';
 import { APIParamRow } from './components/APIParamRow';
-import { ELEMENT_SPACING, STYLES_OPTIONAL } from './styles';
+import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
+import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY } from './styles';
+import { CodeComponentProps, MDComponents } from './types';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
-
-export type MDComponents = Components;
-export type CodeComponentProps = PropsWithChildren<{
-  className?: string;
-  node: { data?: { meta?: string } };
-}>;
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -99,195 +96,6 @@ export const mdComponents: MDComponents = {
 export const mdComponentsNoValidation: MDComponents = {
   ...mdComponents,
   a: ({ href, children }) => <A href={href}>{children}</A>,
-};
-
-const nonLinkableTypes = [
-  'B',
-  'BufferSource',
-  'CodedError',
-  'ColorValue',
-  'ComponentClass',
-  'ComponentProps',
-  'ComponentType',
-  'E',
-  'EmitterSubscription',
-  'EventName',
-  'EventSubscription',
-  'ForwardRefExoticComponent',
-  'GeneratedHref',
-  'GestureResponderEvent',
-  'GetPermissionMethod',
-  'InferEventParameter',
-  'K',
-  'Listener',
-  'ModuleType',
-  'NativeSyntheticEvent',
-  'NavigationContainerRefWithCurrent',
-  'NotificationTimeoutError',
-  'Options',
-  'P',
-  'Parameters',
-  'ParamListBase',
-  'ParsedQs',
-  'PartialState',
-  'PermissionHookBehavior',
-  'PropsWithChildren',
-  'PropsWithoutRef',
-  'ProxyNativeModule',
-  'React.FC',
-  'RequestPermissionMethod',
-  'RouteParamInput',
-  'RouteParams',
-  'ScreenListeners',
-  'ServiceActionResult',
-  'StyleProp',
-  'T',
-  'TaskOptions',
-  'TEventListener',
-  'TEventMap',
-  'TEventName',
-  'TEventsMap',
-  'TInitialValue',
-  'TOptions',
-  'TParams',
-  'TRoute',
-  'TState',
-];
-
-/**
- * List of type names that should not be visible in the docs.
- */
-const omittableTypes = [
-  // Internal React type that adds `ref` prop to the component
-  'RefAttributes',
-];
-
-/**
- * Map of internal entity/type names that should be replaced with something more developer-friendly.
- */
-const replaceableTypes: Partial<Record<string, string>> = {
-  ForwardRefExoticComponent: 'Component',
-  LocationAccuracy: 'Accuracy',
-  LocationGeofencingRegionState: 'GeofencingRegionState',
-  LocationActivityType: 'ActivityType',
-};
-
-/**
- * Map of entity/type names that should be linked to user specified source, internal or external.
- */
-const hardcodedTypeLinks: Record<string, string> = {
-  ArrayBuffer:
-    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer',
-  Asset: '/versions/latest/sdk/asset/#asset',
-  AsyncIterableIterator:
-    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
-  AVMetadata: '/versions/latest/sdk/av/#avmetadata',
-  AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
-  AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
-  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
-  AudioSampleCallback: '/versions/latest/sdk/av/#avplaybackstatustoset',
-  Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
-  Component: 'https://react.dev/reference/react/Component',
-  CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
-  Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
-  DeviceSensor: '/versions/latest/sdk/sensors',
-  Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
-  Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
-  Exclude:
-    'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
-  ExpoConfig:
-    'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
-  Extract: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union',
-  // Conflicts with the File class from expo-file-system@next. TODO: Fix this.
-  // File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
-  FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
-  HTMLAnchorElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement',
-  HTMLInputElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement',
-  IterableIterator:
-    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
-  MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
-  MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
-  MouseEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent',
-  NavigationContainerRef:
-    'https://reactnavigation.org/docs/typescript/#annotating-ref-on-navigationcontainer',
-  NavigationOptions: 'https://reactnavigation.org/docs/screen-options/',
-  NavigationState: 'https://reactnavigation.org/docs/navigation-state',
-  Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
-  PackagerAsset: 'https://github.com/facebook/react-native/blob/main/packages/assets/registry.js',
-  Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
-  Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
-  Platform: 'https://reactnative.dev/docs/platform',
-  Playback: '/versions/latest/sdk/av/#playback',
-  Promise:
-    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
-  PureComponent: 'https://react.dev/reference/react/PureComponent',
-  ReactNode: 'https://reactnative.dev/docs/react-node',
-  Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
-  Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
-  RouteProp: 'https://reactnavigation.org/docs/glossary-of-terms/#route-prop',
-  RootParamList:
-    'https://reactnavigation.org/docs/typescript/#specifying-default-types-for-usenavigation-link-ref-etc',
-  SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
-  ShareOptions: 'https://reactnative.dev/docs/share#share',
-  SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
-  SpeechSynthesisUtterance:
-    'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance',
-  SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
-  TextProps: 'https://reactnative.dev/docs/text#props',
-  Uint8Array:
-    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array',
-  View: 'https://reactnative.dev/docs/view',
-  ViewProps: 'https://reactnative.dev/docs/view#props',
-  ViewStyle: 'https://reactnative.dev/docs/view-style-props',
-  WebBrowserOpenOptions: '/versions/latest/sdk/webbrowser/#webbrowseropenoptions',
-  WebBrowserWindowFeatures: '/versions/latest/sdk/webbrowser/#webbrowserwindowfeatures',
-  WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
-  WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
-  WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
-};
-
-const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  'v49.0.0': {
-    Manifest: '/versions/v49.0.0/sdk/constants/#manifest',
-    SharedObject: null,
-  },
-  'v50.0.0': {
-    SharedObject: null,
-  },
-  '51.0.0': {
-    SharedObject: null,
-  },
-  'v52.0.0': {
-    EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
-    NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
-    SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
-    SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
-    BufferOptions: '/versions/v52.0.0/sdk/video/#bufferoptions-1',
-  },
-  'v53.0.0': {
-    EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
-    NativeModule: '/versions/v53.0.0/sdk/expo/#nativemodule',
-    SharedObject: '/versions/v53.0.0/sdk/expo/#sharedobject',
-    SharedRef: '/versions/v53.0.0/sdk/expo/#sharedref',
-  },
-  latest: {
-    EventEmitter: '/versions/latest/sdk/expo/#eventemitter',
-    NativeModule: '/versions/latest/sdk/expo/#nativemodule',
-    SharedObject: '/versions/latest/sdk/expo/#sharedobject',
-    SharedRef: '/versions/latest/sdk/expo/#sharedref',
-  },
-  unversioned: {
-    EventEmitter: '/versions/unversioned/sdk/expo/#eventemitter',
-    NativeModule: '/versions/unversioned/sdk/expo/#nativemodule',
-    SharedObject: '/versions/unversioned/sdk/expo/#sharedobject',
-    SharedRef: '/versions/unversioned/sdk/expo/#sharedref',
-    Href: '/versions/unversioned/sdk/router/#href-1',
-    BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
-  },
-};
-
-const packageLinks: Record<string, string> = {
-  'expo-manifests': 'manifests',
 };
 
 const renderWithLink = ({
@@ -346,7 +154,7 @@ const renderUnion = (types: TypeDefinitionData[], { sdkVersion }: { sdkVersion: 
 export const resolveTypeName = (
   typeDefinition: TypeDefinitionData,
   sdkVersion: string
-): string | JSX.Element | (string | JSX.Element)[] => {
+): ReactNode => {
   if (!typeDefinition) {
     return 'undefined';
   }
@@ -524,9 +332,23 @@ export const resolveTypeName = (
         ));
     } else if (type === 'indexedAccess') {
       if (indexType?.name) {
-        return `${objectType?.name}[${indexType?.name}]`;
+        return (
+          <>
+            {objectType?.name}
+            <span className="text-quaternary">[</span>
+            {indexType?.name}
+            <span className="text-quaternary">]</span>
+          </>
+        );
       }
-      return `${objectType?.name}['${indexType?.value}']`;
+      return (
+        <>
+          {objectType?.name}
+          <span className="text-quaternary">[</span>
+          {indexType?.value}
+          <span className="text-quaternary">]</span>
+        </>
+      );
     } else if (type === 'typeOperator') {
       if (target && operator && ['readonly', 'keyof'].includes(operator)) {
         return (
@@ -552,61 +374,16 @@ export const resolveTypeName = (
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const ParamsTableHeadRow = ({ hasDescription = true, mainCellLabel = 'Name' }) => (
-  <TableHead>
-    <Row>
-      <HeaderCell size="sm">{mainCellLabel}</HeaderCell>
-      <HeaderCell size="sm">Type</HeaderCell>
-      {hasDescription && <HeaderCell size="sm">Description</HeaderCell>}
-    </Row>
-  </TableHead>
-);
-
-function createInheritPermalink(baseNestingLevel: number) {
-  return createPermalinkedComponent(createTextComponent(TextElement.SPAN, 'text-inherit'), {
-    baseNestingLevel,
-  });
-}
-
-export const BoxSectionHeader = ({
-  text,
-  Icon,
-  exposeInSidebar,
-  className,
-  baseNestingLevel = DEFAULT_BASE_NESTING_LEVEL,
-}: {
-  text: string;
-  Icon?: ComponentType<any>;
-  exposeInSidebar?: boolean;
-  className?: string;
-  baseNestingLevel?: number;
-}) => {
-  const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : SPAN;
-  return (
-    <CALLOUT
-      className={mergeClasses(
-        '-mx-5 my-4 flex border-y border-secondary bg-subtle px-5 py-2',
-        'max-lg-gutters:-mx-4',
-        className
-      )}>
-      <TextWrapper className="flex flex-row items-center gap-2 font-medium text-tertiary">
-        {Icon && <Icon className="icon-sm text-icon-secondary" />}
-        {text}
-      </TextWrapper>
-    </CALLOUT>
-  );
-};
-
 export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
   const hasDescription = Boolean(parameters.some(param => param.comment));
   return (
     <Table>
-      <ParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
+      <APIParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
       <tbody>
-        {parameters?.map(p => (
+        {parameters?.map(param => (
           <APIParamRow
-            key={p.name}
-            param={p}
+            key={param.name}
+            param={param}
             sdkVersion={sdkVersion}
             showDescription={hasDescription}
           />
@@ -631,42 +408,24 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div className="flex items-start gap-1">
-      <DEMI theme="secondary">Default:</DEMI>
+      <span className={STYLES_SECONDARY}>Default:</span>
       <CODE className="!text-[90%]">{defaultValue}</CODE>
     </div>
   ) : undefined;
 
 export const renderFlags = (flags?: TypePropertyDataFlags, defaultValue?: string) =>
-  (flags?.isOptional || defaultValue) && (
-    <>
-      <br />
-      <span className={STYLES_OPTIONAL}>(optional)</span>
-    </>
-  );
+  (flags?.isOptional || defaultValue) && <span className={STYLES_OPTIONAL}>(optional)</span>;
 
 export const renderIndexSignature = (kind: TypeDocKind) =>
   kind === TypeDocKind.Parameter && (
-    <>
-      <br />
-      <A
-        className={STYLES_OPTIONAL}
-        href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures"
-        openInNewTab
-        isStyled>
-        (index signature)
-      </A>
-    </>
+    <A
+      className={STYLES_OPTIONAL}
+      href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures"
+      openInNewTab
+      isStyled>
+      (index signature)
+    </A>
   );
-
-export type CommentTextBlockProps = {
-  comment?: CommentData;
-  components?: MDComponents;
-  beforeContent?: JSX.Element;
-  afterContent?: JSX.Element;
-  includePlatforms?: boolean;
-  inlineHeaders?: boolean;
-  emptyCommentFallback?: string;
-};
 
 export const parseCommentContent = (content?: string): string =>
   content?.length ? content.replace(/&ast;/g, '*').replace(/\t/g, '') : '';

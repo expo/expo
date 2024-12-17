@@ -10,7 +10,7 @@ import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRi
 import { APIBox } from '~/components/plugins/APIBox';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { BoxSectionHeader } from '~/components/plugins/api/APISectionUtils';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { CALLOUT } from '~/ui/components/Text';
 
 > **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
@@ -85,7 +85,7 @@ On iOS 10+, emulate the safe area using the status bar height and home indicator
 
 Hook gives you direct access to the safe area insets. This is a more advanced use-case, and might perform worse than `SafeAreaView` when rotating the device.
 
-<BoxSectionHeader text="Example" />
+<APIBoxSectionHeader text="Example" />
 
 ```jsx
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -97,7 +97,7 @@ function HookComponent() {
 }
 ```
 
-<BoxSectionHeader text="Returns" />
+<APIBoxSectionHeader text="Returns" />
 
 <CornerDownRightIcon className="icon-sm mr-2 inline-block align-middle text-icon-secondary" /> [`EdgeInsets`](#edgeinsets)
 
@@ -117,7 +117,7 @@ Acceptable values are: `'top'`, `'right'`, `'bottom'`, `'left'`.
 
 Represent the hook result.
 
-<BoxSectionHeader text="EdgeInsets Properties" />
+<APIBoxSectionHeader text="EdgeInsets Properties" />
 
 | Name     | Type     | Description            |
 | -------- | -------- | ---------------------- |

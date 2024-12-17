@@ -1,5 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
+import type { ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
@@ -8,17 +9,28 @@ import { Callout } from '~/ui/components/Callout';
 import { Tag } from '~/ui/components/Tag/Tag';
 import { DEMI } from '~/ui/components/Text';
 
+import { MDComponents } from '../types';
+import { APIBoxSectionHeader } from './APIBoxSectionHeader';
+import { CommentData } from '../APIDataTypes';
 import {
-  BoxSectionHeader,
-  CommentTextBlockProps,
   getAllTagData,
   getCommentContent,
   getTagData,
   mdComponents,
   parseCommentContent,
 } from '../APISectionUtils';
-import { ELEMENT_SPACING } from '../styles';
+import { ELEMENT_SPACING, STYLES_SECONDARY } from '../styles';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
+
+type Props = {
+  comment?: CommentData;
+  components?: MDComponents;
+  beforeContent?: ReactNode;
+  afterContent?: ReactNode;
+  includePlatforms?: boolean;
+  inlineHeaders?: boolean;
+  emptyCommentFallback?: string;
+};
 
 export const APICommentTextBlock = ({
   comment,
@@ -27,7 +39,7 @@ export const APICommentTextBlock = ({
   includePlatforms = true,
   inlineHeaders = false,
   emptyCommentFallback,
-}: CommentTextBlockProps) => {
+}: Props) => {
   const content = comment?.summary ? getCommentContent(comment.summary) : undefined;
 
   if (emptyCommentFallback && !content?.length) {
@@ -50,7 +62,7 @@ export const APICommentTextBlock = ({
           Example
         </DEMI>
       ) : (
-        <BoxSectionHeader text="Example" className="!mt-1" Icon={CodeSquare01Icon} />
+        <APIBoxSectionHeader text="Example" className="!mt-1" Icon={CodeSquare01Icon} />
       )}
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {getCommentContent(example.content ?? example.name)}
@@ -79,7 +91,7 @@ export const APICommentTextBlock = ({
       )}
       {paramTags && (
         <>
-          <DEMI theme="secondary">Only for:&ensp;</DEMI>
+          <span className={STYLES_SECONDARY}>Only for:&ensp;</span>
           {paramTags.map(tag => (
             <Tag key={tag} name={tag.split('-')[1]} />
           ))}
