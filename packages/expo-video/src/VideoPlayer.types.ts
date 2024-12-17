@@ -197,7 +197,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * Seeks the playback by the given number of seconds. The time to which the player seeks may differ from the specified requested time for efficiency,
    * depending on the encoding and what is currently buffered by the player. Use this function to implement playback controls that seek by specific amount of time,
-   * in which case the actual time usually does not have to be precise. For frame accurate seeking use the [`currentTime`](#currenttime) property.
+   * in which case, the actual time usually does not have to be precise. For frame accurate seeking, use the [`currentTime`](#currenttime) property.
    */
   seekBy(seconds: number): void;
 
