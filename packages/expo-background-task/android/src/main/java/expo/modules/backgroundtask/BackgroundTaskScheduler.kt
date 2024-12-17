@@ -28,7 +28,7 @@ class BackgroundTaskScheduler {
     private const val WORKER_IDENTIFIER = "EXPO_BACKGROUND_WORKER"
 
     // Log tag
-    private val TAG: String = BackgroundTaskScheduler::class.java.simpleName
+    private val TAG = BackgroundTaskScheduler::class.java.simpleName
 
     /**
      * Schedules the worker task to run. The worker should run periodically.

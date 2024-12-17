@@ -9,7 +9,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 class BackgroundTaskModule : Module() {
   companion object {
-    private val TAG: String = BackgroundTaskModule::class.java.simpleName
+    private val TAG = BackgroundTaskModule::class.java.simpleName
   }
 
   private val _taskManager by lazy { appContext.legacyModule<TaskManagerInterface>() }

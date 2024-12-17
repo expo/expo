@@ -8,7 +8,7 @@ import androidx.work.WorkerParameters
 
 class BackgroundTaskWork(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
   companion object {
-    private val TAG: String = BackgroundTaskWork::class.java.simpleName
+    private val TAG = BackgroundTaskWork::class.java.simpleName
   }
 
   /**
