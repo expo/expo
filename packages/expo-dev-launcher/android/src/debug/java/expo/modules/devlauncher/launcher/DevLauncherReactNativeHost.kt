@@ -57,7 +57,7 @@ class DevLauncherReactNativeHost(
     return createNonDebuggableJavaScriptExecutorFactory(application)
   }
 
-  override fun getJSMainModuleName() = "index"
+  override fun getJSMainModuleName() = "packages/expo-dev-launcher/bundle/index"
 
   override fun getBundleAssetName() = "expo_dev_launcher_android.bundle"
 }
