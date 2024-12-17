@@ -9,7 +9,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 class BackgroundTaskModule : Module() {
   companion object {
-    private const val MODULE_NAME: String = "ExpoBackgroundTask"
     private val TAG: String = BackgroundTaskModule::class.java.simpleName
   }
 
@@ -18,7 +17,7 @@ class BackgroundTaskModule : Module() {
     get() = _taskManager ?: throw TaskMangerInterfaceNotFoundException()
 
   override fun definition() = ModuleDefinition {
-    Name(MODULE_NAME)
+    Name("ExpoBackgroundTask")
 
     AsyncFunction("getStatusAsync") {
       return@AsyncFunction 2 // WorkManager is always available on Android.
