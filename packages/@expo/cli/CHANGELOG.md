@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Bump `@react-native/dev-middleware` to resolve ignored `node_module/*` entry points. ([#33656](https://github.com/expo/expo/pull/33656) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.22.6 — 2024-12-16
