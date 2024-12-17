@@ -29,9 +29,9 @@ A background task will only run if the battery has enough charge (or the device 
 
 ### When will they stop?
 
-The native platform APIs will stop running background tasks if the user explicitly kills the app (they will be resumed when the user restarts the app) or if the app is uninstalled. If the device is rebooted or the app crashes, the background tasks will be resumed.
+The native platform APIs will stop running background tasks if the user explicitly kills the app (they will be resumed when the user restarts the app) or if the app is uninstalled. If the device is rebooted or the app is killed by the system, the background tasks will be resumed.
 
-> **Info** The non-deterministic behavior of background tasks is intentional, aimed at optimizing battery life and enhancing user experience. If a user force-closes an app, the system interprets this as a signal not to run background tasks for that app until the user restarts it.
+> **Info** The non-deterministic behavior of background tasks is intentional, aimed at optimizing battery life and enhancing user experience. If a user force stops an app, the system interprets this as a signal not to run background tasks for that app until the user restarts it. On iOS an app is force stopped if the user swipes up on the app in the app switcher. On Android this behaviour depends on the device vendor. Some vendors have implementations where the app is force stopped when the user removes the app from the recent apps list.
 
 ## Platform differences
 
