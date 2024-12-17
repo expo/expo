@@ -47,5 +47,5 @@ export declare function unregisterTaskAsync(taskName: string): Promise<void>;
  * @returns A promise which fulfils when the task is triggered.
  */
 export declare function triggerTaskWorkerForTestingAsync(): Promise<void>;
-export type { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions, } from './BackgroundTask.types';
+export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.d.ts.map

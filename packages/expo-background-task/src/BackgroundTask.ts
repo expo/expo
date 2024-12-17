@@ -97,7 +97,7 @@ export async function triggerTaskWorkerForTestingAsync(): Promise<void> {
 }
 
 // Export types
-export type {
+export {
   BackgroundTaskStatus,
   BackgroundTaskResult,
   BackgroundTaskOptions,

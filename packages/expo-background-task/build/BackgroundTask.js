@@ -84,4 +84,6 @@ export async function triggerTaskWorkerForTestingAsync() {
         return Promise.resolve();
     }
 }
+// Export types
+export { BackgroundTaskStatus, BackgroundTaskResult, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.js.map
