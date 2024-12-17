@@ -40,7 +40,7 @@ export function APIParamRow({
         <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </Cell>
       {showDescription && (
-        <Cell>
+        <Cell className="[&>*]:last:!mb-0">
           <APICommentTextBlock
             comment={comment}
             afterContent={renderDefaultValue(initValue)}

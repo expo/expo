@@ -43,7 +43,7 @@ import {
 } from './APIStaticData';
 import { APIParamRow } from './components/APIParamRow';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
-import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY } from './styles';
+import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 import { CodeComponentProps, MDComponents } from './types';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -396,7 +396,11 @@ export const parseParamName = (name: string) => (name.startsWith('__') ? name.su
 export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
   const hasDescription = Boolean(parameters.some(param => param.comment));
   return (
-    <Table containerClassName="mt-0.5">
+    <Table
+      containerClassName={mergeClasses(
+        VERTICAL_SPACING,
+        'mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4'
+      )}>
       <APIParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
       <tbody>
         {parameters?.map(param => (

@@ -1,8 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
+import { H2, CALLOUT, CODE, DEMI } from '~/ui/components/Text';
 
 import {
   CommentData,
@@ -18,15 +17,14 @@ import {
   renderFlags,
   resolveTypeName,
   renderDefaultValue,
-  getTagNamesList,
-  H3Code,
   getCommentContent,
 } from './APISectionUtils';
+import { APIBoxHeader } from './components/APIBoxHeader';
+import { APIBoxSectionHeader } from './components/APIBoxSectionHeader';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
 import { APIParamRow } from './components/APIParamRow';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
-import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionInterfacesProps = {
@@ -78,7 +76,7 @@ const renderInterfaceComment = (
           inlineHeaders
           comment={comment}
           afterContent={renderDefaultValue(initValue)}
-          emptyCommentFallback="-"
+          emptyCommentFallback={getTagData('deprecated', comment) ? '' : '-'}
         />
       </>
     );
@@ -95,14 +93,14 @@ const renderInterfacePropertyRow = (
   );
   return (
     <Row key={name}>
-      <Cell fitContent>
+      <Cell>
         <DEMI>{name}</DEMI>
         {renderFlags(flags, initValue)}
       </Cell>
-      <Cell fitContent>
+      <Cell>
         <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </Cell>
-      <Cell fitContent>{renderInterfaceComment(sdkVersion, comment, signatures, initValue)}</Cell>
+      <Cell>{renderInterfaceComment(sdkVersion, comment, signatures, initValue)}</Cell>
     </Row>
   );
 };
@@ -123,16 +121,9 @@ const renderInterface = (
   return (
     <div
       key={`interface-definition-${name}`}
-      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, 'overflow-hidden')}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere !text-base">
-            {name}
-          </MONOSPACE>
-        </H3Code>
-        <APISectionPlatformTags comment={comment} />
-      </div>
+      <APIBoxHeader name={name} comment={comment} />
       {extendedTypes?.length ? (
         <CALLOUT className={ELEMENT_SPACING}>
           <span className={STYLES_SECONDARY}>Extends: </span>
@@ -154,14 +145,12 @@ const renderInterface = (
       )}
       {interfaceFields.length > 0 && (
         <>
-          <APIBoxSectionHeader text={`${name} Properties`} exposeInSidebar baseNestingLevel={99} />
-          <Table>
-            <APIParamsTableHeadRow />
+          <Table containerClassName="rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4">
+            <APIParamsTableHeadRow mainCellLabel="Property" />
             <tbody>
               {interfaceFields.map(field => renderInterfacePropertyRow(field, sdkVersion))}
             </tbody>
           </Table>
-          <br />
         </>
       )}
     </div>
