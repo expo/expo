@@ -44,11 +44,7 @@ class VideoManager {
     videoViews.remove(videoView)
   }
 
-  func onAppForegrounded() {
-    for videoPlayer in videoPlayers.allObjects {
-      videoPlayer.setTracksEnabled(true)
-    }
-  }
+  func onAppForegrounded() {}
 
   func onAppBackgrounded() {
     for videoView in videoViews.allObjects {
@@ -56,9 +52,9 @@ class VideoManager {
         continue
       }
       if player.staysActiveInBackground == true {
-        player.setTracksEnabled(videoView.playerViewController.isInPictureInPicture)
-      } else if !videoView.playerViewController.isInPictureInPicture {
-        player.ref.pause()
+        player.pointer.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
+      } else if !videoView.isInPictureInPicture {
+        player.pointer.pause()
       }
     }
   }
