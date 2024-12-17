@@ -96,7 +96,7 @@ export const renderMethod = (
           </>
         )}
         <APICommentTextBlock
-          comment={comment}
+          comment={method?.comment ?? comment}
           includePlatforms={false}
           afterContent={
             type && resolveTypeName(type, sdkVersion) !== 'undefined' ? (
