@@ -12,7 +12,7 @@ public class BackgroundTaskModule: Module {
     }
 
     AsyncFunction("triggerTaskWorkerForTestingAsync") {
-      BackgroundTaskTester().triggerBackgroundTaskTest()
+      BackgroundTaskDebugHelper.triggerBackgroundTaskTest()
     }
 
     AsyncFunction("registerTaskAsync") { (name: String, options: [String: Any]) in
@@ -28,6 +28,7 @@ public class BackgroundTaskModule: Module {
         throw BackgroundTasksNotConfigured()
       }
 
+      // Register task
       taskManager.registerTask(withName: name, consumer: BackgroundTaskConsumer.self, options: options)
     }
 
@@ -50,6 +51,24 @@ public class BackgroundTaskModule: Module {
     AsyncFunction("getStatusAsync") {
       return BackgroundTaskScheduler.supportsBackgroundTasks() ?
         BackgroundTaskStatus.available : .restricted
+    }
+
+    OnAppEntersBackground {
+      Task {
+        // Try start worker when app enters background
+        do {
+          try await BackgroundTaskScheduler.tryScheduleWorker()
+        } catch {
+          log.error("Could not schedule the worker: \(error.localizedDescription)")
+        }
+      }
+    }
+
+    OnAppEntersForeground {
+      Task {
+        // When entering foreground we'll stop the worker
+        await BackgroundTaskScheduler.stopWorker()
+      }
     }
   }
 }

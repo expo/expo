@@ -1,18 +1,54 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 import BackgroundTasks
 
-@objc(BackgroundTaskScheduler)
-public class BackgroundTaskScheduler: NSObject {
+public class BackgroundTaskScheduler {
   /**
-   Tries to schedule the worker task to run
+   * Keep track of number of registered task consumers
    */
-  @objc public static func tryScheduleWorker() throws {
+  static var numberOfRegisteredTasksOfThisType: Int = 0
+
+  /**
+   * Interval for task scheduler. The iOS BGTaskScheduler does not guarantee that the number of minutes will be
+   * exact, but it indicates when we'd like the task to start
+   */
+  private static var intervalSeconds: TimeInterval = 1
+
+  /**
+   * Call when a task is registered to keep track of how many background task consumers we have
+   */
+  public static func didRegisterTask(minutes: Int) {
+    intervalSeconds = Double(minutes) * 60.0
+    numberOfRegisteredTasksOfThisType = numberOfRegisteredTasksOfThisType + 1
+  }
+
+  /**
+   * Call when a task is unregistered to keep track of how many background task consumers we have
+   */
+  public static func didUnregisterTask() {
+    numberOfRegisteredTasksOfThisType = numberOfRegisteredTasksOfThisType - 1
+  }
+
+  /**
+   * Tries to schedule the worker task to run
+   */
+  public static func tryScheduleWorker() async throws {
+    if numberOfRegisteredTasksOfThisType == 0 {
+      print("Background Task: skipping scheduling. No registered tasks")
+      return
+    }
+
+    // Stop existing tasks
+    await stopWorker()
+
     // Create request
     let request = BGProcessingTaskRequest(identifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
 
     // We'll require network but accept running on battery power.
     request.requiresNetworkConnectivity = true
     request.requiresExternalPower = false
+
+    // Set up mimimum start date
+    request.earliestBeginDate = Date().addingTimeInterval(intervalSeconds)
 
     do {
       try BGTaskScheduler.shared.submit(request)
@@ -37,7 +73,7 @@ public class BackgroundTaskScheduler: NSObject {
   /**
    Cancels the worker task
    */
-  public static func stopWorker() {
+  public static func stopWorker() async {
     BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
   }
 
@@ -52,7 +88,7 @@ public class BackgroundTaskScheduler: NSObject {
   /**
    Returns true if we're on a device that supports background tasks
    */
-  @objc public static func supportsBackgroundTasks() -> Bool {
+  public static func supportsBackgroundTasks() -> Bool {
 #if targetEnvironment(simulator)
     // If we're on emulator we should definetly return restricted
     return false

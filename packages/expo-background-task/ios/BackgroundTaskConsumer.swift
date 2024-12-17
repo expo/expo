@@ -3,7 +3,6 @@ import ExpoModulesCore
 
 class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
   var task: EXTaskInterface?
-  static var numberOfRegisteredTasksOfThisType: Int = 0
 
   static func supportsLaunchReason(_ launchReason: EXTaskLaunchReason) -> Bool {
     return launchReason == EXTaskLaunchReasonBackgroundTask
@@ -43,14 +42,9 @@ class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
       return
     }
 
-    BackgroundTaskConsumer.numberOfRegisteredTasksOfThisType += 1
-
-    // Ensure that the the BGTask is running
-    Task {
-      if await !BackgroundTaskScheduler.isWorkerRunning() {
-        // Start worker
-        try BackgroundTaskScheduler.tryScheduleWorker()
-      }
+    // Safely extract "minimumInterval" from options
+    if let minimumInterval = self.task?.options?["minimumInterval"] as? Int {
+      BackgroundTaskScheduler.didRegisterTask(minutes: minimumInterval)
     }
   }
 
@@ -61,12 +55,6 @@ class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
       return
     }
 
-    BackgroundTaskConsumer.numberOfRegisteredTasksOfThisType -= 1
-
-    // Stop worker only if this was the last task registered
-    if BackgroundTaskConsumer.numberOfRegisteredTasksOfThisType == 0 {
-      // Stop worker
-      BackgroundTaskScheduler.stopWorker()
-    }
+    BackgroundTaskScheduler.didUnregisterTask()
   }
 }
