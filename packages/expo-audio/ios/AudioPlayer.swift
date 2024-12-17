@@ -116,7 +116,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       }
       .store(in: &cancellables)
   }
-  
+
   func replaceCurrentSource(source: AudioSource) {
     ref.pause()
     let wasSamplingEnabled = samplingEnabled
@@ -126,7 +126,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
     shouldInstallAudioTap = wasSamplingEnabled
   }
-  
+
   private func playerIsBuffering() -> Bool {
     if ref.timeControlStatus == .playing {
       return false
