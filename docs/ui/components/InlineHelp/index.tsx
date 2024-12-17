@@ -56,8 +56,7 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
         className
       )}
       data-testid="callout-container">
-      <div
-        className={mergeClasses('mt-1 select-none', '[table_&]:mt-0.5', size === 'sm' && 'mt-1')}>
+      <div className={mergeClasses('mt-1 select-none', size === 'sm' && 'mt-1')}>
         {typeof icon === 'string' ? (
           icon
         ) : (

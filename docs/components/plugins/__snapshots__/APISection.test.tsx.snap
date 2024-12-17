@@ -43,7 +43,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !shadow-none"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !shadow-none"
   >
     <div
       class="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0"
@@ -233,7 +233,7 @@ not appear on the screen.
       data-testid="callout-container"
     >
       <div
-        class="select-none [table_&]:mt-0.5 mt-1"
+        class="select-none mt-1"
       >
         <svg
           class="translate-z icon-xs text-icon-secondary"
@@ -332,7 +332,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -408,7 +408,7 @@ for more details.
         </p>
       </div>
       <div
-        class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -484,7 +484,7 @@ for more details.
         </p>
       </div>
       <div
-        class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -564,7 +564,7 @@ for more details.
         </p>
       </div>
       <div
-        class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -659,7 +659,7 @@ in here.
         </p>
       </div>
       <div
-        class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
+        class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0 !py-3 [&>*:last-child]:!mb-0"
       >
         <div
           class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -908,7 +908,7 @@ properties.
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -1132,7 +1132,7 @@ properties.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -1277,7 +1277,7 @@ This should come from the user field of an
       data-testid="callout-container"
     >
       <div
-        class="select-none [table_&]:mt-0.5 mt-1"
+        class="select-none mt-1"
       >
         <svg
           class="translate-z icon-xs text-icon-default"
@@ -1406,7 +1406,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -1547,7 +1547,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -1786,7 +1786,7 @@ refresh operation.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -2071,7 +2071,7 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -2384,7 +2384,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -2574,7 +2574,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -2590,7 +2590,7 @@ sign-out operation.
           AppleAuthenticationCredential
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#appleauthenticationcredential"
           id="appleauthenticationcredential"
         >
@@ -2674,7 +2674,7 @@ which contains all of the pertinent user and credential information.
       data-testid="callout-container"
     >
       <div
-        class="select-none [table_&]:mt-0.5 mt-1"
+        class="select-none mt-1"
       >
         <svg
           class="translate-z icon-xs text-icon-secondary"
@@ -3123,7 +3123,7 @@ developers.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -3139,7 +3139,7 @@ developers.
           AppleAuthenticationFullName
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#appleauthenticationfullname"
           id="appleauthenticationfullname"
         >
@@ -3481,7 +3481,7 @@ may be
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -3497,7 +3497,7 @@ may be
           AppleAuthenticationFullNameFormatStyle
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#appleauthenticationfullnameformatstyle"
           id="appleauthenticationfullnameformatstyle"
         >
@@ -3559,7 +3559,7 @@ may be
       data-testid="callout-container"
     >
       <div
-        class="select-none [table_&]:mt-0.5 mt-1"
+        class="select-none mt-1"
       >
         <svg
           class="translate-z icon-xs text-icon-secondary"
@@ -3666,7 +3666,7 @@ for more details.
     </p>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -3682,7 +3682,7 @@ for more details.
           AppleAuthenticationRefreshOptions
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#appleauthenticationrefreshoptions"
           id="appleauthenticationrefreshoptions"
         >
@@ -3741,7 +3741,7 @@ You must include the ID string of the user whose credentials you'd like to refre
       data-testid="callout-container"
     >
       <div
-        class="select-none [table_&]:mt-0.5 mt-1"
+        class="select-none mt-1"
       >
         <svg
           class="translate-z icon-xs text-icon-secondary"
@@ -3978,7 +3978,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -3994,7 +3994,7 @@ OAuth 2.0 protocol
           AppleAuthenticationSignInOptions
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#appleauthenticationsigninoptions"
           id="appleauthenticationsigninoptions"
         >
@@ -4053,7 +4053,7 @@ None of these options are required.
       data-testid="callout-container"
     >
       <div
-        class="select-none [table_&]:mt-0.5 mt-1"
+        class="select-none mt-1"
       >
         <svg
           class="translate-z icon-xs text-icon-secondary"
@@ -4306,7 +4306,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -4322,7 +4322,7 @@ OAuth 2.0 protocol
           AppleAuthenticationSignOutOptions
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#appleauthenticationsignoutoptions"
           id="appleauthenticationsignoutoptions"
         >
@@ -4381,7 +4381,7 @@ You must include the ID string of the user to sign out.
       data-testid="callout-container"
     >
       <div
-        class="select-none [table_&]:mt-0.5 mt-1"
+        class="select-none mt-1"
       >
         <svg
           class="translate-z icon-xs text-icon-secondary"
@@ -4548,7 +4548,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -4564,7 +4564,7 @@ OAuth 2.0 protocol
           Subscription
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#subscription"
           id="subscription"
         >
@@ -4726,7 +4726,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[46px] px-5 pt-3"
@@ -4745,7 +4745,7 @@ After calling this function, the listener will no longer receive any events from
             AppleAuthenticationButtonStyle
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
             href="#appleauthenticationbuttonstyle"
             id="appleauthenticationbuttonstyle"
           >
@@ -4996,7 +4996,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[46px] px-5 pt-3"
@@ -5015,7 +5015,7 @@ After calling this function, the listener will no longer receive any events from
             AppleAuthenticationButtonType
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
             href="#appleauthenticationbuttontype"
             id="appleauthenticationbuttontype"
           >
@@ -5300,7 +5300,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[46px] px-5 pt-3"
@@ -5319,7 +5319,7 @@ After calling this function, the listener will no longer receive any events from
             AppleAuthenticationCredentialState
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
             href="#appleauthenticationcredentialstate"
             id="appleauthenticationcredentialstate"
           >
@@ -5377,7 +5377,7 @@ After calling this function, the listener will no longer receive any events from
         data-testid="callout-container"
       >
         <div
-          class="select-none [table_&]:mt-0.5 mt-1"
+          class="select-none mt-1"
         >
           <svg
             class="translate-z icon-xs text-icon-secondary"
@@ -5664,7 +5664,7 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[46px] px-5 pt-3"
@@ -5683,7 +5683,7 @@ for more details.
             AppleAuthenticationOperation
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
             href="#appleauthenticationoperation"
             id="appleauthenticationoperation"
           >
@@ -5963,7 +5963,7 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[46px] px-5 pt-3"
@@ -5982,7 +5982,7 @@ for more details.
             AppleAuthenticationScope
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
             href="#appleauthenticationscope"
             id="appleauthenticationscope"
           >
@@ -6042,7 +6042,7 @@ for more details.
         data-testid="callout-container"
       >
         <div
-          class="select-none [table_&]:mt-0.5 mt-1"
+          class="select-none mt-1"
         >
           <svg
             class="translate-z icon-xs text-icon-default"
@@ -6083,7 +6083,7 @@ You will still need to handle null values for any fields you request.
         data-testid="callout-container"
       >
         <div
-          class="select-none [table_&]:mt-0.5 mt-1"
+          class="select-none mt-1"
         >
           <svg
             class="translate-z icon-xs text-icon-secondary"
@@ -6252,7 +6252,7 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[46px] px-5 pt-3"
@@ -6271,7 +6271,7 @@ for more details.
             AppleAuthenticationUserDetectionStatus
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
             href="#appleauthenticationuserdetectionstatus"
             id="appleauthenticationuserdetectionstatus"
           >
@@ -6317,7 +6317,7 @@ for more details.
         data-testid="callout-container"
       >
         <div
-          class="select-none [table_&]:mt-0.5 mt-1"
+          class="select-none mt-1"
         >
           <svg
             class="translate-z icon-xs text-icon-secondary"
@@ -6608,7 +6608,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -6730,7 +6730,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -7045,7 +7045,7 @@ exports[`APISection expo-pedometer 1`] = `
         data-testid="callout-container"
       >
         <div
-          class="select-none [table_&]:mt-0.5 mt-1"
+          class="select-none mt-1"
         >
           <svg
             class="translate-z icon-xs text-icon-default"
@@ -7084,7 +7084,7 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -7219,7 +7219,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -7341,7 +7341,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -7558,7 +7558,7 @@ provided with a single argument that is
         data-testid="callout-container"
       >
         <div
-          class="select-none [table_&]:mt-0.5 mt-1"
+          class="select-none mt-1"
         >
           <svg
             class="translate-z icon-xs text-icon-default"
@@ -7659,7 +7659,7 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 py-4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 mb-4 px-5 pb-0 pt-3 shadow-none [&_h4]:mt-0"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -7985,7 +7985,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -8001,7 +8001,7 @@ in order to enable/disable the permission.
           PedometerResult
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#pedometerresult"
           id="pedometerresult"
         >
@@ -8105,7 +8105,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -8121,7 +8121,7 @@ in order to enable/disable the permission.
           PedometerUpdateCallback()
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#pedometerupdatecallback"
           id="pedometerupdatecallback"
         >
@@ -8266,7 +8266,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -8282,7 +8282,7 @@ in order to enable/disable the permission.
           PermissionExpiration
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#permissionexpiration"
           id="permissionexpiration"
         >
@@ -8360,7 +8360,7 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4"
   >
     <div
       class="flex flex-wrap justify-between max-md-gutters:flex-col"
@@ -8376,7 +8376,7 @@ in order to enable/disable the permission.
           Subscription
         </code>
         <a
-          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
           href="#subscription"
           id="subscription"
         >
@@ -8538,7 +8538,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 px-5 py-4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
+    class="mb-5 rounded-lg border border-palette-gray4 px-5 pb-4 pt-3 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none max-lg-gutters:px-4 !p-0"
   >
     <div
       class="min-h-[46px] px-5 pt-3"
@@ -8557,7 +8557,7 @@ After calling this function, the listener will no longer receive any events from
             PermissionStatus
           </code>
           <a
-            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8 mb-0"
             href="#permissionstatus"
             id="permissionstatus"
           >

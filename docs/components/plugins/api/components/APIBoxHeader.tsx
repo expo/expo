@@ -12,7 +12,7 @@ type Props = {
 export function APIBoxHeader({ name, comment }: Props) {
   return (
     <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-      <H3Code tags={getTagNamesList(comment)}>
+      <H3Code tags={getTagNamesList(comment)} className="mb-0">
         <MONOSPACE weight="medium" className="!wrap-anywhere !text-base">
           {name}
         </MONOSPACE>
