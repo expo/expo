@@ -7,7 +7,6 @@ public class BackgroundTaskScheduler: NSObject {
    Tries to schedule the worker task to run
    */
   @objc public static func tryScheduleWorker() throws {
-    print("BackgroundTaskScheduler: tryScheduleWorker")
     // Create request
     let request = BGProcessingTaskRequest(identifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
 
@@ -39,7 +38,6 @@ public class BackgroundTaskScheduler: NSObject {
    Cancels the worker task
    */
   public static func stopWorker() {
-    print("BackgroundTaskScheduler: stopWorker")
     BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
   }
 

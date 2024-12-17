@@ -16,12 +16,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-const val BACKGROUND_TASK_TYPE = "expo-background-task"
-const val DEFAULT_INTERVAL_MINUTES = 60L * 24L // Once every day
-private val TAG = BackgroundTaskConsumer::class.java.simpleName
-
 class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtilsInterface?) :
   TaskConsumer(context, taskManagerUtils), TaskConsumerInterface, LifecycleEventListener {
+
+  companion object {
+    private const val BACKGROUND_TASK_TYPE = "expo-background-task"
+    private const val DEFAULT_INTERVAL_MINUTES = 60L * 24L // Once every day
+    private val TAG = BackgroundTaskConsumer::class.java.simpleName
+  }
 
   private var task: TaskInterface? = null
   private var isBackgrounded: Boolean = true
