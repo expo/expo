@@ -21,6 +21,47 @@ open class ExpoAppDelegate: ExpoAppInstance {
   public var shouldCallReactNativeSetup: Bool = true
 
   #if os(iOS) || os(tvOS)
+
+  override public init() {
+    super.init()
+
+    let notifications = [
+      UIApplication.didBecomeActiveNotification,
+      UIApplication.willResignActiveNotification,
+      UIApplication.didEnterBackgroundNotification,
+      UIApplication.willEnterForegroundNotification
+    ]
+    notifications.forEach { name in
+      NotificationCenter.default.addObserver(self, selector: #selector(handleClientAppNotification(_:)), name: name, object: nil)
+    }
+  }
+
+  /**
+   Cleans things up before deallocation.
+   */
+  deinit {
+    NotificationCenter.default.removeObserver(self)
+  }
+
+  /**
+   Handles app's (`UIApplication`) lifecycle notifications
+   */
+  @objc
+  private func handleClientAppNotification(_ notification: Notification) {
+    switch notification.name {
+    case UIApplication.didBecomeActiveNotification:
+      handleDidBecomeActive()
+    case UIApplication.willResignActiveNotification:
+      handleWillResignActive()
+    case UIApplication.didEnterBackgroundNotification:
+      handleDidEnterBackground()
+    case UIApplication.willEnterForegroundNotification:
+      handleWillEnterForeground()
+    default:
+      return
+    }
+  }
+
   // MARK: - Initializing the App
 
   open override func application(
@@ -62,23 +103,20 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Responding to App Life-Cycle Events
 
-  @objc
-  open override func applicationDidBecomeActive(_ application: UIApplication) {
-    subscribers.forEach { $0.applicationDidBecomeActive?(application) }
+  func handleDidBecomeActive() {
+    subscribers.forEach { $0.applicationDidBecomeActive?(UIApplication.shared) }
   }
 
-  @objc
-  open override func applicationWillResignActive(_ application: UIApplication) {
-    subscribers.forEach { $0.applicationWillResignActive?(application) }
+  func handleWillResignActive() {
+    subscribers.forEach { $0.applicationWillResignActive?(UIApplication.shared) }
   }
 
-  @objc
-  open override func applicationDidEnterBackground(_ application: UIApplication) {
-    subscribers.forEach { $0.applicationDidEnterBackground?(application) }
+  func handleDidEnterBackground() {
+    subscribers.forEach { $0.applicationDidEnterBackground?(UIApplication.shared) }
   }
 
-  open override func applicationWillEnterForeground(_ application: UIApplication) {
-    subscribers.forEach { $0.applicationWillEnterForeground?(application) }
+  func handleWillEnterForeground() {
+    subscribers.forEach { $0.applicationWillEnterForeground?(UIApplication.shared) }
   }
 
   open override func applicationWillTerminate(_ application: UIApplication) {
