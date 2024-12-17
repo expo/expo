@@ -34,17 +34,19 @@ export declare function parseEnvFiles(envFiles: string[], { systemEnv, }?: {
  * Once the mutations are done, this will also set a propert `__EXPO_ENV=true` on the system env to avoid multiple mutations.
  * This check can be disabled through `{ force: true }`.
  */
-export declare function loadEnvFiles(envFiles: string[], { force, systemEnv, }?: Parameters<typeof parseEnvFiles>[1] & {
+export declare function loadEnvFiles(envFiles: string[], { force, silent, systemEnv, }?: Parameters<typeof parseEnvFiles>[1] & {
     /** If the environment variables should be applied to the system environment, regardless of previous mutations */
     force?: boolean;
+    /** If possible misconfiguration warnings should be logged, or only logged as debug log */
+    silent?: boolean;
 }): {
-    result: string;
+    result: "skipped";
     loaded: any;
 } | {
     loaded: string[];
     env: Record<string, string>;
     files: string[];
-    result: string;
+    result: "loaded";
 };
 /**
  * Parse all environment variables using the detected list of `.env*` files from a project.
@@ -61,11 +63,53 @@ export declare function parseProjectEnv(projectRoot: string, options?: Parameter
  * This check can be disabled through `{ force: true }`.
  */
 export declare function loadProjectEnv(projectRoot: string, options?: Parameters<typeof getEnvFiles>[0] & Parameters<typeof loadEnvFiles>[1]): {
-    result: string;
+    result: "skipped";
     loaded: any;
 } | {
     loaded: string[];
     env: Record<string, string>;
     files: string[];
-    result: string;
+    result: "loaded";
 };
+/** Log the loaded environment info from the loaded results */
+export declare function logLoadedEnv(envInfo: ReturnType<typeof loadEnvFiles>, options?: Parameters<typeof loadEnvFiles>[1]): {
+    result: "skipped";
+    loaded: any;
+} | {
+    loaded: string[];
+    env: Record<string, string>;
+    files: string[];
+    result: "loaded";
+};
+/**
+ * Get the environment variables without mutating the environment.
+ * This returns memoized values unless the `force` property is provided.
+ *
+ * @deprecated use {@link parseProjectEnv} instead
+ */
+export declare function get(projectRoot: string, { force, silent, }?: {
+    force?: boolean;
+    silent?: boolean;
+}): {
+    env: Record<string, string>;
+    files: string[];
+};
+/**
+ * Load environment variables from .env files and mutate the current `process.env` with the results.
+ *
+ * @deprecated use {@link loadProjectEnv} instead
+ */
+export declare function load(projectRoot: string, options?: {
+    force?: boolean;
+    silent?: boolean;
+}): NodeJS.ProcessEnv;
+/**
+ * Get a list of all `.env*` files based on the `NODE_ENV` mode.
+ * This returns a list of files, in order of highest priority to lowest priority.
+ *
+ * @deprecated use {@link getEnvFiles} instead
+ * @see https://github.com/bkeepers/dotenv/tree/v3.1.4#customizing-rails
+ */
+export declare function getFiles(mode: string | undefined, { silent }?: {
+    silent?: boolean;
+}): string[];

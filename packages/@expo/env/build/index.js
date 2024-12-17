@@ -4,12 +4,23 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.LOADED_ENV_NAME = exports.KNOWN_MODES = void 0;
+exports.get = get;
 exports.getEnvFiles = getEnvFiles;
+exports.getFiles = getFiles;
 exports.isEnabled = isEnabled;
+exports.load = load;
 exports.loadEnvFiles = loadEnvFiles;
 exports.loadProjectEnv = loadProjectEnv;
+exports.logLoadedEnv = logLoadedEnv;
 exports.parseEnvFiles = parseEnvFiles;
 exports.parseProjectEnv = parseProjectEnv;
+function _chalk() {
+  const data = _interopRequireDefault(require("chalk"));
+  _chalk = function () {
+    return data;
+  };
+  return data;
+}
 function dotenv() {
   const data = _interopRequireWildcard(require("dotenv"));
   dotenv = function () {
@@ -52,9 +63,9 @@ function _nodePath() {
   };
   return data;
 }
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = require('debug')('expo:env');
 
 /** Determine if the `.env` files are enabled or not, through `EXPO_NO_DOTENV` */
@@ -126,7 +137,7 @@ function parseEnvFiles(envFiles, {
 
   // Iterate over each dotenv file in lowest prio to highest prio order.
   // This step won't write to the process.env, but will overwrite the parsed envs.
-  envFiles.reverse().forEach(envFile => {
+  [...envFiles].reverse().forEach(envFile => {
     try {
       const envFileContent = _nodeFs().default.readFileSync(envFile, 'utf8');
       const envFileParsed = dotenv().parse(envFileContent);
@@ -144,9 +155,14 @@ function parseEnvFiles(envFiles, {
         loadedEnvVars[key] = envFileParsed[key];
       }
     } catch (error) {
-      // Handle possible ENOENT errors when the env file doesn't exist
       if ('code' in error && error.code === 'ENOENT') {
-        return debug(`${envFile} does not exist, skipping this file`);
+        return debug(`${envFile} does not exist, skipping this env file`);
+      }
+      if ('code' in error && error.code === 'EISDIR') {
+        return debug(`${envFile} is a directory, skipping this env file`);
+      }
+      if ('code' in error && error.code === 'EACCES') {
+        return debug(`No permission to read ${envFile}, skipping this env file`);
       }
       throw error;
     }
@@ -165,6 +181,7 @@ function parseEnvFiles(envFiles, {
  */
 function loadEnvFiles(envFiles, {
   force,
+  silent = false,
   systemEnv = process.env
 } = {}) {
   if (!force && systemEnv[LOADED_ENV_NAME]) {
@@ -240,5 +257,94 @@ function parseProjectEnv(projectRoot, options) {
  */
 function loadProjectEnv(projectRoot, options) {
   return loadEnvFiles(getEnvFiles(options).map(envFile => _nodePath().default.join(projectRoot, envFile)), options);
+}
+
+/** Log the loaded environment info from the loaded results */
+function logLoadedEnv(envInfo, options = {}) {
+  // Skip when running in force mode, or no environment variables are loaded
+  if (options.force || options.silent || !envInfo.loaded.length) return envInfo;
+
+  // Log the loaded environment files, when not skipped
+  if (envInfo.result === 'loaded') {
+    _nodeConsole().default.log(_chalk().default.gray('env: load', envInfo.files.map(file => _nodePath().default.basename(file)).join(' ')));
+  }
+
+  // Log the loaded environment variables
+  _nodeConsole().default.log(_chalk().default.gray('env: export', envInfo.loaded.join(' ')));
+  return envInfo;
+}
+
+// Legacy API - for backwards compatibility
+
+let memo = null;
+
+/**
+ * Get the environment variables without mutating the environment.
+ * This returns memoized values unless the `force` property is provided.
+ *
+ * @deprecated use {@link parseProjectEnv} instead
+ */
+function get(projectRoot, {
+  force,
+  silent
+} = {}) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return {
+      env: {},
+      files: []
+    };
+  }
+  if (force || !memo) {
+    memo = parseProjectEnv(projectRoot, {
+      silent
+    });
+  }
+  return memo;
+}
+
+/**
+ * Load environment variables from .env files and mutate the current `process.env` with the results.
+ *
+ * @deprecated use {@link loadProjectEnv} instead
+ */
+function load(projectRoot, options = {}) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return process.env;
+  }
+  const envInfo = get(projectRoot, options);
+
+  // Port the result of `get` to the newer result object
+  logLoadedEnv({
+    ...envInfo,
+    result: 'loaded',
+    loaded: Object.keys(envInfo.env)
+  }, options);
+  for (const key of Object.keys(envInfo.env)) {
+    // Avoid creating a new object, mutate it instead as this causes problems in Bun
+    process.env[key] = envInfo.env[key];
+  }
+  return process.env;
+}
+
+/**
+ * Get a list of all `.env*` files based on the `NODE_ENV` mode.
+ * This returns a list of files, in order of highest priority to lowest priority.
+ *
+ * @deprecated use {@link getEnvFiles} instead
+ * @see https://github.com/bkeepers/dotenv/tree/v3.1.4#customizing-rails
+ */
+function getFiles(mode, {
+  silent = false
+} = {}) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return [];
+  }
+  return getEnvFiles({
+    mode,
+    silent
+  });
 }
 //# sourceMappingURL=index.js.map
