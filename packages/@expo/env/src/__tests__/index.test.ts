@@ -2,8 +2,7 @@ import { vol } from 'memfs';
 import console from 'node:console';
 import process from 'node:process';
 
-// import { createControlledEnvironment, getFiles } from '../env';
-import { getEnvFiles, LOADED_ENV_NAME, loadProjectEnv, parseProjectEnv } from '../index-new';
+import { getEnvFiles, LOADED_ENV_NAME, loadProjectEnv, parseEnvFiles, parseProjectEnv } from '../';
 
 jest.mock('node:console', () => {
   const console = jest.requireActual('node:console');
@@ -324,6 +323,72 @@ describe(loadProjectEnv, () => {
       loaded: [],
     });
     expect(process.env['FOO']).toBe('previous');
+  });
+
+  it('does not mutate `envFiles` list when parsing', () => {
+    const envFiles = ['/.env.local', '/.env'];
+
+    vol.fromJSON(
+      {
+        '.env': 'FOO=hello\nHELLO=old', // lower priority, will be parsed first
+        '.env.local': 'BAR=$FOO\nHELLO=new', // higher priority, will be parsed last (and override .env)
+      },
+      '/'
+    );
+
+    // Run both the parsing and assertions twice
+    for (let i = 0; i < 2; i++) {
+      // Ensure the environment variables are parsed into an empty system environment
+      expect(parseEnvFiles(envFiles, { systemEnv: {} })).toMatchObject({
+        files: ['/.env.local', '/.env'],
+        env: {
+          FOO: 'hello',
+          BAR: 'hello', // If `.env.local` is loaded before `.env`, this can't be resolved
+          HELLO: 'new',
+        },
+      });
+    }
+
+    // Ensure the envFiles are not mutated
+    expect(envFiles).toEqual(['/.env.local', '/.env']);
+  });
+
+  it('handles ENOENT errors when reading env file', () => {
+    vol.fromJSON({}, '/');
+
+    // Ensure no error is thrown, and nothing was parsed
+    expect(parseEnvFiles(['/.env.local', '/.env'])).toMatchObject({
+      files: [],
+      env: {},
+    });
+  });
+
+  it('handles EISDIR errors when reading env file', () => {
+    vol.fromJSON(
+      {
+        '.env.local': 'FOO=bar',
+        '.env/test.txt': 'mocking `.env` as folder',
+      },
+      '/'
+    );
+
+    // Ensure no error is thrown, and nothing was parsed
+    expect(parseEnvFiles(['/.env.local', '/.env'])).toMatchObject({
+      files: ['/.env.local'],
+      env: { FOO: 'bar' },
+    });
+  });
+
+  it('handles EACCES errors when reading env file', () => {
+    vol.fromJSON({ '.env.local': 'FOO=bar' }, '/');
+
+    // Write the `.env` without any read permissions
+    vol.writeFileSync('/.env', 'TEST=no-access', { mode: 0 });
+
+    expect(parseEnvFiles(['/.env.local', '/.env'])).toMatchObject({
+      files: ['/.env.local'],
+      env: { FOO: 'bar' },
+    });
   });
 });
 

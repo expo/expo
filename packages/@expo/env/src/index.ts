@@ -116,9 +116,14 @@ export function parseEnvFiles(
         loadedEnvVars[key] = envFileParsed[key];
       }
     } catch (error: any) {
-      // Handle possible ENOENT errors when the env file doesn't exist
       if ('code' in error && error.code === 'ENOENT') {
-        return debug(`${envFile} does not exist, skipping this file`);
+        return debug(`${envFile} does not exist, skipping this env file`);
+      }
+      if ('code' in error && error.code === 'EISDIR') {
+        return debug(`${envFile} is a directory, skipping this env file`);
+      }
+      if ('code' in error && error.code === 'EACCES') {
+        return debug(`No permission to read ${envFile}, skipping this env file`);
       }
 
       throw error;
