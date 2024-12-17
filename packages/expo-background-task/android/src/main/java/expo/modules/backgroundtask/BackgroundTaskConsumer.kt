@@ -40,7 +40,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
    */
   fun executeTask(callback: TaskExecutionCallback) {
     if (isBackgrounded || ReactBuildConfig.DEBUG) {
-      Log.i(TAG, "Executing task '${task?.name}'")
+      Log.d(TAG, "Executing task '${task?.name}'")
       taskManagerUtils.executeTask(task, null, callback)
     }
   }
@@ -48,7 +48,7 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
   override fun didRegister(task: TaskInterface) {
     this.task = task
 
-    Log.i(TAG, "didRegister: ${task.name}")
+    Log.d(TAG, "didRegister: ${task.name}")
 
     // Make sure to schedule and set up the worker if it is not running
     taskCoroutineScope.launch {
@@ -57,16 +57,16 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
         // Get interval for the task
         val intervalMinutes = getIntervalMinutes()
         // Start worker
-        Log.i(TAG, "didRegister: worker not running - starting worker.")
+        Log.d(TAG, "didRegister: worker not running - starting worker.")
         BackgroundTaskScheduler.startWorker(context, task.appScopeKey, intervalMinutes)
       } else {
-        Log.i(TAG, "didRegister: worker already running.")
+        Log.d(TAG, "didRegister: worker already running.")
       }
     }
   }
 
   override fun didUnregister() {
-    Log.i(TAG, "didUnregister: ${task?.name}")
+    Log.d(TAG, "didUnregister: ${task?.name}")
 
     taskCoroutineScope.launch {
       if (!BackgroundTaskScheduler.isWorkerRunning(context)) {
@@ -85,11 +85,11 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
       val tasks = taskService.getTasksForAppScopeKey(appScopeKey)
       val ourTasks = tasks.filter { it.getString("taskType") == BACKGROUND_TASK_TYPE }
       if (ourTasks.isEmpty()) {
-        Log.i(TAG, "didUnregister: ${task?.name} - stopping worker, no more $BACKGROUND_TASK_TYPE tasks running.")
+        Log.d(TAG, "didUnregister: ${task?.name} - stopping worker, no more $BACKGROUND_TASK_TYPE tasks running.")
         // We should just stop the worker
         BackgroundTaskScheduler.stopWorker(context)
       } else {
-        Log.i(TAG, "didRegister: Leaving worker running.")
+        Log.d(TAG, "didRegister: Leaving worker running.")
       }
     }
   }
