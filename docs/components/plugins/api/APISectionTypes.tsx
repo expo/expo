@@ -3,8 +3,9 @@ import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRi
 import { Fragment, ReactNode } from 'react';
 
 import { APIBox } from '~/components/plugins/APIBox';
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, CODE, MONOSPACE, CALLOUT, RawH4 } from '~/ui/components/Text';
+import { H2, CODE, MONOSPACE, CALLOUT, RawH4, DEMI } from '~/ui/components/Text';
 
 import {
   PropData,
@@ -23,15 +24,12 @@ import {
   renderParams,
   renderDefaultValue,
   renderIndexSignature,
-  getTagNamesList,
-  H3Code,
   getCommentContent,
   listParams,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
-import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { APITypeOrSignatureType } from './components/APITypeOrSignatureType';
 import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
 
@@ -112,7 +110,7 @@ const renderTypePropertyRow = (
   return (
     <Row key={name}>
       <Cell fitContent>
-        <BOLD>{name}</BOLD>
+        <DEMI>{name}</DEMI>
         {renderFlags(flags, initValue)}
         {kind && renderIndexSignature(kind)}
       </Cell>
@@ -146,15 +144,10 @@ const renderType = (
     return (
       <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-          <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
-            <MONOSPACE weight="medium">
-              {name}
-              {type.declaration.signatures ? '()' : ''}
-            </MONOSPACE>
-          </H3Code>
-          <APISectionPlatformTags comment={comment} />
-        </div>
+        <APIBoxHeader
+          name={`${name}${type.declaration.signatures ? '()' : ''}`}
+          comment={comment}
+        />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration, sdkVersion)}
         {type.declaration.signatures
@@ -185,12 +178,7 @@ const renderType = (
     return (
       <div key={`type-tuple-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-          <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
-            <MONOSPACE weight="medium">{name}</MONOSPACE>
-          </H3Code>
-          <APISectionPlatformTags comment={comment} />
-        </div>
+        <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT className={STYLES_SECONDARY}>
           Tuple: <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
@@ -211,14 +199,7 @@ const renderType = (
       return (
         <div key={`prop-type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
-          <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-            <H3Code tags={getTagNamesList(comment)}>
-              <MONOSPACE weight="medium" className="wrap-anywhere">
-                {name}
-              </MONOSPACE>
-            </H3Code>
-            <APISectionPlatformTags comment={comment} />
-          </div>
+          <APIBoxHeader name={name} comment={comment} />
           <APICommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' || type.type === 'union' ? (
             <>
@@ -262,14 +243,7 @@ const renderType = (
       return (
         <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
-          <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-            <H3Code tags={getTagNamesList(comment)}>
-              <MONOSPACE weight="medium" className="wrap-anywhere">
-                {name}
-              </MONOSPACE>
-            </H3Code>
-            <APISectionPlatformTags comment={comment} />
-          </div>
+          <APIBoxHeader name={name} comment={comment} />
           <CALLOUT className="mb-3">
             <span className={STYLES_SECONDARY}>Literal Type: </span>
             {acceptedLiteralTypes ?? 'multiple types'}
@@ -298,14 +272,7 @@ const renderType = (
         key={`record-definition-${name}`}
         className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-          <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" className="wrap-anywhere">
-              {name}
-            </MONOSPACE>
-          </H3Code>
-          <APISectionPlatformTags comment={comment} />
-        </div>
+        <APIBoxHeader name={name} comment={comment} />
         <CALLOUT className="mb-3">
           <span className={STYLES_SECONDARY}>Type: </span>
           <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
@@ -317,14 +284,7 @@ const renderType = (
     return (
       <div key={`generic-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-          <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" className="wrap-anywhere">
-              {name}
-            </MONOSPACE>
-          </H3Code>
-          <APISectionPlatformTags comment={comment} />
-        </div>
+        <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
           <span className={STYLES_SECONDARY}>Type: </span>
@@ -336,14 +296,7 @@ const renderType = (
     return (
       <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-          <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" className="wrap-anywhere">
-              {name}&lt;{type.checkType.name}&gt;
-            </MONOSPACE>
-          </H3Code>
-          <APISectionPlatformTags comment={comment} />
-        </div>
+        <APIBoxHeader name={`${name}<${type.checkType.name}>`} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
           <span className={STYLES_SECONDARY}>Generic: </span>
@@ -379,14 +332,7 @@ const renderType = (
     return (
       <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-          <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" className="wrap-anywhere">
-              {name}
-            </MONOSPACE>
-          </H3Code>
-          <APISectionPlatformTags comment={comment} />
-        </div>
+        <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
           String union of <CODE>{resolveTypeName(possibleData[0], sdkVersion)}</CODE> values.

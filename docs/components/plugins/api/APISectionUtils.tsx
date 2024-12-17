@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { slug } from 'github-slugger';
 import { type ComponentType, type ReactNode } from 'react';
 
@@ -8,12 +9,12 @@ import { HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import {
   A,
   BOLD,
+  CALLOUT,
   CODE,
   createPermalinkedComponent,
   H4,
   LI,
   OL,
-  P,
   RawH3,
   UL,
 } from '~/ui/components/Text';
@@ -54,7 +55,7 @@ const getInvalidLinkMessage = (href: string) =>
 
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => (
-    <InlineHelp size="sm" className="shadow-none">
+    <InlineHelp size="sm" className={mergeClasses('shadow-none', ELEMENT_SPACING)}>
       {children}
     </InlineHelp>
   ),
@@ -64,14 +65,14 @@ export const mdComponents: MDComponents = {
         {children}
       </PrismCodeBlock>
     ) : (
-      <CODE className="break-words !inline">{children}</CODE>
+      <CODE className="break-words !inline py-0">{children}</CODE>
     );
   },
   pre: ({ children }) => <>{children}</>,
   h1: ({ children }) => <H4 hideInSidebar>{children}</H4>,
   ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
   ol: ({ children }) => <OL className={ELEMENT_SPACING}>{children}</OL>,
-  li: ({ children }) => <LI>{children}</LI>,
+  li: ({ children }) => <LI className="text-sm">{children}</LI>,
   a: ({ href, children }) => {
     if (
       href?.startsWith('../') &&
@@ -86,7 +87,8 @@ export const mdComponents: MDComponents = {
     }
     return <A href={href}>{children}</A>;
   },
-  p: ({ children }) => (children ? <P className={ELEMENT_SPACING}>{children}</P> : null),
+  p: ({ children }) =>
+    children ? <CALLOUT className={ELEMENT_SPACING}>{children}</CALLOUT> : null,
   strong: ({ children }) => <BOLD>{children}</BOLD>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
   table: ({ children }) => <Table>{children}</Table>,
@@ -381,7 +383,7 @@ export const parseParamName = (name: string) => (name.startsWith('__') ? name.su
 export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
   const hasDescription = Boolean(parameters.some(param => param.comment));
   return (
-    <Table>
+    <Table containerClassName="mt-0.5">
       <APIParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
       <tbody>
         {parameters?.map(param => (

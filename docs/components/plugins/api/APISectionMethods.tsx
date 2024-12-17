@@ -75,8 +75,8 @@ export const renderMethod = (
             <MONOSPACE
               weight="medium"
               className={mergeClasses(
-                'wrap-anywhere',
-                !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
+                'wrap-anywhere !text-base',
+                !exposeInSidebar && 'mb-1 inline-block'
               )}>
               {getMethodName(
                 method as MethodDefinitionData,
