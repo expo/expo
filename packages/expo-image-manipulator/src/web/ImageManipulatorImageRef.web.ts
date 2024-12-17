@@ -31,7 +31,7 @@ export default class ImageManipulatorImageRef extends SharedRef<'image'> {
             return reject(new Error(`Unable to save image: ${this.uri}`));
           }
           const base64 = options.base64 ? await blobToBase64String(blob) : undefined;
-          const uri = blob ? URL.createObjectURL(blob) : this.canvas.toDataURL();
+          const uri = URL.createObjectURL(blob);
 
           resolve({
             uri,
