@@ -24,5 +24,5 @@ export type LinkToOptions = {
      */
     withAnchor?: boolean;
 };
-export declare function linkTo(this: RouterStore, href: string, { event, relativeToDirectory, withAnchor }?: LinkToOptions): void;
+export declare function linkTo(this: RouterStore, href: string, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map
