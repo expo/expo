@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix E2E tests in debug build ([#32951](https://github.com/expo/expo/pull/32951) by [@matejkriz](https://github.com/matejkriz))
+
 ### 💡 Others
 
 ## 0.26.10 - 2024-12-05
