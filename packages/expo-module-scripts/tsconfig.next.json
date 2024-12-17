@@ -1,0 +1,20 @@
+{
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "include": [
+    "./src"
+  ],
+  "compilerOptions": {
+    "outDir": "./build",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    // Only load types from these directories. If you have required types in nested node_modules, you should upgrade the dependency so it is no longer nested.
+    "typeRoots": [
+      "./ts-declarations",
+      "./node_modules/@types",
+      "../../node_modules/@types",
+    ],
+  }
+}
