@@ -1,12 +1,26 @@
 import { vol } from 'memfs';
 import console from 'node:console';
 import process from 'node:process';
+import { stripVTControlCharacters } from 'node:util';
 
-import { getEnvFiles, LOADED_ENV_NAME, loadProjectEnv, parseEnvFiles, parseProjectEnv } from '../';
+import {
+  getEnvFiles,
+  LOADED_ENV_NAME,
+  loadEnvFiles,
+  loadProjectEnv,
+  logLoadedEnv,
+  parseEnvFiles,
+  parseProjectEnv,
+} from '../';
 
 jest.mock('node:console', () => {
   const console = jest.requireActual('node:console');
-  return { ...console, error: jest.fn(console.error), warn: jest.fn(console.warn) };
+  return {
+    ...console,
+    error: jest.fn(console.error),
+    warn: jest.fn(console.warn),
+    log: jest.fn(console.log),
+  };
 });
 
 /** The original reference to `process.env`, containing the actual environment variables. */
@@ -389,6 +403,67 @@ describe(loadProjectEnv, () => {
       files: ['/.env.local'],
       env: { FOO: 'bar' },
     });
+  });
+});
+
+describe(logLoadedEnv, () => {
+  const envInfo: ReturnType<typeof loadEnvFiles> = {
+    result: 'loaded',
+    files: ['/.env.production.local', '/.env.production', '.env.local'],
+    env: { FOO: 'test1', BAR: 'test2' },
+    loaded: ['FOO', 'BAR'],
+  };
+
+  it('logs environment vaiables and files', () => {
+    // Hide the logs from the Jest output
+    jest.mocked(console.log).mockImplementation();
+
+    // Ensure `logLoadedEnv` returns the env info as-is
+    expect(logLoadedEnv(envInfo)).toBe(envInfo);
+    // Ensure `console.log` with environment files was called first
+    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0][0])).toBe(
+      'env: load .env.production.local .env.production .env.local'
+    );
+    // Ensure `console.log` with environment variables was called second
+    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[1][0])).toBe(
+      'env: export FOO BAR'
+    );
+  });
+
+  it('only logs the environment variables when skipping the load process', () => {
+    const skippedEnvInfo: ReturnType<typeof loadEnvFiles> = {
+      result: 'skipped',
+      loaded: ['FOO', 'BAR'],
+    };
+
+    // Ensure `logLoadedEnv` returns the env info as-is
+    expect(logLoadedEnv(skippedEnvInfo)).toBe(skippedEnvInfo);
+    // Ensure no `console.log` was called
+    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0][0])).toBe(
+      'env: export FOO BAR'
+    );
+  });
+
+  it('skips logging when running with `force: true`', () => {
+    // Ensure `logLoadedEnv` returns the env info as-is
+    expect(logLoadedEnv(envInfo, { force: true })).toBe(envInfo);
+    // Ensure no `console.log` was called
+    expect(console.log).not.toHaveBeenCalled();
+  });
+
+  it('skips logging when running with `silent: true`', () => {
+    // Ensure `logLoadedEnv` returns the env info as-is
+    expect(logLoadedEnv(envInfo, { silent: true })).toBe(envInfo);
+    // Ensure no `console.log` was called
+    expect(console.log).not.toHaveBeenCalled();
+  });
+
+  it('skips logging when no environment variables are loaded', () => {
+    const envInfoWithoutVars = { ...envInfo, env: {}, loaded: [] };
+    // Ensure `logLoadedEnv` returns the env info as-is
+    expect(logLoadedEnv(envInfoWithoutVars)).toBe(envInfoWithoutVars);
+    // Ensure no `console.log` was called
+    expect(console.log).not.toHaveBeenCalled();
   });
 });
 

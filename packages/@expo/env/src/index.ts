@@ -248,7 +248,7 @@ export function logLoadedEnv(
   options: Parameters<typeof loadEnvFiles>[1] = {}
 ) {
   // Skip when running in force mode, or no environment variables are loaded
-  if (options.force || !envInfo.loaded.length) return envInfo;
+  if (options.force || options.silent || !envInfo.loaded.length) return envInfo;
 
   // Log the loaded environment files, when not skipped
   if (envInfo.result === 'loaded') {
