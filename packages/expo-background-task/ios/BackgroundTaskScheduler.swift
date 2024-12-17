@@ -18,14 +18,14 @@ public class BackgroundTaskScheduler {
    */
   public static func didRegisterTask(minutes: Int) {
     intervalSeconds = Double(minutes) * 60.0
-    numberOfRegisteredTasksOfThisType = numberOfRegisteredTasksOfThisType + 1
+    numberOfRegisteredTasksOfThisType += 1
   }
 
   /**
    * Call when a task is unregistered to keep track of how many background task consumers we have
    */
   public static func didUnregisterTask() {
-    numberOfRegisteredTasksOfThisType = numberOfRegisteredTasksOfThisType - 1
+    numberOfRegisteredTasksOfThisType -= 1
   }
 
   /**

@@ -6,10 +6,8 @@ import ExpoModulesCore
 
 public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-
     if BackgroundTaskScheduler.supportsBackgroundTasks() {
       BGTaskScheduler.shared.register(forTaskWithIdentifier: BackgroundTaskConstants.BackgroundWorkerIdentifier, using: nil) { task in
-
         log.debug("Expo Background Tasks - starting background work")
 
         // Set up expiration handler
@@ -21,7 +19,6 @@ public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
         // Let's find the task service implementation and call the runTasks(withReason)
         if let taskService = ModuleRegistryProvider.singletonModules().first(where: { $0 is EXTaskServiceInterface }) as? EXTaskServiceInterface {
           taskService.runTasks(with: EXTaskLaunchReasonBackgroundTask, userInfo: nil, completionHandler: { _ in
-
             // Mark iOS task as finished - this is important so that we can continue calling it
             task.setTaskCompleted(success: true)
 
