@@ -24,6 +24,8 @@ _This version does not introduce any user-facing changes._
 
 - Add missing `react-native` peer dependencies for isolated modules. ([#30482](https://github.com/expo/expo/pull/30482) by [@byCedric](https://github.com/byCedric))
 
+- [iOS] Added missing `getPermissionsAsync` and `requestPermissionsAsync` implementations to DeviceMotion module. ([#33719](https://github.com/expo/expo/pull/33719) by [@ratley](https://github.com/ratley))
+
 ### 💡 Others
 
 - Fix incorrect event emitting tests. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))
