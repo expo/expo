@@ -18,6 +18,7 @@ import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
+import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -325,11 +326,11 @@ class VideoModule : Module() {
         }
       }
 
-      AsyncFunction("generateThumbnailsAsync") Coroutine { ref: VideoPlayer, times: List<Duration> ->
+      AsyncFunction("generateThumbnailsAsync") Coroutine { ref: VideoPlayer, times: List<Duration>, options: VideoThumbnailOptions? ->
         return@Coroutine ref.toMetadataRetriever().safeUse {
           val bitmaps = times.map { time ->
             appContext.backgroundCoroutineScope.async {
-              generateThumbnailAtTime(time)
+              generateThumbnailAtTime(time, options)
             }
           }
 

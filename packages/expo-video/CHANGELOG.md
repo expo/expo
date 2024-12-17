@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Added an option to `generateThumbnailsAsync` to set the maximum size of generated thumbnails. ([#33599](https://github.com/expo/expo/pull/33599) by [@tsapeta](https://github.com/tsapeta))
+- [Android][iOS] Added an option to `generateThumbnailsAsync` to set the maximum size of generated thumbnails. ([#33599](https://github.com/expo/expo/pull/33599) by [@tsapeta](https://github.com/tsapeta)), ([#33712](https://github.com/expo/expo/pull/33712) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
