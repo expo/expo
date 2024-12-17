@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { H2, MONOSPACE } from '~/ui/components/Text';
 
 import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
@@ -11,7 +12,6 @@ import {
   mdComponents,
   H3Code,
   getCommentContent,
-  BoxSectionHeader,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
@@ -55,7 +55,7 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
       <APICommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
-          <BoxSectionHeader text="Returns" />
+          <APIBoxSectionHeader text="Returns" />
           <ReactMarkdown components={mdComponents}>
             {getCommentContent(returnComment.content)}
           </ReactMarkdown>
@@ -63,7 +63,7 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
       )}
       {methods?.length ? (
         <>
-          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={false} />
+          <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar={false} />
           {methods.map(method => renderMethod(method, { sdkVersion, baseNestingLevel: 4 }))}
         </>
       ) : undefined}

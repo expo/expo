@@ -2,6 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import ReactMarkdown from 'react-markdown';
 
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
 import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
@@ -15,13 +16,12 @@ import {
   mdComponents,
   resolveTypeName,
   getCommentContent,
-  BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
   extractDefaultPropValue,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
-import { STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
+import { STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -143,10 +143,8 @@ const renderClass = (
           returnComment && (
             <div className="flex flex-col items-start gap-2">
               <div className="flex flex-row items-center gap-2">
-                <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
-                <CALLOUT tag="span" theme="secondary" weight="medium">
-                  Returns
-                </CALLOUT>
+                <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+                <span className={STYLES_SECONDARY}>Returns</span>
               </div>
               <ReactMarkdown components={mdComponents}>
                 {getCommentContent(returnComment.content)}
@@ -157,7 +155,7 @@ const renderClass = (
       />
       {properties?.length ? (
         <>
-          <BoxSectionHeader
+          <APIBoxSectionHeader
             text={`${name} Properties`}
             exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
@@ -179,7 +177,7 @@ const renderClass = (
       ) : null}
       {methods?.length > 0 && (
         <>
-          <BoxSectionHeader
+          <APIBoxSectionHeader
             text={`${name} Methods`}
             exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}

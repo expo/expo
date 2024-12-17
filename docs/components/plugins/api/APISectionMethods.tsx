@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
-import { CALLOUT, H2, MONOSPACE } from '~/ui/components/Text';
+import { H2, MONOSPACE, RawH3 } from '~/ui/components/Text';
 
 import { AccessorDefinitionData, MethodDefinitionData, PropData } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
@@ -9,14 +9,14 @@ import {
   getMethodName,
   renderParams,
   resolveTypeName,
-  getH3CodeWithBaseNestingLevel,
+  getCodeHeadingWithBaseNestingLevel,
   getTagData,
   getAllTagData,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
-import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -61,7 +61,7 @@ export const renderMethod = (
 ) => {
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
-  const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
+  const HeaderComponent = getCodeHeadingWithBaseNestingLevel(baseNestingLevel, RawH3);
 
   return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
     const returnComment = getTagData('returns', comment);
@@ -75,8 +75,8 @@ export const renderMethod = (
             <MONOSPACE
               weight="medium"
               className={mergeClasses(
-                'wrap-anywhere',
-                !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
+                'wrap-anywhere !text-base',
+                !exposeInSidebar && 'mb-1 inline-block'
               )}>
               {getMethodName(
                 method as MethodDefinitionData,
@@ -107,14 +107,10 @@ export const renderMethod = (
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
                   )}>
                   <div className="flex flex-row items-center gap-2">
-                    <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
-                    <CALLOUT tag="span" theme="secondary" weight="medium">
-                      Returns:
-                    </CALLOUT>
+                    <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+                    <span className={STYLES_SECONDARY}>Returns:</span>
                   </div>
-                  <CALLOUT>
-                    <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
-                  </CALLOUT>
+                  <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
                 </div>
                 {returnComment ? (
                   <div className="mb-1 mt-1.5 flex flex-col pl-6">

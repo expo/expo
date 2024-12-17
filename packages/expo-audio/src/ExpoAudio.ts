@@ -21,7 +21,7 @@ export const RECORDING_STATUS_UPDATE = 'recordingStatusUpdate';
 
 // @docsMissing
 export function useAudioPlayer(
-  source: AudioSource | string | number | null = null,
+  source: AudioSource = null,
   updateInterval: number = 500
 ): AudioPlayer {
   const parsedSource = resolveSource(source);

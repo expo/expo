@@ -17,7 +17,7 @@ const resolveHref = (href) => {
     return pathname + (paramsString ? `?${paramsString}` : '');
 };
 exports.resolveHref = resolveHref;
-function resolveHrefStringWithSegments(href, { segments = [], params = {} } = {}, relativeToDirectory = false) {
+function resolveHrefStringWithSegments(href, { segments = [], params = {} } = {}, { relativeToDirectory } = {}) {
     if (href.startsWith('.')) {
         // Resolve base path by merging the current segments with the params
         let base = segments

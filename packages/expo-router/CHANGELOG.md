@@ -12,6 +12,7 @@
 - Fix baseURL being removed when refreshing the app on web. ([#33481](https://github.com/expo/expo/pull/33481) by [@marklawlor](https://github.com/marklawlor))
 - Fix navigation when using browser back/forward ([#33524](https://github.com/expo/expo/pull/33524) by [@stephentuso](https://github.com/stephentuso))
 - Fix handling URL with both hash and params ([#33646](https://github.com/expo/expo/pull/33646) by [@stephentuso](https://github.com/stephentuso))
+- Fix `useNavigation` hook unable to find parent navigator for hoisted routes and relative hrefs ([#33035](https://github.com/expo/expo/pull/33035) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 

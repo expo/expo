@@ -22,6 +22,7 @@ import {
   replace,
   setParams,
   dismissTo,
+  LinkToOptions,
 } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
@@ -30,7 +31,8 @@ import { getPathDataFromState, getPathFromState } from '../fork/getPathFromState
 // import { ResultState } from '../fork/getStateFromPath';
 import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
-import { RequireContext } from '../types';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { Href, RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import * as SplashScreen from '../views/Splash';
 
@@ -231,6 +233,12 @@ export class RouterStore {
     if (this.splashScreenAnimationFrame) {
       cancelAnimationFrame(this.splashScreenAnimationFrame);
     }
+  }
+
+  getStateFromPath(href: Href, options: LinkToOptions = {}) {
+    href = resolveHref(href);
+    href = resolveHrefStringWithSegments(href, this.routeInfo, options);
+    return this.linking?.getStateFromPath?.(href, this.linking.config);
   }
 }
 

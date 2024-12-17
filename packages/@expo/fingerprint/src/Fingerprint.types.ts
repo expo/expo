@@ -134,6 +134,11 @@ export interface Options {
    * Whether to include verbose debug info in source output. Useful for debugging.
    */
   debug?: boolean;
+
+  /**
+   * A custom hook function to transform file content sources before hashing.
+   */
+  fileHookTransform?: FileHookTransformFunction;
 }
 
 type SourceSkipsKeys = keyof typeof SourceSkips;
@@ -150,9 +155,49 @@ export type Config = Pick<
   | 'enableReactImportsPatcher'
   | 'useRNCoreAutolinkingFromExpo'
   | 'debug'
+  | 'fileHookTransform'
 > & {
   sourceSkips?: SourceSkips | SourceSkipsKeys[];
 };
+
+/**
+ * Hook function to transform file content sources before hashing.
+ */
+export type FileHookTransformFunction = (
+  /**
+   * Source from HashSourceFile or HashSourceContents.
+   */
+  source: FileHookTransformSource,
+
+  /**
+   * The chunk of file content.
+   * When the stream reaches the end, the chunk will be null.
+   */
+  chunk: Buffer | string | null,
+
+  /**
+   * Indicates the end of the file.
+   */
+  isEndOfFile: boolean,
+
+  /**
+   * The encoding of the chunk.
+   */
+  encoding: BufferEncoding
+) => Buffer | string | null;
+
+/**
+ * The `source` parameter for `FileHookTransformFunction`.
+ */
+export type FileHookTransformSource =
+  | {
+      type: 'file';
+      filePath: string;
+    }
+  | {
+      type: 'contents';
+      id: string;
+    };
 
 //#region internal types
 
@@ -207,6 +252,8 @@ export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents;
 export interface DebugInfoFile {
   path: string;
   hash: string;
+  /** Indicates whether the source is transformed by `fileHookTransform` */
+  isTransformed?: boolean;
 }
 
 export interface DebugInfoDir {
@@ -217,6 +264,8 @@ export interface DebugInfoDir {
 
 export interface DebugInfoContents {
   hash: string;
+  /** Indicates whether the source is transformed by `fileHookTransform` */
+  isTransformed?: boolean;
 }
 
 export type DebugInfo = DebugInfoFile | DebugInfoDir | DebugInfoContents;

@@ -121,8 +121,8 @@ function setParams(params = {}) {
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;
-function linkTo(href, { event, relativeToDirectory, withAnchor } = {}) {
-    if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, { event, relativeToDirectory, withAnchor })) {
+function linkTo(href, options = {}) {
+    if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
         return;
     }
     if ((0, url_1.shouldLinkExternally)(href)) {
@@ -145,13 +145,13 @@ function linkTo(href, { event, relativeToDirectory, withAnchor } = {}) {
         return;
     }
     const rootState = navigationRef.getRootState();
-    href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, relativeToDirectory);
+    href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, options);
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    return navigationRef.dispatch(getNavigateAction(state, rootState, event, withAnchor));
+    return navigationRef.dispatch(getNavigateAction(state, rootState, options.event, options.withAnchor));
 }
 exports.linkTo = linkTo;
 function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor) {

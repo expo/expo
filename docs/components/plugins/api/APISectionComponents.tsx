@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 
 import { APISectionPlatformTags } from '~/components/plugins/api/components/APISectionPlatformTags';
-import { H2, DEMI, P, CODE, MONOSPACE } from '~/ui/components/Text';
+import { H2, DEMI, CODE, MONOSPACE, CALLOUT } from '~/ui/components/Text';
 
 import {
   CommentData,
@@ -19,7 +19,7 @@ import {
   getPossibleComponentPropsNames,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
-import { ELEMENT_SPACING, STYLES_APIBOX } from './styles';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY } from './styles';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];
@@ -73,8 +73,8 @@ const renderComponent = (
         <APISectionPlatformTags comment={comment} />
       </div>
       {resolvedType && resolvedTypeParameters && (
-        <P className={ELEMENT_SPACING}>
-          <DEMI theme="secondary">Type:</DEMI>{' '}
+        <CALLOUT className={ELEMENT_SPACING}>
+          <DEMI className={STYLES_SECONDARY}>Type:</DEMI>{' '}
           <CODE>
             {extendedTypes ? (
               <>React.{resolveTypeName(resolvedTypeParameters, sdkVersion)}</>
@@ -84,7 +84,7 @@ const renderComponent = (
               </>
             )}
           </CODE>
-        </P>
+        </CALLOUT>
       )}
       <APICommentTextBlock comment={extractedComment} />
       {componentsProps?.length ? (

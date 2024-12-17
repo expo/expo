@@ -39,11 +39,11 @@ Environment variables can be assigned to multiple environments and have the same
 
 There are three different visibility settings:
 
-| Visibility | Description                                                                                                                              |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Plain text | Visible on the website, in EAS CLI, and in logs.                                                                                         |
-| Sensitive  | Obfuscated in build and Workflows jobs logs. You can use a toggle to make them visible on the website. They're also readable in EAS CLI. |
-| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in build and Workflows jobs logs.  |
+| Visibility | Description                                                                                                                             |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Plain text | Visible on the website, in EAS CLI, and in logs.                                                                                        |
+| Sensitive  | Obfuscated in build and workflow jobs logs. You can use a toggle to make them visible on the website. They're also readable in EAS CLI. |
+| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in build and workflow jobs logs.  |
 
 > **warning** Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**. Secret type environment variables are intended to be used to provide values to an EAS Build or Workflows job so that they may be used to alter how a job runs. For example, a good use case is setting an `NPM_TOKEN` to install private packages from npm, or a setting a Sentry API key to create a release and upload your source maps. Secrets do not provide any additional security for values that you end up embedding in your application itself.
 
@@ -51,7 +51,7 @@ There are three different visibility settings:
 
 In addition to setting strings as values, you can also upload files as the value of an environment variable.
 
-One common use case of using file environment variable is passing a git ignored **google-services.json** configuration file to a build job. During the job run, the file will be created in a location outside of the project directory and the path to the file will be assigned to the environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`). For example, you can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or Workflows job.
+One common use case of using file environment variable is passing a git ignored **google-services.json** configuration file to a build job. During the job run, the file will be created in a location outside of the project directory and the path to the file will be assigned to the environment variable (`GOOGLE_SERVICES_JSON=/path/to/google-services.json`). For example, you can then set `android.googleServicesFile` in your app config to the value of the `GOOGLE_SERVICES_JSON` environment variable to use this file when executing the build or workflow job.
 
 ```js app.config.js
 export default {

@@ -294,7 +294,7 @@ const general = [
     makePage('eas/environment-variables.mdx'),
     makePage('eas/using-environment-variables.mdx'),
   ]),
-  makeSection('Workflows', [
+  makeSection('EAS Workflows', [
     makePage('workflows/get-started.mdx'),
     makePage('workflows/triggers.mdx'),
     makePage('workflows/jobs.mdx'),

@@ -59,8 +59,13 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
   }
 
   func emitRequestCanceled() {
-    error = FetchRequestCanceledException()
+    let error = FetchRequestCanceledException()
+    self.error = error
+    if state == .bodyStreamingStarted {
+      emit(event: "didFailWithError", arguments: error.localizedDescription)
+    }
     state = .errorReceived
+    emit(event: "readyForJSFinalization")
   }
 
   /**
@@ -197,5 +202,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
     } else {
       state = .bodyCompleted
     }
+
+    emit(event: "readyForJSFinalization")
   }
 }
