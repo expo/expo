@@ -1,9 +1,9 @@
 import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
 /**
  * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
- * while on native platforms it returns `BackgroundTaskStatus.Available`. There is
+ * while on native platforms it returns `BackgroundTaskStatus.Available`.
  *
- * @returns A BackgroundTaskStatus enum value or null if not available.
+ * @returns A BackgroundTaskStatus enum value or `null` if not available.
  */
 export declare const getStatusAsync: () => Promise<BackgroundTaskStatus>;
 /**
