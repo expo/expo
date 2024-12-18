@@ -8,7 +8,7 @@ export enum BackgroundTaskStatus {
    */
   Restricted = 1,
   /**
-   * Background updates are available for the app
+   * Background updates are available for the app.
    */
   Available = 2,
 }
