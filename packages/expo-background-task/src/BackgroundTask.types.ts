@@ -23,7 +23,7 @@ export enum BackgroundTaskResult {
    */
   Success = 1,
   /**
-   * The task failed
+   * The task failed.
    */
   Failed = 2,
 }
