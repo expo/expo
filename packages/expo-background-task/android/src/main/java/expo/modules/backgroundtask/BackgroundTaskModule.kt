@@ -6,6 +6,7 @@ import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.runBlocking
 
 class BackgroundTaskModule : Module() {
   companion object {
@@ -25,7 +26,7 @@ class BackgroundTaskModule : Module() {
 
     AsyncFunction("triggerTaskWorkerForTestingAsync") Coroutine { ->
       if (ReactBuildConfig.DEBUG) {
-        Log.i(TAG, "Triggering tasks for testing")
+        Log.d(TAG, "Triggering tasks for testing")
         appContext.reactContext?.let {
           val appScopeKey = it.packageName
           BackgroundTaskScheduler.runTasks(it, appScopeKey)
@@ -36,13 +37,30 @@ class BackgroundTaskModule : Module() {
     }
 
     AsyncFunction("registerTaskAsync") { taskName: String, options: Map<String, Any?> ->
-      Log.i(TAG, "registerTaskAsync: $taskName")
+      Log.d(TAG, "registerTaskAsync: $taskName")
       taskManager.registerTask(taskName, BackgroundTaskConsumer::class.java, options)
     }
 
     AsyncFunction("unregisterTaskAsync") { taskName: String ->
-      Log.i(TAG, "unregisterTaskAsync: $taskName")
+      Log.d(TAG, "unregisterTaskAsync: $taskName")
       taskManager.unregisterTask(taskName, BackgroundTaskConsumer::class.java)
+    }
+
+    OnActivityEntersBackground {
+      appContext.reactContext?.let {
+        runBlocking {
+          val appScopeKey = it.packageName
+          BackgroundTaskScheduler.startWorker(it, appScopeKey)
+        }
+      } ?: throw MissingContextException()
+    }
+
+    OnActivityEntersForeground {
+      appContext.reactContext?.let {
+        runBlocking {
+          BackgroundTaskScheduler.stopWorker(it)
+        }
+      } ?: throw MissingContextException()
     }
   }
 }
