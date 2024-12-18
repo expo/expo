@@ -19,7 +19,7 @@ export enum BackgroundTaskStatus {
  */
 export enum BackgroundTaskResult {
   /**
-   * The task finished successfully
+   * The task finished successfully.
    */
   Success = 1,
   /**
