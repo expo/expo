@@ -71,9 +71,7 @@ open class ExpoGradleHelperExtension {
     }
 
     val version = getReactNativeProperties(project).getProperty("VERSION_NAME")
-      .substringBefore('-') // strip pre-release
-    val (major, minor, patch) = version.split(".").map { it.toInt() }
-    reactNativeVersion = Version(major, minor, patch)
+    reactNativeVersion = Version.fromString(version)
     return reactNativeVersion
   }
 }
