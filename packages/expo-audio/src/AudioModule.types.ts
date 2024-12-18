@@ -1,4 +1,4 @@
-import { PermissionResponse, SharedObject } from 'expo-modules-core';
+import { NativeModule, PermissionResponse, SharedObject } from 'expo-modules-core';
 
 import {
   AudioMode,
@@ -14,7 +14,7 @@ import {
 /**
  * @hidden
  */
-export declare class NativeAudioModule {
+export declare class NativeAudioModule extends NativeModule {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
   setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
   requestRecordingPermissionsAsync(): Promise<PermissionResponse>;

@@ -14,6 +14,7 @@ const semver_1 = __importDefault(require("semver"));
 const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
 const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
+const Path_1 = require("../utils/Path");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
     if (options.sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAll) {
@@ -109,7 +110,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     // config plugins
     const configPluginModules = loadedModules.map((modulePath) => ({
         type: 'file',
-        filePath: modulePath,
+        filePath: (0, Path_1.toPosixPath)(modulePath),
         reasons: ['expoConfigPlugins'],
     }));
     results.push(...configPluginModules);
@@ -207,14 +208,14 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
         const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
         for (const module of config.modules) {
             for (const project of module.projects) {
-                const filePath = path_1.default.relative(projectRoot, project.sourceDir);
+                const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, project.sourceDir));
                 project.sourceDir = filePath; // use relative path for the dir
                 debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
                 results.push({ type: 'dir', filePath, reasons });
             }
             if (module.plugins) {
                 for (const plugin of module.plugins) {
-                    const filePath = path_1.default.relative(projectRoot, plugin.sourceDir);
+                    const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, plugin.sourceDir));
                     plugin.sourceDir = filePath; // use relative path for the dir
                     debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
                     results.push({ type: 'dir', filePath, reasons });
@@ -259,7 +260,7 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options, expoAutol
         const config = JSON.parse(stdout);
         for (const module of config.modules) {
             for (const pod of module.pods) {
-                const filePath = path_1.default.relative(projectRoot, pod.podspecDir);
+                const filePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, pod.podspecDir));
                 pod.podspecDir = filePath; // use relative path for the dir
                 debug(`Adding expo-modules-autolinking ios dir - ${chalk_1.default.dim(filePath)}`);
                 results.push({ type: 'dir', filePath, reasons });

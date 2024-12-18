@@ -1,7 +1,6 @@
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import path from 'path';
-import semver from 'semver';
 
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
@@ -74,8 +73,6 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
                 currentVersionRange,
                 dependencyType: dependenciesKey,
                 isCanaryRelease: options.canary,
-                packageName: projectName,
-                version: state.releaseVersion,
               })
             ) {
               continue;
@@ -109,20 +106,15 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
 );
 
 /**
- * Returns boolean indicating if the version range should be updated. Our policy assumes that `expo` package controls versions
- * of other expo packages (e.g. expo-modules-core, expo-modules-autolinking). Any other package (or workspace project)
- * doesn't need to be updated as long as the new version still satisfies the version range.
+ * Returns boolean indicating if the version range should be updated. We update them in most cases,
+ * except for peer and optional dependencies with `*` range which are updated only for canary releases.
  *
- * @param context.packageName Name of the package to update
  * @param context.currentVersionRange Current version range of the dependency
- * @param context.version The new version of the dependency
  * @param context.dependencyType What type of dependency we are updating
  * @param context.canary If this is a canary release
  */
 function shouldUpdateDependencyVersion(context: {
-  packageName: string;
   currentVersionRange?: string;
-  version: string;
   dependencyType: string;
   isCanaryRelease: boolean;
 }) {
@@ -139,10 +131,5 @@ function shouldUpdateDependencyVersion(context: {
   ) {
     return context.isCanaryRelease;
   }
-
-  // Otherwise, use the normal versioning logic
-  return (
-    context.packageName === 'expo' ||
-    !semver.satisfies(context.version, context.currentVersionRange)
-  );
+  return true;
 }
