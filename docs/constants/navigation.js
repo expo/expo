@@ -152,6 +152,7 @@ const general = [
   makeSection('Development process', [
     makePage('workflow/overview.mdx'),
     makePage('workflow/configuration.mdx'),
+    makePage('workflow/continuous-native-generation.mdx'),
     makePage('workflow/using-libraries.mdx'),
     makePage('guides/apple-privacy.mdx'),
     makePage('guides/permissions.mdx'),
@@ -171,12 +172,7 @@ const general = [
     ),
     makeGroup(
       'Custom native code',
-      [
-        makePage('workflow/continuous-native-generation.mdx'),
-        makePage('workflow/customizing.mdx'),
-        makePage('workflow/prebuild.mdx'),
-        makePage('guides/adopting-prebuild.mdx'),
-      ],
+      [makePage('workflow/customizing.mdx'), makePage('guides/adopting-prebuild.mdx')],
       { expanded: false }
     ),
     makeGroup(
@@ -527,6 +523,70 @@ const eas = [
       makePage('billing/usage-based-pricing.mdx'),
       makePage('billing/faq.mdx'),
     ]),
+  makeSection(
+    'More',
+    [
+      makePage('workflow/upgrading-expo-sdk-walkthrough.mdx'),
+      makePage('eas/webhooks.mdx'),
+      makeSection('Assorted', [
+        makePage('guides/authentication.mdx'),
+        makePage('guides/sharing-preview-releases.mdx'),
+        makePage('guides/using-hermes.mdx'),
+        makePage('guides/ios-developer-mode.mdx'),
+        makePage('guides/icons.mdx'),
+        makePage('guides/localization.mdx'),
+        makePage('guides/configuring-js-engines.mdx'),
+        makePage('guides/using-bun.mdx'),
+        makePage('guides/editing-richtext.mdx'),
+        makePage('guides/store-assets.mdx'),
+        makePage('guides/local-first.mdx'),
+        makePage('guides/keyboard-handling.mdx'),
+      ]),
+      makeSection('Integrations', [
+        makePage('guides/using-analytics.mdx'),
+        makePage('guides/facebook-authentication.mdx'),
+        makePage('guides/using-supabase.mdx'),
+        makePage('guides/using-firebase.mdx'),
+        makePage('guides/google-authentication.mdx'),
+        makePage('guides/using-eslint.mdx'),
+        makePage('guides/using-nextjs.mdx'),
+        makePage('guides/using-sentry.mdx'),
+        makePage('guides/using-bugsnag.mdx'),
+        makePage('guides/building-for-tv.mdx'),
+        makePage('guides/typescript.mdx'),
+        makePage('guides/in-app-purchases.mdx'),
+      ]),
+      makeSection('Expo accounts', [
+        makePage('accounts/account-types.mdx'),
+        makePage('accounts/two-factor.mdx'),
+        makePage('accounts/programmatic-access.mdx'),
+        makePage('accounts/sso.mdx'),
+        makePage('accounts/audit-logs.mdx'),
+      ]),
+      makeSection('Billing', [
+        makePage('billing/overview.mdx'),
+        makePage('billing/plans.mdx'),
+        makePage('billing/manage.mdx'),
+        makePage('billing/invoices-and-receipts.mdx'),
+        makePage('billing/usage-based-pricing.mdx'),
+        makePage('billing/faq.mdx'),
+      ]),
+      makeSection('Troubleshooting', [
+        makePage('troubleshooting/overview.mdx'),
+        makePage('troubleshooting/application-has-not-been-registered.mdx'),
+        makePage('troubleshooting/clear-cache-macos-linux.mdx'),
+        makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/react-native-version-mismatch.mdx'),
+        makePage('troubleshooting/proxies.mdx'),
+      ]),
+    ],
+    { expanded: true }
+  ),
+  makeSection('Regulatory compliance', [
+    makePage('regulatory-compliance/data-and-privacy-protection.mdx'),
+    makePage('regulatory-compliance/gdpr.mdx'),
+    makePage('regulatory-compliance/hipaa.mdx'),
+    makePage('regulatory-compliance/privacy-shield.mdx'),
   ]),
 ];
 
