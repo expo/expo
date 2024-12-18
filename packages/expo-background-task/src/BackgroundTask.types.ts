@@ -4,7 +4,7 @@
  */
 export enum BackgroundTaskStatus {
   /**
-   * Background updates are unavailable
+   * Background updates are unavailable.
    */
   Restricted = 1,
   /**
