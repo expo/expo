@@ -33,6 +33,8 @@ export const nonLinkableTypes = [
   'ProxyNativeModule',
   'React.FC',
   'RequestPermissionMethod',
+  'RouteInputParams',
+  'RouteOutputParams',
   'RouteParamInput',
   'RouteParams',
   'ScreenListeners',
@@ -49,6 +51,8 @@ export const nonLinkableTypes = [
   'TParams',
   'TRoute',
   'TState',
+  'UnknownInputParams',
+  'UnknownOutputParams',
 ];
 
 /**

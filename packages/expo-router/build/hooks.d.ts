@@ -88,6 +88,9 @@ export declare function useUnstableGlobalHref(): string;
  * ```
  */
 export declare function useSegments<TSegments extends Route = Route>(): RouteSegments<TSegments>;
+/**
+ *  @hidden
+ */
 export declare function useSegments<TSegments extends RouteSegments<Route>>(): TSegments;
 /**
  * Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` returns `/acme`.
@@ -96,13 +99,13 @@ export declare function useSegments<TSegments extends RouteSegments<Route>>(): T
  * @example
  * ```tsx app/profile/[user].tsx
  * import { Text } from 'react-native';
- * import { useSegments } from 'expo-router';
+ * import { usePathname } from 'expo-router';
  *
  * export default function Route() {
- *   // segments = ["profile", "[user]"]
- *   const segments = useSegments();
+ *   // pathname = "/profile/baconbrix"
+ *   const pathname = usePathname();
  *
- *   return <Text>Hello</Text>;
+ *   return <Text>User: {user}</Text>;
  * }
  * ```
  */
@@ -134,7 +137,13 @@ export declare function usePathname(): string;
  * ```
  */
 export declare function useGlobalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
+/**
+ * @hidden
+ */
 export declare function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+/**
+ * @hidden
+ */
 export declare function useGlobalSearchParams<TRoute extends Route, TParams extends UnknownOutputParams = UnknownOutputParams>(): RouteParams<TRoute> & TParams;
 /**
  * Returns the URL parameters for the contextually focused route. Useful for stacks where you may push a new screen
@@ -160,7 +169,13 @@ export declare function useGlobalSearchParams<TRoute extends Route, TParams exte
  * }
  */
 export declare function useLocalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
+/**
+ * @hidden
+ */
 export declare function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+/**
+ * @hidden
+ */
 export declare function useLocalSearchParams<TRoute extends Route, TParams extends UnknownOutputParams = UnknownOutputParams>(): RouteParams<TRoute> & TParams;
 export declare function useSearchParams({ global }?: {
     global?: boolean | undefined;

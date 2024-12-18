@@ -128,6 +128,10 @@ export function useUnstableGlobalHref(): string {
  * ```
  */
 export function useSegments<TSegments extends Route = Route>(): RouteSegments<TSegments>;
+
+/**
+ *  @hidden
+ */
 export function useSegments<TSegments extends RouteSegments<Route>>(): TSegments;
 export function useSegments() {
   return useStoreRouteInfo().segments;
@@ -140,13 +144,13 @@ export function useSegments() {
  * @example
  * ```tsx app/profile/[user].tsx
  * import { Text } from 'react-native';
- * import { useSegments } from 'expo-router';
+ * import { usePathname } from 'expo-router';
  *
  * export default function Route() {
- *   // segments = ["profile", "[user]"]
- *   const segments = useSegments();
+ *   // pathname = "/profile/baconbrix"
+ *   const pathname = usePathname();
  *
- *   return <Text>Hello</Text>;
+ *   return <Text>User: {user}</Text>;
  * }
  * ```
  */
@@ -183,7 +187,15 @@ export function usePathname(): string {
 export function useGlobalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): TParams;
+
+/**
+ * @hidden
+ */
 export function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+
+/**
+ * @hidden
+ */
 export function useGlobalSearchParams<
   TRoute extends Route,
   TParams extends UnknownOutputParams = UnknownOutputParams,
@@ -218,7 +230,15 @@ export function useGlobalSearchParams() {
 export function useLocalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): TParams;
+
+/**
+ * @hidden
+ */
 export function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+
+/**
+ * @hidden
+ */
 export function useLocalSearchParams<
   TRoute extends Route,
   TParams extends UnknownOutputParams = UnknownOutputParams,
