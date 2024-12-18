@@ -147,3 +147,12 @@ Expo Router recommends sorting components and hooks by "feature" and routes by "
 In the above example, both `/sign-in` and `/sign-out` are authentication routes and share components from the **components/authentication** file. However, the `/profile/[user]` route is complex and renders components that belong to the authentication, profile, and task features. If you place your components within the **app** directory, it's not obvious where these components belong. By separating components from routes, you create an organized hierarchy with the philosophy that a route is a collection of reusable components, and a component does not belong to an individual route.
 
 Another project optimization is to utilize [path aliases](/guides/typescript/#path-aliases-optional). They keep your routes project structure agnostic, as imports within your routes no longer depend on the **app** directory structure. This avoids large `import` statement changes when adding new directories (such as new groups) and prevents lengthy `import` paths.
+
+
+### Reserved keywords
+
+Expo Router is built on top of [React Navigation](https://reactnavigation.org/), which imposes certain restrictions on the naming of screen parameters. As a result, the following words cannot be used as dynamic route parameters in Expo Router:
+
+- `screen`
+- `params`
+- `key`
