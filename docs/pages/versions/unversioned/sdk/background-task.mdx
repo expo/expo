@@ -20,27 +20,32 @@ A background task is a deferrable unit of work that is performed in the backgrou
 
 ### When are background tasks run?
 
-The Expo Background Task API leverages each platform to execute tasks at the most optimal time for both the user and the device.
+The Expo Background Task API leverages each platform to execute tasks at the most optimal time for both the user and the device when the app is in the background.
 
-This means that the task may not run immediately after it is scheduled, but it will run at some point in the future if the system decides so.
+This means that the task may not run immediately after it is scheduled, but it will run at some point in the future if the system decides so. You can specify a minimum interval in minutes for the task to run. The task will execute sometime after the interval has passed, provided the specified conditions are met.
 
 A background task will only run if the battery has enough charge (or the device is plugged into power) and the network is available. Without these conditions, the task won't execute. The exact behavior will vary depending on the operating system.
 
-### When will they stop?
+### When will they be stopped?
 
-The native platform APIs will stop running background tasks if the user explicitly kills the app (they will be resumed when the user restarts the app) or if the app is uninstalled. If the device is rebooted or the app is killed by the system, the background tasks will be resumed.
+Background tasks are managed by platform APIs and system constraints. Knowing when tasks stop helps plan their use effectively.
 
-> **Info** The non-deterministic behavior of background tasks is intentional, aimed at optimizing battery life and enhancing user experience. If a user force stops an app, the system interprets this as a signal not to run background tasks for that app until the user restarts it. On iOS an app is force stopped if the user swipes up on the app in the app switcher. On Android this behaviour depends on the device vendor. Some vendors have implementations where the app is force stopped when the user removes the app from the recent apps list.
+- Background tasks are stopped if the user kills the app. Tasks resume when the app is restarted.
+- If the system stops the app or the device reboots, background tasks will resume, and the app will be restarted.
+
+On Android, removing an app from the recent apps list doesn't completely stop it, whereas on iOS, swiping it away in the app switcher fully terminates it.
+
+> **Info** On Android, behavior varies by device vendor. For example, some implementations treat removing an app from the recent apps list as killing it. Read more about these differences here: [https://dontkillmyapp.com](https://dontkillmyapp.com).
 
 ## Platform differences
 
 ### Android&ensp;<PlatformTags platforms={['android']} />
 
-On Android, the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API allows specifying a minimum interval for a task to run (at least 15 minutes). The task will execute sometime after the interval has passed, provided the specified conditions are met.
+On Android, the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API allows specifying a minimum interval for a task to run (minimum 15 minutes). The task will execute sometime after the interval has passed, provided the specified conditions are met.
 
 ### iOS&ensp;<PlatformTags platforms={['ios']} />
 
-On iOS, the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API decides the best time to launch your background task. The system will consider the battery level, the network availability, and the user's usage patterns to determine when to run the task.
+On iOS, the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API decides the best time to launch your background task. The system will consider the battery level, the network availability, and the user's usage patterns to determine when to run the task. You can still specify a minimum interval for the task to run, but the system may choose to run the task at a later time.
 
 ## Known limitations
 
@@ -172,31 +177,26 @@ const styles = StyleSheet.create({
 
 Background tasks can be difficult to test because they can be triggered inconsistently by the system. Fortunately, Expo Background Task contains some tools that help make testing background tasks easier.
 
-### Android&ensp;<PlatformTags platforms={['android']} />
+`expo-background-tasks` has a dev tools plugin that can be used to trigger background tasks.
 
-On Android, the easiest way to test background tasks is to register a task. When the app is in `debug` mode, a background task should be started as soon as possible, while in release mode, it will wait until the minimum interval has passed before running the task.
+Add the following code to your app to use the plugin:
 
-> In release mode, the app must be in the background for the background task to run, while in debug mode, the task will run even if the app is in the foreground.
+```tsx
+import { useExpoBackgroundTaskDevPlugin } from 'expo-background-task/devtools';
 
-### iOS&ensp;<PlatformTags platforms={['ios']} />
-
-On iOS, testing background tasks is done by [simulating](https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development#Launch-a-Task) the launch of the task. This can be done by calling the `triggerTaskWorkerForTestingAsync` method in JavaScript.
-
-Expo Background Task has a convenient helper on iOS that triggers executing the background task worker. This will only work in `debug` mode:
-
-```ts
-import * as BackgroundTask from 'expo-background-task';
-
-export const triggerBackgroundTask = async () => {
-  await BackgroundTask.triggerTaskWorkerForTestingAsync();
-};
+export default App() {
+  useExpoBackgroundTaskDevPlugin();
+  return (/* rest of your app */)
+}
 ```
+
+To trigger background tasks, start the dev server with `npx expo start` and press `shift + m` to open the list of available dev tools plugins. Select `Open expo-background-task`, and a new Chrome Window will be opened.
 
 ## Multiple background tasks
 
 Since the Background Tasks API on iOS and the WorkManager API on Android limit the number of tasks that can be scheduled for a single app, Expo Background Task uses a single worker on both platforms. While you can define multiple JavaScript background tasks, they will all run through this single worker.
 
-On Android, the first registered background task determines the minimum interval for execution.
+The last registered background task determines the minimum interval for execution.
 
 ## API
 
