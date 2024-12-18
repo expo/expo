@@ -15,7 +15,7 @@ export enum BackgroundTaskStatus {
 
 // @needsAudit
 /**
- * Return value for background tasks
+ * Return value for background tasks.
  */
 export enum BackgroundTaskResult {
   /**
