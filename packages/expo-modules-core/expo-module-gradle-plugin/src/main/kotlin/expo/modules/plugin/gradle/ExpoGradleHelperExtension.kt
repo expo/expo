@@ -1,10 +1,10 @@
 package expo.modules.plugin.gradle
 
+import expo.modules.plugin.Version
 import org.gradle.api.Project
-import java.util.Properties
 import java.io.File
 import java.io.FileInputStream
-import expo.modules.plugin.Version
+import java.util.Properties
 
 /**
  * An extension for the Gradle instance that stores data in a cache,
@@ -71,8 +71,7 @@ open class ExpoGradleHelperExtension {
     }
 
     val version = getReactNativeProperties(project).getProperty("VERSION_NAME")
-    val (major, minor, patch) = version.split(".").map { it.toInt() }
-    reactNativeVersion = Version(major, minor, patch)
+    reactNativeVersion = Version.fromString(version)
     return reactNativeVersion
   }
 }
