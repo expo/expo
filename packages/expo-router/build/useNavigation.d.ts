@@ -1,4 +1,5 @@
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, NavigationState } from '@react-navigation/native';
+import { Href } from './types';
 /**
  * Returns the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop)
  * to imperatively access layout-specific functionality like `navigation.openDrawer()` in a
@@ -51,6 +52,7 @@ import { NavigationProp } from '@react-navigation/native';
  * @see React Navigation documentation on [navigation dependent functions](https://reactnavigation.org/docs/navigation-prop/#navigator-dependent-functions)
  * for more information.
  */
-export declare function useNavigation<T = NavigationProp<ReactNavigation.RootParamList>>(parent?: string): T;
-export declare function resolveParentId(contextKey: string, parentId?: string | null): string | null;
+export declare function useNavigation<T = Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {
+    getState(): NavigationState | undefined;
+}>(parent?: string | Href): T;
 //# sourceMappingURL=useNavigation.d.ts.map

@@ -28,7 +28,7 @@ class AudioRecorder(
   MediaRecorder.OnErrorListener,
   MediaRecorder.OnInfoListener {
   private var filePath: String? = null
-  private var meteringEnabled = false
+  private var meteringEnabled = options.isMeteringEnabled
   private var durationAlreadyRecorded = 0L
   private var isPrepared = false
   private var shouldCreateRecorder = false
@@ -148,7 +148,8 @@ class AudioRecorder(
     }
   }
 
-  override fun deallocate() {
+  override fun sharedObjectDidRelease() {
+    super.sharedObjectDidRelease()
     recorder.release()
   }
 
@@ -215,7 +216,7 @@ class AudioRecorder(
       // getRoutedDevice() is the most reliable way to return the actual mic input, however it
       // only returns a valid device when actively recording, and may throw otherwise.
       // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
-      deviceInfo = recorder.getRoutedDevice()
+      deviceInfo = recorder.routedDevice
     } catch (e: java.lang.Exception) {
       // no-op
     }

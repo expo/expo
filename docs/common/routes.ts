@@ -47,6 +47,10 @@ export const isLearnPath = (path: string) => {
   return navigation.learnDirectories.some(name => Utilities.pathStartsWith(name, path));
 };
 
+export const isEasPath = (path: string) => {
+  return navigation.easDirectories.some(name => Utilities.pathStartsWith(name, path));
+};
+
 export const getPageSection = (path: string) => {
   if (isReferencePath(path)) {
     return 'reference';
@@ -62,6 +66,8 @@ export const getPageSection = (path: string) => {
     return 'learn';
   } else if (isHomePath(path)) {
     return 'home';
+  } else if (isEasPath(path)) {
+    return 'eas';
   }
 
   return 'home';
