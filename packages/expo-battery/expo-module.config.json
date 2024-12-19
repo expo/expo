@@ -1,7 +1,7 @@
 {
   "name": "expo-battery",
-  "platforms": ["ios", "android", "web"],
-  "ios": {
+  "platforms": ["apple", "android", "web"],
+  "apple": {
     "modules": ["BatteryModule"]
   },
   "android": {

@@ -1,10 +1,10 @@
 {
   "name": "expo-screen-capture",
-  "platforms": ["ios", "android", "web"],
+  "platforms": ["apple", "android", "web"],
   "android": {
     "modules": ["expo.modules.screencapture.ScreenCaptureModule"]
   },
-  "ios": {
+  "apple": {
     "modules": ["ScreenCaptureModule"]
   }
 }
