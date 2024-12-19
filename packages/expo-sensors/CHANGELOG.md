@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Add missing `getPermissionsAsync` and `requestPermissionsAsync` implementations to native DeviceMotion modules. ([#33719](https://github.com/expo/expo/pull/33719) by [@ratley](https://github.com/ratley))
 
 ### 💡 Others
 
@@ -23,8 +24,6 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Add missing `react-native` peer dependencies for isolated modules. ([#30482](https://github.com/expo/expo/pull/30482) by [@byCedric](https://github.com/byCedric))
-
-- [iOS] Added missing `getPermissionsAsync` and `requestPermissionsAsync` implementations to DeviceMotion module. ([#33719](https://github.com/expo/expo/pull/33719) by [@ratley](https://github.com/ratley))
 
 ### 💡 Others
 
