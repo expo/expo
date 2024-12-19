@@ -1,5 +1,4 @@
 {
-  "name": "expo-battery",
   "platforms": ["apple", "android", "web"],
   "apple": {
     "modules": ["BatteryModule"]

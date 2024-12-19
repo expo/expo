@@ -1,5 +1,4 @@
 {
-  "name": "expo-dev-launcher",
   "platforms": ["apple", "android"],
   "apple": {
     "podspecPath": "expo-dev-launcher.podspec",

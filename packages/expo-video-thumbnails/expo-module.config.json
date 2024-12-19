@@ -1,5 +1,4 @@
 {
-  "name": "expo-video-thumbnails",
   "platforms": ["apple", "android"],
   "apple": {
     "modules": ["VideoThumbnailsModule"]
