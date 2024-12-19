@@ -20,7 +20,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    A reference to the module holder that stores the module definition.
    Enforced unwrapping is required since it can be set right after the object is initialized.
    */
-  var wrappedModuleHolder: ModuleHolder!
+  weak var wrappedModuleHolder: ModuleHolder?
 
   /**
    The designated initializer. At first, we use this base class to hide `ModuleHolder` from Objective-C runtime.
@@ -57,7 +57,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func name() -> String {
-    return wrappedModuleHolder.name
+    return wrappedModuleHolder!.name
   }
 
   /**
@@ -83,10 +83,10 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public override func view() -> UIView! {
-    guard let appContext = wrappedModuleHolder.appContext else {
+    guard let appContext = wrappedModuleHolder?.appContext else {
       fatalError(Exceptions.AppContextLost().reason)
     }
-    guard let view = wrappedModuleHolder.definition.view?.createView(appContext: appContext) else {
+    guard let view = wrappedModuleHolder?.definition.view?.createView(appContext: appContext) else {
       fatalError("Cannot create a view from module '\(String(describing: self.name))'")
     }
     return view
