@@ -63,7 +63,10 @@ function Tabs(props) {
 exports.Tabs = Tabs;
 /**
  * Hook version of `Tabs`. The returned NavigationContent component
- * should be rendered.
+ * should be rendered. Using the hook requires using the `<TabList />`
+ * and `<TabTrigger />` components exported from Expo Router.
+ *
+ * The `useTabsWithTriggers()` hook can be used for custom components.
  *
  * @see [`Tabs`](#tabs) for the component version of this hook.
  * @example
