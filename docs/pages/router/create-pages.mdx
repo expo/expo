@@ -148,7 +148,6 @@ In the above example, both `/sign-in` and `/sign-out` are authentication routes 
 
 Another project optimization is to utilize [path aliases](/guides/typescript/#path-aliases-optional). They keep your routes project structure agnostic, as imports within your routes no longer depend on the **app** directory structure. This avoids large `import` statement changes when adding new directories (such as new groups) and prevents lengthy `import` paths.
 
-
 ### Reserved keywords
 
 Expo Router is built on top of [React Navigation](https://reactnavigation.org/), which imposes certain restrictions on the naming of screen parameters. As a result, the following words cannot be used as dynamic route parameters in Expo Router:
