@@ -163,8 +163,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       try drm.type.assertIsSupported()
       contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: asset)
     }
-    //added player metadata, specifically for TV implementation
-      let metadata = Metadata(title: videoSource.metadata?.title ?? "", artist: videoSource.metadata?.artist ?? "", subTitle: videoSource.metadata?.subTitle ?? "")
+    // added player metadata, specifically for TV implementation
+    let metadata = Metadata(title: videoSource.metadata?.title ?? "", artist: videoSource.metadata?.artist ?? "", subTitle: videoSource.metadata?.subTitle ?? "")
     let metadataItems = createMetadataItems(for: metadata)
     playerItem.externalMetadata = metadataItems
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
@@ -177,7 +177,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
                 .commonIdentifierArtist: metadata.artist,
                 .iTunesMetadataTrackSubTitle: metadata.subTitle
             ]
-            return mapping.compactMap { createMetadataItem(for:$0, value:$1) }
+            return mapping.compactMap { createMetadataItem(for: $0, value: $1) }
         }
     private func createMetadataItem(for identifier: AVMetadataIdentifier,
                                     value: Any) -> AVMetadataItem {
@@ -186,7 +186,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         item.value = value as? NSCopying & NSObjectProtocol
         // Specify "und" to indicate an undefined language.
         item.extendedLanguageTag = "und"
-        return item.copy() as! AVMetadataItem
+        guard let copiedItem = item.copy() as? AVMetadataItem else {
+            fatalError("Failed to copy AVMetadataItem")
+        }
+        return copiedItem
     }
 
   /**

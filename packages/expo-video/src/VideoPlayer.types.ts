@@ -49,6 +49,8 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * at which playback will begin once the `play()` method is called.
    *
    * Setting `currentTime` to a new value seeks the player to the given time.
+   * Note that frame accurate seeking may incur additional decoding delay which can impact seeking performance.
+   * Consider using the [`seekBy`](#seekbyseconds) function if the time does not have to be set precisely.
    */
   currentTime: number;
 
@@ -193,7 +195,9 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   replace(source: VideoSource): void;
 
   /**
-   * Seeks the playback by the given number of seconds.
+   * Seeks the playback by the given number of seconds. The time to which the player seeks may differ from the specified requested time for efficiency,
+   * depending on the encoding and what is currently buffered by the player. Use this function to implement playback controls that seek by specific amount of time,
+   * in which case, the actual time usually does not have to be precise. For frame accurate seeking, use the [`currentTime`](#currenttime) property.
    */
   seekBy(seconds: number): void;
 
@@ -247,7 +251,11 @@ export type VideoSource =
        * When undefined the player will display information contained in the video metadata.
        * @platform android
        * @platform ios
+<<<<<<< HEAD
        * @platform tvos
+=======
+       * @default tvos
+>>>>>>> main
        */
       metadata?: VideoMetadata;
 
@@ -294,9 +302,13 @@ export type VideoMetadata = {
    */
   artwork?: string;
   /**
+<<<<<<< HEAD
    * The text dispayed above the title on the player
    * @platform android
    * @platform ios
+=======
+   * The subTitle of the video.
+>>>>>>> main
    * @platform tvos
    */
   subTitle?: string;

@@ -1,7 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
-import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
+import { CODE, H2, H3, H4, LI, MONOSPACE, RawH3, UL } from '~/ui/components/Text';
 
 import {
   DefaultPropsDefinitionData,
@@ -12,16 +13,15 @@ import {
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
-  BoxSectionHeader,
   extractDefaultPropValue,
   getCommentOrSignatureComment,
-  getH3CodeWithBaseNestingLevel,
+  getCodeHeadingWithBaseNestingLevel,
   getTagNamesList,
   resolveTypeName,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
-import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
+import { STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -107,30 +107,32 @@ export const renderProp = (
 ) => {
   const { comment, name, type, flags, signatures } = { ...propData, ...propData.getSignature };
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
-  const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
+  const HeaderComponent = getCodeHeadingWithBaseNestingLevel(baseNestingLevel, RawH3);
   const extractedSignatures = signatures ?? type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
 
   return (
     <div
       key={`prop-entry-${name}`}
-      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!pb-4 [&>*:last-child]:!mb-0')}>
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!py-3 [&>*:last-child]:!mb-0')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
-      <APISectionPlatformTags comment={comment} />
-      <HeaderComponent tags={getTagNamesList(comment)}>
-        <MONOSPACE
-          weight="medium"
-          className={mergeClasses(
-            'wrap-anywhere',
-            !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
-          )}>
-          {name}
-        </MONOSPACE>
-      </HeaderComponent>
-      <div className={mergeClasses(STYLES_SECONDARY, extractedComment && ELEMENT_SPACING)}>
+      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
+        <HeaderComponent tags={getTagNamesList(comment)}>
+          <MONOSPACE
+            weight="medium"
+            className={mergeClasses(
+              'wrap-anywhere !heading-base',
+              !exposeInSidebar && 'inline-block prose-code:mb-0'
+            )}>
+            {name}
+          </MONOSPACE>
+        </HeaderComponent>
+        <APISectionPlatformTags comment={comment} />
+      </div>
+      <div className={mergeClasses(STYLES_SECONDARY, extractedComment && 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
-        <>Type:</>{' '}
+        Type:{' '}
         <APITypeOrSignatureType
           type={type}
           signatures={extractedSignatures}
@@ -166,7 +168,7 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <BoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
+          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
           {baseProp?.comment && <APICommentTextBlock comment={baseProp.comment} />}
         </div>
       )}

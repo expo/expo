@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { H2, MONOSPACE } from '~/ui/components/Text';
 
 import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
@@ -11,7 +12,6 @@ import {
   mdComponents,
   H3Code,
   getCommentContent,
-  BoxSectionHeader,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APISectionPlatformTags } from './components/APISectionPlatformTags';
@@ -44,16 +44,18 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
   return (
     <div key={`class-definition-${name}`} className={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <APISectionPlatformTags comment={comment} />
-      <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" className="wrap-anywhere">
-          {name}
-        </MONOSPACE>
-      </H3Code>
+      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
+        <H3Code tags={getTagNamesList(comment)}>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
+        </H3Code>
+        <APISectionPlatformTags comment={comment} />
+      </div>
       <APICommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
-          <BoxSectionHeader text="Returns" />
+          <APIBoxSectionHeader text="Returns" />
           <ReactMarkdown components={mdComponents}>
             {getCommentContent(returnComment.content)}
           </ReactMarkdown>
@@ -61,7 +63,7 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
       )}
       {methods?.length ? (
         <>
-          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={false} />
+          <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar={false} />
           {methods.map(method => renderMethod(method, { sdkVersion, baseNestingLevel: 4 }))}
         </>
       ) : undefined}

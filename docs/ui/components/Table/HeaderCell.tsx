@@ -12,9 +12,9 @@ type HeaderCellProps = PropsWithChildren<{
 export const HeaderCell = ({ children, align = 'left', size = 'md' }: HeaderCellProps) => (
   <th
     className={mergeClasses(
-      'border-r border-secondary px-4 py-3.5 font-medium text-secondary',
+      'border-r border-secondary px-4 py-3.5 text-2xs font-medium text-secondary',
       convertAlignToClass(align),
-      size === 'sm' ? 'text-3xs' : 'text-2xs',
+      size === 'sm' && 'py-2 text-3xs',
       '[&_code]:text-3xs [&_code]:text-secondary',
       'last:border-r-0'
     )}>

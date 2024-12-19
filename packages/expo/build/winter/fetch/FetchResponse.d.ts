@@ -1,11 +1,14 @@
 import { ReadableStream } from 'web-streams-polyfill';
 import type { NativeResponse } from './NativeRequest';
 declare const ConcreteNativeResponse: typeof NativeResponse;
+export type AbortSubscriptionCleanupFunction = () => void;
 /**
  * A response implementation for the `fetch.Response` API.
  */
 export declare class FetchResponse extends ConcreteNativeResponse implements Response {
+    private readonly abortCleanupFunction;
     private streamingStarted;
+    constructor(abortCleanupFunction: AbortSubscriptionCleanupFunction);
     get body(): ReadableStream<Uint8Array> | null;
     get headers(): Headers;
     get ok(): boolean;
@@ -16,7 +19,7 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     toString(): string;
     toJSON(): object;
     clone(): FetchResponse;
-    private removeAllRegisteredListeners;
+    private finalize;
 }
 export {};
 //# sourceMappingURL=FetchResponse.d.ts.map

@@ -3,8 +3,9 @@ import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRi
 import { Fragment, ReactNode } from 'react';
 
 import { APIBox } from '~/components/plugins/APIBox';
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN, RawH4 } from '~/ui/components/Text';
+import { H2, CODE, MONOSPACE, CALLOUT, RawH4, DEMI } from '~/ui/components/Text';
 
 import {
   PropData,
@@ -21,17 +22,14 @@ import {
   getCommentOrSignatureComment,
   getTagData,
   renderParams,
-  ParamsTableHeadRow,
   renderDefaultValue,
   renderIndexSignature,
-  getTagNamesList,
-  H3Code,
   getCommentContent,
   listParams,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
-import { APISectionPlatformTags } from './components/APISectionPlatformTags';
+import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { APITypeOrSignatureType } from './components/APITypeOrSignatureType';
 import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
 
@@ -59,7 +57,7 @@ const renderTypeDeclarationTable = (
     {index && index > 0 ? <br /> : undefined}
     <APICommentTextBlock comment={comment} />
     <Table>
-      <ParamsTableHeadRow />
+      <APIParamsTableHeadRow mainCellLabel="Property" />
       <tbody>
         {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
         {indexSignature?.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
@@ -88,7 +86,7 @@ const renderTypeMethodEntry = (
         </RawH4>
         <APICommentTextBlock comment={comment} />
         <Table>
-          <ParamsTableHeadRow mainCellLabel="Parameter" />
+          <APIParamsTableHeadRow mainCellLabel="Parameter" />
           <tbody>
             {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
           </tbody>
@@ -112,7 +110,7 @@ const renderTypePropertyRow = (
   return (
     <Row key={name}>
       <Cell fitContent>
-        <BOLD>{name}</BOLD>
+        <DEMI>{name}</DEMI>
         {renderFlags(flags, initValue)}
         {kind && renderIndexSignature(kind)}
       </Cell>
@@ -146,13 +144,10 @@ const renderType = (
     return (
       <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <APISectionPlatformTags comment={comment} />
-        <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
-          <MONOSPACE weight="medium">
-            {name}
-            {type.declaration.signatures ? '()' : ''}
-          </MONOSPACE>
-        </H3Code>
+        <APIBoxHeader
+          name={`${name}${type.declaration.signatures ? '()' : ''}`}
+          comment={comment}
+        />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration, sdkVersion)}
         {type.declaration.signatures
@@ -164,12 +159,10 @@ const renderType = (
             ))
           : null}
         {type.declaration.signatures?.[0].type && (
-          <div className="mt-4 flex flex-row items-start gap-2">
+          <div className="mt-3.5 flex flex-row items-start gap-2">
             <div className="flex flex-row items-center gap-2">
-              <CornerDownRightIcon className="icon-sm inline-block text-icon-secondary" />
-              <CALLOUT tag="span" theme="secondary" weight="medium">
-                Returns:
-              </CALLOUT>
+              <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+              <span className={STYLES_SECONDARY}>Returns:</span>
             </div>
             <CALLOUT>
               <APIDataType
@@ -185,10 +178,7 @@ const renderType = (
     return (
       <div key={`type-tuple-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <APISectionPlatformTags comment={comment} />
-        <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
-          <MONOSPACE weight="medium">{name}</MONOSPACE>
-        </H3Code>
+        <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT className={STYLES_SECONDARY}>
           Tuple: <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
@@ -209,12 +199,7 @@ const renderType = (
       return (
         <div key={`prop-type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
-          <APISectionPlatformTags comment={comment} />
-          <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" className="wrap-anywhere">
-              {name}
-            </MONOSPACE>
-          </H3Code>
+          <APIBoxHeader name={name} comment={comment} />
           <APICommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' || type.type === 'union' ? (
             <>
@@ -258,16 +243,9 @@ const renderType = (
       return (
         <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
-          <APISectionPlatformTags comment={comment} />
-          <H3Code tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" className="wrap-anywhere">
-              {name}
-            </MONOSPACE>
-          </H3Code>
+          <APIBoxHeader name={name} comment={comment} />
           <CALLOUT className="mb-3">
-            <SPAN theme="secondary" weight="medium">
-              Literal Type:{' '}
-            </SPAN>
+            <span className={STYLES_SECONDARY}>Literal Type: </span>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <APICommentTextBlock comment={comment} includePlatforms={false} />
@@ -276,7 +254,9 @@ const renderType = (
             {literalTypes.map((lt, index) => (
               <Fragment key={`${name}-literal-type-${index}`}>
                 <CODE>{resolveTypeName(lt, sdkVersion)}</CODE>
-                {index + 1 !== literalTypes.length ? ' | ' : ''}
+                {index + 1 !== literalTypes.length ? (
+                  <span className="text-quaternary"> | </span>
+                ) : null}
               </Fragment>
             ))}
           </CALLOUT>
@@ -292,16 +272,9 @@ const renderType = (
         key={`record-definition-${name}`}
         className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <APISectionPlatformTags comment={comment} />
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
-            {name}
-          </MONOSPACE>
-        </H3Code>
+        <APIBoxHeader name={name} comment={comment} />
         <CALLOUT className="mb-3">
-          <SPAN theme="secondary" weight="medium">
-            Type:{' '}
-          </SPAN>
+          <span className={STYLES_SECONDARY}>Type: </span>
           <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
         </CALLOUT>
         <APICommentTextBlock comment={comment} includePlatforms={false} />
@@ -311,17 +284,10 @@ const renderType = (
     return (
       <div key={`generic-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <APISectionPlatformTags comment={comment} />
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
-            {name}
-          </MONOSPACE>
-        </H3Code>
+        <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
-          <SPAN theme="secondary" weight="medium">
-            Type:{' '}
-          </SPAN>
+          <span className={STYLES_SECONDARY}>Type: </span>
           <CODE>{type.name}</CODE>
         </CALLOUT>
       </div>
@@ -330,26 +296,17 @@ const renderType = (
     return (
       <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <APISectionPlatformTags comment={comment} />
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
-            {name}&lt;{type.checkType.name}&gt;
-          </MONOSPACE>
-        </H3Code>
+        <APIBoxHeader name={`${name}<${type.checkType.name}>`} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
-          <SPAN theme="secondary" weight="medium">
-            Generic:{' '}
-          </SPAN>
+          <span className={STYLES_SECONDARY}>Generic: </span>
           <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>}
           </CODE>
         </CALLOUT>
         <CALLOUT>
-          <SPAN theme="secondary" weight="medium">
-            Type:{' '}
-          </SPAN>
+          <span className={STYLES_SECONDARY}>Type: </span>
           <CODE>
             {type.checkType.name}
             {typeParameter && (
@@ -375,12 +332,7 @@ const renderType = (
     return (
       <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <APISectionPlatformTags comment={comment} />
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
-            {name}
-          </MONOSPACE>
-        </H3Code>
+        <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT>
           String union of <CODE>{resolveTypeName(possibleData[0], sdkVersion)}</CODE> values.

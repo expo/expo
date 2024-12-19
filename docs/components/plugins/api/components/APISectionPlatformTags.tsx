@@ -1,8 +1,10 @@
+import { mergeClasses } from '@expo/styleguide';
+
+import { STYLES_SECONDARY } from '~/components/plugins/api/styles';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 import { StatusTag } from '~/ui/components/Tag/StatusTag';
-import { CALLOUT } from '~/ui/components/Text';
 
 import { CommentData, CommentTagData } from '../APIDataTypes';
 import { getAllTagData, getCommentContent } from '../APISectionUtils';
@@ -13,6 +15,7 @@ type Props = {
   platforms?: CommentTagData[];
   userProvidedPlatforms?: string[];
   disableFallback?: boolean;
+  className?: string;
 };
 
 export const APISectionPlatformTags = ({
@@ -20,6 +23,7 @@ export const APISectionPlatformTags = ({
   platforms,
   prefix,
   userProvidedPlatforms,
+  className,
   disableFallback = false,
 }: Props) => {
   const { platforms: defaultPlatforms } = usePageMetadata();
@@ -42,12 +46,12 @@ export const APISectionPlatformTags = ({
   }
 
   return (
-    <div className="mb-2 flex flex-row items-center">
+    <div className={mergeClasses('mb-3 flex flex-row items-start [table_&]:mb-2.5', className)}>
       {experimentalData.length > 0 && (
-        <CALLOUT tag="span" theme="secondary" className="inline-flex flex-row">
+        <div className="inline-flex flex-row">
           <StatusTag status="experimental" className="!mr-0" />
-          <span className="leading-[26px]">&emsp;&bull;&emsp;</span>
-        </CALLOUT>
+          <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
+        </div>
       )}
       <PlatformTags
         prefix={isCompatibleVersion ? prefix : (prefix ?? 'Only for:')}

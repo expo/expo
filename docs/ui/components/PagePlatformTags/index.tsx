@@ -8,7 +8,7 @@ type Props = {
 
 export function PagePlatformTags({ platforms }: Props) {
   return (
-    <div className="mt-3 inline-flex flex-wrap gap-y-1.5">
+    <div className="mt-3 inline-flex flex-wrap">
       {platforms
         .sort((a, b) => a.localeCompare(b))
         .map(platform => {
@@ -16,7 +16,7 @@ export function PagePlatformTags({ platforms }: Props) {
             return (
               <Tooltip.Root key={platform}>
                 <Tooltip.Trigger className="cursor-default">
-                  <PlatformTag platform={platform} className="!rounded-full !px-2.5" />
+                  <PlatformTag platform={platform} className="rounded-full px-2.5 py-1.5" />
                 </Tooltip.Trigger>
                 <Tooltip.Content side="bottom">
                   {platform.startsWith('android') && (
@@ -28,7 +28,11 @@ export function PagePlatformTags({ platforms }: Props) {
             );
           }
           return (
-            <PlatformTag platform={platform} key={platform} className="!rounded-full !px-2.5" />
+            <PlatformTag
+              platform={platform}
+              key={platform}
+              className="rounded-full px-2.5 py-1.5"
+            />
           );
         })}
     </div>

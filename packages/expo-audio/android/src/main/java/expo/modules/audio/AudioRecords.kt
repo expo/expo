@@ -32,7 +32,8 @@ data class RecordingOptions(
   @Field val bitRate: Double?,
   @Field val outputFormat: AndroidOutputFormat?,
   @Field val audioEncoder: AndroidAudioEncoder?,
-  @Field val maxFileSize: Int?
+  @Field val maxFileSize: Int?,
+  @Field val isMeteringEnabled: Boolean = false
 ) : Record
 
 enum class AndroidOutputFormat(val value: String) : Enumerable {

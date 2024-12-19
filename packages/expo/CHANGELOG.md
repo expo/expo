@@ -14,8 +14,11 @@
 
 - Fix sending a blob as fetch body not setting correct content-type. ([#33405](https://github.com/expo/expo/pull/33405) by [@aleqsio](https://github.com/aleqsio))
 - Use nullish assignment operator to assign entries in FormData. ([#33445](https://github.com/expo/expo/pull/33445) by [@j-piasecki](https://github.com/j-piasecki))
+- Fixed streaming requests with `AbortController` doesn't work on `expo/fetch`. ([#33577](https://github.com/expo/expo/pull/33577) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Remove "shortcut" from `rel="icon"` from favicon injection. ([#33696](https://github.com/expo/expo/pull/33696) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 52.0.18 - 2024-12-10
 

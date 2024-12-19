@@ -21,6 +21,7 @@ export type NativeResponseEvents = {
   didReceiveResponseData(data: Uint8Array): void;
   didComplete(): void;
   didFailWithError(error: string): void;
+  readyForJSFinalization(): void;
 };
 
 export declare class NativeResponse extends SharedObject<NativeResponseEvents> {

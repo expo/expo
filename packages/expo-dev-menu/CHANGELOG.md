@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed broken local UI development on Android. ([#33714](https://github.com/expo/expo/pull/33714) by [@kudo](https://github.com/kudo))
+
 ## 6.0.14 - 2024-12-10
 
 _This version does not introduce any user-facing changes._

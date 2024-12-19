@@ -1,6 +1,7 @@
 name: Fingerprint
 
 on:
+  workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
     paths:
@@ -23,7 +24,10 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -34,7 +38,7 @@ jobs:
         with:
           node-version: 18
       - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
       - name: ⬇️ Fetch commits from base branch
@@ -47,7 +51,76 @@ jobs:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
+        run: yarn install --frozen-lockfile --network-timeout 1000000
       - name: E2E Test @expo/fingerprint
-        run: bun test:e2e --ci --runInBand
+        run: |
+          bun run tsc
+          bun run tsc --build cli
+          bun run jest --config e2e/jest.config.js --ci --runInBand
         working-directory: packages/@expo/fingerprint
+      - name: ⚙️  Create temp project
+        run: |
+          cd ..
+          bunx create-expo-app -t blank@sdk-52 my-app
+      - name: 💾 Create fingerprint from the temp project
+        if: ${{ startsWith(matrix.os, 'windows') == false }}
+        run: |
+          cd ../my-app
+          if [[ "${{ env.ACTIONS_STEP_DEBUG }}" == "true" ]]; then
+            ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate --debug > ../expo/fingerprint-${{ matrix.os }}.json
+          else
+            ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ../expo/fingerprint-${{ matrix.os }}.json
+          fi
+      - name: 💾 Create fingerprint from the temp project (Windows)
+        if: ${{ startsWith(matrix.os, 'windows') }}
+        shell: pwsh
+        run: |
+          cd ../my-app
+          if ($env:ACTIONS_STEP_DEBUG -eq "true") {
+            node ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate --debug > ../expo/fingerprint-${{ matrix.os }}.json
+          } else {
+            node ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ../expo/fingerprint-${{ matrix.os }}.json
+          }
+      - name: 📤 Upload fingerprint
+        uses: actions/upload-artifact@v4
+        with:
+          name: fingerprint-${{ matrix.os }}
+          path: fingerprint-${{ matrix.os }}.json
+
+  cross-platform-checks:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Download fingerprint (macos)
+        uses: actions/download-artifact@v4
+        with:
+          name: fingerprint-macos-latest
+
+      - name: 📥 Download fingerprint (ubuntu)
+        uses: actions/download-artifact@v4
+        with:
+          name: fingerprint-ubuntu-latest
+
+      - name: 📥 Download fingerprint (windows)
+        uses: actions/download-artifact@v4
+        with:
+          name: fingerprint-windows-latest
+
+      - name: 👀 Check fingerprint consistency
+        shell: bash
+        run: |
+          hash_macos=$(jq -r '.hash' fingerprint-macos-latest.json)
+          hash_ubuntu=$(jq -r '.hash' fingerprint-ubuntu-latest.json)
+          hash_windows=$(jq -r '.hash' fingerprint-windows-latest.json)
+
+          echo "Hash from fingerprint-macos-latest.json: $hash_macos"
+          echo "Hash from fingerprint-ubuntu-latest.json: $hash_ubuntu"
+          echo "Hash from fingerprint-windows-latest.json: $hash_windows"
+
+          if [[ "$hash_macos" != "$hash_ubuntu" || "$hash_ubuntu" != "$hash_windows" ]]; then
+            echo "Hashes do not match!"
+            exit 1
+          else
+            echo "All hashes match!"
+          fi

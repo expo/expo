@@ -6,7 +6,13 @@
 
 ### 🎉 New features
 
+- [iOS] Added an option to `generateThumbnailsAsync` to set the maximum size of generated thumbnails. ([#33599](https://github.com/expo/expo/pull/33599) by [@tsapeta](https://github.com/tsapeta))
+- [tvOS] Titles and subtitles are now available in the tvOS video player from the metadata. ([#33639](https://github.com/expo/expo/pull/33639) by [@yourusername](https://github.com/HADeveloper))
+
 ### 🐛 Bug fixes
+
+- [iOS] Fix empty notification showing on iOS when `showNowPlayingNotification` is set to false. ([#33698](https://github.com/expo/expo/pull/33698) by [@behenate](https://github.com/behenate))
+- [iOS] Dispatch current player item changes on main queue to fix KVO-related crashes. ([#33123](https://github.com/expo/expo/pull/33123) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

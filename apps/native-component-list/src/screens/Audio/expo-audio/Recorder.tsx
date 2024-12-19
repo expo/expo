@@ -36,9 +36,10 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     isFinished: false,
     url: null,
   });
-  const [recorderOptions, setRecorderOptions] = React.useState<RecordingOptions>(
-    RecordingPresets.HIGH_QUALITY
-  );
+  const [recorderOptions, setRecorderOptions] = React.useState<RecordingOptions>({
+    ...RecordingPresets.HIGH_QUALITY,
+    isMeteringEnabled: true,
+  });
 
   useEffect(() => {
     (async () => {
@@ -139,7 +140,10 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   return (
     <View style={style}>
       <View style={styles.container}>
-        {renderOptionsButton('High Quality', RecordingPresets.HIGH_QUALITY)}
+        {renderOptionsButton('High Quality', {
+          ...RecordingPresets.HIGH_QUALITY,
+          isMeteringEnabled: true,
+        })}
 
         {renderOptionsButton('Low Quality', RecordingPresets.LOW_QUALITY)}
       </View>
