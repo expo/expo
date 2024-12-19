@@ -63,7 +63,7 @@ export declare function useTabSlot({ detachInactiveScreens, style, renderFn, }?:
  */
 export declare function TabSlot(props: TabSlotProps): import("react").JSX.Element;
 /**
- * @ hidden
+ * @hidden
  */
 export declare function defaultTabsSlotRender(descriptor: TabsDescriptor, { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions): import("react").JSX.Element | null;
 /**

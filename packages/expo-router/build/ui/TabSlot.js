@@ -60,7 +60,7 @@ function TabSlot(props) {
 }
 exports.TabSlot = TabSlot;
 /**
- * @ hidden
+ * @hidden
  */
 function defaultTabsSlotRender(descriptor, { isFocused, loaded, detachInactiveScreens }) {
     const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
