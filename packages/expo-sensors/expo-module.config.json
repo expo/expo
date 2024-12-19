@@ -1,9 +1,6 @@
 {
   "name": "expo-sensors",
-  "platforms": [
-    "apple",
-    "android"
-  ],
+  "platforms": ["apple", "android"],
   "apple": {
     "modules": [
       "AccelerometerModule",
