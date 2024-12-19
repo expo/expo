@@ -9,32 +9,32 @@ export namespace ExpoRouter {
   export interface __routes {}
 }
 
-export interface HrefObject {
+export type HrefObject = {
   /** The path of the route. */
   pathname: string;
   /** Optional parameters for the route. */
   params?: UnknownInputParams;
-}
+};
 
 /**
  * @hidden
  */
-export interface HrefInputParamsObject {
+export type HrefInputParamsObject = {
   /** The path of the route. */
   pathname: string;
   /** Optional input parameters for the route. */
   params?: UnknownInputParams;
-}
+};
 
 /**
  * @hidden
  */
-export interface HrefOutputParamsObject {
+export type HrefOutputParamsObject = {
   /** The path of the route */
   pathname: string;
   /** Optional output parameters for the route */
   params?: UnknownOutputParams;
-}
+};
 
 export type RelativePathString = `./${string}` | `../${string}` | '..';
 export type SearchOrHash = `?${string}` | `#${string}`;

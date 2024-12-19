@@ -37,6 +37,7 @@ export const nonLinkableTypes = [
   'RouteOutputParams',
   'RouteParamInput',
   'RouteParams',
+  'RouteSegments',
   'ScreenListeners',
   'ServiceActionResult',
   'StyleProp',
@@ -50,6 +51,7 @@ export const nonLinkableTypes = [
   'TOptions',
   'TParams',
   'TRoute',
+  'TSegments',
   'TState',
   'UnknownInputParams',
   'UnknownOutputParams',
@@ -109,10 +111,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   MouseEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent',
-  NavigationContainerRef:
-    'https://reactnavigation.org/docs/typescript/#annotating-ref-on-navigationcontainer',
-  NavigationOptions: 'https://reactnavigation.org/docs/screen-options/',
-  NavigationState: 'https://reactnavigation.org/docs/navigation-state',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   PackagerAsset: 'https://github.com/facebook/react-native/blob/main/packages/assets/registry.js',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
@@ -125,9 +123,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
   ReactNode: 'https://reactnative.dev/docs/react-node',
   Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
-  RouteProp: 'https://reactnavigation.org/docs/glossary-of-terms/#route-prop',
-  RootParamList:
-    'https://reactnavigation.org/docs/typescript/#specifying-default-types-for-usenavigation-link-ref-etc',
   SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
@@ -145,6 +140,21 @@ export const hardcodedTypeLinks: Record<string, string> = {
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
   WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
+
+  // React Navigation
+  DefaultNavigatorOptions:
+    'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
+  NavigationContainerRef:
+    'https://reactnavigation.org/docs/typescript/#annotating-ref-on-navigationcontainer',
+  NavigationOptions: 'https://reactnavigation.org/docs/screen-options/',
+  NavigationState: 'https://reactnavigation.org/docs/navigation-state',
+  NavigatorID: 'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
+  RouteProp: 'https://reactnavigation.org/docs/glossary-of-terms/#route-prop',
+  RootParamList:
+    'https://reactnavigation.org/docs/typescript/#specifying-default-types-for-usenavigation-link-ref-etc',
+  TabRouterOptions: 'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
+  TabNavigationState:
+    'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {

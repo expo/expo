@@ -40,7 +40,15 @@ export type APISectionTypesProps = {
 
 const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   const uniqueTypes = Array.from(
-    new Set(types.map((t: TypeDefinitionData) => t.value && typeof t.value))
+    new Set(
+      types.map((t: TypeDefinitionData) => {
+        if ('head' in t) {
+          return t.head;
+        } else if ('value' in t) {
+          return t.value && typeof t.value;
+        }
+      })
+    )
   );
   if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
     return <CODE>{uniqueTypes[0]}</CODE>;
@@ -187,7 +195,7 @@ const renderType = (
     );
   } else if (type.types && ['union', 'intersection'].includes(type.type)) {
     const literalTypes = type.types.filter((t: TypeDefinitionData) =>
-      ['literal', 'intrinsic', 'reference', 'tuple'].includes(t.type)
+      ['literal', 'templateLiteral', 'intrinsic', 'reference', 'tuple'].includes(t.type)
     );
     const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
     const propMethodDefinitions = propTypes.filter(

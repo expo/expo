@@ -7,10 +7,7 @@ const react_native_screens_1 = require("react-native-screens");
 const TabContext_1 = require("./TabContext");
 const Navigator_1 = require("../views/Navigator");
 /**
- *
  * Returns a `ReactElement` of the current tab.
- *
- * @see [`useTabSlot`](#usetabslotoptions).
  *
  * @example
  * ```tsx
@@ -21,10 +18,7 @@ const Navigator_1 = require("../views/Navigator");
  * }
  * ```
  */
-function useTabSlot(options = {}) {
-    const { detachInactiveScreens = react_native_1.Platform.OS === 'web' ||
-        react_native_1.Platform.OS === 'android' ||
-        react_native_1.Platform.OS === 'ios', style, renderFn = defaultTabsSlotRender, } = options;
+function useTabSlot({ detachInactiveScreens = ['android', 'ios', 'web'].includes(react_native_1.Platform.OS), style, renderFn = defaultTabsSlotRender, } = {}) {
     const { state, descriptors } = (0, Navigator_1.useNavigatorContext)();
     const focusedRouteKey = state.routes[state.index].key;
     const [loaded, setLoaded] = (0, react_1.useState)({ [focusedRouteKey]: true });
@@ -65,6 +59,9 @@ function TabSlot(props) {
     return useTabSlot(props);
 }
 exports.TabSlot = TabSlot;
+/**
+ * @ hidden
+ */
 function defaultTabsSlotRender(descriptor, { isFocused, loaded, detachInactiveScreens }) {
     const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
     if (unmountOnBlur && !isFocused) {
