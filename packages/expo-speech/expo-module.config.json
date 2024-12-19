@@ -1,5 +1,4 @@
 {
-  "name": "expo-speech",
   "platforms": ["apple", "android"],
   "apple": {
     "modules": ["SpeechModule"]

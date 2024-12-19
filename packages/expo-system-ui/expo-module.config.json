@@ -1,5 +1,4 @@
 {
-  "name": "expo-system-ui",
   "platforms": ["apple", "android"],
   "apple": {
     "modules": ["ExpoSystemUIModule"]
