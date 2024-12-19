@@ -159,6 +159,18 @@ export function usePathname(): string {
 }
 
 /**
+ * @hidden
+ */
+export function useGlobalSearchParams<
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): TParams;
+
+/**
+ * @hidden
+ */
+export function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+
+/**
  * Returns URL parameters for globally selected route, including dynamic path segments.
  * This function updates even when the route is not focused. Useful for analytics or
  * other background operations that don't draw to the screen.
@@ -185,24 +197,24 @@ export function usePathname(): string {
  * ```
  */
 export function useGlobalSearchParams<
-  TParams extends UnknownOutputParams = UnknownOutputParams,
->(): TParams;
-
-/**
- * @hidden
- */
-export function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
-
-/**
- * @hidden
- */
-export function useGlobalSearchParams<
   TRoute extends Route,
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): RouteParams<TRoute> & TParams;
 export function useGlobalSearchParams() {
   return useStoreRouteInfo().params;
 }
+
+/**
+ * @hidden
+ */
+export function useLocalSearchParams<
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): TParams;
+
+/**
+ * @hidden
+ */
+export function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
 
 /**
  * Returns the URL parameters for the contextually focused route. Useful for stacks where you may push a new screen
@@ -226,18 +238,6 @@ export function useGlobalSearchParams() {
  *
  *  return <Text>User: {user}</Text>;
  * }
- */
-export function useLocalSearchParams<
-  TParams extends UnknownOutputParams = UnknownOutputParams,
->(): TParams;
-
-/**
- * @hidden
- */
-export function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
-
-/**
- * @hidden
  */
 export function useLocalSearchParams<
   TRoute extends Route,
