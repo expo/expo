@@ -379,7 +379,7 @@ PODS:
   - ExpoFileSystem/Tests (18.0.6):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoFont (13.0.1):
+  - ExpoFont (13.0.2):
     - ExpoModulesCore
   - ExpoGL (15.0.2):
     - ExpoModulesCore
@@ -428,10 +428,10 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.4.0)
     - GooglePlaces (= 7.3.0)
-  - ExpoMediaLibrary (17.0.3):
+  - ExpoMediaLibrary (17.0.4):
     - ExpoModulesCore
     - React-Core
-  - ExpoMediaLibrary/Tests (17.0.3):
+  - ExpoMediaLibrary/Tests (17.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
@@ -495,7 +495,7 @@ PODS:
     - ExpoModulesCore
   - ExpoScreenCapture (7.0.0):
     - ExpoModulesCore
-  - ExpoScreenOrientation (8.0.1):
+  - ExpoScreenOrientation (8.0.2):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -539,7 +539,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (5.1.0):
     - ExpoModulesCore
-  - ExpoVideo (2.0.2):
+  - ExpoVideo (2.0.3):
     - ExpoModulesCore
   - ExpoVideoThumbnails (9.0.2):
     - ExpoModulesCore
@@ -3303,7 +3303,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 4a89fd8a0cb90010214a416c858d7dece1c1eb10
   ExpoDomWebView: 71d9f0808dce43b9f36b45a8c091c242dfa7b372
   ExpoFileSystem: 179a0661fd6d3c4e5d7e500a99a9cd8b295d9566
-  ExpoFont: 7522d869d84ee2ee8093ee997fef5b86f85d856b
+  ExpoFont: 260fb85279912421894060d9aea453cee4ffc01c
   ExpoGL: 3e7c3b8478a6783d737103b33b9c11235deb6675
   ExpoHaptics: e636188d1d5f7ccb79f3c1bfab47aaf5a1768c73
   ExpoImage: 9cdae70d80c8a59cbfb51a475fc820172fa71666
@@ -3319,14 +3319,14 @@ SPEC CHECKSUMS:
   ExpoLocation: f13126dee9bf4c1499eb16b64f15afe9da9403f5
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
   ExpoMaps: 03f99cbb20655c2beb1bffdca0e6de6a0124f69e
-  ExpoMediaLibrary: 2d20778aafaa2e6f60640167f0618cfacee6f81c
+  ExpoMediaLibrary: 634d8bc2ddb2f6e0f6fd2045ce5ebbc253007114
   ExpoMeshGradient: 341a37c25e1b3ae3fae8f6f5ce11dd9a965407fc
   ExpoModulesCore: 41844ce131433b266261b44012d5b41ac0513999
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
   ExpoNetwork: da76377b4f35d85c0b5391d4eace361223313e4e
   ExpoPrint: 3f9f5a5a19dbda5b30963d5bf078918f024aa29d
   ExpoScreenCapture: 14768e6fe66412d678862858f5c2e0241b7f84b7
-  ExpoScreenOrientation: 17df4d8b6da91424e338f4b223b8801d300ebc5a
+  ExpoScreenOrientation: 164a4d1c05122d0101c4e740eb7f675c5276e744
   ExpoSecureStore: 06c3192d58ed167f619af3d53797c055f5ada785
   ExpoSensors: 55eef9972309aa8ec26bf5922040453e4c5cf7df
   ExpoSharing: 39a198e64bf522948fe60e270e49a0c7757912c1
@@ -3338,7 +3338,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
   ExpoSystemUI: 2d729aea8219f03af1b1996c1d14488a01fea94a
   ExpoTrackingTransparency: 68a91cfcc0593d0c83b6bd3d27afaf639699c02b
-  ExpoVideo: f1993ca14d715dceb8ae2c21f4ea91dccd8c76b3
+  ExpoVideo: d630401195169343272d9d48800e0b38d9c39974
   ExpoVideoThumbnails: 8b6bbe3cb76dd2225910667b896b27855bbda694
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6

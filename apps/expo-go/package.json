@@ -48,7 +48,7 @@
     "expo-camera": "~16.0.10",
     "expo-constants": "~17.0.0",
     "expo-device": "~7.0.0",
-    "expo-font": "~13.0.0",
+    "expo-font": "~13.0.2",
     "expo-linear-gradient": "~14.0.0",
     "expo-linking": "^7.0.0",
     "expo-location": "~18.0.0",

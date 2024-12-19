@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 8.0.2 — 2024-12-19
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed crash when multiple threads access same member in swift ([#33572](https://github.com/expo/expo/pull/33572) by [@chrfalch](https://github.com/chrfalch))
 - Fixed event listeners on web. ([#33361](https://github.com/expo/expo/pull/33361) by [@aleqsio](https://github.com/aleqsio))
-
-### 💡 Others
 
 ## 8.0.1 — 2024-12-05
 
