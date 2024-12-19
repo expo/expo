@@ -1,11 +1,10 @@
 {
   "platforms": [
-    "ios",
-    "tvos",
+    "apple",
     "android",
     "web"
   ],
-  "ios": {
+  "apple": {
     "modules": [
       "ExpoLinkingModule"
     ],

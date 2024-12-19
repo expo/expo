@@ -1,7 +1,7 @@
 {
   "name": "expo-calendar",
-  "platforms": ["ios", "android"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "modules": ["CalendarModule"]
   },
   "android": {
