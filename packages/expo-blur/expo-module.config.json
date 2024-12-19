@@ -4,7 +4,7 @@
   "apple": {
     "modules": ["BlurViewModule"]
   },
-  "android":{
+  "android": {
     "modulesClassNames": ["expo.modules.blur.BlurModule"]
   }
 }
