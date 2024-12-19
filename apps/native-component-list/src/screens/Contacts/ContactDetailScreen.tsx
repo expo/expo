@@ -31,6 +31,12 @@ export default function ContactDetailScreen(props: any) {
       headerRight: () => (
         <HeaderContainerRight>
           <HeaderIconButton
+            name="document"
+            onPress={async () => {
+              Contacts.displayContactAsync(props.route.params.id);
+            }}
+          />
+          <HeaderIconButton
             name="share"
             onPress={async () => {
               Contacts.shareContactAsync(props.route.params.id, 'Call me :]');
