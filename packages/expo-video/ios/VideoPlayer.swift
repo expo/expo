@@ -164,7 +164,11 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: asset)
     }
     // added player metadata, specifically for TV implementation
-    let metadata = Metadata(title: videoSource.metadata?.title ?? "", artist: videoSource.metadata?.artist ?? "", subTitle: videoSource.metadata?.subTitle ?? "")
+    let metadata = Metadata(
+      title: videoSource.metadata?.title ?? "",
+      artist: videoSource.metadata?.artist ?? "",
+      subTitle: videoSource.metadata?.subTitle ?? ""
+    )
     let metadataItems = createMetadataItems(for: metadata)
     playerItem.externalMetadata = metadataItems
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
@@ -172,22 +176,21 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     pointer.replaceCurrentItem(with: playerItem)
   }
     func createMetadataItems(for metadata: Metadata) -> [AVMetadataItem] {
-            let mapping: [AVMetadataIdentifier: Any] = [
-                .commonIdentifierTitle: metadata.title,
-                .commonIdentifierArtist: metadata.artist,
-                .iTunesMetadataTrackSubTitle: metadata.subTitle
-            ]
-            return mapping.compactMap { createMetadataItem(for: $0, value: $1) }
-        }
-    private func createMetadataItem(for identifier: AVMetadataIdentifier,
-                                    value: Any) -> AVMetadataItem {
-        let item = AVMutableMetadataItem()
+      let mapping: [AVMetadataIdentifier: Any] = [
+        .commonIdentifierTitle: metadata.title,
+        .commonIdentifierArtist: metadata.artist,
+        .iTunesMetadataTrackSubTitle: metadata.subTitle
+      ]
+      return mapping.compactMap { createMetadataItem(for: $0, value: $1) }
+    }
+    private func createMetadataItem(for identifier: AVMetadataIdentifier, value: Any) -> AVMetadataItem {
+      let item = AVMutableMetadataItem()
         item.identifier = identifier
         item.value = value as? NSCopying & NSObjectProtocol
         // Specify "und" to indicate an undefined language.
         item.extendedLanguageTag = "und"
         guard let copiedItem = item.copy() as? AVMetadataItem else {
-            fatalError("Failed to copy AVMetadataItem")
+          fatalError("Failed to copy AVMetadataItem")
         }
         return copiedItem
     }
@@ -320,7 +323,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 }
 
 struct Metadata {
-    var title: String
-    var artist: String
-    var subTitle: String
+  var title: String
+  var artist: String
+  var subTitle: String
 }
