@@ -10,4 +10,13 @@ data class Version(
       (major == other.major && minor > other.minor) ||
       (major == other.major && minor == other.minor && patch >= other.patch)
   }
+
+  companion object {
+    fun fromString(value: String): Version {
+      // strip pre-release
+      val normalizedValue = value.substringBefore('-')
+      val (major, minor, patch) = normalizedValue.split(".").map { it.toInt() }
+      return Version(major, minor, patch)
+    }
+  }
 }
