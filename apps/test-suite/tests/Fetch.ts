@@ -35,7 +35,7 @@ export function test({ describe, expect, it, ...t }) {
       expect(buffer.byteLength).toBe(20);
     });
 
-    it('should process response in ReadableStream from late readablestream call', async () => {
+    it('should process response in readablestream from late get reader call', async () => {
       const resp = await fetch('https://httpbin.test.k6.io/get');
       expect(resp.ok).toBe(true);
       expect(resp.body).not.toBeNull();
