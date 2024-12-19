@@ -10,7 +10,6 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either

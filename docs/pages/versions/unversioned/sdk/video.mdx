@@ -295,6 +295,7 @@ const player = createVideoPlayer(videoSource);
 ```
 
 ## Caching videos (experimental)
+
 > **Info** Caching was introduced during the final stages of the beta phase for `expo-video`, and it has not been thoroughly tested by the community yet.
 > If you encounter any issues, please report them at the [expo/expo](https://github.com/expo/expo) repository.
 
@@ -306,10 +307,10 @@ The cache functions offline. If a portion or the entirety of a video is cached, 
 > The cache cannot be used with HLS video sources and DRM-protected videos.
 
 ### Managing the Cache
+
 - The preferred cache size in bytes can be defined using the [`setVideoCacheSizeAsync`](#videosetvideocachesizeasyncsizebytes) function. The default cache size is `1GB`.
 - The [`getCurrentVideoCacheSize`](#videogetcurrentvideocachesize) can be used to get the current storage occupied by the cache in bytes.
 - All cached videos can be cleared using the [`cleanVideoCacheAsync`](#videocleanvideocacheasync) function.
-
 
 ## API
 
