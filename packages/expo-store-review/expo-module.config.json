@@ -1,5 +1,4 @@
 {
-  "name": "expo-store-review",
   "platforms": ["apple", "android"],
   "apple": {
     "modules": ["StoreReviewModule"]

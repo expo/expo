@@ -1,5 +1,4 @@
 {
-  "name": "expo-camera",
   "platforms": ["apple", "android", "web"],
   "apple": {
     "modules": ["CameraViewModule"]

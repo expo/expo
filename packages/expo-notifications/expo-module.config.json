@@ -1,5 +1,4 @@
 {
-  "name": "expo-notifications",
   "platforms": ["apple", "android"],
   "apple": {
     "modules": [

@@ -1,5 +1,4 @@
 {
-  "name": "expo-sms",
   "platforms": ["apple", "android"],
   "apple": {
     "modules": ["ExpoSMSModule"]
