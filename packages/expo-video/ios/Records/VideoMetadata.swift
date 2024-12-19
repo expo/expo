@@ -12,7 +12,7 @@ internal struct VideoMetadata: Record {
 
   @Field
   var artwork: URL? = nil
-    
+
   @Field
   var subTitle: String? = nil
 }
