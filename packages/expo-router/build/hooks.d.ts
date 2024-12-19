@@ -111,6 +111,14 @@ export declare function useSegments<TSegments extends RouteSegments<Route>>(): T
  */
 export declare function usePathname(): string;
 /**
+ * @hidden
+ */
+export declare function useGlobalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
+/**
+ * @hidden
+ */
+export declare function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+/**
  * Returns URL parameters for globally selected route, including dynamic path segments.
  * This function updates even when the route is not focused. Useful for analytics or
  * other background operations that don't draw to the screen.
@@ -136,15 +144,15 @@ export declare function usePathname(): string;
  * }
  * ```
  */
-export declare function useGlobalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
-/**
- * @hidden
- */
-export declare function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
-/**
- * @hidden
- */
 export declare function useGlobalSearchParams<TRoute extends Route, TParams extends UnknownOutputParams = UnknownOutputParams>(): RouteParams<TRoute> & TParams;
+/**
+ * @hidden
+ */
+export declare function useLocalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
+/**
+ * @hidden
+ */
+export declare function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
 /**
  * Returns the URL parameters for the contextually focused route. Useful for stacks where you may push a new screen
  * that changes the query parameters.  For dynamic routes, both the route parameters and the search parameters are returned.
@@ -167,14 +175,6 @@ export declare function useGlobalSearchParams<TRoute extends Route, TParams exte
  *
  *  return <Text>User: {user}</Text>;
  * }
- */
-export declare function useLocalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
-/**
- * @hidden
- */
-export declare function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
-/**
- * @hidden
  */
 export declare function useLocalSearchParams<TRoute extends Route, TParams extends UnknownOutputParams = UnknownOutputParams>(): RouteParams<TRoute> & TParams;
 export declare function useSearchParams({ global }?: {
