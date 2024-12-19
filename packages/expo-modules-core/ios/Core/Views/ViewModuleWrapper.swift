@@ -57,6 +57,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func name() -> String {
+    // swiftlint:disable:next force_cast
     return wrappedModuleHolder!.name
   }
 

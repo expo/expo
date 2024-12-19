@@ -4,9 +4,6 @@
  A converter associated with the specific app context that delegates value conversions to the dynamic type converters.
  */
 public struct MainValueConverter {
-  /**
-   It holds a strong reference as the AppContext is the only owner of the converter.
-   */
   private(set) weak var appContext: AppContext?
 
   /**
