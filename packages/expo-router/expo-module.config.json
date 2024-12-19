@@ -1,6 +1,6 @@
 {
-  "platforms": ["ios", "web"],
-  "ios": {
+  "platforms": ["apple", "web"],
+  "apple": {
     "modules": ["ExpoHeadModule"],
     "appDelegateSubscribers": ["ExpoHeadAppDelegateSubscriber"]
   }

@@ -1,10 +1,10 @@
 {
   "name": "expo-sensors",
   "platforms": [
-    "ios",
+    "apple",
     "android"
   ],
-  "ios": {
+  "apple": {
     "modules": [
       "AccelerometerModule",
       "BarometerModule",

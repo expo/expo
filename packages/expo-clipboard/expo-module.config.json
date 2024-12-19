@@ -1,7 +1,7 @@
 {
   "name": "expo-clipboard",
-  "platforms": ["ios", "android", "web"],
-  "ios": {
+  "platforms": ["apple", "android", "web"],
+  "apple": {
     "modulesClassNames": ["ClipboardModule"]
   },
   "android": {

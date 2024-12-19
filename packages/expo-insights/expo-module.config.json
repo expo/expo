@@ -1,9 +1,9 @@
 {
   "platforms": [
-    "ios",
+    "apple",
     "android"
   ],
-  "ios": {
+  "apple": {
     "modules": [
       "InsightsModule"
     ]
