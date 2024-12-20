@@ -18,15 +18,14 @@ protocol DynamicModuleWrapperProtocol {
 public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtocol {
   /**
    A reference to the module holder that stores the module definition.
-   Enforced unwrapping is required since it can be set right after the object is initialized.
    */
-  weak var wrappedModuleHolder: ModuleHolder?
+  weak var moduleHolder: ModuleHolder?
 
   /**
    The designated initializer. At first, we use this base class to hide `ModuleHolder` from Objective-C runtime.
    */
-  public init(_ wrappedModuleHolder: ModuleHolder) {
-    self.wrappedModuleHolder = wrappedModuleHolder
+  public init(_ moduleHolder: ModuleHolder) {
+    self.moduleHolder = moduleHolder
   }
 
   /**
@@ -41,7 +40,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     guard let module = (self as DynamicModuleWrapperProtocol).wrappedModule?() else {
       return
     }
-    self.wrappedModuleHolder = module.wrappedModuleHolder
+    self.moduleHolder = module.moduleHolder
   }
 
   /**
@@ -57,8 +56,10 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func name() -> String {
-    // swiftlint:disable:next force_unwrapping
-    return wrappedModuleHolder!.name
+    guard let moduleHolder else {
+      fatalError("Failed to create ModuleHolder")
+    }
+    return moduleHolder.name
   }
 
   /**
@@ -84,10 +85,10 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public override func view() -> UIView! {
-    guard let appContext = wrappedModuleHolder?.appContext else {
+    guard let appContext = moduleHolder?.appContext else {
       fatalError(Exceptions.AppContextLost().reason)
     }
-    guard let view = wrappedModuleHolder?.definition.view?.createView(appContext: appContext) else {
+    guard let view = moduleHolder?.definition.view?.createView(appContext: appContext) else {
       fatalError("Cannot create a view from module '\(String(describing: self.name))'")
     }
     return view
