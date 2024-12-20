@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Removed unused `SQLite3Wrapper` code for legacy implementation on Android. ([#33565](https://github.com/expo/expo/pull/33565) by [@kudo](https://github.com/kudo))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#33779](https://github.com/expo/expo/pull/33779) by [@reichhartd](https://github.com/reichhartd))
 
 ## 15.0.3 — 2024-11-12
 
