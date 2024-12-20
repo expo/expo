@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+Add `textZoom` option to override font scaling applied by the user’s Android device settings
 
 ### 🐛 Bug fixes
 
