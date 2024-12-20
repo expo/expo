@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- support autolinking `BaseReactPackage` ([#33773](https://github.com/expo/expo/pull/33773) by [@vonovak](https://github.com/vonovak))
+- Added Android `BaseReactPackage` for autolinking. ([#33773](https://github.com/expo/expo/pull/33773) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
