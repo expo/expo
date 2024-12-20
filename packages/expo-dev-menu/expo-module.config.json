@@ -1,7 +1,6 @@
 {
-  "name": "expo-dev-menu",
-  "platforms": ["ios", "android"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "podspecPath": "expo-dev-menu.podspec",
     "swiftModuleName": "EXDevMenu",
     "modules": [
@@ -15,7 +14,7 @@
   },
   "android": {
     "modules": [
-      "expo.modules.devmenu.modules.DevMenuModule", 
+      "expo.modules.devmenu.modules.DevMenuModule",
       "expo.modules.devmenu.modules.DevMenuPreferences"
     ]
   }

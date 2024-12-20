@@ -1,10 +1,9 @@
 {
-  "name": "expo-blur",
-  "platforms": ["ios", "tvos", "android"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "modules": ["BlurViewModule"]
   },
-  "android":{
+  "android": {
     "modulesClassNames": ["expo.modules.blur.BlurModule"]
   }
 }

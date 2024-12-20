@@ -1,5 +1,5 @@
 {
-  "platforms": ["android", "ios"],
+  "platforms": ["apple", "android"],
   "android": {
     "modules": ["expo.modules.facedetector.FaceDetectorModule"]
   }

@@ -12,13 +12,12 @@
 - Fix baseURL being removed when refreshing the app on web. ([#33481](https://github.com/expo/expo/pull/33481) by [@marklawlor](https://github.com/marklawlor))
 - Fix navigation when using browser back/forward ([#33524](https://github.com/expo/expo/pull/33524) by [@stephentuso](https://github.com/stephentuso))
 - Fix `useNavigation` hook unable to find parent navigator for hoisted routes and relative hrefs ([#33035](https://github.com/expo/expo/pull/33035) by [@marklawlor](https://github.com/marklawlor))
+- Fix regex on `expo-router/matcher` `matchLastGroupName` allows to use it on `IOS < 16.4` ([#33350](https://github.com/expo/expo/pull/33350) by [@antonio-serrat](https://github.com/Antonio-Serat))
+- Fix pushing the same route multiple times and `__EXPO_ROUTER_key` incorrectly showing up in query parameters ([#33430](https://github.com/expo/expo/pull/33430) by [@stephentuso](https://github.com/stephentuso))
 
 ### 💡 Others
 
-### 🐛 Bug fixes
-
-- Fix regex on `expo-router/matcher` `matchLastGroupName` allows to use it on `IOS < 16.4` ([#33350](https://github.com/expo/expo/pull/33350) by [@antonio-serrat](https://github.com/Antonio-Serat))
-- Fix pushing the same route multiple times and `__EXPO_ROUTER_key` incorrectly showing up in query parameters ([#33430](https://github.com/expo/expo/pull/33430) by [@stephentuso](https://github.com/stephentuso))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#33779](https://github.com/expo/expo/pull/33779) by [@reichhartd](https://github.com/reichhartd))
 
 ## 4.0.12 - 2024-12-10
 

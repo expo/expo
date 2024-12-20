@@ -1,6 +1,6 @@
 {
-  "platforms": ["ios", "tvos", "android"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "modules": ["AudioModule"]
   },
   "android": {

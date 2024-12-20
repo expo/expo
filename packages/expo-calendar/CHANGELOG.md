@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - [ios][calendar] Use EXPermissionStatus instead of CalendarPermissionsStatus in calendar permissions requesters ([#33453](https://github.com/expo/expo/pull/33453) by [@ryanduffin](https://github.com/ryanduffin)
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#33779](https://github.com/expo/expo/pull/33779) by [@reichhartd](https://github.com/reichhartd))
 
 ## 14.0.4 - 2024-11-29
 
