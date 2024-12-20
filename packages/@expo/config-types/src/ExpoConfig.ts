@@ -159,12 +159,6 @@ export interface ExpoConfig {
     [k: string]: any;
   };
   /**
-   * @deprecated Use a `metro.config.js` file instead. [Learn more](https://docs.expo.dev/guides/customizing-metro/)
-   */
-  packagerOpts?: {
-    [k: string]: any;
-  };
-  /**
    * Configuration for the expo-updates library
    */
   updates?: {
