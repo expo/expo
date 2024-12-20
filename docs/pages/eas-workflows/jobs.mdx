@@ -55,7 +55,7 @@ jobs:
     type: update
     params:
       platform: android | ios | all # (default: all)
-      channel: string
+      channel: string # missing by default, update will be deployed to a branch
       branch: string # default: ${{ github.ref_name }}, which will be the name of the git branch
       message: string # default: commit message or empty if no commit
 ```
