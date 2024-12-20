@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 import { Readable } from 'stream';
 
 import {
+  matchNativePackageClassName,
   parseComponentDescriptorsAsync,
   parseLibraryNameAsync,
   parseNativePackageClassNameAsync,
@@ -372,5 +373,92 @@ export default codegenNativeComponent<NativeProps>('RNSSearchBar', {});
 
     const results = await parseComponentDescriptorsAsync('/app/node_modules/test', {});
     expect(results).toEqual(['RNSSearchBarComponentDescriptor', 'RNSpecComponentDescriptor']);
+  });
+
+  describe(matchNativePackageClassName, () => {
+    const path = 'unused';
+
+    it.each([
+      {
+        description: 'Java class implementing ReactPackage',
+        content: `
+import com.facebook.react.ReactPackage;
+
+public class CustomReactPackage implements ReactPackage {
+}`,
+      },
+      {
+        description: 'Kotlin class implementing ReactPackage',
+        content: `
+import com.facebook.react.ReactPackage
+
+class CustomReactPackage : ReactPackage {
+}`,
+      },
+      {
+        description: 'class implementing ReactPackage with additional interfaces',
+        content: `
+import com.facebook.react.ReactPackage;
+
+public class CustomReactPackage implements ReactPackage, SomeOtherInterface {
+}`,
+      },
+      {
+        description: 'Java class extending BaseReactPackage',
+        content: `
+import com.facebook.react.BaseReactPackage;
+
+public class CustomReactPackage extends BaseReactPackage {
+}`,
+      },
+      {
+        description: 'Java class extending TurboReactPackage',
+        content: `
+import com.facebook.react.TurboReactPackage;
+
+public class CustomReactPackage extends TurboReactPackage {
+}`,
+      },
+      {
+        description: 'Kotlin class extending BaseReactPackage',
+        content: `
+import com.facebook.react.BaseReactPackage
+
+class CustomReactPackage : BaseReactPackage() {
+}`,
+      },
+      {
+        description: 'Kotlin class extending TurboReactPackage',
+        content: `
+import com.facebook.react.TurboReactPackage
+
+class CustomReactPackage : TurboReactPackage() {
+}`,
+      },
+    ])('should handle $description', ({ content }) => {
+      expect(matchNativePackageClassName(path, Buffer.from(content))).toBe('CustomReactPackage');
+    });
+
+    // these are not as exhaustive as they could be, but cover main cases
+    it.each([
+      {
+        description: 'class without any ReactPackage implementation',
+        content: `
+public class CustomReactPackage {
+}`,
+      },
+      {
+        description: 'class without any ReactPackage implementation 2',
+        content: `
+public class CustomReactPackage extends SomeOtherPackage {
+}`,
+      },
+      {
+        description: 'empty file',
+        content: '',
+      },
+    ])('should return null for $description', ({ content }) => {
+      expect(matchNativePackageClassName(path, Buffer.from(content))).toBeNull();
+    });
   });
 });
