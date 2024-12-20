@@ -12,8 +12,8 @@ You can set variables in the workflow file with the `set-output` function:
 jobs:
   fingerprint:
     outputs:
-      # @info Sets the <CODE>fingerprint_hash_for_workflow</CODE> as a variable #
-      fingerprint_hash_for_workflow: ${{ steps.fingerprint_hash_step.outputs.fingerprint_hash_for_workflow }}
+      # @info Sets the <CODE>fingerprint_hash</CODE> as a variable #
+      fingerprint: ${{ steps.fingerprint_hash_step.outputs.fingerprint_hash }}
       # @end #
     steps:
       - uses: eas/checkout
@@ -22,28 +22,24 @@ jobs:
         run: sudo apt-get update -y && sudo apt-get install -y jq
       - name: Set fingerprint variables
         id: fingerprint_hash_step
-        # @info Exposes the <CODE>fingerprint_hash_for_workflow</CODE> and <CODE>fingerprint_hash_for_steps</CODE> variables. #
-        outputs: [fingerprint_hash_for_workflow, fingerprint_hash_for_steps]
-        # @end #
-        # @info Sets the <CODE>fingerprint_hash_for_workflow</CODE> and <CODE>fingerprint_hash_for_steps</CODE> variables #
+        # @info Sets the <CODE>fingerprint_hash</CODE> variable #
         run: |
           FINGERPRINT=$(npx expo-updates fingerprint:generate --platform ios)
           FINGERPRINT_HASH=$(echo $FINGERPRINT | jq -r '.hash')
           echo "Fingerprint hash: $FINGERPRINT_HASH"
-          set-output fingerprint_hash_for_workflow $FINGERPRINT_HASH
-          set-output fingerprint_hash_for_steps $FINGERPRINT_HASH
+          set-output fingerprint_hash $FINGERPRINT_HASH
         # @end #
-      # @info Accesses the <CODE>fingerprint_hash_for_steps</CODE> variable #
+      # @info Accesses the <CODE>fingerprint_hash</CODE> variable #
       - name: Print fingerprint hash
         run: |
-          echo "Fingerprint hash: ${ steps.fingerprint_hash_step.fingerprint_hash_for_steps }"
+          echo "Fingerprint hash: ${ steps.fingerprint_hash_step.fingerprint_hash }"
       # @end #
   existing_build:
     needs: [fingerprint]
     type: get-build
     params:
-      # @info Accesses the <CODE>fingerprint_hash_for_workflow</CODE> variable #
-      fingerprint_hash: ${{ needs.fingerprint.outputs.fingerprint_hash_for_workflow }}
+      # @info Accesses the <CODE>fingerprint_hash</CODE> variable #
+      fingerprint_hash: ${{ needs.fingerprint.outputs.fingerprint_hash }}
       # @end #
   decide:
     needs: [existing_build]
@@ -62,8 +58,7 @@ jobs:
           echo "More about build: ${{ toJSON(needs.existing_build.outputs) }}"
 ```
 
-In the example above, three things are happening:
+In the example above, two things are happening:
 
-- The `set-output` function sets the `fingerprint_hash_for_steps` and `fingerprint_hash_for_workflow` variables.
-- The `outputs` keyword on the step inside the `fingerprint` job exposes the `fingerprint_hash_for_steps` variable to other steps in `fingerprint` job. That variable is used in an `echo` statement later in the job.
-- The `outputs` keyword on the `fingerprint_hash_for_workflow` job specifies that the whole workflow will have access to a variable called `fingerprint_hash_for_workflow`. That variable is later used in the `existing_build` job to check if there are any existing builds with the same fingerprint.
+- The `set-output` function sets the `fingerprint_hash_for_steps` and `fingerprint_hash` variables.
+- The `outputs` keyword on the `fingerprint_hash` job specifies that the whole workflow will have access to a variable called `fingerprint_hash_for_workflow`. That variable is later used in the `existing_build` job to check if there are any existing builds with the same fingerprint.
