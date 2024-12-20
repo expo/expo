@@ -9,7 +9,7 @@ import { ReactLogo } from './ReactLogo';
 
 export function StateOfRNBanner() {
   const router = useRouter();
-  const stateOfRNEndDate = new Date('2025-01-01');
+  const stateOfRNEndDate = new Date('2025-01-08');
   const showShoutout = isBefore(new Date(), stateOfRNEndDate);
   const isHomePage = router?.pathname === '/';
 
