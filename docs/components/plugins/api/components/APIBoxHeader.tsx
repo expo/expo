@@ -18,7 +18,7 @@ export function APIBoxHeader({ name, comment, baseNestingLevel = 3 }: Props) {
     <div
       className={mergeClasses(
         'mb-2.5 flex flex-wrap justify-between px-4 pt-3',
-        'max-md-gutters:flex-col',
+        'max-md-gutters:flex-col max-md-gutters:gap-y-1.5',
         '[&_h3]:!mb-0'
       )}>
       <HeaderComponent tags={getTagNamesList(comment)}>

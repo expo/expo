@@ -396,11 +396,7 @@ export const parseParamName = (name: string) => (name.startsWith('__') ? name.su
 export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
   const hasDescription = Boolean(parameters.some(param => param.comment));
   return (
-    <Table
-      containerClassName={mergeClasses(
-        VERTICAL_SPACING,
-        'mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4'
-      )}>
+    <Table containerClassName={mergeClasses(VERTICAL_SPACING, 'mt-0.5')}>
       <APIParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
       <tbody>
         {parameters?.map(param => (

@@ -68,11 +68,7 @@ const renderTypeDeclarationTable = (
       </CALLOUT>
     ) : undefined}
     <APICommentTextBlock comment={comment} />
-    <Table
-      containerClassName={mergeClasses(
-        'mt-0.5 rounded-none border-0 border-t border-palette-gray4',
-        '[&_thead]:border-palette-gray4'
-      )}>
+    <Table containerClassName={mergeClasses('mt-0.5 rounded-none border-0 border-t')}>
       <APIParamsTableHeadRow mainCellLabel="Property" />
       <tbody>
         {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
@@ -231,11 +227,17 @@ const renderType = (
                     {type.type === 'union' ? ' or ' : ' '}
                   </Fragment>
                 ))}
-              {type.type === 'union'
-                ? propMethodDefinitions.length > 2
-                  ? 'An anonymous method defined as described below'
-                  : 'Object shaped as below'
-                : 'extended by'}
+              {type.type === 'union' ? (
+                propMethodDefinitions.length > 2 ? (
+                  'An anonymous method defined as described below'
+                ) : (
+                  <>
+                    <CODE className="text-default">object</CODE> shaped as below
+                  </>
+                )
+              ) : (
+                'extended by'
+              )}
               :
             </CALLOUT>
           ) : null}
@@ -256,7 +258,7 @@ const renderType = (
         <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
           <APIBoxHeader name={name} comment={comment} />
-          <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-3')}>
+          <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-1.5')}>
             <span className={STYLES_SECONDARY}>Literal Type: </span>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
@@ -308,14 +310,14 @@ const renderType = (
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={`${name}<${type.checkType.name}>`} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
-        <CALLOUT className={VERTICAL_SPACING}>
+        <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-1')}>
           <span className={STYLES_SECONDARY}>Generic: </span>
           <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>}
           </CODE>
         </CALLOUT>
-        <CALLOUT className={VERTICAL_SPACING}>
+        <CALLOUT className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}>
           <span className={STYLES_SECONDARY}>Type: </span>
           <CODE>
             {type.checkType.name}

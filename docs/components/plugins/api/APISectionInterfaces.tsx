@@ -145,7 +145,7 @@ const renderInterface = (
       )}
       {interfaceFields.length > 0 && (
         <>
-          <Table containerClassName="rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4">
+          <Table containerClassName="rounded-none border-0 border-t">
             <APIParamsTableHeadRow mainCellLabel="Property" />
             <tbody>
               {interfaceFields.map(field => renderInterfacePropertyRow(field, sdkVersion))}

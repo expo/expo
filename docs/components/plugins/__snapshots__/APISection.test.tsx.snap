@@ -43,10 +43,10 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none !shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none !shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -339,7 +339,7 @@ for more details.
         class="border-t border-palette-gray4 first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -419,7 +419,7 @@ for more details.
         class="border-t border-palette-gray4 first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -499,7 +499,7 @@ for more details.
         class="border-t border-palette-gray4 first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -583,7 +583,7 @@ for more details.
         class="border-t border-palette-gray4 first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -682,7 +682,7 @@ in here.
         class="border-t border-palette-gray4 first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
         >
           <h3
             class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -936,10 +936,10 @@ properties.
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -988,7 +988,7 @@ properties.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -1176,10 +1176,10 @@ properties.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -1228,7 +1228,7 @@ properties.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -1462,10 +1462,10 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -1611,10 +1611,10 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -1663,7 +1663,7 @@ value depending on the state of the credential.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -1862,10 +1862,10 @@ refresh operation.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -1914,7 +1914,7 @@ refresh operation.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -2159,10 +2159,10 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -2211,7 +2211,7 @@ sign-in operation.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -2484,10 +2484,10 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -2536,7 +2536,7 @@ sign-out operation.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -2678,10 +2678,10 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -2834,7 +2834,7 @@ for more details.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -3262,10 +3262,10 @@ developers.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -3335,7 +3335,7 @@ may be
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -3627,10 +3627,10 @@ may be
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -3679,7 +3679,7 @@ may be
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mx-4 mb-3"
+      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mx-4 mb-1.5"
       data-text="true"
     >
       <span
@@ -3816,10 +3816,10 @@ for more details.
     </p>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -3947,7 +3947,7 @@ for more details.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -4143,10 +4143,10 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -4274,7 +4274,7 @@ for more details.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -4490,10 +4490,10 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -4621,7 +4621,7 @@ for more details.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -4743,10 +4743,10 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -4808,7 +4808,7 @@ OAuth 2.0 protocol
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -4932,10 +4932,10 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -5214,10 +5214,10 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -5530,10 +5530,10 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -5906,10 +5906,10 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -6217,10 +6217,10 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -6512,10 +6512,10 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -6880,10 +6880,10 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -7006,10 +7006,10 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -7092,7 +7092,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -7376,10 +7376,10 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -7519,10 +7519,10 @@ available on this device.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -7645,10 +7645,10 @@ available on this device.
     </div>
   </div>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -7697,7 +7697,7 @@ available on this device.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -7975,10 +7975,10 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
+    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -8037,7 +8037,7 @@ On iOS, the
       </p>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden shadow-xs rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -8275,10 +8275,10 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -8333,7 +8333,7 @@ in order to enable/disable the permission.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -8405,10 +8405,10 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -8471,7 +8471,7 @@ in order to enable/disable the permission.
         class="px-4 [table_&]:!mb-0 [table_&]:px-0"
       />
       <div
-        class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5 border-palette-gray4 [&_thead]:border-palette-gray4"
+        class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
       >
         <table
           class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -8573,10 +8573,10 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -8625,7 +8625,7 @@ in order to enable/disable the permission.
       </h3>
     </div>
     <p
-      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mx-4 mb-3"
+      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mx-4 mb-1.5"
       data-text="true"
     >
       <span
@@ -8671,10 +8671,10 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
@@ -8736,7 +8736,7 @@ in order to enable/disable the permission.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t border-palette-gray4 [&_thead]:border-palette-gray4"
+      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -8860,10 +8860,10 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-5 rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_th]:px-4 [&_th]:text-tertiary [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col [&_h3]:!mb-0"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:!mb-0"
     >
       <h3
         class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mb-3 mt-7 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1"
