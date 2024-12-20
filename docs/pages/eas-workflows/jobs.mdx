@@ -47,7 +47,7 @@ This job outputs the following variables:
 
 ## Update
 
-This is a pre-packaged job that publishes an update. When no parameters are provided, it is equivalent to `eas update --auto`. When run from a GitHub event, the EAS Update branch name will correspond to the git branch name. When run manually, a random branch name that includes the git branch name will be supplied to avoid unintentionally unintentional deployment of an update.
+This is a pre-packaged job that publishes an update. If starting workflows via `eas workflow:run`, a hard coded branch name will be required. We recommending using `branch: ${{ github.ref_name || 'your-branch-name' }}` if you start workflows locally and via GitHub events.
 
 ```yaml .eas/workflows/update.yaml
 jobs:
@@ -56,7 +56,7 @@ jobs:
     params:
       platform: android | ios
       channel: string
-      branch: string
+      branch: string # default: ${{ github.ref_name }}, which will be the name of the git branch
       message: string
 ```
 
