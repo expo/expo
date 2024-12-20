@@ -180,6 +180,8 @@ export const resolveTypeName = (
     objectType,
     indexType,
     target,
+    head,
+    tail,
   } = typeDefinition;
 
   try {
@@ -319,6 +321,17 @@ export const resolveTypeName = (
             </span>
           ))}
           <span className="text-quaternary">]</span>
+        </>
+      );
+    } else if (type === 'templateLiteral' && tail) {
+      const possibleData = [head ?? '', ...tail.flat()];
+      return (
+        <>
+          {possibleData.map((elem, i) => (
+            <span key={`tl-${name}-${i}`}>
+              {typeof elem === 'string' ? elem : `{${elem?.name}}`}
+            </span>
+          ))}
         </>
       );
     } else if (type === 'query' && queryType) {
