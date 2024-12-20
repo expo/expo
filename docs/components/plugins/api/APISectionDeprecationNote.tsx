@@ -25,7 +25,7 @@ export const APISectionDeprecationNote = ({ comment, sticky = false }: Props) =>
     <div
       className={mergeClasses(
         `[table_&]:mt-0 [table_&]:${ELEMENT_SPACING} [table_&]:last:mb-0`,
-        sticky && 'mx-[-21px] mt-[-21px] max-lg-gutters:mx-[-17px]'
+        sticky && '-mx-px -mt-px'
       )}>
       <InlineHelp
         size="sm"
@@ -34,7 +34,7 @@ export const APISectionDeprecationNote = ({ comment, sticky = false }: Props) =>
         className={mergeClasses(
           'border-palette-yellow5',
           '[table_&]:last-of-type:mb-2.5',
-          sticky && 'mb-3 rounded-b-none rounded-t-lg px-4 shadow-none max-md-gutters:px-4'
+          sticky && 'mb-0 rounded-b-none rounded-t-lg px-4 shadow-none max-md-gutters:px-4'
         )}>
         {content.length ? (
           <ReactMarkdown components={mdComponents}>{`**Deprecated** ${content}`}</ReactMarkdown>

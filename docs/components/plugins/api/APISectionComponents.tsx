@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { APISectionPlatformTags } from '~/components/plugins/api/components/APISectionPlatformTags';
-import { H2, DEMI, CODE, MONOSPACE, CALLOUT } from '~/ui/components/Text';
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { H2, DEMI, CODE, CALLOUT } from '~/ui/components/Text';
 
 import {
   CommentData,
@@ -14,12 +14,10 @@ import APISectionProps from './APISectionProps';
 import {
   resolveTypeName,
   getComponentName,
-  getTagNamesList,
-  H3Code,
   getPossibleComponentPropsNames,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
-import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY } from './styles';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];
@@ -64,16 +62,9 @@ const renderComponent = (
       key={`component-definition-${resolvedName}`}
       className={mergeClasses(STYLES_APIBOX, '!shadow-none')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
-      <div className="flex flex-wrap items-baseline justify-between max-md-gutters:flex-col [&_h3]:mb-0">
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
-            {resolvedName}
-          </MONOSPACE>
-        </H3Code>
-        <APISectionPlatformTags comment={comment} />
-      </div>
+      <APIBoxHeader name={resolvedName} comment={extractedComment} />
       {resolvedType && resolvedTypeParameters && (
-        <CALLOUT className={ELEMENT_SPACING}>
+        <CALLOUT className={mergeClasses(ELEMENT_SPACING, VERTICAL_SPACING)}>
           <DEMI className={STYLES_SECONDARY}>Type:</DEMI>{' '}
           <CODE>
             {extendedTypes ? (
