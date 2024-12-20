@@ -15,7 +15,7 @@ internal struct ContactAccessPicker: View {
   internal var completion: (([String]) -> Void)?
 
   var body: some View {
-    Rectangle()
+    EmptyView()
       .contactAccessPicker(isPresented: $isPickerPresented) { contactIds in
         isPickerPresented = false
         completion?(contactIds)
