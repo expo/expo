@@ -159,6 +159,12 @@ export interface ExpoConfig {
     [k: string]: any;
   };
   /**
+   * @deprecated Use a `metro.config.js` file instead. [Learn more](https://docs.expo.dev/guides/customizing-metro/)
+   */
+  packagerOpts?: {
+    [k: string]: any;
+  };
+  /**
    * Configuration for the expo-updates library
    */
   updates?: {
@@ -529,6 +535,10 @@ export interface IOS {
   runtimeVersion?:
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
+  /**
+   * Your iOS app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `ios.buildNumber` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `CFBundleShortVersionString`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+   */
+  version?: string;
 }
 /**
  * Configuration that is specific to the iOS platform icons.
@@ -777,6 +787,10 @@ export interface Android {
   runtimeVersion?:
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
+  /**
+   * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+   */
+  version?: string;
 }
 export interface AndroidIntentFiltersData {
   /**
