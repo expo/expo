@@ -47,9 +47,6 @@ export type ExpoTabsNavigationProp<
   TabNavigationEventMap
 >;
 
-/**
- * @hidden
- */
 export type ExpoTabsScreenOptions = Pick<
   BottomTabNavigationOptions,
   'title' | 'lazy' | 'freezeOnBlur'
@@ -59,9 +56,6 @@ export type ExpoTabsScreenOptions = Pick<
   action: NavigationAction;
 };
 
-/**
- * @hidden
- */
 export type TabNavigationEventMap = {
   /**
    * Event which fires on tapping on the tab in the tab bar.

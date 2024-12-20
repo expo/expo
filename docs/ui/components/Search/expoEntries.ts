@@ -9,6 +9,7 @@ import { Cube02Icon } from '@expo/styleguide-icons/outline/Cube02Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
 import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+import { FileSearch02Icon } from '@expo/styleguide-icons/outline/FileSearch02Icon';
 import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
@@ -28,9 +29,19 @@ export const entries: ExpoItemType[] = [
     Icon: Settings01Icon,
   },
   {
+    label: 'Account Audit Logs',
+    url: 'https://expo.dev/accounts/[account]/settings/audit-logs',
+    Icon: FileSearch02Icon,
+  },
+  {
     label: 'User Settings',
     url: 'https://expo.dev/settings',
     Icon: Settings01Icon,
+  },
+  {
+    label: 'User Security Activity',
+    url: 'https://expo.dev/settings/security-activity',
+    Icon: FileSearch02Icon,
   },
   {
     label: 'Snacks',

@@ -7,7 +7,8 @@ export type AbortSubscriptionCleanupFunction = () => void;
  */
 export declare class FetchResponse extends ConcreteNativeResponse implements Response {
     private readonly abortCleanupFunction;
-    private streamingStarted;
+    private streamingState;
+    private bodyStream;
     constructor(abortCleanupFunction: AbortSubscriptionCleanupFunction);
     get body(): ReadableStream<Uint8Array> | null;
     get headers(): Headers;

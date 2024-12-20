@@ -437,6 +437,9 @@ const RENAMED_PAGES: Record<string, string> = {
   // After moving common questions from Expo Router FAQ to Introduction
   '/router/reference/faq/': '/router/introduction/',
 
+  // After migrating Prebuild page info to CNG page
+  '/workflow/prebuild/': '/workflow/continuous-native-generation/',
+
   // After removing UI programming section
   '/ui-programming/image-background/': '/tutorial/overview/',
   '/ui-programming/implementing-a-checkbox/': '/versions/latest/sdk/checkbox/',
@@ -445,4 +448,15 @@ const RENAMED_PAGES: Record<string, string> = {
   '/ui-programming/react-native-toast/': '/tutorial/overview/',
   '/ui-programming/react-native-styling-buttons/': '/tutorial/overview/',
   '/ui-programming/user-interface-libraries/': '/tutorial/overview/',
+
+  // After renaming "workflows" to "eas-workflows"
+  // Since Next.js considers workflow/... and workflows/... as the same directory names
+  '/workflows/get-started/': '/eas-workflows/get-started/',
+  '/workflows/triggers/': '/eas-workflows/triggers/',
+  '/workflows/jobs/': '/eas-workflows/jobs/',
+  '/workflows/control-flow/': '/eas-workflows/control-flow/',
+  '/workflows/variables/': '/eas-workflows/variables/',
+
+  // After adding distribution section under EAS
+  '/distribution/publishing-websites/': '/guides/publishing-websites/',
 };

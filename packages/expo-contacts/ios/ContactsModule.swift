@@ -324,6 +324,17 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
         reject: promise.legacyRejecter
       )
     }
+
+    AsyncFunction("presentAccessPickerAsync") { (promise: Promise) in
+      guard #available(iOS 18.0, *) else {
+        return promise.reject(AccessPickerUnavailableException())
+      }
+      guard let currentViewController = appContext?.utilities?.currentViewController() else {
+        return promise.reject(MissingCurrentViewControllerException())
+      }
+      ContactAccessPicker.present(inViewController: currentViewController, promise: promise)
+    }
+    .runOnQueue(.main)
   }
 
   func didPickContact(contact: CNContact) throws {

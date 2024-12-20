@@ -299,6 +299,9 @@ redirects[eas-update/environment-variables]=eas/environment-variables
 # After moving common questions from Expo Router FAQ to Introduction
 redirects[router/reference/faq]=router/introduction
 
+# After migrating Prebuild page info to CNG page
+redirects[workflow/prebuild]=workflow/continuous-native-generation
+
 # After removing UI programming section
 redirects[ui-programming/image-background]=tutorial/overview
 redirects[ui-programming/implementing-a-checkbox]=versions/latest/sdk/checkbox
@@ -307,6 +310,16 @@ redirects[ui-programming/using-svgs]=versions/latest/sdk/svg
 redirects[ui-programming/react-native-toast]=tutorial/overview
 redirects[ui-programming/react-native-styling-buttons]=tutorial/overview
 redirects[ui-programming/user-interface-libraries]=tutorial/overview
+
+# After renaming "workflows" to "eas-workflows"
+redirects[workflows/get-started]=eas-workflows/get-started
+redirects[workflows/triggers]=eas-workflows/triggers
+redirects[workflows/jobs]=eas-workflows/jobs
+redirects[workflows/control-flow]=eas-workflows/control-flow
+redirects[workflows/variables]=eas-workflows/variables
+
+# After adding distribution section under EAS
+redirects[distribution/publishing-websites]=guides/publishing-websites
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

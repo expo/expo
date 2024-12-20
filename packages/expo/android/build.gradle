@@ -1,4 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+
+import expo.modules.plugin.gradle.ExpoModuleExtension
+import expo.modules.plugin.Version
+
 // TODO(@lukmccall): Remove when we drop support for SDK 52
 def useLegacyAutolinking = false
 try {
@@ -32,6 +37,8 @@ buildscript {
   }
 }
 
+def reactNativeVersion = project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
+
 android {
   namespace "expo.core"
   defaultConfig {
@@ -50,6 +57,15 @@ android {
           srcDirs += new File(project.buildDir, generatedFilesSrcDir)
         }
       }
+    }
+  }
+
+  sourceSets.main.java {
+    if (reactNativeVersion.isAtLeast(new Version(0, 78, 0))) {
+      srcDirs += 'src/rn78/main'
+    } else if (reactNativeVersion.isAtLeast(new Version(0, 74, 0))) {
+      // TODO(kudo,20241217): Remove this when we drop react-native 0.77 support
+      srcDirs += 'src/rn74/main'
     }
   }
 }

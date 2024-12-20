@@ -119,6 +119,7 @@ export default {
       // this makes sure our starting and general guides are first, and API index last (in order from new to old)
       pathsPriority: [
         ...navigation.homeDirectories,
+        ...navigation.easDirectories,
         ...navigation.learnDirectories,
         ...navigation.generalDirectories,
         ...navigation.referenceDirectories.filter(dir => dir === 'versions'),

@@ -54,6 +54,7 @@ exceptions:
   - '.*CLI.*'
   - '.*Classic Updates.*'
   - '.*Client.*'
+  - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
   - '.*Command Line Tools.*'

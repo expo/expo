@@ -34,6 +34,36 @@ export function test({ describe, expect, it, ...t }) {
       const buffer = await resp.arrayBuffer();
       expect(buffer.byteLength).toBe(20);
     });
+
+    it('should process response in readablestream from late get reader call', async () => {
+      const resp = await fetch('https://httpbin.test.k6.io/get');
+      expect(resp.ok).toBe(true);
+      expect(resp.body).not.toBeNull();
+
+      // Delay 0.5s to ensure the response is completed before streaming started
+      await delayAsync(500);
+
+      const chunks = [];
+      const reader = resp.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        chunks.push(value);
+      }
+      const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+      let offset = 0;
+      for (const chunk of chunks) {
+        buffer.set(chunk, offset);
+        offset += chunk.length;
+      }
+
+      const text = new TextDecoder().decode(buffer);
+      expect(text).not.toBe('');
+      const json = JSON.parse(text);
+      expect(json.url).toMatch(/^https?:\/\/httpbin\.test\.k6\.io\/get$/);
+    });
   });
 
   describe('Request body', () => {
@@ -369,4 +399,8 @@ function setupTestTimeout(t: Record<string, any>, timeout: number = 30000) {
   t.afterAll(() => {
     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
+}
+
+function delayAsync(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

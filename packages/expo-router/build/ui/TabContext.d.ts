@@ -11,17 +11,11 @@ export type ExpoTabsNavigatorScreenOptions = {
 };
 export type ExpoTabsNavigatorOptions = DefaultNavigatorOptions<ParamListBase, string | undefined, TabNavigationState<ParamListBase>, ExpoTabsScreenOptions, TabNavigationEventMap, ExpoTabsNavigationProp<ParamListBase>> & Omit<TabRouterOptions, 'initialRouteName'> & ExpoTabsNavigatorScreenOptions;
 export type ExpoTabsNavigationProp<ParamList extends ParamListBase, RouteName extends keyof ParamList = keyof ParamList, NavigatorID extends string | undefined = undefined> = NavigationProp<ParamList, RouteName, NavigatorID, TabNavigationState<ParamListBase>, ExpoTabsScreenOptions, TabNavigationEventMap>;
-/**
- * @hidden
- */
 export type ExpoTabsScreenOptions = Pick<BottomTabNavigationOptions, 'title' | 'lazy' | 'freezeOnBlur'> & {
     params?: object;
     title: string;
     action: NavigationAction;
 };
-/**
- * @hidden
- */
 export type TabNavigationEventMap = {
     /**
      * Event which fires on tapping on the tab in the tab bar.
@@ -136,6 +130,9 @@ export declare const TabsNavigatorContext: import("react").Context<({
         merge?: boolean | undefined;
     }): void;
     preload<RouteName_4 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+    /**
+     * @hidden
+     */
     reset(state: Readonly<{
         key: string;
         index: number;
