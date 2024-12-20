@@ -18,7 +18,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
    */
   @objc
   public init(viewModule: ViewModuleWrapper, managerClass: ViewModuleWrapper.Type, bridge: RCTBridge) {
-    self.moduleHolder = viewModule.wrappedModuleHolder
+    self.moduleHolder = viewModule.moduleHolder
     super.init(managerClass: managerClass, bridge: bridge, eventDispatcher: bridge.eventDispatcher())
   }
 
