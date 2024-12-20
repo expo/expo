@@ -26,9 +26,10 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 
   init() {
     let commandCenter = MPRemoteCommandCenter.shared()
-
+    // swiftlint:disable legacy_objc_type
     commandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: skipTimeInterval)]
     commandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: skipTimeInterval)]
+    // swiftlint:enable legacy_objc_type
   }
 
   func registerPlayer(_ player: VideoPlayer) {

@@ -1,5 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
+// swiftlint:disable closure_body_length
+
 import ExpoModulesCore
 
 public final class VideoModule: Module {
@@ -315,3 +317,4 @@ public final class VideoModule: Module {
     }
   }
 }
+// swiftlint:enable closure_body_length
