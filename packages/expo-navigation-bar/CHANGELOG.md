@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Restricted color types to string to prevent the use of illegal color types (PlatformColor) until supported. ([#34053](https://github.com/expo/expo/pull/34053) by [@chrfalch](https://github.com/chrfalch))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#33779](https://github.com/expo/expo/pull/33779) by [@reichhartd](https://github.com/reichhartd))
 
 ## 4.0.6 - 2024-12-10
 
