@@ -7,6 +7,7 @@ import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-
 
 import * as ContactUtils from './ContactUtils';
 import ContactsList from './ContactsList';
+import Button from '../../components/Button';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
 import MonoText from '../../components/MonoText';
@@ -87,7 +88,7 @@ function ContactsView({ navigation }: Props) {
   );
 
   const loadAsync = async (event: { distanceFromEnd?: number } = {}, restart = false) => {
-    if (!hasNextPage || refreshing || Platform.OS === 'web') {
+    if (!restart && (!hasNextPage || refreshing || Platform.OS === 'web')) {
       return;
     }
     setRefreshing(true);
@@ -117,6 +118,11 @@ function ContactsView({ navigation }: Props) {
     setRefreshing(false);
   };
 
+  const changeAccess = React.useCallback(async () => {
+    await Contacts.presentAccessPickerAsync();
+    await loadAsync({}, true);
+  }, []);
+
   const onFocus = React.useCallback(() => {
     loadAsync();
   }, []);
@@ -125,6 +131,9 @@ function ContactsView({ navigation }: Props) {
 
   return (
     <>
+      {Platform.OS === 'ios' && (
+        <Button title="Change access" onPress={changeAccess} style={styles.changeAccessButton} />
+      )}
       <ContactsList
         onEndReachedThreshold={-1.5}
         refreshControl={
@@ -163,5 +172,8 @@ const styles = StyleSheet.create({
   },
   contactRow: {
     marginBottom: 12,
+  },
+  changeAccessButton: {
+    margin: 15,
   },
 });
