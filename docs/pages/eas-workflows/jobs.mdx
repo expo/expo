@@ -54,7 +54,7 @@ jobs:
   update:
     type: update
     params:
-      platform: android | ios
+      platform: android | ios | all # (default: all)
       channel: string
       branch: string # default: ${{ github.ref_name }}, which will be the name of the git branch
       message: string
