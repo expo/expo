@@ -2,8 +2,8 @@
   "name": "expo-contacts",
   "version": "14.0.2",
   "description": "Provides access to the phone's system contacts.",
-  "main": "build/Contacts.js",
-  "types": "build/Contacts.d.ts",
+  "main": "src/index.ts",
+  "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
