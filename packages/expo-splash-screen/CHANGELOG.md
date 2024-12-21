@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, show the splashscreen again when the app is reloaded.
+
 ### 💡 Others
 
 ## 0.29.18 - 2024-12-10
