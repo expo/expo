@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, show the splashscreen again when the app is reloaded.
+- On `iOS`, show the splashscreen again when the app is reloaded. ([#33793](https://github.com/expo/expo/pull/33793) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
