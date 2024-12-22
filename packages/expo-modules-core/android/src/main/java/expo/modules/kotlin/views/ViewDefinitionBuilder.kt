@@ -416,7 +416,6 @@ class ViewDefinitionBuilder<T : View>(
         return@viewFactory try {
           it.newInstance(context, appContext)
         } catch (e: Throwable) {
-          println(e)
           handleFailureDuringViewCreation(context, appContext, e)
         }
       }
