@@ -10,6 +10,8 @@ import { SourceSkips } from './sourcer/SourceSkips';
 import { buildDirMatchObjects, buildPathMatchObjects } from './utils/Path';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
+export const FINGERPRINT_CONFIG_OUTPUT_START_MARKER = '@expo-fingerprint-config-output-start-marker-f8c7d9e1';
+export const FINGERPRINT_CONFIG_OUTPUT_END_MARKER = '@expo-fingerprint-config-output-end-marker-f8c7d9e1';
 
 export const DEFAULT_IGNORE_PATHS = [
   FINGERPRINT_IGNORE_FILENAME,

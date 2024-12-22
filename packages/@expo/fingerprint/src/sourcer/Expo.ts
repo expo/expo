@@ -12,6 +12,7 @@ import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
+import { FINGERPRINT_CONFIG_OUTPUT_START_MARKER, FINGERPRINT_CONFIG_OUTPUT_END_MARKER } from '../Options';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 
@@ -39,7 +40,15 @@ export async function getExpoConfigSourcesAsync(
       [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
       { cwd: projectRoot }
     );
-    const stdoutJson = JSON.parse(stdout);
+
+    // Find the content between the start and end markers, as to not include other output in stdout
+    const startMarker = FINGERPRINT_CONFIG_OUTPUT_START_MARKER;
+    const endMarker = FINGERPRINT_CONFIG_OUTPUT_END_MARKER;
+    const startIndex = stdout.indexOf(startMarker);
+    const endIndex = stdout.indexOf(endMarker);
+    const configContent = stdout.slice(startIndex + startMarker.length, endIndex).trim();
+
+    const stdoutJson = JSON.parse(configContent);
     config = stdoutJson.config;
     expoConfig = normalizeExpoConfig(config.exp, options);
     loadedModules = stdoutJson.loadedModules;

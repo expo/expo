@@ -13,6 +13,7 @@
 - Fixed ignorePaths does not ignore files inside local modules. ([#33597](https://github.com/expo/expo/pull/33597) by [@kudo](https://github.com/kudo))
 - Fixed unstable fingerprint on Windows. ([#33627](https://github.com/expo/expo/pull/33627) by [@kudo](https://github.com/kudo))
 - Fixed negate `!` pattern ignore all paths in `.fingerprintignore`. ([#33671](https://github.com/expo/expo/pull/33671) by [@kudo](https://github.com/kudo))
+- Fixed issue where console logs in `app.config.js` caused errors when loading the config. ([#33800](https://github.com/expo/expo/pull/33800) by [@joelyourstone](https://github.com/joelyourstone))  
 
 ### 💡 Others
 

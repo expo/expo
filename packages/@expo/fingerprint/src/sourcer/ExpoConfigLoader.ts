@@ -7,7 +7,7 @@ import module from 'module';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { DEFAULT_IGNORE_PATHS } from '../Options';
+import { DEFAULT_IGNORE_PATHS, FINGERPRINT_CONFIG_OUTPUT_END_MARKER, FINGERPRINT_CONFIG_OUTPUT_START_MARKER } from '../Options';
 import { isIgnoredPath } from '../utils/Path';
 
 async function runAsync(programName: string, args: string[] = []) {
@@ -33,7 +33,11 @@ async function runAsync(programName: string, args: string[] = []) {
   const filteredLoadedModules = loadedModules.filter(
     (modulePath) => !isIgnoredPath(modulePath, ignoredPaths)
   );
+  // Since we're using stdout to read this output and we cannot always control the entire output
+  // (e.g. config.app.js having a console.log), we'll add a start and end marker to the output
+  console.log(FINGERPRINT_CONFIG_OUTPUT_START_MARKER);
   console.log(JSON.stringify({ config, loadedModules: filteredLoadedModules }));
+  console.log(FINGERPRINT_CONFIG_OUTPUT_END_MARKER);
 }
 
 // If running from the command line
