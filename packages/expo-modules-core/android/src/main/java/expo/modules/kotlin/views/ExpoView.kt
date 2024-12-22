@@ -53,7 +53,7 @@ abstract class ExpoView(
     // When the border radius is set, we need to clip the content to the padding box.
     // This is because the border radius is applied to the background drawable, not the view itself.
     // It is the same behavior as in React Native.
-    if(!clipToPadding) {
+    if (!clipToPadding) {
       return
     }
     BackgroundStyleApplicator.clipToPaddingBox(this, canvas)

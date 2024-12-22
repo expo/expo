@@ -155,10 +155,10 @@ class ViewDefinitionBuilder<T : View>(
     name: String,
     type: KClass<PropType>
   ) {
-      props[name] = ComposeViewProp(
-        name,
-        toAnyType<PropType>(),
-      )
+    props[name] = ComposeViewProp(
+      name,
+      toAnyType<PropType>()
+    )
   }
 
   /**

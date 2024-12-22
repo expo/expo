@@ -26,13 +26,12 @@ abstract class ExpoComposeView(
   val layout = ComposeView(context).also {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     val root = appContext.activityProvider?.currentActivity?.findViewById<View>(android.R.id.content)
-    if(root != null) {
+    if (root != null) {
       WindowRecomposerPolicy.createAndInstallWindowRecomposer(root)
       it.setParentCompositionContext(root.compositionContext)
       it.setViewTreeLifecycleOwner(root.findViewTreeLifecycleOwner())
     }
     addView(it)
-
   }
 
   fun setContent(

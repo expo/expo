@@ -11,9 +11,8 @@ import kotlin.reflect.full.memberProperties
 
 class ComposeViewProp(
   name: String,
-  anyType: AnyType,
+  anyType: AnyType
 ) : AnyViewProp(name, anyType) {
-
 
   @Suppress("UNCHECKED_CAST")
   override fun set(prop: Dynamic, onView: View, appContext: AppContext?) {
@@ -22,7 +21,7 @@ class ComposeViewProp(
     }) {
       val props = (onView as ExpoComposeView).props ?: return
       val property = props::class.memberProperties.find { it.name == name }?.getter?.call(onView.props)
-      if(property is MutableState<*>) {
+      if (property is MutableState<*>) {
         (property as MutableState<Any?>).value = type.convert(prop, appContext)
       }
     }
