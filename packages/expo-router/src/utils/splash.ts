@@ -1,4 +1,5 @@
 import { requireOptionalNativeModule } from 'expo';
+import type { SplashScreenOptions } from 'expo-splash-screen';
 
 const SplashModule = requireOptionalNativeModule('ExpoSplashScreen');
 
@@ -22,6 +23,14 @@ export async function preventAutoHideAsync() {
   }
 
   return SplashModule.preventAutoHideAsync();
+}
+
+export async function setOptions(options: SplashScreenOptions) {
+  if (!SplashModule) {
+    return;
+  }
+
+  return SplashModule.setOptions(options);
 }
 
 export async function _internal_preventAutoHideAsync(): Promise<boolean> {
