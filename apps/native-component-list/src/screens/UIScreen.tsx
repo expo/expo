@@ -1,6 +1,6 @@
 import { SingleChoiceSegmentedControlView } from 'expo-ui';
 import * as React from 'react';
-import { Platform, StyleSheet, Text } from 'react-native';
+import { Platform, Text } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 
