@@ -184,6 +184,7 @@ dependencies {
   implementation("androidx.tracing:tracing-ktx:1.2.0")
 
   implementation 'com.facebook.react:react-android'
+  implementation 'androidx.compose.foundation:foundation-android:1.7.5'
 
   compileOnly 'com.facebook.fbjni:fbjni:0.5.1'
 
