@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoUIModule.web.d.ts","sourceRoot":"","sources":["../src/ExpoUIModule.web.ts"],"names":[],"mappings":"AAAA,OAAO,EAAqB,YAAY,EAAE,MAAM,MAAM,CAAC;AAEvD,OAAO,EAAE,kBAAkB,EAAE,MAAM,gBAAgB,CAAC;AAEpD,cAAM,YAAa,SAAQ,YAAY,CAAC,kBAAkB,CAAC;IACzD,EAAE,SAAW;IACP,aAAa,CAAC,KAAK,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC;IAGjD,KAAK;CAGN;;AAED,wBAA+C"}
