@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [camera] Fixed issue with facing on web mobile (33815) ([#33816](https://github.com/expo/expo/pull/33816) by [@exzos28](https://github.com/exzos28))
+
 ### 💡 Others
 
 ## 15.0.16 — 2024-09-13
