@@ -13,6 +13,7 @@ import HeaderIconButton from '../../components/HeaderIconButton';
 import MonoText from '../../components/MonoText';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
+import { Colors } from '../../constants';
 
 type StackParams = {
   ContactDetail: { id: string };
@@ -131,6 +132,16 @@ function ContactsView({ navigation }: Props) {
 
   return (
     <>
+      <Contacts.ContactAccessButton
+        query="Apple"
+        caption="email"
+        ignoredEmails={[]}
+        ignoredPhoneNumbers={[]}
+        tintColor={Colors.tintColor}
+        backgroundColor="#f3f3f3"
+        textColor="black"
+        style={{ marginTop: 20, height: 50 }}
+      />
       {Platform.OS === 'ios' && (
         <Button title="Change access" onPress={changeAccess} style={styles.changeAccessButton} />
       )}
