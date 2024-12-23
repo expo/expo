@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump react-navigation versions. ([#33758](https://github.com/expo/expo/pull/33758) by [@marklawlor](https://github.com/marklawlor))
+
 ## 4.0.14 — 2024-12-19
 
 ### 🐛 Bug fixes
