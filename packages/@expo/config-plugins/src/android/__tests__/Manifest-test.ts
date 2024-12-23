@@ -48,6 +48,23 @@ describe(getRunnableActivity, () => {
     expect(activity.$['android:name']).toBe('.CustomNamed');
     expect(Array.isArray(activity['intent-filter'])).toBe(true);
   });
+  it(`works`, async () => {
+    const sampleManifestPath = resolve(__dirname, 'fixtures/activity-alias-AndroidManifest.xml');
+    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const activity = getRunnableActivity(manifest)!;
+    expect(activity.$).toBeDefined();
+    expect(activity.$['android:name']).toBe('.MainActivityWithNoLauncherCategory');
+    expect(Array.isArray(activity['intent-filter'])).toBe(true);
+  });
+  it(`returns null`, async () => {
+    const sampleManifestPath = resolve(
+      __dirname,
+      'fixtures/no-runnable-activity-AndroidManifest.xml'
+    );
+    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const activity = getRunnableActivity(manifest)!;
+    expect(activity).toBe(null);
+  });
 });
 describe(getMainApplication, () => {
   it(`works`, async () => {
