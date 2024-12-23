@@ -72,6 +72,12 @@ export type ManifestActivity = {
     };
     'intent-filter'?: ManifestIntentFilter[];
 };
+export type ManifestActivityAlias = {
+    $: ManifestActivity['$'] & {
+        'android:targetActivity'?: string;
+    };
+    'intent-filter'?: ManifestIntentFilter[];
+};
 export type ManifestUsesLibrary = {
     $: AndroidManifestAttributes & {
         'android:required'?: StringBoolean;
@@ -80,6 +86,7 @@ export type ManifestUsesLibrary = {
 export type ManifestApplication = {
     $: ManifestApplicationAttributes;
     activity?: ManifestActivity[];
+    'activity-alias'?: ManifestActivityAlias[];
     service?: ManifestService[];
     receiver?: ManifestReceiver[];
     'meta-data'?: ManifestMetaData[];
