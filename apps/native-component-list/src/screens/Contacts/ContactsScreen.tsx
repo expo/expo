@@ -11,9 +11,9 @@ import Button from '../../components/Button';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
 import MonoText from '../../components/MonoText';
+import { Colors } from '../../constants';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
-import { Colors } from '../../constants';
 
 type StackParams = {
   ContactDetail: { id: string };
