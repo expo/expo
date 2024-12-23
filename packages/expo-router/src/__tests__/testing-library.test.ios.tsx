@@ -1,4 +1,11 @@
+import * as React from 'react';
+import { Text } from 'react-native';
+
+import { Redirect, Slot } from '../exports';
 import { router } from '../imperative-api';
+import Drawer from '../layouts/Drawer';
+import Stack from '../layouts/Stack';
+import Tabs from '../layouts/Tabs';
 import { act, renderRouter, screen } from '../testing-library';
 
 /*
@@ -25,12 +32,13 @@ it('toHavePathnameWithParams', () => {
 });
 
 // This test is currently broken in React Navigation v7 as @react-navigation/routers still has the prerenderRoutes key
-it.skip('toHaveRouterState', () => {
+it('toHaveRouterState', () => {
   renderRouter(['[slug]', '[...catchAll]', 'directory/page'], { initialUrl: '/home?test=true' });
   act(() => router.navigate('/directory/page'));
   expect(screen).toHaveRouterState({
     index: 1,
     key: expect.any(String),
+    preloadedRoutes: [],
     routeNames: ['_sitemap', 'directory/page', '[slug]', '[...catchAll]', '+not-found'],
     routes: [
       {
@@ -52,4 +60,30 @@ it.skip('toHaveRouterState', () => {
     stale: false,
     type: 'stack',
   });
+});
+
+it('correctly asserts the state on delayed state updates', () => {
+  // redirect will render the screen as null
+  // This causes the router, which was expecting 'auth' to exist to
+  // fire an additional state update to render the correct screen
+  renderRouter(
+    {
+      '/home/_layout': () => {
+        return (
+          <Stack>
+            <Stack.Screen name="auth" redirect />
+            <Stack.Screen name="pages" />
+          </Stack>
+        );
+      },
+      '/home/auth': () => null,
+      '/home/pages': () => <Text testID="text">screenA</Text>,
+    },
+    {
+      initialUrl: '/home',
+    }
+  );
+
+  expect(screen.getByTestId('text')).toHaveTextContent('screenA');
+  expect(screen).toHavePathname('/home/pages');
 });
