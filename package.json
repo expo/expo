@@ -29,7 +29,7 @@
     "@react-navigation/native-stack": "^7.2.0",
     "@react-navigation/routers": "7.0.0",
     "@react-navigation/stack": "^7.1.1",
-    "react-native-screens": "~4.1.0",
+    "react-native-screens": "~4.4.0",
     "**/util": "~0.12.4"
   },
   "dependencies": {
