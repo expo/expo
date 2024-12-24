@@ -8,7 +8,7 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "expo": "~52.0.22",
+    "expo": "~52.0.23",
     "expo-router": "^4.0.15",
     "react": "18.3.1",
     "react-native": "0.76.5"
