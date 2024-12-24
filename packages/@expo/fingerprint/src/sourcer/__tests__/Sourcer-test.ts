@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 import { normalizeOptionsAsync } from '../../Options';
 import { getHashSourcesAsync } from '../Sourcer';
 
+jest.mock('@expo/spawn-async');
 jest.mock('fs');
 jest.mock('fs/promises');
 jest.mock('../../utils/SpawnIPC');
