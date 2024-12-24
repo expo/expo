@@ -19,10 +19,10 @@
   },
   "dependencies": {
     "@expo/dom-webview": "0.0.1",
-    "expo": "~52.0.21",
+    "expo": "~52.0.22",
     "expo-haptics": "~14.0.0",
     "expo-linking": "~7.0.0",
-    "expo-router": "^4.0.14",
+    "expo-router": "^4.0.15",
     "expo-speech": "~13.0.0",
     "expo-sqlite": "~15.0.0",
     "react": "18.3.1",
