@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- feat(bun): add support for text-based lockfile format ([#33825](https://github.com/expo/expo/pull/33825) by [@tharakadesilva](https://github.com/tharakadesilva))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
