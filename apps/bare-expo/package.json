@@ -50,7 +50,7 @@
     "expo": "~52.0.22",
     "expo-build-properties": "~0.13.0",
     "expo-camera": "~16.0.10",
-    "expo-dev-client": "~5.0.0",
+    "expo-dev-client": "~5.0.7",
     "expo-face-detector": "~13.0.0",
     "expo-image": "~2.0.0",
     "expo-insights": "~0.8.0",
