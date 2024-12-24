@@ -277,6 +277,13 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
           results.push({ type: 'dir', filePath, reasons });
         }
       }
+      if (module.aarProjects) {
+        for (const aarProject of module.aarProjects) {
+          // use relative path for aarProject fields
+          aarProject.aarFilePath = toPosixPath(path.relative(projectRoot, aarProject.aarFilePath));
+          aarProject.projectDir = toPosixPath(path.relative(projectRoot, aarProject.projectDir));
+        }
+      }
     }
     results.push({
       type: 'contents',
