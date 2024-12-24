@@ -7,10 +7,13 @@
 ### 🎉 New features
 
 - added the ability to read and write starred property (as "isFavorite") of contacts on Android ([#33208](https://github.com/expo/expo/pull/33208) by [@NorseGaud](https://github.com/NorseGaud))
+- Add `presentAccessPickerAsync` function that presents the iOS 18.0+ picker for limited contacts access. ([#33771](https://github.com/expo/expo/pull/33771) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Use the `src` folder as the Metro target.
 
 ## 14.0.2 — 2024-11-07
 

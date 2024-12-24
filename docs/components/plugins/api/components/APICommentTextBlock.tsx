@@ -7,7 +7,7 @@ import remarkSupsub from 'remark-supersub';
 import { InlineHelp } from 'ui/components/InlineHelp';
 
 import { Tag } from '~/ui/components/Tag/Tag';
-import { DEMI } from '~/ui/components/Text';
+import { CALLOUT } from '~/ui/components/Text';
 
 import { MDComponents } from '../types';
 import { APIBoxSectionHeader } from './APIBoxSectionHeader';
@@ -28,6 +28,7 @@ type Props = {
   beforeContent?: ReactNode;
   afterContent?: ReactNode;
   includePlatforms?: boolean;
+  includeSpacing?: boolean;
   inlineHeaders?: boolean;
   emptyCommentFallback?: string;
 };
@@ -37,6 +38,7 @@ export const APICommentTextBlock = ({
   beforeContent,
   afterContent,
   includePlatforms = true,
+  includeSpacing = true,
   inlineHeaders = false,
   emptyCommentFallback,
 }: Props) => {
@@ -55,14 +57,14 @@ export const APICommentTextBlock = ({
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:mb-0')}>
+    <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:!mb-0')}>
       {inlineHeaders ? (
-        <DEMI className="mb-1.5 flex flex-row items-center gap-1.5 text-secondary">
-          <CodeSquare01Icon className="icon-sm" />
+        <CALLOUT className="my-1.5 flex flex-row items-center gap-1.5 font-medium text-tertiary">
+          <CodeSquare01Icon className="icon-sm -mt-px text-icon-tertiary" />
           Example
-        </DEMI>
+        </CALLOUT>
       ) : (
-        <APIBoxSectionHeader text="Example" className="!mb-3 !mt-1" Icon={CodeSquare01Icon} />
+        <APIBoxSectionHeader text="Example" className="-mx-4 mb-3 mt-1" Icon={CodeSquare01Icon} />
       )}
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {getCommentContent(example.content ?? example.name)}
@@ -85,7 +87,7 @@ export const APICommentTextBlock = ({
   const hasPlatforms = (getAllTagData('platform', comment)?.length || 0) > 0;
 
   return (
-    <>
+    <div className={mergeClasses(includeSpacing && 'px-4 [table_&]:!mb-0 [table_&]:px-0')}>
       {includePlatforms && hasPlatforms && (
         <APISectionPlatformTags
           comment={comment}
@@ -106,7 +108,7 @@ export const APICommentTextBlock = ({
       {afterContent && !exampleText && <br />}
       {seeText}
       {exampleText}
-    </>
+    </div>
   );
 };
 

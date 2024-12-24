@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `unknown` file type being returned for video files. ([#33589](https://github.com/expo/expo/pull/33589) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 17.0.4 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `unknown` file type being returned for video files. ([#33589](https://github.com/expo/expo/pull/33589) by [@behenate](https://github.com/behenate))
 
 ## 17.0.3 — 2024-11-22
 

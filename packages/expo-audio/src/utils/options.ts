@@ -8,6 +8,7 @@ export function createRecordingOptions(options: RecordingOptions) {
     sampleRate: options.sampleRate,
     numberOfChannels: options.numberOfChannels,
     bitRate: options.bitRate,
+    isMeteringEnabled: options.isMeteringEnabled ?? false,
   };
 
   if (Platform.OS === 'ios') {

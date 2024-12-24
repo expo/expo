@@ -11,10 +11,12 @@ const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const semver_1 = __importDefault(require("semver"));
+const ExpoResolver_1 = require("../ExpoResolver");
 const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
 const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
 const Path_1 = require("../utils/Path");
+const SpawnIPC_1 = require("../utils/SpawnIPC");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
     if (options.sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAll) {
@@ -30,8 +32,8 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     const tmpDir = await promises_1.default.mkdtemp(path_1.default.join(os_1.default.tmpdir(), 'expo-fingerprint-'));
     const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
     try {
-        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
-        const stdoutJson = JSON.parse(stdout);
+        const { message } = await (0, SpawnIPC_1.spawnWithIpcAsync)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
+        const stdoutJson = JSON.parse(message);
         config = stdoutJson.config;
         expoConfig = normalizeExpoConfig(config.exp, options);
         loadedModules = stdoutJson.loadedModules;
@@ -204,7 +206,7 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
     try {
         const reasons = ['expoAutolinkingAndroid'];
         const results = [];
-        const { stdout } = await (0, spawn_async_1.default)('npx', ['expo-modules-autolinking', 'resolve', '-p', 'android', '--json'], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', 'android', '--json'], { cwd: projectRoot });
         const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
         for (const module of config.modules) {
             for (const project of module.projects) {
@@ -219,6 +221,13 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoA
                     plugin.sourceDir = filePath; // use relative path for the dir
                     debug(`Adding expo-modules-autolinking android dir - ${chalk_1.default.dim(filePath)}`);
                     results.push({ type: 'dir', filePath, reasons });
+                }
+            }
+            if (module.aarProjects) {
+                for (const aarProject of module.aarProjects) {
+                    // use relative path for aarProject fields
+                    aarProject.aarFilePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, aarProject.aarFilePath));
+                    aarProject.projectDir = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, aarProject.projectDir));
                 }
             }
         }
@@ -256,7 +265,7 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options, expoAutol
     try {
         const reasons = ['expoAutolinkingIos'];
         const results = [];
-        const { stdout } = await (0, spawn_async_1.default)('npx', ['expo-modules-autolinking', 'resolve', '-p', platform, '--json'], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot), 'resolve', '-p', platform, '--json'], { cwd: projectRoot });
         const config = JSON.parse(stdout);
         for (const module of config.modules) {
             for (const pod of module.pods) {

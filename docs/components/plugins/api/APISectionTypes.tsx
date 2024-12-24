@@ -12,7 +12,6 @@ import {
   TypeDeclarationContentData,
   TypeDefinitionData,
   TypeGeneralData,
-  TypeSignaturesData,
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
@@ -31,7 +30,7 @@ import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { APITypeOrSignatureType } from './components/APITypeOrSignatureType';
-import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -40,7 +39,15 @@ export type APISectionTypesProps = {
 
 const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   const uniqueTypes = Array.from(
-    new Set(types.map((t: TypeDefinitionData) => t.value && typeof t.value))
+    new Set(
+      types.map((t: TypeDefinitionData) => {
+        if ('head' in t) {
+          return t.head;
+        } else if ('value' in t) {
+          return t.value && typeof t.value;
+        }
+      })
+    )
   );
   if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
     return <CODE>{uniqueTypes[0]}</CODE>;
@@ -54,9 +61,14 @@ const renderTypeDeclarationTable = (
   index?: number
 ): ReactNode => (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
-    {index && index > 0 ? <br /> : undefined}
+    {index && index > 0 ? (
+      <CALLOUT
+        className={mergeClasses(STYLES_SECONDARY, 'border-t border-palette-gray4 px-4 py-3')}>
+        Or object shaped as below:
+      </CALLOUT>
+    ) : undefined}
     <APICommentTextBlock comment={comment} />
-    <Table>
+    <Table containerClassName={mergeClasses('mt-0.5 rounded-none border-0 border-t')}>
       <APIParamsTableHeadRow mainCellLabel="Property" />
       <tbody>
         {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
@@ -109,12 +121,12 @@ const renderTypePropertyRow = (
   const hasDeprecationNote = Boolean(getTagData('deprecated', comment));
   return (
     <Row key={name}>
-      <Cell fitContent>
+      <Cell>
         <DEMI>{name}</DEMI>
         {renderFlags(flags, initValue)}
         {kind && renderIndexSignature(kind)}
       </Cell>
-      <Cell fitContent>
+      <Cell>
         <APITypeOrSignatureType
           allowBlock
           type={type}
@@ -122,7 +134,7 @@ const renderTypePropertyRow = (
           sdkVersion={sdkVersion}
         />
       </Cell>
-      <Cell fitContent>
+      <Cell>
         <APISectionDeprecationNote comment={comment} />
         <APICommentTextBlock
           inlineHeaders
@@ -141,34 +153,35 @@ const renderType = (
 ): ReactNode => {
   if (type.declaration) {
     // Object Types
+    const signature = type?.declaration?.signatures?.[0];
     return (
       <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader
-          name={`${name}${type.declaration.signatures ? '()' : ''}`}
+          name={`${name}${signature ? `(${signature.parameters ? listParams(signature.parameters) : ''})` : ''}`}
           comment={comment}
         />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration, sdkVersion)}
-        {type.declaration.signatures
-          ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
-              <div key={`type-definition-signature-${name}`}>
-                <APICommentTextBlock comment={comment} />
-                {parameters && renderParams(parameters, sdkVersion)}
-              </div>
-            ))
-          : null}
-        {type.declaration.signatures?.[0].type && (
-          <div className="mt-3.5 flex flex-row items-start gap-2">
+        {signature ? (
+          <div key={`type-definition-signature-${signature.name}`}>
+            <APICommentTextBlock comment={signature.comment} />
+            {signature.parameters && renderParams(signature.parameters, sdkVersion)}
+          </div>
+        ) : null}
+        {signature?.type && (
+          <div
+            className={mergeClasses(
+              VERTICAL_SPACING,
+              ELEMENT_SPACING,
+              'mt-3.5 flex flex-row items-start gap-2'
+            )}>
             <div className="flex flex-row items-center gap-2">
               <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
               <span className={STYLES_SECONDARY}>Returns:</span>
             </div>
             <CALLOUT>
-              <APIDataType
-                typeDefinition={type.declaration.signatures[0].type}
-                sdkVersion={sdkVersion}
-              />
+              <APIDataType typeDefinition={signature.type} sdkVersion={sdkVersion} />
             </CALLOUT>
           </div>
         )}
@@ -180,14 +193,14 @@ const renderType = (
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
-        <CALLOUT className={STYLES_SECONDARY}>
+        <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING)}>
           Tuple: <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
         </CALLOUT>
       </div>
     );
   } else if (type.types && ['union', 'intersection'].includes(type.type)) {
     const literalTypes = type.types.filter((t: TypeDefinitionData) =>
-      ['literal', 'intrinsic', 'reference', 'tuple'].includes(t.type)
+      ['literal', 'templateLiteral', 'intrinsic', 'reference', 'tuple'].includes(t.type)
     );
     const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
     const propMethodDefinitions = propTypes.filter(
@@ -202,30 +215,31 @@ const renderType = (
           <APIBoxHeader name={name} comment={comment} />
           <APICommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' || type.type === 'union' ? (
-            <>
-              <CALLOUT className={STYLES_SECONDARY}>
-                Type:{' '}
-                {type.types
-                  .filter(type =>
-                    ['reference', 'union', 'intersection', 'intrinsic', 'literal'].includes(
-                      type.type
-                    )
-                  )
-                  .map(validType => (
-                    <Fragment key={`nested-reference-type-${validType.name}`}>
-                      <CODE className="text-default">{resolveTypeName(validType, sdkVersion)}</CODE>
-                      {type.type === 'union' ? ' or ' : ' '}
-                    </Fragment>
-                  ))}
-                {type.type === 'union'
-                  ? propMethodDefinitions.length > 2
-                    ? 'an anonymous method defined as described below'
-                    : 'object shaped as below'
-                  : 'extended by'}
-                :
-              </CALLOUT>
-              <br />
-            </>
+            <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
+              Type:{' '}
+              {type.types
+                .filter(type =>
+                  ['reference', 'union', 'intersection', 'intrinsic', 'literal'].includes(type.type)
+                )
+                .map(validType => (
+                  <Fragment key={`nested-reference-type-${validType.name}`}>
+                    <CODE className="text-default">{resolveTypeName(validType, sdkVersion)}</CODE>
+                    {type.type === 'union' ? ' or ' : ' '}
+                  </Fragment>
+                ))}
+              {type.type === 'union' ? (
+                propMethodDefinitions.length > 2 ? (
+                  'An anonymous method defined as described below'
+                ) : (
+                  <>
+                    <CODE className="text-default">object</CODE> shaped as below
+                  </>
+                )
+              ) : (
+                'extended by'
+              )}
+              :
+            </CALLOUT>
           ) : null}
           {propObjectDefinitions.map(
             (propType, index) =>
@@ -244,12 +258,12 @@ const renderType = (
         <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
           <APIBoxHeader name={name} comment={comment} />
-          <CALLOUT className="mb-3">
+          <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-1.5')}>
             <span className={STYLES_SECONDARY}>Literal Type: </span>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <APICommentTextBlock comment={comment} includePlatforms={false} />
-          <CALLOUT className={STYLES_SECONDARY}>
+          <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
             Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
               <Fragment key={`${name}-literal-type-${index}`}>
@@ -268,12 +282,10 @@ const renderType = (
     ['array', 'reference'].includes(type.type)
   ) {
     return (
-      <div
-        key={`record-definition-${name}`}
-        className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
+      <div key={`record-definition-${name}`} className={mergeClasses(STYLES_APIBOX)}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={name} comment={comment} />
-        <CALLOUT className="mb-3">
+        <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-3')}>
           <span className={STYLES_SECONDARY}>Type: </span>
           <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
         </CALLOUT>
@@ -286,7 +298,7 @@ const renderType = (
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
-        <CALLOUT>
+        <CALLOUT className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}>
           <span className={STYLES_SECONDARY}>Type: </span>
           <CODE>{type.name}</CODE>
         </CALLOUT>
@@ -298,14 +310,14 @@ const renderType = (
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={`${name}<${type.checkType.name}>`} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
-        <CALLOUT>
+        <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-1')}>
           <span className={STYLES_SECONDARY}>Generic: </span>
           <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>}
           </CODE>
         </CALLOUT>
-        <CALLOUT>
+        <CALLOUT className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}>
           <span className={STYLES_SECONDARY}>Type: </span>
           <CODE>
             {type.checkType.name}
@@ -334,7 +346,7 @@ const renderType = (
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
-        <CALLOUT>
+        <CALLOUT className={VERTICAL_SPACING}>
           String union of <CODE>{resolveTypeName(possibleData[0], sdkVersion)}</CODE> values.
         </CALLOUT>
       </div>

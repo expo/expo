@@ -1027,6 +1027,17 @@ export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return await ExpoContacts.requestPermissionsAsync();
 }
 
+/**
+ * Presents a modal which allows the user to select which contacts the app has access to.
+ * Using this function is reasonable only when the app has "limited" permissions.
+ * @return A promise that resolves with an array of contact identifiers that were newly granted to the app.
+ * Contacts which the app lost access to are not listed. On platforms other than iOS and below 18.0, the promise rejects immediately.
+ * @platform ios 18.0+
+ */
+export async function presentAccessPickerAsync(): Promise<string[]> {
+  return await ExpoContacts.presentAccessPickerAsync();
+}
+
 /** @private */
 function removeIds(contact: Contact): Contact {
   const updatedContact = { ...contact };
