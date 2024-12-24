@@ -28,6 +28,7 @@ _This version does not introduce any user-facing changes._
 - Fixed `expo-modules-autolinking` resolving issue on PNPM isolated mode. ([#33818](https://github.com/expo/expo/pull/33818) by [@kudo](https://github.com/kudo))
 - Fixed `ExpoConfigLoader` error when people has `console.log` in their `app.config.js` or `app.config.ts`. ([#33821](https://github.com/expo/expo/pull/33821) by [@kudo](https://github.com/kudo))
 - Fixed absolute paths inside `aarProjects` autolinking data. ([#33826](https://github.com/expo/expo/pull/33826) by [@kudo](https://github.com/kudo))
+- Fixed CLI `console.log` regression. ([#33828](https://github.com/expo/expo/pull/33828) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

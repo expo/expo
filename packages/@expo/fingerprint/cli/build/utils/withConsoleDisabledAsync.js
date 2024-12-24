@@ -8,7 +8,7 @@ async function withConsoleDisabledAsync(block) {
         error: console.error,
     };
     // Disable logging for this command since the only thing printed to stdout should be the JSON output.
-    // console.log = function () {};
+    console.log = function () { };
     console.warn = function () { };
     console.error = function () { };
     try {
