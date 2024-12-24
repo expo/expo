@@ -13,6 +13,7 @@ import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
+import { spawnWithIpcAsync } from '../utils/SpawnIPC';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 
@@ -35,12 +36,12 @@ export async function getExpoConfigSourcesAsync(
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'expo-fingerprint-'));
   const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
   try {
-    const { stdout } = await spawnAsync(
+    const { message } = await spawnWithIpcAsync(
       'node',
       [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
       { cwd: projectRoot }
     );
-    const stdoutJson = JSON.parse(stdout);
+    const stdoutJson = JSON.parse(message);
     config = stdoutJson.config;
     expoConfig = normalizeExpoConfig(config.exp, options);
     loadedModules = stdoutJson.loadedModules;
