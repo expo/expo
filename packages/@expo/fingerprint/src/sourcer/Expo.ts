@@ -2,8 +2,6 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
 import fs from 'fs/promises';
-import assert from 'node:assert';
-import process from 'node:process';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -15,6 +13,7 @@ import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
+import { spawnWithIpcAsync } from '../utils/SpawnIPC';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 
@@ -37,26 +36,12 @@ export async function getExpoConfigSourcesAsync(
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'expo-fingerprint-'));
   const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
   try {
-    const spawnPromise = spawnAsync(
+    const { message } = await spawnWithIpcAsync(
       'node',
       [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
-      { cwd: projectRoot, stdio: ['pipe', 'pipe', 'pipe', 'ipc'] }
+      { cwd: projectRoot }
     );
-
-    const messageChunks: string[] = [];
-    if (spawnPromise.child?.on) {
-      spawnPromise.child.on('message', (message: any) => {
-        messageChunks.push(message);
-      });
-      await spawnPromise;
-    } else {
-      // For unit tests, we have a mocked ExpoConfigLoader that only returns through stdout.
-      assert(process.env.NODE_ENV === 'test' && typeof jest !== 'undefined');
-      const { stdout } = await spawnPromise;
-      messageChunks.push(stdout);
-    }
-
-    const stdoutJson = JSON.parse(messageChunks.join(''));
+    const stdoutJson = JSON.parse(message);
     config = stdoutJson.config;
     expoConfig = normalizeExpoConfig(config.exp, options);
     loadedModules = stdoutJson.loadedModules;

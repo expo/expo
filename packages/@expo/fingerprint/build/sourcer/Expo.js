@@ -7,8 +7,6 @@ exports.getConfigPluginProps = exports.sortExpoAutolinkingAndroidConfig = export
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const promises_1 = __importDefault(require("fs/promises"));
-const node_assert_1 = __importDefault(require("node:assert"));
-const node_process_1 = __importDefault(require("node:process"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
@@ -18,6 +16,7 @@ const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
 const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
 const Path_1 = require("../utils/Path");
+const SpawnIPC_1 = require("../utils/SpawnIPC");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
     if (options.sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAll) {
@@ -33,21 +32,8 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     const tmpDir = await promises_1.default.mkdtemp(path_1.default.join(os_1.default.tmpdir(), 'expo-fingerprint-'));
     const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
     try {
-        const spawnPromise = (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot, stdio: ['pipe', 'pipe', 'pipe', 'ipc'] });
-        const messageChunks = [];
-        if (spawnPromise.child?.on) {
-            spawnPromise.child.on('message', (message) => {
-                messageChunks.push(message);
-            });
-            await spawnPromise;
-        }
-        else {
-            // For unit tests, we have a mocked ExpoConfigLoader that only returns through stdout.
-            (0, node_assert_1.default)(node_process_1.default.env.NODE_ENV === 'test' && typeof jest !== 'undefined');
-            const { stdout } = await spawnPromise;
-            messageChunks.push(stdout);
-        }
-        const stdoutJson = JSON.parse(messageChunks.join(''));
+        const { message } = await (0, SpawnIPC_1.spawnWithIpcAsync)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
+        const stdoutJson = JSON.parse(message);
         config = stdoutJson.config;
         expoConfig = normalizeExpoConfig(config.exp, options);
         loadedModules = stdoutJson.loadedModules;
