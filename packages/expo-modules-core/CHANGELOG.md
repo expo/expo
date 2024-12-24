@@ -8,9 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- Ensure `uuid.v4`and`uuid.v5` is available on old react native architecture. ([#33621](https://github.com/expo/expo/pull/33621) by [@andrejpavlovic](https://github.com/andrejpavlovic))
-- Changed `import` to `import type` for TS type declarations. ([#33447](https://github.com/expo/expo/pull/33447) by [@j-piasecki](https://github.com/j-piasecki))
-- [macOS] Allow SwiftUI views to work on macOS ([#33506](https://github.com/expo/expo/pull/33506) by [@hassankhan](https://github.com/hassankhan))
 - [iOS] Fixes view managers not deallocating when reloading. ([#33760](https://github.com/expo/expo/pull/33760) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
@@ -21,6 +18,14 @@
 ### ⚠️ Notices
 
 - Deprecated `EXAppDelegateWrapper` in favor of `ExpoAppDelegate`. ([#33348](https://github.com/expo/expo/pull/33348) by [@tsapeta](https://github.com/tsapeta)))
+
+## 2.1.2 - 2024-12-16
+
+### 🐛 Bug fixes
+
+- Ensure `uuid.v4`and`uuid.v5` is available on old react native architecture. ([#33621](https://github.com/expo/expo/pull/33621) by [@andrejpavlovic](https://github.com/andrejpavlovic))
+- Changed `import` to `import type` for TS type declarations. ([#33447](https://github.com/expo/expo/pull/33447) by [@j-piasecki](https://github.com/j-piasecki))
+- [macOS] Allow SwiftUI views to work on macOS ([#33506](https://github.com/expo/expo/pull/33506) by [@hassankhan](https://github.com/hassankhan))
 
 ## 2.1.1 - 2024-12-02
 

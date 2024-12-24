@@ -6,6 +6,28 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.11.6 - 2024-12-24
+
+### 🐛 Bug fixes
+
+- Fixed CLI `console.log` regression. ([#33828](https://github.com/expo/expo/pull/33828) by [@kudo](https://github.com/kudo))
+
+## 0.11.5 - 2024-12-24
+
+### 🐛 Bug fixes
+
+- Fixed `expo-modules-autolinking` resolving issue on PNPM isolated mode. ([#33818](https://github.com/expo/expo/pull/33818) by [@kudo](https://github.com/kudo))
+- Fixed `ExpoConfigLoader` error when people has `console.log` in their `app.config.js` or `app.config.ts`. ([#33821](https://github.com/expo/expo/pull/33821) by [@kudo](https://github.com/kudo))
+- Fixed absolute paths inside `aarProjects` autolinking data. ([#33826](https://github.com/expo/expo/pull/33826) by [@kudo](https://github.com/kudo))
+
+## 0.11.4 - 2024-12-16
+
+### 🎉 New features
+
 - Introduced `fileHookTransform` to support contents or file chunk customization before hashing. ([#33610](https://github.com/expo/expo/pull/33610) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
@@ -13,10 +35,6 @@
 - Fixed ignorePaths does not ignore files inside local modules. ([#33597](https://github.com/expo/expo/pull/33597) by [@kudo](https://github.com/kudo))
 - Fixed unstable fingerprint on Windows. ([#33627](https://github.com/expo/expo/pull/33627) by [@kudo](https://github.com/kudo))
 - Fixed negate `!` pattern ignore all paths in `.fingerprintignore`. ([#33671](https://github.com/expo/expo/pull/33671) by [@kudo](https://github.com/kudo))
-- Fixed `expo-modules-autolinking` resolving issue on PNPM isolated mode. ([#33818](https://github.com/expo/expo/pull/33818) by [@kudo](https://github.com/kudo))
-- Fixed `ExpoConfigLoader` error when people has `console.log` in their `app.config.js` or `app.config.ts`. ([#33821](https://github.com/expo/expo/pull/33821) by [@kudo](https://github.com/kudo))
-- Fixed absolute paths inside `aarProjects` autolinking data. ([#33826](https://github.com/expo/expo/pull/33826) by [@kudo](https://github.com/kudo))
-- Fixed CLI `console.log` regression. ([#33828](https://github.com/expo/expo/pull/33828) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
