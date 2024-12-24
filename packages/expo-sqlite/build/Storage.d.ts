@@ -107,9 +107,7 @@ export declare class SQLiteStorage {
      * Alias for [`closeAsync()`](#closeasync-1) method.
      */
     close(): Promise<void>;
-    private getDbAsync;
     private getDbSync;
-    private maybeMigrateDbAsync;
     private maybeMigrateDbSync;
     /**
      * Recursively merge two JSON objects.
