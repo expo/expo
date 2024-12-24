@@ -7,6 +7,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
+import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
 import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
@@ -255,8 +256,8 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
     const reasons = ['expoAutolinkingAndroid'];
     const results: HashSource[] = [];
     const { stdout } = await spawnAsync(
-      'npx',
-      ['expo-modules-autolinking', 'resolve', '-p', 'android', '--json'],
+      'node',
+      [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', 'android', '--json'],
       { cwd: projectRoot }
     );
     const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
@@ -318,8 +319,8 @@ export async function getExpoAutolinkingIosSourcesAsync(
     const reasons = ['expoAutolinkingIos'];
     const results: HashSource[] = [];
     const { stdout } = await spawnAsync(
-      'npx',
-      ['expo-modules-autolinking', 'resolve', '-p', platform, '--json'],
+      'node',
+      [resolveExpoAutolinkingCliPath(projectRoot), 'resolve', '-p', platform, '--json'],
       { cwd: projectRoot }
     );
     const config = JSON.parse(stdout);

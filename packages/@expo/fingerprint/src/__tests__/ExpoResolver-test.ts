@@ -4,7 +4,7 @@ import {
   resolveExpoVersion,
   resolveExpoAutolinkingVersion,
   satisfyExpoVersion,
-} from '../ExpoVersions';
+} from '../ExpoResolver';
 
 jest.mock('resolve-from');
 
@@ -66,7 +66,8 @@ describe(resolveExpoAutolinkingVersion, () => {
 
   it('should return null if the expo-modules-autolinking package is not found', () => {
     mockedResolveFrom.mockReturnValueOnce(undefined);
-    const version = resolveExpoAutolinkingVersion(projectRoot);
+    // uses a different project root to bypass the cached autolinking package root
+    const version = resolveExpoAutolinkingVersion('/app2');
     expect(version).toBeNull();
   });
 });
