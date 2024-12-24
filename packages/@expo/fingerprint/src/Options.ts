@@ -4,7 +4,7 @@ import os from 'os';
 import path from 'path';
 
 import { loadConfigAsync } from './Config';
-import { satisfyExpoVersion } from './ExpoVersions';
+import { satisfyExpoVersion } from './ExpoResolver';
 import type { Config, NormalizedOptions, Options } from './Fingerprint.types';
 import { SourceSkips } from './sourcer/SourceSkips';
 import { buildDirMatchObjects, buildPathMatchObjects } from './utils/Path';

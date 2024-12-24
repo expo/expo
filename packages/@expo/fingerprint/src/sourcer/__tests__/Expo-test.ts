@@ -24,7 +24,7 @@ jest.mock('find-up');
 jest.mock('fs/promises');
 jest.mock('resolve-from');
 jest.mock('/app/package.json', () => {}, { virtual: true });
-jest.mock('../../ExpoVersions');
+jest.mock('../../ExpoResolver');
 
 // NOTE(cedric): this is a workaround to also mock `node:fs`
 jest.mock('node:fs', () => require('memfs').fs);
