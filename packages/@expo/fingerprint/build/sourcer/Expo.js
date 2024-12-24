@@ -16,6 +16,7 @@ const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
 const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
 const Path_1 = require("../utils/Path");
+const SpawnIPC_1 = require("../utils/SpawnIPC");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
     if (options.sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAll) {
@@ -31,8 +32,8 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     const tmpDir = await promises_1.default.mkdtemp(path_1.default.join(os_1.default.tmpdir(), 'expo-fingerprint-'));
     const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
     try {
-        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
-        const stdoutJson = JSON.parse(stdout);
+        const { message } = await (0, SpawnIPC_1.spawnWithIpcAsync)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
+        const stdoutJson = JSON.parse(message);
         config = stdoutJson.config;
         expoConfig = normalizeExpoConfig(config.exp, options);
         loadedModules = stdoutJson.loadedModules;

@@ -9,6 +9,7 @@ import resolveFrom from 'resolve-from';
 import { HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
 import { SourceSkips } from '../../sourcer/SourceSkips';
+import { spawnWithIpcAsync } from '../../utils/SpawnIPC';
 import {
   getConfigPluginProps,
   getEasBuildSourcesAsync,
@@ -25,6 +26,7 @@ jest.mock('fs/promises');
 jest.mock('resolve-from');
 jest.mock('/app/package.json', () => {}, { virtual: true });
 jest.mock('../../ExpoResolver');
+jest.mock('../../utils/SpawnIPC');
 
 // NOTE(cedric): this is a workaround to also mock `node:fs`
 jest.mock('node:fs', () => require('memfs').fs);
@@ -231,10 +233,14 @@ describe(getExpoConfigSourcesAsync, () => {
     const config = {
       exp: JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString()).expo,
     };
-    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
-    mockSpawnAsync.mockResolvedValueOnce({
+    const configResult = JSON.stringify({ config, loadedModules: [] });
+    const mockSpawnWithIpcAsync = spawnWithIpcAsync as jest.MockedFunction<
+      typeof spawnWithIpcAsync
+    >;
+    mockSpawnWithIpcAsync.mockResolvedValueOnce({
       output: [],
-      stdout: JSON.stringify({ config, loadedModules: [] }),
+      stdout: configResult,
+      message: configResult,
       stderr: '',
       signal: null,
       status: 0,
@@ -251,17 +257,20 @@ describe(getExpoConfigSourcesAsync, () => {
   it('should contain extra files from config plugins', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     const config = await getConfig('/app', { skipSDKVersionRequirement: true });
-    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
-    const stdout = JSON.stringify({
+    const mockSpawnWithIpcAsync = spawnWithIpcAsync as jest.MockedFunction<
+      typeof spawnWithIpcAsync
+    >;
+    const configResult = JSON.stringify({
       config,
       loadedModules: [
         'node_modules/third-party/index.js',
         'node_modules/third-party/node_modules/transitive-third-party/index.js',
       ],
     });
-    mockSpawnAsync.mockResolvedValueOnce({
+    mockSpawnWithIpcAsync.mockResolvedValueOnce({
       output: [],
-      stdout,
+      stdout: configResult,
+      message: configResult,
       stderr: '',
       signal: null,
       status: 0,
