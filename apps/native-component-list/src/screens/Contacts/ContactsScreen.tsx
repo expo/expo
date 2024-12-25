@@ -11,6 +11,7 @@ import Button from '../../components/Button';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
 import MonoText from '../../components/MonoText';
+import { Colors } from '../../constants';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
 
@@ -131,6 +132,16 @@ function ContactsView({ navigation }: Props) {
 
   return (
     <>
+      <Contacts.ContactAccessButton
+        query="Apple"
+        caption="email"
+        ignoredEmails={[]}
+        ignoredPhoneNumbers={[]}
+        tintColor={Colors.tintColor}
+        backgroundColor="#f3f3f3"
+        textColor="black"
+        style={{ marginTop: 20, height: 50 }}
+      />
       {Platform.OS === 'ios' && (
         <Button title="Change access" onPress={changeAccess} style={styles.changeAccessButton} />
       )}
