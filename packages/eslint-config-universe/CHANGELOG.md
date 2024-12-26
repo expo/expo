@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Update `@typescript-eslint` dependencies for better compatibility with TypeScript.
+- Update `eslint-plugin-react-hooks` dependency to new major version.
+
 ## 14.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes
