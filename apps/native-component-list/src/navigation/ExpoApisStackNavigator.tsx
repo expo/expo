@@ -136,12 +136,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/FaceDetectorScreen'));
-    },
-    name: 'FaceDetector',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/FileSystemScreen'));
     },
     name: 'FileSystem',
