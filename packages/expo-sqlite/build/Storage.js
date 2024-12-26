@@ -1,4 +1,4 @@
-import { openDatabaseAsync, openDatabaseSync } from './index';
+import { openDatabaseSync } from './index';
 const DATABASE_VERSION = 1;
 const STATEMENT_GET = 'SELECT value FROM storage WHERE key = ?;';
 const STATEMENT_SET = 'INSERT INTO storage (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value;';
@@ -20,7 +20,7 @@ export class SQLiteStorage {
      * Retrieves the value associated with the given key asynchronously.
      */
     async getItemAsync(key) {
-        const db = await this.getDbAsync();
+        const db = this.getDbSync();
         const result = await db.getFirstAsync(STATEMENT_GET, key);
         return result?.value ?? null;
     }
@@ -29,7 +29,7 @@ export class SQLiteStorage {
      * If a function is provided, it computes the new value based on the previous value.
      */
     async setItemAsync(key, value) {
-        const db = await this.getDbAsync();
+        const db = this.getDbSync();
         if (typeof value === 'function') {
             await db.withExclusiveTransactionAsync(async (tx) => {
                 const prevResult = await tx.getFirstAsync(STATEMENT_GET, key);
@@ -45,7 +45,7 @@ export class SQLiteStorage {
      * Removes the value associated with the given key asynchronously.
      */
     async removeItemAsync(key) {
-        const db = await this.getDbAsync();
+        const db = this.getDbSync();
         const result = await db.runAsync(STATEMENT_REMOVE, key);
         return result.changes > 0;
     }
@@ -53,7 +53,7 @@ export class SQLiteStorage {
      * Retrieves all keys stored in the storage asynchronously.
      */
     async getAllKeysAsync() {
-        const db = await this.getDbAsync();
+        const db = this.getDbSync();
         const result = await db.getAllAsync(STATEMENT_GET_ALL_KEYS);
         return result.map(({ key }) => key);
     }
@@ -61,7 +61,7 @@ export class SQLiteStorage {
      * Clears all key-value pairs from the storage asynchronously.
      */
     async clearAsync() {
-        const db = await this.getDbAsync();
+        const db = this.getDbSync();
         const result = await db.runAsync(STATEMENT_CLEAR);
         return result.changes > 0;
     }
@@ -185,7 +185,7 @@ export class SQLiteStorage {
      * Retrieves the values associated with the given keys asynchronously.
      */
     async multiGet(keys) {
-        const db = await this.getDbAsync();
+        const db = this.getDbSync();
         let result = [];
         await db.withExclusiveTransactionAsync(async (tx) => {
             result = await Promise.all(keys.map(async (key) => {
@@ -199,7 +199,7 @@ export class SQLiteStorage {
      * Sets multiple key-value pairs asynchronously.
      */
     async multiSet(keyValuePairs) {
-        const db = await this.getDbAsync();
+        const db = this.getDbSync();
         await db.withExclusiveTransactionAsync(async (tx) => {
             for (const [key, value] of keyValuePairs) {
                 await tx.runAsync(STATEMENT_SET, key, value);
@@ -210,7 +210,7 @@ export class SQLiteStorage {
      * Removes the values associated with the given keys asynchronously.
      */
     async multiRemove(keys) {
-        const db = await this.getDbAsync();
+        const db = this.getDbSync();
         await db.withExclusiveTransactionAsync(async (tx) => {
             for (const key of keys) {
                 await tx.runAsync(STATEMENT_REMOVE, key);
@@ -222,7 +222,7 @@ export class SQLiteStorage {
      * If existing values are JSON objects, performs a deep merge.
      */
     async multiMerge(keyValuePairs) {
-        const db = await this.getDbAsync();
+        const db = this.getDbSync();
         await db.withExclusiveTransactionAsync(async (tx) => {
             for (const [key, value] of keyValuePairs) {
                 const prevValue = await tx.getFirstAsync(STATEMENT_GET, key);
@@ -245,14 +245,6 @@ export class SQLiteStorage {
     }
     //#endregion
     //#region Internals
-    async getDbAsync() {
-        if (!this.db) {
-            const db = await openDatabaseAsync(this.databaseName);
-            await this.maybeMigrateDbAsync(db);
-            this.db = db;
-        }
-        return this.db;
-    }
     getDbSync() {
         if (!this.db) {
             const db = openDatabaseSync(this.databaseName);
@@ -260,20 +252,6 @@ export class SQLiteStorage {
             this.db = db;
         }
         return this.db;
-    }
-    async maybeMigrateDbAsync(db) {
-        await db.withExclusiveTransactionAsync(async (tx) => {
-            const result = await tx.getFirstAsync('PRAGMA user_version');
-            let currentDbVersion = result?.user_version ?? 0;
-            if (currentDbVersion >= DATABASE_VERSION) {
-                return;
-            }
-            if (currentDbVersion === 0) {
-                await tx.execAsync(MIGRATION_STATEMENT_0);
-                currentDbVersion = 1;
-            }
-            await tx.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
-        });
     }
     maybeMigrateDbSync(db) {
         db.withTransactionSync(() => {
