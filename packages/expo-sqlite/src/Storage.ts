@@ -182,14 +182,14 @@ export class SQLiteStorage {
    * Alias for [`setItemAsync()`](#setitemasynckey-value).
    */
   async setItem(key: string, value: string | SQLiteStorageSetItemUpdateFunction): Promise<void> {
-    this.setItemAsync(key, value);
+    await this.setItemAsync(key, value);
   }
 
   /**
    * Alias for [`removeItemAsync()`](#removeitemasynckey) method.
    */
   async removeItem(key: string): Promise<void> {
-    this.removeItemAsync(key);
+    await this.removeItemAsync(key);
   }
 
   /**
@@ -203,7 +203,7 @@ export class SQLiteStorage {
    * Alias for [`clearAsync()`](#clearasync) method.
    */
   async clear(): Promise<void> {
-    this.clearAsync();
+    await this.clearAsync();
   }
 
   /**
@@ -288,7 +288,7 @@ export class SQLiteStorage {
    * Alias for [`closeAsync()`](#closeasync-1) method.
    */
   async close(): Promise<void> {
-    this.closeAsync();
+    await this.closeAsync();
   }
 
   //#endregion

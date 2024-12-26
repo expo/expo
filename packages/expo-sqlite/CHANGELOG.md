@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed exceptions when converting empty blob data on iOS. ([#33564](https://github.com/expo/expo/pull/33564) by [@kudo](https://github.com/kudo))
+- Fixed `expo-sqlite/kv-store` async API not being well handled when using AsyncStorage compatible api ([#33847](https://github.com/expo/expo/pull/33847) by [@rtorrente](https://github.com/rtorrente))
 
 ### 💡 Others
 
