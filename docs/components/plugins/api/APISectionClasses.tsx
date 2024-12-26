@@ -1,6 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
-import ReactMarkdown from 'react-markdown';
 
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
@@ -12,9 +11,7 @@ import { renderMethod } from './APISectionMethods';
 import { renderProp } from './APISectionProps';
 import {
   getTagData,
-  mdComponents,
   resolveTypeName,
-  getCommentContent,
   DEFAULT_BASE_NESTING_LEVEL,
   extractDefaultPropValue,
 } from './APISectionUtils';
@@ -126,14 +123,17 @@ const renderClass = (
         includePlatforms={false}
         afterContent={
           returnComment && (
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col items-start">
               <div className="flex flex-row items-center gap-2">
                 <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
                 <span className={STYLES_SECONDARY}>Returns</span>
               </div>
-              <ReactMarkdown components={mdComponents}>
-                {getCommentContent(returnComment.content)}
-              </ReactMarkdown>
+              <div className="mb-1 mt-1.5 flex flex-col pl-6">
+                <APICommentTextBlock
+                  comment={{ summary: returnComment.content }}
+                  includeSpacing={false}
+                />
+              </div>
             </div>
           )
         }
@@ -167,15 +167,14 @@ const renderClass = (
             exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
           />
-          <div className={mergeClasses(VERTICAL_SPACING, 'mt-4')}>
-            {methods.map(method =>
-              renderMethod(method, {
-                exposeInSidebar: true,
-                baseNestingLevel: linksNestingLevel,
-                sdkVersion,
-              })
-            )}
-          </div>
+          {methods.map(method =>
+            renderMethod(method, {
+              exposeInSidebar: true,
+              nested: true,
+              baseNestingLevel: linksNestingLevel,
+              sdkVersion,
+            })
+          )}
         </>
       )}
     </div>

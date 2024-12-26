@@ -70,9 +70,9 @@ export const renderMethod = (
         className={mergeClasses(
           !nested && STYLES_APIBOX,
           !nested && STYLES_APIBOX_NESTED,
-          nested && 'border-b border-palette-gray4'
+          nested && 'border-b border-palette-gray4 last:border-b-0'
         )}>
-        <APISectionDeprecationNote comment={comment} sticky />
+        <APISectionDeprecationNote comment={comment} sticky className="!rounded-t-none" />
         <APIBoxHeader
           name={getMethodName(
             method as MethodDefinitionData,
