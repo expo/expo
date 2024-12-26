@@ -1,1 +1,1 @@
-{"version":3,"file":"EventEmitter.d.ts","sourceRoot":"","sources":["../src/EventEmitter.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAC;AAInE,OAAO,EAAE,KAAK,iBAAiB,EAAE,MAAM,gCAAgC,CAAC;;AACxE,wBAAmE"}
+{"version":3,"file":"EventEmitter.d.ts","sourceRoot":"","sources":["../src/EventEmitter.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAC;AAInE,YAAY,EAAE,iBAAiB,EAAE,MAAM,gCAAgC,CAAC;;AACxE,wBAAmE"}
