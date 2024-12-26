@@ -201,9 +201,6 @@ dependencies {
   api "androidx.browser:browser:1.0.0"
   implementation "androidx.tracing:tracing-ktx:1.1.0"
 
-  // expo-face-detector
-  implementation 'com.google.mlkit:face-detection:16.1.5'
-
   api 'com.google.firebase:firebase-core:21.1.0'
   api 'com.google.firebase:firebase-messaging:22.0.0'
   api 'com.google.maps.android:android-maps-utils:3.4.0'
