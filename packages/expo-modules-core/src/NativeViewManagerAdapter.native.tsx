@@ -2,7 +2,7 @@
 
 'use client';
 
-import React from 'react';
+import { type Component, PureComponent, createRef, ComponentType } from 'react';
 import { NativeModules, NativeMethods, HostComponent, findNodeHandle } from 'react-native';
 import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
@@ -60,7 +60,7 @@ function requireCachedNativeComponent<Props>(viewName: string): HostComponent<Pr
 /**
  * A drop-in replacement for `requireNativeComponent`.
  */
-export function requireNativeViewManager<P>(viewName: string): React.ComponentType<P> {
+export function requireNativeViewManager<P>(viewName: string): ComponentType<P> {
   const { viewManagersMetadata } = NativeModules.NativeUnimoduleProxy;
   const viewManagerConfig = viewManagersMetadata?.[viewName];
 
@@ -78,10 +78,10 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
   const reactNativeViewName = `ViewManagerAdapter_${viewName}${viewNameSuffix}`;
   const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
 
-  class NativeComponent extends React.PureComponent<P> {
+  class NativeComponent extends PureComponent<P> {
     static displayName = viewName;
 
-    nativeRef = React.createRef<React.Component & NativeMethods>();
+    nativeRef = createRef<Component & NativeMethods>();
 
     // This will be accessed from native when the prototype functions are called,
     // in order to find the associated native view.
@@ -91,7 +91,7 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
       this.nativeTag = findNodeHandle(this.nativeRef.current);
     }
 
-    render(): React.ReactNode {
+    render() {
       return <ReactNativeComponent {...this.props} ref={this.nativeRef} />;
     }
   }
@@ -101,7 +101,7 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
     const nativeViewPrototype = nativeModule.ViewPrototype;
 
     if (nativeViewPrototype) {
-      // Assign native view functions to the component prototype so they can be accessed from the ref.
+      // Assign native view functions to the component prototype, so they can be accessed from the ref.
       Object.assign(NativeComponent.prototype, nativeViewPrototype);
     }
   } catch {
