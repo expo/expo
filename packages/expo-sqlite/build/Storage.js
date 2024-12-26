@@ -146,13 +146,13 @@ export class SQLiteStorage {
      * Alias for [`setItemAsync()`](#setitemasynckey-value).
      */
     async setItem(key, value) {
-        this.setItemAsync(key, value);
+        await this.setItemAsync(key, value);
     }
     /**
      * Alias for [`removeItemAsync()`](#removeitemasynckey) method.
      */
     async removeItem(key) {
-        this.removeItemAsync(key);
+        await this.removeItemAsync(key);
     }
     /**
      * Alias for [`getAllKeysAsync()`](#getallkeysasync) method.
@@ -164,7 +164,7 @@ export class SQLiteStorage {
      * Alias for [`clearAsync()`](#clearasync) method.
      */
     async clear() {
-        this.clearAsync();
+        await this.clearAsync();
     }
     /**
      * Merges the given value with the existing value for the given key asynchronously.
@@ -241,7 +241,7 @@ export class SQLiteStorage {
      * Alias for [`closeAsync()`](#closeasync-1) method.
      */
     async close() {
-        this.closeAsync();
+        await this.closeAsync();
     }
     //#endregion
     //#region Internals
