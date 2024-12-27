@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - Expose `isMeteringEnabled` to `JS`. ([#33713](https://github.com/expo/expo/pull/33713) by [@alanjhughes](https://github.com/alanjhughes))
-- On `Android`, allow player to accept a `null` audio source.
+- On `Android`, allow player to accept a `null` audio source. ([#33854](https://github.com/expo/expo/pull/33854) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
