@@ -29,7 +29,7 @@ internal final class CoreModule: Module {
       for propName in viewDefinition.getSupportedPropNames() {
         validAttributes[propName] = true
       }
-      for eventName in viewDefinition.eventNames {
+      for eventName in viewDefinition.getSupportedEventNames() {
         guard let normalizedEventName = RCTNormalizeInputEventName(eventName) else {
           continue
         }
