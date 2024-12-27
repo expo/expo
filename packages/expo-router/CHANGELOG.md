@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add less aggressive babel plugin migration warning. ([#33640](https://github.com/expo/expo/pull/33640) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 4.0.15 — 2024-12-24
 
 ### 💡 Others
