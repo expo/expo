@@ -14,8 +14,10 @@ internal struct ExpoContactAccessButton: ExpoSwiftUI.View {
         queryString: props.query ?? "",
         ignoredEmails: Set(props.ignoredEmails ?? []),
         ignoredPhoneNumbers: Set(props.ignoredPhoneNumbers ?? []),
-        approvalCallback: { _ in
-          // TODO: Emit an event to JS when it becomes supported on SwiftUI views
+        approvalCallback: { contactIds in
+          props.onAccessGranted([
+            "contactIds": contactIds
+          ])
         }
       )
       .contactAccessButtonCaption(props.caption?.toContactAccessButtonCaption() ?? .defaultText)

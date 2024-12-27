@@ -140,6 +140,10 @@ function ContactsView({ navigation }: Props) {
         tintColor={Colors.tintColor}
         backgroundColor="#f3f3f3"
         textColor="black"
+        onAccessGranted={(contactIds) => {
+          console.log('Granted access to contacts:', contactIds);
+          loadAsync({}, true);
+        }}
         style={{ marginTop: 20, height: 50 }}
       />
       {Platform.OS === 'ios' && (

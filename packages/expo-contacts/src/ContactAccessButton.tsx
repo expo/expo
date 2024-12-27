@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { Platform, requireOptionalNativeModule } from 'expo-modules-core';
 import React from 'react';
-import { ColorValue, ViewProps } from 'react-native';
+import { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 
 export type ContactAccessButtonProps = ViewProps & {
   /**
@@ -50,6 +50,13 @@ export type ContactAccessButtonProps = ViewProps & {
    * @platform ios 18.0+
    */
   textColor?: ColorValue;
+
+  /**
+   * An event invoked when a user taps the button and adds access to one or more contacts to the app.
+   * @param contactIds An array of contact identifiers as strings.
+   * @platform ios 18.0+
+   */
+  onAccessGranted?(contactIds: string[]): void;
 };
 
 type ContactAccessButtonModule = {
@@ -59,8 +66,12 @@ type ContactAccessButtonModule = {
   isAvailable: boolean;
 };
 
+type NativeContactAccessButtonProps = Omit<ContactAccessButtonProps, 'onAccessGranted'> & {
+  onAccessGranted?(event: NativeSyntheticEvent<{ contactIds: string[] }>): void;
+};
+
 const NativeContactAccessButton =
-  requireNativeView<ContactAccessButtonProps>('ExpoContactAccessButton');
+  requireNativeView<NativeContactAccessButtonProps>('ExpoContactAccessButton');
 
 /**
  * Creates a contact access button to quickly add contacts under limited-access authorization.
@@ -83,10 +94,14 @@ export default class ContactAccessButton extends React.PureComponent<ContactAcce
     );
   }
 
+  private onAccessGranted: NativeContactAccessButtonProps['onAccessGranted'] = (event) => {
+    this.props.onAccessGranted?.(event.nativeEvent.contactIds);
+  };
+
   render() {
     if (Platform.OS !== 'ios') {
       return null;
     }
-    return <NativeContactAccessButton {...this.props} />;
+    return <NativeContactAccessButton {...this.props} onAccessGranted={this.onAccessGranted} />;
   }
 }
