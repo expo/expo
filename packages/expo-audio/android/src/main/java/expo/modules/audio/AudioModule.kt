@@ -239,7 +239,7 @@ class AudioModule : Module() {
           ref.player.volume
         }
       }.set { ref, volume: Float ->
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.volume = volume
         }
       }
@@ -249,13 +249,13 @@ class AudioModule : Module() {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
           return@Function
         }
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.play()
         }
       }
 
       Function("pause") { ref: AudioPlayer ->
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.pause()
         }
       }
@@ -363,21 +363,26 @@ class AudioModule : Module() {
     }
   }
 
-  private fun createMediaItem(source: AudioSource?): MediaSource {
-    val isLocal = Util.isLocalFileUri(Uri.parse(source?.uri))
-    val factory = if (isLocal) {
+  private fun createMediaItem(source: AudioSource?): MediaSource? = source?.let {
+    val factory = createDataSourceFactory(it)
+    it.uri?.let { uri ->
+      val item = MediaItem.fromUri(uri)
+      buildMediaSourceFactory(factory, item)
+    }
+  }
+
+  private fun createDataSourceFactory(audioSource: AudioSource): DataSource.Factory {
+    val isLocal = Util.isLocalFileUri(Uri.parse(audioSource.uri))
+    return if (isLocal) {
       DefaultDataSource.Factory(context)
     } else {
       OkHttpDataSource.Factory(httpClient).apply {
-        source?.headers?.let {
-          setDefaultRequestProperties(it)
+        audioSource.headers?.let { headers ->
+          setDefaultRequestProperties(headers)
         }
         DefaultDataSource.Factory(context, this)
       }
     }
-
-    val item = MediaItem.fromUri(source?.uri ?: "")
-    return buildMediaSourceFactory(factory, item)
   }
 
   private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {
@@ -392,7 +397,7 @@ class AudioModule : Module() {
     mediaItem: MediaItem
   ): MediaSource {
     val uri = mediaItem.localConfiguration?.uri
-    val newFactory = when (val type = retrieveStreamType(uri!!)) {
+    val newFactory = when (val type = uri?.let { retrieveStreamType(it) }) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)

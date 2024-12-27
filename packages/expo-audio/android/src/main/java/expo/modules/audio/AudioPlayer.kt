@@ -32,14 +32,16 @@ private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
 class AudioPlayer(
   context: Context,
   appContext: AppContext,
-  source: MediaSource,
+  source: MediaSource?,
   updateInterval: Double
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .build()
     .apply {
-      setMediaSource(source)
+      source?.let {
+        setMediaSource(it)
+      }
       setAudioAttributes(AudioAttributes.DEFAULT, true)
       prepare()
     },
@@ -53,6 +55,9 @@ class AudioPlayer(
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
+
+  val currentTime get() = player.currentPosition / 1000
+  val duration get() = if (player.duration != C.TIME_UNSET) player.duration / 1000 else 0
 
   init {
     addPlayerListeners()
@@ -118,7 +123,7 @@ class AudioPlayer(
 
     return mapOf(
       "id" to id,
-      "currentTime" to player.currentPosition,
+      "currentTime" to currentTime,
       "playbackState" to playbackStateToString(player.playbackState),
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
       "reasonForWaitingToPlay" to null,
