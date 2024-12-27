@@ -73,7 +73,16 @@ class DevMenuDevOptionsDelegate {
     }
 
     DispatchQueue.main.async {
-      devSettings.isPerfMonitorShown ? perfMonitor.hide() : perfMonitor.show()
+      devSettings.isPerfMonitorShown ? perfMonitor.hide() : {
+        let devMenuWindow = DevMenuManager.shared.window
+        // RCTPerfMonitor adds its view to the window using RCTKeyWindow().
+        // The key window when the dev menu is shown is actually the DevMenuWindow.
+        // To prevent RCTPerfMonitor from adding its view to the incorrect window,
+        // we temporarily hide and resign the key status of the DevMenuWindow.
+        devMenuWindow?.isHidden = true
+        perfMonitor.show()
+        devMenuWindow?.isHidden = false
+      }()
       devSettings.isPerfMonitorShown = !devSettings.isPerfMonitorShown
     }
     #endif
