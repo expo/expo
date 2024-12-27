@@ -30,6 +30,10 @@ internal final class ContactAccessButtonProps: ExpoSwiftUI.ViewProps {
 
   @Field
   var padding: CGFloat?
+
+  // MARK: - Events
+
+  var onAccessGranted = EventDispatcher()
 }
 
 internal enum Caption: String, Enumerable {

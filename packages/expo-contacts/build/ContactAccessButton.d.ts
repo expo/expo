@@ -41,6 +41,12 @@ export type ContactAccessButtonProps = ViewProps & {
      * @platform ios 18.0+
      */
     textColor?: ColorValue;
+    /**
+     * An event invoked when a user taps the button and adds access to one or more contacts to the app.
+     * @param contactIds An array of contact identifiers as strings.
+     * @platform ios 18.0+
+     */
+    onAccessGranted?(contactIds: string[]): void;
 };
 /**
  * Creates a contact access button to quickly add contacts under limited-access authorization.
@@ -55,6 +61,7 @@ export default class ContactAccessButton extends React.PureComponent<ContactAcce
      * This is `true` only on iOS 18.0 and newer.
      */
     static isAvailable(): boolean;
+    private onAccessGranted;
     render(): React.JSX.Element | null;
 }
 //# sourceMappingURL=ContactAccessButton.d.ts.map
