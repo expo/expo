@@ -1,11 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import {
-  Link,
-  NavigationAction,
-  StackActions,
-  useLinkBuilder,
-  useLinkProps,
-} from '@react-navigation/native';
+import { Link, NavigationAction, useLinkBuilder, useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import {
   FlatList,
@@ -47,10 +41,7 @@ function LinkButton({
   screenName?: string;
 }) {
   const { buildAction } = useLinkBuilder();
-  let action: NavigationAction = buildAction(href);
-  if (screenName) {
-    action = StackActions.push(screenName);
-  }
+  const action: NavigationAction = buildAction(href);
 
   const { onPress, ...props } = useLinkProps({ href, action });
 
