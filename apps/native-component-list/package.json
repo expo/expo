@@ -75,7 +75,6 @@
     "expo-crypto": "~14.0.0",
     "expo-device": "~7.0.0",
     "expo-document-picker": "~13.0.0",
-    "expo-face-detector": "~13.0.0",
     "expo-file-system": "~18.0.0",
     "expo-font": "~13.0.0",
     "expo-gl": "~15.0.0",

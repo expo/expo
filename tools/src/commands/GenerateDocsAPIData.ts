@@ -49,7 +49,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-device': ['Device.ts'],
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-document-picker': ['index.ts'],
-  'expo-face-detector': ['FaceDetector.ts'],
   'expo-file-system': ['index.ts'],
   'expo-file-system-next': ['next/index.ts', 'expo-file-system'],
   'expo-font': ['index.ts'],

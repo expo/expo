@@ -18,7 +18,6 @@ import expo.modules.constants.ConstantsPackage
 import expo.modules.core.interfaces.Package
 import expo.modules.device.DeviceModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderModule
@@ -120,7 +119,6 @@ open class HomeActivity : BaseExperienceActivity() {
         ConstantsPackage(),
         FileSystemPackage(),
         KeepAwakePackage(),
-        FaceDetectorPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         SplashScreenPackage()
