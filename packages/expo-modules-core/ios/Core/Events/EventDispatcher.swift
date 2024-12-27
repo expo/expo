@@ -77,7 +77,7 @@ internal func installEventDispatcher<ViewType>(forEvent eventName: String, onVie
 /**
  Checks whether the mirror child refers to the event dispatcher with the given event name.
  */
-private func isEventDispatcherWithName(_ mirrorChild: Mirror.Child, _ eventName: String) -> Bool {
+internal func isEventDispatcherWithName(_ mirrorChild: Mirror.Child, _ eventName: String) -> Bool {
   guard let eventDispatcher = mirrorChild.value as? EventDispatcher else {
     return false
   }

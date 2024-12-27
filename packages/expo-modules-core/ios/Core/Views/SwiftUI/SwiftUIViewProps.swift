@@ -22,5 +22,19 @@ extension ExpoSwiftUI {
       // Notify subscribed views about the change to re-render them.
       objectWillChange.send()
     }
+
+    internal func setUpEvents(_ dispatcher: @escaping (_ eventName: String, _ payload: Any) -> Void) {
+      Mirror(reflecting: self).children.forEach { (label: String?, value: Any) in
+        guard let event = value as? EventDispatcher else {
+          return
+        }
+        guard let eventName = event.customName ?? convertLabelToKey(label) else {
+          fatalError("The event has no name")
+        }
+        event.handler = { payload in
+          dispatcher(eventName, payload)
+        }
+      }
+    }
   }
 }

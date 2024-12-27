@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Implemented dispatching events by SwiftUI views.
+
 ### 🐛 Bug fixes
 
 - [iOS] Fixes view managers not deallocating when reloading. ([#33760](https://github.com/expo/expo/pull/33760) by [@alanjhughes](https://github.com/alanjhughes))

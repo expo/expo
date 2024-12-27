@@ -28,6 +28,11 @@ public protocol AnyViewDefinition {
   func getSupportedPropNames() -> [String]
 
   /**
+   Returns a list of event names supported by the view.
+   */
+  func getSupportedEventNames() -> [String]
+
+  /**
    Calls defined lifecycle methods with the given type.
    */
   func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: UIView)
