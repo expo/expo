@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Fixed broken local UI development on Android. ([#33714](https://github.com/expo/expo/pull/33714) by [@kudo](https://github.com/kudo))
