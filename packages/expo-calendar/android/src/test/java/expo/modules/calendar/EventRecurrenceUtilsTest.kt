@@ -3,11 +3,24 @@ package expo.modules.calendar
 import expo.modules.core.arguments.ReadableArguments
 import io.mockk.every
 import io.mockk.mockk
+import java.util.TimeZone
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Before
 import org.junit.Test
 
 class EventRecurrenceUtilsTest {
+
+  @Before
+  fun setUp() {
+    TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
+  }
+
+  @After
+  fun tearDown() {
+    TimeZone.setDefault(null)
+  }
 
   @Test
   fun testExtractRecurrence_withAllFields() {
@@ -25,7 +38,7 @@ class EventRecurrenceUtilsTest {
 
     assertEquals("daily", result.frequency)
     assertEquals(2, result.interval)
-    assertEquals("20241231T010000Z", result.endDate)
+    assertEquals("20241231T000000Z", result.endDate)
     assertEquals(10, result.occurrence)
   }
 
