@@ -9,9 +9,9 @@ platforms: ['android', 'ios', 'web', 'tvos']
 
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
-import { APIBox } from '~/components/plugins/APIBox';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/PaddedAPIBoxSectionHeader';
 import { CALLOUT } from '~/ui/components/Text';
 
 > **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
@@ -35,7 +35,7 @@ import {
 
 ## Components
 
-<APIBox header="SafeAreaView">
+<PaddedAPIBox header="SafeAreaView" className="px-4 pt-3">
 
 `SafeAreaView` is a regular `View` component with the safe area edges applied as padding.
 
@@ -57,7 +57,7 @@ function SomeComponent() {
 
 <APIBoxSectionHeader text="SafeAreaView Props" />
 
-<APIBox header="edges" headerNestingLevel={4}>
+<PaddedAPIBox header="edges" headerNestingLevel={4} className="px-4 pt-3">
 
 {/* prettier-ignore */}
 <CALLOUT theme="tertiary" className="text-2xs">Optional&ensp;•&ensp;Type: [`Edge[]`](#edge)&ensp;•&ensp;Default: `["top", "right", "bottom", "left"]`</CALLOUT>
@@ -65,9 +65,9 @@ function SomeComponent() {
 
 Sets the edges to apply the safe area insets to.
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="emulateUnlessSupported" headerNestingLevel={4}>
+<PaddedAPIBox header="emulateUnlessSupported" headerNestingLevel={4} className="px-4 pt-3">
 
 <CALLOUT theme="tertiary" className="text-2xs">
   Optional&ensp;•&ensp;Type: `boolean`&ensp;•&ensp;Default: `true`
@@ -76,12 +76,12 @@ Sets the edges to apply the safe area insets to.
 
 On iOS 10+, emulate the safe area using the status bar height and home indicator sizes.
 
-</APIBox>
-</APIBox>
+</PaddedAPIBox>
+</PaddedAPIBox>
 
 ## Hooks
 
-<APIBox header="useSafeAreaInsets()">
+<PaddedAPIBox header="useSafeAreaInsets()" className="px-4 pt-3">
 
 Hook gives you direct access to the safe area insets. This is a more advanced use-case, and might perform worse than `SafeAreaView` when rotating the device.
 
@@ -101,19 +101,19 @@ function HookComponent() {
 
 <CornerDownRightIcon className="icon-sm mr-2 inline-block align-middle text-icon-secondary" /> [`EdgeInsets`](#edgeinsets)
 
-</APIBox>
+</PaddedAPIBox>
 
 ## Types
 
-<APIBox header="Edge">
+<PaddedAPIBox header="Edge" className="px-4 pt-3">
 
 String union of possible edges.
 
 Acceptable values are: `'top'`, `'right'`, `'bottom'`, `'left'`.
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="EdgeInsets">
+<PaddedAPIBox header="EdgeInsets" className="px-4 pt-3">
 
 Represent the hook result.
 
@@ -126,7 +126,7 @@ Represent the hook result.
 | `right`  | `number` | Value of right inset.  |
 | `top`    | `number` | Value of top inset.    |
 
-</APIBox>
+</PaddedAPIBox>
 
 ## Guides
 

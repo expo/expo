@@ -9,8 +9,8 @@ platforms: ['android', 'ios', 'web', 'tvos']
 
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
-import { APIBox } from '~/components/plugins/APIBox';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { CALLOUT } from '~/ui/components/Text';
 
@@ -35,7 +35,7 @@ import {
 
 ## Components
 
-<APIBox header="SafeAreaView">
+<PaddedAPIBox header="SafeAreaView" className="px-4 pt-3">
 
 `SafeAreaView` is a regular `View` component with the safe area edges applied as padding.
 
@@ -57,7 +57,7 @@ function SomeComponent() {
 
 ## Props
 
-<APIBox header="edges">
+<PaddedAPIBox header="edges" className="px-4 pt-3">
 
 <CALLOUT theme="secondary">
   Optional • Type: [`Edge[]`](#edge) • Default: `["top", "right", "bottom", "left"]`
@@ -66,21 +66,21 @@ function SomeComponent() {
 
 Sets the edges to apply the safe area insets to.
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="emulateUnlessSupported">
+<PaddedAPIBox header="emulateUnlessSupported" className="px-4 pt-3">
 
 <CALLOUT theme="secondary">Optional • Type: `boolean` • Default: `true`</CALLOUT>
 <br />
 
 On iOS 10+, emulate the safe area using the status bar height and home indicator sizes.
 
-</APIBox>
-</APIBox>
+</PaddedAPIBox>
+</PaddedAPIBox>
 
 ## Hooks
 
-<APIBox header="useSafeAreaInsets()">
+<PaddedAPIBox header="useSafeAreaInsets()" className="px-4 pt-3">
 
 Hook gives you direct access to the safe area insets. This is a more advanced use-case, and might perform worse than `SafeAreaView` when rotating the device.
 
@@ -100,19 +100,19 @@ function HookComponent() {
 
 <CornerDownRightIcon className="icon-sm mr-2 inline-block align-middle text-icon-secondary" /> [`EdgeInsets`](#edgeinsets)
 
-</APIBox>
+</PaddedAPIBox>
 
 ## Types
 
-<APIBox header="Edge">
+<PaddedAPIBox header="Edge" className="px-4 pt-3">
 
 String union of possible edges.
 
 Acceptable values are: `'top'`, `'right'`, `'bottom'`, `'left'`.
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="EdgeInsets">
+<PaddedAPIBox header="EdgeInsets" className="px-4 pt-3">
 
 Represent the hook result.
 
@@ -125,7 +125,7 @@ Represent the hook result.
 | `right`  | `number` | Value of right inset.  |
 | `top`    | `number` | Value of top inset.    |
 
-</APIBox>
+</PaddedAPIBox>
 
 ## Guides
 

@@ -3,7 +3,7 @@ title: Static Rendering
 description: Learn how to render routes to static HTML and CSS files with Expo Router.
 ---
 
-import { APIBox } from '~/components/plugins/APIBox';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -155,7 +155,7 @@ This will output a file for each post in the **dist** directory. For example, if
 
 <FileTree files={['dist/blog/alpha.html', 'dist/blog/beta.html']} />
 
-<APIBox header="generateStaticParams">
+<PaddedAPIBox header="generateStaticParams" className="px-4 pt-3">
 
 A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process. However, the values prefixed with `EXPO_PUBLIC_.generateStaticParams` do not run in a browser environment, so it cannot access browser APIs such as `localStorage` or `document`. It also cannot access native Expo APIs such as `expo-camera` or `expo-location`.
 
@@ -195,7 +195,7 @@ export async function generateStaticParams(params: {
 }
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
 ### Read files using `process.cwd()`
 
