@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+https://github.com/expo/expo/pull/33867
+- [iOS] Fixed ScreenOrientation.addOrientationChangeListener() Freezes iOS Devices in Expo SDK 52, issue 33853 ([#33867](https://github.com/expo/expo/pull/33867) by [@pjdemers](https://github.com/pjdemers)
+
 ### 💡 Others
 
 ## 8.0.2 - 2024-12-19
