@@ -32,13 +32,11 @@ interface Props {
 function LinkButton({
   href,
   children,
-  screenName,
   ...rest
 }: Omit<React.ComponentProps<typeof Link>, 'action'> & {
   href: string;
   disabled?: boolean;
   children?: React.ReactNode;
-  screenName?: string;
 }) {
   const { buildAction } = useLinkBuilder();
   const action: NavigationAction = buildAction(href);
@@ -95,7 +93,6 @@ export default function ComponentListScreen(props: Props) {
       <LinkButton
         disabled={!isAvailable}
         href={route ?? screenName ?? exampleName}
-        screenName={screenName ?? exampleName}
         style={[styles.rowTouchable]}>
         <View
           pointerEvents="none"
