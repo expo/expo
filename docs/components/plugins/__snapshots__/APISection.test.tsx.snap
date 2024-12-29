@@ -988,7 +988,7 @@ properties.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -1228,7 +1228,7 @@ properties.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -1663,7 +1663,7 @@ value depending on the state of the credential.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -1914,7 +1914,7 @@ refresh operation.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -2211,7 +2211,7 @@ sign-in operation.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -2536,7 +2536,7 @@ sign-out operation.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -2834,7 +2834,7 @@ for more details.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -3335,7 +3335,7 @@ may be
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -3947,7 +3947,7 @@ for more details.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -4274,7 +4274,7 @@ for more details.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -4621,7 +4621,7 @@ for more details.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -4808,7 +4808,7 @@ OAuth 2.0 protocol
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -7092,7 +7092,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -7697,7 +7697,7 @@ available on this device.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -8037,7 +8037,7 @@ On iOS, the
       </p>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs rounded-none border-0 border-t"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -8333,7 +8333,7 @@ in order to enable/disable the permission.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -8471,7 +8471,7 @@ in order to enable/disable the permission.
         class="px-4 [table_&]:!mb-0 [table_&]:px-0"
       />
       <div
-        class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
+        class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
       >
         <table
           class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
@@ -8736,7 +8736,7 @@ in order to enable/disable the permission.
       class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper !mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
         class="w-full rounded-none border-0 text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
