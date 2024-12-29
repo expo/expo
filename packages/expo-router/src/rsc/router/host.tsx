@@ -62,6 +62,14 @@ if (BASE_PATH === '/') {
   );
 }
 
+if (process.env.EXPO_OS !== 'web' && !window.location?.href) {
+  // This can happen if the user attempts to use React Server Components without
+  // enabling the flags in the app.json. This will set origin to false and prevent the expo/metro-runtime polyfill from running.
+  throw new Error(
+    'window.location.href is not defined. This is required for React Server Components to work correctly. Ensure React Server Components is correctly enabled in your project and config.'
+  );
+}
+
 type OnFetchData = (data: unknown) => void;
 type SetElements = (updater: Elements | ((prev: Elements) => Elements)) => void;
 
