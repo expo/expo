@@ -20,7 +20,7 @@ export const Table = ({
 }: TableProps) => (
   <div
     className={mergeClasses(
-      'table-wrapper !mb-3 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs',
+      'table-wrapper !mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs',
       containerClassName
     )}>
     <table
