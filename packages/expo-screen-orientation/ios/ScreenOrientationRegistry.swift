@@ -211,7 +211,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         self.currentScreenOrientation = newScreenOrientation
       }
     }
-    queue.async() {
+    queue.async {
       // Read without the barrier:
       for controller in self.orientationControllers {
         controller.screenOrientationDidChange(newScreenOrientation)
