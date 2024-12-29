@@ -226,17 +226,11 @@ export class SQLiteStorage {
    * Retrieves the values associated with the given keys asynchronously.
    */
   async multiGet(keys: string[]): Promise<[string, string | null][]> {
-    const db = this.getDbSync();
-    let result: [string, string | null][] = [];
-    await db.withExclusiveTransactionAsync(async (tx) => {
-      result = await Promise.all(
-        keys.map(async (key) => {
-          const row = await tx.getFirstAsync<{ value: string }>(STATEMENT_GET, key);
-          return [key, row?.value ?? null];
-        })
-      );
-    });
-    return result;
+    return Promise.all(
+      keys.map(async (key): Promise<[string, string | null]> => {
+        return [key, await this.getItemAsync(key)];
+      })
+    );
   }
 
   /**
