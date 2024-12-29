@@ -206,7 +206,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
     queue.sync(flags: .barrier) {
       // Write with the barrier:
-      if (self.currentScreenOrientation != newScreenOrientation) {
+      if self.currentScreenOrientation != newScreenOrientation {
         // Only change if necessary, to prevent listeners from re-calling this method.
         self.currentScreenOrientation = newScreenOrientation
       }
