@@ -105,8 +105,8 @@ The behavior of the module resolution can be customized using some configuration
 ### `searchPaths`
 
 A list of paths relative to the app's root directory where the autolinking script should search for Expo modules.
-It defaults to a list of all **node_modules** folders found when traversing up through a monorepo, starting from the app's root directory.
-Useful when your project has a custom structure or you want to link local packages from folders different than **node_modules**.
+It defaults to a list of all **node_modules** directories found when traversing up through a monorepo, starting from the app's root directory.
+Useful when your project has a custom structure or you want to link local packages from directories different than **node_modules**.
 
 ```json package.json
 {

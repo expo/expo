@@ -70,7 +70,7 @@ By default, the check is enabled and unknown packages are listed.
 
 Expo Doctor checks if your project includes native project directories such as **android** or **ios**. If these directories exist but are not listed in your **.gitignore** or [**.easignore**](/build-reference/easignore) files, Expo Doctor verifies the presence of an app config file. If this file exists, it means your project is configured to use [Prebuild](/workflow/prebuild).
 
-When the **android** or **ios** folders are present, EAS Build does not sync app config properties to the native projects. Expo Doctor throws a warning if these conditions are true.
+When the **android** or **ios** directories are present, EAS Build does not sync app config properties to the native projects. Expo Doctor throws a warning if these conditions are true.
 
 You can disable/enable this check by adding the following configuration to your project's **package.json** file:
 

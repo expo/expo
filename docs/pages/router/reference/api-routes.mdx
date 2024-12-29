@@ -302,7 +302,7 @@ Create a server entry file. All requests will be delegated through this middlewa
 const { createRequestHandler } = require('@expo/server/adapter/netlify');
 
 const handler = createRequestHandler({
-  /* @info Points to the root `dist/` (output) folder */
+  /* @info Points to the root `dist/` (output) directory */
   build: require('path').join(__dirname, '../../dist/server'),
   /* @end */
 });
@@ -383,7 +383,7 @@ Create a server entry file. All requests will be delegated through this middlewa
 const { createRequestHandler } = require('@expo/server/adapter/vercel');
 
 module.exports = createRequestHandler({
-  /* @info Points to the root `dist/` (output) folder */
+  /* @info Points to the root `dist/` (output) directory */
   build: require('path').join(__dirname, '../dist/server'),
   /* @end */
 });
