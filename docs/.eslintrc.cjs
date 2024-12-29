@@ -145,6 +145,7 @@ module.exports = {
               'dialog-.+',
               'terminal-snippet',
               'table-wrapper',
+              'tutorial-code-annotation',
             ],
             ...TAILWIND_DEFAULTS,
           },

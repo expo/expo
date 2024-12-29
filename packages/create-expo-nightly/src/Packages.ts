@@ -17,7 +17,6 @@ const EXCLUDE_PACKAGES = [
   'expo-dev-client-components',
   'expo-doctor',
   'expo-env-info',
-  'expo-face-detector',
   'expo-module-scripts',
   'expo-module-template',
   'expo-module-template-local',

@@ -266,7 +266,7 @@
       "explanation": null,
       "constant": "android.permission.BIND_CHOOSER_TARGET_SERVICE",
       "protection": "signature",
-      "warning": "This constant was deprecated in API level 30. For publishing direct share targets, please follow the instructions in https://developer.android.com/training/sharing/receive.html#providing-direct-share-targets instead."
+      "warning": "This constant was deprecated in API level 30. For publishing direct share targets, follow the instructions in https://developer.android.com/training/sharing/receive.html#providing-direct-share-targets instead."
     },
     "BIND_COMPANION_DEVICE_SERVICE": {
       "apiAdded": 31,
@@ -2367,7 +2367,7 @@
       "explanation": null,
       "constant": "android.permission.PERSISTENT_ACTIVITY",
       "protection": null,
-      "warning": "This constant was deprecated in API level 15. This functionality will be removed in the future; please do not use. Allow an application to make its activities persistent."
+      "warning": "This constant was deprecated in API level 15. Do not use this functionality since it will be removed in the future. Allow an application to make its activities persistent."
     },
     "POST_NOTIFICATIONS": {
       "apiAdded": 33,
