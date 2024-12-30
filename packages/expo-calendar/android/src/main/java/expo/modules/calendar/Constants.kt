@@ -47,7 +47,8 @@ internal val findEventByIdQueryParameters = arrayOf(
   CalendarContract.Events.GUESTS_CAN_MODIFY,
   CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS,
   CalendarContract.Events.GUESTS_CAN_SEE_GUESTS,
-  CalendarContract.Events.ORIGINAL_ID
+  CalendarContract.Events.ORIGINAL_ID,
+  CalendarContract.Events.EVENT_COLOR
 )
 
 internal val findEventsQueryParameters = arrayOf(
@@ -69,7 +70,8 @@ internal val findEventsQueryParameters = arrayOf(
   CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS,
   CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS,
   CalendarContract.Instances.ORIGINAL_ID,
-  CalendarContract.Instances._ID
+  CalendarContract.Instances._ID,
+  CalendarContract.Instances.EVENT_COLOR
 )
 
 internal val findCalendarsQueryParameters = arrayOf(

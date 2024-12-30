@@ -726,6 +726,7 @@ class CalendarModule : Module() {
       putBoolean("guestsCanInviteOthers", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0)
       putBoolean("guestsCanSeeGuests", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0)
       putString("originalId", optStringFromCursor(cursor, CalendarContract.Events.ORIGINAL_ID))
+      putString("color", String.format("#%06X", 0xFFFFFF and optIntFromCursor(cursor, CalendarContract.Events.EVENT_COLOR)))
     }
 
     // unfortunately the string values of CalendarContract.Events._ID and CalendarContract.Instances._ID are equal

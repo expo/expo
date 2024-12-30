@@ -311,6 +311,11 @@ export async function updateEventAsync(id, details = {}, recurringEventOptions =
     if (!id) {
         throw new Error('updateEventAsync must be called with an id (string) of the target event');
     }
+    if (Platform.OS === 'android') {
+        if (details.hasOwnProperty('color')) {
+            console.warn('updateEventAsync was called with a read-only property, which will not be updated');
+        }
+    }
     if (Platform.OS === 'ios') {
         if (details.hasOwnProperty('creationDate') ||
             details.hasOwnProperty('lastModifiedDate') ||
