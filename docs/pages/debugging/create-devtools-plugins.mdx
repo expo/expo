@@ -3,7 +3,7 @@ title: Create a dev tools plugin
 description: Learn how to create a dev tools plugin to enhance your development experience.
 ---
 
-import { APIBox } from '~/components/plugins/APIBox';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -45,7 +45,7 @@ The template includes a simple example of sending and receiving messages between
 
 The client object returned by `useDevToolsPluginClient` includes:
 
-<APIBox header="addMessageListener">
+<PaddedAPIBox header="addMessageListener">
 
 Listens for a message matching the typed string and invokes the callback with the message data.
 
@@ -56,9 +56,9 @@ client.addMessageListener('ping', data => {
 });
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="sendMessage">
+<PaddedAPIBox header="sendMessage">
 
 Listens for a message matching the typed string and invokes the callback with the message data.
 
@@ -67,7 +67,7 @@ const client = useDevToolsPluginClient('my-devtools-plugin');
 client?.sendMessage('ping', { from: 'web' });
 ```
 
-</APIBox>
+</PaddedAPIBox>
 
 Edit the Expo app inside the **webui** directory to customize the user interface that displays diagnostic information from your app or triggers test scenarios:
 
