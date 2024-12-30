@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix safe area insets not updating for native controls on iOS. ([#32864](https://github.com/expo/expo/pull/32864) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 - Fixed `generateThumbnailsAsync` not being available on Android in the types. ([#33491](https://github.com/expo/expo/pull/33491) by [@hirbod](https://github.com/hirbod))
