@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 15.0.5 — 2024-12-30
+
+_This version does not introduce any user-facing changes._
+
 ## 15.0.4 — 2024-12-26
 
 ### 🐛 Bug fixes

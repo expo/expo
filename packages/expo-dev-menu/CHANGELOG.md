@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 6.0.15 — 2024-12-30
+
+### 🐛 Bug fixes
+
+- Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
 
 ## 6.0.14 — 2024-12-10
 
