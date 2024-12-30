@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android][calendar] retrieve event level color ([#33890](https://github.com/expo/expo/pull/33890) by [@mateoguzmana](https://github.com/mateoguzmana))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
