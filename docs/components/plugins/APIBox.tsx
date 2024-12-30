@@ -11,7 +11,7 @@ import {
 import { PlatformName } from '~/types/common';
 import { MONOSPACE, RawH3 } from '~/ui/components/Text';
 
-type APIBoxProps = PropsWithChildren<{
+export type APIBoxProps = PropsWithChildren<{
   header?: string;
   platforms?: PlatformName[];
   className?: string;

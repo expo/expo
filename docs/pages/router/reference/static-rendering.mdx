@@ -155,7 +155,7 @@ This will output a file for each post in the **dist** directory. For example, if
 
 <FileTree files={['dist/blog/alpha.html', 'dist/blog/beta.html']} />
 
-<PaddedAPIBox header="generateStaticParams" className="px-4 pt-3">
+<PaddedAPIBox header="generateStaticParams">
 
 A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process. However, the values prefixed with `EXPO_PUBLIC_.generateStaticParams` do not run in a browser environment, so it cannot access browser APIs such as `localStorage` or `document`. It also cannot access native Expo APIs such as `expo-camera` or `expo-location`.
 

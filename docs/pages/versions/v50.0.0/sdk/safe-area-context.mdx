@@ -37,7 +37,7 @@ import {
 
 ## Components
 
-<PaddedAPIBox header="SafeAreaView" className="px-4 pt-3">
+<PaddedAPIBox header="SafeAreaView">
 
 `SafeAreaView` is a regular `View` component with the safe area edges applied as padding.
 
@@ -59,7 +59,7 @@ function SomeComponent() {
 
 ## Props
 
-<PaddedAPIBox header="edges" className="px-4 pt-3">
+<PaddedAPIBox header="edges">
 
 <CALLOUT theme="secondary">
   Optional • Type: [`Edge[]`](#edge) • Default: `["top", "right", "bottom", "left"]`
@@ -70,7 +70,7 @@ Sets the edges to apply the safe area insets to.
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="emulateUnlessSupported" className="px-4 pt-3">
+<PaddedAPIBox header="emulateUnlessSupported">
 
 <CALLOUT theme="secondary">Optional • Type: `boolean` • Default: `true`</CALLOUT>
 <br />
@@ -82,7 +82,7 @@ On iOS 10+, emulate the safe area using the status bar height and home indicator
 
 ## Hooks
 
-<PaddedAPIBox header="useSafeAreaInsets()" className="px-4 pt-3">
+<PaddedAPIBox header="useSafeAreaInsets()">
 
 Hook gives you direct access to the safe area insets. This is a more advanced use-case, and might perform worse than `SafeAreaView` when rotating the device.
 
@@ -106,7 +106,7 @@ function HookComponent() {
 
 ## Types
 
-<PaddedAPIBox header="Edge" className="px-4 pt-3">
+<PaddedAPIBox header="Edge">
 
 String union of possible edges.
 
@@ -114,7 +114,7 @@ Acceptable values are: `'top'`, `'right'`, `'bottom'`, `'left'`.
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="EdgeInsets" className="px-4 pt-3">
+<PaddedAPIBox header="EdgeInsets">
 
 Represent the hook result.
 

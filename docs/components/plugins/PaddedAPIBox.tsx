@@ -1,12 +1,10 @@
-import { PropsWithChildren } from 'react';
+import { mergeClasses } from '@expo/styleguide';
 
-import { APIBox } from '~/components/plugins/APIBox';
+import { APIBox, APIBoxProps } from '~/components/plugins/APIBox';
 
-type PaddedAPIBoxProps = PropsWithChildren<unknown>;
-
-export function PaddedAPIBox({ children, ...props }: PaddedAPIBoxProps) {
+export function PaddedAPIBox({ children, className, ...props }: APIBoxProps) {
   return (
-    <APIBox className="px-4 py-3" {...props}>
+    <APIBox className={mergeClasses('px-4 py-3', className)} {...props}>
       {children}
     </APIBox>
   );

@@ -24,7 +24,7 @@ Before you proceed, ensure you have set up `jest-expo` according to the [Unit te
 
 `renderRouter` accepts the same [options](https://callstack.github.io/react-native-testing-library/docs/api#render-options) as `render` and introduces an additional option `initialUrl`, which sets an initial route for simulating deep-linking.
 
-<PaddedAPIBox header="Inline file system" className="px-4 pt-3">
+<PaddedAPIBox header="Inline file system">
 
 `renderRouter(mock: Record<string, ReactComponent>, options: RenderOptions)`
 
@@ -53,7 +53,7 @@ it('my-test', async () => {
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="Inline file system with `null` components" className="px-4 pt-3">
+<PaddedAPIBox header="Inline file system with `null` components">
 
 `renderRouter(mock: string[], options: RenderOptions)`
 
@@ -73,7 +73,7 @@ it('my-test', async () => {
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="Path to fixture" className="px-4 pt-3">
+<PaddedAPIBox header="Path to fixture">
 
 `renderRouter(fixturePath: string, options: RenderOptions)`
 
@@ -88,7 +88,7 @@ it('my-test', async () => {
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="Path to the fixture with overrides" className="px-4 pt-3">
+<PaddedAPIBox header="Path to the fixture with overrides">
 
 `renderRouter({ appDir: string, overrides: Record<string, ReactComponent>}, options: RenderOptions)`
 
@@ -112,7 +112,7 @@ it('my-test', async () => {
 
 The following matches have been added to `expect` and can be used to assert values on `screen`.
 
-<PaddedAPIBox header="toHavePathname()" className="px-4 pt-3">
+<PaddedAPIBox header="toHavePathname()">
 
 Assert the current pathname against a given string. The matcher uses the value of the [`usePathname`](/router/reference/hooks/#usepathname) hook on the current `screen`.
 
@@ -122,7 +122,7 @@ expect(screen).toHavePathname('/my-router');
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="toHavePathnameWithParams()" className="px-4 pt-3">
+<PaddedAPIBox header="toHavePathnameWithParams()">
 
 Assert the current pathname, including URL parameters, against a given string. This is useful to assert the appearance of URL in a web browser.
 
@@ -132,7 +132,7 @@ expect(screen).toHavePathnameWithParams('/my-router?hello=world');
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="toHaveSegments()" className="px-4 pt-3">
+<PaddedAPIBox header="toHaveSegments()">
 
 Assert the current segments against an array of strings. The matcher uses the value of the [`useSegments`](/router/reference/hooks/#usesegments) hook on the current `screen`.
 
@@ -141,7 +141,7 @@ expect(screen).toHaveSegments(['[id]']);
 ```
 
 </PaddedAPIBox>
-<PaddedAPIBox header="useLocalSearchParams()" className="px-4 pt-3">
+<PaddedAPIBox header="useLocalSearchParams()">
 
 Assert the current local URL parameters against an object. The matcher uses the value of the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook on the current `screen`.
 
@@ -150,7 +150,7 @@ expect(screen).useLocalSearchParams({ first: 'abc' });
 ```
 
 </PaddedAPIBox>
-<PaddedAPIBox header="useGlobalSearchParams()" className="px-4 pt-3">
+<PaddedAPIBox header="useGlobalSearchParams()">
 
 Assert the current screen's pathname that matches a value. Compares using the value of [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook.
 
@@ -162,7 +162,7 @@ expect(screen).useGlobalSearchParams({ first: 'abc' });
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="toHaveRouterState()" className="px-4 pt-3">
+<PaddedAPIBox header="toHaveRouterState()">
 
 An advanced matcher that asserts the current router state against an object.
 
