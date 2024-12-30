@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- docs(fingerprint): correct typo in fingerprint cli ([#33887](https://github.com/expo/expo/pull/33887) by [@leopic](https://github.com/leopic))
+
 ## 0.11.6 - 2024-12-24
 
 ### 🐛 Bug fixes
