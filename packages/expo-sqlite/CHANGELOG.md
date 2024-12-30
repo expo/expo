@@ -22,6 +22,7 @@
 ### 💡 Others
 
 - Removed unused `SQLite3Wrapper` code for legacy implementation on Android. ([#33565](https://github.com/expo/expo/pull/33565) by [@kudo](https://github.com/kudo))
+- Enforce input validations in `kv-store` operations. ([#33874](https://github.com/expo/expo/pull/33874) by [@rtorrente](https://github.com/rtorrente))
 
 ## 15.0.3 — 2024-11-12
 
