@@ -11,7 +11,7 @@
   "dependencies": {
     "expo": "~52.0.23",
     "expo-camera": "~16.0.10",
-    "expo-dev-client": "~5.0.7",
+    "expo-dev-client": "~5.0.8",
     "expo-face-detector": "~13.0.0",
     "expo-image": "~2.0.0",
     "expo-notifications": "~0.29.0",

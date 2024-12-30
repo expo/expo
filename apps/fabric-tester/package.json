@@ -14,7 +14,7 @@
     "expo-av": "~15.0.0",
     "expo-blur": "~14.0.0",
     "expo-camera": "~16.0.10",
-    "expo-dev-client": "~5.0.7",
+    "expo-dev-client": "~5.0.8",
     "expo-image": "^2.0.0",
     "expo-linear-gradient": "~14.0.0",
     "expo-splash-screen": "~0.29.0",
