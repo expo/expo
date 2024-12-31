@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Implemented dispatching events by SwiftUI views.
+- Implemented dispatching events by SwiftUI views. ([#33860](https://github.com/expo/expo/pull/33860) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
