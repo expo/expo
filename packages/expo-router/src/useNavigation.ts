@@ -12,7 +12,7 @@ import { resolveHref } from './link/href';
 import { Href } from './types';
 
 /**
- * Returns the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop)
+ * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)
  * to imperatively access layout-specific functionality like `navigation.openDrawer()` in a
  * [Drawer](/router/advanced/drawer/) layout.
  *
