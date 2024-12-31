@@ -56,24 +56,39 @@ export const APICommentTextBlock = ({
   );
 
   const examples = getAllTagData('example', comment);
-  const exampleText = examples?.map((example, index) => (
-    <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:!mb-0')}>
-      {inlineHeaders ? (
-        <CALLOUT className="my-1.5 flex flex-row items-center gap-1.5 font-medium text-tertiary">
-          <CodeSquare01Icon className="icon-sm -mt-px text-icon-tertiary" />
-          Example
-        </CALLOUT>
-      ) : (
-        <APIBoxSectionHeader text="Example" className="-mx-4 mb-3 mt-1" Icon={CodeSquare01Icon} />
-      )}
-      <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
-        {getCommentContent(example.content ?? example.name)}
-      </ReactMarkdown>
-    </div>
-  ));
+  const exampleContent = examples?.map((example, index) => {
+    const exampleText = getCommentContent(example.content ?? example.name);
+    const isMultiline = /[\n\r]/.test(exampleText);
+
+    return (
+      <div
+        key={'example-' + index}
+        className={mergeClasses(
+          ELEMENT_SPACING,
+          !isMultiline && 'flex items-center gap-1.5',
+          'last:[&>*]:!mb-0'
+        )}>
+        {inlineHeaders ? (
+          <CALLOUT
+            className={mergeClasses(
+              'my-1.5 flex flex-row items-center gap-1.5 font-medium text-tertiary',
+              !isMultiline && 'my-0'
+            )}>
+            <CodeSquare01Icon className="icon-sm -mt-px text-icon-tertiary" />
+            Example
+          </CALLOUT>
+        ) : (
+          <APIBoxSectionHeader text="Example" className="-mx-4 mb-3 mt-1" Icon={CodeSquare01Icon} />
+        )}
+        <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
+          {exampleText}
+        </ReactMarkdown>
+      </div>
+    );
+  });
 
   const see = getTagData('see', comment);
-  const seeText = see && (
+  const seeContent = see && (
     <InlineHelp
       className={mergeClasses('shadow-none', `!${ELEMENT_SPACING}`)}
       size="sm"
@@ -105,9 +120,9 @@ export const APICommentTextBlock = ({
       {beforeContent}
       {parsedContent}
       {afterContent}
-      {afterContent && !exampleText && <br />}
-      {seeText}
-      {exampleText}
+      {afterContent && !exampleContent && <br />}
+      {seeContent}
+      {exampleContent}
     </div>
   );
 };
