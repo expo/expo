@@ -29,6 +29,7 @@ export interface Options {
   verbose: boolean;
   unstableTransformProfile?: string;
   eager?: boolean;
+  bundleBytecode?: boolean;
 }
 
 function assertIsBoolean(val: any): asserts val is boolean {
@@ -79,6 +80,7 @@ export function resolveOptions(
     dev,
     minify: parsed.args['--minify'] as boolean | undefined,
     eager: !!parsed.args['--eager'],
+    bundleBytecode: parsed.args['--bundle-bytecode'] as boolean | undefined,
   };
 
   if (commonOptions.eager) {
