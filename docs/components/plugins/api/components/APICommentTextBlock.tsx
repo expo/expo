@@ -2,6 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import type { ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
 import { InlineHelp } from 'ui/components/InlineHelp';
@@ -9,7 +10,6 @@ import { InlineHelp } from 'ui/components/InlineHelp';
 import { Tag } from '~/ui/components/Tag/Tag';
 import { CALLOUT } from '~/ui/components/Text';
 
-import { MDComponents } from '../types';
 import { APIBoxSectionHeader } from './APIBoxSectionHeader';
 import { CommentData } from '../APIDataTypes';
 import {
@@ -24,7 +24,7 @@ import { APISectionPlatformTags } from './APISectionPlatformTags';
 
 type Props = {
   comment?: CommentData;
-  components?: MDComponents;
+  components?: Components;
   beforeContent?: ReactNode;
   afterContent?: ReactNode;
   includePlatforms?: boolean;
