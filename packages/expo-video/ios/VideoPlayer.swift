@@ -173,16 +173,13 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     playerItem.externalMetadata = metadataItems
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
     playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
-<<<<<<< HEAD
     pointer.replaceCurrentItem(with: playerItem)
-=======
     // The current item has to be replaced from the main thread. When replacing from other queues
     // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
     // which causes crashes.
     DispatchQueue.main.async { [weak self] in
       self?.pointer.replaceCurrentItem(with: playerItem)
     }
->>>>>>> expo/doug/pr-33639
   }
     func createMetadataItems(for metadata: Metadata) -> [AVMetadataItem] {
       let mapping: [AVMetadataIdentifier: Any] = [
