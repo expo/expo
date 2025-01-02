@@ -261,7 +261,7 @@ class AudioModule : Module() {
       }
 
       Function("replace") { ref: AudioPlayer, source: AudioSource ->
-        appContext.mainQueue.launch {
+        runOnMain {
           if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
             val mediaSource = createMediaItem(source)
             val wasPlaying = ref.player.isPlaying
@@ -276,7 +276,7 @@ class AudioModule : Module() {
       }
 
       Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.setSamplingEnabled(enabled)
         }
       }

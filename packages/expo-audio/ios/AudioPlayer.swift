@@ -121,7 +121,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
     ref.pause()
-    
+
     // Remove the audio tap if it is active
     if samplingEnabled {
       setSamplingEnabled(enabled: false)
