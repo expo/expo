@@ -264,8 +264,12 @@ class AudioModule : Module() {
         appContext.mainQueue.launch {
           if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
             val mediaSource = createMediaItem(source)
+            val wasPlaying = ref.player.isPlaying
             mediaSource?.let {
               ref.player.replaceMediaItem(0, it.mediaItem)
+              if (wasPlaying) {
+                ref.player.play()
+              }
             }
           }
         }
