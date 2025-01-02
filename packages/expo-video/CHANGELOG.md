@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Added a warning for when the video plays before the component mounts in web. ([#33840](https://github.com/expo/expo/pull/33840) by [@zereight(https://github.com/zereight)])
+
 ### 💡 Others
 
 - Fixed `generateThumbnailsAsync` not being available on Android in the types. ([#33491](https://github.com/expo/expo/pull/33491) by [@hirbod](https://github.com/hirbod))
