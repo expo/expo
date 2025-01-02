@@ -68,7 +68,7 @@ declare -A redirects # associative array variable
 # redirects[requests/for/this/path]=are/redirected/to/this/one
 
 # Old redirects
-redirects[distribution/building-standalone-apps]=archive/classic-builds/building-standalone-apps
+redirects[distribution/building-standalone-apps]=build/setup
 
 # clients is now development
 redirects[clients/installation]=versions/latest/sdk/dev-client
@@ -121,7 +121,7 @@ redirects[guides/using-graphql]=guides/overview
 redirects[build/automating-submissions]=build/automate-submissions
 redirects[workflow/run-on-device]=build/internal-distribution
 redirects[archive/workflow/customizing]=workflow/customizing
-redirects[guides/building-standalone-apps]=archive/classic-builds/building-standalone-apps
+redirects[guides/building-standalone-apps]=build/setup
 redirects[versions/latest/sdk/permissions#expopermissionscamera_roll]=guides/permissions
 redirects[push-notifications/using-fcm]=push-notifications/push-notifications-setup
 
@@ -134,7 +134,6 @@ redirects[workflow/already-used-react-native]=workflow/overview
 redirects[eas-update/how-eas-update-works]=eas-update/how-it-works
 redirects[development/installation]=develop/development-builds/create-a-build
 redirects[bare/updating-your-app]=eas-update/getting-started
-redirects[classic/turtle-cli]=build/introduction
 redirects[technical-specs/expo-updates-0]=technical-specs/expo-updates-1
 redirects[archive/expokit/eject]=archive/glossary
 redirects[archive/expokit/overview]=archive/glossary
