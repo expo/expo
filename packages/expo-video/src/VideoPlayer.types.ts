@@ -251,11 +251,7 @@ export type VideoSource =
        * When undefined the player will display information contained in the video metadata.
        * @platform android
        * @platform ios
-<<<<<<< HEAD
        * @platform tvos
-=======
-       * @default tvos
->>>>>>> main
        */
       metadata?: VideoMetadata;
 
@@ -289,16 +285,22 @@ export type VideoMetadata = {
    */
   title?: string;
   /**
-   * Secondary text that will be displayed under the title.
+   * The name of the artist.
    * @platform android
    * @platform ios
    * @platform tvos
    */
   artist?: string;
   /**
+   * Secondary text that will be displayed under the title.
+   * @platform tvos
+   */
+  subTitle?: string;
+  /**
    * The uri of the video artwork.
    * @platform android
    * @platform ios
+   * @platform tvos
    */
   artwork?: string;
   /**

@@ -173,7 +173,16 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     playerItem.externalMetadata = metadataItems
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
     playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+<<<<<<< HEAD
     pointer.replaceCurrentItem(with: playerItem)
+=======
+    // The current item has to be replaced from the main thread. When replacing from other queues
+    // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
+    // which causes crashes.
+    DispatchQueue.main.async { [weak self] in
+      self?.pointer.replaceCurrentItem(with: playerItem)
+    }
+>>>>>>> expo/doug/pr-33639
   }
     func createMetadataItems(for metadata: Metadata) -> [AVMetadataItem] {
       let mapping: [AVMetadataIdentifier: Any] = [
@@ -194,6 +203,27 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         }
         return copiedItem
     }
+
+  func createMetadataItems(for metadata: Metadata) -> [AVMetadataItem] {
+    let mapping: [AVMetadataIdentifier: Any] = [
+      .commonIdentifierTitle: metadata.title,
+      .commonIdentifierArtist: metadata.artist,
+      .iTunesMetadataTrackSubTitle: metadata.subTitle
+    ]
+    return mapping.compactMap { createMetadataItem(for: $0, value: $1) }
+  }
+
+  private func createMetadataItem(for identifier: AVMetadataIdentifier, value: Any) -> AVMetadataItem {
+    let item = AVMutableMetadataItem()
+    item.identifier = identifier
+    item.value = value as? NSCopying & NSObjectProtocol
+    // Specify "und" to indicate an undefined language.
+    item.extendedLanguageTag = "und"
+    guard let copiedItem = item.copy() as? AVMetadataItem else {
+      fatalError("Failed to copy AVMetadataItem")
+    }
+    return copiedItem
+  }
 
   /**
    * iOS automatically pauses videos when the app enters the background. Only way to avoid this is to detach the player from the playerLayer.

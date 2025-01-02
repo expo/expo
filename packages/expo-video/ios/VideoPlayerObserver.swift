@@ -183,6 +183,7 @@ class VideoPlayerObserver {
     }
 
     playerItemObserver = NotificationCenter.default.addObserver(
+      // swiftlint:disable:next legacy_objc_type
       forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
       object: playerItem,
       queue: nil

@@ -12,6 +12,10 @@ internal struct VideoMetadata: Record {
 
   @Field
   var artwork: URL? = nil
+<<<<<<< HEAD
+=======
+
+>>>>>>> expo/doug/pr-33639
   @Field
   var subTitle: String? = nil
 }

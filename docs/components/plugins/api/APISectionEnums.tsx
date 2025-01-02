@@ -29,15 +29,13 @@ const renderEnumValue = (value: any, fallback?: string) =>
 
 function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefinitionData }) {
   return (
-    <div key={`enum-definition-${name}`} className={mergeClasses(STYLES_APIBOX, '!p-0')}>
-      <div className="min-h-[46px] px-5 pt-3">
-        <APISectionDeprecationNote comment={comment} sticky />
-        <APIBoxHeader name={name} comment={comment} />
-        <APICommentTextBlock comment={comment} includePlatforms={false} />
-      </div>
+    <div key={`enum-definition-${name}`} className={mergeClasses(STYLES_APIBOX)}>
+      <APISectionDeprecationNote comment={comment} sticky />
+      <APIBoxHeader name={name} comment={comment} />
+      <APICommentTextBlock comment={comment} includePlatforms={false} />
       {children.sort(sortByValue).map((enumValue: EnumValueData) => (
         <div
-          className="border-t border-t-palette-gray4 px-5 pb-0 pt-3 [&_h4]:mb-0.5"
+          className="border-t border-t-palette-gray4 px-4 pb-0 pt-3 [&_h4]:mb-0.5"
           key={enumValue.name}>
           <APISectionDeprecationNote comment={enumValue.comment} />
           <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
@@ -54,7 +52,11 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
               enumValue.type.name
             )}`}
           </MONOSPACE>
-          <APICommentTextBlock comment={enumValue.comment} includePlatforms={false} />
+          <APICommentTextBlock
+            comment={enumValue.comment}
+            includePlatforms={false}
+            includeSpacing={false}
+          />
         </div>
       ))}
     </div>

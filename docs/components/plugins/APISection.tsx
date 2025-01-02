@@ -66,10 +66,10 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
   } else if (extendedTypes?.length) {
     return extendedTypes[0].name === 'Component' || extendedTypes[0].name === 'PureComponent';
   } else if (signatures?.length) {
+    const mainSignature = signatures[0];
     if (
-      signatures[0].type.name === 'Element' ||
-      signatures[0].type.types?.map(t => t.name).includes('Element') ||
-      (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
+      (mainSignature.parameters && mainSignature.parameters[0].name === 'props') ||
+      (mainSignature.parameters && mainSignature.parameters[0].name === '__namedParameters')
     ) {
       return true;
     }

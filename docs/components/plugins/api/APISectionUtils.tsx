@@ -43,7 +43,7 @@ import {
 } from './APIStaticData';
 import { APIParamRow } from './components/APIParamRow';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
-import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY } from './styles';
+import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 import { CodeComponentProps, MDComponents } from './types';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -180,6 +180,8 @@ export const resolveTypeName = (
     objectType,
     indexType,
     target,
+    head,
+    tail,
   } = typeDefinition;
 
   try {
@@ -321,6 +323,17 @@ export const resolveTypeName = (
           <span className="text-quaternary">]</span>
         </>
       );
+    } else if (type === 'templateLiteral' && tail) {
+      const possibleData = [head ?? '', ...tail.flat()];
+      return (
+        <>
+          {possibleData.map((elem, i) => (
+            <span key={`tl-${name}-${i}`}>
+              {typeof elem === 'string' ? elem : `{${elem?.name}}`}
+            </span>
+          ))}
+        </>
+      );
     } else if (type === 'query' && queryType) {
       return queryType.name;
     } else if (type === 'literal' && typeof value === 'boolean') {
@@ -383,7 +396,7 @@ export const parseParamName = (name: string) => (name.startsWith('__') ? name.su
 export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
   const hasDescription = Boolean(parameters.some(param => param.comment));
   return (
-    <Table containerClassName="mt-0.5">
+    <Table containerClassName={mergeClasses(VERTICAL_SPACING, 'mt-0.5')}>
       <APIParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
       <tbody>
         {parameters?.map(param => (

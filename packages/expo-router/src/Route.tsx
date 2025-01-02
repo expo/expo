@@ -1,16 +1,16 @@
 'use client';
 
-import React, { ReactNode, useContext } from 'react';
+import { createContext, useContext, type ComponentType, type PropsWithChildren } from 'react';
 
-import type { ErrorBoundaryProps } from './exports';
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import { type ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
 
 export type LoadedRoute = {
-  ErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
-  default?: React.ComponentType<any>;
+  ErrorBoundary?: ComponentType<ErrorBoundaryProps>;
+  default?: ComponentType<any>;
   unstable_settings?: Record<string, any>;
   getNavOptions?: (args: any) => any;
   generateStaticParams?: (props: {
@@ -25,7 +25,7 @@ export type RouteNode = {
   loadRoute: () => Partial<LoadedRoute>;
   /** Loaded initial route name. */
   initialRouteName?: string;
-  /** nested routes */
+  /** Nested routes */
   children: RouteNode[];
   /** Is the route a dynamic path */
   dynamic: null | DynamicConvention[];
@@ -41,8 +41,8 @@ export type RouteNode = {
   entryPoints?: string[];
 };
 
-const CurrentRouteContext = React.createContext<RouteNode | null>(null);
-export const LocalRouteParamsContext = React.createContext<
+const CurrentRouteContext = createContext<RouteNode | null>(null);
+export const LocalRouteParamsContext = createContext<
   Record<string, string | undefined> | undefined
 >({});
 
@@ -63,16 +63,13 @@ export function useContextKey(): string {
   return getContextKey(node.contextKey);
 }
 
-/** Provides the matching routes and filename to the children. */
-export function Route({
-  children,
-  node,
-  route,
-}: {
-  children: ReactNode;
+export type RouteProps = PropsWithChildren<{
   node: RouteNode;
   route?: { params: Record<string, string | undefined> };
-}) {
+}>;
+
+/** Provides the matching routes and filename to the children. */
+export function Route({ children, node, route }: RouteProps) {
   return (
     <LocalRouteParamsContext.Provider value={route?.params}>
       <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
