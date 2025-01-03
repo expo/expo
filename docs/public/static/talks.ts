@@ -91,6 +91,27 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'Universal React Native Apps with DOM & RSC',
+    event: 'React Universe On Air #45',
+    description: 'Evan Bacon',
+    videoId: 'rA7E3rGKSZw',
+    link: 'https://www.callstack.com/podcasts/universal-react-native-apps-with-dom-react-server-components',
+  },
+  {
+    title: 'Streamlined React Native Development',
+    event: 'Software Engineering Daily',
+    description: 'Charlie Cheever, James Ide',
+    thumbnail: 'sedaily-01.webp',
+    link: 'https://softwareengineeringdaily.com/2025/01/01/streamlined-react-native-development-with-charlie-cheever-and-james-ide/',
+  },
+  {
+    title: 'Debugging the Debugger',
+    event: 'React Native Radio #316',
+    description: 'Cedric van Putten',
+    thumbnail: 'rnr-316.jpg',
+    link: 'https://reactnativeradio.com/episodes/rnr-316-debugging-the-debugger-with-cedric-van-putten-and-alex-hunt',
+  },
+  {
     title: 'What to do without App Center',
     event: 'React Native Radio #315',
     description: 'Quinlan Jung',
