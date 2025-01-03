@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Adding `pairedVideoAsset` for Live Photo support. ([#33274](https://github.com/expo/expo/pull/33274) by [@entiendoNull](https://github.com/entiendoNull))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

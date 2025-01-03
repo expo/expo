@@ -28,7 +28,7 @@ export type PermissionResponse = EXPermissionResponse & {
  */
 export type GranularPermission = 'audio' | 'photo' | 'video';
 
-export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
+export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown' | 'pairedVideo';
 
 /**
  * Represents the possible types of media that the app will ask the OS to get access to when calling [`presentPermissionsPickerAsync()`](#medialibrarypresentpermissionspickerasyncmediatypes).
@@ -145,6 +145,12 @@ export type AssetInfo = Asset & {
    * @platform ios
    */
   orientation?: number;
+  /**
+   * Contains information about the video paired with the image file.
+   * This field is available if the `mediaType` is `"photo"`, and the `mediaSubtypes` includes `"livePhoto"`.
+   * @platform ios
+   */
+  pairedVideoAsset?: Asset | null;
 };
 
 /**
