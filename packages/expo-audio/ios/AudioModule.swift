@@ -151,7 +151,7 @@ public class AudioModule: Module {
       }
 
       Function("replace") { (player, source: AudioSource) in
-        player.ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
+        player.replaceCurrentSource(source: source)
       }
 
       Function("pause") { player in
