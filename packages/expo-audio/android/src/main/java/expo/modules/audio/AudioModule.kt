@@ -261,14 +261,22 @@ class AudioModule : Module() {
       }
 
       Function("replace") { ref: AudioPlayer, source: AudioSource ->
-        if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
-          val mediaSource = createMediaItem(source)
-          ref.player.replaceMediaItem(0, mediaSource.mediaItem)
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            val mediaSource = createMediaItem(source)
+            val wasPlaying = ref.player.isPlaying
+            mediaSource?.let {
+              ref.player.replaceMediaItem(0, it.mediaItem)
+              if (wasPlaying) {
+                ref.player.play()
+              }
+            }
+          }
         }
       }
 
       Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.setSamplingEnabled(enabled)
         }
       }

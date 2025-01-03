@@ -7,7 +7,10 @@ import android.media.audiofx.Visualizer
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
@@ -79,6 +82,14 @@ class AudioPlayer(
       override fun onPlaybackStateChanged(playbackState: Int) {
         playerScope.launch {
           sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
+        }
+      }
+
+      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        if (reason == MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
+          playerScope.launch {
+            sendPlayerUpdate()
+          }
         }
       }
     })
