@@ -273,13 +273,7 @@ export default class VideoPlayerWeb
   play(): void {
     if (this._mountedVideos.size === 0) {
       console.warn(
-        '[expo-video] Cannot play video - VideoView is not mounted yet.\n' +
-        'To fix this:\n' +
-        '1. Move player.play() to useEffect:\n' +
-        '   useEffect(() => {\n' +
-        '     if (player) player.play()\n' +
-        '   }, [player])\n' +
-        '2. Or wait for user interaction to play'
+        '[expo-video] Cannot play video - No mounted video found.'
       )
     }
 
