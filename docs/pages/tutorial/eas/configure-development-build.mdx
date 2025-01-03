@@ -151,22 +151,21 @@ On running, this command:
 ```json eas.json
 {
   "cli": {
-    "version": ">= 8.0.0"
+    "version": ">= 14.2.0",
+    "appVersionSource": "remote"
   },
-
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal"
     },
-
     "preview": {
       "distribution": "internal"
     },
-
-    "production": {}
+    "production": {
+      "autoIncrement": true
+    }
   },
-
   "submit": {
     "production": {}
   }
