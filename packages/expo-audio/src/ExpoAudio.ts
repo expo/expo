@@ -19,6 +19,7 @@ export const PLAYBACK_STATUS_UPDATE = 'playbackStatusUpdate';
 export const AUDIO_SAMPLE_UPDATE = 'audioSampleUpdate';
 export const RECORDING_STATUS_UPDATE = 'recordingStatusUpdate';
 
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
 const replace = AudioModule.AudioPlayer.prototype.replace;
 AudioModule.AudioPlayer.prototype.replace = function (source: AudioSource) {
   return replace.call(this, resolveSource(source));
