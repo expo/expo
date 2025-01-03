@@ -10,7 +10,7 @@ import semver from 'semver';
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
 import { SourceSkips } from './SourceSkips';
-import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
+import { getFileBasedHashSourceAsync, relativizeJsonPaths, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
 import { spawnWithIpcAsync } from '../utils/SpawnIPC';
@@ -43,7 +43,7 @@ export async function getExpoConfigSourcesAsync(
     );
     const stdoutJson = JSON.parse(message);
     config = stdoutJson.config;
-    expoConfig = normalizeExpoConfig(config.exp, options);
+    expoConfig = normalizeExpoConfig(config.exp, projectRoot, options);
     loadedModules = stdoutJson.loadedModules;
     results.push({
       type: 'contents',
@@ -145,7 +145,11 @@ export async function getExpoConfigSourcesAsync(
   return results;
 }
 
-function normalizeExpoConfig(config: ExpoConfig, options: NormalizedOptions): ExpoConfig {
+function normalizeExpoConfig(
+  config: ExpoConfig,
+  projectRoot: string,
+  options: NormalizedOptions
+): ExpoConfig {
   // Deep clone by JSON.parse/stringify that assumes the config is serializable.
   const normalizedConfig: ExpoConfig = JSON.parse(JSON.stringify(config));
 
@@ -212,7 +216,7 @@ function normalizeExpoConfig(config: ExpoConfig, options: NormalizedOptions): Ex
     delete normalizedConfig.web?.splash;
   }
 
-  return normalizedConfig;
+  return relativizeJsonPaths(normalizedConfig, projectRoot);
 }
 
 /**

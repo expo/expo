@@ -35,7 +35,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
         const { message } = await (0, SpawnIPC_1.spawnWithIpcAsync)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
         const stdoutJson = JSON.parse(message);
         config = stdoutJson.config;
-        expoConfig = normalizeExpoConfig(config.exp, options);
+        expoConfig = normalizeExpoConfig(config.exp, projectRoot, options);
         loadedModules = stdoutJson.loadedModules;
         results.push({
             type: 'contents',
@@ -119,7 +119,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     return results;
 }
 exports.getExpoConfigSourcesAsync = getExpoConfigSourcesAsync;
-function normalizeExpoConfig(config, options) {
+function normalizeExpoConfig(config, projectRoot, options) {
     // Deep clone by JSON.parse/stringify that assumes the config is serializable.
     const normalizedConfig = JSON.parse(JSON.stringify(config));
     const { sourceSkips } = options;
@@ -176,7 +176,7 @@ function normalizeExpoConfig(config, options) {
         delete normalizedConfig.web?.favicon;
         delete normalizedConfig.web?.splash;
     }
-    return normalizedConfig;
+    return (0, Utils_1.relativizeJsonPaths)(normalizedConfig, projectRoot);
 }
 /**
  * Create a temporary file with ignored paths from options that will be read by the ExpoConfigLoader.
