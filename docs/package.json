@@ -44,7 +44,7 @@
     "front-matter": "^4.0.2",
     "github-slugger": "^2.0.0",
     "lodash": "^4.17.21",
-    "next": "^15.0.1",
+    "next": "^15.1.2",
     "nprogress": "0.2.0",
     "path-browserify": "^1.0.1",
     "prism-react-renderer": "^2.3.1",
