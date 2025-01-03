@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix server action scope position during extraction.
+
 ### 💡 Others
 
 ## 12.0.4 - 2024-12-10
