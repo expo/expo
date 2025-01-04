@@ -300,7 +300,7 @@ export type AudioMode = {
    */
   shouldPlayInBackground: boolean;
   /**
-   *
+   * Whether the audio should route through the earpiece.
    * @platform android
    */
   shouldRouteThroughEarpiece: boolean;
