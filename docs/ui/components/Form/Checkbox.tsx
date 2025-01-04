@@ -1,15 +1,15 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { forwardRef, Ref, InputHTMLAttributes, ReactNode } from 'react';
-
 import { P } from '../Text';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   label?: ReactNode;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; // Ensure onChange is included
 };
 
 export const Checkbox = forwardRef(function Checkbox(
-  { className, label, id, disabled, checked, ...rest }: Props,
+  { className, label, id, disabled, checked, onChange, ...rest }: Props,
   ref?: Ref<HTMLInputElement>
 ) {
   return (
@@ -22,6 +22,7 @@ export const Checkbox = forwardRef(function Checkbox(
         id={id}
         ref={ref}
         checked={checked}
+        onChange={onChange} // Pass the onChange handler
         data-label={label}
         disabled={disabled}
         className={mergeClasses(
@@ -37,7 +38,8 @@ export const Checkbox = forwardRef(function Checkbox(
       {label && (
         <label
           htmlFor={id}
-          className={mergeClasses('select-none text-default', !disabled && 'hocus:cursor-pointer')}>
+          className={mergeClasses('select-none text-default', !disabled && 'hocus:cursor-pointer')}
+        >
           {typeof label === 'string' ? <P>{label}</P> : label}
         </label>
       )}
