@@ -205,7 +205,7 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
-    title: ' Radon IDE: the VS Code extension for React Native',
+    title: 'Radon IDE: the VS Code extension for React Native',
     event: 'Expo Live Stream',
     videoId: 'UeYmRKWhwFI',
   },
