@@ -46,7 +46,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     ref.currentItem?.status == .readyToPlay
   }
 
-  var playing: Bool {
+  var isPlaying: Bool {
     ref.timeControlStatus == .playing
   }
 
@@ -81,7 +81,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "duration": currentDuration,
       "playing": ref.timeControlStatus == .playing,
       "loop": isLooping,
-      "isLoaded": ref.currentItem?.status == .readyToPlay,
+      "isLoaded": isPlaying,
       "playbackRate": ref.rate,
       "shouldCorrectPitch": shouldCorrectPitch,
       "isBuffering": isBuffering
@@ -135,7 +135,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   private func playerIsBuffering() -> Bool {
-    if ref.timeControlStatus == .playing {
+    if isPlaying {
       return false
     }
 

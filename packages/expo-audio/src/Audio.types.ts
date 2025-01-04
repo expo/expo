@@ -280,12 +280,29 @@ export type RecordingOptionsAndroid = {
   maxFileSize?: number;
 };
 
-// @docsMissing
 export type AudioMode = {
+  /**
+   * Determines if audio playback is allowed when the device is in silent mode.
+   * @platform ios
+   */
   playsInSilentMode: boolean;
+  /**
+   * Determines how the audio session interacts with other sessions.
+   */
   interruptionMode: InterruptionMode;
+  /**
+   * Whether the audio session allows recording.
+   * @platform ios
+   */
   allowsRecording: boolean;
+  /**
+   * Whether the audio session stays active when the app moves to the background.
+   */
   shouldPlayInBackground: boolean;
+  /**
+   *
+   * @platform android
+   */
   shouldRouteThroughEarpiece: boolean;
 };
 
