@@ -313,7 +313,7 @@ export async function updateEventAsync(id, details = {}, recurringEventOptions =
     }
     if (Platform.OS === 'android') {
         if (details.hasOwnProperty('color')) {
-            console.warn('updateEventAsync was called with a read-only property, which will not be updated');
+            console.warn('updateEventAsync was called with a read-only property `color`, which will not be updated');
         }
     }
     if (Platform.OS === 'ios') {

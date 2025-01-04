@@ -15,7 +15,7 @@ describe('Calendar', () => {
       await updateEventAsync(id, details);
 
       expect(warnSpy).toHaveBeenCalledWith(
-        'updateEventAsync was called with a read-only property, which will not be updated'
+        'updateEventAsync was called with a read-only property `color`, which will not be updated'
       );
     });
 
