@@ -5,7 +5,7 @@ import { P } from '../Text';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   label?: ReactNode;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; // Ensure onChange is included
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export const Checkbox = forwardRef(function Checkbox(
