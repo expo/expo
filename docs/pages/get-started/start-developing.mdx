@@ -1,97 +1,250 @@
----
-title: Start developing
-description: Make your first change to an Expo project and see it live on your device.
-hideTOC: true
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insta Talk - Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Welcome to Insta Talk</h1>
+        <p>Sign in to continue</p>
+        
+        <!-- Login Form -->
+        <form action="/login" method="POST" class="login-form">
+            <div class="input-field">
+                <label for="username">Phone Number or Email</label>
+                <input type="text" id="username" name="username" placeholder="Enter your phone number or email" required>
+            </div>
+            <div class="input-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="forgot-password">
+                <a href="#">Forgot Password?</a>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        
+        <div class="other-options">
+            <p>Don't have an account? <a href="/register">Sign up</a></p>
+        </div>
+    </div>
 
-import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+    <script src="scripts.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insta Talk - Home Feed</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">Insta Talk</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search..." />
+        </div>
+        <div class="profile-icon">
+            <a href="/profile">My Profile</a>
+        </div>
+    </div>
 
-<Step label="1">
-## Start a development server
-To start the development server, run the following command:
+    <div class="feed-container">
+        <div class="post">
+            <div class="post-header">
+                <img src="user-avatar.jpg" alt="User Avatar" class="avatar">
+                <span class="username">John Doe</span>
+            </div>
+            <div class="post-content">
+                <img src="post-image.jpg" alt="Post Image" class="post-img">
+                <p class="post-text">This is a caption for the post!</p>
+            </div>
+            <div class="post-actions">
+                <button class="like-btn">Like</button>
+                <button class="comment-btn">Comment</button>
+                <button class="share-btn">Share</button>
+            </div>
+        </div>
 
-<Terminal cmd={['$ npx expo start']} />
+        <!-- Repeat Post for additional content -->
+        <div class="post">
+            <div class="post-header">
+                <img src="user-avatar.jpg" alt="User Avatar" class="avatar">
+                <span class="username">Jane Smith</span>
+            </div>
+            <div class="post-content">
+                <img src="video-thumbnail.jpg" alt="Post Video" class="post-img">
+                <p class="post-text">Check out my latest video!</p>
+            </div>
+            <div class="post-actions">
+                <button class="like-btn">Like</button>
+                <button class="comment-btn">Comment</button>
+                <button class="share-btn">Share</button>
+            </div>
+        </div>
+    </div>
 
-</Step>
+    <script src="scripts.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insta Talk - My Profile</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">Insta Talk</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search..." />
+        </div>
+    </div>
 
-<Step label="2">
-## Open the app on your device
+    <div class="profile-container">
+        <div class="profile-header">
+            <img src="user-avatar.jpg" alt="User Avatar" class="avatar">
+            <h2>John Doe</h2>
+            <p>@johndoe</p>
+            <div class="blue-tick">
+                <!-- Placeholder for verified blue tick -->
+                <span>✔️</span>
+            </div>
+        </div>
+        
+        <div class="profile-options">
+            <button>Edit Profile</button>
+            <button>Settings</button>
+            <button>Log Out</button>
+        </div>
 
-After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
+        <div class="my-posts">
+            <h3>My Posts</h3>
+            <div class="post-gallery">
+                <img src="post1.jpg" alt="Post 1">
+                <img src="post2.jpg" alt="Post 2">
+                <img src="post3.jpg" alt="Post 3">
+            </div>
+        </div>
 
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>a</kbd> or <kbd>i</kbd> respectively to open the app.
+        <div class="followers-following">
+            <span>Followers: 100</span>
+            <span>Following: 200</span>
+        </div>
+    </div>
 
-<Collapsible summary="Having problems?">
+    <script src="scripts.js"></script>
+</body>
+</html>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
 
-Make sure you are on the same Wi-Fi network on your computer and your device.
+.navbar {
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
 
-If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
+.navbar .logo {
+    font-size: 1.5em;
+}
 
-<Terminal cmd={['$ npx expo start --tunnel']} />
+.search-bar input {
+    padding: 5px;
+    width: 200px;
+}
 
-> Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
+.profile-icon {
+    align-self: center;
+}
 
-</Collapsible>
+.profile-container {
+    padding: 20px;
+    text-align: center;
+}
 
-</Step>
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
 
-<Step label="3">
+.blue-tick span {
+    color: #1e8bc3;
+    font-size: 1.2em;
+}
 
-## Make your first change
+.profile-options button {
+    margin: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
 
-Open the **app/(tabs)/index.tsx** file in your code editor and make a change.
+.my-posts .post-gallery img {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+}
 
-<DiffBlock
-  raw={`diff --git a/app/(tabs)/index.tsx b/app/(tabs)/index.tsx
-index 45cfa0e..4d1b384 100644
---- a/app/(tabs)/index.tsx
-+++ b/app/(tabs)/index.tsx
-@@ -17,7 +17,7 @@ export default function HomeScreen() {
-       }
-     >
-       <ThemedView style={styles.titleContainer}>
--        <ThemedText type="title">Welcome!</ThemedText>
-+        <ThemedText type="title">Hello World!</ThemedText>
-         <HelloWave />
-       </ThemedView>
-       <ThemedView style={styles.stepContainer}>
-  `}
-/>
+.feed-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
 
-<Collapsible summary="Changes not showing up on your device?">
+.post {
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
 
-Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
+.post-header {
+    display: flex;
+    align-items: center;
+}
 
-- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
-- Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS.
-- If you see **Enable Fast Refresh**, press it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
+.username {
+    margin-left: 10px;
+}
 
-  <ContentSpotlight
-    alt="Developer menu in Expo Go app."
-    src="/static/images/get-started/developer-menu.png"
-    className="max-w-[540px]"
-  />
+.post-content {
+    margin-top: 10px;
+}
 
-</Collapsible>
+.post-img {
+    width: 100%;
+    border-radius: 8px;
+}
 
-</Step>
+.post-actions button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+document.querySelector('.login-btn').addEventListener('click', function(event) {
+    event.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
----
-
-## File structure
-
-Below, you can get familiar with the default project's file structure:
-
-<ProjectStructure />
-
-## Features
-
-The default project template has the following features:
-
-<TemplateFeatures />
+    // Example validation (can be expanded)
+    if (username && password) {
+        alert("Logging in...");
+        // Implement login API call here
+    } else {
+        alert("Please fill in all fields.");
+    }
+});
