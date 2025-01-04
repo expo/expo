@@ -334,11 +334,10 @@ export function reactServerActionsPlugin(
         }
 
         const freeVariables = getFreeVariables(path);
-        const { extractedIdentifier, getReplacement, ...inlineAction } =
-          extractInlineActionToTopLevel(path, state, {
-            freeVariables,
-            body: path.node.body,
-          });
+        const { extractedIdentifier, getReplacement } = extractInlineActionToTopLevel(path, state, {
+          freeVariables,
+          body: path.node.body,
+        });
 
         const tlb = getTopLevelBinding(path);
         if (tlb) {

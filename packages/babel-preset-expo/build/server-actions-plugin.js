@@ -245,7 +245,7 @@ function reactServerActionsPlugin(api) {
                     throw path.buildCodeFrameError('Internal error: expected FunctionDeclaration to have a name');
                 }
                 const freeVariables = getFreeVariables(path);
-                const { extractedIdentifier, getReplacement, ...inlineAction } = extractInlineActionToTopLevel(path, state, {
+                const { extractedIdentifier, getReplacement } = extractInlineActionToTopLevel(path, state, {
                     freeVariables,
                     body: path.node.body,
                 });
