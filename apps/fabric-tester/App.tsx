@@ -1,9 +1,10 @@
+import { useEvent } from 'expo';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { ResizeMode, Video } from 'expo-av';
 import { BlurView } from 'expo-blur';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button,
@@ -58,9 +59,11 @@ export default function App() {
 export function ImageExample() {
   const [seed] = useState(100 + Math.round(Math.random() * 100));
 
+  const uri = `https://picsum.photos/id/${seed}/1000/1000`;
+
   return (
     <View style={styles.exampleContainer}>
-      <Image style={styles.image} source={{ uri: `https://picsum.photos/id/${seed}/1000/1000` }} />
+      <Image style={styles.image} source={{ uri }} />
     </View>
   );
 }
@@ -107,45 +110,27 @@ export function BlurExample() {
 }
 
 export function VideoExample() {
-  const video = useRef(null);
-  const [status, setStatus] = useState({});
-  const [nativeControls, setNativeControls] = useState(true);
+  const videoSource =
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+  const player = useVideoPlayer(videoSource, (player) => {
+    player.loop = true;
+  });
+
+  const status = useEvent(player, 'playingChange', { isPlaying: player.playing });
 
   const togglePlaying = useCallback(() => {
     if (status.isPlaying) {
-      video.current.pauseAsync();
+      player.pause();
     } else {
-      video.current.playAsync();
+      player.play();
     }
   }, [status.isPlaying]);
 
-  const toggleNativeControls = useCallback(
-    () => setNativeControls(!nativeControls),
-    [nativeControls]
-  );
-
-  const setFullscreen = useCallback(() => video.current.presentFullscreenPlayer(true), [video]);
-
   return (
     <View style={[styles.exampleContainer, styles.videoExample]}>
-      <Video
-        ref={video}
-        style={styles.video}
-        source={{
-          uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-        }}
-        useNativeControls={nativeControls}
-        resizeMode={ResizeMode.CONTAIN}
-        isLooping
-        onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-      />
+      <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
       <View style={styles.buttons}>
         <Button title={status.isPlaying ? 'Pause' : 'Play'} onPress={togglePlaying} />
-        <Button
-          title={nativeControls ? 'Hide controls' : 'Show controls'}
-          onPress={toggleNativeControls}
-        />
-        <Button title="Open fullscreen" onPress={setFullscreen} />
       </View>
     </View>
   );
@@ -270,7 +255,7 @@ const styles = StyleSheet.create({
   },
   video: {
     alignSelf: 'center',
-    width: 400,
+    width: '100%',
     height: 200,
   },
   buttons: {
