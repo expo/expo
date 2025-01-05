@@ -59,6 +59,10 @@ function transformTest(sourceCode: string, customOptions: { filename?: string } 
   if (!results) throw new Error('Failed to transform code');
   //   console.log('results', results.code);
   const meta = results.metadata as unknown as { hasCjsExports?: boolean };
+
+  // Parse again to ensure the output is valid code
+  babel.parse(results.code, options);
+
   return {
     code: results.code,
     hasCjsExports: meta.hasCjsExports,
@@ -156,22 +160,22 @@ export { test2a };
     ).toMatchInlineSnapshot(`
       "/*rsc/actions: {"id":"file:///unknown","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2","_$$INLINE_ACTION3"]}*/
       import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
-      // hoisted action: test2a
-      export var _$$INLINE_ACTION3 = _registerServerReference(async function test2a(x) {
-        return external([x, SOME_CONSTANT]);
-      }, "file:///unknown", "_$$INLINE_ACTION3");
-      // hoisted action: test2
-      export var _$$INLINE_ACTION2 = _registerServerReference(async function test2(x) {
-        return external([x, SOME_CONSTANT]);
-      }, "file:///unknown", "_$$INLINE_ACTION2");
+      const external = () => {};
+      const SOME_CONSTANT = "beep";
       // hoisted action: <anonymous>
       export var _$$INLINE_ACTION = _registerServerReference(async x => {
         return external([x, SOME_CONSTANT]);
       }, "file:///unknown", "_$$INLINE_ACTION");
-      const external = () => {};
-      const SOME_CONSTANT = "beep";
       export const test1 = _$$INLINE_ACTION;
+      // hoisted action: test2
+      export var _$$INLINE_ACTION2 = _registerServerReference(async function test2(x) {
+        return external([x, SOME_CONSTANT]);
+      }, "file:///unknown", "_$$INLINE_ACTION2");
       export var test2 = _$$INLINE_ACTION2;
+      // hoisted action: test2a
+      export var _$$INLINE_ACTION3 = _registerServerReference(async function test2a(x) {
+        return external([x, SOME_CONSTANT]);
+      }, "file:///unknown", "_$$INLINE_ACTION3");
       var test2a = _$$INLINE_ACTION3;
       export { test2a };"
     `);
@@ -272,6 +276,7 @@ export async function foo() {
         };
       };
       import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+      const external = () => {};
       // hoisted action: doStuff
       export var _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
         var [foo2] = _$$CLOSURE.value;
@@ -284,7 +289,6 @@ export async function foo() {
           success: true
         };
       }, "file:///unknown", "_$$INLINE_ACTION");
-      const external = () => {};
       export const Test = ({
         foo
       }) => {
@@ -339,6 +343,7 @@ export const Test2 = ({ foo }) => {
         };
       };
       import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+      const external = () => {};
       // hoisted action: doStuff
       export var _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
         var [foo2] = _$$CLOSURE.value;
@@ -351,7 +356,6 @@ export const Test2 = ({ foo }) => {
           success: true
         };
       }, "file:///unknown", "_$$INLINE_ACTION");
-      const external = () => {};
       export const Test2 = ({
         foo
       }) => {
@@ -920,6 +924,126 @@ export const Test = ({ foo }) => {
   `);
 });
 
+it('supports function server actions binding in order with extraneous imports at the end of the file', () => {
+  const code = transformTest(`
+    async function innerAction() {
+      "use server";
+    }
+
+    function wrapAction() {
+      return innerAction.bind(null, {});
+    }
+
+      // The extraneous import shifts the import to the wrong place
+      import "foo"
+    `).code;
+  expect(code).toMatchInlineSnapshot(`
+    "/*rsc/actions: {"id":"file:///unknown","names":["_$$INLINE_ACTION"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
+    // hoisted action: innerAction
+    export var _$$INLINE_ACTION = _registerServerReference(async function innerAction() {}, "file:///unknown", "_$$INLINE_ACTION");
+    var innerAction = _$$INLINE_ACTION;
+    function wrapAction() {
+      return innerAction.bind(null, {});
+    }
+
+    // The extraneous import shifts the import to the wrong place
+    import "foo";"
+  `);
+
+  // find the first line where 'var innerAction = _$$INLINE_ACTION;' is defined
+  const INLINE_ACTION = code
+    .split('\n')
+    .findIndex((line) => line.includes(' innerAction = _$$INLINE_ACTION;'));
+
+  // find the first line where 'var _$$INLINE_ACTION =' is defined
+  const INLINE_ACTION_DECLARATION = code
+    .split('\n')
+    .findIndex((line) => line.includes(' _$$INLINE_ACTION ='));
+
+  expect(INLINE_ACTION_DECLARATION).toBeLessThan(INLINE_ACTION);
+});
+
+it('supports arrow function server actions binding in order with extraneous imports at the end of the file', () => {
+  const code = transformTest(`    
+    const innerAction = async () => {
+      "use server";
+    }
+    
+    function wrapAction() {
+      return innerAction.bind(null, {});
+    }
+    
+      // The extraneous import shifts the import to the wrong place
+      import "foo"
+    `).code;
+  expect(code).toMatchInlineSnapshot(`
+    "/*rsc/actions: {"id":"file:///unknown","names":["_$$INLINE_ACTION"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
+    // hoisted action: <anonymous>
+    export var _$$INLINE_ACTION = _registerServerReference(async () => {}, "file:///unknown", "_$$INLINE_ACTION");
+    const innerAction = _$$INLINE_ACTION;
+    function wrapAction() {
+      return innerAction.bind(null, {});
+    }
+
+    // The extraneous import shifts the import to the wrong place
+    import "foo";"
+  `);
+
+  // find the first line where 'var innerAction = _$$INLINE_ACTION;' is defined
+  const INLINE_ACTION = code
+    .split('\n')
+    .findIndex((line) => line.includes(' innerAction = _$$INLINE_ACTION;'));
+
+  // find the first line where 'var _$$INLINE_ACTION =' is defined
+  const INLINE_ACTION_DECLARATION = code
+    .split('\n')
+    .findIndex((line) => line.includes(' _$$INLINE_ACTION ='));
+
+  expect(INLINE_ACTION_DECLARATION).toBeLessThan(INLINE_ACTION);
+});
+
+it('supports function expression server actions binding in order with extraneous imports at the end of the file', () => {
+  const code = transformTest(`    
+    const innerAction = async function() {
+      "use server";
+    }
+    
+    function wrapAction() {
+      return innerAction.bind(null, {});
+    }
+    
+      // The extraneous import shifts the import to the wrong place
+      import "foo"
+    `).code;
+  expect(code).toMatchInlineSnapshot(`
+    "/*rsc/actions: {"id":"file:///unknown","names":["_$$INLINE_ACTION"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
+    // hoisted action: <anonymous>
+    export var _$$INLINE_ACTION = _registerServerReference(async function () {}, "file:///unknown", "_$$INLINE_ACTION");
+    const innerAction = _$$INLINE_ACTION;
+    function wrapAction() {
+      return innerAction.bind(null, {});
+    }
+
+    // The extraneous import shifts the import to the wrong place
+    import "foo";"
+  `);
+
+  // find the first line where 'var innerAction = _$$INLINE_ACTION;' is defined
+  const INLINE_ACTION = code
+    .split('\n')
+    .findIndex((line) => line.includes(' innerAction = _$$INLINE_ACTION;'));
+
+  // find the first line where 'var _$$INLINE_ACTION =' is defined
+  const INLINE_ACTION_DECLARATION = code
+    .split('\n')
+    .findIndex((line) => line.includes(' _$$INLINE_ACTION ='));
+
+  expect(INLINE_ACTION_DECLARATION).toBeLessThan(INLINE_ACTION);
+});
+
 it('supports nested server actions', () => {
   expect(
     transformTest(`
@@ -1229,11 +1353,6 @@ export const Test = ({ foo }) => {
     };
     import { doSomethingOnTheServer } from "../server-stuff";
     import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-    // hoisted action: doStuffWrapped
-    export var _$$INLINE_ACTION2 = _registerServerReference(async function doStuffWrapped(_$$CLOSURE2, data) {
-      var [doStuff] = _$$CLOSURE2.value;
-      return doStuff(data);
-    }, "file:///unknown", "_$$INLINE_ACTION2");
     // hoisted action: doStuff
     export var _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo2] = _$$CLOSURE.value;
@@ -1246,6 +1365,11 @@ export const Test = ({ foo }) => {
         success: true
       };
     }, "file:///unknown", "_$$INLINE_ACTION");
+    // hoisted action: doStuffWrapped
+    export var _$$INLINE_ACTION2 = _registerServerReference(async function doStuffWrapped(_$$CLOSURE2, data) {
+      var [doStuff] = _$$CLOSURE2.value;
+      return doStuff(data);
+    }, "file:///unknown", "_$$INLINE_ACTION2");
     export const Test = ({
       foo
     }) => {
