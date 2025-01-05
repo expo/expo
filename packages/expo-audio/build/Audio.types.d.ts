@@ -108,6 +108,10 @@ export declare enum AudioQuality {
 export type BitRateStrategy = 'constant' | 'longTermAverage' | 'variableConstrained' | 'variable';
 export type RecordingOptions = {
     /**
+     * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
+     */
+    isMeteringEnabled?: boolean;
+    /**
      * The desired file extension.
      *
      * @example .caf

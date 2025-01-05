@@ -14,7 +14,7 @@ import { Slot } from '../ui/Slot';
 
 export interface LinkComponent {
   (props: PropsWithChildren<LinkProps>): JSX.Element;
-  /** Helper method to resolve a Href object into a string. */
+  /** Helper method to resolve an Href object into a string. */
   resolveHref: (href: Href) => string;
 }
 

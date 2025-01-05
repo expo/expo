@@ -52,7 +52,7 @@ export default function App() {
         // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync(Entypo.font);
         // Artificially delay for two seconds to simulate a slow loading
-        // experience. Please remove this if you copy and paste the code!
+        // experience. Remove this if you copy and paste the code!
         await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (e) {
         console.warn(e);
@@ -166,9 +166,9 @@ You can configure `expo-splash-screen` using its built-in [config plugin](/confi
 
 You can also configure `expo-splash-screen`, using the following [app config](/workflow/configuration/) properties but the config plugin should be preferred.
 
-- [`splash`](../config/app.mdx#splash)
-- [`android.splash`](../config/app.mdx#splash-2)
-- [`ios.splash`](../config/app.mdx#splash-1)
+- [`splash`](../config/app/#splash)
+- [`android.splash`](../config/app/#splash-2)
+- [`ios.splash`](../config/app/#splash-1)
 
 <ConfigReactNative>
 

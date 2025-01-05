@@ -10,7 +10,7 @@ import {
 import { APICommentTextBlock } from '~/components/plugins/api/components/APICommentTextBlock';
 import { APIDataType } from '~/components/plugins/api/components/APIDataType';
 import { Cell, Row } from '~/ui/components/Table';
-import { BOLD } from '~/ui/components/Text';
+import { DEMI } from '~/ui/components/Text';
 
 type Props = {
   param: MethodParamData;
@@ -30,17 +30,17 @@ export function APIParamRow({
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <BOLD>
+        <DEMI>
           {flags?.isRest ? '...' : ''}
           {parseParamName(name)}
-        </BOLD>
+        </DEMI>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
         <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </Cell>
       {showDescription && (
-        <Cell>
+        <Cell className="[&>*]:last:!mb-0">
           <APICommentTextBlock
             comment={comment}
             afterContent={renderDefaultValue(initValue)}

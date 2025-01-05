@@ -1,5 +1,8 @@
+import { mergeClasses } from '@expo/styleguide';
+
+import { STYLES_SECONDARY } from '~/components/plugins/api/styles';
 import { PlatformName } from '~/types/common';
-import { DEMI, CALLOUT } from '~/ui/components/Text';
+import { CALLOUT } from '~/ui/components/Text';
 
 import { PlatformTag } from './PlatformTag';
 
@@ -16,9 +19,9 @@ export const PlatformTags = ({ prefix, platforms }: PlatformTagsProps) => {
   return (
     <CALLOUT tag="span" className="inline-flex items-center">
       {prefix && (
-        <DEMI theme="secondary" className="!text-inherit !font-medium">
+        <span className={mergeClasses(STYLES_SECONDARY, '[table_&]:!text-2xs')}>
           {prefix}&ensp;
-        </DEMI>
+        </span>
       )}
       {platforms
         .sort((a, b) => a.localeCompare(b))

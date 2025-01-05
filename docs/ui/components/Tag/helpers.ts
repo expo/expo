@@ -25,7 +25,7 @@ export function getTagClasses(type: string) {
     case 'deprecated':
       return 'bg-palette-yellow2 text-palette-yellow12 border-palette-yellow4';
     case 'experimental':
-      return 'bg-palette-pink3 text-palette-pink12 border-palette-pink4';
+      return 'bg-palette-purple3 text-palette-purple12 border-palette-purple4';
     default:
       return undefined;
   }

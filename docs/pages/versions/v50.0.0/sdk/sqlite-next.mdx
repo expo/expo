@@ -41,7 +41,7 @@ import * as SQLite from 'expo-sqlite/next';
 const db = await SQLite.openDatabaseAsync('databaseName');
 
 // `execAsync()` is useful for bulk queries when you want to execute altogether.
-// Please note that `execAsync()` does not escape parameters and may lead to SQL injection.
+// Note that `execAsync()` does not escape parameters and may lead to SQL injection.
 await db.execAsync(`
 PRAGMA journal_mode = WAL;
 CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);

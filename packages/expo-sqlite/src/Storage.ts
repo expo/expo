@@ -1,4 +1,20 @@
-import { openDatabaseAsync, openDatabaseSync, type SQLiteDatabase } from './index';
+import { openDatabaseSync, type SQLiteDatabase } from './index';
+
+export function checkValidInput(...input: unknown[]) {
+  const [key, value] = input;
+
+  if (typeof key !== 'string') {
+    throw new Error(
+      `[SQLiteStorage] Using ${typeof key} type for key is not supported. Use string instead. Key passed: ${key}`
+    );
+  }
+
+  if (input.length > 1 && typeof value !== 'string' && typeof value !== 'function') {
+    throw new Error(
+      `[SQLiteStorage] Using ${typeof value} type for value is not supported. Use string instead. Key passed: ${key}. Value passed : ${value}`
+    );
+  }
+}
 
 /**
  * Update function for the [`setItemAsync()`](#setitemasynckey-value) or [`setItemSync()`](#setitemsynckey-value) method. It computes the new value based on the previous value. The function returns the new value to set for the key.
@@ -32,7 +48,8 @@ export class SQLiteStorage {
    * Retrieves the value associated with the given key asynchronously.
    */
   async getItemAsync(key: string): Promise<string | null> {
-    const db = await this.getDbAsync();
+    checkValidInput(key);
+    const db = this.getDbSync();
     const result = await db.getFirstAsync<{ value: string }>(STATEMENT_GET, key);
     return result?.value ?? null;
   }
@@ -45,13 +62,15 @@ export class SQLiteStorage {
     key: string,
     value: string | SQLiteStorageSetItemUpdateFunction
   ): Promise<void> {
-    const db = await this.getDbAsync();
+    checkValidInput(key, value);
+    const db = this.getDbSync();
 
     if (typeof value === 'function') {
       await db.withExclusiveTransactionAsync(async (tx) => {
         const prevResult = await tx.getFirstAsync<{ value: string }>(STATEMENT_GET, key);
         const prevValue = prevResult?.value ?? null;
         const nextValue = value(prevValue);
+        checkValidInput(key, nextValue);
         await tx.runAsync(STATEMENT_SET, key, nextValue);
       });
       return;
@@ -64,7 +83,8 @@ export class SQLiteStorage {
    * Removes the value associated with the given key asynchronously.
    */
   async removeItemAsync(key: string): Promise<boolean> {
-    const db = await this.getDbAsync();
+    checkValidInput(key);
+    const db = this.getDbSync();
     const result = await db.runAsync(STATEMENT_REMOVE, key);
     return result.changes > 0;
   }
@@ -73,7 +93,7 @@ export class SQLiteStorage {
    * Retrieves all keys stored in the storage asynchronously.
    */
   async getAllKeysAsync(): Promise<string[]> {
-    const db = await this.getDbAsync();
+    const db = this.getDbSync();
     const result = await db.getAllAsync<{ key: string }>(STATEMENT_GET_ALL_KEYS);
     return result.map(({ key }) => key);
   }
@@ -82,7 +102,7 @@ export class SQLiteStorage {
    * Clears all key-value pairs from the storage asynchronously.
    */
   async clearAsync(): Promise<boolean> {
-    const db = await this.getDbAsync();
+    const db = this.getDbSync();
     const result = await db.runAsync(STATEMENT_CLEAR);
     return result.changes > 0;
   }
@@ -105,6 +125,7 @@ export class SQLiteStorage {
    * Retrieves the value associated with the given key synchronously.
    */
   getItemSync(key: string): string | null {
+    checkValidInput(key);
     const db = this.getDbSync();
     const result = db.getFirstSync<{ value: string }>(STATEMENT_GET, key);
     return result?.value ?? null;
@@ -115,6 +136,7 @@ export class SQLiteStorage {
    * If a function is provided, it computes the new value based on the previous value.
    */
   setItemSync(key: string, value: string | SQLiteStorageSetItemUpdateFunction): void {
+    checkValidInput(key, value);
     const db = this.getDbSync();
 
     if (typeof value === 'function') {
@@ -122,6 +144,7 @@ export class SQLiteStorage {
         const prevResult = db.getFirstSync<{ value: string }>(STATEMENT_GET, key);
         const prevValue = prevResult?.value ?? null;
         const nextValue = value(prevValue);
+        checkValidInput(key, nextValue);
         db.runSync(STATEMENT_SET, key, nextValue);
       });
       return;
@@ -134,6 +157,7 @@ export class SQLiteStorage {
    * Removes the value associated with the given key synchronously.
    */
   removeItemSync(key: string): boolean {
+    checkValidInput(key);
     const db = this.getDbSync();
     const result = db.runSync(STATEMENT_REMOVE, key);
     return result.changes > 0;
@@ -182,14 +206,14 @@ export class SQLiteStorage {
    * Alias for [`setItemAsync()`](#setitemasynckey-value).
    */
   async setItem(key: string, value: string | SQLiteStorageSetItemUpdateFunction): Promise<void> {
-    this.setItemAsync(key, value);
+    await this.setItemAsync(key, value);
   }
 
   /**
    * Alias for [`removeItemAsync()`](#removeitemasynckey) method.
    */
   async removeItem(key: string): Promise<void> {
-    this.removeItemAsync(key);
+    await this.removeItemAsync(key);
   }
 
   /**
@@ -203,7 +227,7 @@ export class SQLiteStorage {
    * Alias for [`clearAsync()`](#clearasync) method.
    */
   async clear(): Promise<void> {
-    this.clearAsync();
+    await this.clearAsync();
   }
 
   /**
@@ -211,6 +235,7 @@ export class SQLiteStorage {
    * If the existing value is a JSON object, performs a deep merge.
    */
   async mergeItem(key: string, value: string): Promise<void> {
+    checkValidInput(key, value);
     await this.setItemAsync(key, (prevValue) => {
       if (prevValue == null) {
         return value;
@@ -226,26 +251,22 @@ export class SQLiteStorage {
    * Retrieves the values associated with the given keys asynchronously.
    */
   async multiGet(keys: string[]): Promise<[string, string | null][]> {
-    const db = await this.getDbAsync();
-    let result: [string, string | null][] = [];
-    await db.withExclusiveTransactionAsync(async (tx) => {
-      result = await Promise.all(
-        keys.map(async (key) => {
-          const row = await tx.getFirstAsync<{ value: string }>(STATEMENT_GET, key);
-          return [key, row?.value ?? null];
-        })
-      );
-    });
-    return result;
+    return Promise.all(
+      keys.map(async (key): Promise<[string, string | null]> => {
+        checkValidInput(key);
+        return [key, await this.getItemAsync(key)];
+      })
+    );
   }
 
   /**
    * Sets multiple key-value pairs asynchronously.
    */
   async multiSet(keyValuePairs: [string, string][]): Promise<void> {
-    const db = await this.getDbAsync();
+    const db = this.getDbSync();
     await db.withExclusiveTransactionAsync(async (tx) => {
       for (const [key, value] of keyValuePairs) {
+        checkValidInput(key, value);
         await tx.runAsync(STATEMENT_SET, key, value);
       }
     });
@@ -255,9 +276,10 @@ export class SQLiteStorage {
    * Removes the values associated with the given keys asynchronously.
    */
   async multiRemove(keys: string[]): Promise<void> {
-    const db = await this.getDbAsync();
+    const db = this.getDbSync();
     await db.withExclusiveTransactionAsync(async (tx) => {
       for (const key of keys) {
+        checkValidInput(key);
         await tx.runAsync(STATEMENT_REMOVE, key);
       }
     });
@@ -268,9 +290,10 @@ export class SQLiteStorage {
    * If existing values are JSON objects, performs a deep merge.
    */
   async multiMerge(keyValuePairs: [string, string][]): Promise<void> {
-    const db = await this.getDbAsync();
+    const db = this.getDbSync();
     await db.withExclusiveTransactionAsync(async (tx) => {
       for (const [key, value] of keyValuePairs) {
+        checkValidInput(key, value);
         const prevValue = await tx.getFirstAsync<{ value: string }>(STATEMENT_GET, key);
         if (prevValue == null) {
           await tx.runAsync(STATEMENT_SET, key, value);
@@ -288,21 +311,12 @@ export class SQLiteStorage {
    * Alias for [`closeAsync()`](#closeasync-1) method.
    */
   async close(): Promise<void> {
-    this.closeAsync();
+    await this.closeAsync();
   }
 
   //#endregion
 
   //#region Internals
-
-  private async getDbAsync(): Promise<SQLiteDatabase> {
-    if (!this.db) {
-      const db = await openDatabaseAsync(this.databaseName);
-      await this.maybeMigrateDbAsync(db);
-      this.db = db;
-    }
-    return this.db;
-  }
 
   private getDbSync(): SQLiteDatabase {
     if (!this.db) {
@@ -311,21 +325,6 @@ export class SQLiteStorage {
       this.db = db;
     }
     return this.db;
-  }
-
-  private async maybeMigrateDbAsync(db: SQLiteDatabase) {
-    await db.withExclusiveTransactionAsync(async (tx) => {
-      const result = await tx.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-      let currentDbVersion = result?.user_version ?? 0;
-      if (currentDbVersion >= DATABASE_VERSION) {
-        return;
-      }
-      if (currentDbVersion === 0) {
-        await tx.execAsync(MIGRATION_STATEMENT_0);
-        currentDbVersion = 1;
-      }
-      await tx.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
-    });
   }
 
   private maybeMigrateDbSync(db: SQLiteDatabase) {

@@ -163,6 +163,7 @@ export type ClassDefinitionData = InterfaceDefinitionData & {
 
 export type MethodDefinitionData = {
   name: string;
+  comment?: CommentData;
   signatures: MethodSignatureData[];
   getSignature?: MethodSignatureData[];
   setSignatures?: MethodSignatureData[];
@@ -171,6 +172,7 @@ export type MethodDefinitionData = {
 
 export type AccessorDefinitionData = {
   name: string;
+  comment?: CommentData;
   getSignature?: MethodSignatureData;
   kind: TypeDocKind;
 };
@@ -231,7 +233,7 @@ export type TypeDeclarationContentData = {
   kind?: TypeDocKind;
   indexSignature?: TypeSignaturesData;
   signatures?: TypeSignaturesData[];
-  parameters?: PropData[];
+  parameters?: MethodParamData[];
   children?: PropData[];
   comment?: CommentData;
 };

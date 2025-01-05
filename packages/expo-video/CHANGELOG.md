@@ -10,12 +10,19 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Dispatch current player item changes on main queue to fix KVO-related crashes. ([#33123](https://github.com/expo/expo/pull/33123) by [@behenate](https://github.com/behenate))
+- [iOS] Fix `AVPlayer` not deallocating when the player is unmounted. ([#33922](https://github.com/expo/expo/pull/33922) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
 - Fixed `generateThumbnailsAsync` not being available on Android in the types. ([#33491](https://github.com/expo/expo/pull/33491) by [@hirbod](https://github.com/hirbod))
 - Run VideoManager.setAppropriateAudioSessionOrWarn on a different queue for a lower load on the main thread. ([#33127](https://github.com/expo/expo/pull/33127) by [@behenate](https://github.com/behenate))
+
+## 2.0.3 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fix empty notification showing on iOS when `showNowPlayingNotification` is set to false. ([#33698](https://github.com/expo/expo/pull/33698) by [@behenate](https://github.com/behenate))
+- [iOS] Dispatch current player item changes on main queue to fix KVO-related crashes. ([#33123](https://github.com/expo/expo/pull/33123) by [@behenate](https://github.com/behenate))
 
 ## 2.0.2 - 2024-11-29
 

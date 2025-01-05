@@ -101,7 +101,7 @@ async function setupProjectPackageJsonAsync(
     // Exclude templates from autolinking
     expo: {
       autolinking: {
-        exclude: ['expo-face-detector', 'expo-module-template', 'expo-module-template-local'],
+        exclude: ['expo-module-template', 'expo-module-template-local'],
       },
     },
 

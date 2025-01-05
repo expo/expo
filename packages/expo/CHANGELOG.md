@@ -6,8 +6,36 @@
 
 ### 🎉 New features
 
-- [next] Add blob support to `expo/fetch`. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
 - Assert that DOM components cannot have `children`. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Remove "shortcut" from `rel="icon"` from favicon injection. ([#33696](https://github.com/expo/expo/pull/33696) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed compatibility for React Native 0.78 nightlies. ([#33718](https://github.com/expo/expo/pull/33718) by [@kudo](https://github.com/kudo))
+
+## 52.0.23 - 2024-12-24
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.22 - 2024-12-24
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.21 - 2024-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.20 - 2024-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.19 - 2024-12-16
+
+### 🎉 New features
+
+- [next] Add blob support to `expo/fetch`. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
 - Added `Blob` support in `FormData` and also supported from `expo/fetch`. ([#33463](https://github.com/expo/expo/pull/33463), [#33557](https://github.com/expo/expo/pull/33557) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
@@ -15,8 +43,7 @@
 - Fix sending a blob as fetch body not setting correct content-type. ([#33405](https://github.com/expo/expo/pull/33405) by [@aleqsio](https://github.com/aleqsio))
 - Use nullish assignment operator to assign entries in FormData. ([#33445](https://github.com/expo/expo/pull/33445) by [@j-piasecki](https://github.com/j-piasecki))
 - Fixed streaming requests with `AbortController` doesn't work on `expo/fetch`. ([#33577](https://github.com/expo/expo/pull/33577) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
+- Fixed `expo/fetch` streaming request does not complete. ([#33756](https://github.com/expo/expo/pull/33756) by [@kudo](https://github.com/kudo))
 
 ## 52.0.18 - 2024-12-10
 
