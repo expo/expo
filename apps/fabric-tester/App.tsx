@@ -25,6 +25,10 @@ function randomColor() {
   return '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
 }
 
+function randomGradientColors() {
+  return Array(3).fill(0).map(randomColor) as unknown as readonly [string, string, string];
+}
+
 export default function App() {
   const [colorScheme, setColorScheme] = useState(Appearance.getColorScheme());
   const isFabricEnabled = global.nativeFabricUIManager != null;
@@ -70,10 +74,10 @@ export function ImageExample() {
 
 export function LinearGradientExample() {
   const [mounted, setMounted] = useState(true);
-  const [colors, setColors] = useState(() => Array(3).fill(0).map(randomColor));
+  const [colors, setColors] = useState(randomGradientColors());
 
   const toggleMounted = useCallback(() => setMounted(!mounted), [mounted]);
-  const randomizeColors = useCallback(() => setColors(Array(3).fill(0).map(randomColor)), [colors]);
+  const randomizeColors = useCallback(() => setColors(randomGradientColors()), [colors]);
 
   return (
     <View style={styles.exampleContainer}>
