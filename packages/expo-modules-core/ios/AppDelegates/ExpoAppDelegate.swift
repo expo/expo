@@ -2,6 +2,10 @@ import Dispatch
 import Foundation
 import React_RCTAppDelegate
 
+#if canImport(ReactAppDependencyProvider)
+import ReactAppDependencyProvider
+#endif
+
 var subscribers = [ExpoAppDelegateSubscriberProtocol]()
 
 /**
@@ -47,6 +51,9 @@ open class ExpoAppDelegate: ExpoAppInstance {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+#if canImport(ReactAppDependencyProvider)
+    self.dependencyProvider = RCTAppDependencyProvider()
+#endif
     if shouldCallReactNativeSetup {
       super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
