@@ -46,13 +46,13 @@ export function resolvePackageManager(
   };
 
   if (preferredManager) {
-    return lockFiles[preferredManager].some(file => fs.existsSync(path.join(root, file)))
+    return lockFiles[preferredManager].some((file) => fs.existsSync(path.join(root, file)))
       ? preferredManager
       : null;
   }
 
   for (const managerName of RESOLUTION_ORDER) {
-    if (lockFiles[managerName].some(file => fs.existsSync(path.join(root, file)))) {
+    if (lockFiles[managerName].some((file) => fs.existsSync(path.join(root, file)))) {
       return managerName;
     }
   }
