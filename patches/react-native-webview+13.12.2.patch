@@ -1,0 +1,30 @@
+diff --git a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewManagerImpl.kt b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewManagerImpl.kt
+index 4600a8d..1456f62 100644
+--- a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewManagerImpl.kt
++++ b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewManagerImpl.kt
+@@ -333,11 +333,9 @@ class RNCWebViewManagerImpl {
+         }
+         "injectJavaScript" -> webView.evaluateJavascriptWithFallback(args.getString(0))
+         "loadUrl" -> {
+-          if (args == null) {
+-            throw RuntimeException("Arguments for loading an url are null!")
+-          }
++          val url = args.getString(0) ?: throw RuntimeException("Arguments for loading an url are null!")
+           webView.progressChangedFilter.setWaitingForCommandLoadUrl(false)
+-          webView.loadUrl(args.getString(0))
++          webView.loadUrl(url)
+         }
+         "requestFocus" -> webView.requestFocus()
+         "clearFormData" -> webView.clearFormData()
+diff --git a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewPackage.java b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewPackage.java
+index 24e55ed..356d43b 100644
+--- a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewPackage.java
++++ b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewPackage.java
+@@ -36,7 +36,6 @@ public class RNCWebViewPackage extends TurboReactPackage {
+                             false, // canOverrideExistingModule
+                             false, // needsEagerInit
+                             true, // hasConstants
+-                            false, // isCxxModule
+                             isTurboModule // isTurboModule
+                     ));
+             return moduleInfos;
