@@ -171,14 +171,6 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     )
     let metadataItems = createMetadataItems(for: metadata)
     playerItem.externalMetadata = metadataItems
-    // added player metadata, specifically for TV implementation
-    let metadata = Metadata(
-      title: videoSource.metadata?.title ?? "",
-      artist: videoSource.metadata?.artist ?? "",
-      subTitle: videoSource.metadata?.subTitle ?? ""
-    )
-    let metadataItems = createMetadataItems(for: metadata)
-    playerItem.externalMetadata = metadataItems
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
     playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
     pointer.replaceCurrentItem(with: playerItem)
