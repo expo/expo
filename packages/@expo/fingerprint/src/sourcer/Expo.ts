@@ -45,12 +45,6 @@ export async function getExpoConfigSourcesAsync(
     config = stdoutJson.config;
     expoConfig = normalizeExpoConfig(config.exp, projectRoot, options);
     loadedModules = stdoutJson.loadedModules;
-    results.push({
-      type: 'contents',
-      id: 'expoConfig',
-      contents: stringifyJsonSorted(expoConfig),
-      reasons: ['expoConfig'],
-    });
   } catch (e: unknown) {
     if (e instanceof Error) {
       console.warn(`Cannot get Expo config from an Expo project - ${e.message}: `, e.stack);
@@ -134,6 +128,14 @@ export async function getExpoConfigSourcesAsync(
   ).filter(Boolean) as HashSource[];
   results.push(...externalFileSources);
 
+  expoConfig = postUpdateExpoConfig(expoConfig, projectRoot);
+  results.push({
+    type: 'contents',
+    id: 'expoConfig',
+    contents: stringifyJsonSorted(expoConfig),
+    reasons: ['expoConfig'],
+  });
+
   // config plugins
   const configPluginModules: HashSource[] = loadedModules.map((modulePath) => ({
     type: 'file',
@@ -155,11 +157,6 @@ function normalizeExpoConfig(
 
   const { sourceSkips } = options;
   delete normalizedConfig._internal;
-
-  // googleServicesFile may contain absolute paths on EAS with file-based secrets.
-  // Given we include googleServicesFile as external files already, we can remove it from the config.
-  delete normalizedConfig.android?.googleServicesFile;
-  delete normalizedConfig.ios?.googleServicesFile;
 
   if (sourceSkips & SourceSkips.ExpoConfigVersions) {
     delete normalizedConfig.version;
@@ -222,6 +219,21 @@ function normalizeExpoConfig(
   }
 
   return relativizeJsonPaths(normalizedConfig, projectRoot);
+}
+
+/**
+ * Gives the last chance to modify the ExpoConfig.
+ * For example, we can remove some fields that are already included in the fingerprint.
+ */
+function postUpdateExpoConfig(config: ExpoConfig, projectRoot: string): ExpoConfig {
+  // The config is already a clone, so we can modify it in place for performance.
+
+  // googleServicesFile may contain absolute paths on EAS with file-based secrets.
+  // Given we include googleServicesFile as external files already, we can remove it from the config.
+  delete config.android?.googleServicesFile;
+  delete config.ios?.googleServicesFile;
+
+  return config;
 }
 
 /**

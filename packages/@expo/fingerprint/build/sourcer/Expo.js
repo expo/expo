@@ -37,12 +37,6 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
         config = stdoutJson.config;
         expoConfig = normalizeExpoConfig(config.exp, projectRoot, options);
         loadedModules = stdoutJson.loadedModules;
-        results.push({
-            type: 'contents',
-            id: 'expoConfig',
-            contents: (0, Utils_1.stringifyJsonSorted)(expoConfig),
-            reasons: ['expoConfig'],
-        });
     }
     catch (e) {
         if (e instanceof Error) {
@@ -109,6 +103,13 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
         return result;
     }))).filter(Boolean);
     results.push(...externalFileSources);
+    expoConfig = postUpdateExpoConfig(expoConfig, projectRoot);
+    results.push({
+        type: 'contents',
+        id: 'expoConfig',
+        contents: (0, Utils_1.stringifyJsonSorted)(expoConfig),
+        reasons: ['expoConfig'],
+    });
     // config plugins
     const configPluginModules = loadedModules.map((modulePath) => ({
         type: 'file',
@@ -124,10 +125,6 @@ function normalizeExpoConfig(config, projectRoot, options) {
     const normalizedConfig = JSON.parse(JSON.stringify(config));
     const { sourceSkips } = options;
     delete normalizedConfig._internal;
-    // googleServicesFile may contain absolute paths on EAS with file-based secrets.
-    // Given we include googleServicesFile as external files already, we can remove it from the config.
-    delete normalizedConfig.android?.googleServicesFile;
-    delete normalizedConfig.ios?.googleServicesFile;
     if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigVersions) {
         delete normalizedConfig.version;
         delete normalizedConfig.android?.versionCode;
@@ -181,6 +178,18 @@ function normalizeExpoConfig(config, projectRoot, options) {
         delete normalizedConfig.web?.splash;
     }
     return (0, Utils_1.relativizeJsonPaths)(normalizedConfig, projectRoot);
+}
+/**
+ * Gives the last chance to modify the ExpoConfig.
+ * For example, we can remove some fields that are already included in the fingerprint.
+ */
+function postUpdateExpoConfig(config, projectRoot) {
+    // The config is already a clone, so we can modify it in place for performance.
+    // googleServicesFile may contain absolute paths on EAS with file-based secrets.
+    // Given we include googleServicesFile as external files already, we can remove it from the config.
+    delete config.android?.googleServicesFile;
+    delete config.ios?.googleServicesFile;
+    return config;
 }
 /**
  * Create a temporary file with ignored paths from options that will be read by the ExpoConfigLoader.
