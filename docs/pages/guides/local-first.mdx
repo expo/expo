@@ -5,6 +5,7 @@ description: An introduction to the emerging local-first software movement, incl
 ---
 
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+import { Terminal } from '~/ui/components/Snippet';
 
 > **info** This guide is a work in progress. If you have any feedback, [open an issue](https://github.com/expo/expo/issues/new/choose) in our GitHub repository.
 
@@ -50,17 +51,13 @@ One way to think of local-first tools is to group them by the following categori
 
 It works with Expo and React Native (via [`react-native-async-storage`](https://github.com/react-native-async-storage/async-storage?tab=readme-ov-file#react-native-async-storage)). This makes it a perfect match for building local-first mobile and web apps. Get started by using the [Legend-State Supabase example](https://github.com/expo/examples/tree/master/with-legend-state-supabase):
 
-```bash
-npx create-expo-app --example with-legend-state-supabase
-```
+<Terminal cmd={['$ npx create-expo-app --example with-legend-state-supabase']} />
 
 ### TinyBase
 
 [TinyBase](https://tinybase.org/) calls itself "the reactive data store for local-first apps". It is a state management library that plugs in to many of the most popular syncing and persistence layers, such as [Yjs](#yjs) and [SQLite](#sqlite). It's a great choice for building local-first apps that need to persist and sync data. Get started by using the [TinyBase example](https://github.com/expo/examples/tree/master/with-tinybase):
 
-```bash
-npx create-expo-app --example with-tinybase
-```
+<Terminal cmd={['$ npx create-expo-app --example with-tinybase']} />
 
 TinyBase works seamlessly with Expo Go, allowing you to develop quickly. On Android and iOS, it uses the [`expo-sqlite`](/versions/latest/sdk/sqlite/) library to persist data. On the web, it relies on the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) API. [Beto Moedano](https://github.com/betomoedano) demonstrates how to build a [Universal Local-first Shopping List App](https://github.com/betomoedano/groceries-shopping-list-app) in the following video:
 
