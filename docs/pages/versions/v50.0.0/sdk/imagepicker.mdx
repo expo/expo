@@ -36,7 +36,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 On iOS, when an image (usually of a [higher resolution](http://www.openradar.me/49866214)) is picked from the camera roll, the result of the cropped image gives the wrong value for the cropped rectangle in some cases. Unfortunately, this issue is with the underlying `UIImagePickerController` due to a bug in the closed-source tools built into iOS.
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-image-picker` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
