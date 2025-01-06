@@ -143,7 +143,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       let videoSource = videoSource,
       let url = videoSource.uri
     else {
-      pointer.replaceCurrentItem(with: nil)
+      DispatchQueue.main.async { [pointer] in
+        pointer.replaceCurrentItem(with: nil)
+      }
       return
     }
 
