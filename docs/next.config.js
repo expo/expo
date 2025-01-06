@@ -40,6 +40,8 @@ export default {
   trailingSlash: true,
   experimental: {
     esmExternals: false,
+    webpackBuildWorker: true,
+    optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
     // note(simek): would be nice enhancement, but it breaks the `@next/font` styles currently,
     // and results in font face swap on every page reload
     optimizeCss: false,
