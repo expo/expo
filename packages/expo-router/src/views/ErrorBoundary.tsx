@@ -2,7 +2,7 @@
 import type { LogBoxLog } from '@expo/metro-runtime/symbolicate';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { ComponentType, useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Platform, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Pressable } from './Pressable';
@@ -107,15 +107,22 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   const inTabBar = useContext(BottomTabBarHeightContext);
   const Wrapper = inTabBar ? View : SafeAreaView;
 
+  const isServerError = error instanceof ReactServerError;
   return (
     <View style={styles.container}>
       <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
-        {error instanceof ReactServerError ? (
-          <ReactServerErrorView error={error} />
+        {isServerError ? (
+          <>
+            <ReactServerErrorView error={error} />
+            <View style={{ flex: 1 }} />
+          </>
         ) : (
-          <StandardErrorView error={error} />
+          <>
+            <StandardErrorView error={error} />
+            <StackTrace logData={logBoxLog} />
+          </>
         )}
-        <StackTrace logData={logBoxLog} />
+
         {process.env.NODE_ENV === 'development' && (
           <Link testID="router_error_sitemap" href="/_sitemap" style={styles.link}>
             Sitemap
@@ -175,23 +182,22 @@ function ReactServerErrorView({ error }: { error: ReactServerError }) {
         }}>
         {title}
       </Text>
-      <ScrollView
+
+      <TextInput
+        scrollEnabled
+        multiline
+        editable={false}
+        allowFontScaling
+        value={error.message}
         style={{
           borderColor: 'rgba(255,255,255,0.5)',
           borderTopWidth: StyleSheet.hairlineWidth,
           borderBottomWidth: StyleSheet.hairlineWidth,
+          paddingVertical: 4,
           maxHeight: 150,
+          color: 'white',
         }}
-        contentContainerStyle={{ paddingVertical: 4 }}>
-        <Text
-          selectable
-          allowFontScaling
-          style={{
-            color: 'white',
-          }}>
-          {error.message}
-        </Text>
-      </ScrollView>
+      />
 
       <InfoRow title="Code" right={error.statusCode} />
       {errorId && <InfoRow title="ID" right={errorId} />}

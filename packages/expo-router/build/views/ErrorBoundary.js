@@ -87,10 +87,17 @@ function ErrorBoundary({ error, retry }) {
     const logBoxLog = useMetroSymbolication(error);
     const inTabBar = (0, react_1.useContext)(bottom_tabs_1.BottomTabBarHeightContext);
     const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
+    const isServerError = error instanceof errors_1.ReactServerError;
     return (<react_native_1.View style={styles.container}>
       <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
-        {error instanceof errors_1.ReactServerError ? (<ReactServerErrorView error={error}/>) : (<StandardErrorView error={error}/>)}
-        <StackTrace logData={logBoxLog}/>
+        {isServerError ? (<>
+            <ReactServerErrorView error={error}/>
+            <react_native_1.View style={{ flex: 1 }}/>
+          </>) : (<>
+            <StandardErrorView error={error}/>
+            <StackTrace logData={logBoxLog}/>
+          </>)}
+
         {process.env.NODE_ENV === 'development' && (<Link_1.Link testID="router_error_sitemap" href="/_sitemap" style={styles.link}>
             Sitemap
           </Link_1.Link>)}
@@ -134,18 +141,15 @@ function ReactServerErrorView({ error }) {
         }}>
         {title}
       </react_native_1.Text>
-      <react_native_1.ScrollView style={{
+
+      <react_native_1.TextInput scrollEnabled multiline editable={false} allowFontScaling value={error.message} style={{
             borderColor: 'rgba(255,255,255,0.5)',
             borderTopWidth: react_native_1.StyleSheet.hairlineWidth,
             borderBottomWidth: react_native_1.StyleSheet.hairlineWidth,
+            paddingVertical: 4,
             maxHeight: 150,
-        }} contentContainerStyle={{ paddingVertical: 4 }}>
-        <react_native_1.Text selectable allowFontScaling style={{
             color: 'white',
-        }}>
-          {error.message}
-        </react_native_1.Text>
-      </react_native_1.ScrollView>
+        }}/>
 
       <InfoRow title="Code" right={error.statusCode}/>
       {errorId && <InfoRow title="ID" right={errorId}/>}
