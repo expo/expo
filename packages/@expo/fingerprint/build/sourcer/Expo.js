@@ -124,6 +124,10 @@ function normalizeExpoConfig(config, projectRoot, options) {
     const normalizedConfig = JSON.parse(JSON.stringify(config));
     const { sourceSkips } = options;
     delete normalizedConfig._internal;
+    // googleServicesFile may contain absolute paths on EAS with file-based secrets.
+    // Given we include googleServicesFile as external files already, we can remove it from the config.
+    delete normalizedConfig.android?.googleServicesFile;
+    delete normalizedConfig.ios?.googleServicesFile;
     if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigVersions) {
         delete normalizedConfig.version;
         delete normalizedConfig.android?.versionCode;

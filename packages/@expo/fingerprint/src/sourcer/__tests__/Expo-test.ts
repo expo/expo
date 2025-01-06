@@ -215,8 +215,9 @@ describe(getExpoConfigSourcesAsync, () => {
   it('should transform expo config paths as relative paths', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     const appJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
-    appJson.expo.ios.googleServicesFile = '/app/GoogleService-Info.plist';
-    appJson.expo.android.googleServicesFile = '/app/secrets/google-services.json';
+    appJson.expo.extra ||= {};
+    appJson.expo.extra.testFile = '/app/test-file.txt';
+    appJson.expo.extra.testNestedFile = '/app/nested/test-file.txt';
     vol.writeFileSync('/app/app.json', JSON.stringify(appJson, null, 2));
     const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     const expoConfigSource = sources.find<HashSourceContents>(
@@ -224,8 +225,8 @@ describe(getExpoConfigSourcesAsync, () => {
         source.type === 'contents' && source.id === 'expoConfig'
     );
     const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
-    expect(expoConfig.ios.googleServicesFile).toBe('GoogleService-Info.plist');
-    expect(expoConfig.android.googleServicesFile).toBe('secrets/google-services.json');
+    expect(expoConfig.extra.testFile).toBe('test-file.txt');
+    expect(expoConfig.extra.testNestedFile).toBe('nested/test-file.txt');
   });
 
   it('should contain external icon file in app.json', async () => {

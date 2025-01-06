@@ -156,6 +156,11 @@ function normalizeExpoConfig(
   const { sourceSkips } = options;
   delete normalizedConfig._internal;
 
+  // googleServicesFile may contain absolute paths on EAS with file-based secrets.
+  // Given we include googleServicesFile as external files already, we can remove it from the config.
+  delete normalizedConfig.android?.googleServicesFile;
+  delete normalizedConfig.ios?.googleServicesFile;
+
   if (sourceSkips & SourceSkips.ExpoConfigVersions) {
     delete normalizedConfig.version;
     delete normalizedConfig.android?.versionCode;
