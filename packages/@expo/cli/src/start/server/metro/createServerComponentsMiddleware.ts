@@ -10,9 +10,9 @@ import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
 import path from 'path';
 import url from 'url';
-import formatBundlingError from 'metro/src/lib/formatBundlingError';
 
 import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
+import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { toPosixPath } from '../../../utils/filePath';
@@ -25,7 +25,6 @@ import {
   ExpoMetroOptions,
   getMetroOptionsFromUrl,
 } from '../middleware/metroOptions';
-import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
 
