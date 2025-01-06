@@ -26,7 +26,7 @@ export function preprocessSentryError(event: ErrorEvent) {
   const message = getMessage(event);
 
   // Check if it's rate limited to avoid sending the same error over and over
-  if (isRateLimited(message || 'empty')) {
+  if (isRateLimited(message ?? 'empty')) {
     return null;
   }
 

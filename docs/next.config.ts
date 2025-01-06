@@ -1,6 +1,6 @@
-import fsExtra from 'fs-extra';
-import NextLog from 'next/dist/build/output/log.js';
-import { join } from 'path';
+import type { NextConfig } from 'next';
+import { event, error } from 'next/dist/build/output/log.js';
+import { join } from 'node:path';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGFM from 'remark-gfm';
@@ -13,29 +13,23 @@ import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
 import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
-import { copyAsLatest } from './scripts/copy-latest.js';
+import navigation from './public/static/constants/navigation.json';
+import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
 
-const { readJsonSync } = fsExtra;
+import packageJson from '~/package.json';
 
-// note(simek): We cannot use direct JSON import because ESLint do not support `assert { type: 'json' }` syntax yet:
-// * https://github.com/eslint/eslint/discussions/15305
-const { version, betaVersion } = readJsonSync('./package.json');
-const { VERSIONS } = readJsonSync('./public/static/constants/versions.json');
-const navigation = readJsonSync('./public/static/constants/navigation.json');
+const betaVersion =
+  'betaVersion' in packageJson ? (packageJson?.betaVersion as string) : packageJson.version;
 
-copyAsLatest(version);
-NextLog.info(`Copied latest Expo SDK version from v${version}`);
-
-const removeConsole =
+const removeConsoleConfig =
   process.env.NODE_ENV !== 'development'
     ? {
         exclude: ['error'],
       }
     : false;
 
-/** @type {import('next').NextConfig}  */
-export default {
+const nextConfig: NextConfig = {
   transpilePackages: [
     '@expo/*',
     '@radix-ui/react-dropdown-menu',
@@ -46,11 +40,13 @@ export default {
   trailingSlash: true,
   experimental: {
     optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
-    esmExternals: false,
+    parallelServerCompiles: true,
+    parallelServerBuildTraces: true,
+    esmExternals: true,
     webpackBuildWorker: true,
-    staticGenerationRetryCount: 1,
-    staticGenerationMaxConcurrency: 4,
-    staticGenerationMinPagesPerWorker: 50,
+    // staticGenerationRetryCount: 1,
+    // staticGenerationMaxConcurrency: 4,
+    // staticGenerationMinPagesPerWorker: 50,
     // note(simek): would be nice enhancement, but it breaks the `@next/font` styles currently,
     // and results in font face swap on every page reload
     optimizeCss: false,
@@ -58,7 +54,7 @@ export default {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: {
     reactRemoveProperties: true,
-    removeConsole,
+    removeConsole: removeConsoleConfig,
   },
   output: 'export',
   poweredByHeader: false,
@@ -105,22 +101,26 @@ export default {
     if (dev) {
       return defaultPathMap;
     }
-    const pathMap = Object.assign(
+    if (!outDir) {
+      error('Output directory is not defined! Falling back to the default export map.');
+      return defaultPathMap;
+    }
+    const pathMap = Object.assign({
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
-        if (pathname.match(/unversioned/)) {
+        if (pathname.includes('unversioned')) {
           // Remove unversioned pages from the exported site
           return {};
         } else {
           // Remove newer unreleased versions from the exported side
           const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
-          if (versionMatch?.[1] && semver.gt(versionMatch[1], betaVersion || version, false)) {
+          if (versionMatch?.[1] && semver.gt(versionMatch[1], betaVersion, false)) {
             return {};
           }
         }
 
         return { [pathname]: page };
-      })
-    );
+      }),
+    });
 
     const sitemapEntries = createSitemap({
       pathMap,
@@ -139,8 +139,10 @@ export default {
       // Some of our pages are "hidden" and should not be added to the sitemap
       pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories],
     });
-    NextLog.info(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
+    event(`Generated sitemap with ${sitemapEntries.length} entries`);
 
     return pathMap;
   },
 };
+
+export default nextConfig;

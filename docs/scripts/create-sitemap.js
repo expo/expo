@@ -11,13 +11,7 @@ const IGNORED_PAGES = [
  * Create a sitemap for crawlers like Algolia Docsearch.
  * This allows crawlers to index _all_ pages, without a full page-link-chain.
  */
-export default function createSitemap({
-  pathMap,
-  domain,
-  output,
-  pathsPriority = [],
-  pathsHidden = [],
-}) {
+export default function createSitemap({ pathMap, domain, output, pathsPriority, pathsHidden }) {
   if (!pathMap) throw new Error(`⚠️ Couldn't generate sitemap, no 'pathMap' provided`);
   if (!domain) throw new Error(`⚠️ Couldn't generate sitemap, no 'domain' provided`);
   if (!output) throw new Error(`⚠️ Couldn't generate sitemap, no 'output' provided`);
