@@ -36,12 +36,15 @@ const removeConsole =
 
 /** @type {import('next').NextConfig}  */
 export default {
-  transpilePackages: ['@radix-ui/react-select'],
+  transpilePackages: ['@expo/*', '@radix-ui/*', 'framer-motion', 'prismjs'],
   trailingSlash: true,
   experimental: {
     esmExternals: false,
     webpackBuildWorker: true,
     optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
+    staticGenerationRetryCount: 1,
+    staticGenerationMaxConcurrency: 4,
+    staticGenerationMinPagesPerWorker: 50,
     // note(simek): would be nice enhancement, but it breaks the `@next/font` styles currently,
     // and results in font face swap on every page reload
     optimizeCss: false,
