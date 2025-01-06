@@ -183,21 +183,41 @@ function ReactServerErrorView({ error }: { error: ReactServerError }) {
         {title}
       </Text>
 
-      <TextInput
-        scrollEnabled
-        multiline
-        editable={false}
-        allowFontScaling
-        value={error.message}
-        style={{
-          borderColor: 'rgba(255,255,255,0.5)',
-          borderTopWidth: StyleSheet.hairlineWidth,
-          borderBottomWidth: StyleSheet.hairlineWidth,
-          paddingVertical: 4,
-          maxHeight: 150,
-          color: 'white',
-        }}
-      />
+      {process.env.EXPO_OS === 'web' ? (
+        <ScrollView
+          style={{
+            borderColor: 'rgba(255,255,255,0.5)',
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            maxHeight: 150,
+          }}
+          contentContainerStyle={{ paddingVertical: 4 }}>
+          <Text
+            selectable
+            allowFontScaling
+            style={{
+              color: 'white',
+            }}>
+            {error.message}
+          </Text>
+        </ScrollView>
+      ) : (
+        <TextInput
+          scrollEnabled
+          multiline
+          editable={false}
+          allowFontScaling
+          value={error.message}
+          style={{
+            borderColor: 'rgba(255,255,255,0.5)',
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            paddingVertical: 4,
+            maxHeight: 150,
+            color: 'white',
+          }}
+        />
+      )}
 
       <InfoRow title="Code" right={error.statusCode} />
       {errorId && <InfoRow title="ID" right={errorId} />}
