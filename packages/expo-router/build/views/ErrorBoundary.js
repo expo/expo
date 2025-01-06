@@ -68,10 +68,17 @@ else {
         return <react_native_1.View style={{ flex: 1 }}/>;
     };
 }
+function getErrorHeaders(error) {
+    if ('headers' in error && error.headers instanceof Headers) {
+        return Object.fromEntries(error.headers.entries());
+    }
+    return null;
+}
 function ErrorBoundary({ error, retry }) {
     const logBoxLog = useMetroSymbolication(error);
     const inTabBar = (0, react_1.useContext)(bottom_tabs_1.BottomTabBarHeightContext);
     const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
+    const headers = getErrorHeaders(error);
     return (<react_native_1.View style={styles.container}>
       <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
         <react_native_1.View style={{
@@ -82,16 +89,16 @@ function ErrorBoundary({ error, retry }) {
           <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong
           </react_native_1.Text>
-          <react_native_1.Text role="heading" aria-level={2} style={styles.errorMessage}>
+          <react_native_1.Text testID="router_error_message" role="heading" aria-level={2} style={styles.errorMessage}>
             Error: {error.message}
           </react_native_1.Text>
         </react_native_1.View>
 
         <StackTrace logData={logBoxLog}/>
-        {process.env.NODE_ENV === 'development' && (<Link_1.Link href="/_sitemap" style={styles.link}>
+        {process.env.NODE_ENV === 'development' && (<Link_1.Link testID="router_error_sitemap" href="/_sitemap" style={styles.link}>
             Sitemap
           </Link_1.Link>)}
-        <Pressable_1.Pressable onPress={retry}>
+        <Pressable_1.Pressable testID="router_error_retry" onPress={retry}>
           {({ hovered, pressed }) => (<react_native_1.View style={[styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }]}>
               <react_native_1.Text style={[
                 styles.buttonText,

@@ -33,15 +33,17 @@ function TestableErrorBoundary({ error }: { error: Error }) {
 export default function ServerActionTest() {
   return (
     <View style={{ flex: 1, gap: 16 }}>
-      <ToggleMount title="Throw Error in Server Action">
+      <ToggleMount testID="button-error-in-server-action" title="Throw Error in Server Action">
         <ServerActionErrorTest errorBoundary={TestableErrorBoundary} />
       </ToggleMount>
 
-      <ToggleMount title="Throw Error in Server Action with default boundary">
+      <ToggleMount
+        testID="button-error-with-default-boundary"
+        title="Throw Error in Server Action with default boundary">
         <ServerActionErrorTest errorBoundary={ErrorBoundary} />
       </ToggleMount>
 
-      <ToggleMount title="Bundler Error">
+      <ToggleMount testID="button-bundler-error" title="Bundler Error">
         <BundlerErrorTest />
       </ToggleMount>
 
@@ -52,12 +54,22 @@ export default function ServerActionTest() {
   );
 }
 
-function ToggleMount({ title, children }: { title: string; children: React.ReactNode }) {
+function ToggleMount({
+  title,
+  children,
+  testID,
+}: {
+  title: string;
+  children: React.ReactNode;
+  testID: string;
+}) {
   const [mounted, setMounted] = React.useState(false);
   return (
     <View style={{ flex: 1, borderWidth: 1, padding: 16, borderStyle: 'dashed' }}>
       <Text>{title}</Text>
-      <Text onPress={() => setMounted(!mounted)}>Toggle Mount</Text>
+      <Text testID={testID} onPress={() => setMounted(!mounted)}>
+        Toggle Mount
+      </Text>
       <ScrollView>{mounted ? children : null}</ScrollView>
     </View>
   );

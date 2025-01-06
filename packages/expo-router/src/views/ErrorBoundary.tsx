@@ -83,10 +83,19 @@ if (process.env.NODE_ENV === 'development') {
   };
 }
 
+function getErrorHeaders(error: Error & { headers?: Headers }) {
+  if ('headers' in error && error.headers instanceof Headers) {
+    return Object.fromEntries(error.headers.entries());
+  }
+  return null;
+}
+
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   const logBoxLog = useMetroSymbolication(error);
   const inTabBar = useContext(BottomTabBarHeightContext);
   const Wrapper = inTabBar ? View : SafeAreaView;
+
+  const headers = getErrorHeaders(error);
 
   return (
     <View style={styles.container}>
@@ -100,18 +109,22 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
           <Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong
           </Text>
-          <Text role="heading" aria-level={2} style={styles.errorMessage}>
+          <Text
+            testID="router_error_message"
+            role="heading"
+            aria-level={2}
+            style={styles.errorMessage}>
             Error: {error.message}
           </Text>
         </View>
 
         <StackTrace logData={logBoxLog} />
         {process.env.NODE_ENV === 'development' && (
-          <Link href="/_sitemap" style={styles.link}>
+          <Link testID="router_error_sitemap" href="/_sitemap" style={styles.link}>
             Sitemap
           </Link>
         )}
-        <Pressable onPress={retry}>
+        <Pressable testID="router_error_retry" onPress={retry}>
           {({ hovered, pressed }) => (
             <View
               style={[styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }]}>
