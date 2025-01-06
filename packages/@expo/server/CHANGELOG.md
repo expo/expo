@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Throw server function errors in production.
+
 ### 💡 Others
 
 ## 0.5.0 — 2024-11-11
