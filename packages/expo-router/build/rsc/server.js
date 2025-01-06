@@ -30,7 +30,7 @@ function getGlobalCacheForPlatform() {
         return serverCache;
     }
     catch (error) {
-        console.log('[RSC]: Failed to create cache:', error);
+        console.error('[RSC]: Failed to create cache:', error);
         // Fallback to a simple in-memory cache.
         const cache = new Map();
         const serverCache = {

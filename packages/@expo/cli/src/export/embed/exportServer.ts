@@ -132,6 +132,7 @@ export async function exportStandaloneServerAsync(
 
   // If the user hasn't manually defined the server URL, write the deployed server URL to the app.json.
   if (userDefinedServerUrl) {
+    Log.log('Skip automatically linking server origin to native container');
     return;
   }
   Log.log('Writing generated server URL to app.json');
@@ -199,7 +200,7 @@ async function runServerDeployCommandAsync(
   }
 
   // TODO: Only allow EAS deployments when staging is enabled, this is because the feature is still staging-only.
-  if (!deployScript && !env.EXPO_STAGING) {
+  if (!env.EXPO_UNSTABLE_DEPLOY_SERVER) {
     return false;
   }
 

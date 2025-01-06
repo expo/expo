@@ -41,6 +41,11 @@ if (!BASE_PATH.endsWith('/')) {
 if (BASE_PATH === '/') {
     throw new Error(`Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${(0, getDevServer_1.getDevServer)().fullBundleUrl}`);
 }
+if (process.env.EXPO_OS !== 'web' && !window.location?.href) {
+    // This can happen if the user attempts to use React Server Components without
+    // enabling the flags in the app.json. This will set origin to false and prevent the expo/metro-runtime polyfill from running.
+    throw new Error('window.location.href is not defined. This is required for React Server Components to work correctly. Ensure React Server Components is correctly enabled in your project and config.');
+}
 const RSC_CONTENT_TYPE = 'text/x-component';
 const ENTRY = 'e';
 const SET_ELEMENTS = 's';
