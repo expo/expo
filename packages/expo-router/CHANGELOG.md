@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add server error handling to error boundary.
+- Add server error handling to error boundary. ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
