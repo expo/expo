@@ -19,7 +19,7 @@ import createSitemap from './scripts/create-sitemap.js';
 
 import packageJson from '~/package.json';
 
-const betaVersion =
+const newestVersion =
   'betaVersion' in packageJson ? (packageJson?.betaVersion as string) : packageJson.version;
 
 const removeConsoleConfig =
@@ -44,9 +44,6 @@ const nextConfig: NextConfig = {
     parallelServerBuildTraces: true,
     esmExternals: true,
     webpackBuildWorker: true,
-    // staticGenerationRetryCount: 1,
-    // staticGenerationMaxConcurrency: 4,
-    // staticGenerationMinPagesPerWorker: 50,
     // note(simek): would be nice enhancement, but it breaks the `@next/font` styles currently,
     // and results in font face swap on every page reload
     optimizeCss: false,
@@ -116,7 +113,7 @@ const nextConfig: NextConfig = {
         } else {
           // Remove newer unreleased versions from the exported side
           const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
-          if (versionMatch?.[1] && semver.gt(versionMatch[1], betaVersion, false)) {
+          if (versionMatch?.[1] && semver.gt(versionMatch[1], newestVersion, false)) {
             return undefined;
           }
         }
