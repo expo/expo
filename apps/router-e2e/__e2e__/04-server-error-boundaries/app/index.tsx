@@ -30,9 +30,36 @@ function TestableErrorBoundary({ error }: { error: Error }) {
   return <Text testID="error-unknown">Caught error: {error.message}</Text>;
 }
 
+function createFakeProductionError() {
+  return new ReactServerError(
+    `Unhandled Worker Script Exception
+
+        A runtime error was thrown while the worker script executed and
+        no response could be returned.
+      
+
+test error`,
+    'https://x.x.x/_flight/web/ACTION_file:///path/to/action.tsx/serverAction.txt',
+    500,
+    new Headers({
+      Date: 'Mon, 06 Jan 2025 21:31:05 GMT',
+      'Content-Type': 'text/html',
+      'Content-Length': '164',
+      Connection: 'keep-alive',
+      'Cache-Control': 'private, max-age=30, must-revalidate',
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+      'content-security-policy': "frame-ancestors 'self'",
+      Vary: 'Accept-Encoding',
+      Server: 'cloudflare',
+      'CF-RAY': '8fded01d78902e76-DFW',
+    })
+  );
+}
+
 export default function ServerActionTest() {
   return (
     <View style={{ flex: 1, gap: 16 }}>
+      <ErrorBoundary retry={async () => {}} error={createFakeProductionError()} />
       <ToggleMount testID="button-error-in-server-action" title="Throw Error in Server Action">
         <ServerActionErrorTest errorBoundary={TestableErrorBoundary} />
       </ToggleMount>

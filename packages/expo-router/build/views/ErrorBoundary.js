@@ -8,6 +8,7 @@ const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
 const Link_1 = require("../link/Link");
+const errors_1 = require("../rsc/router/errors");
 let useMetroSymbolication;
 if (process.env.NODE_ENV === 'development') {
     const { LogBoxLog, parseErrorStack } = require('@expo/metro-runtime/symbolicate');
@@ -68,32 +69,27 @@ else {
         return <react_native_1.View style={{ flex: 1 }}/>;
     };
 }
-function getErrorHeaders(error) {
-    if ('headers' in error && error.headers instanceof Headers) {
-        return Object.fromEntries(error.headers.entries());
-    }
-    return null;
+function StandardErrorView({ error }) {
+    return (<react_native_1.View style={{
+            marginBottom: 12,
+            gap: 4,
+            flexWrap: process.env.EXPO_OS === 'web' ? 'wrap' : 'nowrap',
+        }}>
+      <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
+        Something went wrong
+      </react_native_1.Text>
+      <react_native_1.Text testID="router_error_message" role="heading" aria-level={2} style={styles.errorMessage}>
+        Error: {error.message}
+      </react_native_1.Text>
+    </react_native_1.View>);
 }
 function ErrorBoundary({ error, retry }) {
     const logBoxLog = useMetroSymbolication(error);
     const inTabBar = (0, react_1.useContext)(bottom_tabs_1.BottomTabBarHeightContext);
     const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
-    const headers = getErrorHeaders(error);
     return (<react_native_1.View style={styles.container}>
       <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
-        <react_native_1.View style={{
-            marginBottom: 12,
-            gap: 4,
-            flexWrap: process.env.EXPO_OS === 'web' ? 'wrap' : 'nowrap',
-        }}>
-          <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
-            Something went wrong
-          </react_native_1.Text>
-          <react_native_1.Text testID="router_error_message" role="heading" aria-level={2} style={styles.errorMessage}>
-            Error: {error.message}
-          </react_native_1.Text>
-        </react_native_1.View>
-
+        {error instanceof errors_1.ReactServerError ? (<ReactServerErrorView error={error}/>) : (<StandardErrorView error={error}/>)}
         <StackTrace logData={logBoxLog}/>
         {process.env.NODE_ENV === 'development' && (<Link_1.Link testID="router_error_sitemap" href="/_sitemap" style={styles.link}>
             Sitemap
@@ -114,6 +110,66 @@ function ErrorBoundary({ error, retry }) {
     </react_native_1.View>);
 }
 exports.ErrorBoundary = ErrorBoundary;
+const COMMON_ERROR_STATUS = {
+    404: 'NOT_FOUND',
+    500: 'INTERNAL_SERVER_ERROR',
+    503: 'SERVICE_UNAVAILABLE',
+    504: 'GATEWAY_TIMEOUT',
+};
+// TODO: This should probably be replaced by a DOM component that loads server errors in the future.
+function ReactServerErrorView({ error }) {
+    let title = String(error.statusCode);
+    title += ': ' + (COMMON_ERROR_STATUS[error.statusCode] ?? 'Server Error');
+    const errorId = error.headers.get('cf-ray');
+    const date = error.headers.get('Date');
+    return (<react_native_1.View style={{
+            padding: 12,
+            gap: 8,
+        }}>
+      <react_native_1.Text selectable allowFontScaling style={{
+            fontSize: react_native_1.Platform.select({ web: 24, default: 16 }),
+            fontWeight: 'bold',
+            marginBottom: 4,
+            color: 'white',
+        }}>
+        {title}
+      </react_native_1.Text>
+      <react_native_1.ScrollView style={{
+            borderColor: 'rgba(255,255,255,0.5)',
+            borderTopWidth: react_native_1.StyleSheet.hairlineWidth,
+            borderBottomWidth: react_native_1.StyleSheet.hairlineWidth,
+            maxHeight: 150,
+        }} contentContainerStyle={{ paddingVertical: 4 }}>
+        <react_native_1.Text selectable allowFontScaling style={{
+            color: 'white',
+        }}>
+          {error.message}
+        </react_native_1.Text>
+      </react_native_1.ScrollView>
+
+      <InfoRow title="Code" right={error.statusCode}/>
+      {errorId && <InfoRow title="ID" right={errorId}/>}
+      {date && <InfoRow title="Date" right={date}/>}
+
+      {error.url && (<react_native_1.Text selectable allowFontScaling style={{ fontSize: 14, opacity: 0.5, color: 'white' }}>
+          {error.url}
+        </react_native_1.Text>)}
+    </react_native_1.View>);
+}
+function InfoRow({ title, right }) {
+    const style = {
+        fontSize: 16,
+        color: 'white',
+    };
+    return (<react_native_1.View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <react_native_1.Text selectable allowFontScaling style={style}>
+        {title}
+      </react_native_1.Text>
+      {right && (<react_native_1.Text selectable allowFontScaling style={[style, styles.code]}>
+          {right}
+        </react_native_1.Text>)}
+    </react_native_1.View>);
+}
 const styles = react_native_1.StyleSheet.create({
     container: {
         flex: 1,

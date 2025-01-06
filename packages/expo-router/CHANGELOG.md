@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add server error handling to error boundary.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

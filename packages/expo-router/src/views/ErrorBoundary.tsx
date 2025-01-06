@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
 import { Link } from '../link/Link';
+import { ReactServerError } from '../rsc/router/errors';
 
 let useMetroSymbolication: (error: Error) => LogBoxLog | null;
 
@@ -83,11 +84,22 @@ if (process.env.NODE_ENV === 'development') {
   };
 }
 
-function getErrorHeaders(error: Error & { headers?: Headers }) {
-  if ('headers' in error && error.headers instanceof Headers) {
-    return Object.fromEntries(error.headers.entries());
-  }
-  return null;
+function StandardErrorView({ error }: { error: Error }) {
+  return (
+    <View
+      style={{
+        marginBottom: 12,
+        gap: 4,
+        flexWrap: process.env.EXPO_OS === 'web' ? 'wrap' : 'nowrap',
+      }}>
+      <Text role="heading" aria-level={1} style={styles.title}>
+        Something went wrong
+      </Text>
+      <Text testID="router_error_message" role="heading" aria-level={2} style={styles.errorMessage}>
+        Error: {error.message}
+      </Text>
+    </View>
+  );
 }
 
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
@@ -95,29 +107,14 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   const inTabBar = useContext(BottomTabBarHeightContext);
   const Wrapper = inTabBar ? View : SafeAreaView;
 
-  const headers = getErrorHeaders(error);
-
   return (
     <View style={styles.container}>
       <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
-        <View
-          style={{
-            marginBottom: 12,
-            gap: 4,
-            flexWrap: process.env.EXPO_OS === 'web' ? 'wrap' : 'nowrap',
-          }}>
-          <Text role="heading" aria-level={1} style={styles.title}>
-            Something went wrong
-          </Text>
-          <Text
-            testID="router_error_message"
-            role="heading"
-            aria-level={2}
-            style={styles.errorMessage}>
-            Error: {error.message}
-          </Text>
-        </View>
-
+        {error instanceof ReactServerError ? (
+          <ReactServerErrorView error={error} />
+        ) : (
+          <StandardErrorView error={error} />
+        )}
         <StackTrace logData={logBoxLog} />
         {process.env.NODE_ENV === 'development' && (
           <Link testID="router_error_sitemap" href="/_sitemap" style={styles.link}>
@@ -141,6 +138,90 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
           )}
         </Pressable>
       </Wrapper>
+    </View>
+  );
+}
+
+const COMMON_ERROR_STATUS = {
+  404: 'NOT_FOUND',
+  500: 'INTERNAL_SERVER_ERROR',
+  503: 'SERVICE_UNAVAILABLE',
+  504: 'GATEWAY_TIMEOUT',
+};
+
+// TODO: This should probably be replaced by a DOM component that loads server errors in the future.
+function ReactServerErrorView({ error }: { error: ReactServerError }) {
+  let title = String(error.statusCode);
+  title += ': ' + (COMMON_ERROR_STATUS[error.statusCode] ?? 'Server Error');
+
+  const errorId = error.headers.get('cf-ray');
+
+  const date = error.headers.get('Date');
+
+  return (
+    <View
+      style={{
+        padding: 12,
+        gap: 8,
+      }}>
+      <Text
+        selectable
+        allowFontScaling
+        style={{
+          fontSize: Platform.select({ web: 24, default: 16 }),
+          fontWeight: 'bold',
+          marginBottom: 4,
+          color: 'white',
+        }}>
+        {title}
+      </Text>
+      <ScrollView
+        style={{
+          borderColor: 'rgba(255,255,255,0.5)',
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          maxHeight: 150,
+        }}
+        contentContainerStyle={{ paddingVertical: 4 }}>
+        <Text
+          selectable
+          allowFontScaling
+          style={{
+            color: 'white',
+          }}>
+          {error.message}
+        </Text>
+      </ScrollView>
+
+      <InfoRow title="Code" right={error.statusCode} />
+      {errorId && <InfoRow title="ID" right={errorId} />}
+      {date && <InfoRow title="Date" right={date} />}
+
+      {error.url && (
+        <Text selectable allowFontScaling style={{ fontSize: 14, opacity: 0.5, color: 'white' }}>
+          {error.url}
+        </Text>
+      )}
+    </View>
+  );
+}
+
+function InfoRow({ title, right }: { title: string; right?: any }) {
+  const style = {
+    fontSize: 16,
+    color: 'white',
+  };
+
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <Text selectable allowFontScaling style={style}>
+        {title}
+      </Text>
+      {right && (
+        <Text selectable allowFontScaling style={[style, styles.code]}>
+          {right}
+        </Text>
+      )}
     </View>
   );
 }
