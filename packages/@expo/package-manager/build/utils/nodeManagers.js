@@ -34,12 +34,12 @@ function resolvePackageManager(projectRoot, preferredManager) {
         bun: [exports.BUN_LOCK_FILE, exports.BUN_TEXT_LOCK_FILE],
     };
     if (preferredManager) {
-        return lockFiles[preferredManager].some(file => fs_1.default.existsSync(path_1.default.join(root, file)))
+        return lockFiles[preferredManager].some((file) => fs_1.default.existsSync(path_1.default.join(root, file)))
             ? preferredManager
             : null;
     }
     for (const managerName of exports.RESOLUTION_ORDER) {
-        if (lockFiles[managerName].some(file => fs_1.default.existsSync(path_1.default.join(root, file)))) {
+        if (lockFiles[managerName].some((file) => fs_1.default.existsSync(path_1.default.join(root, file)))) {
             return managerName;
         }
     }
