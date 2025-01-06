@@ -10,8 +10,9 @@ import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
 import path from 'path';
 import url from 'url';
+import formatBundlingError from 'metro/src/lib/formatBundlingError';
 
-import { logMetroError } from './metroErrorInterface';
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { toPosixPath } from '../../../utils/filePath';
@@ -24,6 +25,7 @@ import {
   ExpoMetroOptions,
   getMetroOptionsFromUrl,
 } from '../middleware/metroOptions';
+import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
 
@@ -105,6 +107,12 @@ export function createServerComponentsMiddleware(
 
         // TODO: Revisit all error handling now that we do direct metro bundling...
         await logMetroError(projectRoot, { error });
+
+        if (error[IS_METRO_BUNDLE_ERROR_SYMBOL]) {
+          throw Response.json(error, {
+            status: isPossiblyUnableToResolveError(error) ? 404 : 500,
+          });
+        }
 
         const sanitizedServerMessage = stripAnsi(error.message) ?? error.message;
         throw new Response(sanitizedServerMessage, {

@@ -33,7 +33,7 @@ import {
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync, IS_METRO_BUNDLE_ERROR_SYMBOL } from './metroErrorInterface';
 import { assertMetroPrivateServer, MetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
@@ -1615,6 +1615,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         map: bundleMap,
       };
     } catch (error) {
+      // Mark the error so we know how to format and return it later.
+      error[IS_METRO_BUNDLE_ERROR_SYMBOL] = true;
+
       this.metro._reporter.update({
         buildID: getBuildID(buildNumber),
         type: 'bundle_build_failed',
