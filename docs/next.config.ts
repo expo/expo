@@ -96,31 +96,34 @@ const nextConfig: NextConfig = {
   },
 
   // Create a map of all pages to export
-  // https://nextjs.org/docs/api-reference/next.config.js/exportPathMap
+  // https://nextjs.org/docs/pages/api-reference/config/next-config-js/exportPathMap
   async exportPathMap(defaultPathMap, { dev, outDir }) {
     if (dev) {
       return defaultPathMap;
     }
+
     if (!outDir) {
       error('Output directory is not defined! Falling back to the default export map.');
       return defaultPathMap;
     }
-    const pathMap = Object.assign({
+
+    const pathMap = Object.assign(
+      {},
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
         if (pathname.includes('unversioned')) {
           // Remove unversioned pages from the exported site
-          return {};
+          return undefined;
         } else {
           // Remove newer unreleased versions from the exported side
           const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
           if (versionMatch?.[1] && semver.gt(versionMatch[1], betaVersion, false)) {
-            return {};
+            return undefined;
           }
         }
 
-        return { [pathname]: page };
-      }),
-    });
+        return { [page.page]: page };
+      })
+    );
 
     const sitemapEntries = createSitemap({
       pathMap,
