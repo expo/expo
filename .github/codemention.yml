@@ -108,8 +108,6 @@ rules:
     mentions: ['lukmccall', 'alanjhughes']
   - patterns: ['packages/expo-env-info/**']
     mentions: ['bycedric']
-  - patterns: ['packages/expo-face-detector/**']
-    mentions: ['kudo']
   - patterns: ['packages/expo-file-system/**']
     mentions: ['brentvatne', 'kudo', 'ide', 'aleqsio']
   - patterns: ['packages/expo-font/**']

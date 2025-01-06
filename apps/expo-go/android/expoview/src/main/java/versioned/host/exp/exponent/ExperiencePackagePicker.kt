@@ -22,8 +22,6 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.facedetector.FaceDetectorModule
-import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
@@ -91,7 +89,6 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ConstantsPackage(),
-    FaceDetectorPackage(),
     FileSystemPackage(),
     ExpoLinkingPackage(),
     ImageLoaderPackage(),
@@ -158,7 +155,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ExpoFetchModule::class.java,
     ExpoLinkingModule::class.java,
     FileSystemModule::class.java,
-    FaceDetectorModule::class.java,
     FontLoaderModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,

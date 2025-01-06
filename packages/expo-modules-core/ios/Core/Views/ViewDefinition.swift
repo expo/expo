@@ -65,6 +65,10 @@ public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefiniti
     return props.map(\.name)
   }
 
+  public func getSupportedEventNames() -> [String] {
+    return eventNames
+  }
+
   public func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: UIView) {
     for method in lifecycleMethods where method.type == type {
       method(view)

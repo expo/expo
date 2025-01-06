@@ -5,12 +5,12 @@ sidebar_title: Settings
 hideTOC: true
 ---
 
-import { APIBox } from '~/components/plugins/APIBox';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { FileTree } from '~/ui/components/FileTree';
 
 > **warning** **Warning:** `unstable_settings` currently do not work with [async routes](/router/reference/async-routes/) (development-only). This is why the feature is designated _unstable_.
 
-<APIBox header="initialRouteName">
+<PaddedAPIBox header="initialRouteName">
 
 When deep linking to a route, you may want to provide a user with a "back" button. The `initialRouteName` sets the default screen of the stack and should match a valid filename (without the extension).
 
@@ -31,17 +31,4 @@ export default function Layout() {
 
 Now deep linking directly to `/other` or reloading the page will continue to show the back arrow.
 
-When using [array syntax](/router/advanced/shared-routes/#arrays) `(foo,bar)` you can specify the name of a group in the `unstable_settings` object to target a particular segment.
-
-```tsx other.tsx
-export const unstable_settings = {
-  // Used for `(foo)`
-  initialRouteName: 'first',
-  // Used for `(bar)`
-  bar: {
-    initialRouteName: 'second',
-  },
-};
-```
-
-</APIBox>
+</PaddedAPIBox>

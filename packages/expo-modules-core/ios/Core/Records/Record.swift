@@ -85,6 +85,6 @@ internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
 /**
  Converts mirror's label to field's key by dropping the "_" prefix from wrapped property label.
  */
-private func convertLabelToKey(_ label: String?) -> String? {
+internal func convertLabelToKey(_ label: String?) -> String? {
   return (label != nil && label!.starts(with: "_")) ? String(label!.dropFirst()) : label
 }

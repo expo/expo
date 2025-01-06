@@ -45,7 +45,6 @@ const screens = [
   'Crypto',
   'Device',
   'DocumentPicker',
-  'FaceDetector',
   'FileSystem',
   'Font',
   'Errors',

@@ -35,7 +35,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
         resolvedHref = (0, href_1.resolveHrefStringWithSegments)(resolvedHref, {
             ...routeInfo,
             segments: segmentsWithoutGroups,
-        }, true);
+        }, { relativeToDirectory: true });
         let state = linking.getStateFromPath?.(resolvedHref, linking.config)?.routes[0];
         if (!state) {
             // This shouldn't occur, as you should get the global +not-found

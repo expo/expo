@@ -1,14 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { H2, P, MONOSPACE } from '~/ui/components/Text';
+import { CALLOUT, H2 } from '~/ui/components/Text';
 
 import { ConstantDefinitionData } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import { getTagNamesList, H3Code } from './APISectionUtils';
+import { APIBoxHeader } from './components/APIBoxHeader';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
-import { APISectionPlatformTags } from './components/APISectionPlatformTags';
-import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -21,27 +20,15 @@ const renderConstant = (
   sdkVersion: string,
   apiName?: string
 ): JSX.Element => (
-  <div
-    key={`constant-definition-${name}`}
-    className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
+  <div key={`constant-definition-${name}`} className={STYLES_APIBOX}>
     <APISectionDeprecationNote comment={comment} sticky />
-    <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-      <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" className="wrap-anywhere">
-          {apiName ? `${apiName}.` : ''}
-          {name}
-        </MONOSPACE>
-      </H3Code>
-      <APISectionPlatformTags comment={comment} />
-    </div>
+    <APIBoxHeader name={`${apiName ? `${apiName}.` : ''}${name}`} comment={comment} />
     {type && (
-      <P className={STYLES_SECONDARY}>
+      <CALLOUT className={mergeClasses(STYLES_SECONDARY, ELEMENT_SPACING, VERTICAL_SPACING)}>
         Type: <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
-      </P>
+      </CALLOUT>
     )}
-    {comment && (
-      <APICommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
-    )}
+    {comment && <APICommentTextBlock comment={comment} includePlatforms={false} inlineHeaders />}
   </div>
 );
 

@@ -1,13 +1,13 @@
 import { vol } from 'memfs';
 import requireString from 'require-from-string';
 
-import { satisfyExpoVersion } from '../ExpoVersions';
+import { satisfyExpoVersion } from '../ExpoResolver';
 import { normalizeOptionsAsync } from '../Options';
 
 jest.mock('fs/promises');
 // Mock cpus to return a single core for consistent snapshot testing
 jest.mock('os', () => ({ cpus: jest.fn().mockReturnValue([0]) }));
-jest.mock('../ExpoVersions');
+jest.mock('../ExpoResolver');
 
 describe(normalizeOptionsAsync, () => {
   afterEach(() => {

@@ -58,7 +58,7 @@ class DevMenuReactNativeHost(application: Application, private val useDeveloperS
 
   override fun getBundleAssetName() = "EXDevMenuApp.android.js"
 
-  override fun getJSMainModuleName() = "index"
+  override fun getJSMainModuleName() = "packages/expo-dev-menu/app/index"
 
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory {
     return createNonDebuggableJavaScriptExecutorFactory(application)

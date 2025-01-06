@@ -63,7 +63,8 @@ function AppConfigProperty({
       className={mergeClasses(
         '!mb-0 !rounded-none !border-b-0 !shadow-none',
         '[&]:first-of-type:!rounded-t-md',
-        '[&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default'
+        '[&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default',
+        'px-4 py-3'
       )}>
       <PropertyName name={name} nestingLevel={nestingLevel} />
       <div className="my-3" data-text="true">

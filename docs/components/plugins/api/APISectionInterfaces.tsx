@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, CALLOUT, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
+import { H2, CALLOUT, CODE, DEMI } from '~/ui/components/Text';
 
 import {
   CommentData,
@@ -15,19 +15,17 @@ import {
   getTagData,
   parseCommentContent,
   renderFlags,
-  ParamsTableHeadRow,
   resolveTypeName,
   renderDefaultValue,
-  getTagNamesList,
-  H3Code,
   getCommentContent,
-  BoxSectionHeader,
 } from './APISectionUtils';
+import { APIBoxHeader } from './components/APIBoxHeader';
+import { APIBoxSectionHeader } from './components/APIBoxSectionHeader';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
 import { APIParamRow } from './components/APIParamRow';
-import { APISectionPlatformTags } from './components/APISectionPlatformTags';
-import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
+import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -78,7 +76,7 @@ const renderInterfaceComment = (
           inlineHeaders
           comment={comment}
           afterContent={renderDefaultValue(initValue)}
-          emptyCommentFallback="-"
+          emptyCommentFallback={getTagData('deprecated', comment) ? '' : '-'}
         />
       </>
     );
@@ -95,14 +93,14 @@ const renderInterfacePropertyRow = (
   );
   return (
     <Row key={name}>
-      <Cell fitContent>
-        <BOLD>{name}</BOLD>
+      <Cell>
+        <DEMI>{name}</DEMI>
         {renderFlags(flags, initValue)}
       </Cell>
-      <Cell fitContent>
+      <Cell>
         <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </Cell>
-      <Cell fitContent>{renderInterfaceComment(sdkVersion, comment, signatures, initValue)}</Cell>
+      <Cell>{renderInterfaceComment(sdkVersion, comment, signatures, initValue)}</Cell>
     </Row>
   );
 };
@@ -123,21 +121,12 @@ const renderInterface = (
   return (
     <div
       key={`interface-definition-${name}`}
-      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, 'overflow-hidden')}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
-            {name}
-          </MONOSPACE>
-        </H3Code>
-        <APISectionPlatformTags comment={comment} />
-      </div>
+      <APIBoxHeader name={name} comment={comment} />
       {extendedTypes?.length ? (
         <CALLOUT className={ELEMENT_SPACING}>
-          <CALLOUT tag="span" theme="secondary" weight="medium">
-            Extends:{' '}
-          </CALLOUT>
+          <span className={STYLES_SECONDARY}>Extends: </span>
           {extendedTypes.map(extendedType => (
             <CODE key={`extend-${extendedType.name}`}>
               {resolveTypeName(extendedType, sdkVersion)}
@@ -146,26 +135,24 @@ const renderInterface = (
         </CALLOUT>
       ) : null}
       <APICommentTextBlock comment={comment} includePlatforms={false} />
-      {interfaceMethods.length ? (
+      {interfaceMethods.length > 0 && (
         <>
-          <BoxSectionHeader text={`${name} Methods`} />
+          <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar baseNestingLevel={99} />
           {interfaceMethods.map(method =>
             renderMethod(method, { exposeInSidebar: false, sdkVersion })
           )}
         </>
-      ) : undefined}
-      {interfaceFields.length ? (
+      )}
+      {interfaceFields.length > 0 && (
         <>
-          <BoxSectionHeader text={`${name} Properties`} />
-          <Table>
-            <ParamsTableHeadRow />
+          <Table containerClassName="rounded-none border-0 border-t">
+            <APIParamsTableHeadRow mainCellLabel="Property" />
             <tbody>
               {interfaceFields.map(field => renderInterfacePropertyRow(field, sdkVersion))}
             </tbody>
           </Table>
-          <br />
         </>
-      ) : undefined}
+      )}
     </div>
   );
 };

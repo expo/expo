@@ -35,8 +35,8 @@ Unlike `@expo/webpack-config`, Expo Router uses the same CLI commands and featur
 | ------------------------ | ------------------------------------------------- | ---------------------- |
 | Start command            | `npx expo start`                                  | `npx expo start`       |
 | Bundle command           | `npx expo export`                                 | `npx expo export:web`  |
-| Output folder            | **dist**                                          | **web-build**          |
-| Static folder            | **public**                                        | **web**                |
+| Output directory         | **dist**                                          | **web-build**          |
+| Static directory         | **public**                                        | **web**                |
 | Config file              | **metro.config.js**                               | **webpack.config.js**  |
 | Default config           | `@expo/metro-config`                              | `@expo/webpack-config` |
 | Bundle Splitting         | <YesIcon /> (SDK 50 • web)                        | <YesIcon />            |
@@ -76,7 +76,7 @@ In Expo Router, use the `npx expo export --platform web` command to export to th
 
 ## Babel configuration
 
-Like before, the root **babel.config.js** file is used for both web and native. You can change the preset by using the `platform` property in the API caller:
+Like before, the root [**babel.config.js**](/versions/latest/config/babel/) file is used for both web and native. You can change the preset by using the `platform` property in the API caller:
 
 ```js babel.config.js
 module.exports = api => {
@@ -225,7 +225,7 @@ Now build the app before running the wizard:
 
 <Terminal cmd={['$ npx expo export -p web']} />
 
-Run the wizard command, selecting `dist` as the root of the app, and the defaults for everything else...
+Run the wizard command, select `dist` as the root of the app, and the defaults for everything else:
 
 <Terminal
   cmd={[
@@ -326,6 +326,6 @@ If you used React Navigation for navigating between screens in `@expo/webpack-co
 
 ## Deployment
 
-See [publishing websites](/distribution/publishing-websites) and select "Expo Router" on how to deploy Expo Router websites to various hosting providers.
+See [publishing websites](/guides/publishing-websites) and select "Expo Router" on how to deploy Expo Router websites to various hosting providers.
 
 [tree-shaking]: /guides/tree-shaking

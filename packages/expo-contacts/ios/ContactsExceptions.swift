@@ -89,3 +89,21 @@ internal class ContactManipulationInProgressException: Exception {
     "Different contact manipulation in progress. Await other contact manipulation first"
   }
 }
+
+internal final class MissingCurrentViewControllerException: Exception {
+  override var reason: String {
+    "Cannot determine currently presented view controller"
+  }
+}
+
+internal final class AccessPickerUnavailableException: Exception {
+  override var reason: String {
+    "Contact access picker is only available as of iOS 18.0"
+  }
+}
+
+internal final class AccessPickerAlreadyPresentedException: Exception {
+  override var reason: String {
+    "Contact access picker is already presented"
+  }
+}

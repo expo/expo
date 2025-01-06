@@ -38,7 +38,7 @@ Now, in a unit test, calling `ExpoClipboard.hasStringAsync()` returns `false`.
 Maintaining mocks for native modules can be a lot of work if the native module has multiple methods. To make this easier, we provide a script that automatically generates mocks for all native functions in a module.
 It works for generating mocks in TypeScript and JavaScript based on the Swift implementation in your module.
 
-To use this script, you have to install [SourceKitten](https://github.com/jpsim/SourceKitten) framework and run the `generate-ts-mocks` command in your module.
+To use this script, you have to install [SourceKitten](https://github.com/jpsim/SourceKitten) framework. Then, navigate to the module directory (where your module's **expo-module.config.json** is located) and run the `generate-ts-mocks` command.
 
 <Terminal
   cmdCopy="brew install sourcekitten && npx expo-modules-test-core generate-ts-mocks"

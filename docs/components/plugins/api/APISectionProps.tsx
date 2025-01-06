@@ -1,7 +1,9 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
-import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
+import { CODE, H2, H3, H4, LI, UL } from '~/ui/components/Text';
 
 import {
   DefaultPropsDefinitionData,
@@ -12,16 +14,12 @@ import {
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
-  BoxSectionHeader,
   extractDefaultPropValue,
   getCommentOrSignatureComment,
-  getH3CodeWithBaseNestingLevel,
-  getTagNamesList,
   resolveTypeName,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
-import { APISectionPlatformTags } from './components/APISectionPlatformTags';
-import { STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
+import { STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -54,10 +52,10 @@ const renderInheritedProps = (
     inheritedData.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
   if (inheritedProps.length) {
     return (
-      <>
+      <div className={mergeClasses('border-t border-palette-gray4 px-4 py-3')}>
         {exposeInSidebar ? <H3>Inherited Props</H3> : <H4>Inherited Props</H4>}
         <UL>{inheritedProps.map(prop => renderInheritedProp(prop, sdkVersion))}</UL>
-      </>
+      </div>
     );
   }
   return undefined;
@@ -86,7 +84,7 @@ const renderProps = (
     .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);
 
   return (
-    <div key={`props-definition-${def.name}`} className="[&>*:last-child]:!mb-0">
+    <div key={`props-definition-${def.name}`} className="[&>*]:last:!mb-0">
       {propsDeclarations?.map(prop =>
         prop
           ? renderProp(prop, sdkVersion, extractDefaultPropValue(prop, defaultValues), {
@@ -107,32 +105,19 @@ export const renderProp = (
 ) => {
   const { comment, name, type, flags, signatures } = { ...propData, ...propData.getSignature };
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
-  const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
   const extractedSignatures = signatures ?? type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
 
   return (
     <div
       key={`prop-entry-${name}`}
-      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!pb-4 [&>*:last-child]:!mb-0')}>
+      className={mergeClasses('border-t border-palette-gray4 first:border-t-0')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
-      <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
-        <HeaderComponent tags={getTagNamesList(comment)}>
-          <MONOSPACE
-            weight="medium"
-            className={mergeClasses(
-              'wrap-anywhere',
-              !exposeInSidebar && 'inline-block prose-code:mb-0'
-            )}>
-            {name}
-          </MONOSPACE>
-        </HeaderComponent>
-        <APISectionPlatformTags comment={comment} />
-      </div>
-      <div className={mergeClasses(STYLES_SECONDARY, extractedComment && 'mb-2.5')}>
+      <APIBoxHeader name={name} comment={extractedComment} baseNestingLevel={baseNestingLevel} />
+      <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
-        <>Type:</>{' '}
+        Type:{' '}
         <APITypeOrSignatureType
           type={type}
           signatures={extractedSignatures}
@@ -144,7 +129,7 @@ export const renderProp = (
           </>
         )}
       </div>
-      <APICommentTextBlock comment={extractedComment} includePlatforms={false} />
+      <APICommentTextBlock comment={extractedComment} includePlatforms={false} inlineHeaders />
     </div>
   );
 };
@@ -168,7 +153,7 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <BoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
+          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
           {baseProp?.comment && <APICommentTextBlock comment={baseProp.comment} />}
         </div>
       )}

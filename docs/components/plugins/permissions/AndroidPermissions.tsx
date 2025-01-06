@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { useMemo } from 'react';
+import { InlineHelp } from 'ui/components/InlineHelp';
 
-import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { CODE, P, createPermalinkedComponent } from '~/ui/components/Text';
 
@@ -63,14 +63,14 @@ function AndroidPermissionRow({
           <P className={mergeClasses((warning || explanation) && '!mb-4')}>{description}</P>
         )}
         {!!warning && (
-          <Callout className="mb-0 mt-1.5" type="warning">
+          <InlineHelp className="mb-0 mt-1.5" type="warning">
             {warning}
-          </Callout>
+          </InlineHelp>
         )}
         {explanation && !warning && (
-          <Callout className="mb-0 mt-1.5">
+          <InlineHelp className="mb-0 mt-1.5">
             <span dangerouslySetInnerHTML={{ __html: explanation }} />
-          </Callout>
+          </InlineHelp>
         )}
       </Cell>
     </Row>

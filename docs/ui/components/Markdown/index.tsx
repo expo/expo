@@ -1,7 +1,7 @@
 import type { ComponentType, PropsWithChildren } from 'react';
+import { InlineHelp } from 'ui/components/InlineHelp';
 
 import { Code as PrismCodeBlock } from '~/components/base/code';
-import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { H1, H2, H3, H4, H5, A, CODE, P, BOLD, UL, OL, LI, KBD, DEL } from '~/ui/components/Text';
 
@@ -56,7 +56,7 @@ const markdownStyles: Record<string, Config | null> = {
     className: 'border-0 bg-palette-gray6 h-px mb-[2ch] mt-12',
   },
   blockquote: {
-    Component: Callout,
+    Component: InlineHelp,
   },
   img: {
     Component: 'img',
