@@ -36,12 +36,18 @@ const removeConsole =
 
 /** @type {import('next').NextConfig}  */
 export default {
-  transpilePackages: ['@expo/*', '@radix-ui/*', 'framer-motion', 'prismjs'],
+  transpilePackages: [
+    '@expo/*',
+    '@radix-ui/react-dropdown-menu',
+    '@radix-ui/react-select',
+    'framer-motion',
+    'prismjs',
+  ],
   trailingSlash: true,
   experimental: {
+    optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
     esmExternals: false,
     webpackBuildWorker: true,
-    optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
     staticGenerationRetryCount: 1,
     staticGenerationMaxConcurrency: 4,
     staticGenerationMinPagesPerWorker: 50,
