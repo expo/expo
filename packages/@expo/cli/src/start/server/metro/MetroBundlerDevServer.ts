@@ -1616,6 +1616,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       };
     } catch (error) {
       // Mark the error so we know how to format and return it later.
+      // @ts-expect-error
       error[IS_METRO_BUNDLE_ERROR_SYMBOL] = true;
 
       this.metro._reporter.update({

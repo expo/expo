@@ -108,8 +108,11 @@ export function createServerComponentsMiddleware(
         await logMetroError(projectRoot, { error });
 
         if (error[IS_METRO_BUNDLE_ERROR_SYMBOL]) {
-          throw Response.json(error, {
+          throw new Response(JSON.stringify(error), {
             status: isPossiblyUnableToResolveError(error) ? 404 : 500,
+            headers: {
+              'Content-Type': 'application/json',
+            },
           });
         }
 
