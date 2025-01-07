@@ -1,7 +1,10 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
+import path from 'path';
 
 import * as Log from '../../log';
+import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
@@ -17,10 +20,7 @@ import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
-import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { CommandError } from '../../utils/errors';
-import spawnAsync from '@expo/spawn-async';
-import path from 'path';
 
 const debug = require('debug')('expo:run:ios');
 
