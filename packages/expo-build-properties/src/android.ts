@@ -4,6 +4,7 @@ import {
   History,
   WarningAggregator,
   withAndroidManifest,
+  withAndroidStyles,
   withDangerousMod,
 } from 'expo/config-plugins';
 import fs from 'fs';
@@ -98,6 +99,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
         });
         return JSON.stringify(extraMavenRepos);
       },
+    },
+    {
+      propName: 'android.useDayNightTheme',
+      propValueGetter: (config) => (config.android?.useDayNightTheme ?? false).toString(),
     },
   ],
   'withAndroidBuildProperties'
@@ -258,6 +263,35 @@ export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props
     };
 
     config.modResults.manifest.queries = [newQueries];
+    return config;
+  });
+};
+
+export const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidStyles(config, (config) => {
+    if (!props.android?.useDayNightTheme) {
+      return config;
+    }
+
+    const { style = [] } = config.modResults.resources;
+    if (!style.length) {
+      return config;
+    }
+
+    // Remove the hardcoded colors.
+    const toRemove = ['android:textColor', 'android:editTextStyle'];
+
+    // We only want to return the AppTheme here. We can drop the `ResetEditText` style.
+    config.modResults.resources.style = [
+      {
+        $: {
+          name: 'AppTheme',
+          parent: 'Theme.AppCompat.DayNight.NoActionBar',
+        },
+        item: [...style[0].item.filter(({ $ }) => !toRemove.includes($.name))],
+      },
+    ];
+
     return config;
   });
 };

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `android.useDayNightTheme` to enable overriding the templates use of a light theme.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

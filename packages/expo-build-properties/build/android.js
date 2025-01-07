@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -87,6 +87,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
             });
             return JSON.stringify(extraMavenRepos);
         },
+    },
+    {
+        propName: 'android.useDayNightTheme',
+        propValueGetter: (config) => (config.android?.useDayNightTheme ?? false).toString(),
     },
 ], 'withAndroidBuildProperties');
 /**
@@ -212,3 +216,28 @@ const withAndroidQueries = (config, props) => {
     });
 };
 exports.withAndroidQueries = withAndroidQueries;
+const withAndroidDayNightTheme = (config, props) => {
+    return (0, config_plugins_1.withAndroidStyles)(config, (config) => {
+        if (!props.android?.useDayNightTheme) {
+            return config;
+        }
+        const { style = [] } = config.modResults.resources;
+        if (!style.length) {
+            return config;
+        }
+        // Remove the hardcoded colors.
+        const toRemove = ['android:textColor', 'android:editTextStyle'];
+        // We only want to return the AppTheme here. We can drop the `ResetEditText` style.
+        config.modResults.resources.style = [
+            {
+                $: {
+                    name: 'AppTheme',
+                    parent: 'Theme.AppCompat.DayNight.NoActionBar',
+                },
+                item: [...style[0].item.filter(({ $ }) => !toRemove.includes($.name))],
+            },
+        ];
+        return config;
+    });
+};
+exports.withAndroidDayNightTheme = withAndroidDayNightTheme;
