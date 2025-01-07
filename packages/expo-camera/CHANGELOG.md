@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - [Android] Add support for the `Google Code Scanner`, similar to the `DataScannerViewController` used on iOS. ([#33347](https://github.com/expo/expo/pull/33347) by [@alanjhughes](https://github.com/alanjhughes))
-- Add support for pausing and resuming a video recording. ([#34002](https://github.com/expo/expo/pull/34
+- Add support for pausing and resuming a video recording. ([#34002](https://github.com/expo/expo/pull/34002) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
