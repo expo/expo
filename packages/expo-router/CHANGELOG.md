@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix render store (unstable_headers) on native platforms.
+- Fix render store (unstable_headers) on native platforms. ([#33978](https://github.com/expo/expo/pull/33978) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
