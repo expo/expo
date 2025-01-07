@@ -178,7 +178,6 @@ class AudioRecorder(
     }
   }
 
-
   private fun getAudioRecorderDurationMillis(): Long {
     var duration = durationAlreadyRecorded
     if (isRecording && uptime > 0) {

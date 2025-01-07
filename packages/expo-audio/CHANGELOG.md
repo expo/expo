@@ -16,7 +16,7 @@
 
 ### 💡 Others
 
-- On `Android`, add checks to methods that will throw without permissions being granted. ([#33986](https://github.com/expo/expo/pull/33986) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Add checks to methods that will throw without permissions being granted. ([#33986](https://github.com/expo/expo/pull/33986) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.3.1 - 2024-12-16
 
