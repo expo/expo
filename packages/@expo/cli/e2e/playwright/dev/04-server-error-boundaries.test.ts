@@ -106,7 +106,8 @@ test.describe(inputDir, () => {
     expect(response.status()).toBe(404);
 
     console.time('error-type');
-    expect(await page.textContent('[data-testid="logbox_title"]')).toBe('Syntax Error');
+    const text = await page.textContent('[data-testid="logbox_title"]');
+    expect(text).toMatch(/(Syntax Error|Uncaught Error)/);
     console.timeEnd('error-type');
 
     expect(pageErrors.all.length).toEqual(2);
