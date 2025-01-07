@@ -2,6 +2,7 @@ import Dispatch
 import Foundation
 import React_RCTAppDelegate
 
+// TODO(vonovak,20250107) - Remove the if expression when we drop SDK 52 / RN 76 support
 #if canImport(ReactAppDependencyProvider)
 import ReactAppDependencyProvider
 #endif

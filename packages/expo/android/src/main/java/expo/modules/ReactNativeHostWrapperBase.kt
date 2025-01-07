@@ -81,6 +81,7 @@ open class ReactNativeHostWrapperBase(
 
   //region Internals
 
+  // this is to call the methods as overridden in MainApplication.kt
   @Suppress("UNCHECKED_CAST")
   internal fun <T> invokeDelegateMethod(name: String): T {
     var method = methodMap[name]
