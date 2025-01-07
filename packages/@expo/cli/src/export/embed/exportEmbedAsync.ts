@@ -39,6 +39,15 @@ import { resolveRealEntryFilePath } from '../../utils/filePath';
 
 const debug = require('debug')('expo:export:embed');
 
+/**
+ * Extended type for the Metro server build result to support the `code` property as a `Buffer`.
+ */
+type ExtendedMetroServerBuildResult =
+  | Awaited<ReturnType<Server['build']>>
+  | {
+      code: string | Buffer;
+    };
+
 function guessCopiedAppleBundlePath(bundleOutput: string) {
   // Ensure the path is familiar before guessing.
   if (!bundleOutput.match(/\/Xcode\/DerivedData\/.*\/Build\/Products\//)) {
@@ -134,6 +143,7 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
 
   // Persist bundle and source maps.
   await Promise.all([
+    // @ts-expect-error: The `save()` method from metro is typed to support `code: string` only but it also supports `Buffer` actually.
     output.save(bundle, options, Log.log),
 
     // Write dom components proxy files.
@@ -162,7 +172,7 @@ export async function exportEmbedBundleAndAssetsAsync(
   projectRoot: string,
   options: Options
 ): Promise<{
-  bundle: Awaited<ReturnType<Server['build']>>;
+  bundle: ExtendedMetroServerBuildResult;
   assets: readonly BundleAssetWithFileHashes[];
   files: ExportAssetMap;
 }> {
@@ -200,8 +210,7 @@ export async function exportEmbedBundleAndAssetsAsync(
         mode: options.dev ? 'development' : 'production',
         engine: isHermes ? 'hermes' : undefined,
         serializerIncludeMaps: !!sourceMapUrl,
-        // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
-        bytecode: false,
+        bytecode: options.bytecode ?? false,
         // source map inline
         reactCompiler: !!exp.experiments?.reactCompiler,
       },
@@ -271,7 +280,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     return {
       files,
       bundle: {
-        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0].source.toString(),
+        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0].source,
         // Can be optional when source maps aren't enabled.
         map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString(),
       },
