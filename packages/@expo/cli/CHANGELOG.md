@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `--unstable-rebundle` flag to `npx expo run:ios`.
+- Add `--unstable-rebundle` flag to `npx expo run:ios`. ([#33980](https://github.com/expo/expo/pull/33980) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `+html` and `+native-intent` to `expo customize`. ([#33368](https://github.com/expo/expo/pull/33368) by [@EvanBacon](https://github.com/EvanBacon))
 - Estimate Xcode binary path in minimal builds. ([#33415](https://github.com/expo/expo/pull/33415) by [@EvanBacon](https://github.com/EvanBacon))
 - Support GitHub shorthand for templates ([#33383](https://github.com/expo/expo/pull/33383) by [@satya164](https://github.com/satya164))
