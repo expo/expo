@@ -9,7 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import requireString from 'require-from-string';
 
-import { logMetroError } from './metro/metroErrorInterface';
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
 import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
@@ -112,9 +112,11 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
         return await fn.apply(this, props);
       } catch (error: any) {
         await logMetroError(projectRoot, { error });
-        if (isExporting) {
+
+        if (isExporting || error[IS_METRO_BUNDLE_ERROR_SYMBOL]) {
           throw error;
         } else {
+          // TODO: When does this happen?
           throw new SilentError(error);
         }
       }
