@@ -280,6 +280,11 @@ export type Event = {
    * @platform android
    */
   instanceId?: string;
+  /**
+   * Color used to display this event.
+   * @platform android
+   */
+  color?: string;
 };
 
 // @needsAudit
@@ -972,6 +977,14 @@ export async function updateEventAsync(
   }
   if (!id) {
     throw new Error('updateEventAsync must be called with an id (string) of the target event');
+  }
+
+  if (Platform.OS === 'android') {
+    if (details.hasOwnProperty('color')) {
+      console.warn(
+        'updateEventAsync was called with a read-only property `color`, which will not be updated'
+      );
+    }
   }
 
   if (Platform.OS === 'ios') {

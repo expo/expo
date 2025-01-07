@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add support for fetching the color of an event. ([#33890](https://github.com/expo/expo/pull/33890) by [@mateoguzmana](https://github.com/mateoguzmana))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

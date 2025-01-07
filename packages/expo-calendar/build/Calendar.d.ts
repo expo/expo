@@ -263,6 +263,11 @@ export type Event = {
      * @platform android
      */
     instanceId?: string;
+    /**
+     * Color used to display this event.
+     * @platform android
+     */
+    color?: string;
 };
 /**
  * A reminder record, used in the iOS Reminders app. No direct analog on Android.
