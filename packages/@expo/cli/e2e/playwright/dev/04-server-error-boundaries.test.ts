@@ -63,7 +63,7 @@ test.describe(inputDir, () => {
     // Click the button
     await page.click('[data-testid="button-error-in-server-action"]');
 
-    // Extract UI from error boundar:
+    // Extract UI from error boundary:
     // await serverActionRequest;
     const response = await serverActionResponsePromise;
     expect(response.status()).toBe(500);
