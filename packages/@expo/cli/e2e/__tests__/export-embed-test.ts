@@ -331,7 +331,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   ]);
 });
 
-it('runs `npx expo export:embed --bundle-bytecode`', async () => {
+it('runs `npx expo export:embed --bytecode`', async () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const output = 'dist-export-embed';
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
@@ -352,7 +352,7 @@ it('runs `npx expo export:embed --bundle-bytecode`', async () => {
       'ios',
       '--dev',
       'false',
-      '--bundle-bytecode',
+      '--bytecode',
       'true',
     ],
     {

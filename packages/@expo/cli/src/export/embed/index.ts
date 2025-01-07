@@ -30,7 +30,7 @@ export const expoExportEmbed: Command = async (argv) => {
     // New flag to guess the other flags based on the environment.
     '--eager': Boolean,
     // Export the bundle as Hermes bytecode bundle
-    '--bundle-bytecode': Boolean,
+    '--bytecode': Boolean,
 
     // This is here for compatibility with the `npx react-native bundle` command.
     // devs should use `DEBUG=expo:*` instead.
@@ -67,7 +67,7 @@ export const expoExportEmbed: Command = async (argv) => {
         `--unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default`,
         `--reset-cache                          Removes cached files`,
         `--eager                                Eagerly export the bundle with default options`,
-        `--bundle-bytecode                      Export the bundle as Hermes bytecode bundle`,
+        `--bytecode                             Export the bundle as Hermes bytecode bundle`,
         `-v, --verbose                          Enables debug logging`,
 
         `--config <string>                      Path to the CLI configuration file`,
@@ -94,7 +94,7 @@ export const expoExportEmbed: Command = async (argv) => {
   return (async () => {
     const parsed = await resolveCustomBooleanArgsAsync(argv ?? [], rawArgsMap, {
       '--eager': Boolean,
-      '--bundle-bytecode': Boolean,
+      '--bytecode': Boolean,
       '--dev': Boolean,
       '--minify': Boolean,
       '--sourcemap-use-absolute-path': Boolean,

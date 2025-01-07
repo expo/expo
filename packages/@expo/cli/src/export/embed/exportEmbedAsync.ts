@@ -210,7 +210,7 @@ export async function exportEmbedBundleAndAssetsAsync(
         mode: options.dev ? 'development' : 'production',
         engine: isHermes ? 'hermes' : undefined,
         serializerIncludeMaps: !!sourceMapUrl,
-        bytecode: options.bundleBytecode ?? false,
+        bytecode: options.bytecode ?? false,
         // source map inline
         reactCompiler: !!exp.experiments?.reactCompiler,
       },
