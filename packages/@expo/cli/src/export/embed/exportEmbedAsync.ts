@@ -50,7 +50,10 @@ type ExtendedMetroServerBuildResult =
 
 function guessCopiedAppleBundlePath(bundleOutput: string) {
   // Ensure the path is familiar before guessing.
-  if (!bundleOutput.match(/\/Xcode\/DerivedData\/.*\/Build\/Products\//)) {
+  if (
+    !bundleOutput.match(/\/Xcode\/DerivedData\/.*\/Build\/Products\//) &&
+    !bundleOutput.match(/\/CoreSimulator\/Devices\/.*\/data\/Containers\/Bundle\/Application\//)
+  ) {
     debug('Bundling to non-standard location:', bundleOutput);
     return false;
   }
