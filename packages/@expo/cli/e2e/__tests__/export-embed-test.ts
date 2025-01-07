@@ -64,7 +64,7 @@ it('runs `npx expo export:embed --help`', async () => {
         --unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default
         --reset-cache                          Removes cached files
         --eager                                Eagerly export the bundle with default options
-        --bundle-bytecode                      Export the bundle as Hermes bytecode bundle
+        --bytecode                             Export the bundle as Hermes bytecode bundle
         -v, --verbose                          Enables debug logging
         --config <string>                      Path to the CLI configuration file
         --read-global-cache                    Try to fetch transformed JS code from the global cache, if configured.
