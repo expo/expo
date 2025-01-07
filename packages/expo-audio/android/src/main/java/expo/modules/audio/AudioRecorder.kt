@@ -1,6 +1,8 @@
 package expo.modules.audio
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.MediaRecorder
@@ -11,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import androidx.core.content.ContextCompat
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
@@ -33,7 +36,7 @@ class AudioRecorder(
   private var isPrepared = false
   private var shouldCreateRecorder = false
 
-  var recorder = createRecorder(options)
+  private var recorder = createRecorder(options)
   val id = UUID.randomUUID().toString()
   var uri: String? = null
   var uptime = 0L
@@ -106,8 +109,11 @@ class AudioRecorder(
     }
 
   private fun setRecordingOptions(recorder: MediaRecorder, options: RecordingOptions) {
+    if (!hasRecordingPermissions()) {
+      return
+    }
     with(recorder) {
-      setAudioSource(MediaRecorder.AudioSource.DEFAULT)
+      setAudioSource(MediaRecorder.AudioSource.MIC)
       if (options.outputFormat != null) {
         setOutputFormat(options.outputFormat.toMediaOutputFormat())
       } else {
@@ -153,15 +159,25 @@ class AudioRecorder(
     recorder.release()
   }
 
-  fun getAudioRecorderStatus() = Bundle().apply {
-    putBoolean("canRecord", isPrepared)
-    putBoolean("isRecording", isRecording)
-    putLong("durationMillis", getAudioRecorderDurationMillis())
-    if (meteringEnabled) {
-      putInt("metering", getAudioRecorderLevels())
+  fun getAudioRecorderStatus() = if (hasRecordingPermissions()) {
+    Bundle().apply {
+      putBoolean("canRecord", isPrepared)
+      putBoolean("isRecording", isRecording)
+      putLong("durationMillis", getAudioRecorderDurationMillis())
+      if (meteringEnabled) {
+        putInt("metering", getAudioRecorderLevels())
+      }
+      putString("url", uri)
     }
-    putString("url", uri)
+  } else {
+    Bundle().apply {
+      putBoolean("canRecord", false)
+      putBoolean("isRecording", false)
+      putLong("durationMillis", 0)
+      putString("url", null)
+    }
   }
+
 
   private fun getAudioRecorderDurationMillis(): Long {
     var duration = durationAlreadyRecorded
@@ -245,6 +261,9 @@ class AudioRecorder(
 
     return getMapFromDeviceInfo(deviceInfo)
   }
+
+  private fun hasRecordingPermissions() =
+    ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
 
   fun getAvailableInputs(audioManager: AudioManager) =
     audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->

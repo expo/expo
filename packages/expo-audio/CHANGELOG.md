@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- On `Android`, add checks to methods that will throw without permissions being granted.
+
 ## 0.3.1 - 2024-12-16
 
 ### 🐛 Bug fixes
