@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { projectRoot, getLoadedModulesAsync, findProjectFiles } from './utils';
+import { isHermesBytecodeBundleAsync } from '../../src/export/exportHermes';
 import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -63,6 +64,7 @@ it('runs `npx expo export:embed --help`', async () => {
         --unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default
         --reset-cache                          Removes cached files
         --eager                                Eagerly export the bundle with default options
+        --bytecode                             Export the bundle as Hermes bytecode bundle
         -v, --verbose                          Enables debug logging
         --config <string>                      Path to the CLI configuration file
         --read-global-cache                    Try to fetch transformed JS code from the global cache, if configured.
@@ -327,4 +329,46 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     'output.js.map',
     'raw/__e2e___staticrendering_sweet.ttf',
   ]);
+});
+
+it('runs `npx expo export:embed --bytecode`', async () => {
+  const projectRoot = ensureTesterReady('static-rendering');
+  const output = 'dist-export-embed';
+  await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
+  await fs.promises.mkdir(path.join(projectRoot, output));
+
+  // `npx expo export:embed`
+  await executeExpoAsync(
+    projectRoot,
+    [
+      'export:embed',
+      '--entry-file',
+      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      '--bundle-output',
+      `./${output}/output.js`,
+      '--assets-dest',
+      output,
+      '--platform',
+      'ios',
+      '--dev',
+      'false',
+      '--bytecode',
+      'true',
+    ],
+    {
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_JS_ENGINE: 'hermes',
+        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_ASYNC: 'development',
+        EXPO_USE_FAST_RESOLVER: 'true',
+      },
+    }
+  );
+
+  const outputDir = path.join(projectRoot, 'dist-export-embed');
+
+  // Ensure output.js is a Hermes bytecode bundle
+  expect(await isHermesBytecodeBundleAsync(path.join(outputDir, 'output.js'))).toBe(true);
 });

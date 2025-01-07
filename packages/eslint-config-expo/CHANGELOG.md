@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Update `@typescript-eslint` dependencies for better compatibility with TypeScript. ([#33849](https://github.com/expo/expo/pull/33849) by [@Simek](https://github.com/Simek))
+- Update `eslint-plugin-react-hooks` dependency to new major version. ([#33849](https://github.com/expo/expo/pull/33849) by [@Simek](https://github.com/Simek))
+
 ## 8.0.1 — 2024-10-22
 
 ### 🐛 Bug fixes
