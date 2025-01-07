@@ -44,15 +44,11 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     // Get the existing binary path to re-bundle the app.
 
     let binaryPath: string;
-    if (options.binary) {
-      binaryPath = await getValidBinaryPathAsync(options.binary, props);
-      Log.log('Using custom binary path:', binaryPath);
-    } else {
+    if (!options.binary) {
       if (!props.isSimulator) {
         throw new Error('Re-bundling on physical devices requires the --binary flag.');
       }
       const appId = await new AppleAppIdResolver(projectRoot).getAppIdAsync();
-
       const possibleBinaryPath = await getContainerPathAsync(props.device, {
         appId,
       });
@@ -63,21 +59,20 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       }
       binaryPath = possibleBinaryPath;
       Log.log('Re-using existing binary path:', binaryPath);
+      // Set the binary path to the existing binary path.
+      options.binary = binaryPath;
     }
-
-    options.binary = binaryPath;
 
     Log.log('Rebundling the Expo config file');
     // Re-bundle the config file the same way the app was originally bundled.
     await spawnAsync('node', [
       path.join(require.resolve('expo-constants/package.json'), '../scripts/getAppConfig.js'),
       projectRoot,
-      path.join(binaryPath, 'EXConstants.bundle'),
+      path.join(options.binary, 'EXConstants.bundle'),
     ]);
-
     // Re-bundle the app.
 
-    const possibleBundleOutput = path.join(binaryPath, 'main.jsbundle');
+    const possibleBundleOutput = path.join(options.binary, 'main.jsbundle');
 
     if (fs.existsSync(possibleBundleOutput)) {
       Log.log('Rebundling the app...');
@@ -85,7 +80,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
         resetCache: false,
         dev: false,
         platform: 'ios',
-        assetsDest: path.join(binaryPath, 'assets'),
+        assetsDest: path.join(options.binary, 'assets'),
         bundleOutput: possibleBundleOutput,
       });
     } else {
