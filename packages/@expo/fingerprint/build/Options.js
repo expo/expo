@@ -64,6 +64,7 @@ exports.DEFAULT_IGNORE_PATHS = [
         'imurmurhash',
         'js-tokens',
         'json5',
+        'ms',
         'picocolors',
         'lines-and-columns',
         'require-from-string',

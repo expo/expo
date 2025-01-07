@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.satisfyExpoVersion = exports.resolveExpoAutolinkingVersion = exports.resolveExpoAutolinkingCliPath = exports.resolveExpoAutolinkingPackageRoot = exports.resolveExpoVersion = void 0;
+exports.satisfyExpoVersion = exports.resolveExpoAutolinkingVersion = exports.resolveExpoAutolinkingCliPath = exports.resolveExpoAutolinkingPackageRoot = exports.resolveExpoEnvPath = exports.resolveExpoVersion = void 0;
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const semver_1 = __importDefault(require("semver"));
@@ -20,6 +20,18 @@ function resolveExpoVersion(projectRoot) {
     return null;
 }
 exports.resolveExpoVersion = resolveExpoVersion;
+/**
+ * Resolve the path to the `@expo/env` package in the project.
+ */
+function resolveExpoEnvPath(projectRoot) {
+    const expoPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo/package.json');
+    const expoEnvPackageJsonPath = resolve_from_1.default.silent(expoPackageRoot ?? projectRoot, '@expo/env/package.json');
+    if (expoEnvPackageJsonPath) {
+        return path_1.default.dirname(expoEnvPackageJsonPath);
+    }
+    return null;
+}
+exports.resolveExpoEnvPath = resolveExpoEnvPath;
 /**
  * Resolve the package root of `expo-modules-autolinking` package in the project.
  */

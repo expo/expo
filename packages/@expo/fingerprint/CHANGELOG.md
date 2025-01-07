@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - docs(fingerprint): correct typo in fingerprint cli ([#33887](https://github.com/expo/expo/pull/33887) by [@leopic](https://github.com/leopic))
+- Added `.env` support for `ExpoConfigLoader`. ([#33967](https://github.com/expo/expo/pull/33967) by [@kudo](https://github.com/kudo))
 
 ## 0.11.6 - 2024-12-24
 

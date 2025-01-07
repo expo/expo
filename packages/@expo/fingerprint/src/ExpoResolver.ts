@@ -17,6 +17,21 @@ export function resolveExpoVersion(projectRoot: string): string | null {
 }
 
 /**
+ * Resolve the path to the `@expo/env` package in the project.
+ */
+export function resolveExpoEnvPath(projectRoot: string): string | null {
+  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
+  const expoEnvPackageJsonPath = resolveFrom.silent(
+    expoPackageRoot ?? projectRoot,
+    '@expo/env/package.json'
+  );
+  if (expoEnvPackageJsonPath) {
+    return path.dirname(expoEnvPackageJsonPath);
+  }
+  return null;
+}
+
+/**
  * Resolve the package root of `expo-modules-autolinking` package in the project.
  */
 export function resolveExpoAutolinkingPackageRoot(projectRoot: string): string | null {

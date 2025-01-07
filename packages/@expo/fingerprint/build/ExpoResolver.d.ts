@@ -3,6 +3,10 @@
  */
 export declare function resolveExpoVersion(projectRoot: string): string | null;
 /**
+ * Resolve the path to the `@expo/env` package in the project.
+ */
+export declare function resolveExpoEnvPath(projectRoot: string): string | null;
+/**
  * Resolve the package root of `expo-modules-autolinking` package in the project.
  */
 export declare function resolveExpoAutolinkingPackageRoot(projectRoot: string): string | null;
