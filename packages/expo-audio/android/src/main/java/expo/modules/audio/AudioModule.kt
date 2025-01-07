@@ -326,6 +326,7 @@ class AudioModule : Module() {
       }
 
       AsyncFunction("prepareToRecordAsync") { ref: AudioRecorder, options: RecordingOptions? ->
+        checkRecordingPermission()
         ref.prepareRecording(options)
       }
 
@@ -345,7 +346,6 @@ class AudioModule : Module() {
       }
 
       Function("getStatus") { ref: AudioRecorder ->
-        checkRecordingPermission()
         ref.getAudioRecorderStatus()
       }
 
