@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expose `setOptions()` on `SplashScreen` from `expo-splash-screen`. ([#33796)(https://github.com/expo/expo/pull/33796) by [@Tobbe](https://github.com/Tobbe))
+
 ### 🐛 Bug fixes
 
 - Fix render store (unstable_headers) on native platforms. ([#33978](https://github.com/expo/expo/pull/33978) by [@EvanBacon](https://github.com/EvanBacon))
