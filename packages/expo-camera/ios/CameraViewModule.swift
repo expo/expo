@@ -207,6 +207,14 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         #endif
       }
 
+      AsyncFunction("toggleRecording") { view in
+        if #available(iOS 18.0, *) {
+          view.toggleRecording()
+        } else {
+          throw CameraToggleRecordingException()
+        }
+      }
+
       AsyncFunction("stopRecording") { view in
         #if targetEnvironment(simulator)
         throw Exceptions.SimulatorNotSupported()

@@ -179,6 +179,12 @@ export default class CameraView extends Component {
         return this._cameraRef.current?.record(recordingOptions);
     }
     /**
+     * Pauses or resumes the video recording. Only has an effect if there is an active recording.
+     */
+    async toggleRecordingAsync() {
+        return this._cameraRef.current?.toggleRecording();
+    }
+    /**
      * Stops recording if any is in progress.
      */
     stopRecording() {

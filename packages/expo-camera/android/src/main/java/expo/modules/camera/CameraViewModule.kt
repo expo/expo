@@ -282,8 +282,12 @@ class CameraViewModule : Module() {
         view.record(options, promise, cacheDirectory)
       }.runOnQueue(Queues.MAIN)
 
+      AsyncFunction("toggleRecording") { view: ExpoCameraView ->
+        view.toggleRecording()
+      }
+
       AsyncFunction("stopRecording") { view: ExpoCameraView ->
-        view.activeRecording?.close()
+        view.stopRecording()
       }.runOnQueue(Queues.MAIN)
 
       AsyncFunction("resumePreview") { view: ExpoCameraView ->
