@@ -40,57 +40,57 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
 
   if (options.rebundle) {
+    Log.warn(`The --unstable-rebundle flag is experimental and may not work as expected.`);
     // Get the existing binary path to re-bundle the app.
-    
-      let binaryPath: string;
-      if (options.binary) {
-        binaryPath = await getValidBinaryPathAsync(options.binary, props);
-        Log.log('Using custom binary path:', binaryPath);
-      } else {
-        if (!props.isSimulator) {
-          throw new Error('Re-bundling on physical devices requires the --binary flag.');
-        }
-        const appId = await new AppleAppIdResolver(projectRoot).getAppIdAsync();
 
-        const possibleBinaryPath = await getContainerPathAsync(props.device, {
-          appId,
-        });
-        if (!possibleBinaryPath) {
-          throw new CommandError(
-            `Cannot rebundle because no --binary was provided and no existing binary was found on the device for ID: ${appId}.`
-          );
-        }
-        binaryPath = possibleBinaryPath;
-        Log.log('Re-using existing binary path:', binaryPath);
+    let binaryPath: string;
+    if (options.binary) {
+      binaryPath = await getValidBinaryPathAsync(options.binary, props);
+      Log.log('Using custom binary path:', binaryPath);
+    } else {
+      if (!props.isSimulator) {
+        throw new Error('Re-bundling on physical devices requires the --binary flag.');
       }
+      const appId = await new AppleAppIdResolver(projectRoot).getAppIdAsync();
 
-      options.binary = binaryPath;
-
-      Log.log('Rebundling the Expo config file');
-      // Re-bundle the config file the same way the app was originally bundled.
-      await spawnAsync('node', [
-        path.join(require.resolve('expo-constants/package.json'), '../scripts/getAppConfig.js'),
-        projectRoot,
-        path.join(binaryPath, 'EXConstants.bundle'),
-      ]);
-
-      // Re-bundle the app.
-
-      const possibleBundleOutput = path.join(binaryPath, 'main.jsbundle');
-
-      if (fs.existsSync(possibleBundleOutput)) {
-        Log.log('Rebundling the app...');
-        await exportEagerAsync(projectRoot, {
-          resetCache: false,
-          dev: false,
-          platform: 'ios',
-          assetsDest: path.join(binaryPath, 'assets'),
-          bundleOutput: possibleBundleOutput,
-        });
-      } else {
-        Log.warn('Bundle output not found at expected location:', possibleBundleOutput);
+      const possibleBinaryPath = await getContainerPathAsync(props.device, {
+        appId,
+      });
+      if (!possibleBinaryPath) {
+        throw new CommandError(
+          `Cannot rebundle because no --binary was provided and no existing binary was found on the device for ID: ${appId}.`
+        );
       }
-   
+      binaryPath = possibleBinaryPath;
+      Log.log('Re-using existing binary path:', binaryPath);
+    }
+
+    options.binary = binaryPath;
+
+    Log.log('Rebundling the Expo config file');
+    // Re-bundle the config file the same way the app was originally bundled.
+    await spawnAsync('node', [
+      path.join(require.resolve('expo-constants/package.json'), '../scripts/getAppConfig.js'),
+      projectRoot,
+      path.join(binaryPath, 'EXConstants.bundle'),
+    ]);
+
+    // Re-bundle the app.
+
+    const possibleBundleOutput = path.join(binaryPath, 'main.jsbundle');
+
+    if (fs.existsSync(possibleBundleOutput)) {
+      Log.log('Rebundling the app...');
+      await exportEagerAsync(projectRoot, {
+        resetCache: false,
+        dev: false,
+        platform: 'ios',
+        assetsDest: path.join(binaryPath, 'assets'),
+        bundleOutput: possibleBundleOutput,
+      });
+    } else {
+      Log.warn('Bundle output not found at expected location:', possibleBundleOutput);
+    }
   }
 
   let binaryPath: string;
