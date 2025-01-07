@@ -112,12 +112,13 @@ try {
 }
 ```
 
-### Uploading files using `@expo/fetch`
+### Uploading files using `expo/fetch`
 
-You can upload files as blobs directly with fetch:
+You can upload files as blobs directly with fetch built into the Expo package:
 
 ```ts example.ts
 import { fetch } from 'expo/fetch';
+import { File } from 'expo-file-system/next';
 
 const src = new File(testDirectory, 'file.txt');
 file.write('Hello, world!');
@@ -129,7 +130,7 @@ const response = await fetch('https://example.com', {
 });
 ```
 
-Or using the FormData constructor:
+Or using the `FormData` constructor:
 
 ```ts example.ts
 import { fetch } from 'expo/fetch';
