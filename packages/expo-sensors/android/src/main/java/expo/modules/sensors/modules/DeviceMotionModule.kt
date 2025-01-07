@@ -16,6 +16,9 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.SensorSubscription
 import java.lang.ref.WeakReference
+import android.Manifest
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.kotlin.Promise
 
 private val sensorTypes = arrayListOf(
   Sensor.TYPE_GYROSCOPE,
@@ -62,6 +65,32 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
 
     AsyncFunction("setUpdateInterval") { updateInterval: Float ->
       this@DeviceMotionModule.updateInterval = updateInterval
+    }
+
+    AsyncFunction("getPermissionsAsync") { promise: expo.modules.kotlin.Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        Permissions.getPermissionsWithPermissionsManager(
+          appContext.permissions,
+          promise,
+          Manifest.permission.ACTIVITY_RECOGNITION
+        )
+      } else {
+        // Permissions don't need to be requested on Android versions below Q
+        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise)
+      }
+    }
+
+    AsyncFunction("requestPermissionsAsync") { promise: expo.modules.kotlin.Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        Permissions.askForPermissionsWithPermissionsManager(
+          appContext.permissions,
+          promise,
+          Manifest.permission.ACTIVITY_RECOGNITION
+        )
+      } else {
+        // Permissions don't need to be requested on Android versions below Q
+        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise)
+      }
     }
 
     OnDestroy {
