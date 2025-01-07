@@ -6,9 +6,9 @@ type Props = PropsWithChildren<object> & { title?: string; abstract?: boolean };
 
 export const ConfigReactNative = ({ children, abstract, title }: Props) => {
   if (!abstract) {
-    title ??= 'Are you using this library in a bare React Native app?';
+    title ??= 'Are you using this library in an existing React Native app?';
   } else {
-    title ??= 'Working in a bare React Native app?';
+    title ??= 'Working in an existing React Native app?';
   }
 
   useEffect(() => {
