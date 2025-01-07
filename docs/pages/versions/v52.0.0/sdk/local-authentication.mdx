@@ -10,11 +10,7 @@ platforms: ['android', 'ios']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import {
-  ConfigReactNative,
-  ConfigPluginExample,
-  ConfigPluginProperties,
-} from '~/ui/components/ConfigSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
 `expo-local-authentication` allows you to use the Biometric Prompt (Android) or FaceID and TouchID (iOS) to authenticate the user with a fingerprint or face scan.
 
@@ -56,12 +52,6 @@ You can configure `expo-local-authentication` using its built-in [config plugin]
     },
   ]}
 />
-
-<ConfigReactNative>
-
-Learn how to configure the native projects in the [installation instructions in the `expo-local-authentication` repository](https://github.com/expo/expo/tree/main/packages/expo-local-authentication#installation-in-bare-react-native-projects).
-
-</ConfigReactNative>
 
 ## API
 

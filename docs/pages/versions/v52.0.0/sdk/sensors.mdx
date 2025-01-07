@@ -12,11 +12,7 @@ import { Speedometer04Icon } from '@expo/styleguide-icons/outline/Speedometer04I
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import { BoxLink } from '~/ui/components/BoxLink';
-import {
-  ConfigReactNative,
-  ConfigPluginExample,
-  ConfigPluginProperties,
-} from '~/ui/components/ConfigSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
 `expo-sensors` provide various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
 
@@ -91,12 +87,6 @@ If you need an update interval of less than 200Hz, you must add the following pe
 The following usage description keys are used by this library:
 
 <IOSPermissions permissions={['NSMotionUsageDescription']} />
-
-<ConfigReactNative>
-
-Learn how to configure the native projects in the [installation instructions in the `expo-sensors` repository](https://github.com/expo/expo/tree/main/packages/expo-sensors#installation-in-bare-react-native-projects).
-
-</ConfigReactNative>
 
 ## Available sensors
 

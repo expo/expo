@@ -12,7 +12,6 @@ import { Speedometer04Icon } from '@expo/styleguide-icons/outline/Speedometer04I
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
 `expo-sensors` provide various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
 
@@ -46,12 +45,6 @@ Starting in Android 12 (API level 31), the system has a 200Hz limit for each sen
 If you need an update interval of less than 200Hz, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
 
 <AndroidPermissions permissions={['HIGH_SAMPLING_RATE_SENSORS']} />
-
-<ConfigReactNative>
-
-Learn how to configure the native projects in the [installation instructions in the `expo-sensors` repository](https://github.com/expo/expo/tree/main/packages/expo-sensors#installation-in-bare-react-native-projects).
-
-</ConfigReactNative>
 
 ## Available sensors
 

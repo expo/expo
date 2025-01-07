@@ -13,11 +13,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import { BoxLink } from '~/ui/components/BoxLink';
-import {
-  ConfigReactNative,
-  ConfigPluginExample,
-  ConfigPluginProperties,
-} from '~/ui/components/ConfigSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
@@ -39,12 +35,6 @@ On iOS, when an image (usually of a [higher resolution](http://www.openradar.me/
 ## Configuration in app config
 
 You can configure `expo-image-picker` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
-
-<ConfigReactNative>
-
-Learn how to configure the native projects in the [installation instructions in the `expo-image-picker` repository](https://github.com/expo/expo/tree/main/packages/expo-image-picker#installation-in-bare-react-native-projects).
-
-</ConfigReactNative>
 
 <ConfigPluginExample>
 
