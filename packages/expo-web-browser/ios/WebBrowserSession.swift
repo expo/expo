@@ -33,7 +33,7 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
       currentViewController = currentViewController?.presentedViewController
     }
     if UIDevice.current.userInterfaceIdiom == .pad {
-     let viewFrame = currentViewController?.view.frame
+      let viewFrame = currentViewController?.view.frame
       viewController.popoverPresentationController?.sourceRect = CGRect(
         x: viewFrame?.midX ?? 0,
         y: viewFrame?.maxY ?? 0,
