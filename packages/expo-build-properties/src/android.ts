@@ -278,18 +278,20 @@ export const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType> = (config,
       return config;
     }
 
+    // Replace `AppTheme` and remove `ResetEditText`
+    const excludedStyles = ['AppTheme', 'ResetEditText'];
     // Remove the hardcoded colors.
-    const toRemove = ['android:textColor', 'android:editTextStyle'];
+    const excludedAttributes = ['android:textColor', 'android:editTextStyle'];
 
-    // We only want to return the AppTheme here. We can drop the `ResetEditText` style.
     config.modResults.resources.style = [
       {
         $: {
           name: 'AppTheme',
           parent: 'Theme.AppCompat.DayNight.NoActionBar',
         },
-        item: [...style[0].item.filter(({ $ }) => !toRemove.includes($.name))],
+        item: [...style[0].item.filter(({ $ }) => !excludedAttributes.includes($.name))],
       },
+      ...style.filter(({ $ }) => !excludedStyles.includes($.name)),
     ];
 
     return config;
