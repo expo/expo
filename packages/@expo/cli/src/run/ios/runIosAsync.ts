@@ -41,12 +41,15 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   if (options.rebundle) {
     // Get the existing binary path to re-bundle the app.
-    if (props.isSimulator) {
+    
       let binaryPath: string;
       if (options.binary) {
         binaryPath = await getValidBinaryPathAsync(options.binary, props);
         Log.log('Using custom binary path:', binaryPath);
       } else {
+        if (!props.isSimulator) {
+          throw new Error('Re-bundling on physical devices requires the --binary flag.');
+        }
         const appId = await new AppleAppIdResolver(projectRoot).getAppIdAsync();
 
         const possibleBinaryPath = await getContainerPathAsync(props.device, {
@@ -87,9 +90,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       } else {
         Log.warn('Bundle output not found at expected location:', possibleBundleOutput);
       }
-    } else {
-      throw new Error('Rebundling is only supported for Apple simulators.');
-    }
+   
   }
 
   let binaryPath: string;
