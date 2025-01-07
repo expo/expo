@@ -26,7 +26,7 @@ In this chapter, we'll create our example app's production version and submit it
 To publish and distribute an app on the Google Play Store, we need:
 
 - **Google Play Developer Account:** Must have a paid developer account. For details on setting one up, visit the [Google Play sign-up page](https://play.google.com/apps/publish/signup/).
-- **Google Service Account key:** We'll need a Google Service Account email and JSON key to automate the app submission process. **Follow the detailed instructions in our guide on [creating a Google Service Account key or downloading it from an existing account ](https://github.com/expo/fyi/blob/main/creating-google-service-account.md), then return to this guide.** This is optional but required for [automating the release process](#automated-release).
+- **Google Service Account key:** We'll need a Google Service Account email and JSON key to automate the app submission process. **Follow the detailed instructions in our guide on [creating a Google Service Account key or downloading it from an existing account ](https://expo.fyi/creating-google-service-account), then return to this guide.** This is optional but required for [automating the release process](#automated-release).
 - **Production build profile:** Ensure that a `production` build profile is present in your **eas.json**, which is added by default.
 
 ## Production build for Android
@@ -200,7 +200,7 @@ To promote our internal test release version to **alpha**, in Google Play Store 
 
 ## Add Google Service Account permissions key
 
-> **info** **Tip**: Before following the steps in this section, see the instructions on [creating a Google Service Account key or downloading it from an existing account ](https://github.com/expo/fyi/blob/main/creating-google-service-account.md) guide.
+> **info** **Tip**: Before following the steps in this section, see the instructions on [creating a Google Service Account key or downloading it from an existing account ](https://expo.fyi/creating-google-service-account) guide.
 
 From now on, we can use [EAS Submit](/submit/introduction/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's **eas.json**.
 
