@@ -11,7 +11,8 @@ import assert from 'assert';
 import path from 'path';
 import url from 'url';
 
-import { logMetroError } from './metroErrorInterface';
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
+import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { toPosixPath } from '../../../utils/filePath';
@@ -105,6 +106,15 @@ export function createServerComponentsMiddleware(
 
         // TODO: Revisit all error handling now that we do direct metro bundling...
         await logMetroError(projectRoot, { error });
+
+        if (error[IS_METRO_BUNDLE_ERROR_SYMBOL]) {
+          throw new Response(JSON.stringify(error), {
+            status: isPossiblyUnableToResolveError(error) ? 404 : 500,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        }
 
         const sanitizedServerMessage = stripAnsi(error.message) ?? error.message;
         throw new Response(sanitizedServerMessage, {
