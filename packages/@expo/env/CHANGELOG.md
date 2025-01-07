@@ -4,13 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Break up the API into more modular methods to get environment variables without applying them and remove the package state. ([#33633](https://github.com/expo/expo/pull/33633) by [@byCedric](https://github.com/byCedric))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
-
-- Refactor environment loading to remove package state and allow to fetch locally defined environment variables. ([#33633](https://github.com/expo/expo/pull/33633) by [@byCedric](https://github.com/byCedric))
 
 ## 0.4.0 — 2024-10-22
 
