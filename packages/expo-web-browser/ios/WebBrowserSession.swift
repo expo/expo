@@ -32,6 +32,18 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
     while currentViewController?.presentedViewController != nil {
       currentViewController = currentViewController?.presentedViewController
     }
+  
+    if UIDevice.current.userInterfaceIdiom == .pad {
+     let viewFrame = currentViewController!.view.frame
+      viewController.popoverPresentationController?.sourceRect = CGRect(
+        x: viewFrame.midX,
+        y: viewFrame.maxY,
+        width: 0,
+        height: 0
+      )
+      viewController.popoverPresentationController?.sourceView = currentViewController?.view
+    }
+
     currentViewController?.present(viewController, animated: true) {
       self.didPresent()
     }
