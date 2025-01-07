@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import fs from 'fs';
 
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
@@ -15,7 +16,11 @@ import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { exportEagerAsync } from '../../export/embed/exportEager';
-import { simctlAsync } from '../../start/platforms/ios/simctl';
+import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
+import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
+import { CommandError } from '../../utils/errors';
+import spawnAsync from '@expo/spawn-async';
+import path from 'path';
 
 const debug = require('debug')('expo:run:ios');
 
@@ -32,7 +37,60 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   // Resolve the CLI arguments into useable options.
-  const props = await resolveOptionsAsync(projectRoot, options);
+  const props = await profile(resolveOptionsAsync)(projectRoot, options);
+
+  if (options.rebundle) {
+    // Get the existing binary path to re-bundle the app.
+    if (props.isSimulator) {
+      let binaryPath: string;
+      if (options.binary) {
+        binaryPath = await getValidBinaryPathAsync(options.binary, props);
+        Log.log('Using custom binary path:', binaryPath);
+      } else {
+        const appId = await new AppleAppIdResolver(projectRoot).getAppIdAsync();
+
+        const possibleBinaryPath = await getContainerPathAsync(props.device, {
+          appId,
+        });
+        if (!possibleBinaryPath) {
+          throw new CommandError(
+            `Cannot rebundle because no --binary was provided and no existing binary was found on the device for ID: ${appId}.`
+          );
+        }
+        binaryPath = possibleBinaryPath;
+        Log.log('Re-using existing binary path:', binaryPath);
+      }
+
+      options.binary = binaryPath;
+
+      Log.log('Rebundling the Expo config file');
+      // Re-bundle the config file the same way the app was originally bundled.
+      await spawnAsync('node', [
+        path.join(require.resolve('expo-constants/package.json'), '../scripts/getAppConfig.js'),
+        projectRoot,
+        path.join(binaryPath, 'EXConstants.bundle'),
+      ]);
+
+      // Re-bundle the app.
+
+      const possibleBundleOutput = path.join(binaryPath, 'main.jsbundle');
+
+      if (fs.existsSync(possibleBundleOutput)) {
+        Log.log('Rebundling the app...');
+        await exportEagerAsync(projectRoot, {
+          resetCache: false,
+          dev: false,
+          platform: 'ios',
+          assetsDest: path.join(binaryPath, 'assets'),
+          bundleOutput: possibleBundleOutput,
+        });
+      } else {
+        Log.warn('Bundle output not found at expected location:', possibleBundleOutput);
+      }
+    } else {
+      throw new Error('Rebundling is only supported for Apple simulators.');
+    }
+  }
 
   let binaryPath: string;
   if (options.binary) {
