@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Updated `Event.location` type to allow a `null` value if not set. ([#33802](https://github.com/expo/expo/pull/33802) by [@rklomp](https://github.com/rklomp)
+
 ### 💡 Others
 
 - [android][calendar] Add `EventRecurrenceUtils` unit tests. ([#33863](https://github.com/expo/expo/pull/33863) by [@mateoguzmana](https://github.com/mateoguzmana))
