@@ -214,9 +214,9 @@ export async function test(t) {
   }
 
   describeWithPermissions('Calendar', () => {
-    t.describe('requestCalendarPermissionsAsync()', () => {
-      t.it('requests for Calendar permissions', async () => {
-        const results = await Calendar.requestCalendarPermissionsAsync();
+    t.describe('requestCalendarWritePermissionsAsync', () => {
+      t.it('requests for Calendar write permissions', async () => {
+        const results = await Calendar.requestCalendarWritePermissionsAsync();
 
         t.expect(results.granted).toBe(true);
         t.expect(results.status).toBe('granted');
@@ -269,6 +269,15 @@ export async function test(t) {
           t.expect(result.action).toBe('done');
           t.expect(result.id).toBe(null);
         }
+      });
+
+      t.describe('requestCalendarPermissionsAsync()', () => {
+        t.it('requests for Calendar permissions', async () => {
+          const results = await Calendar.requestCalendarPermissionsAsync();
+
+          t.expect(results.granted).toBe(true);
+          t.expect(results.status).toBe('granted');
+        });
       });
 
       t.it('can preview an event', async () => {

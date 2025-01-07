@@ -119,3 +119,9 @@ internal class EventDialogInProgressException: Exception {
     "Different calendar dialog is already being presented. Await its result before presenting another."
   }
 }
+
+internal class CalendarWriteAccessDeniedException: Exception {
+  override var reason: String {
+    "Write access to the calendar is denied"
+  }
+}
