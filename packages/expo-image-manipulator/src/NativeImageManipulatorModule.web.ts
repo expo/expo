@@ -24,4 +24,4 @@ class ImageManipulator extends NativeModule {
   }
 }
 
-export default registerWebModule(ImageManipulator);
+export default registerWebModule(ImageManipulator, 'ImageManipulator');
