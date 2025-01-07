@@ -47,7 +47,7 @@ it('runs `npx expo install --help`', async () => {
         --fix       Automatically update any invalid package versions
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
-        --bun       Use bun to install dependencies. Default when bun.lockb exists
+        --bun       Use bun to install dependencies. Default when bun.lock or bun.lockb exists
         --pnpm      Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         -h, --help  Usage info
 
@@ -223,7 +223,7 @@ describe('expo-router integration', () => {
 
     // Ensure `@react-navigation/native` was updated
     expect(pkg.read().dependencies).toMatchObject({
-      '@react-navigation/native': '^7.0.0',
+      '@react-navigation/native': '^7.0.14',
     });
   });
 });

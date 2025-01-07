@@ -7,6 +7,7 @@ import { getHashSourcesAsync } from '../Sourcer';
 jest.mock('@expo/spawn-async');
 jest.mock('fs');
 jest.mock('fs/promises');
+jest.mock('../../utils/SpawnIPC');
 jest.mock('/app/package.json', () => ({}), { virtual: true });
 
 describe(getPatchPackageSourcesAsync, () => {

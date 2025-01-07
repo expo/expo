@@ -6,21 +6,29 @@
 
 ### 🎉 New features
 
+- Implemented dispatching events by SwiftUI views. ([#33860](https://github.com/expo/expo/pull/33860) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
-- Ensure `uuid.v4`and`uuid.v5` is available on old react native architecture. ([#33621](https://github.com/expo/expo/pull/33621) by [@andrejpavlovic](https://github.com/andrejpavlovic))
-- Changed `import` to `import type` for TS type declarations. ([#33447](https://github.com/expo/expo/pull/33447) by [@j-piasecki](https://github.com/j-piasecki))
-- [macOS] Allow SwiftUI views to work on macOS ([#33506](https://github.com/expo/expo/pull/33506) by [@hassankhan](https://github.com/hassankhan))
 - [iOS] Fixes view managers not deallocating when reloading. ([#33760](https://github.com/expo/expo/pull/33760) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
 - [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default. ([#33261](https://github.com/expo/expo/pull/33261) by [@lukmccall](https://github.com/lukmccall))
 - Fixed compatibility for React Native 0.78 nightlies. ([#33718](https://github.com/expo/expo/pull/33718) by [@kudo](https://github.com/kudo))
+- Show `UnimplementedExpoView` in place of SwiftUI views when the New Architecture is not enabled. ([#33901](https://github.com/expo/expo/pull/33901) by [@tsapeta](https://github.com/tsapeta))
 
 ### ⚠️ Notices
 
 - Deprecated `EXAppDelegateWrapper` in favor of `ExpoAppDelegate`. ([#33348](https://github.com/expo/expo/pull/33348) by [@tsapeta](https://github.com/tsapeta)))
+
+## 2.1.2 - 2024-12-16
+
+### 🐛 Bug fixes
+
+- Ensure `uuid.v4`and`uuid.v5` is available on old react native architecture. ([#33621](https://github.com/expo/expo/pull/33621) by [@andrejpavlovic](https://github.com/andrejpavlovic))
+- Changed `import` to `import type` for TS type declarations. ([#33447](https://github.com/expo/expo/pull/33447) by [@j-piasecki](https://github.com/j-piasecki))
+- [macOS] Allow SwiftUI views to work on macOS ([#33506](https://github.com/expo/expo/pull/33506) by [@hassankhan](https://github.com/hassankhan))
 
 ## 2.1.1 - 2024-12-02
 

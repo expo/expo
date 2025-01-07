@@ -101,7 +101,7 @@ function getGlobalCacheForPlatform(): Pick<AsyncLocalStorage<RenderStore>, 'getS
     globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS!, serverCache);
     return serverCache;
   } catch (error) {
-    console.log('[RSC]: Failed to create cache:', error);
+    console.error('[RSC]: Failed to create cache:', error);
 
     // Fallback to a simple in-memory cache.
     const cache = new Map();

@@ -46,7 +46,7 @@ export type WebAnchorProps = {
      *
      * @example
      * ```jsx
-     * <Link href="https://expo.dev" rel="nofollow">Go to Expo</Link>`
+     * <Link href="https://expo.dev" rel="nofollow">Go to Expo</Link>
      * ```
      */
     rel?: string;

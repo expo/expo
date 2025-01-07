@@ -118,7 +118,7 @@ Using a Babel plugin to transform your environment variable references in your c
 + const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 ```
 
-Then you can remove the plugin from your Babel config:
+Then you can remove the plugin from your [Babel config](/versions/latest/config/babel/):
 
 ```diff babel.config.js
 module.exports = function (api) {
@@ -130,7 +130,7 @@ module.exports = function (api) {
 };
 ```
 
-After updating your Babel config file, be sure to clear your cache with `npx expo start -c`.
+After updating your Babel config file, be sure to clear your cache with `npx expo start --clear`.
 
 ### From direnv
 

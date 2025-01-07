@@ -12,6 +12,16 @@
 
 - Fixed broken local UI development on Android. ([#33714](https://github.com/expo/expo/pull/33714) by [@kudo](https://github.com/kudo))
 
+## 5.0.21 - 2024-12-24
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.20 - 2024-12-24
+
+### 💡 Others
+
+- Bump react-navigation versions. ([#33758](https://github.com/expo/expo/pull/33758) by [@marklawlor](https://github.com/marklawlor))
+
 ## 5.0.19 - 2024-12-10
 
 _This version does not introduce any user-facing changes._

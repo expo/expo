@@ -18,7 +18,7 @@ import { Step } from '~/ui/components/Step';
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-sqlite` for advanced configurations using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -86,7 +86,7 @@ import * as SQLite from 'expo-sqlite';
 const db = await SQLite.openDatabaseAsync('databaseName');
 
 // `execAsync()` is useful for bulk queries when you want to execute altogether.
-// Please note that `execAsync()` does not escape parameters and may lead to SQL injection.
+// Note that `execAsync()` does not escape parameters and may lead to SQL injection.
 await db.execAsync(`
 PRAGMA journal_mode = WAL;
 CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);

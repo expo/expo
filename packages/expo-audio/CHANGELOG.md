@@ -10,11 +10,18 @@
 
 ### 🐛 Bug fixes
 
-- Update docs and API so all units of time are returned as seconds, not milliseconds. ([#33320](https://github.com/expo/expo/pull/33320) by [@alanjhughes](https://github.com/alanjhughes))
-- Fix `AudioSource` to accept numbers for loading local assets. ([#33676](https://github.com/expo/expo/pull/33676) by [@alanjhughes](https://github.com/alanjhughes))
 - Expose `isMeteringEnabled` to `JS`. ([#33713](https://github.com/expo/expo/pull/33713) by [@alanjhughes](https://github.com/alanjhughes))
+- On `Android`, allow player to accept a `null` audio source. ([#33854](https://github.com/expo/expo/pull/33854) by [@alanjhughes](https://github.com/alanjhughes))
+- Override the `replace` method on the `AudioPlayer` so the source can be parsed correctly. ([#33708](https://github.com/expo/expo/pull/33708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+## 0.3.1 - 2024-12-16
+
+### 🐛 Bug fixes
+
+- Update docs and API so all units of time are returned as seconds, not milliseconds. ([#33320](https://github.com/expo/expo/pull/33320) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix `AudioSource` to accept numbers for loading local assets. ([#33676](https://github.com/expo/expo/pull/33676) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.3.0 - 2024-12-02
 
