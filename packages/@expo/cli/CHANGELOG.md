@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added `--bytecode` option to `export:embed`. ([#33906](https://github.com/expo/expo/pull/33906) by [@kudo](https://github.com/kudo))
+
 ## 0.22.8 — 2025-01-08
 
 ### 🎉 New features
