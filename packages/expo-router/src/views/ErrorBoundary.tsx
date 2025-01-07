@@ -193,6 +193,7 @@ function ReactServerErrorView({ error }: { error: ReactServerError }) {
           }}
           contentContainerStyle={{ paddingVertical: 4 }}>
           <Text
+            testID="router_error_message"
             selectable
             allowFontScaling
             style={{
@@ -203,6 +204,7 @@ function ReactServerErrorView({ error }: { error: ReactServerError }) {
         </ScrollView>
       ) : (
         <TextInput
+          testID="router_error_message"
           scrollEnabled
           multiline
           editable={false}

@@ -148,12 +148,12 @@ function ReactServerErrorView({ error }) {
                 borderBottomWidth: react_native_1.StyleSheet.hairlineWidth,
                 maxHeight: 150,
             }} contentContainerStyle={{ paddingVertical: 4 }}>
-          <react_native_1.Text selectable allowFontScaling style={{
+          <react_native_1.Text testID="router_error_message" selectable allowFontScaling style={{
                 color: 'white',
             }}>
             {error.message}
           </react_native_1.Text>
-        </react_native_1.ScrollView>) : (<react_native_1.TextInput scrollEnabled multiline editable={false} allowFontScaling value={error.message} style={{
+        </react_native_1.ScrollView>) : (<react_native_1.TextInput testID="router_error_message" scrollEnabled multiline editable={false} allowFontScaling value={error.message} style={{
                 borderColor: 'rgba(255,255,255,0.5)',
                 borderTopWidth: react_native_1.StyleSheet.hairlineWidth,
                 borderBottomWidth: react_native_1.StyleSheet.hairlineWidth,

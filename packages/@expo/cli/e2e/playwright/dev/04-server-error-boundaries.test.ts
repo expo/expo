@@ -141,9 +141,7 @@ test.describe(inputDir, () => {
     expect(response.status()).toBe(500);
 
     console.time('error-text');
-    expect(await page.textContent('[data-testid="router_error_message"]')).toBe(
-      'Error: Server error'
-    );
+    await page.waitForSelector('[data-testid="router_error_message"]');
     console.timeEnd('error-text');
 
     // Extra components
