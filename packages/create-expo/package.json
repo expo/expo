@@ -39,7 +39,7 @@
   "devDependencies": {
     "@expo/config": "~10.0.4",
     "@expo/json-file": "^9.0.0",
-    "@expo/package-manager": "^1.5.0",
+    "@expo/package-manager": "^1.7.0",
     "@expo/spawn-async": "^1.7.2",
     "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",
