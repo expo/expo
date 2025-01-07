@@ -112,21 +112,21 @@ const userDefined = [
 
 describe(withBuildProperties, () => {
   it('correctly modifies the theme for dark mode support', async () => {
-    const { modResults } = await createModResult(true, defaultStyles);
+    const { modResults } = await createModResult(true);
     const { style } = modResults.resources;
     const appTheme = style.find(({ $ }) => $.name === 'AppTheme');
     expect(appTheme.$.parent).toBe('Theme.AppCompat.DayNight.NoActionBar');
   });
 
   it('removes the `ResetEditText` style', async () => {
-    const { modResults } = await createModResult(true, defaultStyles);
+    const { modResults } = await createModResult(true);
     const { style } = modResults.resources;
     const resetEditText = style.find(({ $ }) => $.name === 'ResetEditText');
     expect(resetEditText).toBeUndefined();
   });
 
   it('correctly removes the hardcoded colors from the `AppTheme`', async () => {
-    const { modResults } = await createModResult(true, defaultStyles);
+    const { modResults } = await createModResult(true);
     const { style } = modResults.resources;
 
     const excludedAttributes = ['android:textColor', 'android:editTextStyle'];
@@ -137,7 +137,7 @@ describe(withBuildProperties, () => {
   });
 
   it('does not modify the styles if `useDayNightTheme` is false', async () => {
-    const { modResults } = await createModResult(false, defaultStyles);
+    const { modResults } = await createModResult(false);
     expect(modResults.resources.style).toEqual(defaultStyles);
   });
 
@@ -149,7 +149,7 @@ describe(withBuildProperties, () => {
   });
 });
 
-async function createModResult(useDayNightTheme: boolean, style: any[]) {
+async function createModResult(useDayNightTheme: boolean, style: any[] = defaultStyles) {
   return compileMockModWithResultsAsync(
     {},
     {
