@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix an issue where `launchFallbackUpdateFromDisk` is called from a foreground thread leading to ANRs. ([#33693](https://github.com/expo/expo/pull/33693) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 0.26.11 — 2025-01-08
+
+### 🐛 Bug fixes
+
+- Fix an issue where `launchFallbackUpdateFromDisk` is called from a foreground thread leading to ANRs. ([#33693](https://github.com/expo/expo/pull/33693) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.26.10 — 2024-12-05
 

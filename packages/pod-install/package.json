@@ -1,6 +1,6 @@
 {
   "name": "pod-install",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A fast, zero-dependency package for cutting down on common issues developers have when running pod install.",
   "main": "./build/index.js",
   "scripts": {

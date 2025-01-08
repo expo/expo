@@ -9,7 +9,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~52.0.23",
+    "expo": "~52.0.24",
     "expo-apple-authentication": "~7.1.0",
     "expo-av": "~15.0.0",
     "expo-blur": "~14.0.0",
@@ -17,9 +17,9 @@
     "expo-dev-client": "~5.0.8",
     "expo-image": "^2.0.0",
     "expo-linear-gradient": "~14.0.0",
-    "expo-splash-screen": "~0.29.0",
+    "expo-splash-screen": "~0.29.19",
     "expo-status-bar": "~2.0.0",
-    "expo-updates": "~0.26.0",
+    "expo-updates": "~0.26.11",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.5",
