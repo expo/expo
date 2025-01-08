@@ -274,10 +274,13 @@ export async function exportAppAsync(
         files.set('assetmap.json', { contents: JSON.stringify(createAssetMap({ assets })) });
       }
 
+      const targetDomain = devServer.isReactServerComponentsEnabled ? 'client/' : '';
       const fileNames = Object.fromEntries(
         Object.entries(bundles).map(([platform, bundle]) => [
           platform,
-          bundle.artifacts.filter((asset) => asset.type === 'js').map((asset) => asset.filename),
+          bundle.artifacts
+            .filter((asset) => asset.type === 'js')
+            .map((asset) => targetDomain + asset.filename),
         ])
       );
 

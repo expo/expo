@@ -88,12 +88,12 @@ export async function renderRscWithImportsAsync(
   imports: ImportMap,
   { body, platform, searchParams, config, method, input, contentType, headers }: RenderRscArgs
 ): Promise<ReadableStream<any>> {
+  globalThis.__expo_platform_header = platform;
   if (method === 'POST' && !body) {
     throw new Error('Server request must be provided when method is POST (server actions)');
   }
 
   const context = getRscRenderContext(platform);
-
   context['__expo_requestHeaders'] = headers;
 
   const entries = await imports.router();

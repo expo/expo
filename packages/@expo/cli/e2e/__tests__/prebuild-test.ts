@@ -53,7 +53,7 @@ it('runs `npx expo prebuild --help`', async () => {
         --clean                                  Delete the native folders and regenerate them before applying changes
         --npm                                    Use npm to install dependencies. Default when package-lock.json exists
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
-        --bun                                    Use bun to install dependencies. Default when bun.lockb exists
+        --bun                                    Use bun to install dependencies. Default when bun.lock or bun.lockb exists
         --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         --template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all

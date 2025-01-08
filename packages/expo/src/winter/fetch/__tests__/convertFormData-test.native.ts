@@ -40,7 +40,7 @@ describe(convertFormDataAsync, () => {
     const { body, boundary: resultBoundary } = await convertFormDataAsync(formData, boundary);
     expect(new TextDecoder().decode(body)).toMatchInlineSnapshot(`
       "------ExpoFetchFormBoundary0000000000000000
-      content-disposition: form-data; name="blob"; filename="blobFile"; filename*=utf-8''blobFile
+      content-disposition: form-data; name="blob"; filename="blobFile"
       content-type: text/plain
 
       hello blob

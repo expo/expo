@@ -2,6 +2,7 @@ import { isSimulatorDevice, resolveDeviceAsync } from './resolveDevice';
 import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
 import { resolveXcodeProject } from './resolveXcodeProject';
 import { isOSType } from '../../../start/platforms/ios/simctl';
+import { profile } from '../../../utils/profile';
 import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
 import { BuildProps, Options } from '../XcodeBuild.types';
 
@@ -27,7 +28,7 @@ export async function resolveOptionsAsync(
 
   // Resolve the device based on the provided device id or prompt
   // from a list of devices (connected or simulated) that are filtered by the scheme.
-  const device = await resolveDeviceAsync(options.device, {
+  const device = await profile(resolveDeviceAsync)(options.device, {
     // It's unclear if there's any value to asserting that we haven't hardcoded the os type in the CLI.
     osType: isOSType(osType) ? osType : undefined,
     xcodeProject,

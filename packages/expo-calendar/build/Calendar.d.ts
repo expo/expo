@@ -155,7 +155,7 @@ export type Event = {
     /**
      * Location field of the event.
      */
-    location: string;
+    location: string | null;
     /**
      * Date when the event record was created.
      * @platform ios

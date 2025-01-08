@@ -19,6 +19,10 @@ export const expoRunIos: Command = async (argv) => {
     '--binary': String,
 
     '--port': Number,
+
+    // Undocumented flag for re-bundling the app and assets for a build to try different JS code in release builds.
+    // Also updates the app.json.
+    '--unstable-rebundle': Boolean,
     // Aliases
     '-p': '--port',
 
@@ -72,6 +76,7 @@ export const expoRunIos: Command = async (argv) => {
     bundler: !args['--no-bundler'],
     port: args['--port'],
     binary: args['--binary'],
+    rebundle: args['--unstable-rebundle'],
 
     // Custom parsed args
     device: parsed.args['--device'],

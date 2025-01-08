@@ -27,6 +27,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  if: false # disable here instead of workflow UI so that a PR can re-enable
   build:
     strategy:
       fail-fast: false

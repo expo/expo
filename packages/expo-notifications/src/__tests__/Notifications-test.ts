@@ -13,16 +13,19 @@ const notificationTriggerInputTest = {
 
 it(`verifies date (as Date) trigger handling`, async () => {
   const input = {
+    trigger: {
+      type: SchedulableTriggerInputTypes.DATE,
+      date: new Date(),
+    },
     ...notificationTriggerInputTest,
-    trigger: new Date(),
-  };
+  } as const;
   await scheduleNotificationAsync(input);
   expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
     input.identifier,
     input.content,
     {
       type: 'date',
-      timestamp: input.trigger.getTime(),
+      timestamp: input.trigger.date.getTime(),
     }
   );
 });
@@ -30,15 +33,18 @@ it(`verifies date (as Date) trigger handling`, async () => {
 it(`verifies date (as time) trigger handling`, async () => {
   const input = {
     ...notificationTriggerInputTest,
-    trigger: new Date().getTime(),
-  };
+    trigger: {
+      type: SchedulableTriggerInputTypes.DATE,
+      date: new Date().getTime(),
+    },
+  } as const;
   await scheduleNotificationAsync(input);
   expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
     input.identifier,
     input.content,
     {
       type: 'date',
-      timestamp: input.trigger,
+      timestamp: input.trigger.date,
     }
   );
 });

@@ -60,7 +60,7 @@ type ViewConfig = {
   directEventTypes: Record<string, { registrationName: string }>;
 };
 
-export interface ExpoProcess {
+export type ExpoProcess = {
   env: {
     NODE_ENV: string;
     /** Used in `@expo/metro-runtime`. */
@@ -75,11 +75,8 @@ export interface ExpoProcess {
 
     /** Build-time representation of the `Platform.OS` value that the current JavaScript was bundled for. Does not support platform shaking wrapped require statements. */
     EXPO_OS?: string;
-
-    [key: string]: any;
-  };
-  [key: string]: any;
-}
+  } & Record<string, any>;
+} & Record<string, any>;
 
 /* eslint-disable no-var */
 
