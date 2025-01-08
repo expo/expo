@@ -4,7 +4,7 @@ import MessageUI
 import MobileCoreServices
 import ExpoModulesCore
 
-internal final class MailComposingSession: NSObject, MFMailComposeViewControllerDelegate {
+internal final class MailComposingSession: NSObject, MFMailComposeViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
   typealias ComposingCallback = (Result<[String: String], Exception>) -> ()
 
   let appContext: AppContext
@@ -47,6 +47,9 @@ internal final class MailComposingSession: NSObject, MFMailComposeViewController
       return
     }
     self.callback = callback
+    if let presentationController = composeController.presentationController {
+      presentationController.delegate = self
+    }
     currentViewController.present(composeController, animated: true)
   }
 
@@ -70,6 +73,14 @@ internal final class MailComposingSession: NSObject, MFMailComposeViewController
         callback(.failure(UnknownResultException(result)))
       }
     }
+  }
+
+  // MARK: - UIAdaptivePresentationControllerDelegate
+  func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    guard let callback = self.callback else {
+      return
+    }
+    callback(.success(["status": "cancelled"]))
   }
 }
 
