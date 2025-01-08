@@ -42,6 +42,30 @@ describe(resolveModuleAsync, () => {
     });
   });
 
+  it('should contain coreFeature field', async () => {
+    const name = 'react-native-third-party';
+    const pkgDir = path.join('node_modules', name);
+
+    registerGlobMock(glob, ['android/build.gradle'], pkgDir);
+
+    const result = await resolveModuleAsync(name, {
+      path: pkgDir,
+      version: '0.0.1',
+      config: new ExpoModuleConfig({ platforms: ['android'], coreFeatures: ['jetpackcompose'] }),
+    });
+    expect(result).toEqual({
+      packageName: 'react-native-third-party',
+      projects: [
+        {
+          name: 'react-native-third-party',
+          sourceDir: 'node_modules/react-native-third-party/android',
+        },
+      ],
+      modules: [],
+      coreFeatures: ['jetpackcompose'],
+    });
+  });
+
   it('should resolve android/build.gradle.kts', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
