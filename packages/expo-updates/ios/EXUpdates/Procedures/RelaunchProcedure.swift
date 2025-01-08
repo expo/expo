@@ -53,7 +53,8 @@ final class RelaunchProcedure: StateMachineProcedure {
       config: config,
       database: database,
       directory: updatesDirectory,
-      completionQueue: controllerQueue
+      completionQueue: controllerQueue,
+      logger: self.logger
     )
   }
 
@@ -100,7 +101,8 @@ final class RelaunchProcedure: StateMachineProcedure {
         database: database,
         directory: updatesDirectory,
         selectionPolicy: selectionPolicy,
-        launchedUpdate: launchedUpdate
+        launchedUpdate: launchedUpdate,
+        logger: self.logger
       )
     }
   }

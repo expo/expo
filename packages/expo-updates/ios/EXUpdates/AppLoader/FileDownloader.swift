@@ -69,14 +69,14 @@ public final class FileDownloader {
   private var config: UpdatesConfig!
   private var logger: UpdatesLogger!
 
-  public convenience init(config: UpdatesConfig) {
-    self.init(config: config, urlSessionConfiguration: URLSessionConfiguration.default)
+  public convenience init(config: UpdatesConfig, logger: UpdatesLogger) {
+    self.init(config: config, urlSessionConfiguration: URLSessionConfiguration.default, logger: logger)
   }
 
-  required init(config: UpdatesConfig, urlSessionConfiguration: URLSessionConfiguration) {
+  required init(config: UpdatesConfig, urlSessionConfiguration: URLSessionConfiguration, logger: UpdatesLogger) {
     self.sessionConfiguration = urlSessionConfiguration
     self.config = config
-    self.logger = UpdatesLogger()
+    self.logger = logger
     self.session = URLSession(configuration: sessionConfiguration)
   }
 

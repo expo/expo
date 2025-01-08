@@ -132,7 +132,8 @@ public final class AppLoaderTask: NSObject {
     database: UpdatesDatabase,
     directory: URL,
     selectionPolicy: SelectionPolicy,
-    delegateQueue: DispatchQueue
+    delegateQueue: DispatchQueue,
+    logger: UpdatesLogger
   ) {
     self.config = config
     self.database = database
@@ -145,7 +146,7 @@ public final class AppLoaderTask: NSObject {
     self.isUpToDate = false
     self.delegateQueue = delegateQueue
     self.loaderTaskQueue = DispatchQueue(label: "expo.loader.LoaderTaskQueue")
-    self.logger = UpdatesLogger()
+    self.logger = logger
   }
 
   public func start() {
@@ -260,7 +261,8 @@ public final class AppLoaderTask: NSObject {
         database: database,
         directory: directory,
         selectionPolicy: selectionPolicy,
-        launchedUpdate: launchedUpdate
+        launchedUpdate: launchedUpdate,
+        logger: self.logger
       )
     }
   }
@@ -323,7 +325,7 @@ public final class AppLoaderTask: NSObject {
   }
 
   private func launch(withCompletion completion: @escaping (_ error: UpdatesError?, _ success: Bool) -> Void) {
-    let launcher = AppLauncherWithDatabase(config: config, database: database, directory: directory, completionQueue: loaderTaskQueue)
+    let launcher = AppLauncherWithDatabase(config: config, database: database, directory: directory, completionQueue: loaderTaskQueue, logger: self.logger)
     candidateLauncher = launcher
     launcher.launchUpdate(withSelectionPolicy: selectionPolicy, completion: completion)
   }
@@ -476,7 +478,8 @@ public final class AppLoaderTask: NSObject {
           config: self.config,
           database: self.database,
           directory: self.directory,
-          completionQueue: self.loaderTaskQueue
+          completionQueue: self.loaderTaskQueue,
+          logger: self.logger
         )
         newLauncher.launchUpdate(withSelectionPolicy: self.selectionPolicy) { error, success in
           if success {

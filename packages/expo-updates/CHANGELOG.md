@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- [iOS] Inject logger from controllers down to dependent objects. ([#34035](https://github.com/expo/expo/pull/34035) by [@wschurman](https://github.com/wschurman))
+
 ## 0.26.10 - 2024-12-05
 
 ### 🐛 Bug fixes
