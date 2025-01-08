@@ -123,14 +123,16 @@ function parseCalendarTrigger(trigger) {
 }
 function parseDateTrigger(trigger) {
     if (trigger instanceof Date || typeof trigger === 'number') {
+        // TODO @vonovak this branch is not be used by people using TS
+        // but was part of the public api previously so we keep it for a bit for JS users
+        console.warn(`You are using a deprecated parameter type (${trigger}) for the notification trigger. Use "{ type: 'date', timestamp: someValue }" instead.`);
         return { type: 'date', timestamp: toTimestamp(trigger) };
     }
     else if (typeof trigger === 'object' &&
         trigger !== null &&
         'type' in trigger &&
         trigger.type === SchedulableTriggerInputTypes.DATE &&
-        'date' in trigger &&
-        trigger.date instanceof Date) {
+        'date' in trigger) {
         const result = {
             type: 'date',
             timestamp: toTimestamp(trigger.date),
