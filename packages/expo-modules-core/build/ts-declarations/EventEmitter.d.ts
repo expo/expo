@@ -51,7 +51,7 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
      */
     removeAllListeners(eventName: keyof TEventsMap): void;
     /**
-     * Synchronously calls all of the listeners attached to that specific event.
+     * Synchronously calls all the listeners attached to that specific event.
      * The event can include any number of arguments that will be passed to the listeners.
      */
     emit<EventName extends keyof TEventsMap>(eventName: EventName, ...args: Parameters<TEventsMap[EventName]>): void;
