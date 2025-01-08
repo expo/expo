@@ -31,8 +31,8 @@ If you're installing this library in a [bare React Native app](/bare/overview/) 
 
 If using [app config](/workflow/configuration/) for configuration, this library can be configured by setting at least the following app config properties:
 
-- [`updates.url`](/versions/latest/config/app/#updates): a URL of a remote service implementing the [Expo Updates protocol](/technical-specs/expo-updates-1/)
-- [`runtimeVersion`](/versions/latest/config/app/#runtimeversion): a [runtime version](#runtime-version)
+- [`updates.url`](../config/app/#updates): a URL of a remote service implementing the [Expo Updates protocol](/technical-specs/expo-updates-1/)
+- [`runtimeVersion`](../config/app/#runtimeversion): a [runtime version](#runtime-version)
 
 The remote service must implement the [Expo Updates protocol](/technical-specs/expo-updates-1/). [EAS Update](/eas-update/introduction) is one such service, but it is also possible to use this library with a custom server.
 
@@ -47,24 +47,24 @@ The remote service must implement the [Expo Updates protocol](/technical-specs/e
 
 ## Configuration
 
-There are build-time configuration options that control the behavior of the library. For most apps, these configuration values are set in the [app config](/workflow/configuration/) under the [`updates` property](/versions/latest/config/app/#updates).
+There are build-time configuration options that control the behavior of the library. For most apps, these configuration values are set in the [app config](/workflow/configuration/) under the [`updates` property](../config/app/#updates).
 
-| [App Config property](/versions/latest/config/app/#updates) | Default  | Required?   | iOS plist/dictionary key          | Android meta-data name                                           | Android Map key          |
-| ----------------------------------------------------------- | -------- | ----------- | --------------------------------- | ---------------------------------------------------------------- | ------------------------ |
-| `updates.enabled`                                           | `true`   | <NoIcon />  | `EXUpdatesEnabled`                | `expo.modules.updates.ENABLED`                                   | `enabled`                |
-| `updates.url`                                               | (none)   | <YesIcon /> | `EXUpdatesURL`                    | `expo.modules.updates.EXPO_UPDATE_URL`                           | `updateUrl`              |
-| `updates.requestHeaders`                                    | (none)   | <NoIcon />  | `EXUpdatesRequestHeaders`         | `expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY` | `requestHeaders`         |
-| `runtimeVersion`                                            | (none)   | <YesIcon /> | `EXUpdatesRuntimeVersion`         | `expo.modules.updates.EXPO_RUNTIME_VERSION`                      | `runtimeVersion`         |
-| `updates.checkAutomatically`                                | `ALWAYS` | <NoIcon />  | `EXUpdatesCheckOnLaunch`          | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH`              | `checkOnLaunch`          |
-| `updates.fallbackToCacheTimeout`                            | `0`      | <NoIcon />  | `EXUpdatesLaunchWaitMs`           | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS`               | `launchWaitMs`           |
-| `updates.useEmbeddedUpdate`                                 | `true`   | <NoIcon />  | `EXUpdatesHasEmbeddedUpdate`      | `expo.modules.updates.HAS_EMBEDDED_UPDATE`                       | `hasEmbeddedUpdate`      |
-| `updates.codeSigningCertificate`                            | (none)   | <NoIcon />  | `EXUpdatesCodeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`                  | `codeSigningCertificate` |
-| `updates.codeSigningMetadata`                               | (none)   | <NoIcon />  | `EXUpdatesCodeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`                     | `codeSigningMetadata`    |
+| [App Config property](../config/app/#updates)                             | Default  | Required?   | iOS plist/dictionary key          | Android meta-data name                                           | Android Map key          |
+| ------------------------------------------------------------------------- | -------- | ----------- | --------------------------------- | ---------------------------------------------------------------- | ------------------------ |
+| [`updates.enabled`](../config/app/#enabled)                               | `true`   | <NoIcon />  | `EXUpdatesEnabled`                | `expo.modules.updates.ENABLED`                                   | `enabled`                |
+| [`updates.url`](../config/app/#url)                                       | (none)   | <YesIcon /> | `EXUpdatesURL`                    | `expo.modules.updates.EXPO_UPDATE_URL`                           | `updateUrl`              |
+| [`updates.requestHeaders`](../config/app/#requestheaders)                 | (none)   | <NoIcon />  | `EXUpdatesRequestHeaders`         | `expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY` | `requestHeaders`         |
+| [`runtimeVersion`](../config/app/#runtimeversion)                         | (none)   | <YesIcon /> | `EXUpdatesRuntimeVersion`         | `expo.modules.updates.EXPO_RUNTIME_VERSION`                      | `runtimeVersion`         |
+| [`updates.checkAutomatically`](../config/app/#checkautomatically)         | `ALWAYS` | <NoIcon />  | `EXUpdatesCheckOnLaunch`          | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH`              | `checkOnLaunch`          |
+| [`updates.fallbackToCacheTimeout`](../config/app/#fallbacktocachetimeout) | `0`      | <NoIcon />  | `EXUpdatesLaunchWaitMs`           | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS`               | `launchWaitMs`           |
+| [`updates.useEmbeddedUpdate`](../config/app/#useembeddedupdate)           | `true`   | <NoIcon />  | `EXUpdatesHasEmbeddedUpdate`      | `expo.modules.updates.HAS_EMBEDDED_UPDATE`                       | `hasEmbeddedUpdate`      |
+| [`updates.codeSigningCertificate`](../config/app/#codesigningcertificate) | (none)   | <NoIcon />  | `EXUpdatesCodeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`                  | `codeSigningCertificate` |
+| [`updates.codeSigningMetadata`](../config/app/#codesigningmetadata)       | (none)   | <NoIcon />  | `EXUpdatesCodeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`                     | `codeSigningMetadata`    |
 
 The two core required configuration options are:
 
-- [`updates.url`](/versions/latest/config/app/#updates): the URL at which the library fetches remote updates
-- [`runtimeVersion`](/versions/latest/config/app/#runtimeversion): a [runtime version](#runtime-version)
+- [`updates.url`](../config/app/#updates): the URL at which the library fetches remote updates
+- [`runtimeVersion`](../config/app/#runtimeversion): a [runtime version](#runtime-version)
 
 These are configured automatically when following the EAS Update [Get started](/eas-update/getting-started/) guide.
 
@@ -88,7 +88,7 @@ The runtime version can be managed manually by setting the string value in the c
 
 <Collapsible summary = "Automatic configuration using runtime version policies">
 
-Runtime version policies derive the runtime version from another piece of information already present in your project. They can be set in the [`runtimeVersion`](/versions/latest/config/app/#runtimeversion) config field as follows:
+Runtime version policies derive the runtime version from another piece of information already present in your project. They can be set in the [`runtimeVersion`](../config/app/#runtimeversion) config field as follows:
 
 ```json
 {
