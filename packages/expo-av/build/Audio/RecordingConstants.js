@@ -1,25 +1,69 @@
-// @docsMissing
+/**
+ * Defines the output format.
+ * @platform android
+ */
 export var AndroidOutputFormat;
 (function (AndroidOutputFormat) {
     AndroidOutputFormat[AndroidOutputFormat["DEFAULT"] = 0] = "DEFAULT";
+    /**
+     * 3GPP media file format.
+     */
     AndroidOutputFormat[AndroidOutputFormat["THREE_GPP"] = 1] = "THREE_GPP";
+    /**
+     * MPEG4 media file format.
+     */
     AndroidOutputFormat[AndroidOutputFormat["MPEG_4"] = 2] = "MPEG_4";
+    /**
+     * AMR NB file format.
+     */
     AndroidOutputFormat[AndroidOutputFormat["AMR_NB"] = 3] = "AMR_NB";
+    /**
+     * AMR WB file format.
+     */
     AndroidOutputFormat[AndroidOutputFormat["AMR_WB"] = 4] = "AMR_WB";
+    // @docsMissing
     AndroidOutputFormat[AndroidOutputFormat["AAC_ADIF"] = 5] = "AAC_ADIF";
+    /**
+     * AAC ADTS file format.
+     */
     AndroidOutputFormat[AndroidOutputFormat["AAC_ADTS"] = 6] = "AAC_ADTS";
+    // @docsMissing
     AndroidOutputFormat[AndroidOutputFormat["RTP_AVP"] = 7] = "RTP_AVP";
+    /**
+     * H.264/AAC data encapsulated in MPEG2/TS.
+     */
     AndroidOutputFormat[AndroidOutputFormat["MPEG2TS"] = 8] = "MPEG2TS";
+    /**
+     * VP8/VORBIS data in a WEBM container.
+     */
     AndroidOutputFormat[AndroidOutputFormat["WEBM"] = 9] = "WEBM";
 })(AndroidOutputFormat || (AndroidOutputFormat = {}));
-// @docsMissing
+/**
+ * Defines the audio encoding.
+ * @platform android
+ */
 export var AndroidAudioEncoder;
 (function (AndroidAudioEncoder) {
     AndroidAudioEncoder[AndroidAudioEncoder["DEFAULT"] = 0] = "DEFAULT";
+    /**
+     * AMR (Narrowband) audio codec.
+     */
     AndroidAudioEncoder[AndroidAudioEncoder["AMR_NB"] = 1] = "AMR_NB";
+    /**
+     * AMR (Wideband) audio codec.
+     */
     AndroidAudioEncoder[AndroidAudioEncoder["AMR_WB"] = 2] = "AMR_WB";
+    /**
+     * AAC Low Complexity (AAC-LC) audio codec.
+     */
     AndroidAudioEncoder[AndroidAudioEncoder["AAC"] = 3] = "AAC";
+    /**
+     * High Efficiency AAC (HE-AAC) audio codec.
+     */
     AndroidAudioEncoder[AndroidAudioEncoder["HE_AAC"] = 4] = "HE_AAC";
+    /**
+     * Enhanced Low Delay AAC (AAC-ELD) audio codec.
+     */
     AndroidAudioEncoder[AndroidAudioEncoder["AAC_ELD"] = 5] = "AAC_ELD";
 })(AndroidAudioEncoder || (AndroidAudioEncoder = {}));
 // @docsMissing
