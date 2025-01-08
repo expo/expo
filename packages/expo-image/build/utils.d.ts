@@ -1,10 +1,11 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
+import { type ImageResizeMode } from 'react-native';
 import { ImageContentFit, ImageContentPosition, ImageContentPositionObject, ImageProps, ImageTransition } from './Image.types';
 /**
  * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
  * that we support to provide compatibility with React Native Image.
  */
-export declare function resolveContentFit(contentFit?: ImageContentFit, resizeMode?: ImageProps['resizeMode']): ImageContentFit;
+export declare function resolveContentFit(contentFit?: ImageContentFit, resizeMode?: ImageResizeMode): ImageContentFit;
 /**
  * It resolves a stringified form of the `contentPosition` prop to an object,
  * which is the only form supported in the native code.
