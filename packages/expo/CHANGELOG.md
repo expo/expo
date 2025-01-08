@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
 - Assert that DOM components cannot have `children`. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
