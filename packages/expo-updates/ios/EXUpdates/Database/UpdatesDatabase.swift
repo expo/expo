@@ -89,9 +89,9 @@ public final class UpdatesDatabase: NSObject {
     closeDatabase()
   }
 
-  public func openDatabase(inDirectory directory: URL) throws {
+  public func openDatabase(inDirectory directory: URL, logger: UpdatesLogger) throws {
     dispatchPrecondition(condition: .onQueue(databaseQueue))
-    db = try UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(inDirectory: directory)
+    db = try UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(inDirectory: directory, logger: logger)
   }
 
   public func closeDatabase() {

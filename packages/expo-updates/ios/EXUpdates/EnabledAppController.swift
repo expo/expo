@@ -1,7 +1,5 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-// swiftlint:disable force_unwrapping
-
 import SwiftUI
 import ExpoModulesCore
 
@@ -56,7 +54,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     )
     self.logger.info(message: "AppController sharedInstance created")
     self.eventManager = QueueUpdatesEventManager(logger: logger)
-    self.stateMachine = UpdatesStateMachine(eventManager: self.eventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+    self.stateMachine = UpdatesStateMachine(logger: self.logger, eventManager: self.eventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
   }
 
   public func start() {
@@ -250,5 +248,3 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     return EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
   }
 }
-
-// swiftlint:enable force_unwrapping

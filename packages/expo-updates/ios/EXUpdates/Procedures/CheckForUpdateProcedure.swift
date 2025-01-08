@@ -32,7 +32,7 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
     self.successBlock = successBlock
     self.errorBlock = errorBlock
 
-    self.fileDownloader = FileDownloader(config: self.config)
+    self.fileDownloader = FileDownloader(config: self.config, logger: self.logger)
   }
 
   func getLoggerTimerLabel() -> String {
