@@ -6,6 +6,7 @@ description: An in-depth guide on configuring an Expo project with TypeScript.
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
 
 Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). The JavaScript interface of Expo SDK is written in TypeScript.
@@ -54,6 +55,60 @@ To install required `devDependencies` such as `typescript` and `@types/react` in
     '$ yarn add -D typescript @types/react',
   ]}
 />
+
+<Tabs>
+
+<Tab label="npx">
+
+<Terminal cmd={['$ npx expo install typescript @types/react -- --save-dev']} />
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install typescript @types/react -- --save-dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install typescript @types/react "--" --save-dev',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn add --dev typescript @types/react']} />
+
+</Tab>
+
+<Tab label="pnpm">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install typescript @types/react -- --save-dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install typescript @types/react "--" --save-dev',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="bun">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install typescript @types/react -- --dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install typescript @types/react "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 > **info** Alternatively, run `npx expo start` command to install `typescript` and `@types/react` dev dependencies.
 
