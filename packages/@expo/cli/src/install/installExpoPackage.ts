@@ -56,7 +56,9 @@ export async function installExpoPackageAsync(
 
   // Spawn a new process to install the rest of the packages if there are any, as only then will the latest Expo package be used
   if (followUpCommandArgs.length) {
-    let commandSegments = ['expo', 'install', ...followUpCommandArgs];
+    let commandSegments = ['expo', 'install', dev ? '--dev' : '', ...followUpCommandArgs].filter(
+      Boolean
+    );
     if (packageManagerArguments.length) {
       commandSegments = [...commandSegments, '--', ...packageManagerArguments];
     }
