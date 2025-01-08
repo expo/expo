@@ -295,3 +295,6 @@ require('expo-modules-core/src/web/index.web');
 
 // Ensure the environment globals are installed before the first test runs.
 require('expo/src/winter');
+
+// Ensure the environment variables from dotenv files are loaded before the first test runs
+require('./setup-env').load({ target: 'client' });
