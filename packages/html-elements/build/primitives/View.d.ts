@@ -1,5 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle, BoxShadowValue, FilterFunction } from 'react-native';
+import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle, BoxShadowValue, FilterFunction, type ColorValue } from 'react-native';
 type NativeViewProps = ComponentProps<typeof NativeView> & ClassAttributes<typeof NativeView>;
 /**
  * https://baconbrix.gitbook.io/react-native-web/primitives/view
@@ -76,7 +76,7 @@ export interface WebViewStyle {
     /** @platform web */
     outline?: string;
     /** @platform web */
-    outlineColor?: string;
+    outlineColor?: ColorValue;
     /** @platform web */
     overflowX?: string;
     /** @platform web */

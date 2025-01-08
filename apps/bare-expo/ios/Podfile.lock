@@ -456,6 +456,7 @@ PODS:
     - React-RCTFabric
     - React-rendererdebug
     - React-utils
+    - ReactAppDependencyProvider
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -480,6 +481,7 @@ PODS:
     - React-RCTFabric
     - React-rendererdebug
     - React-utils
+    - ReactAppDependencyProvider
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -3320,7 +3322,7 @@ SPEC CHECKSUMS:
   ExpoMaps: 03f99cbb20655c2beb1bffdca0e6de6a0124f69e
   ExpoMediaLibrary: 2d20778aafaa2e6f60640167f0618cfacee6f81c
   ExpoMeshGradient: 0a9aca4028bd131bd8313b1899c004aad7526c37
-  ExpoModulesCore: f6fcee9041ee48a8edcc7b9cde055cb313297e4c
+  ExpoModulesCore: 0752390621dd30477420a8a3e8711d2852fc430c
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
   ExpoNetwork: f07b371f7e143812980075fda6768702c154a0a0
   ExpoPrint: 3f9f5a5a19dbda5b30963d5bf078918f024aa29d
