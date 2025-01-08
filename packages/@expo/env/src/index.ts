@@ -311,14 +311,20 @@ export function load(
   }
 
   const envInfo = get(projectRoot, options);
+  const loadedEnvKeys: string[] = [];
+
+  for (const key in envInfo.env) {
+    if (typeof process.env[key] !== 'undefined') {
+      debug(`"${key}" is already defined and IS NOT overwritten`);
+    } else {
+      // Avoid creating a new object, mutate it instead as this causes problems in Bun
+      process.env[key] = envInfo.env[key];
+      loadedEnvKeys.push(key);
+    }
+  }
 
   // Port the result of `get` to the newer result object
-  logLoadedEnv({ ...envInfo, result: 'loaded', loaded: Object.keys(envInfo.env) }, options);
-
-  for (const key of Object.keys(envInfo.env)) {
-    // Avoid creating a new object, mutate it instead as this causes problems in Bun
-    process.env[key] = envInfo.env[key];
-  }
+  logLoadedEnv({ ...envInfo, result: 'loaded', loaded: loadedEnvKeys }, options);
 
   return process.env;
 }
