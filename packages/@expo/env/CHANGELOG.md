@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Break up the API into more modular methods to get environment variables without applying them and remove the package state. ([#33633](https://github.com/expo/expo/pull/33633) by [@byCedric](https://github.com/byCedric))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.0.0 — 2025-01-08
+
+### 🛠 Breaking changes
+
+- Break up the API into more modular methods to get environment variables without applying them and remove the package state. ([#33633](https://github.com/expo/expo/pull/33633) by [@byCedric](https://github.com/byCedric))
 
 ## 0.4.0 — 2024-10-22
 
