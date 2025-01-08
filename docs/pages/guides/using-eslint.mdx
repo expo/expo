@@ -27,17 +27,57 @@ To set up ESLint in your Expo project, you can use the Expo CLI to install the n
 
 Install ESLint, and [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo) in your project.
 
+<Tabs>
+
+<Tab label="npx">
+
 <Terminal
   cmd={[
-    '# Install required ESLint configuration manually',
+    '# For macOS and Linux',
+    '$ npx expo install eslint@8 eslint-config-expo -- --save-dev',
     '',
-    '# For other package managers',
-    '$ npx expo install -- --save-dev eslint@8 eslint-config-expo',
-    '',
-    '# For yarn only',
-    '$ yarn add -D eslint eslint-config-expo',
+    '# For Windows with Powershell',
+    '$ npx expo install eslint@8 eslint-config-expo "--" --save-dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn add --dev eslint@8 eslint-config-expo']} />
+
+</Tab>
+
+<Tab label="pnpm">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install eslint@8 eslint-config-expo -- --save-dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install eslint@8 eslint-config-expo "--" --save-dev',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="bun">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install eslint@8 eslint-config-expo -- --dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install eslint@8 eslint-config-expo "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -127,7 +167,7 @@ const { getDefaultConfig } = require('expo/metro-config');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(
-  /* @info This will no longer assert linting errors */ __dirname /* @end */
+  /* @info This will no longer assert linting errors. */ __dirname /* @end */
 );
 
 module.exports = config;
@@ -139,15 +179,57 @@ module.exports = config;
 
 To install Prettier in your project:
 
+<Tabs>
+
+<Tab label="npx">
+
 <Terminal
   cmd={[
-    '# For other package managers',
-    '$ npx expo install -- --save-dev prettier eslint-config-prettier eslint-plugin-prettier',
+    '# For macOS and Linux',
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier -- --save-dev',
     '',
-    '# For yarn only',
-    '$ yarn add -D prettier eslint-config-prettier eslint-plugin-prettier',
+    '# For Windows with Powershell',
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --save-dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn add --dev prettier eslint-config-prettier eslint-plugin-prettier']} />
+
+</Tab>
+
+<Tab label="pnpm">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier -- --save-dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --save-dev',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="bun">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier -- --dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 ### Setup
 
@@ -200,15 +282,57 @@ If you're migrating from an older version of Expo SDK that has `eslint-config-un
 
 Remove the `eslint-config-universe` library and install the `eslint-config-expo` manually:
 
+<Tabs>
+
+<Tab label="npx">
+
 <Terminal
   cmd={[
-    '# For other package managers',
-    '$ npx expo install -- --save-dev eslint-config-expo',
+    '# For macOS and Linux',
+    '$ npx expo install eslint-config-expo -- --save-dev',
     '',
-    '# For yarn only',
-    '$ yarn add -D eslint-config-expo',
+    '# For Windows with Powershell',
+    '$ npx expo install eslint-config-expo "--" --save-dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn add --dev eslint-config-expo']} />
+
+</Tab>
+
+<Tab label="pnpm">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install eslint-config-expo -- --save-dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install eslint-config-expo "--" --save-dev',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="bun">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install eslint-config-expo -- --dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install eslint-config-expo "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
