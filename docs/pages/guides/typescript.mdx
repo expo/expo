@@ -19,33 +19,7 @@ This guide provides a quick way to get started for a new project and also steps 
 
 To create a new project, use the default template which includes base TypeScript configuration, example code, and basic navigation structure:
 
-<Tabs>
-
-<Tab label="npx">
-
 <Terminal cmd={['$ npx create-expo-app@latest']} />
-
-</Tab>
-
-<Tab label="Yarn">
-
-<Terminal cmd={['$ yarn create expo-app']} />
-
-</Tab>
-
-<Tab label="pnpm">
-
-<Terminal cmd={['$ pnpm create expo-app']} />
-
-</Tab>
-
-<Tab label="bun">
-
-<Terminal cmd={['$ bun create expo']} />
-
-</Tab>
-
-</Tabs>
 
 After you create a new project using the command above, make sure to follow instructions from:
 
@@ -76,48 +50,26 @@ To install required `devDependencies` such as `typescript` and `@types/react` in
 
 <Tabs>
 
-<Tab label="npx">
+<Tab label="macOS/Linux">
 
 <Terminal
   cmd={[
-    '# For macOS and Linux',
-    '$ npx expo install typescript @types/react -- --save-dev',
+    '$ npx expo install typescript @types/react  -- --save-dev',
     '',
-    '# For Windows with Powershell',
-    '$ npx expo install typescript @types/react "--" --save-dev',
-  ]}
-/>
-
-</Tab>
-
-<Tab label="Yarn">
-
-<Terminal cmd={['$ yarn add --dev typescript @types/react']} />
-
-</Tab>
-
-<Tab label="pnpm">
-
-<Terminal
-  cmd={[
-    '# For macOS and Linux',
-    '$ npx expo install typescript @types/react -- --save-dev',
-    '',
-    '# For Windows with Powershell',
-    '$ npx expo install typescript @types/react "--" --save-dev',
-  ]}
-/>
-
-</Tab>
-
-<Tab label="bun">
-
-<Terminal
-  cmd={[
-    '# For macOS and Linux',
+    '# For bun and yarn',
     '$ npx expo install typescript @types/react -- --dev',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal
+  cmd={[
+    '$ npx expo install typescript @types/react "--" --save-dev',
     '',
-    '# For Windows with Powershell',
+    '# For bun and yarn',
     '$ npx expo install typescript @types/react "--" --dev',
   ]}
 />
@@ -248,48 +200,26 @@ Additional setup is required to use TypeScript for configuration files such as *
 
 <Tabs>
 
-<Tab label="npx">
+<Tab label="macOS/Linux">
 
 <Terminal
   cmd={[
-    '# For macOS and Linux',
     '$ npx expo install ts-node -- --save-dev',
     '',
-    '# For Windows with Powershell',
-    '$ npx expo install ts-node "--" --save-dev',
-  ]}
-/>
-
-</Tab>
-
-<Tab label="Yarn">
-
-<Terminal cmd={['$ yarn add --dev ts-node']} />
-
-</Tab>
-
-<Tab label="pnpm">
-
-<Terminal
-  cmd={[
-    '# For macOS and Linux',
-    '$ npx expo install ts-node -- --save-dev',
-    '',
-    '# For Windows with Powershell',
-    '$ npx expo install ts-node "--" --save-dev',
-  ]}
-/>
-
-</Tab>
-
-<Tab label="bun">
-
-<Terminal
-  cmd={[
-    '# For macOS and Linux',
+    '# For bun and yarn',
     '$ npx expo install ts-node -- --dev',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal
+  cmd={[
+    '$ npx expo install ts-node "--" --save-dev',
     '',
-    '# For Windows with Powershell',
+    '# For bun and yarn',
     '$ npx expo install ts-node "--" --dev',
   ]}
 />
