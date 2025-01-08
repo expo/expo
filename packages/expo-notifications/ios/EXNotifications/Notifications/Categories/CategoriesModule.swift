@@ -10,10 +10,7 @@ public class CategoriesModule: Module {
 
     AsyncFunction("getNotificationCategoriesAsync") { (promise: Promise) in
       UNUserNotificationCenter.current().getNotificationCategories { categories in
-        var existingCategories: [[String: Any]] = []
-        categories.forEach { category in
-          existingCategories.append(self.serializeCategory(category))
-        }
+        let existingCategories = categories.map { self.serializeCategory($0) }
         promise.resolve(existingCategories)
       }
     }
@@ -21,12 +18,7 @@ public class CategoriesModule: Module {
     AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [[String: Any]], options: [String: Any]?, promise: Promise) in
       let newCategory = categoryFromParams(identifier, actions: actions, options: options)
       UNUserNotificationCenter.current().getNotificationCategories { oldcategories in
-        var newCategories: Set<UNNotificationCategory> = Set<UNNotificationCategory>()
-        oldcategories.forEach { category in
-          if category.identifier != newCategory.identifier {
-            newCategories.insert(category)
-          }
-        }
+        let newCategories = Set(oldcategories.filter { $0.identifier != newCategory.identifier }.union([newCategory]))
         newCategories.insert(newCategory)
         UNUserNotificationCenter.current().setNotificationCategories(newCategories)
         promise.resolve(self.serializeCategory(newCategory))
@@ -35,15 +27,8 @@ public class CategoriesModule: Module {
 
     AsyncFunction("deleteNotificationCategoryAsync") { (identifier: String, promise: Promise) in
       UNUserNotificationCenter.current().getNotificationCategories { oldcategories in
-        var newCategories: Set<UNNotificationCategory> = Set<UNNotificationCategory>()
-        var didDelete = false
-        oldcategories.forEach { category in
-          if category.identifier == identifier {
-            didDelete = true
-          } else {
-            newCategories.insert(category)
-          }
-        }
+        let newCategories = Set(categories.filter { $0.identifier != identifier })
+        let didDelete = categories.contains { $0.identifier == identifier }
         if didDelete {
           UNUserNotificationCenter.current().setNotificationCategories(newCategories)
         }
@@ -56,12 +41,7 @@ public class CategoriesModule: Module {
     let intentIdentifiers: [String] = options?["intentIdentifiers"] as? [String] ?? []
     let previewPlaceholder: String? = options?["previewPlaceholder"] as? String
     let categorySummaryFormat: String? = options?["categorySummaryFormat"] as? String
-    var actionsArray: [UNNotificationAction] = []
-    actions.forEach { actionParams in
-      if let action = actionFromParams(actionParams) {
-        actionsArray.append(action)
-      }
-    }
+    let actionsArray = actions.compactMap { actionFromParams($0) }
     let categoryOptions: UNNotificationCategoryOptions = categoryOptionsFromParams(options)
     return UNNotificationCategory(
       identifier: id,
@@ -98,7 +78,7 @@ public class CategoriesModule: Module {
         textInputPlaceholder: textInput["placeholder"] ?? ""
       )
     }
-    return UNTextInputNotificationAction(identifier: identifier, title: buttonTitle, options: options)
+    return UNNotificationAction(identifier: identifier, title: buttonTitle, options: options)
   }
 
   func categoryOptionsFromParams(_ params: [String: Any]?) -> UNNotificationCategoryOptions {
