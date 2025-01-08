@@ -26,6 +26,13 @@ export default class CameraView extends Component<CameraViewProps> {
      */
     getAvailablePictureSizesAsync(): Promise<string[]>;
     /**
+     * Returns an object with the supported features of the camera on the current device.
+     */
+    getSupportedFeatures(): {
+        isModernBarcodeScannerAvailable: boolean;
+        toggleRecordingAsyncAvailable: boolean;
+    };
+    /**
      * Resumes the camera preview.
      */
     resumePreview(): Promise<void>;
@@ -34,8 +41,8 @@ export default class CameraView extends Component<CameraViewProps> {
      */
     pausePreview(): Promise<void>;
     static ConversionTables: {
-        type: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
-        flash: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
+        type: Record<number | typeof Symbol.iterator | "length" | "toString" | "concat" | "slice" | "indexOf" | "lastIndexOf" | "includes" | "at" | "link" | "search" | "charAt" | "charCodeAt" | "localeCompare" | "match" | "replace" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "substr" | "codePointAt" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "valueOf", string | undefined>;
+        flash: Record<number | typeof Symbol.iterator | "length" | "toString" | "concat" | "slice" | "indexOf" | "lastIndexOf" | "includes" | "at" | "link" | "search" | "charAt" | "charCodeAt" | "localeCompare" | "match" | "replace" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "substr" | "codePointAt" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "valueOf", string | undefined>;
     };
     static defaultProps: CameraViewProps;
     _cameraHandle?: number | null;
@@ -104,7 +111,7 @@ export default class CameraView extends Component<CameraViewProps> {
         uri: string;
     } | undefined>;
     /**
-     * Pauses or resumes the video recording. Only has an effect if there is an active recording.
+     * Pauses or resumes the video recording. Only has an effect if there is an active recording. On `iOS`, this method only supported on `iOS` 18.
      */
     toggleRecordingAsync(): Promise<void | undefined>;
     /**

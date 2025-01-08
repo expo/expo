@@ -54,6 +54,11 @@ class CameraViewModule : Module() {
       true
     }
 
+    // Again, aligned with iOS.
+    Property("toggleRecordingAsyncAvailable") {
+      true
+    }
+
     AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
         permissionsManager,

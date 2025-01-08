@@ -36,6 +36,13 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
       return false
     }
+    
+    Property("toggleRecordingAsyncAvailable") { () -> Bool in
+      if #available(iOS 18.0, *) {
+        return true
+      }
+      return false
+    }
 
     AsyncFunction("scanFromURLAsync") { (url: URL, _: [BarcodeType], promise: Promise) in
       guard let imageLoader = appContext?.imageLoader else {
