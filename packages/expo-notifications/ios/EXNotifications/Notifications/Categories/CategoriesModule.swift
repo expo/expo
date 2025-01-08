@@ -19,7 +19,6 @@ public class CategoriesModule: Module {
       let newCategory = categoryFromParams(identifier, actions: actions, options: options)
       UNUserNotificationCenter.current().getNotificationCategories { oldcategories in
         let newCategories = Set(oldcategories.filter { $0.identifier != newCategory.identifier }.union([newCategory]))
-        newCategories.insert(newCategory)
         UNUserNotificationCenter.current().setNotificationCategories(newCategories)
         promise.resolve(self.serializeCategory(newCategory))
       }
