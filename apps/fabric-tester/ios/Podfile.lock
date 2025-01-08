@@ -260,6 +260,7 @@ PODS:
     - React-RCTFabric
     - React-rendererdebug
     - React-utils
+    - ReactAppDependencyProvider
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -2127,7 +2128,7 @@ SPEC CHECKSUMS:
   ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
   ExpoKeepAwake: 783e68647b969b210a786047c3daa7b753dcac1f
   ExpoLinearGradient: 7ca3b1d1625a1ab85c129abce4a3cdc78a9500a3
-  ExpoModulesCore: f6fcee9041ee48a8edcc7b9cde055cb313297e4c
+  ExpoModulesCore: 0752390621dd30477420a8a3e8711d2852fc430c
   ExpoSplashScreen: 43692d041bf848883410ed9d8836871ca5cf4d6a
   ExpoVideo: 85750319df61d76237b5952fca5a9f39504c6b9b
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
@@ -2208,4 +2209,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 69838eb56567a89dd6f23695b5e8145f838df60d
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
