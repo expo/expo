@@ -12,8 +12,10 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
+
+<TabsGroup>
 
 [Jest](https://jestjs.io) is the most widely used unit and snapshot JavaScript testing framework. In this guide, you will learn how to set up Jest in your project, write a unit test, write a snapshot test, and best practices for structuring your tests when using Jest with React Native.
 
@@ -31,15 +33,57 @@ If you have created your project using [different template](/more/create-expo/#-
 
 Install `jest-expo` and other required dev dependencies in your project. Run the following command from your project's root directory:
 
+<Tabs>
+
+<Tab label="npx">
+
 <Terminal
   cmd={[
-    '# For all other package managers',
-    '$ npx expo install -- --save-dev jest-expo jest @types/jest',
+    '# For macOS and Linux',
+    '$ npx expo install jest-expo jest @types/jest -- --save-dev',
     '',
-    '# For yarn',
-    '$ yarn add -D jest-expo jest @types/jest',
+    '# For Windows with Powershell',
+    '$ npx expo install jest-expo jest @types/jest "--" --save-dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn add --dev jest-expo jest @types/jest']} />
+
+</Tab>
+
+<Tab label="pnpm">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install jest-expo jest @types/jest -- --save-dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install jest-expo jest @types/jest "--" --save-dev',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="bun">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install jest-expo jest @types/jest -- --dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install jest-expo jest @types/jest "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 > **Note:** If your project is not using TypeScript, you can skip installing `@types/jest`.
 
@@ -113,15 +157,57 @@ The [React Native Testing Library (`@testing-library/react-native`)](https://cal
 
 To install it, run the following command:
 
+<Tabs>
+
+<Tab label="npx">
+
 <Terminal
   cmd={[
-    '# For all other package managers',
-    '$ npx expo install -- --save-dev @testing-library/react-native',
+    '# For macOS and Linux',
+    '$ npx expo install @testing-library/react-native -- --save-dev',
     '',
-    '# For yarn',
-    '$ yarn add -D @testing-library/react-native',
+    '# For Windows with Powershell',
+    '$ npx expo install @testing-library/react-native "--" --save-dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn add --dev @testing-library/react-native']} />
+
+</Tab>
+
+<Tab label="pnpm">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install @testing-library/react-native -- --save-dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install @testing-library/react-native "--" --save-dev',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="bun">
+
+<Terminal
+  cmd={[
+    '# For macOS and Linux',
+    '$ npx expo install @testing-library/react-native -- --dev',
+    '',
+    '# For Windows with Powershell',
+    '$ npx expo install @testing-library/react-native "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 > **warning** **Deprecated:** If you are using the default Expo template, after installing this library, you can uninstall the `react-test-renderer` and `@types/react-test-renderer` from your project's dev dependencies. The `react-test-renderer` has been deprecated and will no longer be maintained in the future. See [React's documentation for more information](https://react.dev/warnings/react-test-renderer).
 
@@ -313,3 +399,5 @@ For more information, see [CLI Options](https://jestjs.io/docs/en/cli) in Jest d
   href="/build-reference/e2e-tests/"
   Icon={Cube01Icon}
 />
+
+</TabsGroup>
