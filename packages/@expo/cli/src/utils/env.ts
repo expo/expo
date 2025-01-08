@@ -234,6 +234,11 @@ class Env {
   get EXPO_UNSTABLE_DEPLOY_SERVER(): boolean {
     return boolish('EXPO_UNSTABLE_DEPLOY_SERVER', false);
   }
+
+  /** Disable the React Native Directory compatibility check for new architecture when installing packages */
+  get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
+    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', false);
+  }
 }
 
 export const env = new Env();
