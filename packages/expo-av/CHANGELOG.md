@@ -14,6 +14,7 @@
 
 ### 💡 Others
 
+- [android][docs] Add `AndroidOutputFormat` and `AndroidAudioEncoder` docs. ([#34022](https://github.com/expo/expo/pull/34022) by [@mateoguzmana](https://github.com/mateoguzmana))
 - Added deprecation warning to the `Video` component. ([#32267](https://github.com/expo/expo/pull/32267) by [@tsapeta](https://github.com/tsapeta))
 
 ## 15.0.0 — 2024-10-22
