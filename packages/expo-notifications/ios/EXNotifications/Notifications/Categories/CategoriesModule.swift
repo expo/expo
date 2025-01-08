@@ -26,9 +26,9 @@ public class CategoriesModule: Module {
     }
 
     AsyncFunction("deleteNotificationCategoryAsync") { (identifier: String, promise: Promise) in
-      UNUserNotificationCenter.current().getNotificationCategories { oldcategories in
-        let newCategories = Set(categories.filter { $0.identifier != identifier })
-        let didDelete = categories.contains { $0.identifier == identifier }
+      UNUserNotificationCenter.current().getNotificationCategories { oldCategories in
+        let newCategories = Set(oldCategories.filter { $0.identifier != identifier })
+        let didDelete = oldCategories.contains { $0.identifier == identifier }
         if didDelete {
           UNUserNotificationCenter.current().setNotificationCategories(newCategories)
         }
