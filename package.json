@@ -19,7 +19,7 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.76.3",
+    "react-native": "0.77.0-rc.6",
     "react": "18.3.1",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/core": "7.0.0",
@@ -37,7 +37,7 @@
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
     "patch-package": "^8.0.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.2",
     "yarn-deduplicate": "^6.0.2"
   },
   "volta": {

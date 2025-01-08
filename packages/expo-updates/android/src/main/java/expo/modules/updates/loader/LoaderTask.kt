@@ -449,33 +449,35 @@ class LoaderTask(
               object : LauncherCallback {
                 override fun onFailure(e: Exception) {
                   databaseHolder.releaseDatabase()
+                  callback.onRemoteUpdateFinished(
+                    RemoteUpdateStatus.ERROR,
+                    null,
+                    e
+                  )
                   remoteUpdateCallback.onFailure(e)
                   logger.error("Loaded new update but it failed to launch", e, UpdatesErrorCode.UpdateFailedToLoad)
                 }
 
                 override fun onSuccess() {
                   databaseHolder.releaseDatabase()
-                  val hasLaunchedSynchronized = synchronized(this@LoaderTask) {
+                  synchronized(this@LoaderTask) {
                     if (!hasLaunched) {
                       candidateLauncher = newLauncher
                       isUpToDate = true
                     }
-                    hasLaunched
                   }
-                  if (hasLaunchedSynchronized) {
-                    if (availableUpdate == null) {
-                      callback.onRemoteUpdateFinished(
-                        RemoteUpdateStatus.NO_UPDATE_AVAILABLE,
-                        null,
-                        null
-                      )
-                    } else {
-                      callback.onRemoteUpdateFinished(
-                        RemoteUpdateStatus.UPDATE_AVAILABLE,
-                        availableUpdate,
-                        null
-                      )
-                    }
+                  if (availableUpdate == null) {
+                    callback.onRemoteUpdateFinished(
+                      RemoteUpdateStatus.NO_UPDATE_AVAILABLE,
+                      null,
+                      null
+                    )
+                  } else {
+                    callback.onRemoteUpdateFinished(
+                      RemoteUpdateStatus.UPDATE_AVAILABLE,
+                      availableUpdate,
+                      null
+                    )
                   }
                   remoteUpdateCallback.onSuccess()
                 }

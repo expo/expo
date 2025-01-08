@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
+
+- Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

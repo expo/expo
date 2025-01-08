@@ -1,6 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { slug } from 'github-slugger';
 import { type ComponentType, type ReactNode } from 'react';
+import { type Components } from 'react-markdown';
 
 import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
@@ -15,7 +16,6 @@ import {
   H4,
   LI,
   OL,
-  RawH3,
   UL,
 } from '~/ui/components/Text';
 
@@ -44,7 +44,6 @@ import {
 import { APIParamRow } from './components/APIParamRow';
 import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
 import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
-import { CodeComponentProps, MDComponents } from './types';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -53,15 +52,18 @@ export const DEFAULT_BASE_NESTING_LEVEL = 2;
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
-export const mdComponents: MDComponents = {
+export const mdComponents: Components = {
   blockquote: ({ children }) => (
     <InlineHelp size="sm" className={mergeClasses('shadow-none', ELEMENT_SPACING)}>
       {children}
     </InlineHelp>
   ),
-  code: ({ className, children, node }: CodeComponentProps) => {
+  code: ({ className, children, node }) => {
+    const codeBlockTitle =
+      node?.data && 'meta' in node.data ? (node.data.meta as string) : undefined;
+
     return className ? (
-      <PrismCodeBlock className={className} title={node?.data?.meta}>
+      <PrismCodeBlock className={className} title={codeBlockTitle}>
         {children}
       </PrismCodeBlock>
     ) : (
@@ -99,7 +101,7 @@ export const mdComponents: MDComponents = {
   sub: ({ children }) => <sub>{children}</sub>,
 };
 
-export const mdComponentsNoValidation: MDComponents = {
+export const mdComponentsNoValidation: Components = {
   ...mdComponents,
   a: ({ href, children }) => <A href={href}>{children}</A>,
 };
@@ -554,7 +556,6 @@ export function getCodeHeadingWithBaseNestingLevel(
 ) {
   return getMonospaceHeader(Element, baseNestingLevel, className);
 }
-export const H3Code = getCodeHeadingWithBaseNestingLevel(3, RawH3);
 
 export const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') {

@@ -6,7 +6,7 @@ import java.io.File
 import java.io.IOException
 
 fun ensureDirExists(dir: File): File {
-  if (!(dir.isDirectory() || dir.mkdirs())) {
+  if (!(dir.isDirectory || dir.mkdirs())) {
     throw IOException("Couldn't create directory '$dir'")
   }
   return dir
@@ -22,7 +22,7 @@ fun getMapFromDeviceInfo(deviceInfo: AudioDeviceInfo): Bundle {
     AudioDeviceInfo.TYPE_WIRED_HEADSET -> "MicrophoneWired"
     else -> "Unknown device type"
   }
-  map.putString("name", deviceInfo.getProductName().toString())
+  map.putString("name", deviceInfo.productName.toString())
   map.putString("type", type)
   map.putString("uid", deviceInfo.id.toString())
   return map

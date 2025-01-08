@@ -46,7 +46,7 @@ RelativePathString | ExternalPathString>;
  * a full path like `/profile/settings` or a relative path like `../settings`.
  * The params can be an object of key-value pairs.
  *
- * A Href can either be a string or an object.
+ * An Href can either be a string or an object.
  */
 export type Href<T extends ExpoRouter.__routes = ExpoRouter.__routes> = T extends {
     href: any;

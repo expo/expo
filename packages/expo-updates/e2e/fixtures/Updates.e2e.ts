@@ -141,6 +141,9 @@ describe('Basic tests', () => {
     const startTimeAfter = parseInt(await testElementValueAsync('startTime'), 10);
     jestExpect(startTimeAfter).toBeGreaterThan(startTimeBefore);
 
+    const restartCount = await testElementValueAsync('state.restartCount');
+    jestExpect(restartCount).toBe('1');
+
     await device.terminateApp();
   });
 

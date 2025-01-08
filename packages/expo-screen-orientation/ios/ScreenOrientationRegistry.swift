@@ -204,9 +204,15 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    Called at the end of the screen orientation change. Notifies the controllers about the orientation change.
    */
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
-    queue.async(flags: .barrier) {
-      self.currentScreenOrientation = newScreenOrientation
-
+    queue.sync(flags: .barrier) {
+      // Write with the barrier:
+      if self.currentScreenOrientation != newScreenOrientation {
+        // Only change if necessary, to prevent listeners from re-calling this method.
+        self.currentScreenOrientation = newScreenOrientation
+      }
+    }
+    queue.async {
+      // Read without the barrier:
       for controller in self.orientationControllers {
         controller.screenOrientationDidChange(newScreenOrientation)
       }

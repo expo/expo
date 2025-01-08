@@ -17,11 +17,13 @@ class ExpoUpdatesModule extends NativeModule {
     manifest;
     localAssets;
     initialContext = {
+        isStartupProcedureRunning: false,
         isUpdateAvailable: false,
         isUpdatePending: false,
         isChecking: false,
         isDownloading: false,
         isRestarting: false,
+        restartCount: 0,
         sequenceNumber: 0,
     };
     async reload() {

@@ -32,7 +32,7 @@ Expo Router supports three output targets for web apps.
 
 | Output             | Expo Router | API Routes  | Description                                                                                                                                                                      |
 | ------------------ | ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `single` (default) | <YesIcon /> | <NoIcon />  | Outputs a Single Page Application (SPA) with a single **index.html** in the output folder and has no statically indexable HTML.                                                  |
+| `single` (default) | <YesIcon /> | <NoIcon />  | Outputs a Single Page Application (SPA) with a single **index.html** in the output directory and has no statically indexable HTML.                                               |
 | `server`           | <YesIcon /> | <YesIcon /> | Creates **client** and **server** directories. Client files are output as separate HTML files. API routes as separate JavaScript files for hosting with a custom Node.js server. |
 | `static`           | <YesIcon /> | <NoIcon />  | Outputs separate HTML files for every route in the **app** directory.                                                                                                            |
 
@@ -112,7 +112,7 @@ If you modify this file, you must rebuild your project with `npx expo export -p 
 
 <Step label="3">
 
-Deploy the web build folder by running the following command:
+Deploy the web build directory by running the following command:
 
 <Terminal cmd={['$ netlify deploy --dir dist']} />
 
