@@ -66,7 +66,7 @@ jobs:
         working-directory: apps/bare-expo/ios
       - name: 🥥 Install pods in apps/bare-expo/ios
         if: steps.expo-caches.outputs.ios-pods-hit != 'true'
-        run: pod install
+        run: pod update hermes-engine --no-repo-update && pod install
         working-directory: apps/bare-expo/ios
       - name: 🏗️ Build iOS project
         run: ./scripts/start-ios-e2e-test.ts --build
