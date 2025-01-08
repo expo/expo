@@ -432,7 +432,7 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 A background notification (iOS) or a data-only notification (Android) is a remote notification that does not display an alert, play a sound, or add a badge to your app's icon. The purpose of a background notification is to provide a way to wake up your app to trigger an app data refresh in the background.
 
-To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](/versions/latest/config/app/), and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
+To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](../config/app/), and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
 and wasn't killed by the user. However, this is ultimately decided by the OS, so it might not always happen.
 
 On Android, data-only notifications are sent using the `data` key of the push notification request payload.
