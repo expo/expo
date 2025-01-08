@@ -13,6 +13,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Cache',
+    route: 'video/cache',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoCacheScreen'));
+    },
+  },
+  {
     name: 'DRM',
     route: 'video/drm',
     options: {},

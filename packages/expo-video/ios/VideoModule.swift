@@ -10,6 +10,18 @@ public final class VideoModule: Module {
       return AVPictureInPictureController.isPictureInPictureSupported()
     }
 
+    Function("getCurrentVideoCacheSize") {
+      VideoCacheManager.shared.getCacheDirectorySize()
+    }
+
+    AsyncFunction("setVideoCacheSizeAsync") { size in
+      try VideoCacheManager.shared.setMaxCacheSize(newSize: size)
+    }
+
+    AsyncFunction("clearVideoCacheAsync") {
+      return try await VideoCacheManager.shared.clearAllCache()
+    }
+
     View(VideoView.self) {
       Events(
         "onPictureInPictureStart",
