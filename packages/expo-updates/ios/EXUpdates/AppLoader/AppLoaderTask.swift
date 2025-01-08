@@ -490,14 +490,9 @@ public final class AppLoaderTask: NSObject {
             self.finish(withError: error)
             self.logger.warn(message: "Downloaded update but failed to relaunch: \(error?.localizedDescription ?? "")")
           }
+          self.didFinishBackgroundUpdate(withStatus: .updateAvailable, update: updateBeingLaunched, error: error)
           self.isRunning = false
           self.runReaper()
-
-          self.delegate.let { it in
-            self.delegateQueue.async {
-              it.appLoaderTaskDidFinishAllLoading(self)
-            }
-          }
         }
       } else {
         self.didFinishBackgroundUpdate(withStatus: .updateAvailable, update: updateBeingLaunched, error: nil)
