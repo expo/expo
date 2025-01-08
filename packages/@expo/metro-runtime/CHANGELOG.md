@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Parse errors with Babel code frames as syntax errors on Windows. ([#34017](https://github.com/expo/expo/pull/34017) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - fix: add e2e testing to server function errors ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
