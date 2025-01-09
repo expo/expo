@@ -135,6 +135,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
  * Determine if the provided error is related to a network issue.
  * When this returns true, offline mode should be enabled.
  *   - `ENOTFOUND` is thrown when the DNS lookup failed
+ *   - `EAI_AGAIN` is thrown when DNS lookup failed due to a server-side error
  *   - `UND_ERR_CONNECT_TIMEOUT` is thrown after DNS is resolved, but server can't be reached
  *
  * @see https://nodejs.org/api/errors.html
@@ -142,7 +143,9 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
  */
 function isNetworkError(error: Error & { code?: string }) {
   return (
-    'code' in error && error.code && ['ENOTFOUND', 'UND_ERR_CONNECT_TIMEOUT'].includes(error.code)
+    'code' in error &&
+    error.code &&
+    ['ENOTFOUND', 'EAI_AGAIN', 'UND_ERR_CONNECT_TIMEOUT'].includes(error.code)
   );
 }
 
