@@ -572,6 +572,18 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     }
   }
 
+  @available(iOS 18.0, *)
+  func toggleRecording() {
+    guard let videoFileOutput else {
+      return
+    }
+    if videoFileOutput.isRecordingPaused {
+      videoFileOutput.resumeRecording()
+    } else {
+      videoFileOutput.pauseRecording()
+    }
+  }
+
   func setVideoOptions(options: CameraRecordingOptions, for connection: AVCaptureConnection, promise: Promise) async {
     self.isValidVideoOptions = true
 

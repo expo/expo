@@ -117,6 +117,19 @@ export default class CameraView extends Component<CameraViewProps> {
   }
 
   /**
+   * Returns an object with the supported features of the camera on the current device.
+   */
+  getSupportedFeatures(): {
+    isModernBarcodeScannerAvailable: boolean;
+    toggleRecordingAsyncAvailable: boolean;
+  } {
+    return {
+      isModernBarcodeScannerAvailable: CameraManager.isModernBarcodeScannerAvailable,
+      toggleRecordingAsyncAvailable: CameraManager.toggleRecordingAsyncAvailable,
+    };
+  }
+
+  /**
    * Resumes the camera preview.
    */
   async resumePreview(): Promise<void> {
@@ -225,6 +238,24 @@ export default class CameraView extends Component<CameraViewProps> {
   async recordAsync(options?: CameraRecordingOptions) {
     const recordingOptions = ensureRecordingOptions(options);
     return this._cameraRef.current?.record(recordingOptions);
+  }
+
+  /**
+   * Pauses or resumes the video recording. Only has an effect if there is an active recording. On `iOS`, this method only supported on `iOS` 18.
+   *
+   * @example
+   * ```ts
+   * const { toggleRecordingAsyncAvailable } = getSupportedFeatures()
+   *
+   * return (
+   *  {toggleRecordingAsyncAvailable && (
+   *    <Button title="Toggle Recording" onPress={toggleRecordingAsync} />
+   *  )}
+   * )
+   * ```
+   */
+  async toggleRecordingAsync() {
+    return this._cameraRef.current?.toggleRecording();
   }
 
   /**
