@@ -6,9 +6,9 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 
 class BenchmarkingPackage : ReactPackage {
-  override fun createNativeModules(context: ReactApplicationContext): List<NativeModule?> =
+  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
     listOf(BenchmarkingBridgeModule())
 
-  override fun createViewManagers(context: ReactApplicationContext): List<ViewManager<*, *>?> =
+  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<in Nothing, in Nothing>> =
     emptyList()
 }
