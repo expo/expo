@@ -126,6 +126,7 @@ class ExpoCameraView(
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
   private var glSurface: SurfaceTexture? = null
+  private var isRecording = false
 
   private var previewView = PreviewView(context).apply {
     elevation = 0f
@@ -335,6 +336,15 @@ class ExpoCameraView(
         }
         .start(ContextCompat.getMainExecutor(context)) { event ->
           when (event) {
+            is VideoRecordEvent.Pause -> {
+              isRecording = false
+            }
+            is VideoRecordEvent.Resume -> {
+              isRecording = true
+            }
+            is VideoRecordEvent.Start -> {
+              isRecording = true
+            }
             is VideoRecordEvent.Finalize -> {
               when (event.error) {
                 VideoRecordEvent.Finalize.ERROR_FILE_SIZE_LIMIT_REACHED,
@@ -363,6 +373,21 @@ class ExpoCameraView(
         "Starting video recording failed - could not create video file.",
         null
       )
+  }
+
+  fun stopRecording() {
+    isRecording = false
+    activeRecording?.close()
+  }
+
+  fun toggleRecording() {
+    activeRecording?.let {
+      if (isRecording) {
+        it.pause()
+      } else {
+        it.resume()
+      }
+    }
   }
 
   @SuppressLint("UnsafeOptInUsageError")
