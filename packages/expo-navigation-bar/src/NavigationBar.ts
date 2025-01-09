@@ -1,6 +1,6 @@
 import { Platform, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import { type ColorValue, processColor } from 'react-native';
+import { processColor } from 'react-native';
 
 import ExpoNavigationBar from './ExpoNavigationBar';
 import {
@@ -41,7 +41,7 @@ export function addVisibilityListener(
  * ```
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
-export async function setBackgroundColorAsync(color: ColorValue): Promise<void> {
+export async function setBackgroundColorAsync(color: string): Promise<void> {
   if (Platform.OS !== 'android') {
     console.warn('`setBackgroundColorAsync` is only available on Android');
     return;
@@ -59,7 +59,7 @@ export async function setBackgroundColorAsync(color: ColorValue): Promise<void> 
  * ```
  * @returns Current navigation bar color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
  */
-export async function getBackgroundColorAsync(): Promise<ColorValue> {
+export async function getBackgroundColorAsync(): Promise<string> {
   if (Platform.OS !== 'android') {
     console.warn('`getBackgroundColorAsync` is only available on Android');
     return `#00000000`;
@@ -76,7 +76,7 @@ export async function getBackgroundColorAsync(): Promise<ColorValue> {
  * ```
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
-export async function setBorderColorAsync(color: ColorValue): Promise<void> {
+export async function setBorderColorAsync(color: string): Promise<void> {
   if (Platform.OS !== 'android') {
     console.warn('`setBorderColorAsync` is only available on Android');
     return;
@@ -94,7 +94,7 @@ export async function setBorderColorAsync(color: ColorValue): Promise<void> {
  * ```
  * @returns Navigation bar top border color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
  */
-export async function getBorderColorAsync(): Promise<ColorValue> {
+export async function getBorderColorAsync(): Promise<string> {
   if (Platform.OS !== 'android') {
     console.warn('`getBorderColorAsync` is only available on Android');
     return `#00000000`;
