@@ -169,7 +169,10 @@ module.exports = async function (args: string[]) {
       ...modules.reduce<Set<string>>((acc, module) => {
         if (hasCoreFeatures(module)) {
           const features = module.coreFeatures ?? [];
-          return new Set([...acc, ...features]);
+          for (const feature of features) {
+            acc.add(feature);
+          }
+          return acc;
         }
 
         return acc;
