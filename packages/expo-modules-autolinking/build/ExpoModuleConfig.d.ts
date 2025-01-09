@@ -54,6 +54,10 @@ export declare class ExpoModuleConfig {
      */
     androidGradleAarProjects(): AndroidGradleAarProjectDescriptor[];
     /**
+     * Returns core features required by the module author.
+     */
+    coreFeatures(): string[];
+    /**
      * Returns serializable raw config.
      */
     toJSON(): RawExpoModuleConfig;

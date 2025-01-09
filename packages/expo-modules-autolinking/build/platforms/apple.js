@@ -44,6 +44,7 @@ async function resolveModuleAsync(packageName, revision, options) {
         podspecDir: path_1.default.dirname(path_1.default.join(revision.path, podspecFile)),
     }));
     const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.appleSwiftModuleNames());
+    const coreFeatures = revision.config?.coreFeatures() ?? [];
     return {
         packageName,
         pods,
@@ -53,6 +54,7 @@ async function resolveModuleAsync(packageName, revision, options) {
         appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
         reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
         debugOnly: revision.config?.appleDebugOnly() ?? false,
+        ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
