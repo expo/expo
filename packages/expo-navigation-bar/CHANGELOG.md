@@ -10,7 +10,9 @@
 
 ### 💡 Others
 
-## 4.0.6 — 2024-12-10
+- Restricted color types to string to prevent the use of illegal color types (PlatformColor) until supported. ([#34053](https://github.com/expo/expo/pull/34053) by [@chrfalch](https://github.com/chrfalch))
+
+## 4.0.6 - 2024-12-10
 
 _This version does not introduce any user-facing changes._
 
