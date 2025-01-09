@@ -286,7 +286,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
     do {
       try device.lockForConfiguration()
-      device.videoZoomFactor = (device.activeFormat.videoMaxZoomFactor - 1.0) * zoom + 1.0
+      let minZoom = 1.0
+      device.videoZoomFactor = minZoom * pow(device.activeFormat.videoMaxZoomFactor / minZoom, zoom)
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
     }
@@ -568,6 +569,18 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       videoRecordedPromise = promise
 
       videoFileOutput.startRecording(to: fileUrl, recordingDelegate: self)
+    }
+  }
+
+  @available(iOS 18.0, *)
+  func toggleRecording() {
+    guard let videoFileOutput else {
+      return
+    }
+    if videoFileOutput.isRecordingPaused {
+      videoFileOutput.resumeRecording()
+    } else {
+      videoFileOutput.pauseRecording()
     }
   }
 

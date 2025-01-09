@@ -4,11 +4,12 @@ import { Menu01Icon } from '@expo/styleguide-icons/outline/Menu01Icon';
 import { Star01Icon } from '@expo/styleguide-icons/outline/Star01Icon';
 import { type ReactNode } from 'react';
 
+import { SidebarFooter } from '~/ui/components/Sidebar/SidebarFooter';
+import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
+import { DEMI } from '~/ui/components/Text';
+
 import { Logo } from './Logo';
 import { ThemeSelector } from './ThemeSelector';
-
-import { SidebarFooter, SidebarHead } from '~/ui/components/Sidebar';
-import { DEMI } from '~/ui/components/Text';
 
 type HeaderProps = {
   sidebar: ReactNode;

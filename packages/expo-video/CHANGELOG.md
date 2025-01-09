@@ -6,15 +6,34 @@
 
 ### 🎉 New features
 
+- [iOS] Added an option to `generateThumbnailsAsync` to set the maximum size of generated thumbnails. ([#33599](https://github.com/expo/expo/pull/33599) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
+- [iOS] Fix `AVPlayer` not deallocating when the player is unmounted. ([#33922](https://github.com/expo/expo/pull/33922) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
+
+- Fixed `generateThumbnailsAsync` not being available on Android in the types. ([#33491](https://github.com/expo/expo/pull/33491) by [@hirbod](https://github.com/hirbod))
+- Run VideoManager.setAppropriateAudioSessionOrWarn on a different queue for a lower load on the main thread. ([#33127](https://github.com/expo/expo/pull/33127) by [@behenate](https://github.com/behenate))
+
+## 2.0.3 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fix empty notification showing on iOS when `showNowPlayingNotification` is set to false. ([#33698](https://github.com/expo/expo/pull/33698) by [@behenate](https://github.com/behenate))
+- [iOS] Dispatch current player item changes on main queue to fix KVO-related crashes. ([#33123](https://github.com/expo/expo/pull/33123) by [@behenate](https://github.com/behenate))
+
+## 2.0.2 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
 
 ## 2.0.1 — 2024-11-19
 
 ### 🐛 Bug fixes
 
 - [Android] Fixed `border` related props weren't applied correctly. ([#33075](https://github.com/expo/expo/pull/33075) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix controls sometimes flashing on initial display of the view, when `useNativeControls` is `false` ([#33238](https://github.com/expo/expo/pull/33238) by [@behenate](https://github.com/behenate))
 
 ## 2.0.0 — 2024-11-11
 

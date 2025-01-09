@@ -15,7 +15,7 @@ import { ConfigReactNative, ConfigPluginProperties } from '~/ui/components/Confi
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
-import { PlatformTags } from '~/ui/components/Tag';
+import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -635,9 +635,7 @@ We encourage you to always ensure appropriate channels with informative names ar
 
 ### Custom notification icon and colors&ensp;<PlatformTags platforms={['android']} />
 
-You can configure the [`notification.icon`](../config/app.mdx#notification) and [`notification.color`](../config/app.mdx#notification) keys
-in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#expo-config).
-These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
+You can configure the [`notification.icon`](../config/app/#notification) and [`notification.color`](../config/app/#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#configurable-properties). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles)
 (the icon must be all white with a transparent background) or else it may not be displayed as intended.

@@ -54,8 +54,7 @@ class StateMachineSerialExecutorQueueTest {
           return UpdatesStateValue.Idle
         }
 
-        override fun resetState() {
-        }
+        override fun resetStateAfterRestart() {}
       }
     )
 

@@ -1,6 +1,5 @@
-import type { StyleProp, ViewStyle } from 'react-native';
-export type MeshGradientViewProps = {
-    style?: StyleProp<ViewStyle>;
+import type { ViewProps } from 'react-native';
+export interface MeshGradientViewProps extends ViewProps {
     /**
      * Width of the mesh, i.e. the number of vertices per row.
      * @default 0
@@ -13,6 +12,7 @@ export type MeshGradientViewProps = {
     rows?: number;
     /**
      * An array of two-dimensional points on the mesh. Must contain `columns * rows` elements.
+     * @default []
      */
     points?: number[][];
     /**
@@ -31,5 +31,11 @@ export type MeshGradientViewProps = {
      * @default true
      */
     ignoresSafeArea?: boolean;
-};
+    /**
+     * Masks the gradient using the alpha channel of the given children views.
+     * > **Note**: When this option is enabled, all user interactions (gestures) on children views are ignored.
+     * @default false
+     */
+    mask?: boolean;
+}
 //# sourceMappingURL=MeshGradient.types.d.ts.map

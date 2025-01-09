@@ -58,7 +58,7 @@ export const TALKS = [
     videoId: 'Ca4SNa6kL_M',
   },
   {
-    title: 'Not your grandparents’ Expo',
+    title: "Not your grandparents' Expo",
     event: 'Chain React 2023',
     description: 'Keith Kurak',
     videoId: 'YufZFVL-BJc',
@@ -90,6 +90,41 @@ export const TALKS = [
 ] as Talk[];
 
 export const PODCASTS = [
+  {
+    title: 'Universal React Native Apps with DOM & RSC',
+    event: 'React Universe On Air #45',
+    description: 'Evan Bacon',
+    videoId: 'rA7E3rGKSZw',
+    link: 'https://www.callstack.com/podcasts/universal-react-native-apps-with-dom-react-server-components',
+  },
+  {
+    title: 'Streamlined React Native Development',
+    event: 'Software Engineering Daily',
+    description: 'Charlie Cheever, James Ide',
+    thumbnail: 'sedaily-01.webp',
+    link: 'https://softwareengineeringdaily.com/2025/01/01/streamlined-react-native-development-with-charlie-cheever-and-james-ide/',
+  },
+  {
+    title: 'Debugging the Debugger',
+    event: 'React Native Radio #316',
+    description: 'Cedric van Putten',
+    thumbnail: 'rnr-316.jpg',
+    link: 'https://reactnativeradio.com/episodes/rnr-316-debugging-the-debugger-with-cedric-van-putten-and-alex-hunt',
+  },
+  {
+    title: 'What to do without App Center',
+    event: 'React Native Radio #315',
+    description: 'Quinlan Jung',
+    thumbnail: 'rnr-315.jpg',
+    link: 'https://reactnativeradio.com/episodes/rnr-315-what-to-do-without-app-center',
+  },
+  {
+    title: 'Expo Workflows with Jon Samp',
+    event: 'React Native Radio #314',
+    description: 'Jon Samp',
+    thumbnail: 'rnr-314.jpg',
+    link: 'https://reactnativeradio.com/episodes/rnr-314-announcing-expo-workflows-with-jon-samp',
+  },
   {
     title: 'How to Handle App Center Retirement',
     event: 'React Universe On Air #43',
@@ -169,6 +204,26 @@ export const PODCASTS = [
 ] as Talk[];
 
 export const LIVE_STREAMS = [
+  {
+    title: 'Radon IDE: the VS Code extension for React Native',
+    event: 'Expo Live Stream',
+    videoId: 'UeYmRKWhwFI',
+  },
+  {
+    title: 'Launch Week 2024 AMA',
+    event: 'Expo Live Stream',
+    videoId: 'NHpS9JaL7jA',
+  },
+  {
+    title: 'Expo DOM component live demo',
+    event: 'Expo Live Stream',
+    videoId: 'jU4_1vpjahw',
+  },
+  {
+    title: 'RNL Conf Fireside Interview: Charlie Cheever & Mo Javad',
+    event: 'Expo Live Stream',
+    videoId: 'ZBEkeRy3wjk',
+  },
   {
     title: 'How to migrate a React website to native with Expo DOM components',
     event: 'Expo Live Stream',

@@ -34,7 +34,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -44,7 +44,7 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: 🧪 Run Docs tests
         run: yarn test
       - name: 🚨 Lint Docs website code

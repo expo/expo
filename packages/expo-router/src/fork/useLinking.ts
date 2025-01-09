@@ -13,6 +13,7 @@ import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 
 import { createMemoryHistory } from './createMemoryHistory';
+import { appendBaseUrl } from './getPathFromState';
 import { ServerContext } from '../global-state/serverLocationContext';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
@@ -305,7 +306,10 @@ export function useLinking(
             focusedRoute.name === route.name &&
             isEqual({ ...focusedRoute.params }, { ...route.params })
           ) {
-            path = route.path;
+            // START FORK - Ensure paths coming from events (e.g refresh) have the base URL
+            // path = route.path;
+            path = appendBaseUrl(route.path);
+            // END FORK
           }
         }
       }
@@ -314,7 +318,7 @@ export function useLinking(
         path = getPathFromStateRef.current(state, configRef.current);
       }
 
-      // START FORK - ExpoRouter manually handles hashes
+      // START FORK - ExpoRouter manually handles hashes. This code is intentionally removed
       // const previousRoute = previousStateRef.current
       //   ? findFocusedRoute(previousStateRef.current)
       //   : undefined;

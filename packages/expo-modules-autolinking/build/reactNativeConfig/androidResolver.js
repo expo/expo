@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findGradleAndManifestAsync = exports.parseComponentDescriptorsAsync = exports.parseLibraryNameAsync = exports.parseNativePackageClassNameAsync = exports.parsePackageNameAsync = exports.resolveDependencyConfigImplAndroidAsync = void 0;
+exports.findGradleAndManifestAsync = exports.parseComponentDescriptorsAsync = exports.parseLibraryNameAsync = exports.matchNativePackageClassName = exports.parseNativePackageClassNameAsync = exports.parsePackageNameAsync = exports.resolveDependencyConfigImplAndroidAsync = void 0;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
@@ -13,7 +13,8 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
         // Skip autolinking for this package.
         return null;
     }
-    const androidDir = path_1.default.join(packageRoot, 'android');
+    const sourceDir = reactNativeConfig?.sourceDir || 'android';
+    const androidDir = path_1.default.join(packageRoot, sourceDir);
     const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: true });
     if (!manifest && !gradle) {
         return null;
@@ -92,7 +93,7 @@ async function parsePackageNameAsync(androidDir, manifestPath, gradlePath) {
 }
 exports.parsePackageNameAsync = parsePackageNameAsync;
 /**
- * Parse the Java or Kotlin class name to for `ReactPackage` or `TurboReactPackage`.
+ * Parse the Java or Kotlin class name to for `ReactPackage` or `(Base|Turbo)ReactPackage`.
  */
 async function parseNativePackageClassNameAsync(packageRoot, androidDir) {
     const matched = await (0, fileUtils_1.globMatchFunctorFirstAsync)('**/*Package.{java,kt}', matchNativePackageClassName, { cwd: androidDir });
@@ -121,10 +122,10 @@ function matchNativePackageClassName(filePath, contents) {
     if (matchReactPackage) {
         return matchReactPackage[1];
     }
-    // [1] Match TurboReactPackage
+    // [1] Match (Base|Turbo)ReactPackage
     if (!lazyTurboReactPackageRegex) {
         lazyTurboReactPackageRegex =
-            /class\s+(\w+[^(\s]*)[\s\w():]*(\s+extends\s+|:)[\s\w():,]*[^{]*TurboReactPackage/;
+            /class\s+(\w+[^(\s]*)[\s\w():]*(\s+extends\s+|:)[\s\w():,]*[^{]*(Base|Turbo)ReactPackage/;
     }
     const matchTurboReactPackage = fileContents.match(lazyTurboReactPackageRegex);
     if (matchTurboReactPackage) {
@@ -132,6 +133,7 @@ function matchNativePackageClassName(filePath, contents) {
     }
     return null;
 }
+exports.matchNativePackageClassName = matchNativePackageClassName;
 async function parseLibraryNameAsync(androidDir, packageJson) {
     // [0] `codegenConfig.name` from package.json
     if (packageJson.codegenConfig?.name) {
@@ -159,9 +161,9 @@ async function parseLibraryNameAsync(androidDir, packageJson) {
     return null;
 }
 exports.parseLibraryNameAsync = parseLibraryNameAsync;
-async function parseComponentDescriptorsAsync(packageRoot, pacakgeJson) {
-    const jsRoot = pacakgeJson?.codegenConfig?.jsSrcsDir
-        ? path_1.default.join(packageRoot, pacakgeJson.codegenConfig.jsSrcsDir)
+async function parseComponentDescriptorsAsync(packageRoot, packageJson) {
+    const jsRoot = packageJson?.codegenConfig?.jsSrcsDir
+        ? path_1.default.join(packageRoot, packageJson.codegenConfig.jsSrcsDir)
         : packageRoot;
     const results = await (0, fileUtils_1.globMatchFunctorAllAsync)('**/*.{js,jsx,ts,tsx}', matchComponentDescriptors, {
         cwd: jsRoot,

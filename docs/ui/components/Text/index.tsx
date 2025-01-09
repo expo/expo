@@ -1,12 +1,12 @@
 import { LinkBase, LinkBaseProps, mergeClasses } from '@expo/styleguide';
 import { PropsWithChildren, ComponentType, Children, isValidElement } from 'react';
 
-import { TextComponentProps, TextElement, TextTheme } from './types';
-
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
 import { Permalink } from '~/ui/components/Permalink';
 
-export { AnchorContext } from './withAnchor';
+import { TextComponentProps, TextElement, TextTheme } from './types';
+
+export { AnchorContext } from './AnchorContext';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -26,7 +26,7 @@ export const createPermalinkedComponent = (
     className?: string;
   }
 ) => {
-  const { baseNestingLevel, iconSize = 'sm', sidebarType = HeadingType.Text } = options || {};
+  const { baseNestingLevel, iconSize = 'sm', sidebarType = HeadingType.TEXT } = options ?? {};
   return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = Children.map(children, child => {
       if (isValidElement(child) && child?.props?.href) {
@@ -195,10 +195,7 @@ export const RawH5 = createTextComponent(
   )
 );
 
-export const P = createTextComponent(
-  TextElement.P,
-  'font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words'
-);
+export const P = createTextComponent(TextElement.P, 'font-normal text-base [&_strong]:break-words');
 export const CODE = createTextComponent(
   TextElement.CODE,
   mergeClasses(
@@ -208,12 +205,9 @@ export const CODE = createTextComponent(
 );
 export const LI = createTextComponent(
   TextElement.LI,
-  mergeClasses('text-[16px] font-normal leading-relaxed tracking-[-0.011rem]', 'mb-2')
+  mergeClasses('text-base font-normal leading-relaxed', 'mb-2')
 );
-export const HEADLINE = createTextComponent(
-  TextElement.P,
-  'font-medium text-[16px] leading-[1.625] tracking-[-0.011rem]'
-);
+export const HEADLINE = createTextComponent(TextElement.P, 'font-medium text-base');
 export const LABEL = createTextComponent(
   TextElement.SPAN,
   'font-medium text-[15px] leading-[1.6] tracking-[-0.009rem]'

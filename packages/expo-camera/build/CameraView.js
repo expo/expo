@@ -79,6 +79,15 @@ export default class CameraView extends Component {
         return (await this._cameraRef.current?.getAvailablePictureSizes()) ?? [];
     }
     /**
+     * Returns an object with the supported features of the camera on the current device.
+     */
+    getSupportedFeatures() {
+        return {
+            isModernBarcodeScannerAvailable: CameraManager.isModernBarcodeScannerAvailable,
+            toggleRecordingAsyncAvailable: CameraManager.toggleRecordingAsyncAvailable,
+        };
+    }
+    /**
      * Resumes the camera preview.
      */
     async resumePreview() {
@@ -130,23 +139,26 @@ export default class CameraView extends Component {
         return this._cameraRef.current?.takePicture(pictureOptions);
     }
     /**
-     * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+     * On Android, we will use the [Google code scanner](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
+     * On iOS, presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+     * @platform android
      * @platform ios
      */
     static async launchScanner(options) {
         if (!options) {
             options = { barcodeTypes: [] };
         }
-        if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
+        if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
             await CameraManager.launchScanner(options);
         }
     }
     /**
      * Dismiss the scanner presented by `launchScanner`.
+     * > **info** On Android, the scanner is dismissed automatically when a barcode is scanned.
      * @platform ios
      */
     static async dismissScanner() {
-        if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
+        if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
             await CameraManager.dismissScanner();
         }
     }
@@ -157,6 +169,7 @@ export default class CameraView extends Component {
      * @param listener Invoked with the [ScanningResult](#scanningresult) when a bar code has been successfully scanned.
      *
      * @platform ios
+     * @platform android
      */
     static onModernBarcodeScanned(listener) {
         return CameraManager.addListener('onModernBarcodeScanned', listener);
@@ -173,6 +186,23 @@ export default class CameraView extends Component {
     async recordAsync(options) {
         const recordingOptions = ensureRecordingOptions(options);
         return this._cameraRef.current?.record(recordingOptions);
+    }
+    /**
+     * Pauses or resumes the video recording. Only has an effect if there is an active recording. On `iOS`, this method only supported on `iOS` 18.
+     *
+     * @example
+     * ```ts
+     * const { toggleRecordingAsyncAvailable } = getSupportedFeatures()
+     *
+     * return (
+     *  {toggleRecordingAsyncAvailable && (
+     *    <Button title="Toggle Recording" onPress={toggleRecordingAsync} />
+     *  )}
+     * )
+     * ```
+     */
+    async toggleRecordingAsync() {
+        return this._cameraRef.current?.toggleRecording();
     }
     /**
      * Stops recording if any is in progress.

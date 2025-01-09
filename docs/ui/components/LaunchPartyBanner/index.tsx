@@ -4,10 +4,10 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { isBefore } from 'date-fns/isBefore';
 import { useEffect, useState } from 'react';
 
-import { ConfettiPopper } from './ConfettiPopper';
-
 import { useLocalStorage } from '~/common/useLocalStorage';
 import { CALLOUT, HEADLINE } from '~/ui/components/Text';
+
+import { ConfettiPopper } from './ConfettiPopper';
 
 type Props = {
   currentDateAsString?: string;

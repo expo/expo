@@ -156,4 +156,18 @@ export declare enum ResultCode {
  * @return A promise which fulfils with `IntentLauncherResult` object.
  */
 export declare function startActivityAsync(activityAction: ActivityAction | string, params?: IntentLauncherParams): Promise<IntentLauncherResult>;
+/**
+ * Opens an application by its package name.
+ * @param packageName e.g., `com.google.android.gm` for Gmail.
+ */
+export declare function openApplication(packageName: string): any;
+/**
+ * Returns the icon of the specified application as a base64-encoded PNG image string.
+ * The returned string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image` `<Image>`
+ * component's `source` prop.
+ *
+ * @param packageName The package name of the target application, e.g. `com.google.android.gm` for Gmail.
+ * @return A promise that resolves to the base64-encoded PNG icon of the specified application, or an empty string if the icon could not be retrieved.
+ */
+export declare function getApplicationIconAsync(packageName: string): Promise<string>;
 //# sourceMappingURL=IntentLauncher.d.ts.map

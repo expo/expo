@@ -4,6 +4,8 @@
  * On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed.
  * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), for example [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html).
  */
+import type { EventSubscription } from 'expo-modules-core';
+
 export type PushNotificationTrigger = {
   type: 'push';
   /**
@@ -349,10 +351,11 @@ export type YearlyTriggerInput = {
  * on the specified value of the `date` property. The value of `repeats` will be ignored
  * for this trigger type.
  */
-export type DateTriggerInput =
-  | Date
-  | number
-  | { type: SchedulableTriggerInputTypes.DATE; channelId?: string; date: Date | number };
+export type DateTriggerInput = {
+  type: SchedulableTriggerInputTypes.DATE;
+  date: Date | number;
+  channelId?: string;
+};
 
 /**
  * This trigger input will cause the notification to be delivered once or many times
@@ -764,6 +767,11 @@ export type NotificationCategoryOptions = {
 };
 
 export type MaybeNotificationResponse = NotificationResponse | null | undefined;
+
+/**
+ * @deprecated use the [`EventSubscription`](#eventsubscription) type instead
+ * */
+export type Subscription = EventSubscription;
 
 export {
   PermissionExpiration,

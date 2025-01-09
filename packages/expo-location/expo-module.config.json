@@ -1,22 +1,9 @@
 {
-  "platforms": [
-    "apple",
-    "android"
-  ],
+  "platforms": ["apple", "android"],
   "apple": {
-    "modules": [
-      "LocationModule"
-    ]
+    "modules": ["LocationModule"]
   },
   "android": {
-    "modules": [
-      "expo.modules.location.LocationModule"
-    ],
-    "gradleAarProjects": [
-      {
-        "name": "io.nlopez.smartlocation-jetified-aar",
-        "aarFilePath": "android/libs/io.nlopez.smartlocation-3.3.3-jetified.aar"
-      }
-    ]
+    "modules": ["expo.modules.location.LocationModule"]
   }
 }

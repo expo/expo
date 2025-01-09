@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `expo-updates` to list of packages. ([#33613](https://github.com/expo/expo/pull/33613) by [@betomoedano](https://github.com/betomoedano))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -37,6 +37,13 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
   constructor();
 
   /**
+   * @deprecated As of Expo SDK 52 the given object is already an EventEmitter.
+   * Creating a new one is not necessary.
+   * @hidden
+   */
+  constructor(object: EventEmitter);
+
+  /**
    * Adds a listener for the given event name.
    */
   addListener<EventName extends keyof TEventsMap>(
@@ -58,7 +65,7 @@ export declare class EventEmitter<TEventsMap extends EventsMap = Record<never, n
   removeAllListeners(eventName: keyof TEventsMap): void;
 
   /**
-   * Synchronously calls all of the listeners attached to that specific event.
+   * Synchronously calls all the listeners attached to that specific event.
    * The event can include any number of arguments that will be passed to the listeners.
    */
   emit<EventName extends keyof TEventsMap>(

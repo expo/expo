@@ -51,6 +51,7 @@ function getExpoDependencyChunks({
     ...(includeTV
       ? [
           [
+            'expo-audio',
             'expo-av',
             'expo-blur',
             'expo-image',

@@ -31,15 +31,13 @@ import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.toKClass
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -110,10 +108,8 @@ class ExpoImageModule : Module() {
       }
     }
 
-    AsyncFunction("loadAsync") { source: SourceMap, options: ImageLoadOptions?, promise: Promise ->
-      CoroutineScope(Dispatchers.Main).launch {
-        ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load(promise)
-      }
+    AsyncFunction("loadAsync") Coroutine { source: SourceMap, options: ImageLoadOptions? ->
+      ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
     }
 
     Class(Image::class) {

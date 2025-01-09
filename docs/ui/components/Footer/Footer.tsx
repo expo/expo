@@ -3,12 +3,12 @@ import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
 
+import { NavigationRouteWithSection } from '~/types/common';
+import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
+
 import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
 import { NewsletterSignUp } from './NewsletterSignUp';
 import { PageVote } from './PageVote';
-
-import { NavigationRouteWithSection } from '~/types/common';
-import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
 type Props = {
   title?: string;
@@ -45,7 +45,8 @@ export const Footer = ({
             'max-xl-gutters:flex-col-reverse',
             'max-lg-gutters:flex-row',
             'max-md-gutters:flex-col-reverse'
-          )}>
+          )}
+          data-nosnippet>
           {previousPage ? (
             <LinkBase
               href={previousPage.href}

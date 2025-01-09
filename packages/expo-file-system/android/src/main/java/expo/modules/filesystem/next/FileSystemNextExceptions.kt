@@ -24,6 +24,11 @@ internal class UnableToDeleteException(reason: String) :
     "Unable to delete file or directory: $reason"
   )
 
+internal class UnableToCreateException(reason: String) :
+  CodedException(
+    "Unable to create file or directory: $reason"
+  )
+
 internal class InvalidPermissionException(permission: Permission) :
   CodedException(
     "Missing '${permission.name}' permission for accessing the file."

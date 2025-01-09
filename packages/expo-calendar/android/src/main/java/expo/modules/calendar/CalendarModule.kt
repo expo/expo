@@ -768,7 +768,7 @@ class CalendarModule : Module() {
     val calendar = Bundle().apply {
       putString("id", optStringFromCursor(cursor, CalendarContract.Calendars._ID))
       putString("title", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME))
-      putBoolean("isPrimary", optStringFromCursor(cursor, CalendarContract.Calendars.IS_PRIMARY) === "1")
+      putBoolean("isPrimary", optIntFromCursor(cursor, CalendarContract.Calendars.IS_PRIMARY) == 1)
       putStringArrayList("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(stringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_AVAILABILITY)))
       putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.NAME))
       putString("color", String.format("#%06X", 0xFFFFFF and optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_COLOR)))

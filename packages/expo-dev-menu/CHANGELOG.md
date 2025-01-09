@@ -6,9 +6,26 @@
 
 ### 🎉 New features
 
+- support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
+- Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- Fixed broken local UI development on Android. ([#33714](https://github.com/expo/expo/pull/33714) by [@kudo](https://github.com/kudo))
+- Fixed compatibility for React Native 0.78 nightlies. ([#33718](https://github.com/expo/expo/pull/33718) by [@kudo](https://github.com/kudo))
+
+## 6.0.14 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.13 - 2024-11-29
+
+### 💡 Others
+
+- Fixed compatibility for React Native 0.77. ([#33277](https://github.com/expo/expo/pull/33277) by [@kudo](https://github.com/kudo))
 
 ## 6.0.12 — 2024-11-22
 

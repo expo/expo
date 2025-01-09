@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Added `netInfo` null check. ([#33559](https://github.com/expo/expo/pull/33559)) by [@pchalupa](https://github.com/pchalupa)
+
 ### 💡 Others
+
+## 7.0.4 - 2024-12-16
+
+### 🐛 Bug fixes
+
+- On `Android`, Prevent crash from the `networkCallback` calling `fetchNetworkState`. ([#33563](https://github.com/expo/expo/pull/33563) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 7.0.3 - 2024-12-02
+
+### 🐛 Bug fixes
+
+- Fix event emitters not working on web. ([#33327](https://github.com/expo/expo/pull/33327) by [@aleqsio](https://github.com/aleqsio))
 
 ## 7.0.2 — 2024-11-22
 

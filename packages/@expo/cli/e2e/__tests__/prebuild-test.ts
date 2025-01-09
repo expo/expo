@@ -1,54 +1,21 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
-import * as fs from 'fs/promises';
-import { sync as globSync } from 'glob';
-import klawSync from 'klaw-sync';
+import fs from 'fs/promises';
 import path from 'path';
 import semver from 'semver';
 
 import {
-  bin,
-  execute,
   projectRoot,
   getRoot,
   setupTestProjectWithOptionsAsync,
   getLoadedModulesAsync,
+  findProjectFiles,
 } from './utils';
+import { executeExpoAsync } from '../utils/expo';
+import { createPackageTarball } from '../utils/package';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
-
-const templateFolder = path.join(__dirname, '../../../../../templates/expo-template-bare-minimum/');
-
-function getTemplatePath() {
-  const results = globSync(`*.tgz`, {
-    absolute: true,
-    cwd: templateFolder,
-  });
-
-  return results[0];
-}
-
-let cachedTemplatePath: string | null = null;
-
-async function ensureTemplatePathAsync() {
-  // let templatePath = getTemplatePath();
-  if (cachedTemplatePath) return cachedTemplatePath;
-  await execa('npm', ['pack'], { cwd: templateFolder });
-
-  cachedTemplatePath = getTemplatePath();
-
-  const tmpTemplate = path.join(projectRoot, 'template.tgz');
-  // Move to tmp directory
-  await fs.rename(cachedTemplatePath, tmpTemplate);
-
-  cachedTemplatePath = tmpTemplate;
-
-  if (cachedTemplatePath) return cachedTemplatePath;
-
-  throw new Error('Could not find template tarball');
-}
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
@@ -71,7 +38,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo prebuild --help`', async () => {
-  const results = await execute('prebuild', '--help');
+  const results = await executeExpoAsync(projectRoot, ['prebuild', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -86,7 +53,7 @@ it('runs `npx expo prebuild --help`', async () => {
         --clean                                  Delete the native folders and regenerate them before applying changes
         --npm                                    Use npm to install dependencies. Default when package-lock.json exists
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
-        --bun                                    Use bun to install dependencies. Default when bun.lockb exists
+        --bun                                    Use bun to install dependencies. Default when bun.lock or bun.lockb exists
         --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         --template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
@@ -97,15 +64,17 @@ it('runs `npx expo prebuild --help`', async () => {
 });
 
 it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
-  const projectName = 'basic-prebuild-assert-no-expo';
-  const projectRoot = getRoot(projectName);
+  const projectRoot = getRoot('basic-prebuild-assert-no-expo');
+
   // Create the project root aot
   await fs.mkdir(projectRoot, { recursive: true });
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
   await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
-  await expect(execute('prebuild', projectName, '--no-install')).rejects.toThrowError(
+  await expect(
+    executeExpoAsync(projectRoot, ['prebuild', '--no-install'], { verbose: false })
+  ).rejects.toThrow(
     /Cannot determine which native SDK version your project uses because the module `expo` is not installed\. Please install it with `yarn add expo` and try again./
   );
 });
@@ -175,151 +144,114 @@ async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
   // android/app/src/main/java/com/minimal/MainApplication.java
 }
 
-it(
-  'runs `npx expo prebuild`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank', {
+    reuseExisting: false,
+  });
 
-    const templateFolder = await ensureTemplatePathAsync();
-    console.log('Using local template:', templateFolder);
+  const templateTarball = await createPackageTarball(
+    projectRoot,
+    'templates/expo-template-bare-minimum'
+  );
 
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
-      cwd: projectRoot,
-    });
+  await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--no-install',
+    '--template',
+    templateTarball.relativePath,
+  ]);
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
+  // Clean up the tarballs to avoid `.tarballs` being validated
+  await fs.rm(path.dirname(templateTarball.absolutePath), { force: true, recursive: true });
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+  await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
 
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
+  // Added new packages
+  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+    'expo',
+    'react',
+    'react-native',
+  ]);
 
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
+  // Updated scripts
+  expect(pkg.scripts).toStrictEqual({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
 
-    // If this changes then everything else probably changed as well.
-    expect(files).toMatchSnapshot();
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+});
 
-it(
-  'runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`', async () => {
+  const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank', {
+    reuseExisting: false,
+  });
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
-    const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', npmTemplatePackage], {
-      cwd: projectRoot,
-    });
+  await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--no-install',
+    '--template',
+    npmTemplatePackage,
+  ]);
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
+  await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  // Added new packages
+  expect(pkg.read().dependencies).toMatchObject({
+    expo: expect.any(String),
+    react: expect.any(String),
+    'react-native': expect.any(String),
+  });
 
-    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+  // Updated scripts
+  expect(pkg.read().scripts).toMatchObject({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
 
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+});
 
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'github-template-prebuild',
+    'with-blank',
+    { reuseExisting: false }
+  );
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
-    // If this changes then everything else probably changed as well.
-    expect(files).toMatchSnapshot();
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
+  const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+  if (!expoSdkVersion) {
+    throw new Error('Could not determine Expo SDK major version from template');
+  }
 
-it(
-  'runs `npx expo prebuild --template <github-url>`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync(
-      'github-template-prebuild',
-      'with-blank'
-    );
+  const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
 
-    const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
-    const expoSdkVersion = semver.minVersion(expoPackage)?.major;
-    if (!expoSdkVersion) {
-      throw new Error('Could not determine Expo SDK major version from template');
-    }
+  await executeExpoAsync(projectRoot, ['prebuild', '--no-install', '--template', templateUrl]);
 
-    const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
-    console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
+  // Added new packages
+  expect(pkg.read().dependencies).toMatchObject({
+    expo: expect.any(String),
+    react: expect.any(String),
+    'react-native': expect.any(String),
+  });
 
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateUrl], {
-      cwd: projectRoot,
-    });
+  // Updated scripts
+  expect(pkg.read().scripts).toMatchObject({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
-
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
-
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
-
-    // If this changes then everything else probably changed as well.
-    expect(files).toMatchSnapshot();
-  },
-  // Could take 1-2m depending on how fast github returns the tarball of expo/expo
-  2 * 60 * 1000
-);
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+});

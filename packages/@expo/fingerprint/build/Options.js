@@ -8,7 +8,7 @@ const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const Config_1 = require("./Config");
-const ExpoVersions_1 = require("./ExpoVersions");
+const ExpoResolver_1 = require("./ExpoResolver");
 const SourceSkips_1 = require("./sourcer/SourceSkips");
 const Path_1 = require("./utils/Path");
 exports.FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
@@ -78,6 +78,7 @@ exports.DEFAULT_IGNORE_PATHS = [
 exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
 async function normalizeOptionsAsync(projectRoot, options) {
     const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
+    const ignorePathMatchObjects = await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options);
     return {
         // Defaults
         platforms: ['android', 'ios'],
@@ -91,9 +92,10 @@ async function normalizeOptionsAsync(projectRoot, options) {
         // These options are computed by both default and explicit options, so we put them last.
         enableReactImportsPatcher: options?.enableReactImportsPatcher ??
             config?.enableReactImportsPatcher ??
-            (0, ExpoVersions_1.satisfyExpoVersion)(projectRoot, '<52.0.0') ??
+            (0, ExpoResolver_1.satisfyExpoVersion)(projectRoot, '<52.0.0') ??
             false,
-        ignorePathMatchObjects: await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options),
+        ignorePathMatchObjects,
+        ignoreDirMatchObjects: (0, Path_1.buildDirMatchObjects)(ignorePathMatchObjects),
     };
 }
 exports.normalizeOptionsAsync = normalizeOptionsAsync;

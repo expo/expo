@@ -77,8 +77,8 @@ class FileSystemNextModule : Module() {
         file.validatePath()
       }
 
-      Function("create") { file: FileSystemFile ->
-        file.create()
+      Function("create") { file: FileSystemFile, options: CreateOptions? ->
+        file.create(options ?: CreateOptions())
       }
 
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray> ->
@@ -138,6 +138,10 @@ class FileSystemNextModule : Module() {
         }
       }
 
+      Property("type") { file ->
+        file.type
+      }
+
       Function("open") { file: FileSystemFile ->
         FileSystemFileHandle(file)
       }
@@ -175,8 +179,8 @@ class FileSystemNextModule : Module() {
         directory.delete()
       }
 
-      Function("create") { directory: FileSystemDirectory ->
-        directory.create()
+      Function("create") { directory: FileSystemDirectory, options: CreateOptions? ->
+        directory.create(options ?: CreateOptions())
       }
 
       Property("exists") { directory: FileSystemDirectory ->

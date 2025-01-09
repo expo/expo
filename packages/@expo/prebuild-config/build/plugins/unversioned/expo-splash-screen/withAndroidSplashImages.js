@@ -44,14 +44,15 @@ function _getAndroidSplashConfig() {
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const IMAGE_CACHE_NAME = 'splash-android';
 const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
+const SPLASH_SCREEN_DRAWABLE_NAME = 'splashscreen_logo.xml';
 const DRAWABLES_CONFIGS = {
   default: {
     modes: {
       light: {
-        path: `./res/drawable/${SPLASH_SCREEN_FILENAME}`
+        path: `./res/drawable/${SPLASH_SCREEN_DRAWABLE_NAME}`
       },
       dark: {
-        path: `./res/drawable-night/${SPLASH_SCREEN_FILENAME}`
+        path: `./res/drawable-night/${SPLASH_SCREEN_DRAWABLE_NAME}`
       }
     },
     dimensionsMultiplier: 1
@@ -150,6 +151,10 @@ async function clearAllExistingSplashImagesAsync(projectRoot) {
 async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, imageWidth = 100) {
   if (!config) return;
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
+  if (config.drawable) {
+    await writeSplashScreenDrawablesAsync(androidMainPath, projectRoot, config.drawable);
+    return;
+  }
   const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
   await Promise.all(sizes.map(async imageKey => {
     // @ts-ignore
@@ -191,5 +196,20 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
     }
     return null;
   }));
+}
+async function writeSplashScreenDrawablesAsync(drawablePath, projectRoot, drawable) {
+  if (!drawable) {
+    return;
+  }
+  const lightDrawablePath = _path().default.join(drawablePath, DRAWABLES_CONFIGS.default.modes.light.path);
+  const darkDrawablePath = _path().default.join(drawablePath, DRAWABLES_CONFIGS.default.modes.dark.path);
+  const lightFolder = _path().default.dirname(lightDrawablePath);
+  await _fsExtra().default.ensureDir(lightFolder);
+  await _fsExtra().default.copyFile(_path().default.join(projectRoot, drawable.icon), lightDrawablePath);
+  if (drawable.darkIcon) {
+    const darkFolder = _path().default.dirname(darkDrawablePath);
+    await _fsExtra().default.ensureDir(darkFolder);
+    await _fsExtra().default.copyFile(_path().default.join(projectRoot, drawable.darkIcon), darkDrawablePath);
+  }
 }
 //# sourceMappingURL=withAndroidSplashImages.js.map

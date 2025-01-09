@@ -80,7 +80,8 @@ func exportAsset(asset: PHAsset?) -> [String: Any?]? {
     "creationTime": exportDate(asset.creationDate),
     // Uses required reason API based on the following reason: 0A2A.1
     "modificationTime": exportDate(asset.modificationDate),
-    "duration": asset.duration
+    "duration": asset.duration,
+    "pairedVideoAsset": nil
   ]
 }
 
@@ -267,13 +268,13 @@ func assetType(for localUri: URL) -> PHAssetMediaType {
   switch type {
   case .image:
     return .image
-  case .video:
+  case .video, .movie:
     return .video
   case .audio:
     return .audio
   case _ where type.conforms(to: .image):
     return .image
-  case _ where type.conforms(to: .video):
+  case _ where type.conforms(to: .video) || type.conforms(to: .movie):
     return .video
   case _ where type.conforms(to: .audio):
     return .audio
@@ -514,4 +515,18 @@ func requesterClass(_ writeOnly: Bool) -> EXPermissionsRequester.Type {
     return MediaLibraryWriteOnlyPermissionRequester.self
   }
   return MediaLibraryPermissionRequester.self
+}
+
+func readSizeFrom(url: URL) -> CGSize? {
+  let asset = AVURLAsset(url: url)
+  guard let assetTrack = asset.tracks(withMediaType: .video).first else {
+    return nil
+  }
+  // The video could be rotated and the resulting transform can result in a negative width/height.
+  let size = assetTrack.naturalSize.applying(assetTrack.preferredTransform)
+  return CGSize(width: abs(size.width), height: abs(size.height))
+}
+
+func getFileExtension(from fileName: String) -> String {
+  return ".\(URL(fileURLWithPath: fileName).pathExtension)"
 }

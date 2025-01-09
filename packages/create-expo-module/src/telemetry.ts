@@ -1,9 +1,9 @@
-import { getUserStatePath } from '@expo/config/build/getUserState';
 import JsonFile from '@expo/json-file';
 import TelemetryClient from '@expo/rudder-sdk-node';
 import crypto from 'crypto';
 import { boolish } from 'getenv';
-import os from 'os';
+import os, { homedir } from 'os';
+import * as path from 'path';
 
 import { CommandOptions } from './types';
 
@@ -35,6 +35,24 @@ export function getTelemetryClient() {
   }
 
   return client;
+}
+
+// The ~/.expo directory is used to store authentication sessions,
+// which are shared between EAS CLI and Expo CLI.
+function getExpoHomeDirectory() {
+  const home = homedir();
+  if (process.env.__UNSAFE_EXPO_HOME_DIRECTORY) {
+    return process.env.__UNSAFE_EXPO_HOME_DIRECTORY;
+  } else if (boolish('EXPO_STAGING', false)) {
+    return path.join(home, '.expo-staging');
+  } else if (boolish('EXPO_LOCAL', false)) {
+    return path.join(home, '.expo-local');
+  }
+  return path.join(home, '.expo');
+}
+
+function getUserStatePath() {
+  return path.join(getExpoHomeDirectory(), 'state.json');
 }
 
 /** Get the randomly generated anonymous ID from the persistent storage, see @expo/cli */

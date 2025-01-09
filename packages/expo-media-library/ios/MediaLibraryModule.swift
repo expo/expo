@@ -95,8 +95,8 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       var assetPlaceholder: PHObjectPlaceholder?
       PHPhotoLibrary.shared().performChanges {
         let changeRequest = assetType == .video
-        ? PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: uri)
-        : PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: uri)
+          ? PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: uri)
+          : PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: uri)
 
         assetPlaceholder = changeRequest?.placeholderForCreatedAsset
       } completionHandler: { success, error in
@@ -339,6 +339,62 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     }
   }
 
+  private func handleLivePhoto(asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?], promise: Promise) {
+    let livePhotoOptions = PHLivePhotoRequestOptions()
+    livePhotoOptions.isNetworkAccessAllowed = shouldDownloadFromNetwork
+    var updatedResult = result
+      updatedResult["pairedVideoAsset"] = nil
+
+    PHImageManager.default()
+      .requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { livePhoto, _ in
+      guard let livePhoto = livePhoto,
+        let videoResource = PHAssetResource.assetResources(for: livePhoto)
+        .first(where: { $0.type == .pairedVideo }) else {
+        promise.resolve(updatedResult)
+        return
+      }
+      self.writePairedVideoAsset(videoResource: videoResource, asset: asset, result: updatedResult, promise: promise)
+      }
+  }
+
+  private func writePairedVideoAsset(videoResource: PHAssetResource, asset: PHAsset, result: [String: Any?], promise: Promise) {
+    let fileName = videoResource.originalFilename
+    let tempDir = FileManager.default.temporaryDirectory
+    let fileExt = getFileExtension(from: fileName).replacingOccurrences(of: ".", with: "")
+    let tempId = UUID().uuidString
+    let fileUrl = tempDir.appendingPathComponent(tempId).appendingPathExtension(fileExt)
+    var width = CGFloat(asset.pixelWidth)
+    var height = CGFloat(asset.pixelHeight)
+    PHAssetResourceManager.default().writeData(for: videoResource, toFile: fileUrl, options: nil) { error in
+      guard error == nil else {
+        promise.resolve(result)
+        return
+      }
+      let avAsset = AVAsset(url: fileUrl)
+      let duration = avAsset.duration.seconds
+      // The video resouece of a paired photo may have different dimensions from the original photo
+      if let videoSize = readSizeFrom(url: fileUrl) {
+        width = videoSize.width
+        height = videoSize.height
+      }
+      let pairedVideoAsset: [String: Any?] = [
+        "id": tempId,
+        "filename": fileName,
+        "uri": fileUrl.absoluteString,
+        "mediaType": "pairedVideo",
+        "mediaSubtypes": [],
+        "width": width,
+        "height": height,
+        "duration": duration,
+        "creationTime": exportDate(asset.creationDate),
+        "modificationTime": exportDate(asset.modificationDate)
+      ]
+      var updatedResult = result
+      updatedResult["pairedVideoAsset"] = pairedVideoAsset
+      promise.resolve(updatedResult)
+    }
+  }
+
   private func resolveImage(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {
     var result = exportAssetInfo(asset: asset) ?? [:]
     let imageOptions = PHContentEditingInputRequestOptions()
@@ -354,7 +410,14 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       if let url = contentInput?.fullSizeImageURL, let ciImage = CIImage(contentsOf: url) {
         result["exif"] = ciImage.properties
       }
-      promise.resolve(result)
+
+      result["pairedVideoAsset"] = nil
+
+      if asset.mediaSubtypes.contains(.photoLive) {
+        self.handleLivePhoto(asset: asset, shouldDownloadFromNetwork: options .shouldDownloadFromNetwork, result: result, promise: promise)
+      } else {
+        promise.resolve(result)
+      }
     }
   }
 
@@ -376,7 +439,8 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
       let directory = self.appContext?.config.cacheDirectory?.appendingPathComponent("MediaLibrary")
       FileSystemUtilities.ensureDirExists(at: directory)
-      let videoOutputFileName = "slowMoVideo-\(Int.random(in: 0...999)).mov"
+      let videoOutputFileName =
+        "slowMoVideo-\(Int.random(in: 0...999)).mov"
       guard let videoFileOutputPath = directory?.appendingPathComponent(videoOutputFileName) else {
         promise.reject(InvalidPathException())
         return

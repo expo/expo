@@ -27,10 +27,13 @@ class ExpoModuleGradlePlugin {
   // Path to the plugin folder
   String sourceDir
 
+  Boolean applyToRootProject
+
   ExpoModuleGradlePlugin(Object data) {
     this.id = data.id
     this.group = data.group
     this.sourceDir = data.sourceDir
+    this.applyToRootProject = data.applyToRootProject
   }
 }
 
@@ -329,6 +332,9 @@ if (rootProject instanceof ProjectDescriptor) {
       }
       for (module in modules) {
         for (modulePlugin in module.plugins) {
+          if (!modulePlugin.applyToRootProject) {
+            continue
+          }
           println " ${Emojis.INFORMATION}  ${Colors.YELLOW}Applying gradle plugin${Colors.RESET} '${Colors.GREEN}${modulePlugin.id}${Colors.RESET}' (${module.name}@${module.version})"
           project.plugins.apply(modulePlugin.id)
         }

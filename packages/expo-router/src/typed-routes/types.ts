@@ -9,6 +9,33 @@ export namespace ExpoRouter {
   export interface __routes {}
 }
 
+export type HrefObject = {
+  /** The path of the route. */
+  pathname: string;
+  /** Optional parameters for the route. */
+  params?: UnknownInputParams;
+};
+
+/**
+ * @hidden
+ */
+export type HrefInputParamsObject = {
+  /** The path of the route. */
+  pathname: string;
+  /** Optional input parameters for the route. */
+  params?: UnknownInputParams;
+};
+
+/**
+ * @hidden
+ */
+export type HrefOutputParamsObject = {
+  /** The path of the route */
+  pathname: string;
+  /** Optional output parameters for the route */
+  params?: UnknownOutputParams;
+};
+
 export type RelativePathString = `./${string}` | `../${string}` | '..';
 export type SearchOrHash = `?${string}` | `#${string}`;
 export type ExternalPathString = `${string}:${string}` | `//${string}`;
@@ -25,20 +52,33 @@ export type Route = Exclude<
  * a full path like `/profile/settings` or a relative path like `../settings`.
  * The params can be an object of key-value pairs.
  *
- * A Href can either be a string or an object.
+ * An Href can either be a string or an object.
  */
-export type Href = ExpoRouter.__routes extends { href: any }
-  ? ExpoRouter.__routes['href']
-  : string | { pathname: string; params?: UnknownInputParams };
+export type Href<T extends ExpoRouter.__routes = ExpoRouter.__routes> = T extends { href: any }
+  ? T['href']
+  : string | HrefObject;
 
-export type HrefInputParams = ExpoRouter.__routes extends { hrefInputParams: any }
-  ? ExpoRouter.__routes['hrefInputParams']
-  : { pathname: string; params?: UnknownInputParams };
+/*
+ * @hidden
+ */
+export type HrefInputParams<T extends ExpoRouter.__routes = ExpoRouter.__routes> = T extends {
+  hrefInputParams: any;
+}
+  ? T['hrefInputParams']
+  : HrefInputParamsObject;
 
-export type HrefOutputParams = ExpoRouter.__routes extends { hrefOutputParams: any }
-  ? ExpoRouter.__routes['hrefOutputParams']
-  : { pathname: string; params?: UnknownOutputParams };
+/*
+ * @hidden
+ */
+export type HrefOutputParams<T extends ExpoRouter.__routes = ExpoRouter.__routes> = T extends {
+  hrefOutputParams: any;
+}
+  ? T['hrefOutputParams']
+  : HrefOutputParamsObject;
 
+/**
+ * @hidden
+ */
 export type RouteInputParams<T extends Route> =
   Extract<Href, { pathname: T }> extends never
     ? HrefInputParams extends infer H
@@ -50,6 +90,9 @@ export type RouteInputParams<T extends Route> =
       : never
     : Extract<HrefInputParams, { pathname: T }>['params'];
 
+/**
+ * @hidden
+ */
 export type RouteOutputParams<T extends Route> =
   Extract<HrefOutputParams, { pathname: T }> extends never
     ? HrefOutputParams extends infer H
@@ -61,6 +104,9 @@ export type RouteOutputParams<T extends Route> =
       : never
     : Extract<HrefOutputParams, { pathname: T }>['params'];
 
+/**
+ * @hidden
+ */
 export type RouteParams<T extends Route> = RouteOutputParams<T>;
 
 /**

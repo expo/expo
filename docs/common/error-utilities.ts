@@ -19,7 +19,7 @@ export function getRedirectPath(redirectPath: string): string {
   }
 
   // Add a trailing slash if there is not one
-  if (redirectPath[redirectPath.length - 1] !== '/') {
+  if (!redirectPath.endsWith('/')) {
     redirectPath = `${redirectPath}/`;
   }
 
@@ -52,9 +52,9 @@ export function getRedirectPath(redirectPath: string): string {
   }
 
   // If a page is missing for react-native paths we redirect to react-native docs
-  if (redirectPath.match(/\/versions\/.*\/react-native\//)) {
+  if (/\/versions\/.*\/react-native\//.test(redirectPath)) {
     const pathParts = redirectPath.split('/');
-    const page = pathParts[pathParts.length - 2];
+    const page = pathParts.at(-2);
     redirectPath = `https://reactnative.dev/docs/${page}`;
   }
 
@@ -81,11 +81,11 @@ function isVersionDocumented(path: string) {
 }
 
 function pathIncludesHtmlExtension(path: string) {
-  return !!path.match(/\.html$/);
+  return !!path.endsWith('.html');
 }
 
 function pathIncludesIndexHtml(path: string) {
-  return !!path.match(/index\.html$/);
+  return !!path.endsWith('index.html');
 }
 
 const VERSION_PART_PATTERN = `(latest|unversioned|v\\d+\\.\\d+.\\d+)`;
@@ -95,7 +95,7 @@ const REACT_NATIVE_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/react-native`;
 
 // Check if path is valid (matches /versions/some-valid-version-here/)
 function isVersionedPath(path: string) {
-  return !!path.match(new RegExp(VERSIONED_PATH_PATTERN));
+  return new RegExp(VERSIONED_PATH_PATTERN).test(path);
 }
 
 // Replace an unsupported SDK version with latest
@@ -118,7 +118,7 @@ function pathRequiresVersioning(path: string) {
   const isExpoSdkIndexPage = path.match(new RegExp(VERSIONED_PATH_PATTERN + '/$'));
   const isReactNativeApiPage = path.match(new RegExp(REACT_NATIVE_PATH_PATTERN));
 
-  return isExpoSdkIndexPage || isExpoSdkPage || isReactNativeApiPage;
+  return isExpoSdkIndexPage ?? isExpoSdkPage ?? isReactNativeApiPage;
 }
 
 function removeVersionFromPath(path: string) {
@@ -127,7 +127,7 @@ function removeVersionFromPath(path: string) {
 
 // Not sure why this happens but sometimes the URL ends in /null
 function endsInNull(path: string) {
-  return !!path.match(/\/null$/);
+  return path.endsWith('/null');
 }
 
 // Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
@@ -138,7 +138,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issues/',
-  '/guides/userinterface/': '/ui-programming/user-interface-libraries/',
   '/introduction/why-not-expo/': '/faq/#limitations',
   '/next-steps/community/': '/',
   '/workflow/expo-go/': '/get-started/set-up-your-environment/',
@@ -165,7 +164,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
-  '/build-reference/migrating/': '/archive/classic-builds/migrating/',
 
   // Development builds redirects
   '/development/build/': '/develop/development-builds/create-a-build/',
@@ -209,7 +207,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/routing/create-pages/': '/router/create-pages/',
   '/routing/navigating-pages/': '/router/navigating-pages/',
   '/routing/layouts/': '/router/layouts/',
-  '/routing/appearance/': '/router/appearance/',
+  '/routing/appearance/': '/router/introduction/',
   '/routing/error-handling/': '/router/error-handling/',
 
   // Errors and debugging is better suited for getting started than tutorial
@@ -298,7 +296,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/web-performance/': '/guides/analyzing-bundles/',
   '/guides/assets/': '/develop/user-interface/assets/',
   '/router/reference/search-parameters/': '/router/reference/url-parameters/',
-  '/guides/using-flipper': '/archive/using-flipper/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -312,7 +309,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/bare-react-native/': '/eas-update/getting-started/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/build/setup/',
-  '/classic/turtle-cli/': '/archive/classic-builds/turtle-cli/',
+  '/classic/turtle-cli/': '/build/setup/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
   '/archive/classic-updates/building-standalone-apps/': '/build/setup/',
 
@@ -346,7 +343,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // EAS Update
   '/eas-update/developing-with-eas-update/': '/eas-update/develop-faster/',
-  '/eas-update/eas-update-with-local-build/': '/eas-update/build-locally/',
+  '/eas-update/eas-update-with-local-build/': '/eas-update/standalone-service/',
   '/eas-update/eas-update-and-eas-cli/': '/eas-update/eas-cli/',
   '/eas-update/debug-updates/': '/eas-update/debug/',
   '/eas-update/known-issues/': '/eas-update/introduction/',
@@ -377,18 +374,16 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v49.0.0/sdk/filesystem.md': '/versions/v49.0.0/sdk/filesystem/',
+  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
+  '/versions/v51.0.0/sdk/taskmanager': '/versions/v51.0.0/sdk/task-manager/',
   '/versions/v50.0.0/sdk/taskmanager': '/versions/v50.0.0/sdk/task-manager/',
   '/versions/v49.0.0/sdk/taskmanager': '/versions/v49.0.0/sdk/task-manager/',
-  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
   '/versions/v50.0.0/sdk': '/versions/v50.0.0',
   '/versions/v49.0.0/sdk': '/versions/v49.0.0',
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
-
-  // Stop encouraging usage of Expo Go when using native modules
-  '/bare/using-expo-client/': '/archive/using-expo-client/',
 
   // May 2024 home / get started section
   '/overview/': '/get-started/introduction/',
@@ -426,7 +421,49 @@ const RENAMED_PAGES: Record<string, string> = {
   // After deleting deprecated docs from archive section
   '/guides/using-flipper/': '/debugging/devtools-plugins/',
 
+  // After revamping notification guides
+  '/push-notifications/obtaining-a-device-token-for-fcm-or-apns/':
+    '/push-notifications/sending-notifications-custom/',
+
   // After new environment variables guide
   '/build-reference/variables/': '/eas/environment-variables/',
   '/eas-update/environment-variables/': '/eas/environment-variables/#eas-update',
+
+  // After moving common questions from Expo Router FAQ to Introduction
+  '/router/reference/faq/': '/router/introduction/',
+
+  // After migrating Prebuild page info to CNG page
+  '/workflow/prebuild/': '/workflow/continuous-native-generation/',
+
+  // After removing UI programming section
+  '/ui-programming/image-background/': '/tutorial/overview/',
+  '/ui-programming/implementing-a-checkbox/': '/versions/latest/sdk/checkbox/',
+  '/ui-programming/z-index/': '/tutorial/overview',
+  '/ui-programming/using-svgs/': '/versions/latest/sdk/svg/',
+  '/ui-programming/react-native-toast/': '/tutorial/overview/',
+  '/ui-programming/react-native-styling-buttons/': '/tutorial/overview/',
+  '/ui-programming/user-interface-libraries/': '/tutorial/overview/',
+
+  // After renaming "workflows" to "eas-workflows"
+  // Since Next.js considers workflow/... and workflows/... as the same directory names
+  '/workflows/get-started/': '/eas-workflows/get-started/',
+  '/workflows/triggers/': '/eas-workflows/triggers/',
+  '/workflows/jobs/': '/eas-workflows/jobs/',
+  '/workflows/control-flow/': '/eas-workflows/control-flow/',
+  '/workflows/variables/': '/eas-workflows/variables/',
+
+  // After adding distribution section under EAS
+  '/distribution/publishing-websites/': '/guides/publishing-websites/',
+
+  // Based on Google Search Console not found report 2025-01-02
+  '/versions/latest/sdk/sqlite-next/': '/versions/latest/sdk/sqlite/',
+  '/versions/latest/sdk/camera-next/': '/versions/latest/sdk/camera/',
+  '/home/overview/': '/',
+  '/develop/project-structure/': '/get-started/start-developing/',
+  '/versions/latest/sdk/bar-code-scanner/': '/versions/latest/sdk/camera/',
+  '/bare/using-expo-client/': '/bare/install-dev-builds-in-bare/',
+  '/versions/latest/sdk/sqlite-legacy/': '/versions/latest/sdk/sqlite/',
+  '/versions/latest/config/app/name/': '/versions/latest/config/app/#name',
+  '/bare/': '/bare/overview/',
+  '/accounts/working-together/': '/accounts/account-types/',
 };

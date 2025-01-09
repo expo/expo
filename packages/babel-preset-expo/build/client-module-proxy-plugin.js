@@ -62,7 +62,12 @@ function reactClientReferencesPlugin(api) {
                                         callback(exportName);
                                     }
                                 }
-                                else if (!['InterfaceDeclaration', 'TSTypeAliasDeclaration', 'TypeAlias'].includes(exportPath.node.declaration.type)) {
+                                else if (![
+                                    'InterfaceDeclaration',
+                                    'TSInterfaceDeclaration',
+                                    'TSTypeAliasDeclaration',
+                                    'TypeAlias',
+                                ].includes(exportPath.node.declaration.type)) {
                                     // TODO: What is this type?
                                     console.warn(`[babel-preset-expo] Unsupported export specifier for "use ${type}":`, exportPath.node.declaration.type);
                                 }
@@ -129,7 +134,8 @@ function reactClientReferencesPlugin(api) {
                         return;
                     }
                     // HACK: Mock out the polyfill that doesn't run through the normal bundler pipeline.
-                    if (filePath.endsWith('@react-native/js-polyfills/console.js')) {
+                    if (filePath.endsWith('@react-native/js-polyfills/console.js') ||
+                        filePath.endsWith('@react-native\\js-polyfills\\console.js')) {
                         // Clear the body
                         path.node.body = [];
                         path.node.directives = [];

@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) dispatch_queue_t appLoaderQueue;
 
 @property (nonatomic, nullable) EXUpdatesConfig *config;
+@property (nonatomic, nonnull) EXUpdatesLogger *logger;
 @property (nonatomic, nullable) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, nullable) id<EXUpdatesAppLauncher> appLauncher;
 
@@ -77,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize remoteUpdateStatus = _remoteUpdateStatus;
 @synthesize shouldShowRemoteUpdateStatus = _shouldShowRemoteUpdateStatus;
 @synthesize config = _config;
+@synthesize logger = _logger;
 @synthesize selectionPolicy = _selectionPolicy;
 @synthesize appLauncher = _appLauncher;
 @synthesize isUpToDate = _isUpToDate;
@@ -84,6 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithManifestUrl:(NSURL *)url
 {
   if (self = [super init]) {
+    _logger = [[EXUpdatesLogger alloc] init];
     _manifestUrl = url;
     _httpManifestUrl = [EXAppLoaderExpoUpdates _httpUrlFromManifestUrl:_manifestUrl];
     _appLoaderQueue = dispatch_queue_create("host.exp.exponent.LoaderQueue", DISPATCH_QUEUE_SERIAL);
@@ -419,7 +422,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              database:updatesDatabaseManager.database
                                                                             directory:updatesDatabaseManager.updatesDirectory
                                                                       selectionPolicy:_selectionPolicy
-                                                                        delegateQueue:_appLoaderQueue];
+                                                                        delegateQueue:_appLoaderQueue
+                                                                               logger:_logger];
   loaderTask.delegate = self;
   [loaderTask start];
 }
@@ -432,7 +436,8 @@ NS_ASSUME_NONNULL_BEGIN
                                         database:updatesDatabaseManager.database
                                        directory:updatesDatabaseManager.updatesDirectory
                                  selectionPolicy:_selectionPolicy
-                                  launchedUpdate:_appLauncher.launchedUpdate];
+                                  launchedUpdate:_appLauncher.launchedUpdate
+                                          logger:_logger];
   }
 }
 

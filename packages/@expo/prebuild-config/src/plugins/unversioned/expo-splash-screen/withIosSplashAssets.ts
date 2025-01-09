@@ -168,7 +168,6 @@ async function generateImagesAssetsAsync({
 
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }
-
 const darkAppearances: ContentsJsonAppearance[] = [
   {
     appearance: 'luminosity',

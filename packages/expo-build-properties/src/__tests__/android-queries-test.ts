@@ -26,7 +26,7 @@ const defaultQueries = [
 ];
 
 describe(withAndroidQueries, () => {
-  test('it does not change the manifest default if no queries are provided', async () => {
+  it('does not change the manifest default if no queries are provided', async () => {
     const { modResults: androidModResults } = await compileMockModWithResultsAsync<
       AndroidConfig.Manifest.AndroidManifest,
       PluginConfigType
@@ -53,7 +53,7 @@ describe(withAndroidQueries, () => {
     expect(androidModResults.manifest.queries[0].intent).toHaveLength(1);
   });
 
-  test('it adds the provider if defined', async () => {
+  it('adds the provider if defined', async () => {
     const pluginConfig: PluginConfigType = {
       android: {
         manifestQueries: {
@@ -85,7 +85,7 @@ describe(withAndroidQueries, () => {
     expect(result.provider?.[0].$['android:authorities']).toBe('com.expo.provider');
   });
 
-  test('it does not add the provider if undefined', async () => {
+  it('does not add the provider if undefined', async () => {
     const pluginConfig: PluginConfigType = {
       android: {
         manifestQueries: {
@@ -148,7 +148,7 @@ describe(withAndroidQueries, () => {
     expect(result.package?.some((p) => p.$['android:name'] === 'com.expo.test')).toBe(true);
   });
 
-  test('it correctly adds a single intent', async () => {
+  it('correctly adds a single intent', async () => {
     const pluginConfig: PluginConfigType = {
       android: {
         manifestQueries: {
@@ -185,7 +185,7 @@ describe(withAndroidQueries, () => {
     expect(result?.intent).toHaveLength(2);
   });
 
-  test('it correctly adds two intents', async () => {
+  it('correctly adds two intents', async () => {
     const pluginConfig: PluginConfigType = {
       android: {
         manifestQueries: {
@@ -227,7 +227,7 @@ describe(withAndroidQueries, () => {
     expect(result.intent).toHaveLength(3);
   });
 
-  test('it correctly adds three intents', async () => {
+  it('correctly adds three intents', async () => {
     const pluginConfig: PluginConfigType = {
       android: {
         manifestQueries: {

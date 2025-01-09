@@ -40,7 +40,11 @@ public class DisabledAppController: InternalAppControllerInterface {
   required init(error: UpdatesError?) {
     self.initializationError = error
     self.eventManager = QueueUpdatesEventManager(logger: self.logger)
-    self.stateMachine = UpdatesStateMachine(eventManager: self.eventManager, validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
+    self.stateMachine = UpdatesStateMachine(
+      logger: self.logger,
+      eventManager: self.eventManager,
+      validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting]
+    )
   }
 
   public func start() {

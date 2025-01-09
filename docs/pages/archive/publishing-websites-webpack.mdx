@@ -11,9 +11,9 @@ import { Step } from '~/ui/components/Step';
 
 A web app created using Expo can be served locally for testing out the production behavior. Once the testing phase checks out, you can choose from a variety of third-party services to host it.
 
-| Bundler   | Expo Router | API Routes | Description                                                                                |
-| --------- | ----------- | ---------- | ------------------------------------------------------------------------------------------ |
-| `webpack` | <NoIcon />  | <NoIcon /> | Outputs a Single Page Application (SPA) with a single **index.html** in the output folder. |
+| Bundler   | Expo Router | API Routes | Description                                                                                   |
+| --------- | ----------- | ---------- | --------------------------------------------------------------------------------------------- |
+| `webpack` | <NoIcon />  | <NoIcon /> | Outputs a Single Page Application (SPA) with a single **index.html** in the output directory. |
 
 ## Create a web build
 
@@ -37,13 +37,13 @@ Run the following command to serve the single-page application:
 
 Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other things won't work.
 
-## Server a subfolder
+## Server a sub-directory
 
-If you want to serve your site in a subfolder, add its path to your **package.json** as shown below:
+If you want to serve your site in a sub-directory, add its path to your **package.json** as shown below:
 
 ```json package.json
 {
-  "homepage": "/path/to/subfolder"
+  "homepage": "/path/to/sub-directory"
 }
 ```
 
@@ -81,7 +81,7 @@ If you modify this file, you must rebuild your project with `npx expo export:web
 
 <Step label="3">
 
-Deploy the web build folder by running the following command:
+Deploy the web build directory by running the following command:
 
 <Terminal cmd={['$ netlify deploy --dir web-build']} />
 

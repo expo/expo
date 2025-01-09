@@ -28,14 +28,14 @@ export function PageApiVersionProvider({ children }: Props) {
   const version = getVersionFromPath(router?.pathname ?? '');
   const hasVersion = version !== null;
 
-  // note(Cedric): if the page doesn't exists, the error page will handle it
+  // note(Cedric): if the page doesn't exist, the error page will handle it
   const setVersion = useCallback((newVersion: string) => {
-    router?.push(replaceVersionInPath(router.pathname, newVersion));
+    void router?.push(replaceVersionInPath(router.pathname, newVersion));
   }, []);
 
   return (
     <PageApiVersionContext.Provider
-      value={{ setVersion, hasVersion, version: version || 'latest' }}>
+      value={{ setVersion, hasVersion, version: version ?? 'latest' }}>
       {children}
     </PageApiVersionContext.Provider>
   );

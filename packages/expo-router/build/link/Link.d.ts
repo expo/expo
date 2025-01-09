@@ -3,7 +3,7 @@ import { Href } from '../types';
 import { LinkProps, WebAnchorProps } from './useLinkHooks';
 export interface LinkComponent {
     (props: PropsWithChildren<LinkProps>): JSX.Element;
-    /** Helper method to resolve a Href object into a string. */
+    /** Helper method to resolve an Href object into a string. */
     resolveHref: (href: Href) => string;
 }
 export type RedirectProps = {

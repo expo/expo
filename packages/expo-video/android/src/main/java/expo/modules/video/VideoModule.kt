@@ -95,6 +95,12 @@ class VideoModule : Module() {
       OnViewDestroys {
         VideoManager.unregisterVideoView(it)
       }
+
+      OnViewDidUpdateProps { view ->
+        if (view.playerView.useController != view.useNativeControls) {
+          view.playerView.useController = view.useNativeControls
+        }
+      }
     }
 
     Class(VideoPlayer::class) {

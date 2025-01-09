@@ -4,10 +4,10 @@ import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { CALLOUT } from '../Text';
-
 import { stripVersionFromPath } from '~/common/utilities';
 import { NavigationRoute } from '~/types/common';
+
+import { CALLOUT } from '../Text';
 
 if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
   window.sidebarState = {};
@@ -27,7 +27,7 @@ export function SidebarCollapsible({ info, children }: Props) {
     const sections = info.children;
 
     const isSectionActive = (section: NavigationRoute) => {
-      const linkUrl = stripVersionFromPath(section.as || section.href);
+      const linkUrl = stripVersionFromPath(section.as ?? section.href);
       const pathname = stripVersionFromPath(router?.pathname);
       const asPath = stripVersionFromPath(router?.asPath);
 

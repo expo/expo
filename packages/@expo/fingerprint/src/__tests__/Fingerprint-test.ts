@@ -11,6 +11,7 @@ import { normalizeOptionsAsync } from '../Options';
 jest.mock('fs');
 jest.mock('fs/promises');
 jest.mock('resolve-from');
+jest.mock('../utils/SpawnIPC');
 
 describe(diffFingerprintChangesAsync, () => {
   afterEach(() => {
@@ -519,8 +520,7 @@ describe('function api stability', () => {
     vol.reset();
   });
 
-  it('maintains consistent hash and function signature expected by eas-cli', async () => {
-    vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
+  function getCreateFingerprintFixedArgs(): [string, Record<string, any>] {
     // The fixed options and arguments as called by eas-cli
     const FIXED_OPTIONS = {
       platforms: ['android', 'ios'],
@@ -528,9 +528,13 @@ describe('function api stability', () => {
       debug: true,
     };
     const PROJECT_ROOT = '/app';
-    const FIXED_ARGS = [PROJECT_ROOT, FIXED_OPTIONS];
+    return [PROJECT_ROOT, FIXED_OPTIONS];
+  }
 
-    const fingerprint = await Fingerprint.createFingerprintAsync(...FIXED_ARGS);
+  it('createFingerprintAsync - maintains consistent hash and function signature expected by eas-cli', async () => {
+    vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
+    const createFingerprintFixedArgs = getCreateFingerprintFixedArgs();
+    const fingerprint = await Fingerprint.createFingerprintAsync(...createFingerprintFixedArgs);
 
     expect(fingerprint).toEqual(
       expect.objectContaining({
@@ -553,5 +557,15 @@ describe('function api stability', () => {
         );
       }
     });
+  });
+
+  it('diffFingerprint - accepts output from createFingerprintAsync with stable function signature expected by eas-cli', async () => {
+    vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
+    const createFingerprintFixedArgs = getCreateFingerprintFixedArgs();
+    const fingerprint = await Fingerprint.createFingerprintAsync(...createFingerprintFixedArgs);
+
+    // The fixed arguments as called by eas-cli
+    const FIXED_ARGS = [fingerprint, fingerprint];
+    expect(Fingerprint.diffFingerprints(...FIXED_ARGS)).toBeDefined();
   });
 });

@@ -1,5 +1,6 @@
 ---
-title: SafeAreaContext
+title: React Native Safe Area Context
+sidebar_title: SafeAreaContext
 description: A library with a flexible API for accessing the device's safe area inset information.
 sourceCodeUrl: 'https://github.com/th3rdwave/react-native-safe-area-context'
 packageName: 'react-native-safe-area-context'
@@ -8,9 +9,9 @@ platforms: ['android', 'ios', 'web', 'tvos']
 
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
-import { APIBox } from '~/components/plugins/APIBox';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { BoxSectionHeader } from '~/components/plugins/api/APISectionUtils';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { CALLOUT } from '~/ui/components/Text';
 
 > **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
@@ -34,7 +35,7 @@ import {
 
 ## Components
 
-<APIBox header="SafeAreaView">
+<PaddedAPIBox header="SafeAreaView">
 
 `SafeAreaView` is a regular `View` component with the safe area edges applied as padding.
 
@@ -54,35 +55,37 @@ function SomeComponent() {
 }
 ```
 
-## Props
+<APIBoxSectionHeader text="SafeAreaView Props" />
 
-<APIBox header="edges">
+<PaddedAPIBox header="edges" headerNestingLevel={4}>
 
 {/* prettier-ignore */}
-<CALLOUT theme="secondary">Optional • Type: [`Edge[]`](#edge) • Default: `["top", "right", "bottom", "left"]`</CALLOUT>
+<CALLOUT theme="tertiary" className="text-2xs">Optional&ensp;•&ensp;Type: [`Edge[]`](#edge)&ensp;•&ensp;Default: `["top", "right", "bottom", "left"]`</CALLOUT>
 <br />
 
 Sets the edges to apply the safe area insets to.
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="emulateUnlessSupported">
+<PaddedAPIBox header="emulateUnlessSupported" headerNestingLevel={4}>
 
-<CALLOUT theme="secondary">Optional • Type: `boolean` • Default: `true`</CALLOUT>
+<CALLOUT theme="tertiary" className="text-2xs">
+  Optional&ensp;•&ensp;Type: `boolean`&ensp;•&ensp;Default: `true`
+</CALLOUT>
 <br />
 
 On iOS 10+, emulate the safe area using the status bar height and home indicator sizes.
 
-</APIBox>
-</APIBox>
+</PaddedAPIBox>
+</PaddedAPIBox>
 
 ## Hooks
 
-<APIBox header="useSafeAreaInsets()">
+<PaddedAPIBox header="useSafeAreaInsets()">
 
 Hook gives you direct access to the safe area insets. This is a more advanced use-case, and might perform worse than `SafeAreaView` when rotating the device.
 
-<BoxSectionHeader text="Example" />
+<APIBoxSectionHeader text="Example" />
 
 ```jsx
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -94,27 +97,27 @@ function HookComponent() {
 }
 ```
 
-<BoxSectionHeader text="Returns" />
+<APIBoxSectionHeader text="Returns" />
 
 <CornerDownRightIcon className="icon-sm mr-2 inline-block align-middle text-icon-secondary" /> [`EdgeInsets`](#edgeinsets)
 
-</APIBox>
+</PaddedAPIBox>
 
 ## Types
 
-<APIBox header="Edge">
+<PaddedAPIBox header="Edge">
 
 String union of possible edges.
 
 Acceptable values are: `'top'`, `'right'`, `'bottom'`, `'left'`.
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="EdgeInsets">
+<PaddedAPIBox header="EdgeInsets">
 
 Represent the hook result.
 
-<BoxSectionHeader text="EdgeInsets Properties" />
+<APIBoxSectionHeader text="EdgeInsets Properties" />
 
 | Name     | Type     | Description            |
 | -------- | -------- | ---------------------- |
@@ -123,7 +126,7 @@ Represent the hook result.
 | `right`  | `number` | Value of right inset.  |
 | `top`    | `number` | Value of top inset.    |
 
-</APIBox>
+</PaddedAPIBox>
 
 ## Guides
 

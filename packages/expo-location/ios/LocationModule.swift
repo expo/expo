@@ -147,9 +147,13 @@ public final class LocationModule: Module {
     // Background location
 
     AsyncFunction("startLocationUpdatesAsync") { (taskName: String, options: [String: Any]) in
+      // There are two ways of starting this service.
+      // 1. As a background location service, this requires the background location permission.
+      // 2. As a user-initiated foreground service, this does NOT require the background location permission.
+      // Unfortunately, we cannot distinguish between those cases.
+      // So we only check foreground permission which needs to be granted in both cases.
       try ensureLocationServicesEnabled()
       try ensureForegroundLocationPermissions(appContext)
-      try ensureBackgroundLocationPermissions(appContext)
 
       guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
         throw Exceptions.LocationUpdatesUnavailable()

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for Bun's text-based lock file format `bun.lock` ([#33825](https://github.com/expo/expo/pull/33825) by [@tharakadesilva](https://github.com/tharakadesilva))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

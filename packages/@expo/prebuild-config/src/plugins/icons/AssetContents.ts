@@ -9,7 +9,7 @@ export type ContentsJsonImageIdiom =
   | 'ios-marketing'
   | 'universal';
 
-export type ContentsJsonImageAppearanceLuminosityType = 'dark' | 'tinted';
+export type ContentsJsonImageAppearanceLuminosityType = 'light' | 'dark' | 'tinted';
 
 export type ContentsJsonAppearance = {
   appearance: 'luminosity';

@@ -32,6 +32,17 @@ class UpdatesStateMachineInstrumentationTest {
     }
   }
 
+  private fun UpdatesStateMachine.resetAndIncrementRestartCountTest() {
+    val method: Method = UpdatesStateMachine::class.java.getDeclaredMethod("resetAndIncrementRestartCount")
+    method.isAccessible = true
+
+    try {
+      method.invoke(this)
+    } catch (e: InvocationTargetException) {
+      throw e.targetException
+    }
+  }
+
   private fun UpdatesStateMachine.getState(): UpdatesStateValue {
     val field: Field = UpdatesStateMachine::class.java.getDeclaredField("state")
     field.isAccessible = true
@@ -55,6 +66,55 @@ class UpdatesStateMachineInstrumentationTest {
     val testStateChangeEventManager = TestStateChangeEventManager()
     val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.values().toSet())
     Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
+  }
+
+  @Test
+  fun test_sequenceNumbers() {
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.values().toSet())
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
+
+    Assert.assertEquals(0, machine.context.sequenceNumber)
+
+    machine.processEventTest(UpdatesStateEvent.StartStartup())
+    machine.processEventTest(UpdatesStateEvent.Check())
+    machine.processEventTest(UpdatesStateEvent.CheckCompleteUnavailable())
+    machine.processEventTest(UpdatesStateEvent.EndStartup())
+
+    Assert.assertEquals(4, machine.context.sequenceNumber)
+  }
+
+  @Test
+  fun test_restart() {
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.values().toSet())
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
+
+    Assert.assertEquals(false, machine.context.isRestarting)
+    machine.processEventTest(UpdatesStateEvent.Restart())
+    Assert.assertEquals(true, machine.context.isRestarting)
+    Assert.assertEquals(1, machine.context.sequenceNumber)
+
+    machine.resetAndIncrementRestartCountTest()
+    Assert.assertEquals(1, machine.context.restartCount)
+    Assert.assertEquals(false, machine.context.isRestarting)
+    Assert.assertEquals(2, machine.context.sequenceNumber)
+  }
+
+  @Test
+  fun test_handleStartStartupAndEndStartup() {
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.values().toSet())
+
+    machine.processEventTest(UpdatesStateEvent.StartStartup())
+
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
+    Assert.assertTrue(testStateChangeEventManager.lastContext!!.isStartupProcedureRunning)
+
+    machine.processEventTest(UpdatesStateEvent.EndStartup())
+
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
+    Assert.assertFalse(testStateChangeEventManager.lastContext!!.isStartupProcedureRunning)
   }
 
   @Test

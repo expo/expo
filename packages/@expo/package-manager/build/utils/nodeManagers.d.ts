@@ -10,6 +10,7 @@ export declare const NPM_LOCK_FILE = "package-lock.json";
 export declare const YARN_LOCK_FILE = "yarn.lock";
 export declare const PNPM_LOCK_FILE = "pnpm-lock.yaml";
 export declare const BUN_LOCK_FILE = "bun.lockb";
+export declare const BUN_TEXT_LOCK_FILE = "bun.lock";
 /** The order of the package managers to use when resolving automatically */
 export declare const RESOLUTION_ORDER: NodePackageManager['name'][];
 /**

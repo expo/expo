@@ -7,7 +7,10 @@ import android.media.audiofx.Visualizer
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
@@ -29,14 +32,16 @@ private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
 class AudioPlayer(
   context: Context,
   appContext: AppContext,
-  source: MediaSource,
+  source: MediaSource?,
   updateInterval: Double
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .build()
     .apply {
-      setMediaSource(source)
+      source?.let {
+        setMediaSource(it)
+      }
       setAudioAttributes(AudioAttributes.DEFAULT, true)
       prepare()
     },
@@ -50,6 +55,9 @@ class AudioPlayer(
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
+
+  val currentTime get() = player.currentPosition / 1000
+  val duration get() = if (player.duration != C.TIME_UNSET) player.duration / 1000 else 0
 
   init {
     addPlayerListeners()
@@ -81,6 +89,14 @@ class AudioPlayer(
           sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
         }
       }
+
+      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        if (reason == MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
+          playerScope.launch {
+            sendPlayerUpdate()
+          }
+        }
+      }
     })
   }
 
@@ -107,12 +123,12 @@ class AudioPlayer(
 
     return mapOf(
       "id" to id,
-      "currentTime" to player.currentPosition,
+      "currentTime" to currentTime,
       "playbackState" to playbackStateToString(player.playbackState),
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
       "reasonForWaitingToPlay" to null,
       "mute" to isMuted,
-      "duration" to player.duration,
+      "duration" to duration,
       "playing" to player.isPlaying,
       "loop" to isLooping,
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,

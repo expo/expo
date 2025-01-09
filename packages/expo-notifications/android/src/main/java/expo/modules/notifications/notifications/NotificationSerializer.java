@@ -30,6 +30,7 @@ import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 
+import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.MonthlyTrigger;
@@ -79,6 +80,7 @@ public class NotificationSerializer {
         }
       } else if(
         requestTrigger instanceof SchedulableNotificationTrigger ||
+        requestTrigger instanceof ChannelAwareTrigger ||
           requestTrigger == null
       ) {
         JSONObject body = request.getContent().getBody();

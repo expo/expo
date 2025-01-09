@@ -1,4 +1,3 @@
-import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import type { JSONValue } from '@expo/json-file';
 import path from 'path';
 
@@ -8,12 +7,13 @@ import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
 import { wrapFetchWithOffline } from './wrapFetchWithOffline';
 import { wrapFetchWithProgress } from './wrapFetchWithProgress';
 import { wrapFetchWithProxy } from './wrapFetchWithProxy';
+import { wrapFetchWithUserAgent } from './wrapFetchWithUserAgent';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { fetch } from '../../utils/fetch';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { disableNetwork } from '../settings';
-import { getAccessToken, getSession } from '../user/UserSettings';
+import { getAccessToken, getExpoHomeDirectory, getSession } from '../user/UserSettings';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
@@ -134,6 +134,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
  * Determine if the provided error is related to a network issue.
  * When this returns true, offline mode should be enabled.
  *   - `ENOTFOUND` is thrown when the DNS lookup failed
+ *   - `EAI_AGAIN` is thrown when DNS lookup failed due to a server-side error
  *   - `UND_ERR_CONNECT_TIMEOUT` is thrown after DNS is resolved, but server can't be reached
  *
  * @see https://nodejs.org/api/errors.html
@@ -141,11 +142,13 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
  */
 function isNetworkError(error: Error & { code?: string }) {
   return (
-    'code' in error && error.code && ['ENOTFOUND', 'UND_ERR_CONNECT_TIMEOUT'].includes(error.code)
+    'code' in error &&
+    error.code &&
+    ['ENOTFOUND', 'EAI_AGAIN', 'UND_ERR_CONNECT_TIMEOUT'].includes(error.code)
   );
 }
 
-const fetchWithOffline = wrapFetchWithOffline(fetch);
+const fetchWithOffline = wrapFetchWithOffline(wrapFetchWithUserAgent(fetch));
 
 const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchWithOffline, getExpoApiBaseUrl() + '/v2/');
 

@@ -6,13 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.stringifyJsonSorted = exports.getFileBasedHashSourceAsync = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const Path_1 = require("../utils/Path");
 async function getFileBasedHashSourceAsync(projectRoot, filePath, reason) {
     let result = null;
     try {
         const stat = await promises_1.default.stat(path_1.default.join(projectRoot, filePath));
         result = {
             type: stat.isDirectory() ? 'dir' : 'file',
-            filePath,
+            filePath: (0, Path_1.toPosixPath)(filePath),
             reasons: [reason],
         };
     }

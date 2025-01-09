@@ -33,7 +33,7 @@ import {
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync, IS_METRO_BUNDLE_ERROR_SYMBOL } from './metroErrorInterface';
 import { assertMetroPrivateServer, MetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
@@ -48,6 +48,7 @@ import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveA
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
+import { toPosixPath } from '../../../utils/filePath';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
@@ -69,6 +70,7 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   convertPathToModuleSpecifier,
   createBundleUrlPath,
+  createBundleUrlOsPath,
   ExpoMetroOptions,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
@@ -165,7 +167,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     for (const route of manifest.apiRoutes) {
-      const filepath = route.file.startsWith('/') ? route.file : path.join(appDir, route.file);
+      const filepath = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
       const contents = await this.bundleApiRoute(filepath, { platform });
 
       const artifactFilename =
@@ -509,7 +511,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     // Use fully qualified URL with all options to represent the file path that's used for source maps and HMR. This prevents collisions.
-    const filename = createBundleUrlPath({
+    const filename = createBundleUrlOsPath({
       ...opts,
       mainModuleName: resolvedEntryFilePath,
     });
@@ -714,7 +716,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // HACK: Maybe this should be done in the serializer.
     const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
-      path.relative(serverRoot, boundary)
+      // NOTE(cedric): relative module specifiers / IDs should always be POSIX formatted
+      toPosixPath(path.relative(serverRoot, boundary))
     );
     const moduleIdToSplitBundle = (
       bundle.artifacts
@@ -802,7 +805,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
-    if (!opts.mainModuleName.startsWith('/')) {
+    if (!opts.mainModuleName.startsWith('/') && !path.isAbsolute(opts.mainModuleName)) {
       opts.mainModuleName = './' + opts.mainModuleName;
     }
 
@@ -1133,8 +1136,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
             if (!isInitialUpdate && hasUpdate) {
               // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
-              // @ts-expect-error: __c is not on global but is injected by Metro.
-              if (typeof globalThis.__c === 'function') globalThis.__c();
+              // if (typeof globalThis.__c === 'function') globalThis.__c();
 
               onReload();
             }
@@ -1613,6 +1615,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         map: bundleMap,
       };
     } catch (error) {
+      // Mark the error so we know how to format and return it later.
+      // @ts-expect-error
+      error[IS_METRO_BUNDLE_ERROR_SYMBOL] = true;
+
       this.metro._reporter.update({
         buildID: getBuildID(buildNumber),
         type: 'bundle_build_failed',

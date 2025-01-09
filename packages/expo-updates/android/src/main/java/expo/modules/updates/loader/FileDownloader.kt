@@ -141,7 +141,7 @@ class FileDownloader(
 
     val isMultipart = responseBody.contentType()?.type == "multipart"
     if (isMultipart) {
-      parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, callback)
+      parseMultipartRemoteUpdateResponse(response, responseBody, responseHeaderData, callback)
     } else {
       val manifestResponseInfo = ResponsePartInfo(
         responseHeaderData = responseHeaderData,
@@ -174,38 +174,39 @@ class FileDownloader(
     }
   }
 
-  private fun parseMultipartRemoteUpdateResponse(responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, callback: RemoteUpdateDownloadCallback) {
+  private fun parseMultipartRemoteUpdateResponse(response: Response, responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, callback: RemoteUpdateDownloadCallback) {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
     var certificateChainString: String? = null
     var directivePartBodyAndHeaders: Pair<String, Headers>? = null
 
-    try {
-      MultipartReader(responseBody).use { reader ->
-        while (true) {
-          val nextPart = reader.nextPart() ?: break
-          nextPart.use { part ->
-            val headers = part.headers
-            val body = part.body
-            val contentDispositionValue = headers["content-disposition"]
-            if (contentDispositionValue != null) {
-              val contentDispositionName =
-                contentDispositionValue.parseContentDispositionNameParameter()
-              if (contentDispositionName != null) {
-                when (contentDispositionName) {
-                  "manifest" -> manifestPartBodyAndHeaders = Pair(body.readUtf8(), headers)
-                  "extensions" -> extensionsBody = body.readUtf8()
-                  "certificate_chain" -> certificateChainString = body.readUtf8()
-                  "directive" -> directivePartBodyAndHeaders = Pair(body.readUtf8(), headers)
+    val isEmpty = response.peekBody(1).bytes().isEmpty()
+    if (!isEmpty) {
+      try {
+        MultipartReader(responseBody).use { reader ->
+          while (true) {
+            val nextPart = reader.nextPart() ?: break
+            nextPart.use { part ->
+              val headers = part.headers
+              val body = part.body
+              val contentDispositionValue = headers["content-disposition"]
+              if (contentDispositionValue != null) {
+                val contentDispositionName =
+                  contentDispositionValue.parseContentDispositionNameParameter()
+                if (contentDispositionName != null) {
+                  when (contentDispositionName) {
+                    "manifest" -> manifestPartBodyAndHeaders = Pair(body.readUtf8(), headers)
+                    "extensions" -> extensionsBody = body.readUtf8()
+                    "certificate_chain" -> certificateChainString = body.readUtf8()
+                    "directive" -> directivePartBodyAndHeaders = Pair(body.readUtf8(), headers)
+                  }
                 }
               }
             }
           }
         }
-      }
-    } catch (e: Exception) {
-      // okhttp multipart reader doesn't support empty multipart bodies, but our spec does
-      if (responseBody.bytes().isNotEmpty()) {
+      } catch (e: Exception) {
+        // okhttp multipart reader doesn't support empty multipart bodies, but our spec does
         val message = "Error while reading multipart remote update response"
         logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
         callback.onFailure(IOException(message, e))

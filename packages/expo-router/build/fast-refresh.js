@@ -43,20 +43,28 @@ if (process.env.NODE_ENV === 'development') {
              *   2. With each individual export of a module
              */
             isLikelyComponentType(value) {
-                if (typeof value === 'object') {
-                    if ('unstable_settings' in value) {
-                        expoRouterExports.add(value.unstable_settings);
+                try {
+                    if (typeof value === 'object') {
+                        if ('unstable_settings' in value) {
+                            expoRouterExports.add(value.unstable_settings);
+                        }
+                        if ('ErrorBoundary' in value) {
+                            expoRouterExports.add(value.ErrorBoundary);
+                        }
+                        if ('generateStaticParams' in value) {
+                            expoRouterExports.add(value.generateStaticParams);
+                        }
+                        // When ErrorBoundary is exported, the inverse dependency will also include the _ctx file.
+                        if ('ctx' in value && value.ctx.name === 'metroContext') {
+                            expoRouterExports.add(value.ctx);
+                        }
                     }
-                    if ('ErrorBoundary' in value) {
-                        expoRouterExports.add(value.ErrorBoundary);
-                    }
-                    if ('generateStaticParams' in value) {
-                        expoRouterExports.add(value.generateStaticParams);
-                    }
-                    // When ErrorBoundary is exported, the inverse dependency will also include the _ctx file.
-                    if ('ctx' in value && value.ctx.name === 'metroContext') {
-                        expoRouterExports.add(value.ctx);
-                    }
+                }
+                catch {
+                    // Ignore - we're just trying to avoid breaking Fast Refresh by using exports
+                    // that aren't JS objects valid as keys for the WeakSet - like we've seen with
+                    // some JSI::HostObject instances that are exported in a module - see #33670
+                    // https://github.com/expo/expo/issues/33670
                 }
                 return expoRouterExports.has(value) || isLikelyComponentType(value);
             },

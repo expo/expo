@@ -7,6 +7,7 @@
   "types": "build/DevLauncher.d.ts",
   "scripts": {
     "build": "expo-module build",
+    "bundle": "./write_embedded_bundle.sh",
     "clean": "expo-module clean",
     "lint": "expo-module lint bundle && expo-module lint",
     "test": "expo-module test bundle && expo-module test",
@@ -14,7 +15,6 @@
     "prepublishOnly": "yarn tsc:bundle && expo-module prepublishOnly",
     "expo-module": "expo-module",
     "start": "expo start --port 8090",
-    "bundle": "./write_embedded_bundle.sh",
     "link:ios": "xcrun simctl openurl booted",
     "tsc:bundle": "tsc -p bundle/tsconfig.json"
   },
@@ -37,10 +37,10 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-export-namespace-from": "^7.23.4",
-    "@react-navigation/bottom-tabs": "7.0.0",
+    "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/core": "7.0.0",
-    "@react-navigation/native": "^7.0.0",
-    "@react-navigation/stack": "7.0.0",
+    "@react-navigation/native": "^7.0.14",
+    "@react-navigation/stack": "^7.1.1",
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^12.5.1",
     "babel-plugin-module-resolver": "^5.0.0",

@@ -6,7 +6,7 @@ buildscript {
     minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
     compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
     targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-    kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
+    kotlinVersion = findProperty('android.kotlinVersion') ?: '2.0.21'
     ndkVersion = "26.1.10909125"
   }
   repositories {
@@ -24,43 +24,32 @@ buildscript {
   }
 }
 
+def reactNativeAndroidDir = new File(
+  providers.exec {
+    workingDir(rootDir)
+    commandLine("node", "--print", "require.resolve('react-native/package.json')")
+  }.standardOutput.asText.get().trim(),
+  "../android"
+)
+
+def jscAndroidDir = new File(
+  providers.exec {
+    workingDir(rootDir)
+    commandLine("node", "--print", "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })")
+  }.standardOutput.asText.get().trim(),
+  "../dist"
+)
+
 allprojects {
   repositories {
     mavenLocal()
     maven {
       // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-      url(
-          new File(
-              providers.exec {
-                workingDir(rootDir)
-                commandLine("node", "--print", "require.resolve('react-native/package.json')")
-              }.standardOutput.asText.get().trim(),
-              "../android"
-          )
-      )
+      url(reactNativeAndroidDir)
     }
     maven {
       // Android JSC is installed from npm
-      url(
-          new File(
-              providers.exec {
-                workingDir(rootDir)
-                commandLine("node", "--print", "require.resolve('jsc-android/package.json')")
-              }.standardOutput.asText.get().trim(),
-              "../dist"
-          )
-      )
-    }
-    maven {
-      url(
-          new File(
-              providers.exec {
-                workingDir(rootDir)
-                commandLine("node", "--print", "require.resolve('expo-camera/package.json')")
-              }.standardOutput.asText.get().trim(),
-              "../android/maven"
-          )
-      )
+      url(jscAndroidDir)
     }
 
     google()

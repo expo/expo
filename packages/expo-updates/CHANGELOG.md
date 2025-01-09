@@ -6,9 +6,22 @@
 
 ### 🎉 New features
 
+- Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
+- Fix an issue where `launchFallbackUpdateFromDisk` is called from a foreground thread leading to ANRs. ([#33693](https://github.com/expo/expo/pull/33693) by [@alanjhughes](https://github.com/alanjhughes))
+- [android] Use more robust mechanism for determining empty multipart bodies. ([#33977](https://github.com/expo/expo/pull/33977) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
+
+- [iOS] Inject logger from controllers down to dependent objects. ([#34035](https://github.com/expo/expo/pull/34035) by [@wschurman](https://github.com/wschurman))
+
+## 0.26.10 - 2024-12-05
+
+### 🐛 Bug fixes
+
+- Fix black screen appearing instead of the splashscreen on launch. ([#33432](https://github.com/expo/expo/pull/33432) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.26.9 — 2024-11-22
 

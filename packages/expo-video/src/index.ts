@@ -16,6 +16,7 @@ export {
   DRMOptions,
   BufferOptions,
   AudioMixingMode,
+  VideoThumbnailOptions,
 } from './VideoPlayer.types';
 
 export {

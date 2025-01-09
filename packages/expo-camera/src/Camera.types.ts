@@ -298,7 +298,7 @@ export type BarcodeScanningResult = {
   bounds: BarcodeBounds;
 };
 
-export type ScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
+export type ScanningResult = Omit<BarcodeScanningResult, 'bounds' | 'cornerPoints'>;
 
 // @needsAudit
 export type CameraViewProps = ViewProps & {
@@ -442,6 +442,7 @@ export interface CameraViewRef {
   readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
   readonly getAvailablePictureSizes: () => Promise<string[]>;
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
+  readonly toggleRecording: () => Promise<void>;
   readonly stopRecording: () => Promise<void>;
   readonly launchModernScanner: () => Promise<void>;
   readonly resumePreview: () => Promise<void>;
@@ -489,16 +490,19 @@ export type ScanningOptions = {
   barcodeTypes: BarcodeType[];
   /**
    * Indicates whether people can use a two-finger pinch-to-zoom gesture.
+   * @platform ios
    * @default true
    */
   isPinchToZoomEnabled?: boolean;
   /**
    * Guidance text, such as “Slow Down,” appears over the live video.
+   * @platform ios
    * @default true
    */
   isGuidanceEnabled?: boolean;
   /**
    * Indicates whether the scanner displays highlights around recognized items.
+   * @platform ios
    * @default false
    */
   isHighlightingEnabled?: boolean;

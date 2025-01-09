@@ -18,7 +18,9 @@ export default function VideoScreen() {
       Math.random() * player.duration,
     ];
     const start = performance.now();
-    const thumbnails = await player.generateThumbnailsAsync(times);
+    const thumbnails = await player.generateThumbnailsAsync(times, {
+      maxWidth: 240 * PixelRatio.get(),
+    });
     const end = performance.now();
 
     setGenerationTime(end - start);

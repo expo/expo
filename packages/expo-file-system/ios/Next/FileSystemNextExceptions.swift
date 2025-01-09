@@ -37,15 +37,9 @@ internal class UnableToDeleteException: GenericException<String> {
   }
 }
 
-internal class UnableToCreateDirectoryException: GenericException<String> {
+internal class UnableToCreateException: GenericException<String> {
   override var reason: String {
-    "Unable to create directory: \(param)"
-  }
-}
-
-internal class UnableToCreateFileException: GenericException<String> {
-  override var reason: String {
-    "Unable to create file: \(param)"
+    "Unable to create file or directory: \(param)"
   }
 }
 

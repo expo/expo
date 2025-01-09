@@ -294,56 +294,66 @@ class LoaderTask(
   }
 
   private fun launchFallbackUpdateFromDisk(diskUpdateCallback: LaunchUpdateCallback) {
-    val database = databaseHolder.database
-    val launcher = DatabaseLauncher(context, configuration, directory, fileDownloader, selectionPolicy, logger)
-    candidateLauncher = launcher
-    val launcherCallback: LauncherCallback = object : LauncherCallback {
-      override fun onFailure(e: Exception) {
-        databaseHolder.releaseDatabase()
-        diskUpdateCallback.onFailure(e)
+    AsyncTask.execute {
+      val database = databaseHolder.database
+      val launcher =
+        DatabaseLauncher(context, configuration, directory, fileDownloader, selectionPolicy, logger)
+      candidateLauncher = launcher
+      val launcherCallback: LauncherCallback = object : LauncherCallback {
+        override fun onFailure(e: Exception) {
+          databaseHolder.releaseDatabase()
+          diskUpdateCallback.onFailure(e)
+        }
+
+        override fun onSuccess() {
+          databaseHolder.releaseDatabase()
+          diskUpdateCallback.onSuccess()
+        }
       }
+      if (configuration.hasEmbeddedUpdate) {
+        // if the embedded update should be launched (e.g. if it's newer than any other update we have
+        // in the database, which can happen if the app binary is updated), load it into the database
+        // so we can launch it
+        val embeddedUpdate =
+          EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)!!.updateEntity
+        val launchableUpdate = launcher.getLaunchableUpdate(database)
+        val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
+        if (selectionPolicy.shouldLoadNewUpdate(
+            embeddedUpdate,
+            launchableUpdate,
+            manifestFilters
+          )
+        ) {
+          EmbeddedLoader(context, configuration, logger, database, directory).start(object :
+            LoaderCallback {
+            override fun onFailure(e: Exception) {
+              logger.error("Unexpected error copying embedded update", e, UpdatesErrorCode.Unknown)
+              launcher.launch(database, launcherCallback)
+            }
 
-      override fun onSuccess() {
-        databaseHolder.releaseDatabase()
-        diskUpdateCallback.onSuccess()
-      }
-    }
-    if (configuration.hasEmbeddedUpdate) {
-      // if the embedded update should be launched (e.g. if it's newer than any other update we have
-      // in the database, which can happen if the app binary is updated), load it into the database
-      // so we can launch it
-      val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)!!.updateEntity
-      val launchableUpdate = launcher.getLaunchableUpdate(database)
-      val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
-      if (selectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
-        EmbeddedLoader(context, configuration, logger, database, directory).start(object : LoaderCallback {
-          override fun onFailure(e: Exception) {
-            logger.error("Unexpected error copying embedded update", e, UpdatesErrorCode.Unknown)
-            launcher.launch(database, launcherCallback)
-          }
+            override fun onSuccess(loaderResult: Loader.LoaderResult) {
+              launcher.launch(database, launcherCallback)
+            }
 
-          override fun onSuccess(loaderResult: Loader.LoaderResult) {
-            launcher.launch(database, launcherCallback)
-          }
+            override fun onAssetLoaded(
+              asset: AssetEntity,
+              successfulAssetCount: Int,
+              failedAssetCount: Int,
+              totalAssetCount: Int
+            ) {
+              // do nothing
+            }
 
-          override fun onAssetLoaded(
-            asset: AssetEntity,
-            successfulAssetCount: Int,
-            failedAssetCount: Int,
-            totalAssetCount: Int
-          ) {
-            // do nothing
-          }
-
-          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
-          }
-        })
+            override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+              return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+            }
+          })
+        } else {
+          launcher.launch(database, launcherCallback)
+        }
       } else {
         launcher.launch(database, launcherCallback)
       }
-    } else {
-      launcher.launch(database, launcherCallback)
     }
   }
 
@@ -439,33 +449,35 @@ class LoaderTask(
               object : LauncherCallback {
                 override fun onFailure(e: Exception) {
                   databaseHolder.releaseDatabase()
+                  callback.onRemoteUpdateFinished(
+                    RemoteUpdateStatus.ERROR,
+                    null,
+                    e
+                  )
                   remoteUpdateCallback.onFailure(e)
                   logger.error("Loaded new update but it failed to launch", e, UpdatesErrorCode.UpdateFailedToLoad)
                 }
 
                 override fun onSuccess() {
                   databaseHolder.releaseDatabase()
-                  val hasLaunchedSynchronized = synchronized(this@LoaderTask) {
+                  synchronized(this@LoaderTask) {
                     if (!hasLaunched) {
                       candidateLauncher = newLauncher
                       isUpToDate = true
                     }
-                    hasLaunched
                   }
-                  if (hasLaunchedSynchronized) {
-                    if (availableUpdate == null) {
-                      callback.onRemoteUpdateFinished(
-                        RemoteUpdateStatus.NO_UPDATE_AVAILABLE,
-                        null,
-                        null
-                      )
-                    } else {
-                      callback.onRemoteUpdateFinished(
-                        RemoteUpdateStatus.UPDATE_AVAILABLE,
-                        availableUpdate,
-                        null
-                      )
-                    }
+                  if (availableUpdate == null) {
+                    callback.onRemoteUpdateFinished(
+                      RemoteUpdateStatus.NO_UPDATE_AVAILABLE,
+                      null,
+                      null
+                    )
+                  } else {
+                    callback.onRemoteUpdateFinished(
+                      RemoteUpdateStatus.UPDATE_AVAILABLE,
+                      availableUpdate,
+                      null
+                    )
                   }
                   remoteUpdateCallback.onSuccess()
                 }

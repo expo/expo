@@ -10,7 +10,7 @@ export const withSdk52ReactNative77CompatAndroid: ConfigPlugin = (config) => {
       return config;
     }
     const reactNativeVersion = await queryReactNativeVersionAsync(config.modRequest.projectRoot);
-    if (!reactNativeVersion || reactNativeVersion.minor !== 77) {
+    if (!reactNativeVersion || semver.lt(reactNativeVersion, '0.77.0')) {
       return config;
     }
 

@@ -5,8 +5,8 @@ import { AppProps } from 'next/app';
 import { Inter, Fira_Code } from 'next/font/google';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
-import { useNProgress } from '~/common/use-nprogress';
-import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
+import { useNProgress } from '~/common/useNProgress';
+import { DocumentationPageWrapper } from '~/components/DocumentationPageWrapper';
 import { AnalyticsProvider } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
@@ -46,13 +46,13 @@ Sentry.init({
   replaysOnErrorSampleRate: 0.05,
 });
 
-import('@sentry/react').then(lazyLoadedSentry => {
+await import('@sentry/react').then(lazyLoadedSentry => {
   Sentry.addIntegration(lazyLoadedSentry.replayIntegration());
 });
 
 const rootMarkdownComponents = {
   ...markdownComponents,
-  wrapper: DocumentationElements,
+  wrapper: DocumentationPageWrapper,
 };
 
 export { reportWebVitals } from '~/providers/Analytics';

@@ -8,7 +8,33 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, show the splashscreen again when the app is reloaded. ([#33793](https://github.com/expo/expo/pull/33793) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 0.29.18 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.17 - 2024-12-10
+
+### 🎉 New features
+
+- On Android, add support for providing vector drawables as the splashscreen icon. ([#33507](https://github.com/expo/expo/pull/33507) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.16 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.15 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.14 - 2024-12-05
+
+### 💡 Others
+
+- Use `light` and `dark` colors on `iOS` instead of `any`. ([#33472](https://github.com/expo/expo/pull/33472) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.29.13 — 2024-11-22
 
