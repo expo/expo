@@ -1,9 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
-
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
+#import <ExpoModulesCore/Swift.h>
 
 @interface RCTRootViewFactory ()
 
@@ -13,9 +13,9 @@
 
 @implementation EXReactRootViewFactory
 
-- (instancetype)initWithReactDelegate:(nullable EXReactDelegateWrapper *)reactDelegate
+- (instancetype)initWithReactDelegate:(nullable EXReactDelegate *)reactDelegate
                         configuration:(RCTRootViewFactoryConfiguration *)configuration
-           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+           turboModuleManagerDelegate:(nullable id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
 {
   if (self = [super initWithConfiguration:configuration andTurboModuleManagerDelegate:turboModuleManagerDelegate]) {
     self.reactDelegate = reactDelegate;
@@ -28,7 +28,7 @@
                  launchOptions:(nullable NSDictionary *)launchOptions
 {
   if (self.reactDelegate != nil) {
-    return [self.reactDelegate createReactRootView:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+    return [self.reactDelegate createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
   }
   return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
 }
