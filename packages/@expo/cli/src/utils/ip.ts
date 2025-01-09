@@ -66,7 +66,7 @@ function getRouteIPAddress(): string | null {
   let ifaces: ReturnType<typeof networkInterfaces>;
   try {
     ifaces = networkInterfaces();
-  } catch (_error) {
+  } catch {
     // NOTE: This usually doesn't throw, but invalid builds or unknown targets in Node.js
     // can cause this call to unexpectedly raise a system error
     return null;
