@@ -1,6 +1,7 @@
 import { useEvent } from 'expo';
 import { useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useState, useMemo } from 'react';
+import { Platform } from 'react-native';
 import AudioModule from './AudioModule';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
@@ -70,7 +71,13 @@ export async function setIsAudioActiveAsync(active) {
     return await AudioModule.setIsAudioActiveAsync(active);
 }
 export async function setAudioModeAsync(mode) {
-    return await AudioModule.setAudioModeAsync(mode);
+    const audioMode = Platform.OS === 'ios'
+        ? mode
+        : {
+            shouldPlayInBackground: mode.shouldPlayInBackground,
+            shouldRouteThroughEarpiece: mode.shouldRouteThroughEarpiece,
+        };
+    return await AudioModule.setAudioModeAsync(audioMode);
 }
 export async function requestRecordingPermissionsAsync() {
     return await AudioModule.requestRecordingPermissionsAsync();
