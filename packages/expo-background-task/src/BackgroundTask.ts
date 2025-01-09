@@ -84,15 +84,15 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
  * This function will only work for apps built in debug mode.
  * @returns A promise which fulfils when the task is triggered.
  */
-export async function triggerTaskWorkerForTestingAsync(): Promise<void> {
+export async function triggerTaskWorkerForTestingAsync(): Promise<boolean> {
   if (__DEV__) {
     if (!ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync) {
       throw new UnavailabilityError('BackgroundTask', 'triggerTaskWorkerForTestingAsync');
     }
     console.log('Calling triggerTaskWorkerForTestingAsync');
-    await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
+    return await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
   } else {
-    return Promise.resolve();
+    return Promise.resolve(false);
   }
 }
 

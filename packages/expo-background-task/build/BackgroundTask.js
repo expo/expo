@@ -78,10 +78,10 @@ export async function triggerTaskWorkerForTestingAsync() {
             throw new UnavailabilityError('BackgroundTask', 'triggerTaskWorkerForTestingAsync');
         }
         console.log('Calling triggerTaskWorkerForTestingAsync');
-        await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
+        return await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
     }
     else {
-        return Promise.resolve();
+        return Promise.resolve(false);
     }
 }
 // Export types

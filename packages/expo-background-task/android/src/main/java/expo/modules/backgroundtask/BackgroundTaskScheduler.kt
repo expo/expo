@@ -149,7 +149,7 @@ class BackgroundTaskScheduler {
     /**
      * Runs tasks with the given appScopeKey
      */
-    suspend fun runTasks(context: Context, appScopeKey: String) {
+    suspend fun runTasks(context: Context, appScopeKey: String) : Boolean {
       // Get task service
       val taskService = TaskServiceProviderHelper.getTaskServiceImpl(context)
         ?: throw MissingTaskServiceException()
@@ -159,6 +159,10 @@ class BackgroundTaskScheduler {
       // Get all task consumers
       val consumers = taskService.getTaskConsumers(appScopeKey)
       Log.d(TAG, "runTasks: number of consumers ${consumers.size}")
+
+      if (consumers.size == 0) {
+        return false
+      }
 
       val tasks = consumers.mapNotNull { consumer ->
         val bgTaskConsumer = consumer as? BackgroundTaskConsumer ?: return@mapNotNull null
@@ -177,6 +181,8 @@ class BackgroundTaskScheduler {
 
       // Await all tasks to complete
       tasks.awaitAll()
+
+      return true
     }
 
     /**

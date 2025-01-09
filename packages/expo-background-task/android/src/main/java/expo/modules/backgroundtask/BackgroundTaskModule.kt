@@ -29,7 +29,7 @@ class BackgroundTaskModule : Module() {
         Log.d(TAG, "Triggering tasks for testing")
         appContext.reactContext?.let {
           val appScopeKey = it.packageName
-          BackgroundTaskScheduler.runTasks(it, appScopeKey)
+          return@Coroutine BackgroundTaskScheduler.runTasks(it, appScopeKey)
         } ?: throw MissingContextException()
       } else {
         throw TestMethodNotAvailableInProductionBuild()
