@@ -242,6 +242,17 @@ export default class CameraView extends Component<CameraViewProps> {
 
   /**
    * Pauses or resumes the video recording. Only has an effect if there is an active recording. On `iOS`, this method only supported on `iOS` 18.
+   *
+   * @example
+   * ```ts
+   * const { toggleRecordingAsyncAvailable } = getSupportedFeatures()
+   *
+   * return (
+   *  {toggleRecordingAsyncAvailable && (
+   *    <Button title="Toggle Recording" onPress={toggleRecordingAsync} />
+   *  )}
+   * )
+   * ```
    */
   async toggleRecordingAsync() {
     return this._cameraRef.current?.toggleRecording();
