@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Restricted color types to string to prevent the use of illegal color types (PlatformColor) untill supported.
+
 ## 4.0.6 - 2024-12-10
 
 _This version does not introduce any user-facing changes._
