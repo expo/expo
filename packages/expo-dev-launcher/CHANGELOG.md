@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed black stuck screen when loading an unreachable server from last opened url. ([#34067](https://github.com/expo/expo/pull/34067) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Fixed broken local UI development on Android. ([#33714](https://github.com/expo/expo/pull/33714) by [@kudo](https://github.com/kudo))
