@@ -33,7 +33,8 @@ export function cleanCopyValue(value: string) {
     .replace(/\/\*\s?@(tutinfo[^*]+|end|hide[^*]+).?\*\//g, '')
     .replace(/#\s?@(tutinfo[^#]+|end|hide[^#]+).?#/g, '')
     .replace(/<!--\s?@(tutinfo[^<>]+|end|hide[^<>]+).?-->/g, '')
-    .replace(/^ +\r?\n|\n +\r?$/gm, '');
+    .replace(/^ +\r?\n|\n +\r?$/gm, '')
+    .replace(/Show\s+[Mm]ore\s*$/, '');
 }
 
 export function escapeHtml(text: string) {
