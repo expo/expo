@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `coreFeatures` field.
+- Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
