@@ -7,9 +7,9 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- Switched JSX options in `tsconfig.base.json` from legacy `"react-native"` to the new and better optimized `"react-jsx"`
-
 ### 🛠 Breaking changes
+
+- [typescript] Updated default TSConfig to use `"jsx": "react-jsx"` instead of the deprecated `"jsx": "react-native"` option ([#34051](https://github.com/expo/expo/pull/34051)) @asleepace
 
 ### 🎉 New features
 
