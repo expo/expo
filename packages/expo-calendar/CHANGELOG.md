@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Correctly type `organizer` and document it. ([#34052](https://github.com/expo/expo/pull/34052) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 14.0.5 — 2024-12-09
