@@ -159,8 +159,8 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
           {baseProp?.comment && <APICommentTextBlock comment={baseProp.comment} />}
+          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
