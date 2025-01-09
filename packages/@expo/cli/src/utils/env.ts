@@ -234,6 +234,11 @@ class Env {
   get EXPO_UNSTABLE_DEPLOY_SERVER(): boolean {
     return boolish('EXPO_UNSTABLE_DEPLOY_SERVER', false);
   }
+
+  /** Is running in EAS Build. This is set by EAS: https://docs.expo.dev/eas/environment-variables/ */
+  get EAS_BUILD(): boolean {
+    return boolish('EAS_BUILD', false);
+  }
 }
 
 export const env = new Env();
