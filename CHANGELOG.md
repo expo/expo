@@ -9,8 +9,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🛠 Breaking changes
 
-- [typescript] Updated default TSConfig to use `"jsx": "react-jsx"` instead of the deprecated `"jsx": "react-native"` option ([#34051](https://github.com/expo/expo/pull/34051)) @asleepace
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
