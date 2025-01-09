@@ -16,6 +16,7 @@
 ### 💡 Others
 
 - Add less aggressive babel plugin migration warning. ([#33640](https://github.com/expo/expo/pull/33640) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix linting errors ([#34033](https://github.com/expo/expo/pull/34033) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 

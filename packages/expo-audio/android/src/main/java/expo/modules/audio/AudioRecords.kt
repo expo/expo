@@ -12,17 +12,9 @@ class AudioSource(
 ) : Record
 
 class AudioMode(
-  @Field val playsInSilentMode: Boolean = false,
-  @Field val interruptionMode: InterruptionMode = InterruptionMode.DO_NOT_MIX,
-  @Field val allowsRecording: Boolean = true,
   @Field val shouldPlayInBackground: Boolean = true,
   @Field val shouldRouteThroughEarpiece: Boolean?
 ) : Record
-
-enum class InterruptionMode(val value: String) : Enumerable {
-  DO_NOT_MIX("doNotMix"),
-  DUCK_OTHERS("duckOthers")
-}
 
 // Data class because we want `equals`
 data class RecordingOptions(

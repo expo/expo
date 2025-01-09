@@ -236,15 +236,15 @@ public extension UpdatesStateContext {
  in a production app, instantiated as a property of AppController.
  */
 internal class UpdatesStateMachine {
+  private let logger: UpdatesLogger
   private let eventManager: UpdatesEventManager
   private let validUpdatesStateValues: Set<UpdatesStateValue>
 
-  required init(eventManager: UpdatesEventManager, validUpdatesStateValues: Set<UpdatesStateValue>) {
+  required init(logger: UpdatesLogger, eventManager: UpdatesEventManager, validUpdatesStateValues: Set<UpdatesStateValue>) {
+    self.logger = logger
     self.eventManager = eventManager
     self.validUpdatesStateValues = validUpdatesStateValues
   }
-
-  private let logger = UpdatesLogger()
 
   private lazy var serialExecutorQueue: StateMachineSerialExecutorQueue = {
     return StateMachineSerialExecutorQueue(

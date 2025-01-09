@@ -27,7 +27,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
     self.controllerQueue = controllerQueue
     self.updatesDirectory = updatesDirectory
     self.logger = logger
-
+    self.errorRecovery = ErrorRecovery(logger: logger)
     self.errorRecovery.delegate = self
   }
 
@@ -48,7 +48,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
     self.launcher = launcher
   }
 
-  private let errorRecovery = ErrorRecovery()
+  private let errorRecovery: ErrorRecovery
   private var errorRecoveryRemoteAppLoader: RemoteAppLoader?
   internal func requestStartErrorMonitoring() {
     errorRecovery.startMonitoring()
@@ -87,7 +87,8 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       database: database,
       directory: updatesDirectory,
       selectionPolicy: selectionPolicy,
-      delegateQueue: controllerQueue
+      delegateQueue: controllerQueue,
+      logger: self.logger
     )
     loaderTask!.delegate = self
     loaderTask!.swiftDelegate = self

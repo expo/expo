@@ -1,6 +1,7 @@
 import { useEvent } from 'expo';
 import { PermissionResponse, useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useState, useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import {
   AudioMode,
@@ -115,7 +116,14 @@ export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
 
 // @docsMissing
 export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void> {
-  return await AudioModule.setAudioModeAsync(mode);
+  const audioMode: Partial<AudioMode> =
+    Platform.OS === 'ios'
+      ? mode
+      : {
+          shouldPlayInBackground: mode.shouldPlayInBackground,
+          shouldRouteThroughEarpiece: mode.shouldRouteThroughEarpiece,
+        };
+  return await AudioModule.setAudioModeAsync(audioMode);
 }
 
 // @docsMissing
