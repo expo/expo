@@ -46,13 +46,18 @@ public final class ScreenCaptureModule: Module {
     if shouldListen && !isListening {
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(self.listenForScreenCapture),
+      selector: #selector(self.sendScreenshotEvent),
       name: UIApplication.userDidTakeScreenshotNotification,
       object: nil
     )
+
+    if UIScreen.main.isCaptured {
+      self.sendScreenRecordingEvent()
+    }
+
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(self.listenForScreenRecording),
+      selector: #selector(self.sendScreenRecordingEvent),
       name: UIScreen.capturedDidChangeNotification,
       object: nil
     )
@@ -76,14 +81,14 @@ public final class ScreenCaptureModule: Module {
   }
 
   @objc
-  func listenForScreenCapture() {
+  func sendScreenshotEvent() {
     sendEvent(onScreenshotEventName, [
       "body": nil
     ])
   }
 
   @objc
-  func listenForScreenRecording() {
+  func sendScreenRecordingEvent() {
     sendEvent(onScreenRecordingEventName, [
       "isCaptured": UIScreen.main.isCaptured
     ])
