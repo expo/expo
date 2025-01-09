@@ -368,6 +368,47 @@ module.exports = config;
     });
   });
 
+  it('should support sourceSkips specified as string array in config', async () => {
+    await jest.isolateModulesAsync(async () => {
+      vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+      vol.writeFileSync(
+        '/app/app.config.js',
+        `\
+export default ({ config }) => {
+  config.android = { versionCode: 1, package: 'com.example.app' };
+  config.ios = { buildNumber: '1', bundleIdentifier: 'com.example.app' };
+  return config;
+};`
+      );
+
+      const configContents = `\
+const { SourceSkips } = require('@expo/fingerprint');
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  sourceSkips: ['ExpoConfigAndroidPackage', 'ExpoConfigIosBundleIdentifier', 'ExpoConfigVersions'],
+};
+module.exports = config;
+`;
+      vol.writeFileSync('/app/fingerprint.config.js', configContents);
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
+
+      const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+      const expoConfigSource = sources.find<HashSourceContents>(
+        (source): source is HashSourceContents =>
+          source.type === 'contents' && source.id === 'expoConfig'
+      );
+      const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
+      expect(expoConfig).not.toBeNull();
+      expect(expoConfig.version).toBeUndefined();
+      expect(expoConfig.android.versionCode).toBeUndefined();
+      expect(expoConfig.android.package).toBeUndefined();
+      expect(expoConfig.ios.buildNumber).toBeUndefined();
+      expect(expoConfig.ios.bundleIdentifier).toBeUndefined();
+    });
+  });
+
   it('should not contain runtimeVersion when SourceSkips.ExpoConfigRuntimeVersionIfString and runtime version is a string', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.writeFileSync(
