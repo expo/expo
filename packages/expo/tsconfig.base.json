@@ -5,7 +5,7 @@
   "compilerOptions": {
     "allowJs": true,
     "esModuleInterop": true,
-    "jsx": "react-native",
+    "jsx": "react-jsx",
     "lib": ["DOM", "ESNext"],
     "moduleResolution": "node",
     "noEmit": true,

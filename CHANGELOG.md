@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Switched JSX options in `tsconfig.base.json` from legacy `"react-native"` to the new and better optimized `"react-jsx"`
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
