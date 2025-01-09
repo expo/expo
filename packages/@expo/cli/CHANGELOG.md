@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ensure we hydrate env vars in the project when running `npx expo serve`. ([#34064](https://github.com/expo/expo/pull/34064) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.22.9 — 2025-01-10
