@@ -295,7 +295,10 @@
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
-    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
+    // When launch to the last opend url, the previous url could be unreachable because of LAN IP changed.
+    // We use a shorter timeout to prevent black screen when loading for an unreachable server.
+    NSTimeInterval requestTimeout = 10.0;
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:requestTimeout onSuccess:nil onError:navigateToLauncher];
     return;
   }
   [self navigateToLauncher];
@@ -436,6 +439,18 @@
   [self loadApp:url withProjectUrl:nil onSuccess:onSuccess onError:onError];
 }
 
+- (void)loadApp:(NSURL *)url
+ withProjectUrl:(NSURL * _Nullable)projectUrl
+      onSuccess:(void (^ _Nullable)(void))onSuccess
+        onError:(void (^ _Nullable)(NSError *error))onError
+{
+  [self loadApp:url
+ withProjectUrl:projectUrl
+    withTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest
+      onSuccess:onSuccess
+        onError:onError];
+}
+
 /**
  * This method is the external entry point into loading an app with the dev launcher (e.g. via the
  * dev launcher UI or a deep link). It takes a URL, determines what type of server it points to
@@ -443,7 +458,11 @@
  * downloads all the project's assets (via expo-updates) in the case of a published project, and
  * then calls `_initAppWithUrl:bundleUrl:manifest:` if successful.
  */
-- (void)loadApp:(NSURL *)url withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+- (void)loadApp:(NSURL *)url
+ withProjectUrl:(NSURL * _Nullable)projectUrl
+    withTimeout:(NSTimeInterval)requestTimeout
+      onSuccess:(void (^ _Nullable)(void))onSuccess
+        onError:(void (^ _Nullable)(NSError *error))onError
 {
   EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
   NSURL *expoUrl = devLauncherUrl.url;
@@ -505,7 +524,12 @@
     [_updatesInterface reset];
   }
 
-  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl installationID:installationID session:[NSURLSession sharedSession]];
+  NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc]
+                                                 initWithURL:expoUrl
+                                                 installationID:installationID
+                                                 session:[NSURLSession sharedSession]
+                                                 requestTimeout:requestTimeout];
 
   void (^onIsManifestURL)(BOOL) = ^(BOOL isManifestURL) {
     if (!isManifestURL) {
