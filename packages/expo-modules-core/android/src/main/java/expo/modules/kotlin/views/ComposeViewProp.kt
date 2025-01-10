@@ -7,11 +7,12 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.PropSetException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.types.AnyType
-import kotlin.reflect.full.memberProperties
+import kotlin.reflect.KProperty1
 
 class ComposeViewProp(
   name: String,
-  anyType: AnyType
+  anyType: AnyType,
+  val property: KProperty1<*, *>
 ) : AnyViewProp(name, anyType) {
 
   @Suppress("UNCHECKED_CAST")
@@ -19,10 +20,10 @@ class ComposeViewProp(
     exceptionDecorator({
       PropSetException(name, onView::class, it)
     }) {
-      val props = (onView as ExpoComposeView).props ?: return
-      val property = props::class.memberProperties.find { it.name == name }?.getter?.call(onView.props)
-      if (property is MutableState<*>) {
-        (property as MutableState<Any?>).value = type.convert(prop, appContext)
+      val props = (onView as ExpoComposeView<*>).props ?: return
+      val mutableState = property.getter.call(props)
+      if (mutableState is MutableState<*>) {
+        (mutableState as MutableState<Any?>).value = type.convert(prop, appContext)
       }
     }
   }

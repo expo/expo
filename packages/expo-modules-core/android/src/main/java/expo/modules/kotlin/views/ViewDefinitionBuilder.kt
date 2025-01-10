@@ -151,16 +151,6 @@ class ViewDefinitionBuilder<T : View>(
     }
   }
 
-  inline fun <reified PropType : Any> ComposeProp(
-    name: String,
-    type: KClass<PropType>
-  ) {
-    props[name] = ComposeViewProp(
-      name,
-      toAnyType<PropType>()
-    )
-  }
-
   /**
    * Defines prop names that should be treated as callbacks.
    */

@@ -18,8 +18,8 @@ data class SegmentedControlProps(
   val selectedIndex: MutableState<Int?> = mutableStateOf(null)
 )
 
-class SingleChoiceSegmentedControlView(context: Context, appContext: AppContext) : ExpoComposeView(context, appContext) {
-  override val props: SegmentedControlProps = SegmentedControlProps()
+class SingleChoiceSegmentedControlView(context: Context, appContext: AppContext) : ExpoComposeView<SegmentedControlProps>(context, appContext) {
+  override val props = SegmentedControlProps()
   private val onOptionSelected by EventDispatcher()
 
   init {
