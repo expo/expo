@@ -84,14 +84,25 @@ exports.default = (0, create_pages_1.createPages)(async ({ createPage, createLay
                         ...loaded.unstable_settings,
                         staticPaths: (await loadAndConvertStaticParamsAsync(child)),
                     });
+                    if (settings?.render !== 'static') {
+                        createPage({
+                            // NOTE(EvanBacon): Support routes with top-level "use client"
+                            component: loaded.default,
+                            path: normal,
+                            render: 'dynamic',
+                            ...settings,
+                        });
+                    }
                 }
-                createPage({
-                    // NOTE(EvanBacon): Support routes with top-level "use client"
-                    component: loaded.default,
-                    path: normal,
-                    render: 'dynamic',
-                    ...settings,
-                });
+                else {
+                    createPage({
+                        // NOTE(EvanBacon): Support routes with top-level "use client"
+                        component: loaded.default,
+                        path: normal,
+                        render: 'dynamic',
+                        ...settings,
+                    });
+                }
             }
         }));
     }

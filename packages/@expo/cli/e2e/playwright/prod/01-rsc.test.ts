@@ -19,6 +19,7 @@ test.describe(inputDir, () => {
     env: {
       NODE_ENV: 'production',
       TEST_SECRET_VALUE: 'test-secret-dynamic',
+      E2E_BUILD_MARKER: 'dynamic',
     },
   });
 
@@ -34,6 +35,7 @@ test.describe(inputDir, () => {
         NODE_ENV: 'production',
         E2E_ROUTER_SRC: '01-rsc',
         TEST_SECRET_VALUE: 'test-secret',
+        E2E_BUILD_MARKER: 'static',
       },
     });
     console.timeEnd('expo export');
@@ -57,7 +59,12 @@ test.describe(inputDir, () => {
   // This test generally ensures no errors are thrown during an export loading.
   test('loads without hydration errors', async ({ page }) => {
     // Ensure the JS code has string module IDs
-    expect(findProjectFiles(STATIC_RSC_PATH)).toEqual(['web/index.txt']);
+    expect(findProjectFiles(STATIC_RSC_PATH)).toEqual([
+      'web/colors/blue.txt',
+      'web/colors/red.txt',
+      'web/index.txt',
+      'web/shapes/square.txt',
+    ]);
 
     // Listen for console logs and errors
     const pageErrors = pageCollectErrors(page);
@@ -136,5 +143,83 @@ test.describe(inputDir, () => {
       // Ensure the headers are rendered as expected
       'expo-platform: web'
     );
+  });
+
+  test('has static version of static page (colors)', async ({ page }) => {
+    // Observe network request
+    const staticComponentRequest = page.waitForRequest((request) => {
+      // console.log('request.url()', request.url(), request.method(), headers);
+      return (
+        // Server Actions can only be POST requests
+        request.method() === 'GET' &&
+        // Expected URL location
+        new URL(request.url()).pathname.startsWith('/_flight/web/colors/blue.txt')
+      );
+    });
+
+    const serverResponsePromise = page.waitForResponse((response) => {
+      return new URL(response.url()).pathname.startsWith('/_flight/web/colors/blue.txt');
+    });
+
+    // Navigate to the app
+    await page.goto(new URL('/colors/blue', expoServe.url).href);
+
+    await staticComponentRequest;
+    const response = await serverResponsePromise;
+
+    const rscPayload = new TextDecoder().decode(await response.body()).trim();
+
+    expect(rscPayload)
+      .toBe(`1:I["node_modules/react-native-safe-area-context/lib/module/index.js",[],"SafeAreaView"]
+2:I["packages/expo-router/build/rsc/router/host.js",[],"Children"]
+3:I["node_modules/react-native-web/dist/exports/View/index.js",[],""]
+4:I["packages/expo-router/build/rsc/router/client.js",[],"Link"]
+5:I["node_modules/react-native-web/dist/exports/Text/index.js",[],""]
+0:{"layout":["$","$L1",null,{"style":{"flex":1},"testID":"layout-child-wrapper","children":[["$","$L2",null,{}],["$","$L3",null,{"testID":"layout-global-style","style":[{"width":100,"height":100},{"$$css":true,"_":"custom-global-style"}]}],["$","$L3",null,{"testID":"layout-module-style","style":[{"width":100,"height":100},{"$$css":true,"_":"zvzhJW_container"}]}],["$","$L3",null,{"style":{"flexDirection":"row","padding":12,"justifyContent":"space-around"},"children":[["$","$L4",null,{"href":"/","style":{},"children":"One"}],["$","$L4",null,{"href":"/second","style":{},"children":"Two"}]]}]]}],"colors/blue/page":["$","$L5",null,{"testID":"color","children":["blue","-","static"]}],"/SHOULD_SKIP":[["layout",[]],["colors/layout",[]],["colors/blue/layout",[]],["colors/blue/page",[]]],"/LOCATION":["/colors/blue",""]}`);
+
+    await expect(page.locator('[data-testid="color"]')).toHaveText('blue-static');
+  });
+
+  test('has dynamic version of static page (colors)', async ({ page }) => {
+    // Navigate to the app
+    await page.goto(new URL('/colors/magenta', expoServe.url).href);
+
+    await expect(page.locator('[data-testid="color"]')).toHaveText('magenta-dynamic');
+  });
+
+  test('has static version of static-only page (shapes)', async ({ page }) => {
+    // Navigate to the app
+    await page.goto(new URL('/shapes/square', expoServe.url).href);
+
+    await expect(page.locator('[data-testid="shape"]')).toHaveText('square-static');
+  });
+
+  test('does not have static version of static-only page that was not rendered (shapes)', async ({
+    page,
+  }) => {
+    // Observe network request
+    const staticComponentRequest = page.waitForRequest((request) => {
+      return (
+        // Server Actions can only be POST requests
+        request.method() === 'GET' &&
+        // Expected URL location
+        new URL(request.url()).pathname.startsWith('/_flight/web/shapes/other.txt')
+      );
+    });
+
+    const serverResponsePromise = page.waitForResponse((response) => {
+      return new URL(response.url()).pathname.startsWith('/_flight/web/shapes/other.txt');
+    });
+
+    // Navigate to the app
+    await page.goto(new URL('/shapes/other', expoServe.url).href);
+
+    await staticComponentRequest;
+    const response = await serverResponsePromise;
+
+    // TODO: This should be 404 in the future
+    expect(response.status()).toBe(500);
+
+    await expect(page.locator('[data-testid="shape"]')).not.toBeVisible();
   });
 });

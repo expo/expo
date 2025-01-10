@@ -112,15 +112,25 @@ export default createPages(async ({ createPage, createLayout, unstable_setBuildD
               ...loaded.unstable_settings,
               staticPaths: (await loadAndConvertStaticParamsAsync(child)) as any,
             });
-          }
 
-          createPage({
-            // NOTE(EvanBacon): Support routes with top-level "use client"
-            component: loaded.default as any,
-            path: normal as any,
-            render: 'dynamic',
-            ...settings,
-          });
+            if (settings?.render !== 'static') {
+              createPage({
+                // NOTE(EvanBacon): Support routes with top-level "use client"
+                component: loaded.default as any,
+                path: normal as any,
+                render: 'dynamic',
+                ...settings,
+              });
+            }
+          } else {
+            createPage({
+              // NOTE(EvanBacon): Support routes with top-level "use client"
+              component: loaded.default as any,
+              path: normal as any,
+              render: 'dynamic',
+              ...settings,
+            });
+          }
         }
       })
     );
