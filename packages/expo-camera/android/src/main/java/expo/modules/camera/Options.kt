@@ -20,5 +20,4 @@ data class PictureOptions(
 data class RecordingOptions(
   @Field val maxDuration: Int = 0,
   @Field val maxFileSize: Int = 0,
-  @Field val quality: VideoQuality?
 ) : Record
