@@ -185,8 +185,7 @@ class AudioPlayer(
               }
             }
 
-            override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) =
-              Unit
+            override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) = Unit
           },
           Visualizer.getMaxCaptureRate() / 2,
           true,
