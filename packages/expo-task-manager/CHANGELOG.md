@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.0.4 — 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 12.0.3 — 2024-11-13
 
 ### 💡 Others

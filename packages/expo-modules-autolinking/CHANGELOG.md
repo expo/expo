@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.0.5 — 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.4 — 2024-12-10
 
 ### 🐛 Bug fixes

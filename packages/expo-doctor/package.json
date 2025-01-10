@@ -33,9 +33,9 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config": "~10.0.7",
-    "@expo/json-file": "~9.0.0",
-    "@expo/schemer": "1.5.3",
+    "@expo/config": "~10.0.8",
+    "@expo/json-file": "~9.0.1",
+    "@expo/schemer": "1.5.4",
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.8",
     "@vercel/ncc": "0.38.1",

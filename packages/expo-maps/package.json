@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-asset": "^11.0.0"
+    "expo-asset": "^11.0.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^4.0.3"

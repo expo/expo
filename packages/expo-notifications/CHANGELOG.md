@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.29.12 — 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 0.29.11 — 2024-12-05
 
 ### 🐛 Bug fixes

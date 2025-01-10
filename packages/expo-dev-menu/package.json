@@ -56,7 +56,7 @@
     "@testing-library/react-native": "^12.5.1",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~12.0.6",
-    "expo-dev-client-components": "2.0.2",
+    "expo-dev-client-components": "2.0.3",
     "expo-module-scripts": "^4.0.3",
     "fuse.js": "^6.4.6",
     "react": "18.3.1",

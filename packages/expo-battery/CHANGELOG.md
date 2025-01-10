@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 9.0.2 — 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 9.0.1 — 2024-10-22
 
 _This version does not introduce any user-facing changes._

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.1.1 — 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 5.1.0 — 2024-11-29
 
 ### 🎉 New features

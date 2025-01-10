@@ -1,6 +1,6 @@
 {
   "name": "create-expo",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "bin": "./build/index.js",
   "main": "build",
   "description": "Create universal Expo apps",
@@ -37,9 +37,9 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config": "~10.0.7",
-    "@expo/json-file": "^9.0.0",
-    "@expo/package-manager": "^1.7.0",
+    "@expo/config": "~10.0.8",
+    "@expo/json-file": "^9.0.1",
+    "@expo/package-manager": "^1.7.1",
     "@expo/spawn-async": "^1.7.2",
     "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",
