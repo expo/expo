@@ -12,7 +12,7 @@
 ### 🐛 Bug fixes
 
 - Fix `zoom` on Android and adjust the magnitude on iOS. ([#33319](https://github.com/expo/expo/pull/33319) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix setting `videoQuality` prop.
+- [iOS] Fix setting `videoQuality` prop. ([#34082](https://github.com/expo/expo/pull/34082) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
