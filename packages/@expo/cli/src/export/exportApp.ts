@@ -12,11 +12,7 @@ import {
   updateDomComponentAssetsForMD5Naming,
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import {
-  exportApiRoutesStandaloneAsync,
-  exportFromServerAsync,
-  getHtmlFiles,
-} from './exportStaticAsync';
+import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
