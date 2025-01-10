@@ -10,7 +10,13 @@ export async function renderPage(params: { title: string }) {
   return (
     <>
       <Stack.Screen options={{ title: 'Server Actions' }} />
-      <Text testID="index-text">Platform: {process.env.EXPO_OS}</Text>
+      <Text
+        testID="index-text"
+        style={{
+          backgroundColor: 'red',
+        }}>
+        Platform: {process.env.EXPO_OS}
+      </Text>
       <Text testID="secret-text">Secret: {process.env.TEST_SECRET_VALUE}</Text>
       <Text>Render: {Date.now()}</Text>
       <Text testID="platform-header">Header: {platformHeader}</Text>

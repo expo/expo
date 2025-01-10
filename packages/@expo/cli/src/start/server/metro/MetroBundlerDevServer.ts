@@ -79,6 +79,7 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import requireFromString from 'require-from-string';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -1094,6 +1095,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private onReloadRscEvent: (() => void) | null = null;
 
   private async registerSsrHmrAsync(url: string, onReload: () => void) {
+    const injectUpdate = (update) => {
+      const inject = ({
+        module: [id, code],
+        sourceURL,
+      }: {
+        module: [string, string];
+        sourceURL: string;
+      }) => {
+        // eval(code);
+        requireFromString(code, sourceURL);
+      };
+      update.added.forEach(inject);
+      update.modified.forEach(inject);
+    };
+
     if (!this.hmrServer || this.ssrHmrClients.has(url)) {
       return;
     }
@@ -1138,7 +1154,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
               // if (typeof globalThis.__c === 'function') globalThis.__c();
 
-              onReload();
+              injectUpdate(update);
+
+              console.log(
+                '[SSR] HMR Update:',
+                util.inspect(update, {
+                  colors: true,
+                  compact: false,
+                  showHidden: false,
+                  depth: null,
+                })
+              );
+
+              // onReload();
             }
           }
           break;
@@ -1353,6 +1381,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // platform,
       });
     };
+
+    globalThis.__metro_ssr_reload = onReload;
 
     this.registerSsrHmrAsync(url.toString(), onReload);
   }
@@ -1707,3 +1737,5 @@ async function sourceMapStringAsync(
     excludeSource: options.excludeSource,
   });
 }
+
+import util from 'util';

@@ -97,6 +97,7 @@ export type DefineFn = (
 type VerboseModuleNameForDev = string;
 type ModuleDefiner = (moduleId: ModuleID) => void;
 
+console.log('Loaded metro-runtime require runtime. Has current:', global.__d);
 global.__r = metroRequire as RequireFn;
 global[`${__METRO_GLOBAL_PREFIX__}__d`] = define as DefineFn;
 global.__c = clear;
@@ -147,6 +148,8 @@ function define(factory: FactoryFn, moduleId: ModuleID, dependencyMap?: Dependen
       // called with inverseDependencies, we can hot reload it.
       if (inverseDependencies) {
         global.__accept(moduleId, factory, dependencyMap, inverseDependencies);
+      } else {
+        console.log('failed to hot reload', moduleId);
       }
     }
 
@@ -154,6 +157,7 @@ function define(factory: FactoryFn, moduleId: ModuleID, dependencyMap?: Dependen
     // that are already loaded
     return;
   }
+  console.log('define:', moduleId);
 
   const mod: ModuleDefinition = {
     dependencyMap,
@@ -560,6 +564,7 @@ if (__DEV__) {
     dependencyMap: DependencyMap,
     inverseDependencies: InverseDependencyMap
   ) {
+    console.log('Hot update module', id, inverseDependencies);
     const mod = modules.get(id);
     if (!mod) {
       if (factory) {
@@ -864,7 +869,9 @@ if (__DEV__) {
       failed?: ModuleDefinition;
     }
   ) => {
-    if (
+    if (typeof __metro_ssr_reload !== 'undefined') {
+      globalThis.__metro_ssr_reload();
+    } else if (
       typeof window !== 'undefined' &&
       window.location != null &&
       typeof window.location.reload === 'function'

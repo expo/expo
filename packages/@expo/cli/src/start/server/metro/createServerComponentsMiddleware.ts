@@ -292,6 +292,7 @@ export function createServerComponentsMiddleware(
   >();
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
+    await ensureMemo();
     // We can only cache this if we're using the client router since it doesn't change or use HMR
     if (routerCache.has(platform) && useClientRouter) {
       return routerCache.get(platform)!;
@@ -421,7 +422,26 @@ export function createServerComponentsMiddleware(
 
   const rscRendererCache = new Map<string, typeof import('expo-router/build/rsc/rsc-renderer')>();
 
+  let ensurePromise: Promise<any> | null = null;
+  async function ensureSSRReady() {
+    console.log('Ensuring SSR is ready...');
+    // TODO: Extract CSS Modules / Assets from the bundler process
+    const runtime = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
+      'expo-router/noop.js',
+      {
+        environment: 'react-server',
+        platform: 'web',
+      }
+    );
+    return runtime;
+  }
+  const ensureMemo = () => {
+    ensurePromise ??= ensureSSRReady();
+    return ensurePromise;
+  };
+
   async function getRscRendererAsync(platform: string) {
+    await ensureMemo();
     // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
     if (rscRendererCache.has(platform)) {
       return rscRendererCache.get(platform)!;
