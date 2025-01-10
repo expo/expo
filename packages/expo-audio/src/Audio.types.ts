@@ -38,6 +38,7 @@ export type AudioStatus = {
   duration: number;
   playing: boolean;
   loop: boolean;
+  didJustFinish: boolean;
   isBuffering: boolean;
   isLoaded: boolean;
   playbackRate: number;
