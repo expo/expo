@@ -44,6 +44,7 @@ it('runs `npx expo install --help`', async () => {
 
       Options
         --check     Check which installed packages need to be updated
+        --dev       Save the dependencies as devDependencies
         --fix       Automatically update any invalid package versions
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
