@@ -40,6 +40,7 @@ const easDirectories = [
   'distribution',
   'custom-builds',
   'eas-workflows',
+  'eas-hosting',
   'billing',
   'accounts',
 ];
@@ -379,6 +380,7 @@ const eas = [
       expanded: true,
     }
   ),
+  makeSection('EAS Hosting', [makePage('eas-hosting/introduction.mdx')]),
   makeSection('EAS Workflows', [
     makePage('eas-workflows/get-started.mdx'),
     makePage('eas-workflows/triggers.mdx'),
