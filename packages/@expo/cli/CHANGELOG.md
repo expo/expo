@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Improve native publish linking with server from CI. ([#34070](https://github.com/expo/expo/pull/34070) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.22.9 — 2025-01-10
 
 ### 🐛 Bug fixes
