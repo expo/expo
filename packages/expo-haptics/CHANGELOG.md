@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Implement haptics using `performHapticFeedback()`. The `Vibrator` api is no longer recommended.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
