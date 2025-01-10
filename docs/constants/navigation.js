@@ -385,6 +385,7 @@ const eas = [
     makePage('eas-hosting/get-started.mdx'),
     makePage('eas-hosting/deployments-and-aliases.mdx'),
     makePage('eas-hosting/environment-variables.mdx'),
+    makePage('eas-hosting/custom-domain.mdx'),
   ]),
   makeSection('EAS Workflows', [
     makePage('eas-workflows/get-started.mdx'),
