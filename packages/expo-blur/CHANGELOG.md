@@ -12,7 +12,9 @@
 
 ## 14.0.1 — 2024-10-22
 
-_This version does not introduce any user-facing changes._
+### 🛠 Breaking changes
+
+- Update BlurView dependency to version-2.0.6. ([#34080](https://github.com/expo/expo/pull/34080) by [@bhattaraijay05](https://github.com/bhattaraijay05))
 
 ## 14.0.0 — 2024-10-22
 
