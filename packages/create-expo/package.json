@@ -52,7 +52,7 @@
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-module-scripts": "^4.0.0",
+    "expo-module-scripts": "^4.0.3",
     "fast-glob": "^3.3.2",
     "getenv": "^1.0.0",
     "nock": "^14.0.0-beta.7",

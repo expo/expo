@@ -35,7 +35,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
   "devDependencies": {
     "@types/fs-extra": "^9.0.11",
-    "expo-module-scripts": "~4.0.0",
+    "expo-module-scripts": "~4.0.3",
     "minimatch": "^3.0.4"
   },
   "dependencies": {

@@ -42,7 +42,7 @@
     "rtl-detect": "^1.0.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.0.0"
+    "expo-module-scripts": "^4.0.3"
   },
   "peerDependencies": {
     "expo": "*",

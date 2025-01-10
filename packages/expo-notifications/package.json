@@ -44,10 +44,10 @@
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~6.0.0",
-    "expo-constants": "~17.0.0"
+    "expo-constants": "~17.0.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.0.0",
+    "expo-module-scripts": "^4.0.3",
     "memfs": "^3.2.0"
   },
   "peerDependencies": {

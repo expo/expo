@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix mail modal callback when dismissing the composer through multitasking controls on iPad. ([#34040](https://github.com/expo/expo/pull/34040) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 14.0.2 — 2025-01-10
+
+### 🐛 Bug fixes
+
+- [iOS] Fix mail modal callback when dismissing the composer through multitasking controls on iPad. ([#34040](https://github.com/expo/expo/pull/34040) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 14.0.1 — 2024-10-22
 

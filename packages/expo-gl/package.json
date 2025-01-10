@@ -43,7 +43,7 @@
     "@types/invariant": "^2.2.33",
     "@types/offscreencanvas": "2019.6.4",
     "@types/webgl2": "^0.0.6",
-    "expo-module-scripts": "^4.0.0",
+    "expo-module-scripts": "^4.0.3",
     "react-test-renderer": "18.3.1"
   },
   "peerDependencies": {

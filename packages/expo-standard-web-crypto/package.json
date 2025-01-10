@@ -31,7 +31,7 @@
   "license": "MIT",
   "devDependencies": {
     "expo-crypto": "^14.0.0",
-    "expo-module-scripts": "^4.0.0"
+    "expo-module-scripts": "^4.0.3"
   },
   "peerDependencies": {
     "expo-crypto": "^14.0.0"

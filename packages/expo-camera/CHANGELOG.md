@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix setting `videoQuality` prop. ([#34082](https://github.com/expo/expo/pull/34082) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 16.0.11 — 2025-01-10
+
+### 🐛 Bug fixes
+
+- [iOS] Fix setting `videoQuality` prop. ([#34082](https://github.com/expo/expo/pull/34082) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 16.0.10 — 2024-12-16
 

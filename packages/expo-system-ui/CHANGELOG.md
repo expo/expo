@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.7 — 2025-01-10
+
+### 💡 Others
+
 - Bump `@react-native/normalize-colors` to 0.76.6. ([#34062](https://github.com/expo/expo/pull/34062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 4.0.6 — 2024-12-10

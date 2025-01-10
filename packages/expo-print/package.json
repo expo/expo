@@ -38,7 +38,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^4.0.0"
+    "expo-module-scripts": "^4.0.3"
   },
   "peerDependencies": {
     "expo": "*",
