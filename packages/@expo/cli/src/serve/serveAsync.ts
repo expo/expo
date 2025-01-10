@@ -15,7 +15,6 @@ import { resolvePortAsync } from '../utils/port';
 type Options = {
   port?: number;
   isDefaultDirectory: boolean;
-  single?: boolean;
 };
 
 const debug = require('debug')('expo:serve') as typeof console.log;
@@ -70,17 +69,8 @@ async function startStaticServerAsync(dist: string, options: Options) {
     })
       .on('error', (err: any) => {
         if (err.status === 404) {
-          if (options.single) {
-            // Fallback to index.html for single page apps
-            send(req, '/index.html', {
-              root: dist,
-            }).pipe(res);
-            return;
-          } else {
-            res.statusCode = 404;
-            res.end('Not Found');
-          }
-
+          res.statusCode = 404;
+          res.end('Not Found');
           return;
         }
         res.statusCode = err.status || 500;

@@ -9,7 +9,6 @@ export const expoServe: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
-      '--single': Boolean,
       '--port': Number,
 
       // Aliases
@@ -25,7 +24,6 @@ export const expoServe: Command = async (argv) => {
       [
         chalk`<dir>            Directory of the Expo project. {dim Default: Current working directory}`,
         `--port <number>  Port to host the server on`,
-        `--single         Serve as a single-page app`,
         `-h, --help       Usage info`,
       ].join('\n')
     );
@@ -43,6 +41,5 @@ export const expoServe: Command = async (argv) => {
     isDefaultDirectory: !args._[0],
     // Parsed options
     port: args['--port'],
-    single: args['--single'],
   }).catch(logCmdError);
 };
