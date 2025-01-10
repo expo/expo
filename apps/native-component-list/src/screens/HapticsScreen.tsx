@@ -1,6 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { AndroidHaptics } from 'expo-haptics';
-import { SectionList, SectionListData, StyleSheet, Text, View } from 'react-native';
+import { Platform, SectionList, SectionListData, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
@@ -63,7 +63,10 @@ const sections: SectionListData<SectionData>[] = [
     method: Haptics.selectionAsync,
     data: [{}],
   },
-  {
+];
+
+if (Platform.OS === 'android') {
+  sections.push({
     methodName: 'performAndroidHapticsAsync',
     method: Haptics.performAndroidHapticsAsync,
     data: [
@@ -144,8 +147,8 @@ const sections: SectionListData<SectionData>[] = [
         value: Haptics.AndroidHaptics.Text_Handle_Move,
       },
     ],
-  },
-];
+  });
+}
 
 export default function HapticsScreen() {
   const renderItem = ({

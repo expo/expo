@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Implement haptics using `performHapticFeedback()`. The `Vibrator` api is no longer recommended.
+- [Android] Added new method `performAndroidHapticsAsync()`. The `Vibrator` api is no longer recommended. This method avoids it. ([#34077](https://github.com/expo/expo/pull/34077) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
