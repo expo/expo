@@ -48,7 +48,7 @@ export enum ImpactFeedbackStyle {
 
 export enum AndroidHaptics {
   /**
-   * A haptic effect to signal the confirmation or successful completion of a user interaction
+   * A haptic effect to signal the confirmation or successful completion of a user interaction.
    */
   Confirm = 'confirm',
   /**
@@ -56,11 +56,11 @@ export enum AndroidHaptics {
    */
   Reject = 'reject',
   /**
-   * The user has started a gesture (e. g. on the soft keyboard)
+   * The user has started a gesture (e. g. on the soft keyboard).
    */
   Gesture_Start = 'gesture-start',
   /**
-   * The user has finished a gesture (e. g. on the soft keyboard).
+   * The user has finished a gesture (for example, on the soft keyboard).
    */
   Gesture_End = 'gesture-end',
   /**
@@ -68,7 +68,7 @@ export enum AndroidHaptics {
    */
   Toggle_On = 'toggle-on',
   /**
-   * The user has toggled a switch or button into the off position
+   * The user has toggled a switch or button into the off position.
    */
   Toggle_Off = 'toggle-off',
   /**
@@ -116,13 +116,13 @@ export enum AndroidHaptics {
    */
   Segment_Tick = 'segment-tick',
   /**
-   * The user is switching between a series of many potential choices, for example minutes on a clock face, or individual percentages.
+   * The user is switching between a series of many potential choices. For example, minutes on a clock face or individual percentages.
    * This constant is expected to be very soft, so as not to be uncomfortable when performed a lot in quick succession.
    * If the device can't make a suitably soft vibration, then it may not make any vibration.
    */
   Segment_Frequent_Tick = 'segment-frequent-tick',
   /**
-   * The user has performed a selection/ insertion handle move on text field.
+   * The user has performed a selection/insertion handle move on text field.
    */
   Text_Handle_Move = 'text-handle-move',
 }
