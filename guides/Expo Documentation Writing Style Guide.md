@@ -110,7 +110,7 @@ When referencing Expo Go, the supported text should avoid implying: "running an 
 
 ### Referencing app.json/app.config.json/app.config.js/app.config.ts
 
-When referencing the multiple variants of app config file file, such as app.json, app.config.json, app.config.js, or app.config.ts, use "**app config**" or "**app config** file" and link to its [documentation page](https://docs.expo.dev/workflow/configuration/). This helps the reader understand that these files are interchangeable and can be used in the same context.
+When referencing the multiple variants of app config file, such as app.json, app.config.json, app.config.js, or app.config.ts, use "**app config**" or "**app config** file" and link to its [documentation page](https://docs.expo.dev/workflow/configuration/). This helps the reader understand that these files are interchangeable and can be used in the same context.
 
 If there is a need to reference a specific file format, use the appropriate file name.
 
