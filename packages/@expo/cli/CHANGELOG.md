@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add support for ESM package imports support and `import` condition in `react-server` resolution.
 - Add `--unstable-rebundle` flag to `npx expo run:ios`. ([#33980](https://github.com/expo/expo/pull/33980) by [@EvanBacon](https://github.com/EvanBacon))
 - Support EAS Update when RSC is configured. ([#33975](https://github.com/expo/expo/pull/33975) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `+html` and `+native-intent` to `expo customize`. ([#33368](https://github.com/expo/expo/pull/33368) by [@EvanBacon](https://github.com/EvanBacon))
