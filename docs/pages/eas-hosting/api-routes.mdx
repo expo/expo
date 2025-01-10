@@ -1,0 +1,50 @@
+---
+sidebar_title: API routes
+title: API Routes
+description: Inspect requests from API routes on the EAS Hosting Dashboard.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> This page is for EAS Hosting specific details about API routes. For general documentation about API routes, see the [API routes](router/reference/api-routes/) documentation.
+
+Crashes, logs, and requests that occurred in API routes can be inspected on the EAS Hosting dashboard.
+
+### Crashes
+
+A crash is a statement that throws in the program execution, for example,`throw new Error("An error!")`. Crashes may be viewed on the project level **Hosting** > **Crashes.**
+
+Crashes are grouped by occurrences, so if the same crash happens 100 times, you will see one line item for it. The crash details will show the stack trace and metadata for the first and last known occurrence of the crash.
+
+<ContentSpotlight
+  alt="EAS dashboard showing a list of crashes"
+  src="/static/images/eas-hosting/crashes.png"
+/>
+
+### Logs
+
+All logs from API routes (`console.log`, `console.info`, `console.error` and so on) are recorded on the **Logs** page. These are only available per deployment at **Deployments** > _choose a deployment_ > **Logs**.
+
+<ContentSpotlight
+  alt="EAS dashboard showing a list of logs"
+  src="/static/images/eas-hosting/logs.png"
+/>
+
+### Requests
+
+Requests can be viewed on the project level at **Hosting** > **Requests** and deployment level at **Deployments** > _choose a deployment_ > **Requests**.
+
+This will show a list of requests against your service, with metadata (status, browser, region, duration, and more) per request.
+
+These include all requests to the service, including requests to API routes.
+
+<ContentSpotlight
+  alt="EAS dashboard showing a list of requests"
+  src="/static/images/eas-hosting/requests.png"
+/>
+
+### Looking up a request by ID
+
+All response headers include a `Cf-Ray` header that looks like `8ffb63895cf6779b-LHR`. The first part of this is the request ID and you may look up the request on the EAS dashboard via this ID using the filters.
+
+This request ID is also displayed on any service-level error pages.
