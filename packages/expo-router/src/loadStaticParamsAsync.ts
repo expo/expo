@@ -14,7 +14,7 @@ export async function evalStaticParamsAsync(
   generateStaticParams?: (props: {
     params?: Record<string, string | string[]>;
   }) => Record<string, string | string[]>[]
-): Promise<Array<Record<string, string | string[]>> | null> {
+): Promise<Record<string, string | string[]>[] | null> {
   if (!route.dynamic && generateStaticParams) {
     throw new Error(
       'Cannot use generateStaticParams in a route without dynamic segments: ' + route.contextKey

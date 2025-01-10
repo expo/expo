@@ -3,9 +3,9 @@ import { ctx } from 'expo-router/_ctx';
 import { createPages } from './create-pages';
 import type { RouteNode } from '../../Route';
 import { getRoutes } from '../../getRoutesSSR';
+import { evalStaticParamsAsync } from '../../loadStaticParamsAsync';
 import { getContextKey } from '../../matchers';
 import { sortRoutes } from '../../sortRoutes';
-import { evalStaticParamsAsync } from '../../loadStaticParamsAsync';
 
 const UNIMPLEMENTED_PARAMS = new Proxy(
   {},
