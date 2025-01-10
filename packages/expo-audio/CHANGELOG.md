@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Add Apple TV support. ([#33365](https://github.com/expo/expo/pull/33365) by [@douglowder](https://github.com/douglowder))
+- Add new `didJustFinish` property to `AudioStatus`.
 
 ### 🐛 Bug fixes
 

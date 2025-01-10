@@ -55,6 +55,7 @@ class AudioPlayer(
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
+  private var playing = false
 
   val currentTime get() = player.currentPosition / 1000
   val duration get() = if (player.duration != C.TIME_UNSET) player.duration / 1000 else 0
@@ -64,41 +65,36 @@ class AudioPlayer(
     player.setAudioAttributes(AudioAttributes.DEFAULT, true)
     playerScope.launch {
       while (isActive) {
-        sendPlayerUpdate()
+        if (playing) {
+          sendPlayerUpdate()
+        }
         delay(updateInterval.toLong())
       }
     }
   }
 
-  private fun addPlayerListeners() {
-    player.addListener(object : Player.Listener {
-      override fun onIsPlayingChanged(isPlaying: Boolean) {
-        playerScope.launch {
-          sendPlayerUpdate(mapOf("playing" to isPlaying))
-        }
+  private fun addPlayerListeners() = player.addListener(object : Player.Listener {
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+      playing = isPlaying
+      playerScope.launch {
+        sendPlayerUpdate(mapOf("playing" to isPlaying))
       }
+    }
 
-      override fun onIsLoadingChanged(isLoading: Boolean) {
-        playerScope.launch {
-          sendPlayerUpdate(mapOf("isLoaded" to isLoading))
-        }
+    override fun onPlaybackStateChanged(playbackState: Int) {
+      playerScope.launch {
+        sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
       }
+    }
 
-      override fun onPlaybackStateChanged(playbackState: Int) {
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      if (reason == MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
         playerScope.launch {
-          sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
+          sendPlayerUpdate()
         }
       }
-
-      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        if (reason == MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
-          playerScope.launch {
-            sendPlayerUpdate()
-          }
-        }
-      }
-    })
-  }
+    }
+  })
 
   fun setSamplingEnabled(enabled: Boolean) {
     samplingEnabled = enabled
@@ -131,6 +127,7 @@ class AudioPlayer(
       "duration" to duration,
       "playing" to player.isPlaying,
       "loop" to isLooping,
+      "didJustFinish" to (player.playbackState == Player.STATE_ENDED),
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,
       "playbackRate" to player.playbackParameters.speed,
       "shouldCorrectPitch" to preservesPitch,
@@ -188,7 +185,8 @@ class AudioPlayer(
               }
             }
 
-            override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) = Unit
+            override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) =
+              Unit
           },
           Visualizer.getMaxCaptureRate() / 2,
           true,

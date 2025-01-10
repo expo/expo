@@ -81,6 +81,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "duration": currentDuration,
       "playing": isPlaying,
       "loop": isLooping,
+      "didJustFinish": false,
       "isLoaded": isLoaded,
       "playbackRate": ref.rate,
       "shouldCorrectPitch": shouldCorrectPitch,
@@ -200,7 +201,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       } else {
         self.updateStatus(with: [
           "isPlaying": false,
-          "currentTime": self.duration
+          "currentTime": self.duration,
+          "didJustFinish": true
         ])
       }
     }
