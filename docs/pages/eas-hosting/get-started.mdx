@@ -1,0 +1,102 @@
+---
+sidebar_title: Create your first deployment
+title: Deploy your first website
+description: Learn how to deploy your Expo Router web app to EAS Hosting.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+EAS Hosting allows you to deploy an exported Expo web build to a preview or production URL.
+
+This guide will walk you through the process of creating your first web deployment.
+
+## Prerequisites
+
+<Collapsible summary="An Expo user account">
+
+EAS Hosting is available to anyone with an Expo account, regardless of whether you pay for EAS or use the Free plan. You can sign up at [expo.dev/signup](https://expo.dev/signup).
+
+Paid subscribers can create more deployments, have more bandwidth, storage, requests, and may set up a custom domain. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
+
+</Collapsible>
+
+<Collapsible summary="An Expo Router web project">
+
+If using an existing project, ensure that in your project’s app config, the web output `expo.web.output` set to either `static` or `server` (single page apps are not supported on Hosting).
+
+Don't have a project yet? No problem. It's quick and easy to create a "Hello world" app that you can use with this guide.
+
+Run the following command to create a new project:
+
+<Terminal cmd={['$ npx create-expo-app my-app']} />
+
+</Collapsible>
+
+<Step label="1">
+## Install the latest EAS CLI
+
+EAS CLI is the command line app you will use to interact with EAS services from your terminal. To install it, run the command:
+
+<Terminal cmd={['$ npm install --global eas-cli']} />
+
+You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
+
+> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli@latest`. Remember to use that instead of `eas` whenever it's called for in the documentation.
+
+</Step>
+
+<Step label="2">
+## Log in to your Expo account
+
+If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
+
+<Terminal cmd={['$ eas login']} />
+
+You can check whether you are logged in by running `eas whoami`.
+
+</Step>
+
+<Step label="3">
+## Prepare your project
+
+In your [app config](/versions/latest/config/app/#output) set `expo.web.output` to either `static` or `server`.
+
+- `static`: Exports your Expo app to a statically generated web app
+- `server`: Supports server functions and API routes as well as the static pages for your website
+
+> Don’t worry if you’re not sure which output mode you need, you can always change this value later and re-deploy.
+
+</Step>
+
+<Step label="4">
+### Export your app
+
+You need to export your web project into a **dist** directory. To do this, run:
+
+<Terminal cmd={['$ npx expo export --platform web']} />
+
+> Remember to re-run this command every time before deploying.
+
+</Step>
+
+<Step label="5">
+
+### Deploy your app
+
+</Step>
+
+Now publish your website to EAS Hosting:
+
+<Terminal cmd={['$ eas deploy']} />
+
+The first time you run this command, it will:
+
+1. Prompt you to connect to an EAS project if you haven’t done so yet
+2. Ask you to choose a preview subdomain name
+
+> A **preview subdomain name** is a prefix used for the preview url of your app.
+> For example, if you choose `test` as your preview subdomain name, your preview URL would look something like this: `https://test--or1170q9ix.expo.app/`, and your production url would be: `https://test.expo.app/`.
+
+Once your deployment is complete, the CLI will output a preview URL for where your deployed app is accessible, as well as a link to the deployment details on the EAS Dashboard.
