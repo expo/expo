@@ -2,10 +2,12 @@ import * as queryString from 'query-string';
 
 import { State } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
+import { NativeIntent } from '../types';
 
-type Options = Parameters<typeof getStateFromPath>[1];
+type Options = Parameters<typeof getStateFromPath>[2];
 
 export function reconstructState(
+  nativeIntent: NativeIntent | undefined,
   state: State | undefined,
   getState: typeof getStateFromPath,
   options: Options
@@ -44,5 +46,5 @@ export function reconstructState(
     path += `?${query}`;
   }
 
-  return getState(path, options);
+  return getState(nativeIntent, path, options);
 }

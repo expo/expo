@@ -41,7 +41,9 @@ export type NativeIntent = {
    *
    * @see For usage information, see [Redirecting system paths](/router/advanced/native-intent/#redirectsystempath).
    */
-  redirectSystemPath?: (event: { path: string; initial: boolean }) => Promise<string> | string;
+  redirectSystemPath?: (event: { path: string; initial: boolean }) => string;
+  // redirectSystemPath?: (event: { path: string; initial: boolean }) => Promise<string> | string;
+
   /**
    * > **warning** Experimentally available in SDK 52.
    *
