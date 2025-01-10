@@ -12,6 +12,8 @@
 
 - Fix error 'WeakSet key must be an object' in fast-refresh for invalid exports like cpp host objects. ([#34026](https://github.com/expo/expo/pull/34026) by [@chrfalch](https://github.com/chrfalch))
 - Fix render store (unstable_headers) on native platforms. ([#33978](https://github.com/expo/expo/pull/33978) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix `getStateFromPath` not using the native intent file if it contains a `redirectSystemPath` function. ([#34076](https://github.com/expo/expo/pull/34076)) by [@shllg](https://github.com/shllg)
+- Fix `redirectSystemPath` in `+native-intent.ts` not loading. ([#34076](https://github.com/expo/expo/pull/34076)) by [@shllg](https://github.com/shllg)
 
 ### 💡 Others
 
