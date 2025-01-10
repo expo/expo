@@ -1,22 +1,66 @@
 import type { RecordingOptions } from './Recording.types';
+/**
+ * Defines the output format.
+ * @platform android
+ */
 export declare enum AndroidOutputFormat {
     DEFAULT = 0,
+    /**
+     * 3GPP media file format.
+     */
     THREE_GPP = 1,
+    /**
+     * MPEG4 media file format.
+     */
     MPEG_4 = 2,
+    /**
+     * AMR NB file format.
+     */
     AMR_NB = 3,
+    /**
+     * AMR WB file format.
+     */
     AMR_WB = 4,
     AAC_ADIF = 5,
+    /**
+     * AAC ADTS file format.
+     */
     AAC_ADTS = 6,
     RTP_AVP = 7,
+    /**
+     * H.264/AAC data encapsulated in MPEG2/TS.
+     */
     MPEG2TS = 8,
+    /**
+     * VP8/VORBIS data in a WEBM container.
+     */
     WEBM = 9
 }
+/**
+ * Defines the audio encoding.
+ * @platform android
+ */
 export declare enum AndroidAudioEncoder {
     DEFAULT = 0,
+    /**
+     * AMR (Narrowband) audio codec.
+     */
     AMR_NB = 1,
+    /**
+     * AMR (Wideband) audio codec.
+     */
     AMR_WB = 2,
+    /**
+     * AAC Low Complexity (AAC-LC) audio codec.
+     */
     AAC = 3,
+    /**
+     * High Efficiency AAC (HE-AAC) audio codec.
+     */
     HE_AAC = 4,
+    /**
+     * Enhanced Low Delay AAC (AAC-ELD) audio codec.
+     */
     AAC_ELD = 5
 }
 /**
