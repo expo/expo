@@ -59,7 +59,7 @@ class SettingsManager(
 
     // Defines the required features for the core module
     settings.gradle.beforeProject("expo-modules-core") { project ->
-      project.extra.set("features", config.coreFeatures)
+      project.extra.set("coreFeatures", config.coreFeatures)
     }
 
     settings.gradle.beforeRootProject { rootProject: Project ->
