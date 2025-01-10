@@ -7,3 +7,7 @@ class HapticsInvalidArgumentException internal constructor(message: String?) : C
     return "E_HAPTICS_INVALID_ARGUMENT"
   }
 }
+
+class HapticTypeNotSupportedException(type: String) : CodedException("This device doesn't support the selected haptic type: $type")
+
+class HapticsNotSupportedException : CodedException("A haptics engine is not available on this device")

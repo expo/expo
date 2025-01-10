@@ -239,6 +239,11 @@ class Env {
   get EAS_BUILD(): boolean {
     return boolish('EAS_BUILD', false);
   }
+
+  /** Disable the React Native Directory compatibility check for new architecture when installing packages */
+  get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
+    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', false);
+  }
 }
 
 export const env = new Env();

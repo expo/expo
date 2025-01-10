@@ -1,4 +1,4 @@
-import { NotificationFeedbackType, ImpactFeedbackStyle } from './Haptics.types';
+import { NotificationFeedbackType, ImpactFeedbackStyle, AndroidHaptics } from './Haptics.types';
 /**
  * The kind of notification response used in the feedback.
  * @param type A notification feedback type that on iOS is directly mapped to [UINotificationFeedbackType](https://developer.apple.com/documentation/uikit/uinotificationfeedbacktype),
@@ -19,5 +19,11 @@ export declare function impactAsync(style?: ImpactFeedbackStyle): Promise<void>;
  * @return A `Promise` which fulfils once native size haptics functionality is triggered.
  */
 export declare function selectionAsync(): Promise<void>;
-export { NotificationFeedbackType, ImpactFeedbackStyle };
+/**
+ * Use the device haptics engine to provide physical feedback to the user.
+ *
+ * @platform android
+ */
+export declare function performAndroidHapticsAsync(type: AndroidHaptics): Promise<void>;
+export { NotificationFeedbackType, ImpactFeedbackStyle, AndroidHaptics };
 //# sourceMappingURL=Haptics.d.ts.map
