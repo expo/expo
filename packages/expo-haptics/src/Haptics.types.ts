@@ -56,7 +56,7 @@ export enum AndroidHaptics {
    */
   Reject = 'reject',
   /**
-   * The user has started a gesture (e. g. on the soft keyboard).
+   * The user has started a gesture (for example, on the soft keyboard).
    */
   Gesture_Start = 'gesture-start',
   /**
