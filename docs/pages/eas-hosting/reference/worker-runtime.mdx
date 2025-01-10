@@ -1,0 +1,69 @@
+---
+sidebar_title: Worker runtime
+title: EAS Hosting worker runtime
+description: Learn about EAS Hosting worker runtime and Node.js compatibility.
+---
+
+## Caching with API Routes
+
+EAS Hosting is built on [Cloudflare Workers](https://developers.cloudflare.com/workers/), a modern and powerful platform for serverless APIs that’s been built for seamless scalability, high reliability, and exceptional performance globally.
+
+The Cloudflare Workers runtime runs on the V8 JavaScript engine, the same powering JavaScript in Node.js and Chromium. However, its runtime has a few key differences from what you might be used to in traditional serverless Node.js deployments.
+
+Instead of each request running in a full JavaScript process, Workers are designed to run them in small V8 isolates, a feature of the V8 runtime. Think of them as micro-containers in a single JavaScript process.
+
+Learn more about how Cloudflare Workers work on [their documentation](https://developers.cloudflare.com/workers/reference/how-workers-works/).
+
+## Node.js compatibility
+
+Cloudflare is part of [Winter CG](https://wintercg.org/), and therefore, is more similar to the JavaScript environments in browsers and service workers rather than in Node.js. Restrictions like these provide a leaner runtime than Node.js, which is still familiar. This common runtime is a minimal standard supported by many JavaScript runtime these days.
+
+This means, that many Node.js APIs that you might be used to or some dependencies you utilize, aren’t directly available in the EAS Hosting runtime. To ease this transition, as not all dependencies will have first-class support for Web APIs yet, Node.js compatibility modules exist and can be used in your API routes.
+
+### Node.js shim modules
+
+The list of compatibility modules for Node.js APIs natively supported by Cloudflare’s runtime are:
+
+- `assert`
+- `async_hooks`
+- `buffer`
+- `crypto` (With some limitations and missing exports)
+- `diagnostics_channel`
+- `events`
+- `path`, `path/posix`, and `path/win32`
+- `process`
+- `querystring`
+- `stream`, `stream/consumers`, `stream/promises`, and `stream/web`
+- `string_decoder`
+- `url`
+- `util`
+- `zlib`
+
+Additionally, EAS Hosting provides JavaScript-level shims (or rather polyfills) for the following modules:
+
+- `http`
+- `https`
+- `tty`
+
+These modules generally provide a lower-accuracy polyfill of their Node.js counterparts. For example, the `http` and `https` modules only provide thin Node.js compatibility wrappers around the `fetch` API and cannot be used to make arbitrary HTTP requests.
+
+The following modules are mocked but won’t provide any functionality:
+
+- `child_process`
+- `net`
+
+Any of the above Node.js modules can be used in API routes or dependencies of your API routes as usual and will use appropriate compatibility modules.
+
+Any modules that aren’t mentioned here are unavailable, and your code and none of your dependencies should rely on them being provided.
+
+> More Node compatibility shims may be added in the future, but all Node APIs that are not documented in these non-exhaustive lists are expected to work.
+
+## Globals
+
+- The `process` global is present with mock values set as appropriate to match Node.js
+- `process.env` is available and will be populated with your deployment’s environment variables
+- `process.stdout` and `process.stderr` will convert the output written to them to `console.log` and `console.error` calls
+- `setImmediate` and `clearImmediate` are available as shims around `setTimeout` and `clearTimeout`
+- The `Buffer` and `EventEmitter` globals are available and set to their Node.js shims
+- `global` is available and set to `globalThis`
+- `require()` is available in CommonJS modules but `require.cache` is unavailable

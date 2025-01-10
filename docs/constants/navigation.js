@@ -388,6 +388,11 @@ const eas = [
     makePage('eas-hosting/custom-domain.mdx'),
     makePage('eas-hosting/api-routes.mdx'),
     makePage('eas-hosting/workflows.mdx'),
+    makeGroup('Reference', [
+      makePage('eas-hosting/reference/caching.mdx'),
+      makePage('eas-hosting/reference/responses-and-headers.mdx'),
+      makePage('eas-hosting/reference/worker-runtime.mdx'),
+    ]),
   ]),
   makeSection('EAS Workflows', [
     makePage('eas-workflows/get-started.mdx'),
