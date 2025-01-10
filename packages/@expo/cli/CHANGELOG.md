@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for ESM package imports support and `import` condition in `react-server` resolution. ([#34091](https://github.com/expo/expo/pull/34091) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Ensure we hydrate env vars in the project when running `npx expo serve`. ([#34064](https://github.com/expo/expo/pull/34064) by [@EvanBacon](https://github.com/EvanBacon))
