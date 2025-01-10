@@ -12,7 +12,11 @@ import {
   updateDomComponentAssetsForMD5Naming,
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
+import {
+  exportApiRoutesStandaloneAsync,
+  exportFromServerAsync,
+  getHtmlFiles,
+} from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
@@ -136,6 +140,7 @@ export async function exportAppAsync(
     // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
     await copyPublicFolderAsync(publicPath, outputPath);
 
+    let templateHtml: string | undefined;
     // Can be empty during web-only SSG.
     if (spaPlatforms.length) {
       await Promise.all(
@@ -239,6 +244,9 @@ export async function exportAppAsync(
               html = modifyHtml(html);
             }
 
+            // HACK: This is used for adding SSR shims in React Server Components.
+            templateHtml = html;
+
             // Generate SPA-styled HTML file.
             // If web exists, then write the template HTML file.
             files.set('index.html', {
@@ -256,6 +264,7 @@ export async function exportAppAsync(
             files,
             platform: 'web',
             apiRoutesOnly: !isWeb,
+            templateHtml,
           });
         }
       }
