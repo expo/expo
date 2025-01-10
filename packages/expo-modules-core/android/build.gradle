@@ -5,6 +5,9 @@ apply plugin: 'com.android.library'
 group = 'host.exp.exponent'
 version = '2.0.6'
 
+// List of features that are required by linked modules
+def features = project.findProperty("features") ?: []
+
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
 applyKotlinExpoModulesCorePlugin()

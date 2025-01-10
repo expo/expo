@@ -16,6 +16,17 @@ internal inline fun Gradle.beforeRootProject(crossinline action: (rootProject: P
 }
 
 /**
+ * Adds an action to be called before the given project is evaluated.
+ */
+internal inline fun Gradle.beforeProject(projectName: String, crossinline action: (project: Project) -> Unit) {
+  beforeProject { project ->
+    if (project.name == projectName) {
+      action(project)
+    }
+  }
+}
+
+/**
  * Adds an action to be called immediately after an Android application project is evaluated.
  */
 internal inline fun Gradle.afterAndroidApplicationProject(crossinline action: (androidApplication: Project) -> Unit) {
