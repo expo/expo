@@ -1,0 +1,68 @@
+---
+sidebar_title: Deployments and aliases
+title: Assign aliases and promote to production
+description: Learn about deployment URLs and how to set up aliases.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+## Deployments
+
+Deployments to EAS Hosting are immutable. Each deployment is accessible via a unique deployment URL consisting of the preview subdomain name and the deployment ID.
+
+### Preview subdomain name
+
+To activate EAS hosting for a project, you’ll need to choose a **preview subdomain name**. You may do this via the **Hosting** section of your project on the [expo.dev](http://expo.dev) website. Alternatively, you’ll be prompted to choose a preview subdomain when you create your first deployment using the EAS CLI.
+
+### Preview and production URLs
+
+A **preview subdomain name** is a prefix used for the preview URL of your app. For example, if you choose `test` as the preview subdomain name, your preview URL would be: `https://test--or1170q9ix.expo.app/`, and your production URL would be: `https://test.expo.app/`.
+
+### Deployment ID
+
+Each deployment is identifiable using a unique deployment ID. This ID can be customized but will be a random string of letters and numbers by default.
+
+Deployments are immutable. Once they are deployed, they will always remain accessible and identifiable using their deployment ID, and cannot be changed.
+
+## Aliases
+
+Aliases are user-defined values used for creating custom URLs for deployments.
+
+To make a deployment and assign it to an alias, use the `--alias` option:
+
+<Terminal cmd={['$ eas deploy --alias hello']} />
+
+The above command will create a deployment with both a standard URL at `https://test--or1170q9ix.expo.app/` and an alias at `https://test--hello.expo.app/`.
+
+> Aliases are unique per project. If you choose an alias that was already in use, it will get re-assigned to the new deployment.
+
+A single deployment can have multiple aliases. Aliases can also be assigned to an existing deployment by using the `deploymentId` with the `--id` option:
+
+<Terminal cmd={['$ eas deploy:alias --id=deploymentId']} />
+
+In the above command, the `deploymentId` is the ID in the preview URL.
+
+Aliases can have arbitrary names. For example, if you want to create a staging environment, you may create an alias called `staging` and assign a deployment to it.
+
+### Production alias
+
+If your preview subdomain name is `test`, your production URL will be `https://test.expo.app/`.
+
+Similar to other aliases, a deployment can be promoted to production using `--prod` option:
+
+<Terminal cmd={['$ eas deploy --prod']} />
+
+Existing deployment can also be promoted to production using its deployment ID with the --id option:
+
+<Terminal cmd={['$ eas deploy:alias --prod --id=deploymentId']} />
+
+## Terminology
+
+In the following example, `test` has been chosen ad the preview subdomain name:
+
+- `https://test--or1170q9ix.expo.app/` : Preview url, which is unique URL and where your deployment is available.
+  - `test`: Preview subdomain name. Globally unique prefix tied to your project.
+  - `or1170q9ix`: Deployment ID. An ID that is unique to this deployment.
+- `https://test--hello.expo.app/`: A deployment url with an alias.
+  - `hello`: User-defined alias.
+- `https://test.expo.app/`: Production deployment URL.

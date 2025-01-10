@@ -383,6 +383,7 @@ const eas = [
   makeSection('EAS Hosting', [
     makePage('eas-hosting/introduction.mdx'),
     makePage('eas-hosting/get-started.mdx'),
+    makePage('eas-hosting/deployments-and-aliases.mdx'),
   ]),
   makeSection('EAS Workflows', [
     makePage('eas-workflows/get-started.mdx'),
