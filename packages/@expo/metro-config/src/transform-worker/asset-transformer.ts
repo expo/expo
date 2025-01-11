@@ -98,7 +98,8 @@ export async function transform(
       : options.publicPath
   );
 
-  if (isServerEnv || options.platform === 'web') {
+  const hasMultipleDescriptors = data.scales?.length > 1 && data.files?.length > 1;
+  if (isServerEnv || (options.platform === 'web' && !hasMultipleDescriptors)) {
     const type = !data.type ? '' : `.${data.type}`;
     const assetPath = !isExport
       ? data.httpServerLocation + '/' + data.name + type
