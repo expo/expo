@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Removed cmd.exe warning. ([#33357](https://github.com/expo/expo/pull/33357) by [@keith-kurak](https://github.com/keith-kurak))
+- Added `.env` support. ([#33988](https://github.com/expo/expo/pull/33988) by [@kudo](https://github.com/kudo))
 
 ## 1.12.4 — 2024-11-14
 
