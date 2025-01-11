@@ -22,7 +22,6 @@ import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherPackage
 import expo.modules.devlauncher.helpers.findDevMenuPackage
 import expo.modules.devlauncher.helpers.injectDebugServerHost
-import expo.modules.devlauncher.helpers.injectDevServerHelper
 import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.kotlin.ModulesProvider
 
@@ -39,7 +38,7 @@ object DevLauncherReactHost {
     } else {
       HermesInstance()
     }
-    val jsMainModuleName = "packages/expo-dev-launcher/bundle/index"
+    val jsMainModuleName = "index"
     val defaultReactHostDelegate =
       DefaultReactHostDelegate(
         jsMainModulePath = jsMainModuleName,
@@ -60,11 +59,7 @@ object DevLauncherReactHost {
     )
 
     if (useDeveloperSupport) {
-      injectDevServerHelper(application.applicationContext, reactHost.devSupportManager, DevLauncherController.instance);
-      val success = injectDebugServerHost(application.applicationContext, reactHost, launcherIp!!, jsMainModuleName)
-      if (!success) {
-        throw IllegalStateException("Failed to inject debug server host")
-      }
+      injectDebugServerHost(application.applicationContext, reactHost, launcherIp!!, jsMainModuleName)
     }
     return reactHost
   }
