@@ -19,6 +19,7 @@ export default function ContactsList({ data, style, onPressItem, ...props }: Pro
       <ContactsListItem
         key={item.id}
         contactId={item.id!}
+        phoneNumber={item.phoneNumbers?.[0].number}
         {...item}
         onPress={(id: string) => onPressItem?.(id)}
       />

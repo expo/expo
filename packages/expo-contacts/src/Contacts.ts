@@ -451,6 +451,11 @@ export type ContactQuery = {
    * @platform ios
    */
   rawContacts?: boolean;
+  /**
+   * Get all contacts whose phone number contains the provided string.
+   * @platform android
+   */
+  phoneNumber?: string;
 };
 
 /**

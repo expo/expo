@@ -10,6 +10,7 @@ struct ContactsQuery: Record {
   @Field var groupId: String?
   @Field var containerId: String?
   @Field var rawContacts: Bool?
+  @Field var phoneNumber: String?
 }
 
 struct ContainerQuery: Record {
