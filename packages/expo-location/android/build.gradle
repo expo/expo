@@ -15,6 +15,7 @@ android {
   defaultConfig {
     versionCode 29
     versionName "18.0.2"
+    consumerProguardFiles("proguard-rules.pro")
   }
 }
 
