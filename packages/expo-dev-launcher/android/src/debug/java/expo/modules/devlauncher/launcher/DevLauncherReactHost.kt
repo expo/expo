@@ -61,7 +61,10 @@ object DevLauncherReactHost {
 
     if (useDeveloperSupport) {
       injectDevServerHelper(application.applicationContext, reactHost.devSupportManager, DevLauncherController.instance);
-      injectDebugServerHost(application.applicationContext, reactHost, launcherIp!!, jsMainModuleName)
+      val success = injectDebugServerHost(application.applicationContext, reactHost, launcherIp!!, jsMainModuleName)
+      if (!success) {
+        throw IllegalStateException("Failed to inject debug server host")
+      }
     }
     return reactHost
   }

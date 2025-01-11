@@ -7,7 +7,10 @@ import android.media.audiofx.Visualizer
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
@@ -29,14 +32,16 @@ private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
 class AudioPlayer(
   context: Context,
   appContext: AppContext,
-  source: MediaSource,
+  source: MediaSource?,
   updateInterval: Double
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .build()
     .apply {
-      setMediaSource(source)
+      source?.let {
+        setMediaSource(it)
+      }
       setAudioAttributes(AudioAttributes.DEFAULT, true)
       prepare()
     },
@@ -50,42 +55,46 @@ class AudioPlayer(
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
+  private var playing = false
 
   val currentTime get() = player.currentPosition / 1000
-  val duration get() = player.duration / 1000
+  val duration get() = if (player.duration != C.TIME_UNSET) player.duration / 1000 else 0
 
   init {
     addPlayerListeners()
     player.setAudioAttributes(AudioAttributes.DEFAULT, true)
     playerScope.launch {
       while (isActive) {
-        sendPlayerUpdate()
+        if (playing) {
+          sendPlayerUpdate()
+        }
         delay(updateInterval.toLong())
       }
     }
   }
 
-  private fun addPlayerListeners() {
-    player.addListener(object : Player.Listener {
-      override fun onIsPlayingChanged(isPlaying: Boolean) {
-        playerScope.launch {
-          sendPlayerUpdate(mapOf("playing" to isPlaying))
-        }
+  private fun addPlayerListeners() = player.addListener(object : Player.Listener {
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+      playing = isPlaying
+      playerScope.launch {
+        sendPlayerUpdate(mapOf("playing" to isPlaying))
       }
+    }
 
-      override fun onIsLoadingChanged(isLoading: Boolean) {
-        playerScope.launch {
-          sendPlayerUpdate(mapOf("isLoaded" to isLoading))
-        }
+    override fun onPlaybackStateChanged(playbackState: Int) {
+      playerScope.launch {
+        sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
       }
+    }
 
-      override fun onPlaybackStateChanged(playbackState: Int) {
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      if (reason == MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
         playerScope.launch {
-          sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
+          sendPlayerUpdate()
         }
       }
-    })
-  }
+    }
+  })
 
   fun setSamplingEnabled(enabled: Boolean) {
     samplingEnabled = enabled
@@ -118,6 +127,7 @@ class AudioPlayer(
       "duration" to duration,
       "playing" to player.isPlaying,
       "loop" to isLooping,
+      "didJustFinish" to (player.playbackState == Player.STATE_ENDED),
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,
       "playbackRate" to player.playbackParameters.speed,
       "shouldCorrectPitch" to preservesPitch,

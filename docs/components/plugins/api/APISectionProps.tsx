@@ -16,6 +16,7 @@ import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
   extractDefaultPropValue,
   getCommentOrSignatureComment,
+  getTagData,
   resolveTypeName,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
@@ -112,8 +113,13 @@ export const renderProp = (
     <div
       key={`prop-entry-${name}`}
       className={mergeClasses('border-t border-palette-gray4 first:border-t-0')}>
-      <APISectionDeprecationNote comment={extractedComment} sticky />
-      <APIBoxHeader name={name} comment={extractedComment} baseNestingLevel={baseNestingLevel} />
+      <APISectionDeprecationNote comment={extractedComment} className="mx-4 mb-0 mt-3" />
+      <APIBoxHeader
+        name={name}
+        comment={extractedComment}
+        baseNestingLevel={baseNestingLevel}
+        deprecated={Boolean(getTagData('deprecated', extractedComment))}
+      />
       <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
@@ -153,8 +159,8 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
           {baseProp?.comment && <APICommentTextBlock comment={baseProp.comment} />}
+          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>

@@ -102,6 +102,7 @@ class StartupProcedure(
       }
 
       override fun onFinishedAllLoading() {
+        procedureContext.processStateEvent(UpdatesStateEvent.EndStartup())
         procedureContext.onComplete()
       }
 
@@ -208,6 +209,7 @@ class StartupProcedure(
 
   override fun run(procedureContext: ProcedureContext) {
     this.procedureContext = procedureContext
+    procedureContext.processStateEvent(UpdatesStateEvent.StartStartup())
     initializeDatabaseHandler()
     initializeErrorRecovery()
     loaderTask.start()

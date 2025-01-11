@@ -6,4 +6,4 @@ import type { ProxyNativeModule } from './NativeModulesProxy.types';
  * @deprecated `NativeModulesProxy` is deprecated and might be removed in the future releases.
  * Use `requireNativeModule` or `requireOptionalNativeModule` instead.
  */
-export default {} as { [moduleName: string]: ProxyNativeModule };
+export default {} as Record<string, ProxyNativeModule>;

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Throw server function errors in production. ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.5.0 — 2024-11-11

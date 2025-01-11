@@ -2,6 +2,11 @@ import Dispatch
 import Foundation
 import React_RCTAppDelegate
 
+// TODO(vonovak,20250107) - Remove the if expression when we drop SDK 52 / RN 76 support
+#if canImport(ReactAppDependencyProvider)
+import ReactAppDependencyProvider
+#endif
+
 var subscribers = [ExpoAppDelegateSubscriberProtocol]()
 
 /**
@@ -47,6 +52,9 @@ open class ExpoAppDelegate: ExpoAppInstance {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+#if canImport(ReactAppDependencyProvider)
+    self.dependencyProvider = RCTAppDependencyProvider()
+#endif
     if shouldCallReactNativeSetup {
       super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `android.useDayNightTheme` to enable overriding the templates use of a light theme. ([#33989](https://github.com/expo/expo/pull/33989) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

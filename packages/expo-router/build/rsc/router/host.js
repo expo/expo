@@ -41,6 +41,11 @@ if (!BASE_PATH.endsWith('/')) {
 if (BASE_PATH === '/') {
     throw new Error(`Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${(0, getDevServer_1.getDevServer)().fullBundleUrl}`);
 }
+if (process.env.EXPO_OS !== 'web' && !window.location?.href) {
+    // This can happen if the user attempts to use React Server Components without
+    // enabling the flags in the app.json. This will set origin to false and prevent the expo/metro-runtime polyfill from running.
+    throw new Error('window.location.href is not defined. This is required for React Server Components to work correctly. Ensure React Server Components is correctly enabled in your project and config.');
+}
 const RSC_CONTENT_TYPE = 'text/x-component';
 const ENTRY = 'e';
 const SET_ELEMENTS = 's';
@@ -65,16 +70,21 @@ const checkStatus = async (responsePromise) => {
     if (!response.ok) {
         // NOTE(EvanBacon): Transform the Metro development error into a JS error that can be used by LogBox.
         // This was tested against using a Class component in a server component.
-        if (response.status === 500) {
+        if (__DEV__ && (response.status === 500 || response.status === 404)) {
             const errorText = await response.text();
             let errorJson;
             try {
                 errorJson = JSON.parse(errorText);
             }
             catch {
-                throw new errors_1.ReactServerError(errorText, response.url, response.status);
+                // `Unable to resolve module` error should respond as JSON from the dev server and sent to the master red box, this can get corrupt when it's returned as the formatted string.
+                if (errorText.startsWith('Unable to resolve module')) {
+                    console.error('Unexpected Metro error format from dev server');
+                    // This is an unexpected state that occurs when the dev server renderer does not throw Metro errors in the expected JSON format.
+                    throw new Error(errorJson);
+                }
+                throw new errors_1.ReactServerError(errorText, response.url, response.status, response.headers);
             }
-            // TODO: This should be a dev-only error. Add handling for production equivalent.
             throw new errors_1.MetroServerError(errorJson, response.url);
         }
         let responseText;
@@ -82,9 +92,9 @@ const checkStatus = async (responsePromise) => {
             responseText = await response.text();
         }
         catch {
-            throw new errors_1.ReactServerError(response.statusText, response.url, response.status);
+            throw new errors_1.ReactServerError(response.statusText, response.url, response.status, response.headers);
         }
-        throw new errors_1.ReactServerError(responseText, response.url, response.status);
+        throw new errors_1.ReactServerError(responseText, response.url, response.status, response.headers);
     }
     return response;
 };

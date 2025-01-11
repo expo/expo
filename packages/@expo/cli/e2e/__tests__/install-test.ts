@@ -44,10 +44,11 @@ it('runs `npx expo install --help`', async () => {
 
       Options
         --check     Check which installed packages need to be updated
+        --dev       Save the dependencies as devDependencies
         --fix       Automatically update any invalid package versions
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
-        --bun       Use bun to install dependencies. Default when bun.lockb exists
+        --bun       Use bun to install dependencies. Default when bun.lock or bun.lockb exists
         --pnpm      Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         -h, --help  Usage info
 
@@ -69,7 +70,7 @@ it('runs `npx expo install expo-sms`', async () => {
 
   // Added expected package
   const pkgDependencies = pkg.dependencies as Record<string, string>;
-  expect(pkgDependencies['expo-sms']).toBe('~13.0.0');
+  expect(pkgDependencies['expo-sms']).toBe('~13.0.1');
   expect(pkg.devDependencies).toEqual({
     '@babel/core': '^7.25.2',
   });

@@ -38,6 +38,7 @@ async function getSSRManifest(distFolder, platform) {
     return interopDefault(await (0, _async_server_import_1.asyncServerImport)(filePath));
 }
 async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType, headers }) {
+    globalThis.__expo_platform_header = platform;
     if (method === 'POST' && !body) {
         throw new Error('Server request must be provided when method is POST (server actions)');
     }

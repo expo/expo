@@ -164,7 +164,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
-  '/build-reference/migrating/': '/archive/classic-builds/migrating/',
 
   // Development builds redirects
   '/development/build/': '/develop/development-builds/create-a-build/',
@@ -297,7 +296,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/web-performance/': '/guides/analyzing-bundles/',
   '/guides/assets/': '/develop/user-interface/assets/',
   '/router/reference/search-parameters/': '/router/reference/url-parameters/',
-  '/guides/using-flipper': '/archive/using-flipper/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -311,7 +309,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/bare-react-native/': '/eas-update/getting-started/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/build/setup/',
-  '/classic/turtle-cli/': '/archive/classic-builds/turtle-cli/',
+  '/classic/turtle-cli/': '/build/setup/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
   '/archive/classic-updates/building-standalone-apps/': '/build/setup/',
 
@@ -345,7 +343,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // EAS Update
   '/eas-update/developing-with-eas-update/': '/eas-update/develop-faster/',
-  '/eas-update/eas-update-with-local-build/': '/eas-update/build-locally/',
+  '/eas-update/eas-update-with-local-build/': '/eas-update/standalone-service/',
   '/eas-update/eas-update-and-eas-cli/': '/eas-update/eas-cli/',
   '/eas-update/debug-updates/': '/eas-update/debug/',
   '/eas-update/known-issues/': '/eas-update/introduction/',
@@ -386,9 +384,6 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
-
-  // Stop encouraging usage of Expo Go when using native modules
-  '/bare/using-expo-client/': '/archive/using-expo-client/',
 
   // May 2024 home / get started section
   '/overview/': '/get-started/introduction/',
@@ -459,4 +454,16 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After adding distribution section under EAS
   '/distribution/publishing-websites/': '/guides/publishing-websites/',
+
+  // Based on Google Search Console not found report 2025-01-02
+  '/versions/latest/sdk/sqlite-next/': '/versions/latest/sdk/sqlite/',
+  '/versions/latest/sdk/camera-next/': '/versions/latest/sdk/camera/',
+  '/home/overview/': '/',
+  '/develop/project-structure/': '/get-started/start-developing/',
+  '/versions/latest/sdk/bar-code-scanner/': '/versions/latest/sdk/camera/',
+  '/bare/using-expo-client/': '/bare/install-dev-builds-in-bare/',
+  '/versions/latest/sdk/sqlite-legacy/': '/versions/latest/sdk/sqlite/',
+  '/versions/latest/config/app/name/': '/versions/latest/config/app/#name',
+  '/bare/': '/bare/overview/',
+  '/accounts/working-together/': '/accounts/account-types/',
 };

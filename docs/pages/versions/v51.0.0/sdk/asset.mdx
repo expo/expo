@@ -16,7 +16,7 @@ import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/Con
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-asset` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -51,7 +51,7 @@ You can configure `expo-asset` using its built-in [config plugin](/config-plugin
         '* Media: `.mp4`, `.mp3`, `.lottie`',
         '* SQLite database files: `.db`',
         '',
-        '> **Note**: To import an existing database file (`.db`), see instructions in [SQLite API reference](/versions/latest/sdk/sqlite/#import-an-existing-database). For other file types such as `.lottie`, see [how to add a file extension to `assetExts` in metro config](/guides/customizing-metro/#adding-more-file-extensions-to-assetexts).',
+        '> **Note**: To import an existing database file (`.db`), see instructions in [SQLite API reference](./sqlite/#import-an-existing-database). For other file types such as `.lottie`, see [how to add a file extension to `assetExts` in metro config](/guides/customizing-metro/#adding-more-file-extensions-to-assetexts).',
       ].join('\n'),
       default: '[]',
     },

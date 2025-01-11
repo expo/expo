@@ -17,7 +17,6 @@ const EXCLUDE_PACKAGES = [
   'expo-dev-client-components',
   'expo-doctor',
   'expo-env-info',
-  'expo-face-detector',
   'expo-module-scripts',
   'expo-module-template',
   'expo-module-template-local',
@@ -65,6 +64,7 @@ export async function addWorkspacePackagesToAppAsync(projectRoot: string, packag
 export async function reinstallPackagesAsync(projectRoot: string) {
   await Promise.all([
     fs.rm(path.join(projectRoot, 'node_modules'), { recursive: true, force: true }),
+    fs.rm(path.join(projectRoot, 'bun.lock'), { force: true }),
     fs.rm(path.join(projectRoot, 'bun.lockb'), { force: true }),
     fs.rm(path.join(projectRoot, 'yarn.lock'), { force: true }),
   ]);

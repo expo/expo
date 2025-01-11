@@ -284,11 +284,13 @@ export type UpdatesNativeStateRollback = {
  * @hidden
  */
 export type UpdatesNativeStateMachineContext = {
+  isStartupProcedureRunning: boolean;
   isUpdateAvailable: boolean;
   isUpdatePending: boolean;
   isChecking: boolean;
   isDownloading: boolean;
   isRestarting: boolean;
+  restartCount: number;
   latestManifest?: Manifest;
   downloadedManifest?: Manifest;
   rollback?: UpdatesNativeStateRollback;

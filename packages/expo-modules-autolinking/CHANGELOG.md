@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 - Added Android `BaseReactPackage` for autolinking. ([#33773](https://github.com/expo/expo/pull/33773) by [@vonovak](https://github.com/vonovak))

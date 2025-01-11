@@ -58,31 +58,31 @@ export type FingerprintDiffItem = {
 export type Platform = 'android' | 'ios';
 export interface Options {
     /**
-     * Only get native files from the given platforms. Default is `['android', 'ios']`.
+     * Limit native files to those for specified platforms. Default is `['android', 'ios']`.
      */
     platforms?: Platform[];
     /**
-     * I/O concurrent limit. Default is the number of CPU core.
+     * I/O concurrency limit. Default is the number of CPU cores.
      */
     concurrentIoLimit?: number;
     /**
-     * The algorithm passing to `crypto.createHash()`. Default is `'sha1'`.
+     * The algorithm to use for `crypto.createHash()`. Default is `'sha1'`.
      */
     hashAlgorithm?: string;
     /**
-     * Excludes directories from hashing. This supported pattern is as `glob()`.
+     * Exclude specified directories from hashing. The supported pattern is the same as `glob()`.
      * Default is `['android/build', 'android/app/build', 'android/app/.cxx', 'ios/Pods']`.
      * @deprecated Use `ignorePaths` instead.
      */
     dirExcludes?: string[];
     /**
-     * Ignore files and directories from hashing. This supported pattern is as `glob()`.
+     * Ignore files and directories from hashing. The supported pattern is the same as `glob()`.
      *
-     * Please note that the pattern matching is slightly different from gitignore. For example, we don't support partial matching where `build` does not match `android/build`. You should use `'**' + '/build'` instead.
-     * @see [minimatch implementations](https://github.com/isaacs/minimatch#comparisons-to-other-fnmatchglob-implementations) for more reference.
+     * Please note that the pattern matching is slightly different from gitignore. Partial matching is unsupported. For example, `build` does not match `android/build`; instead, use `'**' + '/build'`.
+     * @see [minimatch implementations](https://github.com/isaacs/minimatch#comparisons-to-other-fnmatchglob-implementations) for further reference.
      *
-     * Besides this `ignorePaths`, fingerprint comes with implicit default ignorePaths defined in `Options.DEFAULT_IGNORE_PATHS`.
-     * If you want to override the default ignorePaths, use `!` prefix.
+     * Fingerprint comes with implicit default ignorePaths defined in `Options.DEFAULT_IGNORE_PATHS`.
+     * If you want to override the default ignorePaths, use `!` prefix in `ignorePaths`.
      */
     ignorePaths?: string[];
     /**
@@ -90,7 +90,7 @@ export interface Options {
      */
     extraSources?: HashSource[];
     /**
-     * Skips some sources from fingerprint.
+     * Skips some sources from fingerprint. Value is the result of bitwise-OR'ing desired values of SourceSkips.
      * @default DEFAULT_SOURCE_SKIPS
      */
     sourceSkips?: SourceSkips;

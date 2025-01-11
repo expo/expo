@@ -50,7 +50,7 @@ import { currentlyRunning, updatesStateFromContext } from './UseUpdatesUtils';
  * ```
  */
 export const useUpdates = () => {
-    const [updatesState, setUpdatesState] = useState(latestContext);
+    const [updatesState, setUpdatesState] = useState(updatesStateFromContext(latestContext));
     // Change the state based on native state machine context changes
     useEffect(() => {
         const subscription = addUpdatesStateChangeListener((event) => {

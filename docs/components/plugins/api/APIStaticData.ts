@@ -144,14 +144,12 @@ export const hardcodedTypeLinks: Record<string, string> = {
   // React Navigation
   DefaultNavigatorOptions:
     'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
-  NavigationContainerRef:
-    'https://reactnavigation.org/docs/typescript/#annotating-ref-on-navigationcontainer',
+  NavigationContainerRef: 'https://reactnavigation.org/docs/navigating-without-navigation-prop',
   NavigationOptions: 'https://reactnavigation.org/docs/screen-options/',
   NavigationState: 'https://reactnavigation.org/docs/navigation-state',
   NavigatorID: 'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
-  RouteProp: 'https://reactnavigation.org/docs/glossary-of-terms/#route-prop',
-  RootParamList:
-    'https://reactnavigation.org/docs/typescript/#specifying-default-types-for-usenavigation-link-ref-etc',
+  RouteProp: 'https://reactnavigation.org/docs/glossary-of-terms/#route-object',
+  RootParamList: 'https://reactnavigation.org/docs/typescript/#navigator-specific-types',
   TabRouterOptions: 'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
   TabNavigationState:
     'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',

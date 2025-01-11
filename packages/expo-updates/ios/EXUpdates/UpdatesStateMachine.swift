@@ -1,7 +1,6 @@
 //  Copyright © 2023 650 Industries. All rights reserved.
 
 // swiftlint:disable no_grouping_extension
-// swiftlint:disable type_name
 
 import Foundation
 
@@ -17,127 +16,70 @@ internal enum UpdatesStateValue: String, CaseIterable {
   case restarting
 }
 
+// MARK: - Data structures
+
 /**
  All the possible types of events that can be sent to the machine. Each event
  will cause the machine to transition to a new state.
  */
-public enum UpdatesStateEventType: String {
+internal enum UpdatesStateEvent {
+  case startStartup
+  case endStartup
   case check
   case checkCompleteUnavailable
-  case checkCompleteAvailable
-  case checkError
+  case checkCompleteWithUpdate(manifest: [String: Any])
+  case checkCompleteWithRollback(rollbackCommitTime: Date)
+  case checkError(errorMessage: String)
   case download
   case downloadComplete
-  case downloadError
+  case downloadCompleteWithUpdate(manifest: [String: Any])
+  case downloadCompleteWithRollback
+  case downloadError(errorMessage: String)
   case restart
-}
 
-// MARK: - Data structures
-
-/**
- Protocol representing an event that can be sent to the machine, and
- structs representing the different event types
- */
-internal protocol UpdatesStateEvent {
-  var type: UpdatesStateEventType { get }
-  var manifest: [String: Any]? { get }
-  var message: String? { get }
-  var rollbackCommitTime: Date? { get }
-  var error: [String: String]? { get }
-}
-
-internal struct UpdatesStateEventCheck: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .check
-  let manifest: [String: Any]? = nil
-  let message: String? = nil
-  let rollbackCommitTime: Date? = nil
-  let error: [String: String]? = nil
-}
-
-internal struct UpdatesStateEventDownload: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .download
-  let manifest: [String: Any]? = nil
-  let message: String? = nil
-  let rollbackCommitTime: Date? = nil
-  let error: [String: String]? = nil
-}
-
-internal struct UpdatesStateEventRestart: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .restart
-  let manifest: [String: Any]? = nil
-  let message: String? = nil
-  let rollbackCommitTime: Date? = nil
-  let error: [String: String]? = nil
-}
-
-internal struct UpdatesStateEventCheckError: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .checkError
-  let manifest: [String: Any]? = nil
-  let message: String?
-  let rollbackCommitTime: Date? = nil
-  var error: [String: String]? {
-    return (message != nil) ? ["message": message ?? ""] : nil
+  internal enum InternalType {
+    case startStartup
+    case endStartup
+    case check
+    case checkCompleteUnavailable
+    case checkCompleteAvailable
+    case checkError
+    case download
+    case downloadComplete
+    case downloadError
+    case restart
   }
-}
 
-internal struct UpdatesStateEventDownloadError: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .downloadError
-  let manifest: [String: Any]? = nil
-  let message: String?
-  let rollbackCommitTime: Date? = nil
-  var error: [String: String]? {
-    return (message != nil) ? ["message": message ?? ""] : nil
+  var type: InternalType {
+    switch self {
+    case .startStartup:
+      return .startStartup
+    case .endStartup:
+      return .endStartup
+    case .check:
+      return .check
+    case .checkCompleteUnavailable:
+      return .checkCompleteUnavailable
+    case .checkCompleteWithUpdate:
+      return .checkCompleteAvailable
+    case .checkCompleteWithRollback:
+      return .checkCompleteAvailable
+    case .checkError:
+      return .checkError
+    case .download:
+      return .download
+    case .downloadComplete:
+      return .downloadComplete
+    case .downloadCompleteWithUpdate:
+      return .downloadComplete
+    case .downloadCompleteWithRollback:
+      return .downloadComplete
+    case .downloadError:
+      return .downloadError
+    case .restart:
+      return .restart
+    }
   }
-}
-
-internal struct UpdatesStateEventCheckCompleteWithUpdate: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .checkCompleteAvailable
-  let manifest: [String: Any]?
-  let message: String? = nil
-  let rollbackCommitTime: Date? = nil
-  let error: [String: String]? = nil
-}
-
-internal struct UpdatesStateEventCheckCompleteWithRollback: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .checkCompleteAvailable
-  let manifest: [String: Any]? = nil
-  let message: String? = nil
-  let rollbackCommitTime: Date?
-  let error: [String: String]? = nil
-}
-
-internal struct UpdatesStateEventCheckComplete: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .checkCompleteUnavailable
-  let manifest: [String: Any]? = nil
-  let message: String? = nil
-  let rollbackCommitTime: Date? = nil
-  let error: [String: String]? = nil
-}
-
-internal struct UpdatesStateEventDownloadCompleteWithUpdate: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .downloadComplete
-  let manifest: [String: Any]?
-  let message: String? = nil
-  let isRollback: Bool = false
-  let rollbackCommitTime: Date? = nil
-  let error: [String: String]? = nil
-}
-
-internal struct UpdatesStateEventDownloadCompleteWithRollback: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .downloadComplete
-  let manifest: [String: Any]? = nil
-  let message: String? = nil
-  // Rollback commit time is captured during check, not during download
-  let rollbackCommitTime: Date? = nil
-  let error: [String: String]? = nil
-}
-
-internal struct UpdatesStateEventDownloadComplete: UpdatesStateEvent {
-  let type: UpdatesStateEventType = .downloadComplete
-  let manifest: [String: Any]? = nil
-  let message: String? = nil
-  let rollbackCommitTime: Date? = nil
-  let error: [String: String]? = nil
 }
 
 /**
@@ -162,19 +104,20 @@ public struct UpdatesStateContextRollback {
  The state machine context, with information that will be readable from JS.
  */
 public struct UpdatesStateContext {
+  public let isStartupProcedureRunning: Bool
   public let isUpdateAvailable: Bool
   public let isUpdatePending: Bool
-  public let isRollback: Bool
   public let isChecking: Bool
   public let isDownloading: Bool
   public let isRestarting: Bool
+  public let restartCount: Int
   public let latestManifest: [String: Any]?
   public let downloadedManifest: [String: Any]?
   public let rollback: UpdatesStateContextRollback?
   public let checkError: [String: String]?
   public let downloadError: [String: String]?
   public let lastCheckForUpdateTime: Date?
-  private let sequenceNumber: Int
+  public let sequenceNumber: Int
 
   private var lastCheckForUpdateTimeDateString: String? {
     guard let lastCheckForUpdateTime = lastCheckForUpdateTime else {
@@ -185,12 +128,13 @@ public struct UpdatesStateContext {
 
   var json: [String: Any?] {
     return [
+      "isStartupProcedureRunning": self.isStartupProcedureRunning,
       "isUpdateAvailable": self.isUpdateAvailable,
       "isUpdatePending": self.isUpdatePending,
-      "isRollback": self.isRollback,
       "isChecking": self.isChecking,
       "isDownloading": self.isDownloading,
       "isRestarting": self.isRestarting,
+      "restartCount": self.restartCount,
       "latestManifest": self.latestManifest,
       "downloadedManifest": self.downloadedManifest,
       "checkError": self.checkError,
@@ -204,12 +148,13 @@ public struct UpdatesStateContext {
 
 public extension UpdatesStateContext {
   init() {
+    self.isStartupProcedureRunning = false
     self.isUpdateAvailable = false
     self.isUpdatePending = false
-    self.isRollback = false
     self.isChecking = false
     self.isDownloading = false
     self.isRestarting = false
+    self.restartCount = 0
     self.latestManifest = nil
     self.downloadedManifest = nil
     self.checkError = nil
@@ -224,21 +169,22 @@ public extension UpdatesStateContext {
   func copyAndIncrementSequenceNumber(build: (inout Builder) -> Void) -> UpdatesStateContext {
     var builder = Builder(original: self)
     build(&builder)
-    return builder.toContext(newSequenceNumber: self.sequenceNumber + 1)
+    return builder.toContext(newRestartCount: self.restartCount, newSequenceNumber: self.sequenceNumber + 1)
   }
 
-  func resetCopyWithIncrementedSequenceNumber() -> UpdatesStateContext {
+  func resetCopyWithIncrementedRestartCountAndSequenceNumber() -> UpdatesStateContext {
     let builder = Builder(original: UpdatesStateContext())
-    return builder.toContext(newSequenceNumber: self.sequenceNumber + 1)
+    return builder.toContext(newRestartCount: self.restartCount + 1, newSequenceNumber: self.sequenceNumber + 1)
   }
 
   struct Builder {
+    var isStartupProcedureRunning: Bool = false
     var isUpdateAvailable: Bool = false
     var isUpdatePending: Bool = false
-    var isRollback: Bool = false
     var isChecking: Bool = false
     var isDownloading: Bool = false
     var isRestarting: Bool = false
+    var restartCount: Int = 0
     var latestManifest: [String: Any]?
     var downloadedManifest: [String: Any]?
     var checkError: [String: String]?
@@ -247,12 +193,13 @@ public extension UpdatesStateContext {
     var rollback: UpdatesStateContextRollback?
 
     fileprivate init(original: UpdatesStateContext) {
+      self.isStartupProcedureRunning = original.isStartupProcedureRunning
       self.isUpdateAvailable = original.isUpdateAvailable
       self.isUpdatePending = original.isUpdatePending
-      self.isRollback = original.isRollback
       self.isChecking = original.isChecking
       self.isDownloading = original.isDownloading
       self.isRestarting = original.isRestarting
+      self.restartCount = original.restartCount
       self.latestManifest = original.latestManifest
       self.downloadedManifest = original.downloadedManifest
       self.checkError = original.checkError
@@ -261,14 +208,15 @@ public extension UpdatesStateContext {
       self.rollback = original.rollback
     }
 
-    fileprivate func toContext(newSequenceNumber: Int) -> UpdatesStateContext {
+    fileprivate func toContext(newRestartCount: Int, newSequenceNumber: Int) -> UpdatesStateContext {
       return UpdatesStateContext(
+        isStartupProcedureRunning: isStartupProcedureRunning,
         isUpdateAvailable: isUpdateAvailable,
         isUpdatePending: isUpdatePending,
-        isRollback: isRollback,
         isChecking: isChecking,
         isDownloading: isDownloading,
         isRestarting: isRestarting,
+        restartCount: newRestartCount,
         latestManifest: latestManifest,
         downloadedManifest: downloadedManifest,
         rollback: rollback,
@@ -288,15 +236,15 @@ public extension UpdatesStateContext {
  in a production app, instantiated as a property of AppController.
  */
 internal class UpdatesStateMachine {
+  private let logger: UpdatesLogger
   private let eventManager: UpdatesEventManager
   private let validUpdatesStateValues: Set<UpdatesStateValue>
 
-  required init(eventManager: UpdatesEventManager, validUpdatesStateValues: Set<UpdatesStateValue>) {
+  required init(logger: UpdatesLogger, eventManager: UpdatesEventManager, validUpdatesStateValues: Set<UpdatesStateValue>) {
+    self.logger = logger
     self.eventManager = eventManager
     self.validUpdatesStateValues = validUpdatesStateValues
   }
-
-  private let logger = UpdatesLogger()
 
   private lazy var serialExecutorQueue: StateMachineSerialExecutorQueue = {
     return StateMachineSerialExecutorQueue(
@@ -308,8 +256,8 @@ internal class UpdatesStateMachine {
         getCurrentStateCallback: {
           return self.state
         },
-        resetStateCallback: {
-          return self.reset()
+        resetStateAfterRestartCallback: {
+          return self.resetAndIncrementRestartCount()
         }
       )
     )
@@ -340,14 +288,14 @@ internal class UpdatesStateMachine {
   /**
    Reset the machine to its starting state. Should only be called after the app restarts (reloadAsync()).
    */
-  private func reset() {
+  private func resetAndIncrementRestartCount() {
     state = .idle
-    context = context.resetCopyWithIncrementedSequenceNumber()
+    context = context.resetCopyWithIncrementedRestartCountAndSequenceNumber()
     logger.info(message: "Updates state is reset, state = \(state), context = \(context)")
     sendContextToJS()
   }
-  internal func resetForTesting() {
-    reset()
+  internal func resetAndIncrementRestartCountForTesting() {
+    resetAndIncrementRestartCount()
   }
 
   /**
@@ -372,7 +320,7 @@ internal class UpdatesStateMachine {
    Make sure the state transition is allowed, and then update the state.
    */
   private func transition(_ event: UpdatesStateEvent) -> Bool {
-    let allowedEvents: Set<UpdatesStateEventType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
+    let allowedEvents: Set<UpdatesStateEvent.InternalType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
       assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
       return false
@@ -392,14 +340,15 @@ internal class UpdatesStateMachine {
    made by processing the event.
    */
   private func reducedContext(_ context: UpdatesStateContext, _ event: UpdatesStateEvent) -> UpdatesStateContext {
-    let rollback: UpdatesStateContextRollback?
-    if let rollbackCommitTime = event.rollbackCommitTime {
-      rollback = UpdatesStateContextRollback(commitTime: rollbackCommitTime)
-    } else {
-      rollback = nil
-    }
-
-    switch event.type {
+    switch event {
+    case .startStartup:
+      return context.copyAndIncrementSequenceNumber {
+        $0.isStartupProcedureRunning = true
+      }
+    case .endStartup:
+      return context.copyAndIncrementSequenceNumber {
+        $0.isStartupProcedureRunning = false
+      }
     case .check:
       return context.copyAndIncrementSequenceNumber {
         $0.isChecking = true
@@ -409,24 +358,32 @@ internal class UpdatesStateMachine {
         $0.isChecking = false
         $0.checkError = nil
         $0.latestManifest = nil
-        $0.isUpdateAvailable = false
-        $0.isRollback = false
-        $0.lastCheckForUpdateTime = Date()
         $0.rollback = nil
+        $0.isUpdateAvailable = false
+        $0.lastCheckForUpdateTime = Date()
       }
-    case .checkCompleteAvailable:
+    case let .checkCompleteWithRollback(rollbackCommitTime):
       return context.copyAndIncrementSequenceNumber {
         $0.isChecking = false
         $0.checkError = nil
-        $0.latestManifest = event.manifest
+        $0.latestManifest = nil
+        $0.rollback = UpdatesStateContextRollback(commitTime: rollbackCommitTime)
         $0.isUpdateAvailable = true
         $0.lastCheckForUpdateTime = Date()
-        $0.rollback = rollback
       }
-    case .checkError:
+    case let .checkCompleteWithUpdate(manifest):
       return context.copyAndIncrementSequenceNumber {
         $0.isChecking = false
-        $0.checkError = event.error
+        $0.checkError = nil
+        $0.latestManifest = manifest
+        $0.rollback = nil
+        $0.isUpdateAvailable = true
+        $0.lastCheckForUpdateTime = Date()
+      }
+    case let .checkError(errorMessage):
+      return context.copyAndIncrementSequenceNumber {
+        $0.isChecking = false
+        $0.checkError = ["message": errorMessage]
         $0.lastCheckForUpdateTime = Date()
       }
     case .download:
@@ -437,15 +394,28 @@ internal class UpdatesStateMachine {
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
-        $0.latestManifest = event.manifest ?? context.latestManifest
-        $0.downloadedManifest = event.manifest ?? context.downloadedManifest
-        $0.isUpdatePending = $0.downloadedManifest != nil
-        $0.isUpdateAvailable = event.manifest != nil || context.isUpdateAvailable
+        $0.isUpdatePending = true
       }
-    case .downloadError:
+    case .downloadCompleteWithRollback:
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
-        $0.downloadError = event.error
+        $0.downloadError = nil
+        $0.isUpdatePending = true
+      }
+    case let .downloadCompleteWithUpdate(manifest):
+      return context.copyAndIncrementSequenceNumber {
+        $0.isDownloading = false
+        $0.downloadError = nil
+        $0.latestManifest = manifest
+        $0.downloadedManifest = manifest
+        $0.rollback = nil
+        $0.isUpdatePending = true
+        $0.isUpdateAvailable = true
+      }
+    case let .downloadError(errorMessage):
+      return context.copyAndIncrementSequenceNumber {
+        $0.isDownloading = false
+        $0.downloadError = ["message": errorMessage]
       }
     case .restart:
       return context.copyAndIncrementSequenceNumber {
@@ -469,8 +439,8 @@ internal class UpdatesStateMachine {
    If the machine receives an unexpected event, an assertion failure will occur
    and the app will crash.
    */
-  private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEventType>] = [
-    .idle: [.check, .download, .restart],
+  private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEvent.InternalType>] = [
+    .idle: [.startStartup, .endStartup, .check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
     .downloading: [.downloadComplete, .downloadError],
     .restarting: []
@@ -480,7 +450,9 @@ internal class UpdatesStateMachine {
    For this state machine, each event has only one destination state that the
    machine will transition to.
    */
-  private static let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
+  private static let updatesStateTransitions: [UpdatesStateEvent.InternalType: UpdatesStateValue] = [
+    .startStartup: .idle,
+    .endStartup: .idle,
     .check: .checking,
     .checkCompleteAvailable: .idle,
     .checkCompleteUnavailable: .idle,
@@ -493,4 +465,3 @@ internal class UpdatesStateMachine {
 }
 
 // swiftlint:enable no_grouping_extension
-// swiftlint:enable type_name

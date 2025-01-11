@@ -1,6 +1,0 @@
-{
-  "platforms": ["android", "ios"],
-  "android": {
-    "modules": ["expo.modules.facedetector.FaceDetectorModule"]
-  }
-}

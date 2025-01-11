@@ -2,9 +2,14 @@
 
 'use client';
 
-import React from 'react';
-import { NativeModules, NativeMethods, HostComponent, findNodeHandle } from 'react-native';
-import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
+import { type Component, type ComponentType, createRef, PureComponent } from 'react';
+import {
+  findNodeHandle,
+  type HostComponent,
+  type NativeMethods,
+  NativeModules,
+} from 'react-native';
+import { get as componentRegistryGet } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
 import { requireNativeModule } from './requireNativeModule';
 
@@ -12,7 +17,7 @@ import { requireNativeModule } from './requireNativeModule';
 // `requireNativeViewManager` as easy as possible, `requireNativeViewManager` is a drop-in
 // replacement for `requireNativeComponent`.
 //
-// For each view manager, we create a wrapper component that accepts all of the props available to
+// For each view manager, we create a wrapper component that accepts all the props available to
 // the author of the universal module. This wrapper component splits the props into two sets: props
 // passed to React Native's View (ex: style, testID) and custom view props, which are passed to the
 // adapter view component in a prop called `proxiedProperties`.
@@ -26,7 +31,7 @@ const nativeComponentsCache = new Map<string, HostComponent<any>>();
  * Requires a React Native component using the static view config from an Expo module.
  */
 function requireNativeComponent<Props>(viewName: string): HostComponent<Props> {
-  return NativeComponentRegistry.get<Props>(viewName, () => {
+  return componentRegistryGet<Props>(viewName, () => {
     const viewModuleName = viewName.replace('ViewManagerAdapter_', '');
     const expoViewConfig = globalThis.expo?.getViewConfig(viewModuleName);
 
@@ -60,7 +65,7 @@ function requireCachedNativeComponent<Props>(viewName: string): HostComponent<Pr
 /**
  * A drop-in replacement for `requireNativeComponent`.
  */
-export function requireNativeViewManager<P>(viewName: string): React.ComponentType<P> {
+export function requireNativeViewManager<P>(viewName: string): ComponentType<P> {
   const { viewManagersMetadata } = NativeModules.NativeUnimoduleProxy;
   const viewManagerConfig = viewManagersMetadata?.[viewName];
 
@@ -78,10 +83,10 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
   const reactNativeViewName = `ViewManagerAdapter_${viewName}${viewNameSuffix}`;
   const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
 
-  class NativeComponent extends React.PureComponent<P> {
+  class NativeComponent extends PureComponent<P> {
     static displayName = viewName;
 
-    nativeRef = React.createRef<React.Component & NativeMethods>();
+    nativeRef = createRef<Component & NativeMethods>();
 
     // This will be accessed from native when the prototype functions are called,
     // in order to find the associated native view.
@@ -91,7 +96,7 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
       this.nativeTag = findNodeHandle(this.nativeRef.current);
     }
 
-    render(): React.ReactNode {
+    render() {
       return <ReactNativeComponent {...this.props} ref={this.nativeRef} />;
     }
   }
@@ -101,7 +106,7 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
     const nativeViewPrototype = nativeModule.ViewPrototype;
 
     if (nativeViewPrototype) {
-      // Assign native view functions to the component prototype so they can be accessed from the ref.
+      // Assign native view functions to the component prototype, so they can be accessed from the ref.
       Object.assign(NativeComponent.prototype, nativeViewPrototype);
     }
   } catch {
