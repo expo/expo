@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
+- support RN 0.77 in SDK 52 ([#34088](https://github.com/expo/expo/pull/34088) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
