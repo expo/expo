@@ -1,0 +1,37 @@
+diff --git a/node_modules/@shopify/flash-list/android/src/paper/java/com/facebook/react/viewmanagers/AutoLayoutViewManagerDelegate.java b/node_modules/@shopify/flash-list/android/src/paper/java/com/facebook/react/viewmanagers/AutoLayoutViewManagerDelegate.java
+index 4c90807..530f11e 100644
+--- a/node_modules/@shopify/flash-list/android/src/paper/java/com/facebook/react/viewmanagers/AutoLayoutViewManagerDelegate.java
++++ b/node_modules/@shopify/flash-list/android/src/paper/java/com/facebook/react/viewmanagers/AutoLayoutViewManagerDelegate.java
+@@ -12,9 +12,11 @@ package com.facebook.react.viewmanagers;
+ import android.view.View;
+ import androidx.annotation.Nullable;
+ import com.facebook.react.uimanager.BaseViewManagerDelegate;
+-import com.facebook.react.uimanager.BaseViewManagerInterface;
++import com.facebook.react.uimanager.BaseViewManager;
++import com.facebook.react.uimanager.LayoutShadowNode;
+ 
+-public class AutoLayoutViewManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & AutoLayoutViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
++// old-arch only
++public class AutoLayoutViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & AutoLayoutViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+   public AutoLayoutViewManagerDelegate(U viewManager) {
+     super(viewManager);
+   }
+diff --git a/node_modules/@shopify/flash-list/android/src/paper/java/com/facebook/react/viewmanagers/CellContainerManagerDelegate.java b/node_modules/@shopify/flash-list/android/src/paper/java/com/facebook/react/viewmanagers/CellContainerManagerDelegate.java
+index 2b64af7..3f7a997 100644
+--- a/node_modules/@shopify/flash-list/android/src/paper/java/com/facebook/react/viewmanagers/CellContainerManagerDelegate.java
++++ b/node_modules/@shopify/flash-list/android/src/paper/java/com/facebook/react/viewmanagers/CellContainerManagerDelegate.java
+@@ -12,10 +12,11 @@ package com.facebook.react.viewmanagers;
+ import android.view.View;
+ import androidx.annotation.Nullable;
+ import com.facebook.react.uimanager.BaseViewManagerDelegate;
+-import com.facebook.react.uimanager.BaseViewManagerInterface;
++import com.facebook.react.uimanager.BaseViewManager;
++import com.facebook.react.uimanager.LayoutShadowNode;
+ 
+-public class CellContainerManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & CellContainerManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+-  public CellContainerManagerDelegate(U viewManager) {
++// old-arch only
++public class CellContainerManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & CellContainerManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {  public CellContainerManagerDelegate(U viewManager) {
+     super(viewManager);
+   }
+   @Override
