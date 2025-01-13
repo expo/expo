@@ -244,6 +244,11 @@ class Env {
   get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
     return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', false);
   }
+
+  /** Disable the dependency validation when installing other dependencies and starting the project */
+  get EXPO_NO_DEPENDENCY_VALIDATION(): boolean {
+    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', false);
+  }
 }
 
 export const env = new Env();
