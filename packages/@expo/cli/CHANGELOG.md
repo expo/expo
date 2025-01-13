@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix compiler usage with RSC HMR. ([#34128](https://github.com/expo/expo/pull/34128) by [@EvanBacon](https://github.com/EvanBacon))
 - Add temporary fix for HMR in RSC. ([#34168](https://github.com/expo/expo/pull/34168) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure we hydrate env vars in the project when running `npx expo serve`. ([#34064](https://github.com/expo/expo/pull/34064) by [@EvanBacon](https://github.com/EvanBacon))
 
