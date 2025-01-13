@@ -7,7 +7,7 @@
   </a>
 </p>
 
-Provides access to the system's haptics engine on iOS and vibration effects on Android.
+Provides access to the system's haptics engine on iOS, vibration effects on Android, and Web Vibration API on web platforms.
 
 # API documentation
 
