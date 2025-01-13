@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import fs from 'node:fs';
 import path from 'node:path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
@@ -39,12 +38,6 @@ test.describe(inputDir, () => {
       },
     });
     console.timeEnd('expo export');
-
-    // Duplicate the index.html file for an SPA-style export.
-    fs.copyFileSync(
-      path.join(projectRoot, inputDir, 'server/index.html'),
-      path.join(projectRoot, inputDir, 'client/second.html')
-    );
 
     console.time('expo serve');
     await expoServe.startAsync([inputDir]);
