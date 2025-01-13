@@ -4,11 +4,9 @@ title: Environment variables
 description: Learn how to use environment variables in your project.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
+An Expo Router web project may include client-side and server-side environment variables. The client-side environment variables are visible to the app user and inlined in the JavaScript bundle when you run `npx expo export`. The server-side environment variables are kept securely on the server and are bundled with the API routes code when you run `eas deploy`.
 
-An Expo Router web project may include two kinds of environment variables: client-side and server-side. The client-side environment variables are visible to the app user and inlined in the JavaScript bundle when you run `npx expo export`. The server-side environment variables are kept securely on the server and are bundled with the API routes code when you run `eas deploy`.
-
-> **warning** Only **plain text** and **sensitive** [environment variables](/eas/environment-variables/#visibility) can be used. Secrets cannot be used in code, they are strictly for build time use. For example, a private npm token.
+> **warning** Only **plain text** and **sensitive** [environment variables](/eas/environment-variables/#visibility) can be used. Secrets cannot be used in code.
 
 ## Client-side environment variables
 
@@ -16,11 +14,11 @@ All the code that runs in the browser is client-side. In an Expo Router project,
 
 The environment variables on your client-side code are inlined at build time. You should never put any sensitive information in your client-side code, which is why all client-side environment variables must be prefixed with [`EXPO_PUBLIC_`](/guides/environment-variables/).
 
-Then, when you run `npx expo export`, all instances of `process.env.EXPO_PUBLIC_VARIABLE` environment variables will be replaced with values from the environment.
+Then, when you run `npx expo export`, all instances of `process.env.EXPO_PUBLIC_*` environment variables will be replaced with values from the environment.
 
 ## Server-side environment variables
 
-All the code in your API routes (that is, files that end with **+api.tsx**) runs on the server.
+All the code in your API routes (that is, files that end with **+api.ts**) runs on the server.
 
 Since the code running on the server is never visible to the app user, the server-side code can safely use sensitive environment variables such as API keys and tokens.
 
@@ -45,6 +43,4 @@ For deploying a project with environment variables, note that the environment va
 - Running `npx expo export --platform web` will inline the `EXPO_PUBLIC_` variables in the frontend code. So ensure that your **.env** or **.env.local** file includes the correct environment variables before running the export command.
 - `eas deploy --environment production` will include all variables for the given environment (in this case, `production`) in the API routes. If you don't include the `--environment` flag, variables from **.env** or **.env.local** will be used.
 
-**Environment variables are per deployment**
-
-> **warning** Deployments are immutable. This means that after changing an environment variable, you will need to re-export your project, and do a new deployment in order for them to take effect.
+> **warning** **Environment variables are per deployment, and deployments are immutable**. This means that after changing an environment variable, you will need to re-export your project, and do a new deployment in order for them to take effect.

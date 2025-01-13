@@ -16,20 +16,20 @@ Each project can have exactly one custom domain, which is assigned to the produc
 
 <Collapsible summary="An EAS Hosting project with a production deployment">
 
-The custom domain will always lead to the production deployment, so to set it up, you will need a deployment that is promoted to production.
+The custom domain will always lead to the production deployment. Therefore in order to set this up, you will need a deployment that's been promoted to production.
 
 </Collapsible>
 
 <Collapsible summary="A domain name">
 
-You will need to own the domain name you want to use.
+You will need to own a domain name you want to use.
 
 </Collapsible>
 
 ## Assigning a custom domain
 
-1. In your project's dashboard on expo.dev, open **Hosting** > [**Settings**](https://expo.dev/accounts/[accountName]/projects/[projectName]/hosting/settings).
-2. If you do not have a production deployment, you'll get prompted to go and promote an existing deployment first.
+1. In your project's dashboard on expo.dev, navigate to [Hosting Settings](https://expo.dev/accounts/[accountName]/projects/[projectName]/hosting/settings).
+2. If you do not have a production deployment, you'll be prompted create one first.
 3. Under **Custom domain**, enter the custom domain to route your project to. Both apex domains and subdomains are supported, so if you own `example.com`, you can select:
 
    - `example.com`: apex domain
@@ -45,6 +45,6 @@ You will need to own the domain name you want to use.
 
 > If you require for the domain name switchover to be **zero downtime**, it's important to fill out these records one by one in the order they are presented in the table.
 > That is, add the **TXT** record for verification, press the refresh button until the UI says verification is successful, then proceed to the next one.
-> If downtime isn't important or relevant, you may add three DNS records at once.
+> If downtime isn't important or relevant, you may add all three DNS records at once.
 
-Now, after assigning a custom domain to your app, the custom domain will route to your **production** deployment.
+After assigning a custom domain to your app, the custom domain will route to your **production** deployment.

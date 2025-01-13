@@ -14,9 +14,9 @@ To use [EAS workflows](/eas-workflows/get-started/) to automatically deploy your
 
 ## Create a deployment workflow
 
-Add the following file to **.eas/workflows/deploy.yaml**. This will use the production environment variables, export the web bundle, deploy your project and promote it to production whenever you push to the main branch.
+Add the following file to **.eas/workflows/deploy.yml**. This will use the production environment variables, export the web bundle, deploy your project and promote it to production whenever you push to the main branch.
 
-```yaml
+```yml
 name: Deploy
 
 on:
@@ -36,4 +36,4 @@ Now, whenever a commit is pushed to `main` or a PR is merged, the workflow will 
 
 You can also test this workflow by running it locally:
 
-<Terminal cmd={['$ eas workflow:run .eas/workflows/deploy.yaml']} />
+<Terminal cmd={['$ eas workflow:run .eas/workflows/deploy.yml']} />
