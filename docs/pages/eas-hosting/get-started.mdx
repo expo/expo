@@ -24,13 +24,13 @@ Paid subscribers can create more deployments, have more bandwidth, storage, requ
 
 <Collapsible summary="An Expo Router web project">
 
-If using an existing project, ensure that in your project’s app config, the web output `expo.web.output` set to either `static` or `server` (single page apps are not supported on Hosting).
+If using an existing project, ensure that in your project's app config, the web output ([`expo.web.output`](/versions/latest/config/app/#output)) set to either `static` or `server` (single page apps are not supported on EAS Hosting).
 
 Don't have a project yet? No problem. It's quick and easy to create a "Hello world" app that you can use with this guide.
 
 Run the following command to create a new project:
 
-<Terminal cmd={['$ npx create-expo-app my-app']} />
+<Terminal cmd={['$ npx create-expo-app@latest my-app']} />
 
 </Collapsible>
 
@@ -61,12 +61,12 @@ You can check whether you are logged in by running `eas whoami`.
 <Step label="3">
 ## Prepare your project
 
-In your [app config](/versions/latest/config/app/#output) set `expo.web.output` to either `static` or `server`.
+In your app config file set [`expo.web.output`](/versions/latest/config/app/#output) to either `static` or `server`.
 
 - `static`: Exports your Expo app to a statically generated web app
 - `server`: Supports server functions and API routes as well as the static pages for your website
 
-> Don’t worry if you’re not sure which output mode you need, you can always change this value later and re-deploy.
+> Don't worry if you're not sure which output mode you need, you can always change this value later and re-deploy.
 
 </Step>
 
@@ -93,10 +93,10 @@ Now publish your website to EAS Hosting:
 
 The first time you run this command, it will:
 
-1. Prompt you to connect to an EAS project if you haven’t done so yet
+1. Prompt you to connect to an EAS project if you haven't done so yet
 2. Ask you to choose a preview subdomain name
 
-> A **preview subdomain name** is a prefix used for the preview url of your app.
+> **info** A **preview subdomain name** is a prefix used for the preview url of your app.
 > For example, if you choose `test` as your preview subdomain name, your preview URL would look something like this: `https://test--or1170q9ix.expo.app/`, and your production url would be: `https://test.expo.app/`.
 
 Once your deployment is complete, the CLI will output a preview URL for where your deployed app is accessible, as well as a link to the deployment details on the EAS Dashboard.

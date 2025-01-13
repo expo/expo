@@ -12,7 +12,7 @@ Deployments to EAS Hosting are immutable. Each deployment is accessible via a un
 
 ### Preview subdomain name
 
-To activate EAS hosting for a project, you’ll need to choose a **preview subdomain name**. You may do this via the **Hosting** section of your project on the [expo.dev](http://expo.dev) website. Alternatively, you’ll be prompted to choose a preview subdomain when you create your first deployment using the EAS CLI.
+To activate EAS Hosting for a project, you'll need to choose a **preview subdomain name**. You can do this via the **Hosting** section of your project on the [expo.dev](http://expo.dev) website. Alternatively, you'll be prompted to choose a preview subdomain when you create your first deployment using the EAS CLI.
 
 ### Preview and production URLs
 
@@ -52,17 +52,17 @@ Similar to other aliases, a deployment can be promoted to production using `--pr
 
 <Terminal cmd={['$ eas deploy --prod']} />
 
-Existing deployment can also be promoted to production using its deployment ID with the --id option:
+Existing deployment can also be promoted to production using its deployment ID with the `--id` option:
 
 <Terminal cmd={['$ eas deploy:alias --prod --id=deploymentId']} />
 
 ## Terminology
 
-In the following example, `test` has been chosen ad the preview subdomain name:
+In the following example, `test` is selected as the preview subdomain name:
 
-- `https://test--or1170q9ix.expo.app/` : Preview url, which is unique URL and where your deployment is available.
+- `https://test--or1170q9ix.expo.app/` : Preview URL, which is unique and where your deployment is available.
   - `test`: Preview subdomain name. Globally unique prefix tied to your project.
-  - `or1170q9ix`: Deployment ID. An ID that is unique to this deployment.
-- `https://test--hello.expo.app/`: A deployment url with an alias.
+  - `or1170q9ix`: Deployment ID, which is unique to this deployment.
+- `https://test--hello.expo.app/`: A deployment URL with an alias.
   - `hello`: User-defined alias.
 - `https://test.expo.app/`: Production deployment URL.

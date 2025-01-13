@@ -1,12 +1,12 @@
 ---
-sidebar_title: API routes
+sidebar_title: Monitoring API routes
 title: API Routes
-description: Inspect requests from API routes on the EAS Hosting Dashboard.
+description: Learn how to inspect requests from API routes on the EAS Hosting dashboard.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> This page is for EAS Hosting specific details about API routes. For general documentation about API routes, see the [API routes](router/reference/api-routes/) documentation.
+> **info** This page is for EAS Hosting specific details about API routes. For general documentation about API routes, see the [API routes](/router/reference/api-routes/) under Expo Router.
 
 Crashes, logs, and requests that occurred in API routes can be inspected on the EAS Hosting dashboard.
 
@@ -23,7 +23,7 @@ Crashes are grouped by occurrences, so if the same crash happens 100 times, you 
 
 ### Logs
 
-All logs from API routes (`console.log`, `console.info`, `console.error` and so on) are recorded on the **Logs** page. These are only available per deployment at **Deployments** > _choose a deployment_ > **Logs**.
+All logs from API routes (`console.log`, `console.info`, `console.error` and so on) are recorded on the **Logs** page. These are only available per deployment at **Deployments** > _select a deployment_ > **Logs**.
 
 <ContentSpotlight
   alt="EAS dashboard showing a list of logs"
@@ -34,9 +34,7 @@ All logs from API routes (`console.log`, `console.info`, `console.error` and so 
 
 Requests can be viewed on the project level at **Hosting** > **Requests** and deployment level at **Deployments** > _choose a deployment_ > **Requests**.
 
-This will show a list of requests against your service, with metadata (status, browser, region, duration, and more) per request.
-
-These include all requests to the service, including requests to API routes.
+This will show a list of requests against your service, with metadata (status, browser, region, duration, and more) per request. These include all requests to the service, including requests to API routes.
 
 <ContentSpotlight
   alt="EAS dashboard showing a list of requests"

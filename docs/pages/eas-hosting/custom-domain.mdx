@@ -10,13 +10,13 @@ By default, your production deployment on EAS Hosting will look like this: `my-a
 
 Each project can have exactly one custom domain, which is assigned to the production deployment.
 
-> Note that setting up a custom domain is a premium feature and isn’t available on the free tier. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
+> **info** **Note**: Setting up a custom domain is a premium feature and isn't available on the free plan. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
 
 ## Prerequisites
 
 <Collapsible summary="An EAS Hosting project with a production deployment">
 
-The custom domain will always lead to the production deployment, so in order to set it up, you will need a deployment that is promoted to production.
+The custom domain will always lead to the production deployment, so to set it up, you will need a deployment that is promoted to production.
 
 </Collapsible>
 
@@ -29,22 +29,22 @@ You will need to own the domain name you want to use.
 ## Assigning a custom domain
 
 1. In your project's dashboard on expo.dev, open **Hosting** > [**Settings**](https://expo.dev/accounts/[accountName]/projects/[projectName]/hosting/settings).
-2. If you do not have a production deployment, you’ll get prompted to go and promote an existing deployment first.
-3. Under **Custom domain**, enter the custom domain to route your project to. Both apex domains and subdomains are supported, so if you own `example.com`, you can choose:
+2. If you do not have a production deployment, you'll get prompted to go and promote an existing deployment first.
+3. Under **Custom domain**, enter the custom domain to route your project to. Both apex domains and subdomains are supported, so if you own `example.com`, you can select:
 
    - `example.com`: apex domain
-   - `anything.example.com:` a subdomain
+   - `anything.example.com`: a subdomain
 
-4. Now you’ll be prompted to fill out some DNS records with your DNS provider:
+4. Now you'll be prompted to fill out some DNS records with your DNS provider:
 
-   - **Verification** - This proves you own the domain
-   - **SSL** - Setting up SSL certificates for HTTPS traffic
-   - **CNAME** (subdomains) / **A-record** (apex domains) - To switch over the domain to point to your production deployment
+   - **Verification**: This proves you own the domain
+   - **SSL**: Setting up SSL certificates for HTTPS traffic
+   - **CNAME** (subdomains)/**A-record** (apex domains): To switch over the domain to point to your production deployment
 
 5. Press the refresh button until all steps have turned green. Depending on your DNS provider, this usually takes a couple of minutes.
 
-> If you require for the domain name switchover to be **zero downtime**, it’s important to fill out these records one by one in the order they are presented in the table.
+> If you require for the domain name switchover to be **zero downtime**, it's important to fill out these records one by one in the order they are presented in the table.
 > That is, add the **TXT** record for verification, press the refresh button until the UI says verification is successful, then proceed to the next one.
-> If downtime isn’t important or relevant, you may add three DNS records at once.
+> If downtime isn't important or relevant, you may add three DNS records at once.
 
 Now, after assigning a custom domain to your app, the custom domain will route to your **production** deployment.

@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 An Expo Router web project may include two kinds of environment variables: client-side and server-side. The client-side environment variables are visible to the app user and inlined in the JavaScript bundle when you run `npx expo export`. The server-side environment variables are kept securely on the server and are bundled with the API routes code when you run `eas deploy`.
 
-> **warning** Only **plain text** and **sensitive** environment variables can be used. Secrets cannot be used in code, they are strictly for build time use, for example, a private npm token.
+> **warning** Only **plain text** and **sensitive** [environment variables](/eas/environment-variables/#visibility) can be used. Secrets cannot be used in code, they are strictly for build time use. For example, a private npm token.
 
 ## Client-side environment variables
 
@@ -20,7 +20,7 @@ Then, when you run `npx expo export`, all instances of `process.env.EXPO_PUBLIC_
 
 ## Server-side environment variables
 
-All the code in your API routes (that is, files that end with **+api** ) runs on the server.
+All the code in your API routes (that is, files that end with **+api.tsx**) runs on the server.
 
 Since the code running on the server is never visible to the app user, the server-side code can safely use sensitive environment variables such as API keys and tokens.
 
@@ -28,7 +28,7 @@ Unlike client-side environment variables, server-side environment variables are 
 
 ## Environment variables for local development
 
-For local development, both server and client side environment variables are loaded from a local **.env** file, which should be gitignored. If you’re using EAS environment variables, use `eas env:pull` to retrieve the environment variables for `development`, `preview`, or `production`.
+For local development, both server and client side environment variables are loaded from a local **.env** file, which should be gitignored. If you're using EAS environment variables, use [`eas env:pull`](/eas/environment-variables/#sync-the-environment-variables-for-local-development-using-eas-envpull) command to retrieve the environment variables for `development`, `preview`, or `production`.
 
 ## Storing environment variables
 
@@ -38,12 +38,12 @@ The two primary ways of handling environment variables are via EAS environment v
 
 With [EAS environment variables](/eas/environment-variables/), you store all variables in EAS using the EAS CLI or the web UI and pull them down locally as and when necessary.
 
-When using the EAS environment variables, use the `eas env:pull` command to pull down the environment you want to develop against.
+When using the EAS environment variables, use the [`eas env:pull`](/eas/environment-variables/#sync-the-environment-variables-for-local-development-using-eas-envpull) command to pull down the environment you want to develop against.
 
 For deploying a project with environment variables, note that the environment variables for the frontend and server code are included at different steps:
 
 - Running `npx expo export --platform web` will inline the `EXPO_PUBLIC_` variables in the frontend code. So ensure that your **.env** or **.env.local** file includes the correct environment variables before running the export command.
-- `eas deploy --environment production` will include all variables for the given environment (in this case, `production`) in the API routes. If you don’t include the `--environment` flag, variables from **.env** or **.env.local** will be used.
+- `eas deploy --environment production` will include all variables for the given environment (in this case, `production`) in the API routes. If you don't include the `--environment` flag, variables from **.env** or **.env.local** will be used.
 
 **Environment variables are per deployment**
 
