@@ -68,7 +68,7 @@ export async function installAsync(
   }
 
   // note(simek): check out the packages compatibility with New Architecture against RND API
-  if (!env.EXPO_NO_NEW_ARCH_COMPAT_CHECK) {
+  if (!env.EXPO_NO_DEPENDENCY_VALIDATION && !env.EXPO_NO_NEW_ARCH_COMPAT_CHECK) {
     await checkPackagesCompatibility(otherPackages);
   }
 
