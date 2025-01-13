@@ -125,6 +125,16 @@ test.describe(inputDir, () => {
     );
   });
 
+  test('has static public file', async ({ page }) => {
+    // Navigate to the app
+    const res = await page.goto(new URL('/_static-file.txt', expoServe.url).href);
+
+    const status = await res?.status();
+    expect(status).toBe(200);
+    const text = await res?.text();
+    expect(text).toBe('hello');
+  });
+
   test('has dynamic headers', async ({ page }) => {
     // Navigate to the app
     await page.goto(new URL('/second', expoServe.url).href);
