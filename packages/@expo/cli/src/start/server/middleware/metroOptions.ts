@@ -201,7 +201,7 @@ export function getMetroDirectBundleOptions(
     baseUrl: baseUrl || undefined,
     routerRoot,
     bytecode: bytecode ? '1' : undefined,
-    reactCompiler: reactCompiler || undefined,
+    reactCompiler: reactCompiler ? String(reactCompiler) : undefined,
     dom: domRoot,
   };
 
