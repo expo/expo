@@ -35,7 +35,7 @@ const SECTIONS = {
     'billing',
     'accounts',
   ],
-  'general-faq': ['faq'],
+  faq: ['faq'],
 };
 
 function extractFrontmatter(content) {
@@ -77,7 +77,7 @@ function getSectionForPath(filePath) {
 
   const baseFilename = path.basename(filePath, '.mdx');
   if (baseFilename === 'core-concepts') return 'core-concepts';
-  if (baseFilename === 'faq') return 'general-faq';
+  if (baseFilename === 'faq') return 'faq';
 
   // Handle "get-started" section because there are
   // multiple files that includes "/get-started/"
@@ -104,42 +104,36 @@ function shouldIncludePath(filePath) {
     return true;
   }
 
-  // For paths starting with "versions", only include "latest" versions
-  if (pathParts[0] === 'versions') {
-    if (relativePath.includes('latest')) {
-      return true;
-    }
-    if (
-      relativePath.match(/versions\/v\d+\.\d+\.\d+/) ||
-      relativePath.includes('versions/unversioned')
-    ) {
-      return false;
-    }
+  if (relativePath.includes('latest')) {
+    return true;
+  }
+  if (
+    relativePath.match(/versions\/v\d+\.\d+\.\d+/) ||
+    relativePath.includes('versions/unversioned')
+  ) {
+    return false;
   }
 
   return true;
 }
 
-// Helper functions moved before they're used
 function formatTitle(urlPath) {
   const parts = urlPath.split('/').filter(Boolean);
   if (parts.length === 0) return 'Home';
 
-  const lastPart = parts[parts.length - 1];
-  return lastPart
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  const lastPart = parts.at(-1);
+  return startCase(lastPart);
 }
 
 function formatSectionTitle(section) {
   const specialCases = {
     'get-started': 'Get Started',
     'core-concepts': 'Core Concepts',
-    eas: 'EAS',
-    'general-faq': 'FAQs',
     'expo-modules': 'Expo Modules API',
     'push-notifications': 'Push Notifications',
+    eas: 'EAS',
+    sdk: 'SDK',
+    faq: 'FAQs',
   };
 
   if (specialCases[section]) {
@@ -149,8 +143,7 @@ function formatSectionTitle(section) {
   return startCase(section);
 }
 
-// Moved walkDir outside of generateLlmsTxt
-function walkDir(currentPath, depth = 0, urlsBySection) {
+function walkDir(urlsBySection, currentPath = DOCS_DIR, depth = 0) {
   const files = fs.readdirSync(currentPath);
 
   for (const file of files) {
@@ -162,7 +155,7 @@ function walkDir(currentPath, depth = 0, urlsBySection) {
     }
 
     if (stat.isDirectory()) {
-      walkDir(filePath, depth + 1, urlsBySection);
+      walkDir(urlsBySection, filePath, depth + 1);
     } else if (file.endsWith('.mdx')) {
       const section = getSectionForPath(filePath);
       const { title, description } = readMDXFile(filePath);
@@ -174,6 +167,10 @@ function walkDir(currentPath, depth = 0, urlsBySection) {
         .replace(/\\/g, '/');
 
       const url = `https://docs.expo.dev/${urlPath}`;
+
+      if (!urlsBySection[section]) {
+        urlsBySection[section] = [];
+      }
 
       urlsBySection[section].push({
         title: title || formatTitle(urlPath),
@@ -195,7 +192,7 @@ async function generateLlmsTxt() {
     });
     urlsBySection.other = [];
 
-    walkDir(DOCS_DIR, 0, urlsBySection);
+    walkDir(urlsBySection);
 
     Object.keys(SECTIONS).forEach(section => {
       if (urlsBySection[section].length > 0) {
