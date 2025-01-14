@@ -40,6 +40,7 @@ const easDirectories = [
   'distribution',
   'custom-builds',
   'eas-workflows',
+  'hosting',
   'billing',
   'accounts',
 ];
@@ -445,6 +446,20 @@ const eas = [
       ],
       { expanded: false }
     ),
+  ]),
+  makeSection('EAS Hosting', [
+    makePage('eas/hosting/introduction.mdx'),
+    makePage('eas/hosting/get-started.mdx'),
+    makePage('eas/hosting/deployments-and-aliases.mdx'),
+    makePage('eas/hosting/environment-variables.mdx'),
+    makePage('eas/hosting/custom-domain.mdx'),
+    makePage('eas/hosting/api-routes.mdx'),
+    makePage('eas/hosting/workflows.mdx'),
+    makeGroup('Reference', [
+      makePage('eas/hosting/reference/caching.mdx'),
+      makePage('eas/hosting/reference/responses-and-headers.mdx'),
+      makePage('eas/hosting/reference/worker-runtime.mdx'),
+    ]),
   ]),
   makeSection('EAS Submit', [
     makePage('submit/introduction.mdx'),
