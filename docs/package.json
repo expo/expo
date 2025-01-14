@@ -18,7 +18,7 @@
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.cjs",
     "permissions-sync-android": "npx scrape-permissions-json@latest components/plugins/permissions/data --android",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
-    "generate-static-resources": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js ./scripts/generate-llm-txt.js",
+    "generate-static-resources": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js ./scripts/generate-llm-txt.js ./scripts/generate-llm-full-txt.js",
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
     "copy-latest": "node ./scripts/copy-latest.js",
     "postinstall": "yarn copy-latest && yarn generate-static-resources"
