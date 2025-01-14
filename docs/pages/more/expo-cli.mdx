@@ -75,7 +75,7 @@ The UI that shows up in the process is referred to as the **Terminal UI**. It co
 | <kbd>S</kbd>                    | Switch the launch target between Expo Go and development builds.                                                                                                                         |
 | <kbd>M</kbd>                    | Open the dev menu on any connected native device (web not supported).                                                                                                                    |
 | <kbd>Shift</kbd> + <kbd>M</kbd> | Choose more commands to trigger on connected devices.<br/>This includes toggling the performance monitor, opening the element inspector, reloading the device, and opening the dev menu. |
-| <kbd>J</kbd>                    | Open Chrome Dev Tools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes#javascript-inspector-for-hermes).                        |
+| <kbd>J</kbd>                    | Open Chrome DevTools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes#javascript-inspector-for-hermes).                         |
 | <kbd>O</kbd>                    | Open project code in your editor. This can be configured with the `EXPO_EDITOR` and `EDITOR` [environment variables](#environment-variables).                                            |
 | <kbd>E</kbd>                    | Show the development server URL as a QR code in the terminal.                                                                                                                            |
 | <kbd>?</kbd>                    | Show all Terminal UI commands.                                                                                                                                                           |
@@ -125,7 +125,7 @@ This will serve your app from a public URL like: `http://xxxxxxx.bacon.19000.exp
 **Drawbacks**
 
 - Tunneling is slower than local connections because requests must be forwarded to a public URL.
-- Tunnel URLs are public and can be accessed by any device with a network connection. Expo CLI mitigates the risk of exposure by adding entropy to the beginning of the URL. Entropy can be reset by clearing the `.expo` directory in your project.
+- Tunnel URLs are public and can be accessed by any device with a network connection. Expo CLI mitigates the risk of exposure by adding entropy to the beginning of the URL. Entropy can be reset by clearing the **.expo** directory in your project.
 - Tunnels require a network connection on both devices, meaning this feature cannot be used with the `--offline` flag.
 
 Tunneling requires a third-party hosting service, this means it may sometimes experience intermittent issues like `ngrok tunnel took too long to connect` or `Tunnel connection has been closed. This is often related to intermittent connection problems with the Ngrok servers...`. Be sure to check for [Ngrok outages](https://status.ngrok.com/) before reporting an issue. Some Windows users have also reported needing to modify their antivirus settings to allow Ngrok to work correctly.
