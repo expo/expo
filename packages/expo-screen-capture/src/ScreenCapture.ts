@@ -13,6 +13,7 @@ import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags: Set<string> = new Set();
 
 const onScreenshotEventName = 'onScreenshot';
+const onScreenRecordingEventName = 'onScreenRecording';
 
 // @needsAudit
 /**
@@ -109,6 +110,24 @@ export function addScreenshotListener(listener: () => void): EventSubscription {
 
 // @needsAudit
 /**
+ * Adds a listener that will fire whenever the app starts or stops to be recorded.
+ * On Android, the `addScreenRecordingListener` method has no effect.
+ *
+ * @param listener The function that will be executed when the user takes a screen recording.
+ * This function accepts a single boolean argument that indicates whether the screen recording
+ * started or stopped.
+ * @platform ios 11+
+ * @return A `Subscription` object that you can use to unregister the listener, either by calling
+ * `remove()` or passing it to `removeScreenRecordingListener`.
+ */
+export function addScreenRecordingListener(
+  listener: (props: { isCaptured: boolean }) => void
+): EventSubscription {
+  return ExpoScreenCapture.addListener(onScreenRecordingEventName, listener);
+}
+
+// @needsAudit
+/**
  * Removes the subscription you provide, so that you are no longer listening for screenshots.
  * You can also call `remove()` on that `Subscription` object.
  *
@@ -126,6 +145,18 @@ export function addScreenshotListener(listener: () => void): EventSubscription {
  * ```
  */
 export function removeScreenshotListener(subscription: EventSubscription) {
+  subscription.remove();
+}
+
+// @needsAudit
+/**
+ * Removes the subscription you provide, so that you are no longer listening for screen recordings.
+ * You can also call `remove()` on that `Subscription` object.
+ *
+ * @param subscription Subscription returned by `addScreenRecordingListener`.
+ * @platform ios 11+
+ */
+export function removeScreenRecordingListener(subscription: EventSubscription) {
   subscription.remove();
 }
 

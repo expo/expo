@@ -25,6 +25,14 @@ describe('ScreenCapture methods are defined', () => {
   it('removeScreenshotListener is defined', async () => {
     expect(ScreenCapture.removeScreenshotListener).toBeDefined();
   });
+
+  it('addScreenRecordingListener is defined', async () => {
+    expect(ScreenCapture.addScreenRecordingListener).toBeDefined();
+  });
+
+  it('removeScreenRecordingListener is defined', async () => {
+    expect(ScreenCapture.removeScreenRecordingListener).toBeDefined();
+  });
 });
 
 describe('Test key functionality', () => {

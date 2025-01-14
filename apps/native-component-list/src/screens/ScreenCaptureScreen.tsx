@@ -1,23 +1,31 @@
 import * as ScreenCapture from 'expo-screen-capture';
 import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Platform, StyleSheet, Text, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 import TitleSwitch from '../components/TitledSwitch';
 
-function useScreenCapture(onCapture: () => void) {
+function useScreenCapture({
+  onScreenshot,
+  onScreenRecording,
+}: {
+  onScreenshot: () => void;
+  onScreenRecording: (props: { isCaptured: boolean }) => void;
+}) {
   const hasPermissions = async () => {
     const { status } = await ScreenCapture.requestPermissionsAsync();
     return status === 'granted';
   };
 
   React.useEffect(() => {
-    let listener: ScreenCapture.Subscription;
+    let screenshotListener: ScreenCapture.Subscription;
+    let screenRecordingListener: ScreenCapture.Subscription;
 
     const addListenerAsync = async () => {
       if (await hasPermissions()) {
-        listener = ScreenCapture.addScreenshotListener(onCapture);
+        screenshotListener = ScreenCapture.addScreenshotListener(onScreenshot);
+        screenRecordingListener = ScreenCapture.addScreenRecordingListener(onScreenRecording);
       } else {
         alert('Permissions needed to capture screenshot events are missing!');
       }
@@ -26,14 +34,21 @@ function useScreenCapture(onCapture: () => void) {
     addListenerAsync();
 
     return () => {
-      listener?.remove();
+      screenshotListener?.remove();
+      screenRecordingListener?.remove();
     };
   }, []);
 }
 
+type Timestamp = {
+  type: 'screenshot' | 'screen-recording';
+  timestamp: Date;
+  isCaptured?: boolean;
+};
+
 export default function ScreenCaptureScreen() {
   const [isEnabled, setEnabled] = React.useState(true);
-  const [timestamps, setTimestamps] = React.useState<Date[]>([]);
+  const [timestamps, setTimestamps] = React.useState<Timestamp[]>([]);
 
   React.useEffect(() => {
     if (isEnabled) {
@@ -43,7 +58,17 @@ export default function ScreenCaptureScreen() {
     }
   }, [isEnabled]);
 
-  useScreenCapture(() => setTimestamps((timestamps) => timestamps.concat([new Date()])));
+  useScreenCapture({
+    onScreenshot: () =>
+      setTimestamps((timestamps) =>
+        timestamps.concat([{ type: 'screenshot', timestamp: new Date() }])
+      ),
+    onScreenRecording: ({ isCaptured }) => {
+      setTimestamps((timestamps) =>
+        timestamps.concat([{ type: 'screen-recording', timestamp: new Date(), isCaptured }])
+      );
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -52,11 +77,24 @@ export default function ScreenCaptureScreen() {
         Take a screenshot or attempt to record the screen to test that the image is/isn't obscured.
       </Text>
       <HeadingText>Capture Timestamps</HeadingText>
-      <Text>Take a screenshot to test if the listener works.</Text>
+      {Platform.OS === 'ios' ? (
+        <Text>Take a screenshot or record the screen to test if the listener works.</Text>
+      ) : (
+        <Text>Take a screenshot to test if the listener works.</Text>
+      )}
       <FlatList
         data={timestamps}
-        keyExtractor={(item) => item.getTime() + '-'}
-        renderItem={({ item }) => <MonoText>{item.toLocaleTimeString()}</MonoText>}
+        keyExtractor={(item) => item.timestamp.getTime() + '-' + item.type}
+        renderItem={({ item }) => (
+          <MonoText>
+            {item.timestamp.toLocaleTimeString()} - {item.type}
+            {item.type === 'screen-recording'
+              ? item.isCaptured
+                ? ' - Started'
+                : ' - Stopped'
+              : ''}
+          </MonoText>
+        )}
       />
     </View>
   );

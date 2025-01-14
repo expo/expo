@@ -1,6 +1,7 @@
 import ExpoModulesCore
 
 let onScreenshotEventName = "onScreenshot"
+let onScreenRecordingEventName = "onScreenRecording"
 
 public final class ScreenCaptureModule: Module {
   private var isBeingObserved = false
@@ -10,7 +11,7 @@ public final class ScreenCaptureModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenCapture")
 
-    Events(onScreenshotEventName)
+    Events(onScreenshotEventName, onScreenRecordingEventName)
 
     OnCreate {
       let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
@@ -43,11 +44,27 @@ public final class ScreenCaptureModule: Module {
     let shouldListen = self.isBeingObserved
 
     if shouldListen && !isListening {
-      // swiftlint:disable:next line_length
-      NotificationCenter.default.addObserver(self, selector: #selector(self.listenForScreenCapture), name: UIApplication.userDidTakeScreenshotNotification, object: nil)
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.sendScreenshotEvent),
+      name: UIApplication.userDidTakeScreenshotNotification,
+      object: nil
+    )
+
+    if UIScreen.main.isCaptured {
+      self.sendScreenRecordingEvent()
+    }
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.sendScreenRecordingEvent),
+      name: UIScreen.capturedDidChangeNotification,
+      object: nil
+    )
       isListening = true
     } else if !shouldListen && isListening {
       NotificationCenter.default.removeObserver(self, name: UIApplication.userDidTakeScreenshotNotification, object: nil)
+      NotificationCenter.default.removeObserver(self, name: UIScreen.capturedDidChangeNotification, object: nil)
       isListening = false
     }
   }
@@ -64,9 +81,16 @@ public final class ScreenCaptureModule: Module {
   }
 
   @objc
-  func listenForScreenCapture() {
+  func sendScreenshotEvent() {
     sendEvent(onScreenshotEventName, [
       "body": nil
+    ])
+  }
+
+  @objc
+  func sendScreenRecordingEvent() {
+    sendEvent(onScreenRecordingEventName, [
+      "isCaptured": UIScreen.main.isCaptured
     ])
   }
 }

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add screen recording event listener. ([#33243](https://github.com/expo/expo/pull/33243) by [@gstj](https://github.com/gstj))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

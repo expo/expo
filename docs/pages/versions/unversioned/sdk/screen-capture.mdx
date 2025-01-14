@@ -128,6 +128,52 @@ export default function useScreenCaptureCallback() {
 
 </SnackInline>
 
+### Example: Screen recording events
+
+Screen recording detection is available on iOS 11 and newer. The API lets you detect when users start or stop recording your app's screen, allowing you to protect sensitive content.
+
+```jsx
+import * as ScreenCapture from 'expo-screen-capture';
+import { useEffect, StyleSheet } from 'react';
+
+export default function App() {
+  const [sensitiveContentVisible, setSensitiveContentVisible] = useState(true);
+
+  useEffect(() => {
+    const subscription = ScreenCapture.addScreenRecordingListener(({ isCaptured }) => {
+      if (isCaptured) {
+        // Hide sensitive content
+        setSensitiveContentVisible(false);
+      } else {
+        // Show sensitive content again
+        setSensitiveContentVisible(true);
+      }
+    });
+
+    // Clean up subscription when component unmounts
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      {sensitiveContentVisible && (
+        <Text>This is sensitive content. It will be hidden when screen recording starts.</Text>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
 ## API
 
 ```js
