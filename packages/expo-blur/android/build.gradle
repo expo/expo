@@ -19,5 +19,5 @@ android {
 }
 
 dependencies {
-  implementation 'com.github.Dimezis:BlurView:version-2.0.3'
+  implementation 'com.github.Dimezis:BlurView:version-2.0.6'
 }
