@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const DOCS_DIR = 'pages';
+const OUTPUT_FILENAME = 'llms.txt';
 const TITLE = 'Expo Documentation';
 const DESCRIPTION =
   'Expo is an open-source React Native framework for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app such as live updates, instantly sharing your app, and web support. The company behind Expo also offers Expo Application Services (EAS), which are deeply integrated cloud services for Expo and React Native apps.';
@@ -188,9 +189,9 @@ async function generateLlmsTxt() {
       }
     });
 
-    const outputPath = path.join(process.cwd(), 'public', 'llms.txt');
+    const outputPath = path.join(process.cwd(), 'public', OUTPUT_FILENAME);
     fs.writeFileSync(outputPath, markdownContent);
-    console.log('Successfully generated llms.txt.');
+    console.log(`Successfully generated ${OUTPUT_FILENAME}`);
     process.exit(0);
   } catch (error) {
     console.error('Error generating llms.txt:', error);
