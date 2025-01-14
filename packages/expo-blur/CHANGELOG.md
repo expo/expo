@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Bump the Dimezis/BlurView dependency to the latest patch version. ([#34012](https://github.com/expo/expo/pull/34012) by [@jakobsen](https://github.com/jakobsen))
+
 ### 💡 Others
 
 ## 14.0.1 — 2024-10-22
