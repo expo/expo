@@ -1,4 +1,5 @@
 import fs from 'fs';
+import startCase from 'lodash/startCase.js';
 import path from 'path';
 
 const DOCS_DIR = 'pages';
@@ -119,6 +120,71 @@ function shouldIncludePath(filePath) {
   return true;
 }
 
+// Helper functions moved before they're used
+function formatTitle(urlPath) {
+  const parts = urlPath.split('/').filter(Boolean);
+  if (parts.length === 0) return 'Home';
+
+  const lastPart = parts[parts.length - 1];
+  return lastPart
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function formatSectionTitle(section) {
+  const specialCases = {
+    'get-started': 'Get Started',
+    'core-concepts': 'Core Concepts',
+    eas: 'EAS',
+    'general-faq': 'FAQs',
+    'expo-modules': 'Expo Modules API',
+    'push-notifications': 'Push Notifications',
+  };
+
+  if (specialCases[section]) {
+    return specialCases[section];
+  }
+
+  return startCase(section);
+}
+
+// Moved walkDir outside of generateLlmsTxt
+function walkDir(currentPath, depth = 0, urlsBySection) {
+  const files = fs.readdirSync(currentPath);
+
+  for (const file of files) {
+    const filePath = path.join(currentPath, file);
+    const stat = fs.statSync(filePath);
+
+    if (!shouldIncludePath(filePath)) {
+      continue;
+    }
+
+    if (stat.isDirectory()) {
+      walkDir(filePath, depth + 1, urlsBySection);
+    } else if (file.endsWith('.mdx')) {
+      const section = getSectionForPath(filePath);
+      const { title, description } = readMDXFile(filePath);
+
+      const urlPath = path
+        .relative(DOCS_DIR, filePath)
+        .replace(/\.mdx$/, '')
+        .replace(/index$/, '')
+        .replace(/\\/g, '/');
+
+      const url = `https://docs.expo.dev/${urlPath}`;
+
+      urlsBySection[section].push({
+        title: title || formatTitle(urlPath),
+        url,
+        description,
+        depth: depth + 1,
+      });
+    }
+  }
+}
+
 async function generateLlmsTxt() {
   try {
     let markdownContent = `# ${TITLE}\n\n${DESCRIPTION}\n\n`;
@@ -129,43 +195,7 @@ async function generateLlmsTxt() {
     });
     urlsBySection.other = [];
 
-    // eslint-disable-next-line no-inner-declarations
-    function walkDir(currentPath, depth = 0) {
-      const files = fs.readdirSync(currentPath);
-
-      for (const file of files) {
-        const filePath = path.join(currentPath, file);
-        const stat = fs.statSync(filePath);
-
-        if (!shouldIncludePath(filePath)) {
-          continue;
-        }
-
-        if (stat.isDirectory()) {
-          walkDir(filePath, depth + 1);
-        } else if (file.endsWith('.mdx')) {
-          const section = getSectionForPath(filePath);
-          const { title, description } = readMDXFile(filePath);
-
-          const urlPath = path
-            .relative(DOCS_DIR, filePath)
-            .replace(/\.mdx$/, '')
-            .replace(/index$/, '')
-            .replace(/\\/g, '/');
-
-          const url = `https://docs.expo.dev/${urlPath}`;
-
-          urlsBySection[section].push({
-            title: title || formatTitle(urlPath),
-            url,
-            description,
-            depth: depth + 1,
-          });
-        }
-      }
-    }
-
-    walkDir(DOCS_DIR);
+    walkDir(DOCS_DIR, 0, urlsBySection);
 
     Object.keys(SECTIONS).forEach(section => {
       if (urlsBySection[section].length > 0) {
@@ -197,38 +227,6 @@ async function generateLlmsTxt() {
     console.error('Error generating llms.txt:', error);
     process.exit(1);
   }
-}
-
-// Helper functions
-function formatTitle(urlPath) {
-  const parts = urlPath.split('/').filter(Boolean);
-  if (parts.length === 0) return 'Home';
-
-  const lastPart = parts[parts.length - 1];
-  return lastPart
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
-function formatSectionTitle(section) {
-  const specialCases = {
-    'get-started': 'Get Started',
-    'core-concepts': 'Core Concepts',
-    eas: 'EAS',
-    'general-faq': 'General FAQ',
-    'expo-modules': 'Expo Modules API',
-    'push-notifications': 'Push Notifications',
-  };
-
-  if (specialCases[section]) {
-    return specialCases[section];
-  }
-
-  return section
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
 }
 
 generateLlmsTxt();
