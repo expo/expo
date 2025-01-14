@@ -3,6 +3,9 @@ import path from 'path';
 
 const DOCS_DIR = 'pages';
 const OUTPUT_FILENAME = 'llms-full.txt';
+const TITLE = 'Expo Documentation';
+const DESCRIPTION =
+  'Expo is an open-source React Native framework for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app such as live updates, instantly sharing your app, and web support. The company behind Expo also offers Expo Application Services (EAS), which are deeply integrated cloud services for Expo and React Native apps.';
 
 const SECTIONS = {
   'get-started': ['get-started'],
@@ -133,7 +136,7 @@ function formatSectionTitle(section) {
 
 async function generateLlmsFullTxt() {
   try {
-    let fullContent = `# Expo Documentation\n\n`;
+    let fullContent = `# ${TITLE}\n\n${DESCRIPTION}\n\n`;
     const contentBySection = {};
 
     Object.keys(SECTIONS).forEach(section => {
