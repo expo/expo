@@ -6,13 +6,17 @@ import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
 
-private const val defaultCompileSdkVersion = 34
-private const val defaultMinSdkVersion = 23
+private const val defaultCompileSdkVersion = 35
+private const val defaultMinSdkVersion = 24
 private const val defaultTargetSdkVersion = 34
 
 internal fun Project.applyDefaultPlugins() {
-  plugins.apply("com.android.library")
-  plugins.apply("kotlin-android")
+  if (!plugins.hasPlugin("com.android.library")) {
+    plugins.apply("com.android.library")
+  }
+  if (!plugins.hasPlugin("kotlin-android")) {
+    plugins.apply("kotlin-android")
+  }
 }
 
 internal fun Project.applyKotlin(kotlinVersion: String, kspVersion: String) {
