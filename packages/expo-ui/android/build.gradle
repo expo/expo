@@ -6,6 +6,18 @@ version = '0.1.0'
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
 applyKotlinExpoModulesCorePlugin()
+
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
 useCoreDependencies()
 useExpoPublishing()
 
@@ -37,21 +49,19 @@ android {
     versionCode 1
     versionName "0.1.0"
   }
-  lintOptions {
-    abortOnError false
-  }
   buildFeatures {
     compose true
   }
-  composeOptions {
-    kotlinCompilerExtensionVersion = "1.5.14"
+  lintOptions {
+    abortOnError false
   }
 }
 
 dependencies {
-  implementation 'androidx.compose.ui:ui-android:1.7.5'
+  implementation 'androidx.compose.foundation:foundation-android:1.7.6'
+  implementation 'androidx.compose.ui:ui-android:1.7.6'
   implementation "androidx.compose.material3:material3:1.3.1"
-  implementation 'androidx.lifecycle:lifecycle-runtime:2.5.1'
+  implementation 'androidx.lifecycle:lifecycle-runtime:2.8.7'
   implementation 'androidx.fragment:fragment-ktx:1.8.5'
   implementation 'androidx.compose.material3:material3-android:1.3.1'
 }
