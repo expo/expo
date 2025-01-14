@@ -8,7 +8,7 @@ import org.gradle.internal.extensions.core.extra
 
 private const val defaultCompileSdkVersion = 35
 private const val defaultMinSdkVersion = 24
-private const val defaultTargetSdkVersion = 34
+private const val defaultTargetSdkVersion = 35
 
 internal fun Project.applyDefaultPlugins() {
   if (!plugins.hasPlugin("com.android.library")) {
