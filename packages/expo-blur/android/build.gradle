@@ -1,5 +1,13 @@
 apply plugin: 'com.android.library'
 
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
+
 try {
   apply plugin: 'expo-module-gradle-plugin'
 } catch (e) {
@@ -7,11 +15,7 @@ try {
     throw e
   }
 
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-  useDefaultAndroidSdkVersions()
-  useExpoPublishing()
+  useLegacyExpoModulesCorePlugin()
 }
 
 group = 'host.exp.exponent'
