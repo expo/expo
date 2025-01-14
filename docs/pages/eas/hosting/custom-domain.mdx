@@ -16,7 +16,7 @@ Each project can have exactly one custom domain, which is assigned to the produc
 
 <Collapsible summary="An EAS Hosting project with a production deployment">
 
-The custom domain will always lead to the production deployment. Therefore in order to set this up, you will need a deployment that's been promoted to production.
+The custom domain will always load the production deployment. Therefore, in order to add a custom doamin to your project, you will need a deployment that's been promoted to production first.
 
 </Collapsible>
 
@@ -28,20 +28,20 @@ You will need to own a domain name you want to use.
 
 ## Assigning a custom domain
 
-1. In your project's dashboard on expo.dev, navigate to [Hosting Settings](https://expo.dev/accounts/[accountName]/projects/[projectName]/hosting/settings).
-2. If you do not have a production deployment, you'll be prompted create one first.
-3. Under **Custom domain**, enter the custom domain to route your project to. Both apex domains and subdomains are supported, so if you own `example.com`, you can select:
+1. In your project's dashboard, navigate to [Hosting settings](https://expo.dev/accounts/[accountName]/projects/[projectName]/hosting/settings).
+2. If you do not have a production deployment, you'll be prompted to assign one first.
+3. Under **Custom domain**, enter the custom domain you'd like to set up. Both apex domains and subdomains are supported. If you own `example.com`, you can select:
 
    - `example.com`: apex domain
    - `anything.example.com`: a subdomain
 
-4. Now you'll be prompted to fill out some DNS records with your DNS provider:
+4. Next, you'll be prompted to fill out some DNS records with your DNS provider:
 
-   - **Verification**: This proves you own the domain
-   - **SSL**: Setting up SSL certificates for HTTPS traffic
-   - **CNAME** (subdomains)/**A-record** (apex domains): To switch over the domain to point to your production deployment
+   - **Verification**: to prove you own the domain
+   - **SSL**: to set up SSL certificates
+   - **CNAME** (subdomains) or **A record** (apex domains): to point the domain at your production deployment
 
-5. Press the refresh button until all steps have turned green. Depending on your DNS provider, this usually takes a couple of minutes.
+5. Press the refresh button until all checks pass. Depending on your DNS provider, this step usually only takes a couple of minutes.
 
 > If you require for the domain name switchover to be **zero downtime**, it's important to fill out these records one by one in the order they are presented in the table.
 > That is, add the **TXT** record for verification, press the refresh button until the UI says verification is successful, then proceed to the next one.
