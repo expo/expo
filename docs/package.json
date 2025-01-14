@@ -66,7 +66,6 @@
     "remark-mdx-disable-explicit-jsx": "^0.1.0",
     "remark-mdx-frontmatter": "^5.0.0",
     "tippy.js": "^6.3.7",
-    "xml2js": "^0.6.2",
     "yet-another-react-lightbox": "^3.21.7"
   },
   "devDependencies": {
@@ -87,7 +86,6 @@
     "@types/prismjs": "^1.26.5",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@types/xml2js": "^0",
     "@vvago/vale": "^3.9.2",
     "acorn": "^8.14.0",
     "autoprefixer": "^10.4.20",
