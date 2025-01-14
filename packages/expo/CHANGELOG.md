@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Replace inferred rest spread arguments types (and other inferred types) for changes in newer TypeScript versions. ([#34132](https://github.com/expo/expo/pull/34132) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 52.0.25 — 2025-01-10
