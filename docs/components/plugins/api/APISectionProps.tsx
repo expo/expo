@@ -149,7 +149,7 @@ export const renderProp = (
             <MONOSPACE>
               {param.name}: {resolveTypeName(param.type, sdkVersion)}
             </MONOSPACE>
-            <APICommentTextBlock comment={param.comment} emptyCommentFallback="No description" />
+            <APICommentTextBlock comment={param.comment} />
           </div>
         ))}
     </div>
