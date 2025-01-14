@@ -9,6 +9,8 @@ import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
 
 Expo Router enables you to write server code for all platforms, right in your **app** directory.
 
@@ -198,6 +200,19 @@ Route handlers are executed in a sandboxed environment that is isolated from the
 
 ## Deployment
 
+When you're ready to deploy to production, simply run [`npx expo export`](/more/expo-cli#exporting) to create the server bundle in the `dist` folder. This server can be tested locally with `npx expo serve` (Expo SDK 52), visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
+
+You can deploy the server for production using [EAS Hosting](/eas/hosting/get-started) or another third-party service.
+
+<BoxLink
+  title="Deploy instantly with EAS"
+  description="EAS Hosting is the best way to deploy your Expo API routes and servers."
+  href="/eas/hosting/get-started"
+  Icon={Rocket02Icon}
+/>
+
+## Hosting on third-party services
+
 > **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
 
 Every cloud hosting provider needs a custom adapter to support the Expo server runtime. The following third-party providers have unofficial or experimental support from the Expo team.
@@ -209,10 +224,6 @@ Before deploying to these providers, it may be good to be familiar with the basi
 - The `@expo/server` package is included with `expo` and delegates requests to the server routes.
 - `@expo/server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
-
-### Testing Locally
-
-You can test the local production server in Expo SDK 52 by running `npx expo serve`. This will start the production server locally and serve the static files and API routes. Visit the URL in a web browser or create a native build with the origin set to the local server URL.
 
 ### Express
 
