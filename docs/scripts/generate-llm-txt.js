@@ -10,14 +10,15 @@ const DESCRIPTION =
 const SECTIONS = {
   'get-started': ['get-started'],
   'core-concepts': ['core-concepts'],
-  'general-faq': ['faq'],
   develop: ['develop', 'user-interface', 'config-plugins', 'debugging'],
   deploy: ['deploy'],
   review: ['review'],
   guides: ['guides', 'workflow', 'troubleshooting'],
   learn: ['tutorial', 'additional-resources'],
   reference: ['versions', 'technical-specs', 'more'],
+  'push-notifications': ['push-notifications'],
   router: ['router'],
+  'expo-modules': ['modules', 'module-api'],
   sdk: ['versions/latest/sdk'],
   eas: [
     'eas',
@@ -33,8 +34,7 @@ const SECTIONS = {
     'billing',
     'accounts',
   ],
-  'expo-modules': ['modules', 'module-api'],
-  'push-notifications': ['push-notifications'],
+  'general-faq': ['faq'],
 };
 
 function extractFrontmatter(content) {
