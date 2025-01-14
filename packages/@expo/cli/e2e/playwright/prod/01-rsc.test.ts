@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import fs from 'node:fs';
 import path from 'node:path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
@@ -39,12 +38,6 @@ test.describe(inputDir, () => {
       },
     });
     console.timeEnd('expo export');
-
-    // Duplicate the index.html file for an SPA-style export.
-    fs.copyFileSync(
-      path.join(projectRoot, inputDir, 'server/index.html'),
-      path.join(projectRoot, inputDir, 'client/second.html')
-    );
 
     console.time('expo serve');
     await expoServe.startAsync([inputDir]);
@@ -130,6 +123,16 @@ test.describe(inputDir, () => {
       // Value should match the env var that we pass to the server after the build was completed, this will only work with dynamic rendering.
       'Secret: test-secret-dynamic'
     );
+  });
+
+  test('has static public file', async ({ page }) => {
+    // Navigate to the app
+    const res = await page.goto(new URL('/_static-file.txt', expoServe.url).href);
+
+    const status = await res?.status();
+    expect(status).toBe(200);
+    const text = await res?.text();
+    expect(text).toBe('hello');
   });
 
   test('has dynamic headers', async ({ page }) => {
