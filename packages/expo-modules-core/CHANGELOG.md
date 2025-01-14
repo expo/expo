@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Allowed extending `process.env` types. ([#34112](https://github.com/expo/expo/pull/34112) by [@kudo](https://github.com/kudo))
+
 ## 2.1.3 — 2025-01-10
 
 _This version does not introduce any user-facing changes._
