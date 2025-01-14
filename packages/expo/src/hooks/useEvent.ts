@@ -101,7 +101,7 @@ export function useEventListener<
   listenerRef.current = listener;
 
   useEffect(() => {
-    const callback = (...args) => listenerRef.current(...args);
+    const callback = (...args: any[]) => listenerRef.current(...args);
     const subscription = eventEmitter.addListener<TEventName>(
       eventName,
       callback as TEventsMap[TEventName]
