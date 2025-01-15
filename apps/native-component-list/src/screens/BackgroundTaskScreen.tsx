@@ -72,7 +72,7 @@ export default function BackgroundTaskScreen() {
     <View style={styles.screen}>
       <View style={styles.textContainer}>
         <Text>
-          Background Task Service:{' '}
+          Background Task Service:
           <Text style={styles.boldText}>
             {status ? BackgroundTask.BackgroundTaskStatus[status] : null}
           </Text>
