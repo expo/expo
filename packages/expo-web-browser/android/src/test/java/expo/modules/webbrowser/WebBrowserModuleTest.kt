@@ -52,8 +52,6 @@ private interface WebBrowserModuleTestInterface {
   fun warmUpAsync(browserPackage: String?): Bundle
 
   fun coolDownAsync(browserPackage: String?): Bundle
-
-  fun mayInitWithUrlAsync(url: String, browserPackage: String?): Bundle
 }
 
 private inline fun withWebBrowserMock(

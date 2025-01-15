@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import android.net.Uri
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
+import androidx.core.net.toUri
 import expo.modules.core.errors.CurrentActivityNotFoundException
 import expo.modules.kotlin.AppContext
 
@@ -23,7 +23,8 @@ internal class CustomTabsActivitiesHelper(
    * @throws CurrentActivityNotFoundException
    * @throws PackageManagerNotFoundException
    */
-  fun canResolveIntent(intent: Intent): Boolean = getResolvingActivities(intent).isNotEmpty()
+  fun canResolveIntent(customTabsIntent: CustomTabsIntent): Boolean =
+    getResolvingActivities(customTabsIntent).isNotEmpty()
 
   /**
    * @throws PackageManagerNotFoundException
@@ -60,7 +61,7 @@ internal class CustomTabsActivitiesHelper(
    */
   val defaultCustomTabsResolvingActivity: String?
     get() {
-      val info = packageManager.resolveActivity(createDefaultCustomTabsIntent(), 0)
+      val info = packageManager.resolveActivity(createDefaultCustomTabsIntent().intent, 0)
       return info?.activityInfo?.packageName
     }
 
@@ -79,8 +80,8 @@ internal class CustomTabsActivitiesHelper(
    * @throws CurrentActivityNotFoundException
    * @throws PackageManagerNotFoundException
    */
-  private fun getResolvingActivities(intent: Intent): List<ResolveInfo> {
-    return packageManager.queryIntentActivities(intent, 0)
+  private fun getResolvingActivities(customTabsIntent: CustomTabsIntent): List<ResolveInfo> {
+    return packageManager.queryIntentActivities(customTabsIntent.intent, 0)
   }
 
   /**
@@ -107,10 +108,10 @@ private inline fun <T, R> Collection<T>.mapToDistinctArrayList(mapper: (T) -> R)
   return ArrayList(resultSet)
 }
 
-private fun createDefaultCustomTabsIntent(): Intent {
+private fun createDefaultCustomTabsIntent(): CustomTabsIntent {
   val customTabsIntent = CustomTabsIntent.Builder().build()
-  return customTabsIntent.intent.apply {
-    data = Uri.parse(DUMMY_URL)
+  return customTabsIntent.apply {
+    intent.data = DUMMY_URL.toUri()
   }
 }
 

@@ -88,7 +88,7 @@ class WebBrowserModule : Module() {
     AsyncFunction("openBrowserAsync") { url: String, options: OpenBrowserOptions ->
       val tabsIntent = createCustomTabsIntent(options)
 
-      if (!customTabsResolver.canResolveIntent(tabsIntent.intent)) {
+      if (!customTabsResolver.canResolveIntent(tabsIntent)) {
         throw NoMatchingActivityException()
       }
 
