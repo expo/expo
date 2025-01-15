@@ -78,12 +78,7 @@ function getSectionForPath(filePath) {
   const baseFilename = path.basename(filePath, '.mdx');
   if (baseFilename === 'core-concepts') return 'core-concepts';
   if (baseFilename === 'faq') return 'faq';
-
-  // Handle "get-started" section because there are
-  // multiple files that includes "/get-started/"
-  if (pathParts[0] === 'get-started') {
-    return 'get-started';
-  }
+  if (pathParts[0] === 'get-started') return 'get-started';
 
   for (const [section, patterns] of Object.entries(SECTIONS)) {
     for (const pattern of patterns) {
@@ -119,28 +114,19 @@ function shouldIncludePath(filePath) {
 
 function formatTitle(urlPath) {
   const parts = urlPath.split('/').filter(Boolean);
-  if (parts.length === 0) return 'Home';
-
-  const lastPart = parts.at(-1);
-  return startCase(lastPart);
+  return parts.length === 0 ? 'Home' : startCase(parts.at(-1));
 }
 
 function formatSectionTitle(section) {
   const specialCases = {
     'get-started': 'Get Started',
     'core-concepts': 'Core Concepts',
+    eas: 'EAS',
     'expo-modules': 'Expo Modules API',
     'push-notifications': 'Push Notifications',
-    eas: 'EAS',
-    sdk: 'SDK',
     faq: 'FAQs',
   };
-
-  if (specialCases[section]) {
-    return specialCases[section];
-  }
-
-  return startCase(section);
+  return specialCases[section] || startCase(section);
 }
 
 function walkDir(urlsBySection, currentPath = DOCS_DIR, depth = 0) {
@@ -182,11 +168,37 @@ function walkDir(urlsBySection, currentPath = DOCS_DIR, depth = 0) {
   }
 }
 
+function generateMarkdownContent({ title, description, sections, urlsBySection }) {
+  let markdownContent = `# ${title}\n\n${description}\n\n`;
+
+  Object.keys(sections).forEach(section => {
+    if (urlsBySection[section]?.length > 0) {
+      const sectionTitle = formatSectionTitle(section);
+      markdownContent += `## ${sectionTitle}\n\n`;
+
+      urlsBySection[section]
+        .sort((a, b) => {
+          if (a.depth !== b.depth) return a.depth - b.depth;
+          return a.title.localeCompare(b.title);
+        })
+        .forEach(({ title, url, description, depth }, index, array) => {
+          const indent = '  '.repeat(Math.max(0, depth - 3));
+          markdownContent += `${indent}- [${title}](${url})`;
+          if (description) {
+            markdownContent += `: ${description}`;
+          }
+          markdownContent += index < array.length - 1 ? '\n' : '';
+        });
+      markdownContent += '\n\n';
+    }
+  });
+
+  return markdownContent;
+}
+
 async function generateLlmsTxt() {
   try {
-    let markdownContent = `# ${TITLE}\n\n${DESCRIPTION}\n\n`;
     const urlsBySection = {};
-
     Object.keys(SECTIONS).forEach(section => {
       urlsBySection[section] = [];
     });
@@ -194,30 +206,15 @@ async function generateLlmsTxt() {
 
     walkDir(urlsBySection);
 
-    Object.keys(SECTIONS).forEach(section => {
-      if (urlsBySection[section].length > 0) {
-        const sectionTitle = formatSectionTitle(section);
-        markdownContent += `## ${sectionTitle}\n\n`;
-
-        urlsBySection[section]
-          .sort((a, b) => {
-            if (a.depth !== b.depth) return a.depth - b.depth;
-            return a.title.localeCompare(b.title);
-          })
-          .forEach(({ title, url, description, depth }, index, array) => {
-            const indent = '  '.repeat(Math.max(0, depth - 3));
-            markdownContent += `${indent}- [${title}](${url})`;
-            if (description) {
-              markdownContent += `: ${description}`;
-            }
-            markdownContent += index < array.length - 1 ? '\n' : '';
-          });
-        markdownContent += '\n\n';
-      }
+    const markdownContent = generateMarkdownContent({
+      title: TITLE,
+      description: DESCRIPTION,
+      sections: SECTIONS,
+      urlsBySection,
     });
 
     const outputPath = path.join(process.cwd(), 'public', OUTPUT_FILENAME);
-    fs.writeFileSync(outputPath, markdownContent);
+    await fs.promises.writeFile(outputPath, markdownContent);
     console.log(`Successfully generated ${OUTPUT_FILENAME}`);
     process.exit(0);
   } catch (error) {
