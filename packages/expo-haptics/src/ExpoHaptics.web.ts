@@ -3,7 +3,7 @@ import { NotificationFeedbackType, ImpactFeedbackStyle } from './Haptics.types';
 /**
  * The vibrate pattern holds an array of values describes alternating periods in which the device is
  * vibrating and not vibrating. Each value in the array is converted to an integer, then interpreted
- * alternately as the number of milliseconds the device should vibrate and the number of
+ * alternately as the duration of milliseconds the device should and should not vibrate.
  * milliseconds it should not be vibrating.
  */
 const vibrationPatterns: Record<
