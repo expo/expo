@@ -9,6 +9,11 @@
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 #import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
 
+// TODO remove the if when 76 is not supported, or rather remove the EXAppDelegateWrapper because it's deprecated
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
+#endif
+
 @interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
 @end
 
@@ -46,6 +51,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+	self.dependencyProvider = [RCTAppDependencyProvider new];
+#endif
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   return [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
 }
@@ -74,7 +82,10 @@
 
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-  return @{};
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+	return self.dependencyProvider.thirdPartyFabricComponents
+#endif
+	return @{};
 }
 
 #pragma mark - RCTHostDelegate
