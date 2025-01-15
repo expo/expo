@@ -1,18 +1,24 @@
 import { NotificationFeedbackType, ImpactFeedbackStyle } from './Haptics.types';
 
+/**
+ * The vibrate pattern holds an array of values describes alternating periods in which the device is
+ * vibrating and not vibrating. Each value in the array is converted to an integer, then interpreted
+ * alternately as the number of milliseconds the device should vibrate and the number of
+ * milliseconds it should not be vibrating.
+ */
 const vibrationPatterns: Record<
   NotificationFeedbackType | ImpactFeedbackStyle | 'selection',
   VibratePattern
 > = {
-  [NotificationFeedbackType.Success]: [50],
-  [NotificationFeedbackType.Warning]: [50, 50, 50],
-  [NotificationFeedbackType.Error]: [200, 100, 200],
-  [ImpactFeedbackStyle.Light]: [30],
+  [NotificationFeedbackType.Success]: [40, 100, 40],
+  [NotificationFeedbackType.Warning]: [50, 100, 50],
+  [NotificationFeedbackType.Error]: [60, 100, 60, 100, 60],
+  [ImpactFeedbackStyle.Light]: [40],
   [ImpactFeedbackStyle.Medium]: [50],
-  [ImpactFeedbackStyle.Heavy]: [80],
-  [ImpactFeedbackStyle.Soft]: [20],
-  [ImpactFeedbackStyle.Rigid]: [100],
-  selection: [30],
+  [ImpactFeedbackStyle.Heavy]: [60],
+  [ImpactFeedbackStyle.Soft]: [35],
+  [ImpactFeedbackStyle.Rigid]: [45],
+  selection: [50],
 };
 
 function isVibrationAvailable(): boolean {
