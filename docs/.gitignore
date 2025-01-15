@@ -23,3 +23,6 @@ out
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# generated file(s) for llms
+public/llms.txt
