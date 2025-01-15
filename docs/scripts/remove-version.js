@@ -34,8 +34,8 @@ const run = () => {
     if (fs.pathExistsSync(pagesPath)) {
       fs.rmSync(pagesPath, { recursive: true });
     }
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
   }
 
   console.log(`🎉 SDK ${version} files have been removed successfully!`);
