@@ -4,6 +4,7 @@ import android.view.View
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.tracing.trace
+import expo.modules.kotlin.views.ViewManagerDefinition
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,12 +64,17 @@ class ModuleRegistry(
 
   fun <T : View> getModuleHolder(viewClass: Class<T>): ModuleHolder<*>? {
     return registry.firstNotNullOfOrNull { (_, holder) ->
-      if (holder.definition.viewManagerDefinition?.viewType == viewClass) {
+      val definition = holder.definition.viewManagerDefinitions.values.find { it.viewType == viewClass }
+      if (definition != null) {
         holder
       } else {
         null
       }
     }
+  }
+
+  fun <T : View> getViewDefinition(holder: ModuleHolder<*>, viewClass: Class<T>): ViewManagerDefinition? {
+    return holder.definition.viewManagerDefinitions.values.find { it.viewType == viewClass }
   }
 
   /**

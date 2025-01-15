@@ -6,6 +6,7 @@ import com.facebook.react.uimanager.ViewManager
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
+import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.views.GroupViewManagerWrapper
 import expo.modules.kotlin.views.SimpleViewManagerWrapper
@@ -42,25 +43,33 @@ class KotlinInteropModuleRegistry(
   fun exportViewManagers(): List<ViewManager<*, *>> =
     trace("KotlinInteropModuleRegistry.exportViewManagers") {
       registry
-        .filter { it.definition.viewManagerDefinition != null }
-        .map {
-          val wrapperDelegate = ViewManagerWrapperDelegate(it)
-          when (it.definition.viewManagerDefinition!!.getViewManagerType()) {
-            ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(wrapperDelegate)
-            ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
+        .flatMap { module ->
+          module.definition.viewManagerDefinitions.map {
+            val wrapperDelegate = ViewManagerWrapperDelegate(module, it.value, if(it.key == DEFAULT_MODULE_VIEW) module.name else null)
+            when (it.value.getViewManagerType()) {
+              ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(wrapperDelegate)
+              ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
+            }
           }
         }
     }
 
   fun viewManagersMetadata(): Map<String, Map<String, Any>> =
     trace("KotlinInteropModuleRegistry.viewManagersMetadata") {
-      registry
-        .filter { it.definition.viewManagerDefinition != null }
-        .associate { holder ->
-          holder.name to mapOf(
-            "propsNames" to (holder.definition.viewManagerDefinition?.propsNames ?: emptyList())
-          )
-        }
+      val result = registry.flatMap { module ->
+          module.definition.viewManagerDefinitions.map {
+            if (it.key == DEFAULT_MODULE_VIEW) {
+              module.name to mapOf(
+                "propsNames" to it.value.propsNames
+              )
+            } else {
+              "${module.name}_${it.value.name}" to mapOf(
+                "propsNames" to it.value.propsNames
+              )
+            }
+          }
+        }.toMap()
+      return@trace result
     }
 
   fun extractViewManagersDelegateHolders(viewManagers: List<ViewManager<*, *>>): List<ViewWrapperDelegateHolder> =
