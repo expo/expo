@@ -72,6 +72,12 @@ To configure an Android or an iOS project for EAS Build, run the following comma
 
 To learn more about what happens behind the scenes, see [build configuration process reference](/build-reference/build-configuration).
 
+For development, we recommend creating a [development build](/develop/development-builds/introduction/) which is a debug build of your app and contains [`expo-dev-client`](/versions/latest/sdk/dev-client/) library. It helps you iterate as quickly as possible and provides a more flexible, reliable, and complete development environment. To install the library, run the following command:
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+> **Note:** If you have created your project with `npx react-native`, your project requires further configuration after installing this library. See steps 1 and 2 from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
+
 Additional configuration may be required for some scenarios:
 
 - Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables).
@@ -86,7 +92,7 @@ Additional configuration may be required for some scenarios:
 
 ### Build for Android Emulator/device or iOS Simulator
 
-The easiest way to try out EAS Build is to create a build that you can run on your Android device/emulator or iOS Simulator. It's quicker than uploading it to a store, and you don't need store developer membership accounts. If you'd like to try this, read about [creating an installable APK for Android](/build-reference/apk) and [creating a simulator build for iOS](/build-reference/simulators).
+The easiest way to try out EAS Build is to create a build that you can run on your Android device/emulator or iOS Simulator. It's quicker than uploading it to a store, and you don't need store developer membership accounts. If you'd like to try this, read about [creating an installable APK for Android](/tutorial/eas/android-development-build/) and [creating a simulator build for iOS](/tutorial/eas/ios-development-build-for-simulators/).
 
 ### Build for app stores
 
