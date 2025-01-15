@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withWebBrowserAndroid = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
 const codeMod_1 = require("@expo/config-plugins/build/android/codeMod");
 const generateCode_1 = require("@expo/config-plugins/build/utils/generateCode");
+const config_plugins_1 = require("expo/config-plugins");
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const withWebBrowserAndroid = (config) => {
