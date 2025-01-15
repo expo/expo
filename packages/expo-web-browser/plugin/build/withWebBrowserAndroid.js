@@ -41,9 +41,7 @@ function addActivityToManifest(config) {
                 },
             ],
         };
-        if (!application?.activity?.includes(launcherActivity)) {
-            application?.activity?.push(launcherActivity);
-        }
+        application?.activity?.push(launcherActivity);
         return config;
     });
 }

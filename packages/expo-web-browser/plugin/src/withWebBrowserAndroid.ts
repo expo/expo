@@ -54,10 +54,7 @@ function addActivityToManifest(config: ExpoConfig) {
       ],
     };
 
-    if (!application?.activity?.includes(launcherActivity)) {
-      application?.activity?.push(launcherActivity);
-    }
-
+    application?.activity?.push(launcherActivity);
     return config;
   });
 }
