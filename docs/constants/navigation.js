@@ -1,8 +1,8 @@
 import frontmatter from 'front-matter';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { URL, fileURLToPath } from 'node:url';
 import { u as make } from 'unist-builder';
-import { URL, fileURLToPath } from 'url';
 
 import { VERSIONS } from './versions.js';
 
@@ -685,7 +685,7 @@ export default {
 // --- MDX methods ---
 
 function makeSection(name, children = [], props = {}) {
-  return make('section', { name, ...{ expanded: false, ...props } }, children);
+  return make('section', { name, expanded: false, ...props }, children);
 }
 
 function makeGroup(name, children = [], props = {}) {

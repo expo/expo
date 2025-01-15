@@ -9,6 +9,8 @@ import remarkMdxDisableExplicitJsx from 'remark-mdx-disable-explicit-jsx';
 import remarkMDXFrontmatter from 'remark-mdx-frontmatter';
 import semver from 'semver';
 
+import packageJson from '~/package.json';
+
 import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
@@ -16,8 +18,6 @@ import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
 import navigation from './public/static/constants/navigation.json';
 import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
-
-import packageJson from '~/package.json';
 
 const newestVersion =
   'betaVersion' in packageJson ? (packageJson?.betaVersion as string) : packageJson.version;

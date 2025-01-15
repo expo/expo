@@ -165,7 +165,9 @@ export function parseValue(value: string) {
 }
 
 export function findNodeByPropInChildren<T>(element: ReactElement, propToFind: string): T | null {
-  if (!element || typeof element !== 'object') return null;
+  if (!element || typeof element !== 'object') {
+    return null;
+  }
 
   if (element.props?.[propToFind]) {
     return element.props;
@@ -177,7 +179,9 @@ export function findNodeByPropInChildren<T>(element: ReactElement, propToFind: s
     if (Array.isArray(children)) {
       for (const child of Children.toArray(children)) {
         const allProps = findNodeByPropInChildren<T>(child as ReactElement, propToFind);
-        if (allProps) return allProps;
+        if (allProps) {
+          return allProps;
+        }
       }
     } else {
       return findNodeByPropInChildren<T>(children as ReactElement, propToFind);

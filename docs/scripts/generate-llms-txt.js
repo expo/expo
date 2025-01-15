@@ -1,6 +1,6 @@
-import fs from 'fs';
 import startCase from 'lodash/startCase.js';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const DOCS_DIR = 'pages';
 const OUTPUT_FILENAME = 'llms.txt';
@@ -39,10 +39,12 @@ const SECTIONS = {
 };
 
 function extractFrontmatter(content) {
-  const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---/;
+  const frontmatterRegex = /^---\s*\n([\S\s]*?)\n---/;
   const match = content.match(frontmatterRegex);
 
-  if (!match) return {};
+  if (!match) {
+    return {};
+  }
 
   const frontmatter = match[1];
   const metadata = {};
@@ -62,8 +64,8 @@ function readMDXFile(filePath) {
     const content = fs.readFileSync(filePath, 'utf8');
     const metadata = extractFrontmatter(content);
     return {
-      title: metadata.title || '',
-      description: metadata.description || '',
+      title: metadata.title ?? '',
+      description: metadata.description ?? '',
     };
   } catch (error) {
     console.error(`Error reading MDX file ${filePath}:`, error);
@@ -76,9 +78,15 @@ function getSectionForPath(filePath) {
   const pathParts = relativePath.split(path.sep);
 
   const baseFilename = path.basename(filePath, '.mdx');
-  if (baseFilename === 'core-concepts') return 'core-concepts';
-  if (baseFilename === 'faq') return 'faq';
-  if (pathParts[0] === 'get-started') return 'get-started';
+  if (baseFilename === 'core-concepts') {
+    return 'core-concepts';
+  }
+  if (baseFilename === 'faq') {
+    return 'faq';
+  }
+  if (pathParts[0] === 'get-started') {
+    return 'get-started';
+  }
 
   for (const [section, patterns] of Object.entries(SECTIONS)) {
     for (const pattern of patterns) {
@@ -102,8 +110,9 @@ function shouldIncludePath(filePath) {
   if (relativePath.includes('latest')) {
     return true;
   }
+
   if (
-    relativePath.match(/versions\/v\d+\.\d+\.\d+/) ||
+    /versions\/v\d+\.\d+\.\d+/.test(relativePath) ||
     relativePath.includes('versions/unversioned')
   ) {
     return false;
@@ -178,7 +187,9 @@ function generateMarkdownContent({ title, description, sections, urlsBySection }
 
       urlsBySection[section]
         .sort((a, b) => {
-          if (a.depth !== b.depth) return a.depth - b.depth;
+          if (a.depth !== b.depth) {
+            return a.depth - b.depth;
+          }
           return a.title.localeCompare(b.title);
         })
         .forEach(({ title, url, description, depth }, index, array) => {
@@ -215,7 +226,7 @@ async function generateLlmsTxt() {
 
     const outputPath = path.join(process.cwd(), 'public', OUTPUT_FILENAME);
     await fs.promises.writeFile(outputPath, markdownContent);
-    console.log(`Successfully generated ${OUTPUT_FILENAME}`);
+    console.log(` \x1b[1m\x1b[32m✓\x1b[0m Successfully generated ${OUTPUT_FILENAME}`);
     process.exit(0);
   } catch (error) {
     console.error('Error generating llms.txt:', error);
