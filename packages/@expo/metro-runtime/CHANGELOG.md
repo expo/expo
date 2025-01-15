@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Polyfill relative fetch requests and `window.location` by default.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
