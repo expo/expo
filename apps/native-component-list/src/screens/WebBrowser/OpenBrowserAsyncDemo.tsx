@@ -78,6 +78,12 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
         },
         {
           type: 'boolean',
+          name: 'createTask',
+          platforms: ['android'],
+          initial: false,
+        },
+        {
+          type: 'boolean',
           name: 'showInRecents',
           platforms: ['android'],
           initial: false,

@@ -10,13 +10,14 @@ import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.kotlin.AppContext
 import java.util.ArrayList
 import java.util.LinkedHashSet
 
 private const val DUMMY_URL = "https://expo.dev"
 
 internal class CustomTabsActivitiesHelper(
-  private val activityProvider: ActivityProvider?
+  private val appContext: AppContext
 ) {
 
   // region Actual custom tabs activities helper methods
@@ -96,9 +97,7 @@ internal class CustomTabsActivitiesHelper(
    * @throws CurrentActivityNotFoundException
    */
   private val currentActivity: Activity
-    get() {
-      return activityProvider?.currentActivity ?: throw CurrentActivityNotFoundException()
-    }
+    get() = appContext.throwingActivity
 
   // endregion
 }

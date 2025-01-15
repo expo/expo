@@ -17,6 +17,7 @@ import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
 class MainApplication : Application(), ReactApplication {
+  private val runningActivities = ArrayList<Class<*>>()
 
   override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
     this,
@@ -53,4 +54,18 @@ class MainApplication : Application(), ReactApplication {
     super.onConfigurationChanged(newConfig)
     ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
   }
+
+  fun addActivityToStack(cls: Class<*>?) {
+    cls?.let {
+      if (!runningActivities.contains(it)) runningActivities.add(it)
+    }
+  }
+
+  fun removeActivityFromStack(cls: Class<*>?) {
+    cls?.let {
+      if (runningActivities.contains(cls)) runningActivities.remove(it)
+    }
+  }
+
+  fun isActivityInBackStack(cls: Class<*>?) = runningActivities.contains(cls)
 }
