@@ -1,17 +1,15 @@
 package expo.modules.webbrowser
 
 import android.app.Activity
-import expo.modules.core.errors.CurrentActivityNotFoundException
-import android.content.pm.ResolveInfo
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
+import expo.modules.core.errors.CurrentActivityNotFoundException
 import expo.modules.kotlin.AppContext
-import java.util.ArrayList
-import java.util.LinkedHashSet
 
 private const val DUMMY_URL = "https://expo.dev"
 
