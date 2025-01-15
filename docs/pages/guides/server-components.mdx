@@ -23,8 +23,9 @@ Your project must use Expo Router and React Native new architecture (default in 
 
 To use React Server Components in your Expo app, you need to:
 
-1. Ensure the entry module is `expo-router/entry` (default) in **package.json**.
-2. Enable the flag in the project app config:
+1. Install the required RSC dependency `react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610`
+2. Ensure the entry module is `expo-router/entry` (default) in **package.json**.
+3. Enable the flag in the project app config:
 
 ```json app.json
 {
@@ -36,7 +37,8 @@ To use React Server Components in your Expo app, you need to:
 }
 ```
 
-3. Create an initial route **app/index.tsx**:
+4. Ensure `"origin": "false"` is not set anywhere in your app config.
+5. Create an initial route **app/index.tsx**:
 
 ```tsx app/index.tsx (Client Component)
 /// <reference types="react/canary" />
