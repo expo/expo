@@ -83,7 +83,7 @@
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
 #if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
-	return self.dependencyProvider.thirdPartyFabricComponents
+	return self.dependencyProvider.thirdPartyFabricComponents;
 #endif
 	return @{};
 }
