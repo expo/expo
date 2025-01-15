@@ -21,7 +21,7 @@ const homeDirectories = [
   'review',
 ];
 /** Manual list of directories to categorize as "Learn" */
-const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
+const learnDirectories = ['tutorial', 'additional-resources'];
 /** Manual list of directories to categorize as "Archive" */
 const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
