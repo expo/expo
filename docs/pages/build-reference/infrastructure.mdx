@@ -17,7 +17,7 @@ Linux runners are hosted in Google Cloud Platform. macOS runners are hosted in o
 
 ## Configuring build environment
 
-Images for each platform have one specific version of Node.js, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json). If there is no dedicated configuration option you are looking for, you can use [npm hooks](/build-reference/npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Consider that those customizations are applied during the build and will increase your build times.
+Images for each platform have one specific version of Node.js, Yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json). If there is no dedicated configuration option you are looking for, you can use [npm hooks](/build-reference/npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Consider that those customizations are applied during the build and will increase your build times.
 
 When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, or for a particular SDK such as `sdk-52`.
 
