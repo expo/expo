@@ -8,8 +8,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
 
-private const val defaultKotlinVersion = "1.9.24"
-private const val defaultKSPVersion = "1.9.24-1.0.20"
+private const val defaultKotlinVersion = "2.0.21"
+private const val defaultKSPVersion = "2.0.21-1.0.28"
 
 abstract class ExpoModulesGradlePlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -53,6 +53,7 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       "1.7.22" -> "1.7.22-1.0.8"
       "1.8.0" -> "1.8.0-1.0.9"
       "1.8.10" -> "1.8.10-1.0.9"
+      "1.8.20" -> "1.8.20-1.0.11"
       "1.8.22" -> "1.8.22-1.0.11"
       "1.9.23" -> "1.9.23-1.0.20"
       "1.9.24" -> "1.9.24-1.0.20"
