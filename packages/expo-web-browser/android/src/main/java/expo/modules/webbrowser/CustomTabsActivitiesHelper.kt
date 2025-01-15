@@ -9,7 +9,6 @@ import android.net.Uri
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
-import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.kotlin.AppContext
 import java.util.ArrayList
 import java.util.LinkedHashSet

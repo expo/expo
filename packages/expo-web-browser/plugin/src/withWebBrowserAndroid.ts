@@ -1,3 +1,7 @@
+import type { ManifestActivity } from '@expo/config-plugins/build/android/Manifest';
+import { appendContentsInsideDeclarationBlock } from '@expo/config-plugins/build/android/codeMod';
+import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
+import type { ExpoConfig } from '@expo/config-types';
 import {
   AndroidConfig,
   ConfigPlugin,
@@ -5,11 +9,7 @@ import {
   withDangerousMod,
   withMainActivity,
   withMainApplication,
-} from '@expo/config-plugins';
-import { ManifestActivity } from '@expo/config-plugins/build/android/Manifest';
-import { appendContentsInsideDeclarationBlock } from '@expo/config-plugins/build/android/codeMod';
-import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
-import { ExpoConfig } from '@expo/config-types';
+} from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 
