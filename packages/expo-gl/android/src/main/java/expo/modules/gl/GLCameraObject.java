@@ -62,7 +62,6 @@ import static android.opengl.GLES30.glUseProgram;
 import static android.opengl.GLES30.glVertexAttribPointer;
 import static android.opengl.GLES30.glViewport;
 import static android.opengl.Matrix.orthoM;
-import static android.opengl.Matrix.scaleM;
 import static expo.modules.gl.cpp.EXGL.EXGLContextMapObject;
 
 public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAvailableListener {
@@ -79,13 +78,22 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
 
   private SurfaceTexture mCameraSurfaceTexture;
 
-  private float textureCoords[] = {
-    0.0f, 0.0f,
-    1.0f, 0.0f,
-    0.0f, 1.0f,
-    1.0f, 0.0f,
-    1.0f, 1.0f,
+  /* Coordinates that define how a texture is mapped onto a surface. Typically the values are
+    0.0f, 0.0f
+    1.0f, 0.0f
     0.0f, 1.0f
+    1.0f, 0.0f
+    1.0f, 1.0f
+    0.0f, 1.0f
+   We invert them because [SurfaceTexture] has an inverted Y-Axis
+  */
+  private float textureCoords[] = {
+    0.0f, 1.0f, // Bottom-left
+    1.0f, 1.0f, // Bottom-right
+    0.0f, 0.0f, // Top-left
+    1.0f, 1.0f, // Bottom-right
+    1.0f, 0.0f, // Top-right
+    0.0f, 0.0f  // Top-left
   };
 
   private static String vertexShaderSource
