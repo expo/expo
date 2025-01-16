@@ -883,6 +883,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
     }
 
+    // Error early about the window.location polyfill when React Server Components are enabled.
+    if (isReactServerComponentsEnabled && exp?.extra?.router?.origin === false) {
+      const configPath = config.dynamicConfigPath ?? config.staticConfigPath ?? '/app.json';
+      const configFileName = path.basename(configPath);
+      throw new CommandError(
+        `The Expo Router "origin" property in the Expo config (${configFileName}) cannot be "false" when React Server Components is enabled. Remove it from the ${configFileName} file and try again.`
+      );
+    }
+
     const instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
