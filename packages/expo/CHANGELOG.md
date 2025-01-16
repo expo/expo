@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- Remove `transformOrigin` type override.
+- Remove `transformOrigin` type override. ([#34183](https://github.com/expo/expo/pull/34183) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🛠 Breaking changes
 
