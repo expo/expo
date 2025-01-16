@@ -13,7 +13,7 @@ class ViewManagerDefinition(
   internal val name: String? = null,
   private val viewFactory: (Context, AppContext) -> View,
   internal val viewType: Class<out View>,
-  internal val props: Map<String, AnyViewProp>,
+  internal val props: Map<String, AnyViewProp> = emptyMap(),
   val onViewDestroys: ((View) -> Unit)? = null,
   val callbacksDefinition: CallbacksDefinition? = null,
   val viewGroupDefinition: ViewGroupDefinition? = null,
