@@ -70,11 +70,11 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
 
   fun registerViewDefinition(definition: ViewManagerDefinition) {
     // For backwards compatibility, the first View is also added to viewManagerDefinitions under the `DEFAULT` key
-    if(definition.name != null) {
+    if (definition.name != null) {
       require(!viewManagerDefinitions.contains(definition.name)) { "The module definition defines more than one view with name ${definition.name}." }
       viewManagerDefinitions[definition.name] = definition
     }
-    if(!viewManagerDefinitions.contains(DEFAULT_MODULE_VIEW)) {
+    if (!viewManagerDefinitions.contains(DEFAULT_MODULE_VIEW)) {
       viewManagerDefinitions[DEFAULT_MODULE_VIEW] = definition
     }
   }

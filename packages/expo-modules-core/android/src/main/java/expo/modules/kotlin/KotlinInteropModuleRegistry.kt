@@ -44,9 +44,9 @@ class KotlinInteropModuleRegistry(
     trace("KotlinInteropModuleRegistry.exportViewManagers") {
       registry
         .flatMap { module ->
-          module.definition.viewManagerDefinitions.map {
-            val wrapperDelegate = ViewManagerWrapperDelegate(module, it.value, if(it.key == DEFAULT_MODULE_VIEW) module.name else null)
-            when (it.value.getViewManagerType()) {
+          module.definition.viewManagerDefinitions.map { (name, definition) ->
+            val wrapperDelegate = ViewManagerWrapperDelegate(module, definition, if(name == DEFAULT_MODULE_VIEW) module.name else null)
+            when (definition.getViewManagerType()) {
               ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(wrapperDelegate)
               ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
             }
@@ -57,18 +57,16 @@ class KotlinInteropModuleRegistry(
   fun viewManagersMetadata(): Map<String, Map<String, Any>> =
     trace("KotlinInteropModuleRegistry.viewManagersMetadata") {
       val result = registry.flatMap { module ->
-          module.definition.viewManagerDefinitions.map {
-            if (it.key == DEFAULT_MODULE_VIEW) {
-              module.name to mapOf(
-                "propsNames" to it.value.propsNames
-              )
-            } else {
-              "${module.name}_${it.value.name}" to mapOf(
-                "propsNames" to it.value.propsNames
-              )
-            }
+        module.definition.viewManagerDefinitions.map { (name, definition) ->
+          val viewName = if (name == DEFAULT_MODULE_VIEW) {
+            module.name
+          } else {
+            "${module.name}_${name}"
           }
-        }.toMap()
+          
+         	viewName to mapOf("propsNames" to definition.propsNames)
+        }
+      }.toMap()
       return@trace result
     }
 

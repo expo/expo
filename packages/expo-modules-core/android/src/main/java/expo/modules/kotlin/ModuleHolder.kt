@@ -48,20 +48,19 @@ class ModuleHolder<T : Module>(val module: T) {
       // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
       moduleDecorator.registerProperty("__expo_module_name__", false, emptyArray(), { name }, false, emptyArray(), null)
 
-      definition.viewManagerDefinitions.values.forEach {
-        val viewFunctions = it.asyncFunctions
+      definition.viewManagerDefinitions.values.forEach { definition ->
+        val viewFunctions = definition.asyncFunctions
         if (viewFunctions.isNotEmpty() == true) {
           trace("Attaching view prototype") {
             val viewDecorator = JSDecoratorsBridgingObject(jniDeallocator)
             viewFunctions.forEach { function ->
-              function.attachToJSObject(appContext, viewDecorator, "${name}_${it.name}")
+              function.attachToJSObject(appContext, viewDecorator, "${name}_${definition.name}")
             }
 
             moduleDecorator.registerObject("ViewPrototype", viewDecorator)
           }
         }
       }
-
 
       trace("Attaching classes") {
         definition.classData.forEach { clazz ->

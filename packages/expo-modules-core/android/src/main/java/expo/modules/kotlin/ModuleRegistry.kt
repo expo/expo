@@ -64,7 +64,7 @@ class ModuleRegistry(
 
   fun <T : View> getModuleHolder(viewClass: Class<T>): ModuleHolder<*>? {
     return registry.firstNotNullOfOrNull { (_, holder) ->
-      val definition = holder.definition.viewManagerDefinitions.values.find { it.viewType == viewClass }
+      val definition = getViewDefinition(holder, viewClass)
       if (definition != null) {
         holder
       } else {
