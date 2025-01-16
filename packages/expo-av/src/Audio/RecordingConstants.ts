@@ -70,10 +70,12 @@ export enum AndroidAudioEncoder {
 
 // @docsMissing
 /**
- * > **Note** Not all of the iOS formats included in this list of constants are currently supported by iOS,
+ * > **Note:** Not all of the iOS formats included in this list of constants are currently supported by iOS,
  * > in spite of appearing in the Apple source code. For an accurate list of formats supported by iOS, see
  * > [Core Audio Codecs](https://developer.apple.com/library/content/documentation/MusicAudio/Conceptual/CoreAudioOverview/CoreAudioEssentials/CoreAudioEssentials.html)
  * > and [iPhone Audio File Formats](https://developer.apple.com/library/content/documentation/MusicAudio/Conceptual/CoreAudioOverview/CoreAudioEssentials/CoreAudioEssentials.html).
+ *
+ * @platform ios
  */
 export enum IOSOutputFormat {
   LINEARPCM = 'lpcm',
@@ -113,6 +115,9 @@ export enum IOSOutputFormat {
 }
 
 // @docsMissing
+/**
+ * @platform ios
+ */
 export enum IOSAudioQuality {
   MIN = 0,
   LOW = 0x20,
@@ -122,6 +127,9 @@ export enum IOSAudioQuality {
 }
 
 // @docsMissing
+/**
+ * @platform ios
+ */
 export enum IOSBitRateStrategy {
   CONSTANT = 0,
   LONG_TERM_AVERAGE = 1,
