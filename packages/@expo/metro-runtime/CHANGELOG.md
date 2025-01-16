@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Polyfill relative fetch requests and `window.location` by default.
+- Polyfill relative fetch requests and `window.location` by default. ([#34169](https://github.com/expo/expo/pull/34169) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
