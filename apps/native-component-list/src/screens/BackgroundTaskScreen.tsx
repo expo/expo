@@ -49,9 +49,7 @@ export default function BackgroundTaskScreen() {
     if (isRegistered) {
       await BackgroundTask.unregisterTaskAsync(BACKGROUND_TASK_IDENTIFIER);
     } else {
-      await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER, {
-        minimumInterval: 15, // 15 minutes
-      });
+      await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER);
     }
     setIsRegistered(!isRegistered);
   };
@@ -89,12 +87,6 @@ export default function BackgroundTaskScreen() {
         buttonStyle={styles.button}
         title="Check Background Task Status"
         onPress={checkStatusAsync}
-      />
-      <Button
-        buttonStyle={styles.button}
-        disabled={!isRegistered}
-        title="Trigger Background Tasks (DEBUG)"
-        onPress={() => BackgroundTask.triggerTaskWorkerForTestingAsync()}
       />
     </View>
   );
