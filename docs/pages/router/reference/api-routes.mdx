@@ -200,8 +200,7 @@ Route handlers are executed in a sandboxed environment that is isolated from the
 
 ## Deployment
 
-When you're ready to deploy to production, run [`npx expo export`](/more/expo-cli#exporting) to create the server bundle in the `dist` folder. This server can be tested locally with `npx expo serve` (available in Expo SDK 52 and higher), visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
-
+When you're ready to deploy to production, run [`npx expo export --platform web`](/more/expo-cli#exporting) to create the server bundle in the **dist** directory. This server can be tested locally with `npx expo serve` (available in Expo SDK 52 and higher), visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
 You can deploy the server for production using [EAS Hosting](/eas/hosting/get-started) or another third-party service.
 
 <BoxLink
