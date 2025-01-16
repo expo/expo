@@ -9,15 +9,17 @@ public class BackgroundTaskScheduler {
 
   /**
    * Interval for task scheduler. The iOS BGTaskScheduler does not guarantee that the number of minutes will be
-   * exact, but it indicates when we'd like the task to start
+   * exact, but it indicates when we'd like the task to start. This will be set to at least 12 hours
    */
-  private static var intervalSeconds: TimeInterval = 1
+  private static var intervalSeconds: TimeInterval = 12 * 60 * 60
 
   /**
    * Call when a task is registered to keep track of how many background task consumers we have
    */
-  public static func didRegisterTask(minutes: Int) {
-    intervalSeconds = Double(minutes) * 60.0
+  public static func didRegisterTask(minutes: Int?) {
+    if let minutes = minutes {
+      intervalSeconds = Double(minutes) * 60
+    }
     numberOfRegisteredTasksOfThisType += 1
   }
 

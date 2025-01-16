@@ -42,10 +42,7 @@ class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
       return
     }
 
-    // Safely extract "minimumInterval" from options
-    if let minimumInterval = self.task?.options?["minimumInterval"] as? Int {
-      BackgroundTaskScheduler.didRegisterTask(minutes: minimumInterval)
-    }
+    BackgroundTaskScheduler.didRegisterTask(minutes: self.task?.options?["minimumInterval"] as? Int)
   }
 
   func didUnregister() {
