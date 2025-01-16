@@ -7,7 +7,11 @@ import ExpoGoFileSystemNextStub from './ExpoGoFileSystemNextStub';
 declare class ExpoFileSystemNextModule extends NativeModule {
   FileSystemDirectory: typeof Directory;
   FileSystemFile: typeof File;
-  downloadFileAsync(url: string, destination: File | Directory, options?: DownloadOptions): Promise<string>;
+  downloadFileAsync(
+    url: string,
+    destination: File | Directory,
+    options?: DownloadOptions
+  ): Promise<string>;
 }
 
 export default isRunningInExpoGo()
