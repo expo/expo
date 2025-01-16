@@ -100,7 +100,7 @@ export function requireNativeViewManager<P>(
   const ReactNativeComponent = requireCachedNativeComponent(moduleName, viewName);
 
   class NativeComponent extends PureComponent<P> {
-    static displayName = viewName;
+    static displayName = viewName ? viewName : moduleName;
 
     nativeRef = createRef<Component & NativeMethods>();
 
