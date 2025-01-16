@@ -51,7 +51,7 @@ On iOS, the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgr
 
 ### iOS&ensp;<PlatformTags platforms={['ios']} />
 
-The [`Background Tasks`](https://developer.apple.com/documentation/backgroundtasks) API on iOS is not available on simulators, it is only available when running on a physical device.
+The [`Background Tasks`](https://developer.apple.com/documentation/backgroundtasks) API is unavailable on iOS simulators. It is only available when running on a physical device.
 
 ## Installation
 
@@ -172,25 +172,6 @@ const styles = StyleSheet.create({
   },
 });
 ```
-
-## Testing background tasks
-
-Background tasks can be difficult to test because they can be triggered inconsistently by the system. Fortunately, Expo Background Task contains some tools that help make testing background tasks easier.
-
-`expo-background-tasks` has a dev tools plugin that can be used to trigger background tasks.
-
-Add the following code to your app to use the plugin:
-
-```tsx
-import { useExpoBackgroundTaskDevPlugin } from 'expo-background-task/devtools';
-
-export default App() {
-  useExpoBackgroundTaskDevPlugin();
-  return (/* rest of your app */)
-}
-```
-
-To trigger background tasks, start the dev server with `npx expo start` and press `shift + m` to open the list of available dev tools plugins. Select `Open expo-background-task`, and a new Chrome Window will be opened.
 
 ## Multiple background tasks
 

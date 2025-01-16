@@ -31,7 +31,7 @@ export const getStatusAsync = async (): Promise<BackgroundTaskStatus> => {
  * import * as TaskManager from 'expo-task-manager';
  *
  * // Register the task outside of the component
- * TaskManager.defineTask(YOUR_TASK_NAME, () => {
+ * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, () => {
  *   try {
  *     await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
  *   } catch (error) {
@@ -82,19 +82,20 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
 /**
  * When in debug mode this function will trigger running the background tasks.
  * This function will only work for apps built in debug mode.
+ * @todo(chrfalch): When we have a usable devtools plugin we can enable this function.
  * @returns A promise which fulfils when the task is triggered.
  */
-export async function triggerTaskWorkerForTestingAsync(): Promise<boolean> {
-  if (__DEV__) {
-    if (!ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync) {
-      throw new UnavailabilityError('BackgroundTask', 'triggerTaskWorkerForTestingAsync');
-    }
-    console.log('Calling triggerTaskWorkerForTestingAsync');
-    return await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
-  } else {
-    return Promise.resolve(false);
-  }
-}
+// export async function triggerTaskWorkerForTestingAsync(): Promise<boolean> {
+//   if (__DEV__) {
+//     if (!ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync) {
+//       throw new UnavailabilityError('BackgroundTask', 'triggerTaskWorkerForTestingAsync');
+//     }
+//     console.log('Calling triggerTaskWorkerForTestingAsync');
+//     return await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
+//   } else {
+//     return Promise.resolve(false);
+//   }
+// }
 
 // Export types
 export {

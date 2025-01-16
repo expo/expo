@@ -17,7 +17,7 @@ export declare const getStatusAsync: () => Promise<BackgroundTaskStatus>;
  * import * as TaskManager from 'expo-task-manager';
  *
  * // Register the task outside of the component
- * TaskManager.defineTask(YOUR_TASK_NAME, () => {
+ * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, () => {
  *   try {
  *     await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
  *   } catch (error) {
@@ -44,8 +44,8 @@ export declare function unregisterTaskAsync(taskName: string): Promise<void>;
 /**
  * When in debug mode this function will trigger running the background tasks.
  * This function will only work for apps built in debug mode.
+ * @todo(chrfalch): When we have a usable devtools plugin we can enable this function.
  * @returns A promise which fulfils when the task is triggered.
  */
-export declare function triggerTaskWorkerForTestingAsync(): Promise<boolean>;
 export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.d.ts.map
