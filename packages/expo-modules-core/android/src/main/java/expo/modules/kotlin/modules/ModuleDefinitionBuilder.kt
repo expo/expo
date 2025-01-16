@@ -67,7 +67,6 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     this.name = name
   }
 
-
   fun registerViewDefinition(definition: ViewManagerDefinition) {
     // For backwards compatibility, the first View is also added to viewManagerDefinitions under the `DEFAULT` key
     if (definition.name != null) {

@@ -45,7 +45,7 @@ class KotlinInteropModuleRegistry(
       registry
         .flatMap { module ->
           module.definition.viewManagerDefinitions.map { (name, definition) ->
-            val wrapperDelegate = ViewManagerWrapperDelegate(module, definition, if(name == DEFAULT_MODULE_VIEW) module.name else null)
+            val wrapperDelegate = ViewManagerWrapperDelegate(module, definition, if (name == DEFAULT_MODULE_VIEW) module.name else null)
             when (definition.getViewManagerType()) {
               ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(wrapperDelegate)
               ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
@@ -61,10 +61,10 @@ class KotlinInteropModuleRegistry(
           val viewName = if (name == DEFAULT_MODULE_VIEW) {
             module.name
           } else {
-            "${module.name}_${name}"
+            "${module.name}_$name"
           }
-          
-         	viewName to mapOf("propsNames" to definition.propsNames)
+
+          viewName to mapOf("propsNames" to definition.propsNames)
         }
       }.toMap()
       return@trace result

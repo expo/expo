@@ -50,15 +50,16 @@ class ModuleHolder<T : Module>(val module: T) {
 
       definition.viewManagerDefinitions.values.forEach { definition ->
         val viewFunctions = definition.asyncFunctions
-        if (viewFunctions.isNotEmpty() == true) {
-          trace("Attaching view prototype") {
-            val viewDecorator = JSDecoratorsBridgingObject(jniDeallocator)
-            viewFunctions.forEach { function ->
-              function.attachToJSObject(appContext, viewDecorator, "${name}_${definition.name}")
-            }
-
-            moduleDecorator.registerObject("ViewPrototype", viewDecorator)
+        if (viewFunctions.isEmpty()) {
+          return@forEach
+        }
+        trace("Attaching view prototype") {
+          val viewDecorator = JSDecoratorsBridgingObject(jniDeallocator)
+          viewFunctions.forEach { function ->
+            function.attachToJSObject(appContext, viewDecorator, "${name}_${definition.name}")
           }
+
+          moduleDecorator.registerObject("ViewPrototype", viewDecorator)
         }
       }
 
