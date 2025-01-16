@@ -31,8 +31,9 @@ export type BackgroundTaskOptions = {
     /**
      * Inexact interval in minutes between subsequent repeats of the background tasks. The final
      * interval may differ from the specified one to minimize wakeups and battery usage.
-     * - Defaults to once every day on Android (The minimum interval is 15 minutes)
-     * - On iOS the system will determine the interval.
+     * - Defaults to once every 12 hours (The minimum interval is 15 minutes)
+     * - On iOS, the system determines the interval for background task execution,
+     *  but will wait until the specified minimum interval has elapsed before starting a task.
      * @platform android
      */
     minimumInterval?: number;
