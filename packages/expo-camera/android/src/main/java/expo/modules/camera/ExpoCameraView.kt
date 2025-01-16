@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
-import android.graphics.drawable.ColorDrawable
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.media.MediaActionSound
@@ -50,6 +49,7 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
 import expo.modules.camera.analyzers.BarcodeAnalyzer
 import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.common.BarcodeScannedEvent
@@ -117,7 +117,7 @@ class ExpoCameraView(
   }
 
   var camera: Camera? = null
-  var activeRecording: Recording? = null
+  private var activeRecording: Recording? = null
 
   private var cameraProvider: ProcessCameraProvider? = null
   private val providerFuture = ProcessCameraProvider.getInstance(context)
@@ -125,7 +125,8 @@ class ExpoCameraView(
   private var imageAnalysisUseCase: ImageAnalysis? = null
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
-  private var glSurface: SurfaceTexture? = null
+  private var glSurfaceTexture: SurfaceTexture? = null
+
 
   private var previewView = PreviewView(context).apply {
     elevation = 0f
@@ -233,12 +234,10 @@ class ExpoCameraView(
   }
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-    if (!changed) {
-      return
-    }
     val width = right - left
     val height = bottom - top
     previewView.layout(0, 0, width, height)
+    glSurfaceTexture?.setDefaultBufferSize(width, height)
   }
 
   override fun onViewAdded(child: View?) {
@@ -267,7 +266,7 @@ class ExpoCameraView(
             return
           }
           rootView.postDelayed({
-            rootView.foreground = ColorDrawable(Color.WHITE)
+            rootView.foreground = Color.WHITE.toDrawable()
             rootView.postDelayed(
               { rootView.foreground = null },
               ANIMATION_FAST_MILLIS
@@ -386,11 +385,9 @@ class ExpoCameraView(
         val preview = Preview.Builder()
           .setResolutionSelector(resolutionSelector)
           .build()
-          .also {
-            it.surfaceProvider = previewView.surfaceProvider
-          }
 
-        glSurface?.let {
+        glSurfaceTexture?.let {
+          it.setDefaultBufferSize(previewView.width, previewView.height)
           preview.setSurfaceProvider { request ->
             val surface = Surface(it)
             request.provideSurface(surface, ContextCompat.getMainExecutor(context)) {
@@ -683,7 +680,7 @@ class ExpoCameraView(
   }
 
   override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) {
-    glSurface = surfaceTexture
+    glSurfaceTexture = surfaceTexture
     shouldCreateCamera = true
     createCamera()
   }
