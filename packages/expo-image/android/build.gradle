@@ -1,11 +1,23 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-kapt'
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
+
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  useLegacyExpoModulesCorePlugin()
+}
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.

@@ -1,14 +1,25 @@
 apply plugin: 'com.android.library'
 
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
+
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  useLegacyExpoModulesCorePlugin()
+}
+
 group = 'org.unimodules'
 version = '0.19.0'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
 
 android {
   namespace "org.unimodules.test.core"
@@ -44,7 +55,7 @@ dependencies {
 
   implementation 'com.facebook.react:react-android'
 
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
 
   // instrumented testing dependencies
   api 'androidx.test.ext:junit:1.2.1'
