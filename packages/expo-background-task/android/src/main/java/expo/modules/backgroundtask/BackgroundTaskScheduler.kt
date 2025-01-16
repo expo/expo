@@ -11,7 +11,6 @@ import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.facebook.react.common.build.ReactBuildConfig
 import com.google.common.util.concurrent.ListenableFuture
 import expo.modules.interfaces.taskManager.TaskServiceProviderHelper
 import kotlinx.coroutines.CancellationException
@@ -143,7 +142,7 @@ class BackgroundTaskScheduler {
     /**
      * Runs tasks with the given appScopeKey
      */
-    suspend fun runTasks(context: Context, appScopeKey: String) : Boolean {
+    suspend fun runTasks(context: Context, appScopeKey: String): Boolean {
       // Get task service
       val taskService = TaskServiceProviderHelper.getTaskServiceImpl(context)
         ?: throw MissingTaskServiceException()
@@ -158,24 +157,18 @@ class BackgroundTaskScheduler {
         return false
       }
 
-      val tasks = consumers.mapNotNull { consumer ->
-        val bgTaskConsumer = consumer as? BackgroundTaskConsumer ?: return@mapNotNull null
-
-        Log.d(TAG, "runTasks: executing tasks for consumer of type ${consumer.taskType()}")
-
-        val taskCompletion = CompletableDeferred<Unit>()
-
-        bgTaskConsumer.executeTask {
-          Log.d(TAG, "Task successfully finished")
-          taskCompletion.complete(Unit)
+      val tasks = consumers.filterIsInstance<BackgroundTaskConsumer>()
+        .map { bgTaskConsumer ->
+          Log.d(TAG, "runTasks: executing tasks for consumer of type ${bgTaskConsumer.taskType()}")
+          val taskCompletion = CompletableDeferred<Unit>()
+          bgTaskConsumer.executeTask {
+            Log.d(TAG, "Task successfully finished")
+            taskCompletion.complete(Unit)
+          }
+          taskCompletion
         }
-
-        taskCompletion
-      }
-
       // Await all tasks to complete
       tasks.awaitAll()
-
       return true
     }
 
@@ -199,19 +192,15 @@ class BackgroundTaskScheduler {
     /**
      * Helper function for calling functions returning an Operation
      */
-    suspend fun Operation.await(): Boolean = withContext(Dispatchers.IO) {
-      try {
-        result.get()
-        true
-      } catch (e: Exception) {
-        throw e
-      }
+    private suspend fun Operation.await(): Boolean = withContext(Dispatchers.IO) {
+      result.get()
+      true
     }
 
     /**
      * Helper function for calling functions returning a ListenableFuture
      */
-    suspend fun <T> ListenableFuture<T>.await(): T = withContext(Dispatchers.IO) {
+    private suspend fun <T> ListenableFuture<T>.await(): T = withContext(Dispatchers.IO) {
       try {
         get()
       } catch (e: CancellationException) {
