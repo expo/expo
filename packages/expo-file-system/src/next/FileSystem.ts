@@ -1,9 +1,9 @@
 import { ReadableStream, WritableStream } from 'web-streams-polyfill';
 
 import ExpoFileSystem from './ExpoFileSystem';
+import type { DownloadOptions } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
-import type { DownloadOptions } from './ExpoFileSystem.types';
 
 export class Paths extends PathUtilities {
   /**
@@ -134,7 +134,11 @@ export class File extends ExpoFileSystem.FileSystemFile {
 }
 
 // Cannot use `static` keyword in class declaration because of a runtime error.
-File.downloadFileAsync = async function downloadFileAsync(url: string, to: File | Directory, options?: DownloadOptions) {
+File.downloadFileAsync = async function downloadFileAsync(
+  url: string,
+  to: File | Directory,
+  options?: DownloadOptions
+) {
   const outputPath = await ExpoFileSystem.downloadFileAsync(url, to, options);
   return new File(outputPath);
 };
