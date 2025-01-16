@@ -11,6 +11,7 @@
 //// <reference types="react/canary" />
 'use client';
 
+import Constants from 'expo-constants';
 import {
   createContext,
   createElement,
@@ -24,7 +25,6 @@ import {
 } from 'react';
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
-import Constants from 'expo-constants';
 
 import { MetroServerError, ReactServerError } from './errors';
 import { fetch } from './fetch';
