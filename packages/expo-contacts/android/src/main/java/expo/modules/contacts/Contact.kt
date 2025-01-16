@@ -285,13 +285,29 @@ class Contact(var contactId: String) {
           .build()
       )
     }
+
+    // Flush all data from linked db
+    ops.add(getFlushOperation(CommonDataKinds.Event.CONTENT_ITEM_TYPE, rawContactId!!))
+    ops.add(getFlushOperation(CommonDataKinds.Email.CONTENT_ITEM_TYPE, rawContactId!!))
+    ops.add(getFlushOperation(CommonDataKinds.Im.CONTENT_ITEM_TYPE, rawContactId!!))
+    ops.add(getFlushOperation(CommonDataKinds.Phone.CONTENT_ITEM_TYPE, rawContactId!!))
+    ops.add(getFlushOperation(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE, rawContactId!!))
+    ops.add(getFlushOperation(CommonDataKinds.Relation.CONTENT_ITEM_TYPE, rawContactId!!))
+    ops.add(getFlushOperation(CommonDataKinds.Website.CONTENT_ITEM_TYPE, rawContactId!!))
+    ops.add(getFlushOperation(CommonDataKinds.Nickname.CONTENT_ITEM_TYPE, rawContactId!!))
+    // add updated data
     for (map in baseModels) {
       for (item in map) {
-        ops.add(item.getDeleteOperation(rawContactId!!))
         ops.add(item.getInsertOperation(rawContactId))
       }
     }
     return ops
+  }
+
+  private fun getFlushOperation(contentType: String, rawId: String): ContentProviderOperation? {
+      return ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+        .withSelection(String.format("%s=? AND %s=?", ContactsContract.Data.MIMETYPE, ContactsContract.Data.RAW_CONTACT_ID), arrayOf(contentType, rawId))
+        .build()
   }
 
   private val baseModels: Array<List<BaseModel>>
