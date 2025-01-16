@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Remove `transformOrigin` type override.
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
