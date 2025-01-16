@@ -5,7 +5,7 @@ const maxKotlinVersion = '2.0.21';
 
 const groupId = 'com.google.devtools.ksp';
 const artifactId = 'symbol-processing-gradle-plugin';
-const path = 'expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/KSPLookup.kt';
+const path = require('path').resolve(__dirname, '../expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/KSPLookup.kt');
 
 const mavenRows = 30;
 const mavenSearchUrl = 'https://search.maven.org/solrsearch/select';
