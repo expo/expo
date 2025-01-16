@@ -87,13 +87,7 @@ class BackgroundTaskScheduler {
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         // Add minimum interval here as well so that the work doesn't start immediately
-        // In Debug builds we wait 30 seconds to make sure background tasks are easy to test.
-        // Remember to put the app in the background for the task to run.
-        if (ReactBuildConfig.DEBUG) {
-          builder.setInitialDelay(Duration.ofSeconds(30))
-        } else {
-          builder.setInitialDelay(Duration.ofMinutes(intervalMinutes))
-        }
+        builder.setInitialDelay(Duration.ofMinutes(intervalMinutes))
       }
 
       // Create work request
