@@ -23,6 +23,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [expo-file-system][next] Add options to the create function. ([#32909](https://github.com/expo/expo/pull/32909) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Add options to download function.
 
 ### 🐛 Bug fixes
 

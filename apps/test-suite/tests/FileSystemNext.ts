@@ -423,6 +423,18 @@ export async function test({ describe, expect, it, ...t }) {
           }
           expect(error.message.includes('Destination already exists')).toBe(true);
         });
+
+        it("downloads file when headers are set", async () => {
+          const url = 'https://picsum.photos/id/237/200/300';
+          const file = new File(testDirectory, 'image.jpeg');
+          const output = await File.downloadFileAsync(url, file, {
+            headers: {
+              'Token': '1234',
+            }
+          });
+          expect(file.exists).toBe(true);
+          expect(output.uri).toBe(file.uri);
+        });
       });
 
       describe('Computes file properties', () => {
