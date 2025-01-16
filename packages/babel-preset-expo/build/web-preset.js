@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 const defaultPlugins = [
-    [require('@babel/plugin-syntax-flow')],
+    [require('babel-plugin-syntax-hermes-parser'), { parseLangTypes: 'flow' }],
     [require('babel-plugin-transform-flow-enums')],
     [require('@babel/plugin-transform-private-methods'), { loose }],
     [require('@babel/plugin-transform-private-property-in-object'), { loose }],
