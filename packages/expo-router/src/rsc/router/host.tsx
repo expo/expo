@@ -77,13 +77,13 @@ if (process.env.EXPO_OS !== 'web' && !window.location?.href) {
     if (isExpoGo) {
       // Updating is a bit easier in Expo Go as you don't need a native rebuild.
       throw new Error(
-        'The "origin" property in the Expo config (app.json) cannot be false when React Server Components is enabled.'
+        'The "origin" property in the Expo config (app.json) cannot be false when React Server Components is enabled. https://docs.expo.dev/guides/server-components/'
       );
     }
 
     // Add more context about updating the app.json in development builds.
     throw new Error(
-      'The "origin" property in the Expo config (app.json) cannot be "false" when React Server Components is enabled. Remove the "origin" property from your Expo config and rebuild the native app to resolve.'
+      'The "origin" property in the Expo config (app.json) cannot be "false" when React Server Components is enabled. Remove the "origin" property from your Expo config and rebuild the native app to resolve. https://docs.expo.dev/guides/server-components/'
     );
   }
 
