@@ -49,7 +49,9 @@ export default function BackgroundTaskScreen() {
     if (isRegistered) {
       await BackgroundTask.unregisterTaskAsync(BACKGROUND_TASK_IDENTIFIER);
     } else {
-      await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER);
+      await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER, {
+        minimumInterval: 15, // 15 minutes
+      });
     }
     setIsRegistered(!isRegistered);
   };
