@@ -24,6 +24,16 @@ export class Asset {
         }
         this.name ??= AssetUris.getFilename(uri);
         this.type ??= AssetUris.getFileExtension(uri);
+        // Essentially run the contents of downloadAsync here.
+        if (ImageAssets.isImageType(this.type)) {
+            this.width = 0;
+            this.height = 0;
+            this.name = AssetUris.getFilename(this.uri);
+        }
+        else {
+            this.name = AssetUris.getFilename(this.uri);
+        }
+        this.localUri = this.uri;
     }
     static loadAsync(moduleId) {
         const moduleIds = Array.isArray(moduleId) ? moduleId : [moduleId];
@@ -91,15 +101,6 @@ export class Asset {
         return asset;
     }
     async downloadAsync() {
-        if (ImageAssets.isImageType(this.type)) {
-            this.width = 0;
-            this.height = 0;
-            this.name = AssetUris.getFilename(this.uri);
-        }
-        else {
-            this.name = AssetUris.getFilename(this.uri);
-        }
-        this.localUri = this.uri;
         return this;
     }
 }

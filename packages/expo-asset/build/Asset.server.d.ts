@@ -1,12 +1,5 @@
+import type { AssetDescriptor } from './Asset';
 import type { AssetMetadata } from './AssetSources';
-type AssetDescriptor = {
-    name: string;
-    type: string;
-    hash?: string | null;
-    uri: string;
-    width?: number | null;
-    height?: number | null;
-};
 export declare class Asset {
     private static byHash;
     private static byUri;
@@ -29,5 +22,4 @@ export declare class Asset {
     static fromURI(uri: string): Asset;
     downloadAsync(): Promise<this>;
 }
-export {};
 //# sourceMappingURL=Asset.server.d.ts.map

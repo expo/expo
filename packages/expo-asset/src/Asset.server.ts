@@ -1,20 +1,7 @@
-import type { AssetMetadata } from './AssetSources';
+import type { AssetDescriptor } from './Asset';
+import type { AssetMetadata, AssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
-
-type AssetSource = {
-  uri: string;
-  hash: string;
-};
-
-type AssetDescriptor = {
-  name: string;
-  type: string;
-  hash?: string | null;
-  uri: string;
-  width?: number | null;
-  height?: number | null;
-};
 
 export class Asset {
   private static byHash = {};
@@ -44,6 +31,16 @@ export class Asset {
 
     this.name ??= AssetUris.getFilename(uri);
     this.type ??= AssetUris.getFileExtension(uri);
+
+    // Essentially run the contents of downloadAsync here.
+    if (ImageAssets.isImageType(this.type)) {
+      this.width = 0;
+      this.height = 0;
+      this.name = AssetUris.getFilename(this.uri);
+    } else {
+      this.name = AssetUris.getFilename(this.uri);
+    }
+    this.localUri = this.uri;
   }
 
   static loadAsync(moduleId: number | number[] | string | string[]): Promise<Asset[]> {
@@ -125,15 +122,6 @@ export class Asset {
   }
 
   async downloadAsync(): Promise<this> {
-    if (ImageAssets.isImageType(this.type)) {
-      this.width = 0;
-      this.height = 0;
-      this.name = AssetUris.getFilename(this.uri);
-    } else {
-      this.name = AssetUris.getFilename(this.uri);
-    }
-    this.localUri = this.uri;
-
     return this;
   }
 }
