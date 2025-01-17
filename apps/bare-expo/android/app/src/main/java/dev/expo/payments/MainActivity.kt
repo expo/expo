@@ -15,7 +15,6 @@ class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     SplashScreenManager.registerOnActivity(this)
     super.onCreate(null)
-    (application as MainApplication).addActivityToStack(this.javaClass)
   }
 
   /**
@@ -57,10 +56,5 @@ class MainActivity : ReactActivity() {
     // Use the default back button implementation on Android S
     // because it's doing more than [Activity.moveTaskToBack] in fact.
     super.invokeDefaultOnBackPressed()
-  }
-
-  override fun onDestroy() {
-    super.onDestroy()
-    (application as MainApplication).removeActivityFromStack(this.javaClass)
   }
 }

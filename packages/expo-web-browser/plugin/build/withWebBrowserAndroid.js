@@ -4,15 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withWebBrowserAndroid = void 0;
-const codeMod_1 = require("@expo/config-plugins/build/android/codeMod");
-const generateCode_1 = require("@expo/config-plugins/build/utils/generateCode");
 const config_plugins_1 = require("expo/config-plugins");
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("./utils");
 const withWebBrowserAndroid = (config) => {
     config = addActivityToManifest(config);
     config = modifyMainApplication(config);
-    config = modifyMainActivity(config);
     config = addLauncherClassToProject(config);
     return config;
 };
@@ -66,7 +64,8 @@ class BrowserLauncherActivity : Activity() {
     }
     finish()
   }
-}`;
+}
+`;
             const dir = path_1.default.dirname(config_plugins_1.AndroidConfig.Paths.getProjectFilePath(config.modRequest.projectRoot, 'MainApplication'));
             const fullPath = path_1.default.join(dir, fileName);
             await promises_1.default.writeFile(fullPath, classTemplate);
@@ -77,57 +76,44 @@ class BrowserLauncherActivity : Activity() {
 function modifyMainApplication(config) {
     return (0, config_plugins_1.withMainApplication)(config, (config) => {
         const mainApplication = config.modResults;
-        const newSrc = `  private val runningActivities = ArrayList<Class<*>>()
-
-  fun addActivityToStack(cls: Class<*>?) {
-    cls?.let {
-      if (!runningActivities.contains(it)) runningActivities.add(it)
-    }
-  }
-
-  fun removeActivityFromStack(cls: Class<*>?) {
-    cls?.let {
-      if (runningActivities.contains(cls)) runningActivities.remove(it)
-    }
-  }
-
-  fun isActivityInBackStack(cls: Class<*>?) = runningActivities.contains(cls)`;
-        const init = (0, generateCode_1.mergeContents)({
-            src: mainApplication.contents,
-            comment: '  //',
-            tag: 'expo-web-browser',
-            offset: 2,
-            anchor: /ApplicationLifecycleDispatcher\.onConfigurationChanged/,
-            newSrc,
-        });
+        const importsMod = (0, utils_1.addImports)(mainApplication.contents, ['android.app.Activity', 'android.os.Bundle'], false);
+        const onCreateMod = (0, utils_1.appendContentsInsideDeclarationBlock)(importsMod, 'onCreate', '  registerActivityLifecycleCallbacks(lifecycleCallbacks)');
+        const result = addMainApplicationMod(onCreateMod);
         return {
             ...config,
             modResults: {
                 ...config.modResults,
-                contents: init.contents,
+                contents: result,
             },
         };
     });
 }
-function modifyMainActivity(config) {
-    return (0, config_plugins_1.withMainActivity)(config, (config) => {
-        const { modResults } = config;
-        if (modResults.contents.includes('addActivityToStack') ||
-            modResults.contents.includes('removeActivityFromStack')) {
-            return config;
-        }
-        const onCreateMod = (0, codeMod_1.appendContentsInsideDeclarationBlock)(modResults.contents, 'onCreate', '  (application as MainApplication).addActivityToStack(this.javaClass)');
-        const onDestroyMod = (0, codeMod_1.appendContentsInsideDeclarationBlock)(onCreateMod, 'class MainActivity', `
-  override fun onDestroy() {
-    super.onDestroy()
-    (application as MainApplication).removeActivityFromStack(this.javaClass)
-  }`);
-        return {
-            ...config,
-            modResults: {
-                ...config.modResults,
-                contents: onDestroyMod,
-            },
-        };
-    });
+function addMainApplicationMod(contents) {
+    const codeMod = `
+  private val runningActivities = ArrayList<Class<*>>()
+
+  private val lifecycleCallbacks = object : ActivityLifecycleCallbacks {
+    override fun onActivityCreated(activity: Activity, p1: Bundle?) {
+      if (!runningActivities.contains(activity::class.java)) runningActivities.add(activity::class.java)
+    }
+
+    override fun onActivityStarted(p0: Activity) = Unit
+    override fun onActivityResumed(p0: Activity) = Unit
+    override fun onActivityPaused(p0: Activity) = Unit
+    override fun onActivityStopped(p0: Activity) = Unit
+    override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) = Unit
+
+    override fun onActivityDestroyed(activity: Activity) {
+      if (runningActivities.contains(activity::class.java)) runningActivities.remove(activity::class.java)
+    }
+  }
+  
+  fun isActivityInBackStack(cls: Class<*>?) = runningActivities.contains(cls)
+
+  override fun onTerminate() {
+    super.onTerminate()
+    unregisterActivityLifecycleCallbacks(lifecycleCallbacks)
+  }
+  `;
+    return (0, utils_1.appendContentsInsideDeclarationBlock)(contents, 'class MainApplication', codeMod);
 }

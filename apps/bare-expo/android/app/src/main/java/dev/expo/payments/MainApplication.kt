@@ -1,7 +1,9 @@
 package dev.expo.payments
 
+import android.app.Activity
 import android.app.Application
 import android.content.res.Configuration
+import android.os.Bundle
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -17,7 +19,6 @@ import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
 class MainApplication : Application(), ReactApplication {
-  private val runningActivities = ArrayList<Class<*>>()
 
   override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
     this,
@@ -48,6 +49,7 @@ class MainApplication : Application(), ReactApplication {
       load()
     }
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
+    registerActivityLifecycleCallbacks(lifecycleCallbacks)
   }
 
   override fun onConfigurationChanged(newConfig: Configuration) {
@@ -55,17 +57,28 @@ class MainApplication : Application(), ReactApplication {
     ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
   }
 
-  fun addActivityToStack(cls: Class<*>?) {
-    cls?.let {
-      if (!runningActivities.contains(it)) runningActivities.add(it)
-    }
-  }
+  private val runningActivities = ArrayList<Class<*>>()
 
-  fun removeActivityFromStack(cls: Class<*>?) {
-    cls?.let {
-      if (runningActivities.contains(cls)) runningActivities.remove(it)
+  private val lifecycleCallbacks = object : ActivityLifecycleCallbacks {
+    override fun onActivityCreated(activity: Activity, p1: Bundle?) {
+      if (!runningActivities.contains(activity::class.java)) runningActivities.add(activity::class.java)
+    }
+
+    override fun onActivityStarted(p0: Activity) = Unit
+    override fun onActivityResumed(p0: Activity) = Unit
+    override fun onActivityPaused(p0: Activity) = Unit
+    override fun onActivityStopped(p0: Activity) = Unit
+    override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) = Unit
+
+    override fun onActivityDestroyed(activity: Activity) {
+      if (runningActivities.contains(activity::class.java)) runningActivities.remove(activity::class.java)
     }
   }
 
   fun isActivityInBackStack(cls: Class<*>?) = runningActivities.contains(cls)
+
+  override fun onTerminate() {
+    super.onTerminate()
+    unregisterActivityLifecycleCallbacks(lifecycleCallbacks)
+  }
 }
