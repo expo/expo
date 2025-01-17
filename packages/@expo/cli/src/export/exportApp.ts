@@ -127,9 +127,11 @@ export async function exportAppAsync(
   const bundles: Partial<Record<Platform, BundleOutput>> = {};
   const domComponentAssetsMetadata: Partial<Record<Platform, PlatformMetadata['assets']>> = {};
 
-  const spaPlatforms = useServerRendering
-    ? platforms.filter((platform) => platform !== 'web')
-    : platforms;
+  const spaPlatforms =
+    // TODO: Support server and static rendering for server component exports.
+    useServerRendering && !devServer.isReactServerComponentsEnabled
+      ? platforms.filter((platform) => platform !== 'web')
+      : platforms;
 
   try {
     if (devServer.isReactServerComponentsEnabled) {
@@ -261,14 +263,13 @@ export async function exportAppAsync(
 
       if (devServer.isReactServerComponentsEnabled) {
         const isWeb = platforms.includes('web');
-        if (!(isWeb && useServerRendering)) {
-          await exportApiRoutesStandaloneAsync(devServer, {
-            files,
-            platform: 'web',
-            apiRoutesOnly: !isWeb,
-            templateHtml,
-          });
-        }
+
+        await exportApiRoutesStandaloneAsync(devServer, {
+          files,
+          platform: 'web',
+          apiRoutesOnly: !isWeb,
+          templateHtml,
+        });
       }
 
       // TODO: Use same asset system across platforms again.
@@ -332,7 +333,10 @@ export async function exportAppAsync(
             targetDomain: 'client',
           });
         }
-      } else {
+      } else if (
+        // TODO: Support static export with RSC.
+        !devServer.isReactServerComponentsEnabled
+      ) {
         await exportFromServerAsync(projectRoot, devServer, {
           mode,
           files,
