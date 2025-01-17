@@ -35,6 +35,11 @@ class Env {
     return boolish('EXPO_LOCAL', false);
   }
 
+  /** Enable having custom API server */
+  get CUSTOM_API_URL() {
+    return string('CUSTOM_API_URL', '');
+  }
+
   /** Is running in non-interactive CI mode */
   get CI() {
     return boolish('CI', false);
