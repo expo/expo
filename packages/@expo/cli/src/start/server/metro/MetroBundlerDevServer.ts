@@ -877,9 +877,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
-    if (isReactServerComponentsEnabled && useServerRendering) {
+    if (isReactServerComponentsEnabled && exp.web?.output === 'static') {
       throw new CommandError(
-        `Experimental server component support does not support 'web.output: ${exp.web!.output}' yet. Use 'web.output: "single"' during the experimental phase.`
+        `Experimental server component support does not support 'web.output: ${exp.web!.output}' yet. Use 'web.output: "server"' during the experimental phase.`
       );
     }
 
@@ -1034,7 +1034,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {
-        if (!useServerRendering || isReactServerComponentsEnabled) {
+        if (!useServerRendering) {
           // This MUST run last since it's the fallback.
           middleware.use(
             new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
@@ -1048,7 +1048,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               ...config.exp.extra?.router,
               bundleApiRoute: (functionFilePath) =>
                 this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
-              getStaticPageAsync: (pathname) => {
+              getStaticPageAsync: async (pathname) => {
+                if (isReactServerComponentsEnabled) {
+                  const html = await manifestMiddleware.getSingleHtmlTemplateAsync();
+                  console.log(html);
+                  return html;
+                }
+
                 return this.getStaticPageAsync(pathname);
               },
             })
