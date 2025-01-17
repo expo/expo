@@ -22,10 +22,10 @@ export default function InstallSection({
       <Terminal cmd={cmd} />
       {hideBareInstructions ? null : (
         <P>
-          If you are installing this in an <A href="/bare/overview/">existing React Native app</A>,
-          start by{' '}
+          If you are installing this in an <A href="/bare/overview/">existing React Native app</A>,{' '}
+          ensure to{' '}
           <A href="/bare/installing-expo-modules/">
-            installing <CODE>expo</CODE>
+            install <CODE>expo</CODE>
           </A>{' '}
           in your project.
         </P>
