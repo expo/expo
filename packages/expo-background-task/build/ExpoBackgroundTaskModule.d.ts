@@ -1,4 +1,4 @@
-import type { NativeModule } from 'expo-modules-core';
+import { type NativeModule } from 'expo';
 import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
 declare class ExpoBackgroundTaskModule extends NativeModule {
     getStatusAsync(): Promise<BackgroundTaskStatus>;

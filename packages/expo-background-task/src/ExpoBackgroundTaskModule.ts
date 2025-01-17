@@ -1,5 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
-import type { NativeModule } from 'expo-modules-core';
+import { requireNativeModule, type NativeModule } from 'expo';
 
 import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
 
