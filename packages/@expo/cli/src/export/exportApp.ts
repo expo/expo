@@ -136,8 +136,13 @@ export async function exportAppAsync(
   try {
     if (devServer.isReactServerComponentsEnabled) {
       // In RSC mode, we only need these to be in the client dir.
-      // TODO: Merge back with other copy after we add HMR.
-      await copyPublicFolderAsync(publicPath, path.join(outputPath, 'client'));
+      // TODO: Merge back with other copy after we add SSR.
+      try {
+        await copyPublicFolderAsync(publicPath, path.join(outputPath, 'client'));
+      } catch (error) {
+        Log.error('Failed to copy public directory to dist directory');
+        throw error;
+      }
     } else {
       // NOTE(kitten): The public folder is currently always copied, regardless of targetDomain
       // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`

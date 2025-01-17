@@ -13,10 +13,13 @@ const testName = '03-server-actions-only';
 
 const staticModes = ['single', 'server'] as const;
 
-for (const staticMode of staticModes) {
-  const inputDir = `dist-${testName}-${staticMode}`;
+for (const outputMode of staticModes) {
+  const inputDir = `dist-${testName}_${outputMode}`;
 
-  test.describe(`EXPO_USE_STATIC: ${staticMode}`, () => {
+  test.describe(`EXPO_USE_STATIC: ${outputMode}`, () => {
+    // Configure this describe block to run serially on a single worker so we don't bundle multiple times to the same on-disk location.
+    test.describe.configure({ mode: 'serial' });
+
     const expoServe = createExpoServe({
       cwd: projectRoot,
       env: {
@@ -29,10 +32,9 @@ for (const staticMode of staticModes) {
       console.time('expo export');
       await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
         env: {
-          NODE_ENV: 'production',
-          EXPO_USE_STATIC: staticMode,
+          EXPO_USE_STATIC: outputMode,
           E2E_ROUTER_SRC: testName,
-          EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
+          E2E_SERVER_FUNCTIONS: '1',
           E2E_ROUTER_JS_ENGINE: 'hermes',
           EXPO_USE_METRO_REQUIRE: '1',
           E2E_CANARY_ENABLED: '1',
@@ -72,5 +74,13 @@ for (const staticMode of staticModes) {
       await expect(page.locator('[data-testid="secret-text"]')).toHaveText('Secret: test-secret');
       await expect(page.locator('[data-testid="server-contents"]')).toHaveText('Hello!');
     });
+
+    if (outputMode === 'server') {
+      test('supports API routes in server mode', async ({ page }) => {
+        const response = await page.goto(new URL('/api/endpoint', expoServe.url).href);
+        expect(response?.status()).toBe(200);
+        expect(await response?.json()).toEqual({ hello: 'world' });
+      });
+    }
   });
 }

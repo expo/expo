@@ -9,13 +9,16 @@ import { pageCollectErrors } from '../page';
 // TODO: We'll split this test up in the future when server/single do different things.
 const outputModes = ['single', 'server'] as const;
 
-for (const staticMode of outputModes) {
-  test.describe(`EXPO_USE_STATIC: ${staticMode}`, () => {
+for (const outputMode of outputModes) {
+  test.describe(`EXPO_USE_STATIC: ${outputMode}`, () => {
+    // Configure this describe block to run serially on a single worker so we don't bundle multiple times to the same on-disk location.
+    test.describe.configure({ mode: 'serial' });
+
     test.beforeAll(() => clearEnv());
     test.afterAll(() => restoreEnv());
 
     const projectRoot = getRouterE2ERoot();
-    const inputDir = `dist-01-rsc_${staticMode}`;
+    const inputDir = `dist-01-rsc_${outputMode}`;
 
     const expoServe = createExpoServe({
       cwd: projectRoot,
@@ -31,14 +34,12 @@ for (const staticMode of outputModes) {
       await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
         env: {
           E2E_ROUTER_JS_ENGINE: 'hermes',
-          EXPO_USE_METRO_REQUIRE: '1',
           E2E_CANARY_ENABLED: '1',
           E2E_RSC_ENABLED: '1',
-          EXPO_USE_STATIC: staticMode,
-          NODE_ENV: 'production',
           E2E_ROUTER_SRC: '01-rsc',
-          TEST_SECRET_VALUE: 'test-secret',
           E2E_BUILD_MARKER: 'static',
+          EXPO_USE_STATIC: outputMode,
+          TEST_SECRET_VALUE: 'test-secret',
         },
       });
       console.timeEnd('expo export');
@@ -100,6 +101,19 @@ for (const staticMode of outputModes) {
       ).toBeAttached();
       await expect(page.locator('link[rel="stylesheet"][href*="home.module"]')).toBeAttached();
     });
+
+    test('gets 404 NOT_FOUND for non-existent route', async ({ page }) => {
+      const response = await page.goto(new URL('/route-that-does-not-exist', expoServe.url).href);
+      expect(response?.status()).toBe(404);
+    });
+
+    if (outputMode === 'server') {
+      test('supports API routes in server mode', async ({ page }) => {
+        const response = await page.goto(new URL('/api/endpoint', expoServe.url).href);
+        expect(response?.status()).toBe(200);
+        expect(await response?.json()).toEqual({ hello: 'world' });
+      });
+    }
 
     test('dynamically renders RSC', async ({ page }) => {
       await page.goto(new URL('/second', expoServe.url).href);
@@ -181,7 +195,7 @@ for (const staticMode of outputModes) {
       await staticComponentRequest;
       const response = await serverResponsePromise;
 
-      expect(response.status()).toBe(500);
+      expect(response.status()).toBe(404);
       await expect(page.locator('[data-testid="shape"]')).not.toBeVisible();
     });
   });
