@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [android][background-task] Added callback parameter to new executeTask method after adding package expo-background-task ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))
+
 ## 12.0.3 — 2024-11-13
 
 ### 💡 Others
