@@ -86,13 +86,15 @@ class WebBrowserModule : Module() {
 
     // throws CurrentActivityNotFoundException
     AsyncFunction("openBrowserAsync") { url: String, options: OpenBrowserOptions ->
-      val tabsIntent = createCustomTabsIntent(options)
+      val tabsIntent = createCustomTabsIntent(options).apply {
+        intent.data = url.toUri()
+      }
 
       if (!customTabsResolver.canResolveIntent(tabsIntent)) {
         throw NoMatchingActivityException()
       }
 
-      tabsIntent.launchUrl(appContext.throwingActivity, url.toUri())
+      customTabsResolver.startCustomTabs(tabsIntent)
 
       return@AsyncFunction bundleOf(
         "type" to "opened"

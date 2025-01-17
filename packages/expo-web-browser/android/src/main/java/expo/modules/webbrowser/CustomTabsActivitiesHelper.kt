@@ -68,8 +68,10 @@ internal class CustomTabsActivitiesHelper(
   /**
    * @throws CurrentActivityNotFoundException
    */
-  fun startCustomTabs(intent: Intent) {
-    currentActivity.startActivity(intent)
+  fun startCustomTabs(tabsIntent: CustomTabsIntent) {
+    tabsIntent.intent.data?.let {
+      tabsIntent.launchUrl(currentActivity, it)
+    } ?: throw NoUrlProvidedException()
   }
 
   // endregion
