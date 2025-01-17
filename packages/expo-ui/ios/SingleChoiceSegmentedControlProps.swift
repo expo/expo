@@ -5,6 +5,6 @@ import ExpoModulesCore
 
 class SingleChoiceSegmentedControlProps: ExpoSwiftUI.ViewProps {
   @Field var options: [String] = []
-  @Field var selectedIndex: Int? = nil
+  @Field var selectedIndex: Int?
   var onOptionSelected = EventDispatcher()
 }
