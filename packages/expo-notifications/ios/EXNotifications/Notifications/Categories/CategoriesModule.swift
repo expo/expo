@@ -15,7 +15,7 @@ public class CategoriesModule: Module {
       }
     }
 
-    AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [[String: Any]], options: [String: Any]?, promise: Promise) in
+    AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?, promise: Promise) in
       let newCategory = categoryFromParams(identifier, actions: actions, options: options)
       UNUserNotificationCenter.current().getNotificationCategories { oldcategories in
         let newCategories = Set(oldcategories.filter { $0.identifier != newCategory.identifier }.union([newCategory]))
@@ -36,10 +36,10 @@ public class CategoriesModule: Module {
     }
   }
 
-  func categoryFromParams(_ id: String, actions: [[String: Any]], options: [String: Any]?) -> UNNotificationCategory {
-    let intentIdentifiers: [String] = options?["intentIdentifiers"] as? [String] ?? []
-    let previewPlaceholder: String? = options?["previewPlaceholder"] as? String
-    let categorySummaryFormat: String? = options?["categorySummaryFormat"] as? String
+  func categoryFromParams(_ id: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) -> UNNotificationCategory {
+    let intentIdentifiers: [String] = options?.intentIdentifiers as? [String] ?? []
+    let previewPlaceholder: String? = options?.previewPlaceholder as? String
+    let categorySummaryFormat: String? = options?.categorySummaryFormat as? String
     let actionsArray = actions.compactMap { actionFromParams($0) }
     let categoryOptions: UNNotificationCategoryOptions = categoryOptionsFromParams(options)
     return UNNotificationCategory(
@@ -52,94 +52,100 @@ public class CategoriesModule: Module {
     )
   }
 
-  func actionFromParams(_ params: [String: Any]) -> UNNotificationAction? {
-    guard let identifier = params["identifier"] as? String,
-      let buttonTitle = params["buttonTitle"] as? String else {
+  func actionFromParams(_ params: CategoryActionRecord) -> UNNotificationAction? {
+    guard let identifier = params.identifier,
+      let buttonTitle = params.buttonTitle else {
       return nil
     }
     var options: UNNotificationActionOptions = []
-    if let optionsParams = params["options"] as? [String: Any] {
-      if optionsParams["opensAppToForeground"] as? Bool ?? false {
+    if let optionsParams = params.options {
+      if optionsParams.opensAppToForeground == true {
         options.insert(.foreground)
       }
-      if optionsParams["isDestructive"] as? Bool ?? false {
+      if optionsParams.isDestructive == true {
         options.insert(.destructive)
       }
-      if optionsParams["isAuthenticationRequired"] as? Bool ?? false {
+      if optionsParams.isAuthenticationRequired == true {
         options.insert(.authenticationRequired)
       }
     }
-    if let textInput = params["textInput"] as? [String: String] {
+    if let textInput = params.textInput {
       return UNTextInputNotificationAction(
         identifier: identifier,
         title: buttonTitle,
-        textInputButtonTitle: textInput["submitButtonTitle"] ?? "",
-        textInputPlaceholder: textInput["placeholder"] ?? ""
+        textInputButtonTitle: textInput.submitButtonTitle ?? "",
+        textInputPlaceholder: textInput.placeholder ?? ""
       )
     }
     return UNNotificationAction(identifier: identifier, title: buttonTitle, options: options)
   }
 
-  func categoryOptionsFromParams(_ params: [String: Any]?) -> UNNotificationCategoryOptions {
+  func categoryOptionsFromParams(_ params: CategoryOptionsRecord?) -> UNNotificationCategoryOptions {
     var options: UNNotificationCategoryOptions = []
-    if params?["customDismissAction"] as? Bool ?? false {
+    if params?.customDismissAction == true {
       options.insert(.customDismissAction)
     }
-    if params?["allowInCarPlay"] as? Bool ?? false {
+    if params?.allowInCarPlay == true {
       options.insert(.allowInCarPlay)
     }
-    if params?["showTitle"] as? Bool ?? false {
+    // allowAnnouncement deprecated in iOS 15 and later
+    /*
+    if params?.allowAnnouncement as? Bool ?? false {
+      options.insert(.allowAnnouncement)
+    }
+     */
+    if params?.showTitle == true {
       options.insert(.hiddenPreviewsShowTitle)
     }
-    if params?["showSubtitle"] as? Bool ?? false {
+    if params?.showSubtitle == true {
       options.insert(.hiddenPreviewsShowSubtitle)
     }
     return options
   }
 
-  func serializeCategory(_ category: UNNotificationCategory) -> [String: Any] {
-    return [
-      "identifier": category.identifier,
-      "actions": serializeActions(category.actions),
-      "options": serializeCategoryOptions(category)
-    ]
+  func serializeCategory(_ category: UNNotificationCategory) -> CategoryRecord {
+    let record = CategoryRecord()
+    record.identifier = category.identifier
+    record.actions = serializeActions(category.actions)
+    record.options = serializeCategoryOptions(category)
+    return record
   }
 
-  func serializeActions(_ actions: [UNNotificationAction]) -> [[String: Any]] {
+  func serializeActions(_ actions: [UNNotificationAction]) -> [CategoryActionRecord] {
     return actions.map { action in
-      var serializedAction: [String: Any] = [
-        "identifier": action.identifier,
-        "title": action.title,
-        "options": serializeActionOptions(action.options)
-      ]
+      let serializedAction = CategoryActionRecord()
+      serializedAction.identifier = action.identifier
+      serializedAction.buttonTitle = action.title
+      serializedAction.options = serializeActionOptions(action.options)
       if let textInputAction = action as? UNTextInputNotificationAction {
-        serializedAction["textInput"] = [
-          "placeholder": textInputAction.textInputPlaceholder,
-          "submitButtonTitle": textInputAction.textInputButtonTitle
-        ]
+        let serializedActionTextInput = CategoryActionTextInputOptionsRecord()
+        serializedActionTextInput.placeholder = textInputAction.textInputPlaceholder
+        serializedActionTextInput.submitButtonTitle = textInputAction.textInputButtonTitle
+        serializedAction.textInput = serializedActionTextInput
       }
       return serializedAction
     }
   }
 
-  func serializeCategoryOptions(_ category: UNNotificationCategory) -> [String: Any] {
-    return [
-      "allowAnnouncement": category.options.contains(.allowAnnouncement),
-      "allowInCarPlay": category.options.contains(.allowInCarPlay),
-      "categorySummaryFormat": category.categorySummaryFormat,
-      "customDismissAction": category.options.contains(.customDismissAction),
-      "intentIdentifiers": category.intentIdentifiers,
-      "previewPlaceholder": category.hiddenPreviewsBodyPlaceholder,
-      "showTitle": category.options.contains(.hiddenPreviewsShowTitle),
-      "showSubtitle": category.options.contains(.hiddenPreviewsShowSubtitle)
-    ]
+  func serializeCategoryOptions(_ category: UNNotificationCategory) -> CategoryOptionsRecord {
+    let record = CategoryOptionsRecord()
+    // allowAnnouncement deprecated in iOS 15 and later
+    // record.allowAnnouncement = category.options.contains(.allowAnnouncement)
+    record.allowInCarPlay = category.options.contains(.allowInCarPlay)
+    record.categorySummaryFormat = category.categorySummaryFormat
+    record.customDismissAction = category.options.contains(.customDismissAction)
+    record.intentIdentifiers = category.intentIdentifiers
+    record.previewPlaceholder = category.hiddenPreviewsBodyPlaceholder
+    record.showTitle = category.options.contains(.hiddenPreviewsShowTitle)
+    record.showSubtitle = category.options.contains(.hiddenPreviewsShowSubtitle)
+    return record
   }
 
-  func serializeActionOptions(_ options: UNNotificationActionOptions) -> [String: Any] {
-    return [
-      "destructive": options.contains(.destructive),
-      "authenticationRequired": options.contains(.authenticationRequired),
-      "foreground": options.contains(.foreground)
-    ]
+  func serializeActionOptions(_ options: UNNotificationActionOptions) -> CategoryActionOptionsRecord {
+    let record = CategoryActionOptionsRecord()
+    record.isDestructive = options.contains(.destructive)
+    record.isAuthenticationRequired = options.contains(.authenticationRequired)
+    record.opensAppToForeground = options.contains(.foreground)
+    return record
   }
 }
