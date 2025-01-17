@@ -1049,12 +1049,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               bundleApiRoute: (functionFilePath) =>
                 this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
               getStaticPageAsync: async (pathname) => {
+                // TODO: Add server rendering when RSC is enabled.
                 if (isReactServerComponentsEnabled) {
+                  // NOTE: This is a temporary hack to return the SPA/template index.html in development when RSC is enabled.
+                  // While this technically works, it doesn't provide the correct experience of server rendering the React code to HTML first.
                   const html = await manifestMiddleware.getSingleHtmlTemplateAsync();
-                  console.log(html);
-                  return html;
+                  return { content: html };
                 }
 
+                // Non-RSC apps will bundle the static HTML for a given pathname and respond with it.
                 return this.getStaticPageAsync(pathname);
               },
             })
