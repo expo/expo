@@ -10,7 +10,11 @@ platforms: ['android', 'ios']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-media-library` provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
@@ -71,6 +75,39 @@ You can configure `expo-media-library` using its built-in [config plugin](/confi
     },
   ]}
 />
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **android** **ios** projects manually, then you need to add following permissions and configuration to your native projects:
+
+**Android**
+
+- To access asset location (latitude and longitude EXIF tags), add `ACCESS_MEDIA_LOCATION` permission to your project's **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml
+  <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+  ```
+
+- [Scoped storage](https://developer.android.com/training/data-storage#scoped-storage) is available from Android 10. To make `expo-media-library` work with scoped storage, you need to add the following configuration to your **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml
+  <manifest ... >
+    <application android:requestLegacyExternalStorage="true" ...>
+  </manifest>
+  ```
+
+**iOS**
+
+- Add `NSPhotoLibraryUsageDescription`, and `NSPhotoLibraryAddUsageDescription` keys to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>Give $(PRODUCT_NAME) permission to access your photos</string>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>Give $(PRODUCT_NAME) permission to save photos</string>
+  ```
+
+</ConfigReactNative>
 
 ## Usage
 
@@ -154,7 +191,7 @@ const styles = StyleSheet.create({
   },
 });
 /* @end */
-```
+````
 
 </SnackInline>
 

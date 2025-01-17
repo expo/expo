@@ -10,7 +10,11 @@ platforms: ['android', 'ios', 'tvos', 'web']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 The [`Audio.Sound`](audio.mdx) objects and [`Video`](video-av.mdx) components share a unified imperative API for media playback.
@@ -59,6 +63,25 @@ You can configure `expo-av` using its built-in [config plugin](/config-plugins/i
     },
   ]}
 />
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **android** and **ios** projects manually, then you need to configure following permissions in your native projects:
+
+- For Android, add `android.permission.RECORD_AUDIO` permission to your project's **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  ```
+
+- For iOS, add `NSMicrophoneUsageDescription` to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+  ```
+
+</ConfigReactNative>
 
 ## Usage
 

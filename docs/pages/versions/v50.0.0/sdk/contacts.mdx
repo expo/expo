@@ -10,7 +10,11 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-contacts` provides access to the device's system contacts, allowing you to get contact information as well as adding, editing, or removing contacts.
@@ -56,6 +60,26 @@ You can configure `expo-contacts` using its built-in [config plugin](/config-plu
     },
   ]}
 />
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **android** and **ios** projects manually, then you need to configure following permissions in your native projects:
+
+- For Android, add `android.permission.READ_CONTACTS` and `android.permission.WRITE_CONTACTS` permissions to your project's **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml
+  <uses-permission android:name="android.permission.READ_CONTACTS" />
+  <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+  ```
+
+- For iOS, add the `NSContactsUsageDescription` key to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSContactsUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your contacts</string>
+  ```
+
+</ConfigReactNative>
 
 ## Usage
 

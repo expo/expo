@@ -81,7 +81,49 @@ You can configure `expo-camera` using its built-in [config plugin](/config-plugi
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-camera` repository](https://github.com/expo/expo/tree/main/packages/expo-camera#installation-in-bare-react-native-projects).
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **android** and **ios** projects manually, then you need to configure following permissions in your native projects:
+
+**Android**
+
+- `expo-camera` automatically ads `android.permission.CAMERA` permission to your project's **android/app/src/main/AndroidManifest.xml**. If you want to record videos with audio, include `RECORD_AUDIO` permission:
+
+  ```xml
+  <!-- Added permission -->
+  <uses-permission android:name="android.permission.CAMERA" />
+
+  <!-- Only when recording videos with audio -->
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  ```
+
+- Then, adjust the **android/build.gradle** file to add new maven block after all other repositories as show below:
+
+  ```gradle
+  allprojects {
+    repositories {
+        // * Your other repositories here *
+        // * Add a new maven block after other repositories / blocks *
+        maven {
+            // expo-camera bundles a custom com.google.android:cameraview
+            url "$rootDir/../node_modules/expo-camera/android/maven"
+        }
+    }
+  }
+  ```
+
+**iOS**
+
+- Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` keys to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSCameraUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your camera</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+  ```
+
+</ConfigReactNative>
 
 </ConfigReactNative>
 

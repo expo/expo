@@ -10,7 +10,11 @@ platforms: ['android', 'ios', 'web']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { IOSPermissions } from '~/components/plugins/permissions';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 
 `DeviceMotion` from `expo-sensors` provides access to the device motion and orientation sensors. All data is presented in terms of three axes that run through a device. According to portrait orientation: X runs from left to right, Y from bottom to top and Z perpendicularly through the screen from back to front.
 
@@ -51,6 +55,17 @@ You can configure `DeviceMotion` from `expo-sensor` using its built-in [config p
     },
   ]}
 />
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **ios** project manually, then you need to configure `NSMotionUsageDescription` key in your native project to access `DeviceMotion` stats:
+
+```xml ios/[app]/Info.plist
+<key>NSMotionUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your device motion</string>
+```
+
+</ConfigReactNative>
 
 ## API
 

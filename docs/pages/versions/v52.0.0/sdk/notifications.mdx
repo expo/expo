@@ -14,7 +14,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import { ConfigReactNative, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -424,6 +424,12 @@ Here is an example of using the config plugin in the app config file:
 
 > The iOS APNs entitlement is _always_ set to 'development'. Xcode automatically changes this to 'production' during the archive.
 > [Learn more](https://stackoverflow.com/a/42293632/4047926).
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/sdk-52/packages/expo-notifications#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
 
 ## Permissions
 

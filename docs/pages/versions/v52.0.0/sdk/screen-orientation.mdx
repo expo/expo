@@ -39,13 +39,6 @@ Apple added support for _split view_ mode to iPads in iOS 9. This changed how th
 
 You can configure `expo-screen-orientation` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
-<ConfigReactNative>
-
-1. Open the **ios** directory in Xcode with `xed ios`. If you don't have the directory, run `npx expo prebuild -p ios` to generate one.
-2. Tick the `Requires Full Screen` checkbox in Xcode. It should be located under **Project Target** > **General** > **Deployment Info**.
-
-</ConfigReactNative>
-
 <ConfigPluginExample>
 
 ```json app.json
@@ -79,6 +72,13 @@ You can configure `expo-screen-orientation` using its built-in [config plugin](/
     },
   ]}
 />
+
+<ConfigReactNative>
+
+1. Open the **ios** directory in Xcode with `xed ios`. If you don't have the directory, run `npx expo prebuild -p ios` to generate one.
+2. Tick the `Requires Full Screen` checkbox in Xcode. It should be located under **Project Target** > **General** > **Deployment Info**.
+
+</ConfigReactNative>
 
 ## API
 

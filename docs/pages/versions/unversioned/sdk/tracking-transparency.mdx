@@ -9,7 +9,11 @@ platforms: ['android', 'ios', 'tvos']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, and more. This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](/versions/latest/config/app/#infoplist) to explain how the user will be tracked. Otherwise, your app will be rejected by Apple.
@@ -55,6 +59,25 @@ You can configure `expo-tracking-transparency` using its built-in [config plugin
     },
   ]}
 />
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **android** and **ios** projects manually, then you need to configure following permissions in your native projects:
+
+- For Android, add `com.google.android.gms.permission.AD_ID` permission to your project's **android/app/src/main/AndroidManifest.xml**.
+
+  ```xml
+  <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+  ```
+
+- For iOS, add `NSUserTrackingUsageDescription` key to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSUserTrackingUsageDescription</key>
+  <string>Your custom usage description string here.</string>
+  ```
+
+</ConfigReactNative>
 
 ## Usage
 
@@ -112,3 +135,4 @@ import * as ExpoTrackingTransparency from 'expo-tracking-transparency';
 The following usage description keys are used by this library:
 
 <IOSPermissions permissions={['NSUserTrackingUsageDescription']} />
+````
