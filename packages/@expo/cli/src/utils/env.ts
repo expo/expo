@@ -36,8 +36,8 @@ class Env {
   }
 
   /** Enable having custom API server */
-  get CUSTOM_API_URL() {
-    return string('CUSTOM_API_URL', '');
+  get EXPO_API_MIRROR() {
+    return string('EXPO_API_MIRROR', '');
   }
 
   /** Is running in non-interactive CI mode */

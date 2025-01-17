@@ -2,8 +2,8 @@ import { env } from '../utils/env';
 
 /** Get the URL for the expo.dev API. */
 export function getExpoApiBaseUrl(): string {
-  if (env.CUSTOM_API_URL) {
-    return `${env.CUSTOM_API_URL}`;
+  if (env.EXPO_API_MIRROR) {
+    return env.EXPO_API_MIRROR;
   } else if (env.EXPO_STAGING) {
     return `https://staging-api.expo.dev`;
   } else if (env.EXPO_LOCAL) {
