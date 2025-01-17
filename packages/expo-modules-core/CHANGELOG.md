@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android]: Added callback to executeTask method signature after adding package expo-background-task ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))
+
 ## 2.1.4 — 2025-01-19
 
 ### 🎉 New features

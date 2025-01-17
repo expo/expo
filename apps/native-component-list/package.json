@@ -62,6 +62,7 @@
     "expo-auth-session": "~6.0.2",
     "expo-av": "~15.0.2",
     "expo-background-fetch": "~13.0.4",
+    "expo-background-task": "~0.0.1",
     "expo-battery": "~9.0.2",
     "expo-blur": "~14.0.3",
     "expo-brightness": "~13.0.3",
