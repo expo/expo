@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `babel-plugin-syntax-hermes-parser` to the server preset for native RSC.
 - Add `displayName` to DOM components for better debugging. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
