@@ -1,14 +1,25 @@
 apply plugin: 'com.android.library'
 
-group = 'expo.modules.insights'
-version = '0.8.1'
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  useLegacyExpoModulesCorePlugin()
+}
+
+group = 'host.exp.exponent'
+version = '0.8.1'
 
 android {
   namespace "expo.modules.insights"

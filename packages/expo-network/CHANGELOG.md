@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
 ## 7.0.4 - 2024-12-16
 
 ### 🐛 Bug fixes
