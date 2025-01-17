@@ -3,17 +3,21 @@
 /**
  * This script is used to reset the project to a blank state.
  * It moves the /app, /components, /hooks, /scripts, and /constants directories to /app-example and creates a new /app directory with an index.tsx and _layout.tsx file.
- * You can remove the `reset-project` script from package.json and safely delete this file after running it.
+ * After completing, it prompts to remove the /app-example folder and the script entry in package.json.
  */
 
 const fs = require("fs");
 const path = require("path");
+const readline = require("readline");
 
 const root = process.cwd();
 const oldDirs = ["app", "components", "hooks", "constants", "scripts"];
 const newDir = "app-example";
 const newAppDir = "app";
 const newDirPath = path.join(root, newDir);
+const scriptFileName = path.basename(__filename);
+const scriptFilePath = path.join(root, "scripts", scriptFileName);
+const packageJsonPath = path.join(root, "package.json");
 
 const indexContent = `import { Text, View } from "react-native";
 
@@ -38,6 +42,61 @@ export default function RootLayout() {
   return <Stack />;
 }
 `;
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const promptForCleanup = () => {
+  rl.question(
+    "Do you want to delete the /app-example folder and this script? (Y/N): ",
+    async (answer) => {
+      if (answer.toLowerCase() === "y") {
+        try {
+          // Remove the app-example folder
+          if (fs.existsSync(newDirPath)) {
+            await fs.promises.rm(newDirPath, { recursive: true, force: true });
+            console.log(`✅ /${newDir} folder deleted.`);
+          }
+
+          // Remove the script file
+          if (fs.existsSync(scriptFilePath)) {
+            await fs.promises.unlink(scriptFilePath);
+            console.log("✅ Script file deleted.");
+          }
+
+          // Remove the script from package.json
+          const packageJson = JSON.parse(
+            await fs.promises.readFile(packageJsonPath, "utf-8"),
+          );
+          if (packageJson.scripts && packageJson.scripts["reset-project"]) {
+            delete packageJson.scripts["reset-project"];
+            await fs.promises.writeFile(
+              packageJsonPath,
+              JSON.stringify(packageJson, null, 2) + "\n",
+            );
+            console.log("✅ Script entry removed from package.json.");
+          }
+
+          console.log("\n✅ Project reset complete. Next steps:");
+          console.log(
+            "1. Run `npx expo start` to start a development server.\n2. Edit app/index.tsx to edit the main screen.",
+          );
+        } catch (error) {
+          console.error(`Error during script execution: ${error}`);
+        }
+      } else {
+        console.log("\n✅ Project reset complete. Next steps:");
+        console.log(
+          "1. Run `npx expo start` to start a development server.\n2. Edit app/index.tsx to edit the main screen.\n3. Delete the /app-example directory when you're done referencing it.",
+        );
+      }
+
+      rl.close();
+    },
+  );
+};
 
 const moveDirectories = async () => {
   try {
@@ -72,10 +131,7 @@ const moveDirectories = async () => {
     await fs.promises.writeFile(layoutPath, layoutContent);
     console.log("📄 app/_layout.tsx created.");
 
-    console.log("\n✅ Project reset complete. Next steps:");
-    console.log(
-      "1. Run `npx expo start` to start a development server.\n2. Edit app/index.tsx to edit the main screen.\n3. Delete the /app-example directory when you're done referencing it."
-    );
+    promptForCleanup();
   } catch (error) {
     console.error(`Error during script execution: ${error}`);
   }
