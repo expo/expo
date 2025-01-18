@@ -1365,7 +1365,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private setupHmr(url: URL) {
     const onReload = (platforms: string[] = []) => {
       // Send reload command to client from Fast Refresh code.
-      // console.log('[SSR]: Reload requested:', platforms);
 
       if (!platforms.length) {
         // TODO: When is this called?
@@ -1382,22 +1381,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         }
       }
     };
-
-    // globalThis.__metro_ssr_reload = (modules) => {
-    //   console.log('[SSR] Force reload', modules);
-
-    //   const platform =
-    //     modules?.failed?.publicModule?.id?.match(/[?&]platform=([\w]+)/)?.[1] ?? null;
-
-    //   if (platform) {
-    //     if (typeof globalThis.__cPlat === 'function') {
-    //       globalThis.__cPlat(platform);
-    //     }
-    //   } else {
-    //     console.log('Cannot force reload.');
-    //   }
-    //   // publicModule
-    // };
 
     this.registerSsrHmrAsync(url.toString(), onReload);
   }
