@@ -1,3 +1,4 @@
+/// <reference types="react/canary" />
 import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
 /** Props passed to a page's `ErrorBoundary` export. */
 export type ErrorBoundaryProps = {
@@ -18,6 +19,6 @@ export declare class Try extends Component<PropsWithChildren<{
         error: Error;
     } | null;
     retry: () => Promise<void>;
-    render(): string | number | boolean | Iterable<React.ReactNode> | React.JSX.Element | null | undefined;
+    render(): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<React.AwaitedReactNode> | React.JSX.Element | null | undefined;
 }
 //# sourceMappingURL=Try.d.ts.map
