@@ -640,6 +640,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     assets: readonly BundleAssetWithFileHashes[];
     files: ExportAssetMap;
   }> {
+    const getReactServerReferences = (artifacts: SerialAsset[]): string[] => {
+      // Get the React server action boundaries from the client bundle.
+      return unique(
+        artifacts
+          .filter((a) => a.type === 'js')
+          .map((artifact) =>
+            artifact.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref))
+          )
+          // TODO: Segment by module for splitting.
+          .flat()
+          .filter(Boolean) as string[]
+      );
+    };
+
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
     let {
       reactClientReferences: clientBoundaries,
@@ -655,65 +669,84 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // TODO: The output keys should be in production format or use a lookup manifest.
 
-    debug('Evaluated client boundaries:', clientBoundaries);
+    const processClientBoundaries = async (
+      reactServerReferences: string[]
+    ): Promise<{
+      artifacts: SerialAsset[];
+      assets: readonly BundleAssetWithFileHashes[];
+    }> => {
+      debug('Evaluated client boundaries:', clientBoundaries);
 
-    // Run metro bundler and create the JS bundles/source maps.
-    let bundle = await this.legacySinglePageExportBundleAsync(
-      {
-        ...options,
-        clientBoundaries,
-      },
-      extraOptions
-    );
-
-    // Get the React server action boundaries from the client bundle.
-    const reactServerReferences = bundle.artifacts
-      .filter((a) => a.type === 'js')
-      .map((artifact) =>
-        artifact.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref))
-      )
-      // TODO: Segment by module for splitting.
-      .flat()
-      .filter(Boolean) as string[];
-
-    if (!reactServerReferences) {
-      // Issue with babel plugin / metro-config.
-      throw new Error(
-        'Static server action references were not returned from the Metro client bundle'
-      );
-    }
-
-    debug('React server action boundaries from client:', reactServerReferences);
-
-    // When we export the server actions that were imported from the client, we may need to re-bundle the client with the new client boundaries.
-    const { clientBoundaries: nestedClientBoundaries } =
-      await this.rscRenderer!.exportServerActionsAsync(
-        {
-          platform: options.platform,
-          domRoot: options.domRoot,
-          entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
-        },
-        files
-      );
-
-    // TODO: Check against all modules in the initial client bundles.
-    const hasUniqueClientBoundaries = nestedClientBoundaries.some(
-      (boundary) => !clientBoundaries.includes(boundary)
-    );
-
-    if (hasUniqueClientBoundaries) {
-      debug('Re-bundling client with nested client boundaries:', nestedClientBoundaries);
-      clientBoundaries = [...new Set(clientBoundaries.concat(nestedClientBoundaries))];
-      // Re-bundle the client with the new client boundaries that only exist in server actions that were imported from the client.
       // Run metro bundler and create the JS bundles/source maps.
-      bundle = await this.legacySinglePageExportBundleAsync(
+      let bundle = await this.legacySinglePageExportBundleAsync(
         {
           ...options,
           clientBoundaries,
         },
         extraOptions
       );
-    }
+
+      // Get the React server action boundaries from the client bundle.
+      const newReactServerReferences = getReactServerReferences(bundle.artifacts);
+
+      if (!newReactServerReferences) {
+        // Issue with babel plugin / metro-config.
+        throw new Error(
+          'Static server action references were not returned from the Metro client bundle'
+        );
+      }
+
+      debug('React server action boundaries from client:', newReactServerReferences);
+
+      const currentRefs = unique([...reactServerReferences, ...newReactServerReferences]);
+      // When we export the server actions that were imported from the client, we may need to re-bundle the client with the new client boundaries.
+      const { clientBoundaries: nestedClientBoundaries } =
+        await this.rscRenderer!.exportServerActionsAsync(
+          {
+            platform: options.platform,
+            domRoot: options.domRoot,
+            entryPoints: currentRefs,
+          },
+          files
+        );
+
+      // TODO: Check against all modules in the initial client bundles.
+      const hasUniqueClientBoundaries = nestedClientBoundaries.some(
+        (boundary) => !clientBoundaries.includes(boundary)
+      );
+
+      if (hasUniqueClientBoundaries) {
+        debug('Re-bundling client with nested client boundaries:', nestedClientBoundaries);
+        clientBoundaries = unique(clientBoundaries.concat(nestedClientBoundaries));
+        // Re-bundle the client with the new client boundaries that only exist in server actions that were imported from the client.
+        // Run metro bundler and create the JS bundles/source maps.
+        bundle = await this.legacySinglePageExportBundleAsync(
+          {
+            ...options,
+            clientBoundaries,
+          },
+          extraOptions
+        );
+
+        const moreReactServerReferences = getReactServerReferences(bundle.artifacts);
+
+        const hasNestedServerReferences = moreReactServerReferences.some(
+          (boundary) => !currentRefs.includes(boundary)
+        );
+
+        if (hasNestedServerReferences) {
+          return processClientBoundaries(
+            clientBoundaries,
+            moreReactServerReferences.concat(currentRefs)
+          );
+        }
+        console.log('>>>>', moreReactServerReferences);
+      }
+
+      return bundle;
+    };
+
+    const bundle = await processClientBoundaries(clientBoundaries, serverActionReferencesInServer);
 
     // Inject the global CSS that was imported during the server render.
     bundle.artifacts.push(...cssModules);
@@ -1167,19 +1200,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 [...added, ...modified].map((m) => m.module[0]).concat(deleted)
               );
 
-              const platforms = [
-                ...new Set(
-                  Array.from(allModuleIds)
-                    .map((moduleId) => {
-                      if (typeof moduleId !== 'string') {
-                        return null;
-                      }
-                      // Extract platforms from the module IDs.
-                      return moduleId.match(/[?&]platform=([\w]+)/)?.[1] ?? null;
-                    })
-                    .filter(Boolean)
-                ),
-              ] as string[];
+              const platforms = unique(
+                Array.from(allModuleIds)
+                  .map((moduleId) => {
+                    if (typeof moduleId !== 'string') {
+                      return null;
+                    }
+                    // Extract platforms from the module IDs.
+                    return moduleId.match(/[?&]platform=([\w]+)/)?.[1] ?? null;
+                  })
+                  .filter(Boolean)
+              ) as string[];
 
               onReload(platforms);
             }
@@ -1755,4 +1786,8 @@ async function sourceMapStringAsync(
   return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {
     excludeSource: options.excludeSource,
   });
+}
+
+function unique<T>(array: T[]): T[] {
+  return Array.from(new Set(array));
 }
