@@ -729,34 +729,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Re-bundle the client with the new client boundaries that only exist in server actions that were imported from the client.
       // Run metro bundler and create the JS bundles/source maps.
       return processClientBoundaries(allKnownReactServerReferences);
-
-      // bundle = await this.legacySinglePageExportBundleAsync(
-      //   {
-      //     ...options,
-      //     clientBoundaries,
-      //   },
-      //   extraOptions
-      // );
-
-      // const moreReactServerReferences = getReactServerReferences(bundle.artifacts);
-      // console.log(
-      //   'moreReactServerReferences',
-      //   moreReactServerReferences,
-      //   allKnownReactServerReferences
-      // );
-
-      // const hasNestedServerReferences = moreReactServerReferences.filter(
-      //   (boundary) => !allKnownReactServerReferences.includes(boundary)
-      // );
-
-      // if (hasNestedServerReferences.length) {
-      //   debug('Re-bundling with nested server boundaries:', hasNestedServerReferences);
-      //   return processClientBoundaries(
-      //     moreReactServerReferences.concat(allKnownReactServerReferences)
-      //   );
-      // }
-
-      // return bundle;
     };
 
     const bundle = await processClientBoundaries(serverActionReferencesInServer);
