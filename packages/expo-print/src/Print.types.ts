@@ -113,6 +113,11 @@ export type FilePrintOptions = {
    * Whether to include base64 encoded string of the file in the returned object.
    */
   base64?: boolean;
+  /**
+   * Number to override the device's font size defined in device's settings. 100 in case of needing it to be unchanged
+   * @platform android
+   */
+  textZoom?: number;
 };
 
 // @needsAudit
