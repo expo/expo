@@ -560,7 +560,6 @@ if (__DEV__) {
     dependencyMap: DependencyMap,
     inverseDependencies: InverseDependencyMap
   ) {
-    console.log('Hot update module', id, inverseDependencies);
     const mod = modules.get(id);
     if (!mod) {
       if (factory) {
@@ -848,6 +847,7 @@ if (__DEV__) {
 
     if (hot._acceptCallback) {
       try {
+        // @ts-expect-error
         hot._acceptCallback();
       } catch (error) {
         console.error(`Error while calling accept handler for module ${id}: `, error);
