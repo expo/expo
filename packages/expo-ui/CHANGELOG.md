@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [ios] Add Picker component ([#34198](https://github.com/expo/expo/pull/34198) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add Picker component ([#34198](https://github.com/expo/expo/pull/34198) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
