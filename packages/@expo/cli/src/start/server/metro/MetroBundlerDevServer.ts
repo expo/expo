@@ -79,7 +79,6 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import requireFromString from 'require-from-string';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -1099,21 +1098,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private onReloadRscEvent: ((platform: string) => void) | null = null;
 
   private async registerSsrHmrAsync(url: string, onReload: (platform: string[]) => void) {
-    const injectUpdate = (update) => {
-      const inject = ({
-        module: [id, code],
-        sourceURL,
-      }: {
-        module: [string, string];
-        sourceURL: string;
-      }) => {
-        // eval(code);
-        requireFromString(code, sourceURL);
-      };
-      update.added.forEach(inject);
-      update.modified.forEach(inject);
-    };
-
     if (!this.hmrServer || this.ssrHmrClients.has(url)) {
       return;
     }
@@ -1158,22 +1142,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
               // if (typeof globalThis.__c === 'function') globalThis.__c();
 
-              // injectUpdate(update);
-
-              console.log(
-                '[SSR] HMR Update:',
-                util.inspect(update, {
-                  colors: true,
-                  compact: false,
-                  showHidden: false,
-                  depth: null,
-                })
-              );
-
               const allModuleIds = new Set(
                 [...added, ...modified].map((m) => m.module[0]).concat(deleted)
               );
-              console.log('allModuleIds', allModuleIds);
 
               const platforms = [
                 ...new Set(
@@ -1188,9 +1159,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                     .filter(Boolean)
                 ),
               ] as string[];
-
-              console.log('found platforms in update:', platforms);
-              // const platforms;
 
               onReload(platforms);
             }

@@ -97,7 +97,6 @@ export type DefineFn = (
 type VerboseModuleNameForDev = string;
 type ModuleDefiner = (moduleId: ModuleID) => void;
 
-console.log('Loaded metro-runtime require runtime. Has current:', global.__d);
 global.__r = metroRequire as RequireFn;
 global[`${__METRO_GLOBAL_PREFIX__}__d`] = define as DefineFn;
 global.__c = clear;
@@ -145,8 +144,6 @@ function clearForPlatform(platform: string): ModuleList {
         .filter(Boolean)
     ),
   ] as string[];
-
-  console.log('CLEARING:', moduleIdsForPlatform);
 
   for (const moduleId of moduleIdsForPlatform) {
     modules.delete(moduleId);
@@ -703,7 +700,6 @@ if (__DEV__) {
 
       const updatedMod = modules.get(updatedID);
       if (updatedMod == null) {
-        console.log('updatedID', updatedID, ' - ', modules.keys());
         throw new Error('[Refresh] Expected to find the updated module.');
       }
       const prevExports = updatedMod.publicModule.exports;
@@ -898,7 +894,6 @@ if (__DEV__) {
     }
   ) => {
     if (typeof __metro_ssr_reload !== 'undefined') {
-      console.log('Performing SSR full refresh');
       globalThis.__metro_ssr_reload(modules);
     } else if (
       typeof window !== 'undefined' &&
