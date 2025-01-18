@@ -735,18 +735,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         );
 
         if (hasNestedServerReferences) {
-          return processClientBoundaries(
-            clientBoundaries,
-            moreReactServerReferences.concat(currentRefs)
-          );
+          return processClientBoundaries(moreReactServerReferences.concat(currentRefs));
         }
-        console.log('>>>>', moreReactServerReferences);
       }
 
       return bundle;
     };
 
-    const bundle = await processClientBoundaries(clientBoundaries, serverActionReferencesInServer);
+    const bundle = await processClientBoundaries(serverActionReferencesInServer);
 
     // Inject the global CSS that was imported during the server render.
     bundle.artifacts.push(...cssModules);
