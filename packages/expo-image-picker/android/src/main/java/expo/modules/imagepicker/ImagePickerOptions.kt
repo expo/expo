@@ -124,7 +124,6 @@ internal enum class CameraType(val value: String) : Enumerable {
   FRONT("front")
 }
 
-
 internal enum class DefaultTab(val value: String) : Enumerable {
   PHOTOS("photos"),
   ALBUMS("albums");
