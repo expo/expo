@@ -5,11 +5,11 @@ it('creates an asset', () => {
   expect(asset).toEqual({
     downloaded: true,
     hash: null,
-    height: null,
-    localUri: null,
-    name: '',
+    height: 0,
+    localUri: 'https://github.com/expo.png',
+    name: 'expo.png',
     type: 'png',
     uri: 'https://github.com/expo.png',
-    width: null,
+    width: 0,
   });
 });
