@@ -1094,7 +1094,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private onReloadRscEvent: (() => void) | null = null;
 
-  private async registerSsrHmrAsync(url: string, onReload: () => void) {
+  private async registerSsrHmrAsync(url: string, onReload: (platform: string[]) => void) {
     const injectUpdate = (update) => {
       const inject = ({
         module: [id, code],
@@ -1166,7 +1166,29 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 })
               );
 
-              // onReload();
+              const allModuleIds = new Set(
+                [...added, ...modified].map((m) => m.module[0]).concat(deleted)
+              );
+              console.log('allModuleIds', allModuleIds);
+
+              const platforms = [
+                ...new Set(
+                  Array.from(allModuleIds)
+                    .map((moduleId) => {
+                      if (typeof moduleId !== 'string') {
+                        return null;
+                      }
+                      // Extract platforms from the module IDs.
+                      return moduleId.match(/[?&]platform=([\w]+)/)?.[1] ?? null;
+                    })
+                    .filter(Boolean)
+                ),
+              ] as string[];
+
+              console.log('found platforms in update:', platforms);
+              // const platforms;
+
+              onReload(platforms);
             }
           }
           break;
@@ -1369,20 +1391,42 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   // Metro HMR
 
   private setupHmr(url: URL) {
-    const onReload = () => {
+    const onReload = (platforms: string[] = []) => {
       // Send reload command to client from Fast Refresh code.
-      debug('[SSR]: Reload requested.');
+      console.log('[SSR]: Reload requested:', platforms);
 
       this.onReloadRscEvent?.();
 
-      this.broadcastMessage('sendDevCommand', {
-        name: 'rsc-reload',
-        // TODO: Target only certain platforms
-        // platform,
-      });
+      if (!platforms.length) {
+        // TODO: When is this called?
+        this.broadcastMessage('sendDevCommand', {
+          name: 'rsc-reload',
+        });
+      } else {
+        for (const platform of platforms) {
+          this.broadcastMessage('sendDevCommand', {
+            name: 'rsc-reload',
+            platform,
+          });
+        }
+      }
     };
 
-    globalThis.__metro_ssr_reload = onReload;
+    globalThis.__metro_ssr_reload = (modules) => {
+      console.log('[SSR] Force reload', modules);
+
+      const platform =
+        modules?.failed?.publicModule?.id?.match(/[?&]platform=([\w]+)/)?.[1] ?? null;
+
+      if (platform) {
+        if (typeof globalThis.__cPlat === 'function') {
+          globalThis.__cPlat(platform);
+        }
+      } else {
+        console.log('Cannot force reload.');
+      }
+      // publicModule
+    };
 
     this.registerSsrHmrAsync(url.toString(), onReload);
   }
