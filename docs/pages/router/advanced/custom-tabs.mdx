@@ -22,7 +22,7 @@ There are four components offered by `expo-router/ui` to create custom tab layou
 | `TabTrigger` | A trigger component to switch to the specified tab. It is used to define the route using `href` prop and a `name` for each tab. |
 | `TabSlot`    | A slot to render the currently selected tab.                                                                                    |
 
-A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a`TabSlot`, all within the `Tabs` component), as shown here:
+A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a`TabSlot`, all within the `Tabs` component, as shown here:
 
 ```tsx app/(tabs)/_layout.tsx|collapseHeight=440
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
