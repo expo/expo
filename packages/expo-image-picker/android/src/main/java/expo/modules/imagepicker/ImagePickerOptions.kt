@@ -129,7 +129,7 @@ internal enum class DefaultTab(val value: String) : Enumerable {
   PHOTOS("photos"),
   ALBUMS("albums");
 
-  fun toActivityResultContractsDefaultTab(): ActivityResultContracts.PickVisualMedia.DefaultTab {
+  fun toDefaultTab(): ActivityResultContracts.PickVisualMedia.DefaultTab {
     return when (this) {
       PHOTOS -> ActivityResultContracts.PickVisualMedia.DefaultTab.PhotosTab
       ALBUMS -> ActivityResultContracts.PickVisualMedia.DefaultTab.AlbumsTab
