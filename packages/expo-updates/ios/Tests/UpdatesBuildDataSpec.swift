@@ -31,7 +31,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
       
       db = UpdatesDatabase()
       db.databaseQueue.sync {
-        try! db.openDatabase(inDirectory: testDatabaseDir)
+        try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
       }
 
       logger = UpdatesLogger()
