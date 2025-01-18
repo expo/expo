@@ -43,5 +43,9 @@ var SourceSkips;
      * Skip the whole `scripts` section in the project's package.json.
      */
     SourceSkips[SourceSkips["PackageJsonScriptsAll"] = 1024] = "PackageJsonScriptsAll";
+    /**
+     * Skip .gitignore files.
+     */
+    SourceSkips[SourceSkips["GitIgnore"] = 2048] = "GitIgnore";
 })(SourceSkips || (exports.SourceSkips = SourceSkips = {}));
 //# sourceMappingURL=SourceSkips.js.map

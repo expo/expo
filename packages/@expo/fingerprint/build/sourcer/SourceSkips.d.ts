@@ -36,5 +36,9 @@ export declare enum SourceSkips {
     /**
      * Skip the whole `scripts` section in the project's package.json.
      */
-    PackageJsonScriptsAll = 1024
+    PackageJsonScriptsAll = 1024,
+    /**
+     * Skip .gitignore files.
+     */
+    GitIgnore = 2048
 }
