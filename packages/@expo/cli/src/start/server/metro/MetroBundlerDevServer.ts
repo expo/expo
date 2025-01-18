@@ -678,7 +678,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       debug('Evaluated client boundaries:', clientBoundaries);
 
       // Run metro bundler and create the JS bundles/source maps.
-      let bundle = await this.legacySinglePageExportBundleAsync(
+      const bundle = await this.legacySinglePageExportBundleAsync(
         {
           ...options,
           clientBoundaries,
@@ -690,22 +690,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const newReactServerReferences = getReactServerReferences(bundle.artifacts);
 
       if (!newReactServerReferences) {
-        // Issue with babel plugin / metro-config.
+        // Possible issue with babel plugin / metro-config.
         throw new Error(
           'Static server action references were not returned from the Metro client bundle'
         );
       }
-
       debug('React server action boundaries from client:', newReactServerReferences);
 
-      const currentRefs = unique([...reactServerReferences, ...newReactServerReferences]);
+      const allKnownReactServerReferences = unique([
+        ...reactServerReferences,
+        ...newReactServerReferences,
+      ]);
+
       // When we export the server actions that were imported from the client, we may need to re-bundle the client with the new client boundaries.
       const { clientBoundaries: nestedClientBoundaries } =
         await this.rscRenderer!.exportServerActionsAsync(
           {
             platform: options.platform,
             domRoot: options.domRoot,
-            entryPoints: currentRefs,
+            entryPoints: allKnownReactServerReferences,
           },
           files
         );
@@ -715,31 +718,45 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         (boundary) => !clientBoundaries.includes(boundary)
       );
 
-      if (hasUniqueClientBoundaries) {
-        debug('Re-bundling client with nested client boundaries:', nestedClientBoundaries);
-        clientBoundaries = unique(clientBoundaries.concat(nestedClientBoundaries));
-        // Re-bundle the client with the new client boundaries that only exist in server actions that were imported from the client.
-        // Run metro bundler and create the JS bundles/source maps.
-        bundle = await this.legacySinglePageExportBundleAsync(
-          {
-            ...options,
-            clientBoundaries,
-          },
-          extraOptions
-        );
-
-        const moreReactServerReferences = getReactServerReferences(bundle.artifacts);
-
-        const hasNestedServerReferences = moreReactServerReferences.some(
-          (boundary) => !currentRefs.includes(boundary)
-        );
-
-        if (hasNestedServerReferences) {
-          return processClientBoundaries(moreReactServerReferences.concat(currentRefs));
-        }
+      if (!hasUniqueClientBoundaries) {
+        return bundle;
       }
 
-      return bundle;
+      debug('Re-bundling client with nested client boundaries:', nestedClientBoundaries);
+
+      clientBoundaries = unique(clientBoundaries.concat(nestedClientBoundaries));
+
+      // Re-bundle the client with the new client boundaries that only exist in server actions that were imported from the client.
+      // Run metro bundler and create the JS bundles/source maps.
+      return processClientBoundaries(allKnownReactServerReferences);
+
+      // bundle = await this.legacySinglePageExportBundleAsync(
+      //   {
+      //     ...options,
+      //     clientBoundaries,
+      //   },
+      //   extraOptions
+      // );
+
+      // const moreReactServerReferences = getReactServerReferences(bundle.artifacts);
+      // console.log(
+      //   'moreReactServerReferences',
+      //   moreReactServerReferences,
+      //   allKnownReactServerReferences
+      // );
+
+      // const hasNestedServerReferences = moreReactServerReferences.filter(
+      //   (boundary) => !allKnownReactServerReferences.includes(boundary)
+      // );
+
+      // if (hasNestedServerReferences.length) {
+      //   debug('Re-bundling with nested server boundaries:', hasNestedServerReferences);
+      //   return processClientBoundaries(
+      //     moreReactServerReferences.concat(allKnownReactServerReferences)
+      //   );
+      // }
+
+      // return bundle;
     };
 
     const bundle = await processClientBoundaries(serverActionReferencesInServer);
