@@ -27,8 +27,8 @@ Also, see the guide on [creating a splash screen image](/develop/user-interface/
 
 This example shows how to keep the splash screen visible while loading app resources and then hide the splash screen when the app has rendered some initial content.
 
-```jsx App.js
-import { useCallback, useEffect, useState } from 'react';
+```jsx app/_layout.tsx
+import { useLayoutEffect, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
@@ -65,7 +65,7 @@ export default function App() {
     prepare();
   }, []);
 
-  const onLayoutRootView = useCallback(() => {
+  useLayoutEffect(() => {
     if (appIsReady) {
       // This tells the splash screen to hide immediately! If we call this after
       // `setAppIsReady`, then we may see a blank screen while the app is
@@ -80,14 +80,8 @@ export default function App() {
     return null;
   }
 
-  return (
-    <View
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-      onLayout={onLayoutRootView}>
-      <Text>SplashScreen Demo! 👋</Text>
-      <Entypo name="rocket" size={30} />
-    </View>
-  );
+  // For simplicity we only render a `Slot` here. In Reality you might want to render Headers, Footers and Navigation Components like `Stack` here.
+  return <Slot />;
 }
 ```
 
