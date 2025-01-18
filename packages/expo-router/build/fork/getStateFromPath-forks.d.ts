@@ -44,7 +44,7 @@ export declare function spreadParamsAcrossAllStates(state: InitialState, params?
 export declare function stripBaseUrl(path: string, baseUrl?: string | undefined): string;
 export declare function matchForEmptyPath(configs: RouteConfig[]): {
     path: string;
-    type: "layout" | "dynamic" | "static";
+    type: "layout" | "static" | "dynamic";
     userReadableName: string;
     isIndex: boolean;
     isInitial?: boolean | undefined;

@@ -8,7 +8,7 @@
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/client.ts#L1
  */
 
-/// <reference types="react/canary" />
+//// <reference types="react/canary" />
 'use client';
 
 import Constants from 'expo-constants';
@@ -19,6 +19,7 @@ import {
   useCallback,
   useState,
   startTransition,
+  // @ts-expect-error
   use,
   useEffect,
 } from 'react';
@@ -330,11 +331,11 @@ export const prefetchRSC = (input: string, params?: unknown): void => {
   }
 };
 
-const RefetchContext = createContext<
-  (input: string, searchParams?: URLSearchParams | string) => void
->(() => {
-  throw new Error('Missing Root component');
-});
+const RefetchContext = createContext<(input: string, searchParams?: URLSearchParams) => void>(
+  () => {
+    throw new Error('Missing Root component');
+  }
+);
 const ElementsContext = createContext<Elements | null>(null);
 
 export const Root = ({
