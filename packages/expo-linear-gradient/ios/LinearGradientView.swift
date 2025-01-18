@@ -11,7 +11,7 @@ final class LinearGradientView: ExpoView {
   public var gradientLayer: LinearGradientLayer {
     return layer as! LinearGradientLayer
   }
-  
+
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
     layer.setNeedsDisplay()
