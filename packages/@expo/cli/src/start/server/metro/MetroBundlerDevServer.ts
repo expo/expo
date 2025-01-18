@@ -1735,5 +1735,3 @@ async function sourceMapStringAsync(
     excludeSource: options.excludeSource,
   });
 }
-
-import util from 'util';

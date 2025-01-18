@@ -424,10 +424,9 @@ export function createServerComponentsMiddleware(
 
   let ensurePromise: Promise<any> | null = null;
   async function ensureSSRReady() {
-    console.log('Ensuring SSR is ready...');
     // TODO: Extract CSS Modules / Assets from the bundler process
     const runtime = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
-      'expo-router/noop.js',
+      'metro-runtime/src/modules/empty-module.js',
       {
         environment: 'react-server',
         platform: 'web',
