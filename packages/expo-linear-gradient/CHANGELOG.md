@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix adaptive color support for `PlatformColor` and add corresponding types
+
 ### 💡 Others
 
 ## 14.0.1 — 2024-10-25
