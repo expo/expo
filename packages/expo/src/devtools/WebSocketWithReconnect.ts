@@ -103,7 +103,7 @@ export class WebSocketWithReconnect implements WebSocket {
     this.eventSubscriptions.push(this.emitter.addListener(event, listener));
   }
 
-  public removeEventListener(event: string, listener: (event: any) => void) {
+  public removeEventListener(_event: string, listener: (event: any) => void) {
     const index = this.eventSubscriptions.findIndex(
       (subscription) => subscription.listener === listener
     );
@@ -284,19 +284,19 @@ export class WebSocketWithReconnect implements WebSocket {
 
   //#regions Unsupported legacy properties
 
-  public set onclose(value: ((e: WebSocketCloseEvent) => any) | null) {
+  public set onclose(_value: ((e: WebSocketCloseEvent) => any) | null) {
     throw new Error('Unsupported legacy property, use addEventListener instead');
   }
 
-  public set onerror(value: ((e: Event) => any) | null) {
+  public set onerror(_value: ((e: Event) => any) | null) {
     throw new Error('Unsupported legacy property, use addEventListener instead');
   }
 
-  public set onmessage(value: ((e: WebSocketMessageEvent) => any) | null) {
+  public set onmessage(_value: ((e: WebSocketMessageEvent) => any) | null) {
     throw new Error('Unsupported legacy property, use addEventListener instead');
   }
 
-  public set onopen(value: (() => any) | null) {
+  public set onopen(_value: (() => any) | null) {
     throw new Error('Unsupported legacy property, use addEventListener instead');
   }
 

@@ -36,6 +36,12 @@ if new_arch_enabled
   compiler_flags << ' ' << new_arch_compiler_flags
 end
 
+# List of features that are required by linked modules
+coreFeatures = []
+if defined?(Expo::PackagesConfig)
+  coreFeatures = Expo::PackagesConfig.instance.coreFeatures
+end
+
 Pod::Spec.new do |s|
   s.name           = 'ExpoModulesCore'
   s.version        = package['version']

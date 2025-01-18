@@ -204,17 +204,21 @@ async function runServerDeployCommandAsync(
     return false;
   }
 
-  const globalBin = getCommandBin('eas');
-  if (!globalBin) {
-    // This should never happen from EAS Builds.
-    // Possible to happen when building locally with `npx expo run`
-    logMetroErrorInXcode(
-      projectRoot,
-      `eas-cli is not installed globally, skipping server deployment. Install EAS CLI with 'npm install -g eas-cli'.`
-    );
-    return false;
+  if (!env.EAS_BUILD) {
+    // This check helps avoid running EAS if the user isn't a user of EAS.
+    // We only need to run it when building outside of EAS.
+    const globalBin = getCommandBin('eas');
+    if (!globalBin) {
+      // This should never happen from EAS Builds.
+      // Possible to happen when building locally with `npx expo run`
+      logMetroErrorInXcode(
+        projectRoot,
+        `eas-cli is not installed globally, skipping server deployment. Install EAS CLI with 'npm install -g eas-cli'.`
+      );
+      return false;
+    }
+    debug('Found eas-cli:', globalBin);
   }
-  debug('Found eas-cli:', globalBin);
 
   let json: any;
   try {
@@ -241,8 +245,8 @@ async function runServerDeployCommandAsync(
 
       // results = DEPLOYMENT_SUCCESS_FIXTURE;
       results = await spawnAsync(
-        'node',
-        [globalBin, 'deploy', '--non-interactive', '--json', `--export-dir=${exportDir}`],
+        'npx',
+        ['eas-cli', 'deploy', '--non-interactive', '--json', `--export-dir=${exportDir}`],
         spawnOptions
       );
 

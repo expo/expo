@@ -235,9 +235,19 @@ class Env {
     return boolish('EXPO_UNSTABLE_DEPLOY_SERVER', false);
   }
 
+  /** Is running in EAS Build. This is set by EAS: https://docs.expo.dev/eas/environment-variables/ */
+  get EAS_BUILD(): boolean {
+    return boolish('EAS_BUILD', false);
+  }
+
   /** Disable the React Native Directory compatibility check for new architecture when installing packages */
   get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
     return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', false);
+  }
+
+  /** Disable the dependency validation when installing other dependencies and starting the project */
+  get EXPO_NO_DEPENDENCY_VALIDATION(): boolean {
+    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', false);
   }
 }
 

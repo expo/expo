@@ -1,6 +1,6 @@
 // Prepare the latest version by copying the actual exact latest version
 import fsExtra from 'fs-extra';
-import { join } from 'path';
+import { join } from 'node:path';
 
 const { copySync, removeSync, readJsonSync } = fsExtra;
 const { version } = readJsonSync('./package.json');

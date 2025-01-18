@@ -378,6 +378,12 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/UIScreen'));
+    },
+    name: 'Expo UI',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Screens'));
     },
     name: 'Screens',

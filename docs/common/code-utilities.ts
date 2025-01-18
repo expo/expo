@@ -1,6 +1,6 @@
 import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
-import { Children, ReactElement, ReactNode, isValidElement } from 'react';
+import { Children, ReactElement, ReactNode, PropsWithChildren } from 'react';
 
 // Read more: https://github.com/FormidableLabs/prism-react-renderer#custom-language-support
 async function initPrismAsync() {
@@ -33,6 +33,7 @@ export function cleanCopyValue(value: string) {
     .replace(/\/\*\s?@(tutinfo[^*]+|end|hide[^*]+).?\*\//g, '')
     .replace(/#\s?@(tutinfo[^#]+|end|hide[^#]+).?#/g, '')
     .replace(/<!--\s?@(tutinfo[^<>]+|end|hide[^<>]+).?-->/g, '')
+    .replace(/%%placeholder-start%%.*%%placeholder-end%%/g, '')
     .replace(/^ +\r?\n|\n +\r?$/gm, '');
 }
 
@@ -163,30 +164,13 @@ export function parseValue(value: string) {
   };
 }
 
-export function getRootCodeBlockProps(children: ReactNode, className?: string) {
-  if (className?.startsWith('language')) {
-    return { className, children };
+export function findNodeByPropInChildren<T>(element: ReactElement, propToFind: string): T | null {
+  if (!element || typeof element !== 'object') {
+    return null;
   }
-
-  const firstChild = Children.toArray(children)[0];
-  if (isValidElement(firstChild) && firstChild.props.className) {
-    if (firstChild.props.className.startsWith('language')) {
-      return {
-        className: firstChild.props.className,
-        children: firstChild.props.children,
-        isNested: true,
-      };
-    }
-  }
-
-  return {};
-}
-
-export function findPropInChildren(element: ReactElement, propToFind: string): string | null {
-  if (!element || typeof element !== 'object') return null;
 
   if (element.props?.[propToFind]) {
-    return element.props[propToFind];
+    return element.props;
   }
 
   if (element.props?.children) {
@@ -194,15 +178,34 @@ export function findPropInChildren(element: ReactElement, propToFind: string): s
 
     if (Array.isArray(children)) {
       for (const child of Children.toArray(children)) {
-        const wantedProp: string | null = findPropInChildren(child as ReactElement, propToFind);
-        if (wantedProp) return wantedProp;
+        const allProps = findNodeByPropInChildren<T>(child as ReactElement, propToFind);
+        if (allProps) {
+          return allProps;
+        }
       }
     } else {
-      return findPropInChildren(children as ReactElement, propToFind);
+      return findNodeByPropInChildren<T>(children as ReactElement, propToFind);
     }
   }
 
   return null;
+}
+
+export function getCodeBlockDataFromChildren(children?: ReactNode, className?: string) {
+  if (typeof children === 'string') {
+    return {
+      ...parseValue(children),
+      language: className ? className.split('-')[1] : 'jsx',
+    };
+  }
+  const codeNode = findNodeByPropInChildren<PropsWithChildren<{ className: string }>>(
+    children as ReactElement,
+    'className'
+  );
+  const code = parseValue(codeNode?.children?.toString() ?? '');
+  const codeLanguage = codeNode?.className ? codeNode.className.split('-')[1] : 'jsx';
+
+  return { ...code, language: codeLanguage };
 }
 
 export function getCollapseHeight(params?: Record<string, string>) {

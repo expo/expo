@@ -8,6 +8,7 @@ description: Learn about Expo Application Services (EAS) for Expo and React Nati
 import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
 import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
@@ -40,21 +41,28 @@ Read the full pitch at [expo.dev/eas](https://expo.dev/eas), or follow the links
 />
 
 <BoxLink
-  title="EAS Metadata (In Beta)"
+  title="EAS Hosting (in preview)"
+  description="Deploy Expo Router websites and API routes."
+  href="/eas/hosting/introduction"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
+  title="EAS Metadata (in beta)"
   description="Upload all app store information required to get your app published."
   href="/eas/metadata/"
   Icon={EasMetadataIcon}
 />
 
 <BoxLink
-  title="EAS Insights (In Preview)"
+  title="EAS Insights (in preview)"
   description="View analytics about a project's performance, usage, and reach."
   href="/eas-insights/introduction/"
   Icon={DataIcon}
 />
 
 <BoxLink
-  title="EAS Workflows (In Preview)"
+  title="EAS Workflows (in preview)"
   description="Automate your development release workflows."
   href="/eas-workflows/get-started/"
   Icon={Dataflow01Icon}

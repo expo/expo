@@ -134,9 +134,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       Prop("videoQuality") { (view, quality: VideoQuality?) in
-        if let quality, view.videoQuality != quality {
-          view.videoQuality = quality
-        }
+        view.videoQuality = quality ?? .video1080p
       }
 
       Prop("autoFocus") { (view, focusMode: FocusMode?) in

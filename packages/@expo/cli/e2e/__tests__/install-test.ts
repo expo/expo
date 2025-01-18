@@ -70,7 +70,7 @@ it('runs `npx expo install expo-sms`', async () => {
 
   // Added expected package
   const pkgDependencies = pkg.dependencies as Record<string, string>;
-  expect(pkgDependencies['expo-sms']).toBe('~13.0.0');
+  expect(pkgDependencies['expo-sms']).toBe('~13.0.1');
   expect(pkg.devDependencies).toEqual({
     '@babel/core': '^7.25.2',
   });
@@ -196,6 +196,52 @@ it('runs `npx expo install expo@<version> --fix`', async () => {
   expect(pkg.read().dependencies).toMatchObject({
     'expo-dev-client': expect.stringContaining('canary'),
   });
+});
+
+it('does not validate for `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --check`', async () => {
+  const env = { EXPO_NO_DEPENDENCY_VALIDATION: '1' };
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'install-check-no-validation',
+    'with-blank',
+    {
+      reuseExisting: false,
+    }
+  );
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+
+  // Install wrong package version of `expo-image`
+  await expect(
+    executeExpoAsync(projectRoot, ['install', 'expo-image@1.0.0'], { env })
+  ).resolves.toMatchObject({
+    stdout: expect.stringContaining('Installing 1 other package using bun'),
+  });
+
+  // Ensure the wrong version is installed
+  expect(pkg.read().dependencies).toMatchObject({ 'expo-image': '1.0.0' });
+
+  // Ensure `expo install --check` does not throw when validation is disabled
+  await expect(
+    executeExpoAsync(projectRoot, ['install', '--check'], { env })
+  ).resolves.toMatchObject({
+    stdout: expect.stringContaining('Dependencies are up to date'),
+  });
+
+  // Ensure `expo install --check <package>` does not throw when validation is disabled
+  await expect(
+    executeExpoAsync(projectRoot, ['install', 'expo-image', '--check'], {
+      env: { ...env, EXPO_DEBUG: '1' },
+    })
+  ).resolves.toMatchObject({
+    // Ensure no dependency issues are found
+    stdout: expect.stringContaining('Dependencies are up to date'),
+    // Ensure a debug warning is printed
+    stderr: expect.stringContaining(
+      'Dependency validation is disabled through EXPO_NO_DEPENDENCY_VALIDATION=1'
+    ),
+  });
+
+  // Ensure `--check` did not fix the version
+  expect(pkg.read().dependencies).toMatchObject({ 'expo-image': '1.0.0' });
 });
 
 describe('expo-router integration', () => {

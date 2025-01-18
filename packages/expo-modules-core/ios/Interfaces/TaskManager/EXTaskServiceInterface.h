@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXTaskLaunchReason.h>
 #import <ExpoModulesCore/EXTaskInterface.h>
 #import <ExpoModulesCore/EXTaskManagerInterface.h>
 
@@ -64,5 +65,12 @@
 - (void)setTaskManager:(nonnull id<EXTaskManagerInterface>)taskManager
               forAppId:(nonnull NSString *)appId
                withUrl:(nonnull NSString *)appUrl;
+
+/**
+ * Executes tasks that supports the provided launch reason.
+ */
+- (void)runTasksWithReason:(EXTaskLaunchReason)launchReason
+                  userInfo:(nullable NSDictionary *)userInfo
+         completionHandler:(nullable void (^)(UIBackgroundFetchResult))completionHandler;
 
 @end
