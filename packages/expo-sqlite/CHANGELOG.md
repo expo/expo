@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177) by [@kudo](https://github.com/kudo))
+- Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177), [#34205](https://github.com/expo/expo/pull/34205) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

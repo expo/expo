@@ -92,8 +92,18 @@ class SQLiteModule : Module() {
 
           val dbPath = ensureDatabasePathExists(databasePath)
           database = NativeDatabase(databasePath, options)
-          if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
-            throw OpenDatabaseException(databasePath)
+          if (BuildConfig.USE_LIBSQL) {
+            val libSQLUrl = options.libSQLUrl ?: throw InvalidArgumentsException("libSQLUrl must be provided")
+            val libSQLAuthToken = options.libSQLAuthToken ?: throw InvalidArgumentsException("libSQLAuthToken must be provided")
+            if (options.libSQLRemoteOnly) {
+              database.ref.libsql_open_remote(libSQLUrl, libSQLAuthToken)
+            } else {
+              database.ref.libsql_open(dbPath, libSQLUrl, libSQLAuthToken, options.libSQLSyncInterval)
+            }
+          } else {
+            if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
+              throw OpenDatabaseException(databasePath)
+            }
           }
         }
 

@@ -3,6 +3,7 @@
 #include "NativeStatementBinding.h"
 
 #include <android/log.h>
+#include "Exceptions.h"
 
 namespace jni = facebook::jni;
 

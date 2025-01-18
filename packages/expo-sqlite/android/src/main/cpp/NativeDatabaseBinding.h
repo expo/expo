@@ -61,24 +61,4 @@ private:
   sqlite3 *db;
 };
 
-/**
- * A convenient wrapper for the Kotlin SQLiteErrorException.
- */
-class SQLiteErrorException
-    : public jni::JavaClass<SQLiteErrorException, CodedException> {
-public:
-  static auto constexpr kJavaDescriptor =
-      "Lexpo/modules/sqlite/SQLiteErrorException;";
-
-  static jni::local_ref<SQLiteErrorException>
-  create(const std::string &message) {
-    return SQLiteErrorException::newInstance(jni::make_jstring(message));
-  }
-
-  static jni::local_ref<SQLiteErrorException>
-  create(jni::alias_ref<jni::JString> message) {
-    return SQLiteErrorException::newInstance(message);
-  }
-};
-
 } // namespace expo
