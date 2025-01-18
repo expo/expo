@@ -31,6 +31,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
+  'expo-background-task': ['BackgroundTask.ts'],
   'expo-battery': ['Battery.ts'],
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-blur': ['index.ts'],

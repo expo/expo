@@ -877,9 +877,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
-    if (isReactServerComponentsEnabled && useServerRendering) {
+    if (isReactServerComponentsEnabled && exp.web?.output === 'static') {
       throw new CommandError(
-        `Experimental server component support does not support 'web.output: ${exp.web!.output}' yet. Use 'web.output: "single"' during the experimental phase.`
+        `Experimental server component support does not support 'web.output: ${exp.web!.output}' yet. Use 'web.output: "server"' during the experimental phase.`
+      );
+    }
+
+    // Error early about the window.location polyfill when React Server Components are enabled.
+    if (isReactServerComponentsEnabled && exp?.extra?.router?.origin === false) {
+      const configPath = config.dynamicConfigPath ?? config.staticConfigPath ?? '/app.json';
+      const configFileName = path.basename(configPath);
+      throw new CommandError(
+        `The Expo Router "origin" property in the Expo config (${configFileName}) cannot be "false" when React Server Components is enabled. Remove it from the ${configFileName} file and try again.`
       );
     }
 
@@ -1025,7 +1034,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {
-        if (!useServerRendering || isReactServerComponentsEnabled) {
+        if (!useServerRendering) {
           // This MUST run last since it's the fallback.
           middleware.use(
             new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
@@ -1039,7 +1048,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               ...config.exp.extra?.router,
               bundleApiRoute: (functionFilePath) =>
                 this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
-              getStaticPageAsync: (pathname) => {
+              getStaticPageAsync: async (pathname) => {
+                // TODO: Add server rendering when RSC is enabled.
+                if (isReactServerComponentsEnabled) {
+                  // NOTE: This is a temporary hack to return the SPA/template index.html in development when RSC is enabled.
+                  // While this technically works, it doesn't provide the correct experience of server rendering the React code to HTML first.
+                  const html = await manifestMiddleware.getSingleHtmlTemplateAsync();
+                  return { content: html };
+                }
+
+                // Non-RSC apps will bundle the static HTML for a given pathname and respond with it.
                 return this.getStaticPageAsync(pathname);
               },
             })

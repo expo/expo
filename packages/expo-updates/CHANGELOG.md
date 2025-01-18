@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove a few long-deprecated typescript types. ([#34215](https://github.com/expo/expo/pull/34215) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 - Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
