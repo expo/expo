@@ -100,7 +100,6 @@ type ModuleDefiner = (moduleId: ModuleID) => void;
 global.__r = metroRequire as RequireFn;
 global[`${__METRO_GLOBAL_PREFIX__}__d`] = define as DefineFn;
 global.__c = clear;
-global.__cPlat = clearForPlatform;
 global.__registerSegment = registerSegment;
 
 var modules = clear();
@@ -122,33 +121,6 @@ function clear(): ModuleList {
   // We return modules here so that we can assign an initial value to modules
   // when defining it. Otherwise, we would have to do "let modules = null",
   // which will force us to add "nullthrows" everywhere.
-  return modules;
-}
-
-// A method for SSR environments with shared platforms to clear a given platform's modules in an attempt to fully refresh the platform.
-function clearForPlatform(platform: string): ModuleList {
-  // Iterate modules and clear the ones with the matching platform module ID.
-
-  const moduleIdsForPlatform = [
-    ...new Set(
-      Array.from(modules.keys())
-        .map((moduleId) => {
-          if (typeof moduleId !== 'string') {
-            return null;
-          }
-          const modulePlatform = moduleId.match(/[?&]platform=([\w]+)/)?.[1] ?? null;
-          if (modulePlatform == platform) {
-            return moduleId;
-          }
-        })
-        .filter(Boolean)
-    ),
-  ] as string[];
-
-  for (const moduleId of moduleIdsForPlatform) {
-    modules.delete(moduleId);
-  }
-
   return modules;
 }
 
@@ -892,9 +864,7 @@ if (__DEV__) {
       failed?: ModuleDefinition;
     }
   ) => {
-    if (typeof __metro_ssr_reload !== 'undefined') {
-      // globalThis.__metro_ssr_reload(modules);
-    } else if (
+    if (
       typeof window !== 'undefined' &&
       window.location != null &&
       typeof window.location.reload === 'function'
