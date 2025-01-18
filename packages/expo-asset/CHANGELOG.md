@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add RSC support.
+- Add RSC support. ([#34213](https://github.com/expo/expo/pull/34213) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
