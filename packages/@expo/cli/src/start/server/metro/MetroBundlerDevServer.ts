@@ -414,7 +414,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   ) => {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
 
-    if (extras.hot && this.instanceMetroOptions.isExporting !== true) {
+    if (
+      // TODO: hot should be a callback function for invalidating the related SSR module.
+      extras.hot &&
+      this.instanceMetroOptions.isExporting !== true
+    ) {
       // Register SSR HMR
       const serverRoot = getMetroServerRoot(this.projectRoot);
       const relativePath = path.relative(serverRoot, res.filename);
@@ -1092,7 +1096,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  private onReloadRscEvent: (() => void) | null = null;
+  private onReloadRscEvent: ((platform: string) => void) | null = null;
 
   private async registerSsrHmrAsync(url: string, onReload: (platform: string[]) => void) {
     const injectUpdate = (update) => {
@@ -1154,7 +1158,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
               // if (typeof globalThis.__c === 'function') globalThis.__c();
 
-              injectUpdate(update);
+              // injectUpdate(update);
 
               console.log(
                 '[SSR] HMR Update:',
@@ -1395,8 +1399,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Send reload command to client from Fast Refresh code.
       console.log('[SSR]: Reload requested:', platforms);
 
-      this.onReloadRscEvent?.();
-
       if (!platforms.length) {
         // TODO: When is this called?
         this.broadcastMessage('sendDevCommand', {
@@ -1404,6 +1406,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         });
       } else {
         for (const platform of platforms) {
+          this.onReloadRscEvent?.(platform);
           this.broadcastMessage('sendDevCommand', {
             name: 'rsc-reload',
             platform,

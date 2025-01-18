@@ -304,7 +304,7 @@ export function createServerComponentsMiddleware(
       routerModule,
       {
         environment: 'react-server',
-        // modulesOnly: true,
+        modulesOnly: true,
         platform,
       },
       {
@@ -605,11 +605,11 @@ export function createServerComponentsMiddleware(
       },
       rscMiddleware
     ),
-    onReloadRscEvent: () => {
+    onReloadRscEvent: (platform: string) => {
       // NOTE: We cannot clear the renderer context because it would break the mounted context state.
 
-      // Clear the render context to ensure that the next render is a fresh start.
-      rscRenderContext.clear();
+      rscRendererCache.delete(platform);
+      routerCache.delete(platform);
     },
   };
 }

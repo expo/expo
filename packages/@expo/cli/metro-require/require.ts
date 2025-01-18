@@ -178,8 +178,6 @@ function define(factory: FactoryFn, moduleId: ModuleID, dependencyMap?: Dependen
       // called with inverseDependencies, we can hot reload it.
       if (inverseDependencies) {
         global.__accept(moduleId, factory, dependencyMap, inverseDependencies);
-      } else {
-        console.log('failed to hot reload', moduleId);
       }
     }
 
@@ -187,7 +185,6 @@ function define(factory: FactoryFn, moduleId: ModuleID, dependencyMap?: Dependen
     // that are already loaded
     return;
   }
-  console.log('define:', moduleId);
 
   const mod: ModuleDefinition = {
     dependencyMap,
@@ -706,6 +703,7 @@ if (__DEV__) {
 
       const updatedMod = modules.get(updatedID);
       if (updatedMod == null) {
+        console.log('updatedID', updatedID, ' - ', modules.keys());
         throw new Error('[Refresh] Expected to find the updated module.');
       }
       const prevExports = updatedMod.publicModule.exports;

@@ -9,7 +9,7 @@ export async function renderNestedAsync() {
       style={{
         backgroundColor: 'darkcyan',
       }}>
-      !!!Platform: {process.env.EXPO_OS}
+      Platform: {process.env.EXPO_OS}
     </Text>
   );
 }
