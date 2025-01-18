@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add RSC support.
+
 ### 🐛 Bug fixes
 
 - [macOS] Add macOS platform support ([#33505](https://github.com/expo/expo/pull/33505) by [@hassankhan](https://github.com/hassankhan))
