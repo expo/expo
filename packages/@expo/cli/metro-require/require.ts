@@ -876,7 +876,6 @@ if (__DEV__) {
 
     if (hot._acceptCallback) {
       try {
-        // @ts-expect-error
         hot._acceptCallback();
       } catch (error) {
         console.error(`Error while calling accept handler for module ${id}: `, error);
@@ -894,7 +893,7 @@ if (__DEV__) {
     }
   ) => {
     if (typeof __metro_ssr_reload !== 'undefined') {
-      globalThis.__metro_ssr_reload(modules);
+      // globalThis.__metro_ssr_reload(modules);
     } else if (
       typeof window !== 'undefined' &&
       window.location != null &&
