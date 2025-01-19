@@ -382,7 +382,11 @@ export function withExtendedResolver(
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestDevMockProdReact(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       // This resolution is dev-only to prevent bundling the production React packages in development.
       if (!context.dev) return null;
 
@@ -410,7 +414,11 @@ export function withExtendedResolver(
       return null;
     },
     // tsconfig paths
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestTsconfigPaths(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       return (
         tsConfigResolve?.(
           {
@@ -423,7 +431,11 @@ export function withExtendedResolver(
     },
 
     // Node.js externals support
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestNodeExternals(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       const isServer =
         context.customResolverOptions?.environment === 'node' ||
         context.customResolverOptions?.environment === 'react-server';
@@ -468,7 +480,11 @@ export function withExtendedResolver(
     },
 
     // Custom externals support
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestCustomExternals(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       // We don't support this in the resolver at the moment.
       if (moduleName.endsWith('/package.json')) {
         return null;
@@ -532,7 +548,7 @@ export function withExtendedResolver(
     },
 
     // Basic moduleId aliases
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestAlias(context: ResolutionContext, moduleName: string, platform: string | null) {
       // Conditionally remap `react-native` to `react-native-web` on web in
       // a way that doesn't require Babel to resolve the alias.
       if (platform && platform in aliases && aliases[platform][moduleName]) {
@@ -557,7 +573,11 @@ export function withExtendedResolver(
     },
 
     // Polyfill for asset registry
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestStableAssetRegistry(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
         return getAssetRegistryModule();
       }
@@ -575,7 +595,11 @@ export function withExtendedResolver(
 
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+    function requestPostRewrites(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       const doResolve = getStrictResolver(context, platform);
 
       const result = doResolve(moduleName);
