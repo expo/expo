@@ -41,18 +41,18 @@ const getModuleDescriptionWithResolver = (
   resolve: StrictResolver,
   originModuleName: string
 ): ModuleDescription | null => {
-  const resolution = resolve(`${originModuleName}/package.json`);
-  if (resolution.type !== 'sourceFile') {
-    debug(`Fallback module resolution failed for origin module: ${originModuleName})`);
-    return null;
-  }
+  let filePath: string;
   let packageMeta: PackageMeta;
   try {
+    const resolution = resolve(`${originModuleName}/package.json`);
+    if (resolution.type !== 'sourceFile') {
+      debug(`Fallback module resolution failed for origin module: ${originModuleName})`);
+      return null;
+    }
+    filePath = resolution.filePath;
     packageMeta = JSON.parse(fs.readFileSync(resolution.filePath, 'utf8'));
   } catch (error: any) {
-    debug(
-      `Fallback module resolution threw: ${error.constructor.name}. (module: ${resolution.filePath})`
-    );
+    debug(`Fallback module resolution threw: ${error.constructor.name}. (module: ${filePath})`);
     return null;
   }
   let dependencies: string[] = [];
@@ -81,7 +81,7 @@ const getModuleDescriptionWithResolver = (
     return dependenciesArr.indexOf(moduleName) === index;
   });
   // Return test regex for dependencies and full origin module path to resolve through
-  const originModulePath = path.dirname(resolution.filePath);
+  const originModulePath = path.dirname(filePath);
   return dependencies.length
     ? { originModulePath, moduleTestRe: dependenciesToRegex(dependencies) }
     : null;
@@ -124,9 +124,8 @@ export function createFallbackModuleResolver({
       ...immutableContext,
       originModulePath: `${originModuleName}/package.json`,
     };
-    const resolve = getStrictResolver(context, platform);
     return (_moduleDescriptionsCache[originModuleName] = getModuleDescriptionWithResolver(
-      resolve,
+      getStrictResolver(context, platform),
       originModuleName
     ));
   };
