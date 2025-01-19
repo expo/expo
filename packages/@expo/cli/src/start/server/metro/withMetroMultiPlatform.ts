@@ -35,6 +35,12 @@ import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
+export type StrictResolver = (moduleName: string) => Resolution;
+export type StrictResolverFactory = (
+  context: ResolutionContext,
+  platform: string | null
+) => StrictResolver;
+
 const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
@@ -258,14 +264,14 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
-  function getStrictResolver(
-    { resolveRequest, ...context }: ResolutionContext,
-    platform: string | null
-  ) {
+  const getStrictResolver: StrictResolverFactory = (
+    { resolveRequest, ...context },
+    platform
+  ): StrictResolver => {
     return function doResolve(moduleName: string): Resolution {
       return resolver(context, moduleName, platform);
     };
-  }
+  };
 
   function getOptionalResolver(context: ResolutionContext, platform: string | null) {
     const doResolve = getStrictResolver(context, platform);
