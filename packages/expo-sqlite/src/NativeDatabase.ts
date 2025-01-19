@@ -58,4 +58,54 @@ export interface SQLiteOpenOptions {
    * @hidden
    */
   finalizeUnusedStatementsBeforeClosing?: boolean;
+
+  /**
+   * Options for libSQL integration.
+   */
+  libSQLOptions?: {
+    /** The URL of the libSQL server. */
+    url: string;
+
+    /** The auth token for the libSQL server. */
+    authToken: string;
+
+    /**
+     * Whether to use remote-only without syncing to local database.
+     * @default false
+     */
+    remoteOnly?: boolean;
+
+    /**
+     * The internval to sync the local database with the remote database.
+     * Only works when `remoteOnly` is `false`.
+     * @default 0 and disable automatic sync.
+     */
+    syncInterval?: number;
+  };
+}
+
+type FlattenedOpenOptions = Omit<SQLiteOpenOptions, 'libSQLOptions'> & {
+  libSQLUrl?: string;
+  libSQLAuthToken?: string;
+  libSQLRemoteOnly?: boolean;
+  libSQLSyncInterval?: number;
+};
+
+/**
+ * Flattens the SQLiteOpenOptions that are passed to the native module.
+ */
+export function flattenOpenOptions(options: SQLiteOpenOptions): FlattenedOpenOptions {
+  const { libSQLOptions, ...restOptions } = options;
+  const result: FlattenedOpenOptions = {
+    ...restOptions,
+  };
+  if (libSQLOptions) {
+    Object.assign(result, {
+      libSQLUrl: libSQLOptions.url,
+      libSQLAuthToken: libSQLOptions.authToken,
+      libSQLRemoteOnly: libSQLOptions.remoteOnly,
+      libSQLSyncInterval: libSQLOptions.syncInterval,
+    });
+  }
+  return result;
 }

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Fixed exceptions when converting empty blob data on iOS. ([#33564](https://github.com/expo/expo/pull/33564) by [@kudo](https://github.com/kudo))

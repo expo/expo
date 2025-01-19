@@ -12,9 +12,11 @@ const withSQLiteAndroidProps = (config, props) => {
         const customBuildFlags = props?.android?.customBuildFlags ?? props?.customBuildFlags;
         const enableFTS = props?.android?.enableFTS ?? props?.enableFTS;
         const useSQLCipher = props?.android?.useSQLCipher ?? props?.useSQLCipher;
+        const useLibSQL = props?.android?.useLibSQL ?? props?.useLibSQL;
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.customBuildFlags', customBuildFlags);
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.enableFTS', enableFTS);
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useSQLCipher', useSQLCipher);
+        config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useLibSQL', useLibSQL);
         return config;
     });
 };
@@ -23,9 +25,11 @@ const withSQLiteIOSProps = (config, props) => {
         const customBuildFlags = props?.ios?.customBuildFlags ?? props?.customBuildFlags;
         const enableFTS = props?.ios?.enableFTS ?? props?.enableFTS;
         const useSQLCipher = props?.ios?.useSQLCipher ?? props?.useSQLCipher;
+        const useLibSQL = props?.ios?.useLibSQL ?? props?.useLibSQL;
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.customBuildFlags', customBuildFlags);
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.enableFTS', enableFTS);
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useSQLCipher', useSQLCipher);
+        config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useLibSQL', useLibSQL);
         return config;
     });
 };
