@@ -914,6 +914,85 @@ describe(withExtendedResolver, () => {
       );
     });
   });
+
+  describe('with fallback module resolver', () => {
+    function getModifiedConfig() {
+      return withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+        isReactCanaryEnabled: true,
+        getMetroBundler: getMetroBundlerGetter() as any,
+      });
+    }
+
+    it('resolves `@babel/runtime/helpers/interopRequireDefault` as a fallback module', () => {
+      vol.fromJSON(
+        {
+          'node_modules/expo/package.json': JSON.stringify({
+            name: 'expo',
+            dependencies: {
+              // Needs to define that it depends on `@babel/runtime`
+              '@babel/runtime': '*',
+            },
+          }),
+        },
+        '/'
+      );
+
+      const platform = 'ios';
+      const modified = getModifiedConfig();
+
+      jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+        if (
+          context.originModulePath === '/index.js' &&
+          moduleName === '@babel/runtime/helpers/interopRequireDefault'
+        ) {
+          throw new FailedToResolveNameError();
+        } else if (moduleName === 'expo/package.json') {
+          return { type: 'sourceFile', filePath: `/node_modules/${moduleName}` };
+        } else if (moduleName === 'expo-router/package.json') {
+          return { type: 'sourceFile', filePath: `/node_modules/${moduleName}` };
+        } else {
+          return { type: 'empty' };
+        }
+      });
+
+      modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        '@babel/runtime/helpers/interopRequireDefault',
+        platform
+      );
+
+      expect(getResolveFunc()).toHaveBeenCalledTimes(3);
+
+      // 1: Fails to resolve the dependency by `expo` (@babel/runtime)
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ originModulePath: '/index.js' }),
+        '@babel/runtime/helpers/interopRequireDefault',
+        platform
+      );
+
+      // 2: Resolves the origin root module path for `expo`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        'expo/package.json',
+        platform
+      );
+
+      // 3: After finding that `expo` has a dependency on `@babel/runtime`, resolves the dependency via `expo` insteaad
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({
+          originModulePath: '/node_modules/expo',
+          nodeModulesPaths: ['/node_modules/expo'],
+        }),
+        '@babel/runtime/helpers/interopRequireDefault',
+        platform
+      );
+    });
+  });
 });
 
 describe(getNodejsExtensions, () => {
