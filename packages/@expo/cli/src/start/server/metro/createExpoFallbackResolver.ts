@@ -41,7 +41,7 @@ const getModuleDescriptionWithResolver = (
   resolve: StrictResolver,
   originModuleName: string
 ): ModuleDescription | null => {
-  let filePath: string;
+  let filePath: string | undefined;
   let packageMeta: PackageMeta;
   try {
     const resolution = resolve(`${originModuleName}/package.json`);
@@ -52,7 +52,9 @@ const getModuleDescriptionWithResolver = (
     filePath = resolution.filePath;
     packageMeta = JSON.parse(fs.readFileSync(resolution.filePath, 'utf8'));
   } catch (error: any) {
-    debug(`Fallback module resolution threw: ${error.constructor.name}. (module: ${filePath})`);
+    debug(
+      `Fallback module resolution threw: ${error.constructor.name}. (module: ${filePath || originModuleName})`
+    );
     return null;
   }
   let dependencies: string[] = [];
