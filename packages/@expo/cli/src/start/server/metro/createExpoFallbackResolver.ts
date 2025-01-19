@@ -1,3 +1,4 @@
+import fs from 'fs';
 import type { ResolutionContext } from 'metro-resolver';
 import path from 'path';
 
@@ -40,15 +41,14 @@ const getModuleDescriptionWithResolver = (
   resolve: StrictResolver,
   originModuleName: string
 ): ModuleDescription | null => {
-  const metaPath = path.join(originModuleName, 'package.json');
-  const resolution = resolve(metaPath);
+  const resolution = resolve(`${originModuleName}/package.json`);
   if (resolution.type !== 'sourceFile') {
     debug(`Fallback module resolution failed for origin module: ${originModuleName})`);
     return null;
   }
   let packageMeta: PackageMeta;
   try {
-    packageMeta = require(resolution.filePath);
+    packageMeta = JSON.parse(fs.readFileSync(resolution.filePath, 'utf8'));
   } catch (error: any) {
     debug(
       `Fallback module resolution threw: ${error.constructor.name}. (module: ${resolution.filePath})`
