@@ -11,6 +11,7 @@
 - [iOS] Exposed `ContactAccessButton` from SwiftUI. ([#33782](https://github.com/expo/expo/pull/33782) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
+- Fixed a null pointer on android when calling updateContactAsync on a contact with an image ([#32097](https://github.com/expo/expo/pull/32097) by [@freeboub](https://github.com/freeboub))
 
 - Fixed `the native view manager required by name (ExpoContactAccessButton) from NativeViewManagerAdapter isn't exported` warning. ([#33993](https://github.com/expo/expo/pull/33993) by [@lukmccall](https://github.com/lukmccall))
 
