@@ -1105,6 +1105,60 @@ describe(withExtendedResolver, () => {
         platform
       );
     });
+
+    it('resolves no fallback modules if origin module dependencies mismatch', () => {
+      // Empty dependencies should cause no modules to match
+      vol.fromJSON(
+        {
+          'node_modules/expo/package.json': JSON.stringify({
+            name: 'expo',
+            dependencies: {},
+          }),
+          'node_modules/expo-router/package.json': JSON.stringify({
+            name: 'expo-router',
+            dependencies: {},
+          }),
+        },
+        '/'
+      );
+
+      const platform = 'ios';
+      const modified = getModifiedConfig();
+
+      jest.mocked(getResolveFunc()).mockImplementation(() => {
+        throw new FailedToResolveNameError();
+      });
+
+      expect(() => {
+        modified.resolver.resolveRequest!(getDefaultRequestContext(), 'example', platform);
+      }).toThrow();
+
+      expect(getResolveFunc()).toHaveBeenCalledTimes(3);
+
+      // 1: Fails to resolve the dependency (example)
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ originModulePath: '/index.js' }),
+        'example',
+        platform
+      );
+
+      // 2: Resolves the origin root module path for `expo`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ originModulePath: 'expo/package.json' }),
+        'expo/package.json',
+        platform
+      );
+
+      // 2: Resolves the origin root module path for `expo-router`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({ originModulePath: 'expo-router/package.json' }),
+        'expo-router/package.json',
+        platform
+      );
+    });
   });
 });
 
