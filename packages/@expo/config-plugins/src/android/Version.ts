@@ -56,11 +56,14 @@ export function setMinBuildScriptExtVersion(
   return buildGradle.replace(regex, `$1${Math.max(minVersion, currentVersionNum)}`);
 }
 
-export function getVersionName(config: Pick<ExpoConfig, 'version'>) {
-  return config.version ?? null;
+export function getVersionName(config: Pick<ExpoConfig, 'version' | 'android'>) {
+  return config.android?.version ?? config.version ?? null;
 }
 
-export function setVersionName(config: Pick<ExpoConfig, 'version'>, buildGradle: string) {
+export function setVersionName(
+  config: Pick<ExpoConfig, 'version' | 'android'>,
+  buildGradle: string
+) {
   const versionName = getVersionName(config);
   if (versionName === null) {
     return buildGradle;
