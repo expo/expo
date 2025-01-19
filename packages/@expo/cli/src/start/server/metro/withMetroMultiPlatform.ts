@@ -13,6 +13,7 @@ import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
@@ -676,6 +677,11 @@ export function withExtendedResolver(
 
       return result;
     },
+
+    createFallbackModuleResolver({
+      originModuleNames: ['expo', 'expo-router'],
+      getStrictResolver,
+    }),
   ]);
 
   // Ensure we mutate the resolution context to include the custom resolver options for server and web.
