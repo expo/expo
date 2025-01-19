@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- update nativeBuildVersion example ([#33364](https://github.com/expo/expo/pull/33364) by [@radko93](https://github.com/radko93))
+
 ### 💡 Others
 
 ## 6.0.1 — 2024-10-22
