@@ -1,7 +1,7 @@
 import type { ResolutionContext } from 'metro-resolver';
 import path from 'path';
 
-import type { StrictResolverFactory } from './withMetroMultiPlatform';
+import type { StrictResolver, StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 
 /** A record of dependencies that we know are only used for scripts and config-plugins */
@@ -25,7 +25,6 @@ interface PackageMeta {
 }
 
 interface ModuleDescription {
-  originModuleName: string;
   originModulePath: string;
   moduleTestRe: RegExp;
 }
@@ -37,17 +36,23 @@ const dependenciesToRegex = (dependencies: string[]) =>
   new RegExp(`^(?:${dependencies.join('|')})(?:$|/)`);
 
 /** Resolves an origin module and outputs a filter regex and target path for it */
-const getModuleDescription = (originModuleName: string): ModuleDescription | null => {
+const getModuleDescriptionWithResolver = (
+  resolve: StrictResolver,
+  originModuleName: string
+): ModuleDescription | null => {
   const metaPath = path.join(originModuleName, 'package.json');
-  let originModulePath: string;
+  const resolution = resolve(metaPath);
+  if (resolution.type !== 'sourceFile') {
+    debug(`Fallback module resolution failed for origin module: ${originModuleName})`);
+    return null;
+  }
   let packageMeta: PackageMeta;
   try {
-    // We attempt to resolve all origin modules via `@expo/cli`. Due to normal Node resolution
-    // this may include dependencies of `@expo/cli` or of the project.
-    originModulePath = path.dirname(require.resolve(metaPath));
-    packageMeta = require(metaPath);
+    packageMeta = require(resolution.filePath);
   } catch (error: any) {
-    debug(`Node module resolution threw: ${error.constructor.name}. (module: ${originModuleName})`);
+    debug(
+      `Fallback module resolution threw: ${error.constructor.name}. (module: ${resolution.filePath})`
+    );
     return null;
   }
   let dependencies: string[] = [];
@@ -75,8 +80,10 @@ const getModuleDescription = (originModuleName: string): ModuleDescription | nul
     if (EXCLUDE_ORIGIN_MODULES[moduleName]) return false;
     return dependenciesArr.indexOf(moduleName) === index;
   });
+  // Return test regex for dependencies and full origin module path to resolve through
+  const originModulePath = path.dirname(resolution.filePath);
   return dependencies.length
-    ? { originModuleName, originModulePath, moduleTestRe: dependenciesToRegex(dependencies) }
+    ? { originModulePath, moduleTestRe: dependenciesToRegex(dependencies) }
     : null;
 };
 
@@ -102,11 +109,27 @@ export function createFallbackModuleResolver({
   originModuleNames: string[];
   getStrictResolver: StrictResolverFactory;
 }): ExpoCustomMetroResolver {
-  const moduleDescriptions = originModuleNames
-    .map(getModuleDescription)
-    .filter(
-      (moduleDescription): moduleDescription is ModuleDescription => moduleDescription != null
-    );
+  const _moduleDescriptionsCache: Record<string, ModuleDescription | null> = {};
+
+  const getModuleDescription = (
+    immutableContext: ResolutionContext,
+    platform: string | null,
+    originModuleName: string
+  ) => {
+    if (_moduleDescriptionsCache[originModuleName] !== undefined) {
+      return _moduleDescriptionsCache[originModuleName];
+    }
+    // Resolve the origin module itself through `<module>/.`
+    const context: ResolutionContext = {
+      ...immutableContext,
+      originModulePath: `${originModuleName}/package.json`,
+    };
+    const resolve = getStrictResolver(context, platform);
+    return (_moduleDescriptionsCache[originModuleName] = getModuleDescriptionWithResolver(
+      resolve,
+      originModuleName
+    ));
+  };
 
   return function requestFallbackModule(immutableContext, moduleName, platform) {
     // Early return if `moduleName` cannot be a module specifier
@@ -114,13 +137,14 @@ export function createFallbackModuleResolver({
       return null;
     }
 
-    for (const { originModuleName, originModulePath, moduleTestRe } of moduleDescriptions) {
-      if (moduleTestRe.test(moduleName)) {
+    for (const originModuleName of originModuleNames) {
+      const moduleDescription = getModuleDescription(immutableContext, platform, originModuleName);
+      if (moduleDescription && moduleDescription.moduleTestRe.test(moduleName)) {
         // We instead resolve as if it was depended on by the `originModulePath` (the module named in `originModuleNames`)
         const context: ResolutionContext = {
           ...immutableContext,
-          nodeModulesPaths: [originModulePath],
-          originModulePath,
+          nodeModulesPaths: [moduleDescription.originModulePath],
+          originModulePath: moduleDescription.originModulePath,
         };
         const res = getStrictResolver(context, platform)(moduleName);
         debug(
