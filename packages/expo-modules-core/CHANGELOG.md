@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- support RN 0.77 in SDK 52 ([#34088](https://github.com/expo/expo/pull/34088) by [@vonovak](https://github.com/vonovak))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.1.4 — 2025-01-19
+
+### 🎉 New features
+
+- support RN 0.77 in SDK 52 ([#34088](https://github.com/expo/expo/pull/34088) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 

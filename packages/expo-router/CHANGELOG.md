@@ -6,12 +6,16 @@
 
 ### 🎉 New features
 
-- Add partial support for `generateStaticParams` in React Server Components router. ([#34093](https://github.com/expo/expo/pull/34093) by [@EvanBacon](https://github.com/EvanBacon))
-- Add server error handling to error boundary. ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 4.0.17 — 2025-01-19
+
+### 🎉 New features
+
+- Add partial support for `generateStaticParams` in React Server Components router. ([#34093](https://github.com/expo/expo/pull/34093) by [@EvanBacon](https://github.com/EvanBacon))
+- Add server error handling to error boundary. ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.0.16 — 2025-01-08
 

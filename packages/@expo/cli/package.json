@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "0.22.9",
+  "version": "0.22.10",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
@@ -119,7 +119,7 @@
   "devDependencies": {
     "@expo/multipart-body-parser": "^1.0.0",
     "@expo/ngrok": "4.1.3",
-    "@expo/server": "^0.5.0",
+    "@expo/server": "^0.5.1",
     "@graphql-codegen/cli": "^2.16.3",
     "@graphql-codegen/typescript": "^2.8.7",
     "@graphql-codegen/typescript-operations": "^2.5.12",

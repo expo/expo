@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Added Android `BaseReactPackage` for autolinking. ([#33773](https://github.com/expo/expo/pull/33773) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 2.0.6 — 2025-01-19
+
+### 🐛 Bug fixes
+
+- Added Android `BaseReactPackage` for autolinking. ([#33773](https://github.com/expo/expo/pull/33773) by [@vonovak](https://github.com/vonovak))
 
 ## 2.0.5 — 2025-01-10
 

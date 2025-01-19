@@ -9,13 +9,13 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~52.0.25",
-    "expo-camera": "~16.0.11",
+    "expo": "~52.0.26",
+    "expo-camera": "~16.0.12",
     "expo-dev-client": "~5.0.9",
     "expo-face-detector": "~13.0.2",
     "expo-image": "~2.0.4",
     "expo-notifications": "~0.29.12",
-    "expo-splash-screen": "~0.29.20",
+    "expo-splash-screen": "~0.29.21",
     "native-component-list": "*",
     "react": "18.3.1",
     "react-dom": "18.3.1",

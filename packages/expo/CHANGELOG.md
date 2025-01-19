@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 52.0.26 — 2025-01-19
+
+### 🎉 New features
+
 - support RN 0.77 in SDK 52 ([#34088](https://github.com/expo/expo/pull/34088) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
 - Replace inferred rest spread arguments types (and other inferred types) for changes in newer TypeScript versions. ([#34132](https://github.com/expo/expo/pull/34132) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 52.0.25 — 2025-01-10
 

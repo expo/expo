@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 4.0.1 — 2025-01-19
+
+### 🐛 Bug fixes
+
 - Only reload RSC for a given platform. ([#34216](https://github.com/expo/expo/pull/34216) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others

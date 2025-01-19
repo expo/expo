@@ -32,9 +32,9 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
   "dependencies": {
-    "expo-dev-launcher": "5.0.23",
-    "expo-dev-menu": "6.0.16",
-    "expo-dev-menu-interface": "1.9.2",
+    "expo-dev-launcher": "5.0.24",
+    "expo-dev-menu": "6.0.17",
+    "expo-dev-menu-interface": "1.9.3",
     "expo-manifests": "~0.15.5",
     "expo-updates-interface": "~1.0.0"
   },
