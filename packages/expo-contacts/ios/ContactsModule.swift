@@ -570,6 +570,8 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       predicate = CNContact.predicateForContactsInGroup(withIdentifier: groupId)
     } else if let containerId = options.containerId {
       predicate = CNContact.predicateForContacts(withIdentifiers: [containerId])
+    } else if let phoneNumber = options.phoneNumber {
+      predicate = NSPredicate(format: "ANY phoneNumbers.value.digits CONTAINS %@", phoneNumber)
     }
 
     let descriptors = getDescriptors(for: keys, isWriting: isWriting)

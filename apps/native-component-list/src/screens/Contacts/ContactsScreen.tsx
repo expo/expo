@@ -3,7 +3,15 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import * as Contacts from 'expo-contacts';
 import { Platform } from 'expo-modules-core';
 import React from 'react';
-import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  RefreshControl,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import * as ContactUtils from './ContactUtils';
 import ContactsList from './ContactsList';
@@ -74,12 +82,14 @@ export default function ContactsScreen({ navigation }: Props) {
 }
 
 function ContactsView({ navigation }: Props) {
-  let rawContacts: Record<string, Contacts.Contact> = {};
-
+  const searchRef = React.useRef('');
+  const [searchByPhone, setSearchByPhone] = React.useState(false);
   const [contacts, setContacts] = React.useState<Contacts.Contact[]>([]);
   const [hasNextPage, setHasNextPage] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
   const [selectedContact, setSelectedContact] = React.useState<Contacts.Contact | null>(null);
+
+  const rawContactsRef = React.useRef<Record<string, Contacts.Contact>>({});
 
   const onPressItem = React.useCallback(
     (id: string) => {
@@ -88,40 +98,60 @@ function ContactsView({ navigation }: Props) {
     [navigation]
   );
 
-  const loadAsync = async (event: { distanceFromEnd?: number } = {}, restart = false) => {
-    if (!restart && (!hasNextPage || refreshing || Platform.OS === 'web')) {
-      return;
-    }
-    setRefreshing(true);
+  const loadAsync = React.useCallback(
+    async (restart = false) => {
+      if (!restart && (!hasNextPage || refreshing || Platform.OS === 'web')) {
+        return;
+      }
+      setRefreshing(true);
 
-    const pageOffset = restart ? 0 : contacts.length || 0;
+      const pageOffset = restart ? 0 : contacts.length || 0;
+      const pageSize = restart ? Math.max(pageOffset, CONTACT_PAGE_SIZE) : CONTACT_PAGE_SIZE;
+      const searchQuery = searchRef.current;
+      const isPhoneSearch = searchByPhone && searchQuery;
 
-    const pageSize = restart ? Math.max(pageOffset, CONTACT_PAGE_SIZE) : CONTACT_PAGE_SIZE;
+      const searchPayload = isPhoneSearch ? { phoneNumber: searchQuery } : { name: searchQuery };
 
-    const payload = await Contacts.getContactsAsync({
-      fields: [Contacts.Fields.Name],
-      sort: Contacts.SortTypes.LastName,
-      pageSize,
-      pageOffset,
-    });
+      const payload = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
+        sort: Contacts.SortTypes.LastName,
+        pageSize,
+        pageOffset,
+        ...searchPayload,
+      });
 
-    const { data: nextContacts } = payload;
+      const { data: nextContacts } = payload;
 
-    if (restart) {
-      rawContacts = {};
-    }
+      if (restart) {
+        rawContactsRef.current = {};
+      }
 
-    for (const contact of nextContacts) {
-      rawContacts[contact.id!] = contact;
-    }
-    setContacts(Object.values(rawContacts));
-    setHasNextPage(payload.hasNextPage);
-    setRefreshing(false);
+      for (const contact of nextContacts) {
+        rawContactsRef.current[contact.id!] = contact;
+      }
+
+      setContacts(Object.values(rawContactsRef.current));
+      setHasNextPage(payload.hasNextPage);
+      setRefreshing(false);
+    },
+    [contacts, hasNextPage, refreshing, searchByPhone]
+  );
+
+  const triggerSearch = () => {
+    loadAsync(true);
+  };
+
+  const handleSearchTypeChange = React.useCallback((newValue: boolean) => {
+    setSearchByPhone(newValue);
+  }, []);
+
+  const handleSearchChange = (text: string) => {
+    searchRef.current = text;
   };
 
   const changeAccess = React.useCallback(async () => {
     await Contacts.presentAccessPickerAsync();
-    await loadAsync({}, true);
+    await loadAsync(true);
   }, []);
 
   const onFocus = React.useCallback(() => {
@@ -148,23 +178,36 @@ function ContactsView({ navigation }: Props) {
       <ContactsList
         onEndReachedThreshold={-1.5}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => loadAsync({}, true)} />
+          <RefreshControl refreshing={refreshing} onRefresh={() => loadAsync(true)} />
         }
         data={contacts}
         onPressItem={onPressItem}
-        onEndReached={loadAsync}
+        onEndReached={() => loadAsync()}
         ListHeaderComponent={() => (
           <>
             <TouchableOpacity
               onPress={async () => {
                 const contact = await Contacts.presentContactPickerAsync();
-
                 setSelectedContact(contact);
               }}>
-              <Text>Select a contact</Text>
+              <Text style={[styles.selectContactButton]}>Select a contact</Text>
             </TouchableOpacity>
 
             {selectedContact && <MonoText>{JSON.stringify(selectedContact, null, 2)}</MonoText>}
+
+            <TextInput
+              placeholder="Search by..."
+              style={styles.searchInput}
+              defaultValue={searchRef.current}
+              onChangeText={handleSearchChange}
+              onSubmitEditing={triggerSearch}
+            />
+
+            <View style={styles.switchContainer}>
+              <Text>Search by: Name</Text>
+              <Switch value={searchByPhone} onValueChange={handleSearchTypeChange} />
+              <Text>Or phone</Text>
+            </View>
           </>
         )}
       />
@@ -186,5 +229,23 @@ const styles = StyleSheet.create({
   },
   changeAccessButton: {
     margin: 15,
+  },
+  selectContactButton: {
+    margin: 15,
+    color: Colors.tintColor,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  searchInput: {
+    borderColor: 'gray',
+    borderWidth: 1,
+    padding: 10,
+    margin: 10,
+    marginTop: 0,
+    borderRadius: 5,
   },
 });

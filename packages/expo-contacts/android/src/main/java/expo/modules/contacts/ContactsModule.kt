@@ -111,6 +111,9 @@ class ContactQuery : Record {
   val name: String? = null
 
   @Field
+  val phoneNumber: String? = null
+
+  @Field
   val id: List<String>? = null
 }
 
@@ -155,20 +158,22 @@ class ContactsModule : Module() {
       appContext
         .backgroundCoroutineScope
         .launch {
-          if (!options.id.isNullOrEmpty()) {
-            val contacts = options.id.mapNotNull { id ->
-              getContactById(id, options.fields)
+          val contactData = when {
+            !options.id.isNullOrEmpty() -> {
+              val contacts = options.id.mapNotNull { id ->
+                getContactById(id, options.fields)
+              }
+              ContactPage(data = contacts)
             }
-            promise.resolve(ContactPage(data = contacts).toBundle(options.fields))
-            return@launch
-          }
-
-          val name = options.name
-          val contactData = if (!name.isNullOrBlank()) {
-            val predicateMatchingName = "%$name%"
-            getContactByName(predicateMatchingName, options.fields, options.sort)
-          } else {
-            getAllContactsAsync(options)
+            !options.name.isNullOrBlank() -> {
+              val predicateMatchingName = "%${options.name}%"
+              getContactByName(predicateMatchingName, options.fields, options.sort)
+            }
+            !options.phoneNumber.isNullOrBlank() -> {
+              val predicateMatchingPhoneNumber = "%${options.phoneNumber}%"
+              getContactByPhoneNumber(predicateMatchingPhoneNumber, options.fields, options.sort)
+            }
+            else -> getAllContactsAsync(options)
           }
 
           promise.resolve(contactData.toBundle(options.fields))
@@ -459,6 +464,17 @@ class ContactsModule : Module() {
       9999,
       arrayOf(query),
       ContactsContract.Data.DISPLAY_NAME_PRIMARY,
+      keysToFetch,
+      sortOrder
+    )
+  }
+
+  private fun getContactByPhoneNumber(query: String, keysToFetch: Set<String>, sortOrder: String?): ContactPage? {
+    return fetchContacts(
+      0,
+      9999,
+      arrayOf(query),
+      CommonDataKinds.Phone.NUMBER,
       keysToFetch,
       sortOrder
     )

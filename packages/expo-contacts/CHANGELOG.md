@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Android][iOS] Added ability to search by phone number. ([#34109](https://github.com/expo/expo/pull/34109) by [@mateoguzmana](https://github.com/mateoguzmana))
 - added the ability to read and write starred property (as "isFavorite") of contacts on Android ([#33208](https://github.com/expo/expo/pull/33208) by [@NorseGaud](https://github.com/NorseGaud))
 - Add `presentAccessPickerAsync` function that presents the iOS 18.0+ picker for limited contacts access. ([#33771](https://github.com/expo/expo/pull/33771) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Exposed `ContactAccessButton` from SwiftUI. ([#33782](https://github.com/expo/expo/pull/33782) by [@tsapeta](https://github.com/tsapeta))
