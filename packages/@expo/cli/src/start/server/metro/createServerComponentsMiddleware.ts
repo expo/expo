@@ -292,6 +292,7 @@ export function createServerComponentsMiddleware(
   >();
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
+    await ensureMemo();
     // We can only cache this if we're using the client router since it doesn't change or use HMR
     if (routerCache.has(platform) && useClientRouter) {
       return routerCache.get(platform)!;
@@ -303,7 +304,7 @@ export function createServerComponentsMiddleware(
       routerModule,
       {
         environment: 'react-server',
-        // modulesOnly: true,
+        modulesOnly: true,
         platform,
       },
       {
@@ -421,7 +422,25 @@ export function createServerComponentsMiddleware(
 
   const rscRendererCache = new Map<string, typeof import('expo-router/build/rsc/rsc-renderer')>();
 
+  let ensurePromise: Promise<any> | null = null;
+  async function ensureSSRReady() {
+    // TODO: Extract CSS Modules / Assets from the bundler process
+    const runtime = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
+      'metro-runtime/src/modules/empty-module.js',
+      {
+        environment: 'react-server',
+        platform: 'web',
+      }
+    );
+    return runtime;
+  }
+  const ensureMemo = () => {
+    ensurePromise ??= ensureSSRReady();
+    return ensurePromise;
+  };
+
   async function getRscRendererAsync(platform: string) {
+    await ensureMemo();
     // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
     if (rscRendererCache.has(platform)) {
       return rscRendererCache.get(platform)!;
@@ -585,11 +604,11 @@ export function createServerComponentsMiddleware(
       },
       rscMiddleware
     ),
-    onReloadRscEvent: () => {
+    onReloadRscEvent: (platform: string) => {
       // NOTE: We cannot clear the renderer context because it would break the mounted context state.
 
-      // Clear the render context to ensure that the next render is a fresh start.
-      rscRenderContext.clear();
+      rscRendererCache.delete(platform);
+      routerCache.delete(platform);
     },
   };
 }
