@@ -89,36 +89,27 @@ function getSectionForPath(filePath) {
   }
 
   for (const [section, patterns] of Object.entries(SECTIONS)) {
-    for (const pattern of patterns) {
-      const patternParts = pattern.split('/');
-      if (pathParts.slice(0, patternParts.length).join('/') === pattern) {
-        return section;
-      }
+    if (
+      patterns.some(pattern => pathParts.slice(0, pattern.split('/').length).join('/') === pattern)
+    ) {
+      return section;
     }
   }
+
   return 'other';
 }
 
 function shouldIncludePath(filePath) {
   const relativePath = path.relative(DOCS_DIR, filePath);
-  const pathParts = relativePath.split(path.sep);
-
-  if (!pathParts[0] || pathParts[0] !== 'versions') {
+  if (!relativePath.startsWith('versions')) {
     return true;
   }
-
   if (relativePath.includes('latest')) {
     return true;
   }
-
-  if (
-    /versions\/v\d+\.\d+\.\d+/.test(relativePath) ||
-    relativePath.includes('versions/unversioned')
-  ) {
-    return false;
-  }
-
-  return true;
+  return !(
+    /versions\/v\d+\.\d+\.\d+/.test(relativePath) || relativePath.includes('versions/unversioned')
+  );
 }
 
 function formatTitle(urlPath) {
@@ -139,72 +130,56 @@ function formatSectionTitle(section) {
 }
 
 function walkDir(urlsBySection, currentPath = DOCS_DIR, depth = 0) {
-  const files = fs.readdirSync(currentPath);
-
-  for (const file of files) {
+  fs.readdirSync(currentPath).forEach(file => {
     const filePath = path.join(currentPath, file);
-    const stat = fs.statSync(filePath);
-
     if (!shouldIncludePath(filePath)) {
-      continue;
+      return;
     }
 
+    const stat = fs.statSync(filePath);
     if (stat.isDirectory()) {
       walkDir(urlsBySection, filePath, depth + 1);
-    } else if (file.endsWith('.mdx')) {
+      return;
+    }
+
+    if (file.endsWith('.mdx')) {
       const section = getSectionForPath(filePath);
       const { title, description } = readMDXFile(filePath);
-
       const urlPath = path
         .relative(DOCS_DIR, filePath)
         .replace(/\.mdx$/, '')
         .replace(/index$/, '')
         .replace(/\\/g, '/');
 
-      const url = `https://docs.expo.dev/${urlPath}`;
-
-      if (!urlsBySection[section]) {
-        urlsBySection[section] = [];
-      }
-
-      urlsBySection[section].push({
+      (urlsBySection[section] = urlsBySection[section] || []).push({
         title: title || formatTitle(urlPath),
-        url,
+        url: `https://docs.expo.dev/${urlPath}`,
         description,
         depth: depth + 1,
       });
     }
-  }
+  });
 }
 
 function generateMarkdownContent({ title, description, sections, urlsBySection }) {
-  let markdownContent = `# ${title}\n\n${description}\n\n`;
-
-  Object.keys(sections).forEach(section => {
-    if (urlsBySection[section]?.length > 0) {
-      const sectionTitle = formatSectionTitle(section);
-      markdownContent += `## ${sectionTitle}\n\n`;
-
-      urlsBySection[section]
-        .sort((a, b) => {
-          if (a.depth !== b.depth) {
-            return a.depth - b.depth;
-          }
-          return a.title.localeCompare(b.title);
-        })
-        .forEach(({ title, url, description, depth }, index, array) => {
-          const indent = '  '.repeat(Math.max(0, depth - 3));
-          markdownContent += `${indent}- [${title}](${url})`;
-          if (description) {
-            markdownContent += `: ${description}`;
-          }
-          markdownContent += index < array.length - 1 ? '\n' : '';
-        });
-      markdownContent += '\n\n';
+  return Object.keys(sections).reduce((content, section) => {
+    if (!urlsBySection[section]?.length) {
+      return content;
     }
-  });
 
-  return markdownContent;
+    return (
+      content +
+      `## ${formatSectionTitle(section)}\n\n` +
+      urlsBySection[section]
+        .sort((a, b) => (a.depth !== b.depth ? a.depth - b.depth : a.title.localeCompare(b.title)))
+        .map(
+          ({ title, url, description, depth }) =>
+            `${'  '.repeat(Math.max(0, depth - 3))}- [${title}](${url})${description ? `: ${description}` : ''}`
+        )
+        .join('\n') +
+      '\n\n'
+    );
+  }, `# ${title}\n\n${description}\n\n`);
 }
 
 async function generateLlmsTxt() {
@@ -217,15 +192,16 @@ async function generateLlmsTxt() {
 
     walkDir(urlsBySection);
 
-    const markdownContent = generateMarkdownContent({
-      title: TITLE,
-      description: DESCRIPTION,
-      sections: SECTIONS,
-      urlsBySection,
-    });
+    await fs.promises.writeFile(
+      path.join(process.cwd(), 'public', OUTPUT_FILENAME),
+      generateMarkdownContent({
+        title: TITLE,
+        description: DESCRIPTION,
+        sections: SECTIONS,
+        urlsBySection,
+      })
+    );
 
-    const outputPath = path.join(process.cwd(), 'public', OUTPUT_FILENAME);
-    await fs.promises.writeFile(outputPath, markdownContent);
     console.log(` \x1b[1m\x1b[32m✓\x1b[0m Successfully generated ${OUTPUT_FILENAME}`);
     process.exit(0);
   } catch (error) {
