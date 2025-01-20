@@ -17,6 +17,7 @@
 ### 🐛 Bug fixes
 
 - Make exported sourcemap paths relative on Windows. ([#33503](https://github.com/expo/expo/pull/33503) by [@byCedric](https://github.com/byCedric))
+- Ignore static creation for images with a pixel density descriptor for client web ([#34108](https://github.com/expo/expo/pull/34108) by [@exzos28](https://github.com/exzos28))
 
 ## 0.19.7 - 2024-12-10
 
