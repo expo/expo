@@ -186,9 +186,13 @@ export function processCollectOutput(
   child: ChildProcess,
   onOutput?: (type: 'stderr' | 'stdout', output: string) => void
 ) {
+  const shouldOutputLogs = !!process.env.DEBUG;
   const collected = { stderr: '', stdout: '', all: '' };
 
   const collect = (type: 'stderr' | 'stdout', output: string) => {
+    if (shouldOutputLogs) {
+      console[type === 'stderr' ? 'error' : 'log'](output);
+    }
     collected[type] += output;
     collected.all += output;
     onOutput?.(type, output);
