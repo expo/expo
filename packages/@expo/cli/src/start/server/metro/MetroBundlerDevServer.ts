@@ -71,6 +71,7 @@ import {
   convertPathToModuleSpecifier,
   createBundleUrlPath,
   ExpoMetroOptions,
+  createBundleOsPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
@@ -536,6 +537,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       transformOptions,
     });
 
+    const fileName = createBundleOsPath({
+      ...opts,
+      mainModuleName: resolvedEntryFilePath,
+    });
+
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const results = await this._bundleDirectAsync(resolvedEntryFilePath, {
       graphOptions: {
@@ -559,7 +565,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     return {
       ...results,
-      fileName: resolvedEntryFilePath,
+      fileName,
     };
   }
 
