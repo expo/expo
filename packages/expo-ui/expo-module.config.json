@@ -1,10 +1,16 @@
 {
   "platforms": [
-    "android"
+    "android",
+    "apple"
   ],
   "android": {
     "modules": [
       "expo.modules.ui.ExpoUIModule"
+    ]
+  },
+  "ios": {
+    "modules": [
+      "ExpoUIModule"
     ]
   }
 }
