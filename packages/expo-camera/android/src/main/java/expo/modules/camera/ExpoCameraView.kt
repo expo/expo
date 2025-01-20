@@ -117,7 +117,8 @@ class ExpoCameraView(
   }
 
   var camera: Camera? = null
-  private var activeRecording: Recording? = null
+  var activeRecording: Recording? = null
+    private set
 
   private var cameraProvider: ProcessCameraProvider? = null
   private val providerFuture = ProcessCameraProvider.getInstance(context)
@@ -126,7 +127,6 @@ class ExpoCameraView(
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
   private var glSurfaceTexture: SurfaceTexture? = null
-
 
   private var previewView = PreviewView(context).apply {
     elevation = 0f
