@@ -197,6 +197,8 @@ function getIconElement(iconName?: string) {
       return StoplightIcon;
     case 'Deploy':
       return Rocket01Icon;
+    case 'Monitor':
+      return DataIcon;
     case 'Development process':
       return CodeSquare01Icon;
     case 'EAS Build':
