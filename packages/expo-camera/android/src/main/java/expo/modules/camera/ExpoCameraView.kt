@@ -117,7 +117,8 @@ class ExpoCameraView(
   }
 
   var camera: Camera? = null
-  private var activeRecording: Recording? = null
+  var activeRecording: Recording? = null
+    private set
 
   private var cameraProvider: ProcessCameraProvider? = null
   private val providerFuture = ProcessCameraProvider.getInstance(context)
