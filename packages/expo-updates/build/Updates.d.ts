@@ -174,4 +174,5 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  * timeout communicating with the server. It also rejects when `expo-updates` is not enabled.
  */
 export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
+export declare function setUrlOverride(url: string): void;
 //# sourceMappingURL=Updates.d.ts.map

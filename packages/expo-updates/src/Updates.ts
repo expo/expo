@@ -305,3 +305,7 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   }
   return result;
 }
+
+export function setUrlOverride(url: string): void {
+  ExpoUpdates.setUrlOverride(url);
+}

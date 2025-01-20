@@ -23,6 +23,7 @@ import {
   getUpdatesTimeout,
   getUpdateUrl,
   getUpdatesUseEmbeddedUpdate,
+  getAllowMeToLiveDangerously,
 } from '../utils/Updates';
 import { addWarningAndroid } from '../utils/warnings';
 
@@ -36,6 +37,7 @@ export enum Config {
   UPDATES_HAS_EMBEDDED_UPDATE = 'expo.modules.updates.HAS_EMBEDDED_UPDATE',
   CODE_SIGNING_CERTIFICATE = 'expo.modules.updates.CODE_SIGNING_CERTIFICATE',
   CODE_SIGNING_METADATA = 'expo.modules.updates.CODE_SIGNING_METADATA',
+  ALLOW_ME_TO_LIVE_DANGEROUSLY = 'expo.modules.updates.ALLOW_ME_TO_LIVE_DANGEROUSLY',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -161,6 +163,13 @@ export async function setUpdatesConfigAsync(
       mainApplication,
       Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
     );
+  }
+
+  const allowMeToLiveDangerously = getAllowMeToLiveDangerously(config);
+  if (allowMeToLiveDangerously) {
+    addMetaDataItemToMainApplication(mainApplication, Config.ALLOW_ME_TO_LIVE_DANGEROUSLY, 'true');
+  } else {
+    removeMetaDataItemFromMainApplication(mainApplication, Config.ALLOW_ME_TO_LIVE_DANGEROUSLY);
   }
 
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);

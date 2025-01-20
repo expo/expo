@@ -262,6 +262,17 @@ class EnabledUpdatesController(
     }
   }
 
+  override fun setUrlOverride(url: String) {
+    if (!updatesConfiguration.allowMeToLiveDangerously) {
+      throw CodedException("ERR_UPDATES_URL_OVERRIDE", "Must set allowMeToLiveDangerously configuration to use URL overriding", null)
+    }
+    val sharedPreferences = context.getSharedPreferences("updatesOverridePrefs", Context.MODE_PRIVATE)
+    with (sharedPreferences.edit()) {
+      putString("updatesOverride", url)
+      apply()
+    }
+  }
+
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName
   }

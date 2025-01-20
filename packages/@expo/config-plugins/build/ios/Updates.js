@@ -38,6 +38,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["UPDATES_HAS_EMBEDDED_UPDATE"] = "EXUpdatesHasEmbeddedUpdate";
   Config["CODE_SIGNING_CERTIFICATE"] = "EXUpdatesCodeSigningCertificate";
   Config["CODE_SIGNING_METADATA"] = "EXUpdatesCodeSigningMetadata";
+  Config["ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY"] = "EXUpdatesAllowMeToLiveDangerously";
   return Config;
 }({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
@@ -98,6 +99,12 @@ async function setUpdatesConfigAsync(projectRoot, config, expoPlist, expoUpdates
     newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders;
   } else {
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
+  }
+  const allowMeToLiveDangerously = (0, _Updates().getAllowMeToLiveDangerously)(config);
+  if (allowMeToLiveDangerously) {
+    newExpoPlist[Config.ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY] = allowMeToLiveDangerously;
+  } else {
+    delete newExpoPlist[Config.ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY];
   }
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);
 }

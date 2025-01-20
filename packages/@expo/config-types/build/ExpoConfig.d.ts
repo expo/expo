@@ -207,6 +207,10 @@ export interface ExpoConfig {
          * Array of glob patterns specifying which files should be included in updates. Glob patterns are relative to the project root. A value of `['**']` will match all asset files within the project root. When not supplied all asset files will be included. Example: Given a value of `['app/images/** /*.png', 'app/fonts/** /*.woff']` all `.png` files in all subdirectories of `app/images` and all `.woff` files in all subdirectories of `app/fonts` will be included in updates.
          */
         assetPatternsToBeBundled?: string[];
+        /**
+         * Allow expo-updates to be run in danger mode TM.
+         */
+        allowMeToLiveDangerously?: boolean;
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes

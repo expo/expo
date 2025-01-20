@@ -13,6 +13,7 @@ import {
   getUpdatesTimeout,
   getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
+  getAllowMeToLiveDangerously,
 } from '../utils/Updates';
 import { addWarningIOS } from '../utils/warnings';
 
@@ -26,6 +27,7 @@ export enum Config {
   UPDATES_HAS_EMBEDDED_UPDATE = 'EXUpdatesHasEmbeddedUpdate',
   CODE_SIGNING_CERTIFICATE = 'EXUpdatesCodeSigningCertificate',
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
+  ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY = 'EXUpdatesAllowMeToLiveDangerously',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -106,6 +108,13 @@ export async function setUpdatesConfigAsync(
     newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders;
   } else {
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
+  }
+
+  const allowMeToLiveDangerously = getAllowMeToLiveDangerously(config);
+  if (allowMeToLiveDangerously) {
+    newExpoPlist[Config.ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY] = allowMeToLiveDangerously;
+  } else {
+    delete newExpoPlist[Config.ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY];
   }
 
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);

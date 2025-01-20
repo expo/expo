@@ -243,4 +243,7 @@ export async function fetchUpdateAsync() {
     }
     return result;
 }
+export function setUrlOverride(url) {
+    ExpoUpdates.setUrlOverride(url);
+}
 //# sourceMappingURL=Updates.js.map

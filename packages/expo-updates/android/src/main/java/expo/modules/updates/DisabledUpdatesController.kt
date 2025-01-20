@@ -162,6 +162,10 @@ class DisabledUpdatesController(
     callback.onFailure(UpdatesDisabledException("Updates.setExtraParamAsync() is not supported when expo-updates is not enabled."))
   }
 
+  override fun setUrlOverride(url: String) {
+    throw UpdatesDisabledException("Updates.setUrlOverride() is not supported when expo-updates is not enabled.")
+  }
+
   @Synchronized
   private fun notifyController() {
     if (launcher == null) {

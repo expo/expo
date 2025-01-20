@@ -220,3 +220,9 @@ export function getUpdatesRequestHeadersStringified(
 
   return JSON.stringify(metadata);
 }
+
+export function getAllowMeToLiveDangerously(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): boolean | undefined {
+  return config.updates?.allowMeToLiveDangerously;
+}

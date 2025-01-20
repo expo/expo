@@ -12,7 +12,8 @@ export declare enum Config {
     UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY",
     UPDATES_HAS_EMBEDDED_UPDATE = "expo.modules.updates.HAS_EMBEDDED_UPDATE",
     CODE_SIGNING_CERTIFICATE = "expo.modules.updates.CODE_SIGNING_CERTIFICATE",
-    CODE_SIGNING_METADATA = "expo.modules.updates.CODE_SIGNING_METADATA"
+    CODE_SIGNING_METADATA = "expo.modules.updates.CODE_SIGNING_METADATA",
+    ALLOW_ME_TO_LIVE_DANGEROUSLY = "expo.modules.updates.ALLOW_ME_TO_LIVE_DANGEROUSLY"
 }
 export declare const withUpdates: ConfigPlugin;
 export declare function applyRuntimeVersionFromConfigAsync(config: ExportedConfigWithProps<Resources.ResourceXML>, stringsJSON: ResourceXML): Promise<ResourceXML>;

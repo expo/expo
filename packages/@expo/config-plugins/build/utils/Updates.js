@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.FINGERPRINT_RUNTIME_VERSION_SENTINEL = void 0;
+exports.getAllowMeToLiveDangerously = getAllowMeToLiveDangerously;
 exports.getAppVersion = getAppVersion;
 exports.getExpoUpdatesPackageVersion = getExpoUpdatesPackageVersion;
 exports.getNativeVersion = getNativeVersion;
@@ -222,5 +223,8 @@ function getUpdatesRequestHeadersStringified(config) {
     return undefined;
   }
   return JSON.stringify(metadata);
+}
+function getAllowMeToLiveDangerously(config) {
+  return config.updates?.allowMeToLiveDangerously;
 }
 //# sourceMappingURL=Updates.js.map
