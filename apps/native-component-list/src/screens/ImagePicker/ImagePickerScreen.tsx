@@ -138,7 +138,15 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         name: 'orderedSelection',
         type: 'boolean',
         initial: false,
-        platforms: ['ios'],
+        platforms: ['ios', 'android'],
+      },
+      {
+        name: 'defaultTab',
+        type: 'enum',
+        values: [
+          { name: 'photos', value: 'photos' },
+          { name: 'albums', value: 'albums' },
+        ],
       },
       { name: 'videoMaxDuration', type: 'number', values: [0, 10, 60] },
       {

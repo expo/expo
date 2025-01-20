@@ -46,6 +46,12 @@ export declare enum MediaTypeOptions {
  * > When on Android or Web `livePhotos` type passed as a media type will be ignored.
  */
 export type MediaType = 'images' | 'videos' | 'livePhotos';
+/**
+ * The default tab with which the image picker will be opened (Android only).
+ * - `'photos'` - the photos/videos tab will be opened.
+ * - `'albums'` - the albums tab will be opened.
+ */
+export type DefaultTab = 'photos' | 'albums';
 export declare enum VideoExportPreset {
     /**
      * Resolution: __Unchanged__ •
@@ -455,6 +461,12 @@ export type ImagePickerOptions = {
      * @default false
      */
     orderedSelection?: boolean;
+    /**
+     * Choose the default tab with which the image picker will be opened (Android only).
+     * @default 'photos'
+     * @platform android
+     */
+    defaultTab?: DefaultTab;
     /**
      * Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit.
      * Defaults to `0` (no limit).
