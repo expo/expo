@@ -337,15 +337,12 @@ class ExpoCameraView(
             is VideoRecordEvent.Pause -> {
               isRecording = false
             }
-
             is VideoRecordEvent.Resume -> {
               isRecording = true
             }
-
             is VideoRecordEvent.Start -> {
               isRecording = true
             }
-
             is VideoRecordEvent.Finalize -> {
               when (event.error) {
                 VideoRecordEvent.Finalize.ERROR_FILE_SIZE_LIMIT_REACHED,
