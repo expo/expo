@@ -73,7 +73,7 @@ class ViewDefinitionBuilder<T : View>(
   }
 
   /**
-   * Defines view name that is exported to the JavaScript world. // TODO: Better comment
+   * Sets the name of the view that is exported to the JavaScript world.
    */
   fun Name(viewName: String) {
     name = viewName
