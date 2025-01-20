@@ -10,7 +10,7 @@ const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const debug = require('debug')('expo:metro-config:assets');
-function getMD5ForDataAsync(data) {
+function getMD5ForData(data) {
     if (data.length === 1)
         return data[0];
     const hash = node_crypto_1.default.createHash('md5');
@@ -22,6 +22,7 @@ function getMD5ForFilePathAsync(path) {
         const output = node_crypto_1.default.createHash('md5');
         const input = node_fs_1.default.createReadStream(path);
         input.on('error', (err) => reject(err));
+        output.on('error', (err) => reject(err));
         output.once('readable', () => resolve(output.read().toString('hex')));
         input.pipe(output);
     });
@@ -68,7 +69,7 @@ async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, pla
         // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
         // TODO: Prevent one multi-res image from updating the hash in all images.
         // @ts-expect-error: name is typed as readonly.
-        data.name = `${data.name}.${getMD5ForDataAsync(data.fileHashes)}`;
+        data.name = `${data.name}.${getMD5ForData(data.fileHashes)}`;
     }
     return data;
 }

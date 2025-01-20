@@ -28,7 +28,7 @@ type Options = {
   publicPath: string;
 };
 
-function getMD5ForDataAsync(data: string[]) {
+function getMD5ForData(data: string[]) {
   if (data.length === 1) return data[0];
   const hash = crypto.createHash('md5');
   hash.update(data.join(''));
@@ -40,6 +40,7 @@ function getMD5ForFilePathAsync(path: string) {
     const output = crypto.createHash('md5');
     const input = fs.createReadStream(path);
     input.on('error', (err) => reject(err));
+    output.on('error', (err) => reject(err));
     output.once('readable', () => resolve(output.read().toString('hex')));
     input.pipe(output);
   });
@@ -112,7 +113,7 @@ export async function getUniversalAssetData(
     // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
     // TODO: Prevent one multi-res image from updating the hash in all images.
     // @ts-expect-error: name is typed as readonly.
-    data.name = `${data.name}.${getMD5ForDataAsync(data.fileHashes)}`;
+    data.name = `${data.name}.${getMD5ForData(data.fileHashes)}`;
   }
 
   return data;
