@@ -49,7 +49,7 @@
     "@shopify/flash-list": "1.7.1",
     "expo": "~52.0.26",
     "expo-build-properties": "~0.13.2",
-    "expo-camera": "~16.0.12",
+    "expo-camera": "~16.0.13",
     "expo-dev-client": "~5.0.9",
     "expo-face-detector": "~13.0.2",
     "expo-image": "~2.0.4",

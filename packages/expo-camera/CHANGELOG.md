@@ -7,9 +7,14 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-- [Android] Fix activeRecording visibility in ExpoCameraView ([#34290](https://github.com/expo/expo/pull/34290) by [@limbo56](https://github.com/limbo56))
 
 ### 💡 Others
+
+## 16.0.13 — 2025-01-20
+
+### 🐛 Bug fixes
+
+- [Android] Fix activeRecording visibility in ExpoCameraView ([#34290](https://github.com/expo/expo/pull/34290) by [@limbo56](https://github.com/limbo56))
 
 ## 16.0.12 — 2025-01-19
 
