@@ -25,6 +25,9 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   var viewDefinition: AnyViewDefinition?
 
+  /**
+  A boolean indicating if the view manager represents the default module view – the first exported definition available without specifying a view name.
+   */
   var isDefaultModuleView: Bool = true
 
   /**
@@ -69,7 +72,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     }
     return self.isDefaultModuleView ? moduleHolder.name : "\(moduleHolder.name)_\(viewDefinition.name)"
   }
-  
+
   /**
    Returns the original name of the wrapped module.
    */
@@ -80,7 +83,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     }
     return moduleHolder.name
   }
-  
+
   /**
    Returns the original name of the wrapped module.
    */
@@ -89,7 +92,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     guard let moduleHolder, let viewDefinition else {
       fatalError("Failed to create ModuleHolder or a viewDefinition")
     }
-    return self.isDefaultModuleView ? moduleHolder.name : viewDefinition.name
+    return self.isDefaultModuleView ? DEFAULT_MODULE_VIEW : viewDefinition.name
   }
 
   /**

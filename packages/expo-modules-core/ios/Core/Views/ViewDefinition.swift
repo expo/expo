@@ -8,7 +8,7 @@ public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefiniti
    An array of view props definitions.
    */
   public let props: [AnyViewProp]
-  
+
   /**
    Name of the defined view. Falls back to the type name if not provided in the definition.
    */
@@ -30,7 +30,7 @@ public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefiniti
   init(_ viewType: ViewType.Type, elements: [AnyViewDefinitionElement]) {
     self.props = elements
       .compactMap { $0 as? AnyViewProp }
-    
+
     self.name = elements
       .compactMap { $0 as? ViewNameDefinition }
       .last?

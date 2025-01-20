@@ -148,7 +148,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
       fatalError("Cannot allocate a Fabric view class for '\(className)'")
     }
     inject(appContext: appContext)
-    injectInitializer(appContext: appContext, moduleName: moduleName,viewName: viewName, toViewClass: viewClass)
+    injectInitializer(appContext: appContext, moduleName: moduleName, viewName: viewName, toViewClass: viewClass)
 
     // Save the allocated view class in the registry for the later use (e.g. when the app is reloaded).
     viewClassesRegistry[className] = viewClass
@@ -170,9 +170,8 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
       guard let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
         fatalError(Exceptions.AppContextLost().reason)
       }
-      // TODO: fix
-      guard let view = moduleHolder.definition.views[viewName == moduleName ? DEFAULT_MODULE_VIEW : viewName]?.createView(appContext: appContext) else {
-        fatalError("Cannot create a view from module '\(moduleName)'")
+      guard let view = moduleHolder.definition.views[viewName]?.createView(appContext: appContext) else {
+        fatalError("Cannot create a view '\(viewName)' from module '\(moduleName)'")
       }
       _ = Unmanaged.passRetained(view) // retain the view given this is an initializer
       return view

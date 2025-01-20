@@ -88,7 +88,6 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
   func build(appContext: AppContext) throws -> JavaScriptObject {
     return try appContext.runtime.createAsyncFunction(name, argsCount: argumentsCount) {
       [weak appContext, weak self, name] this, args, resolve, reject in
-
       guard let appContext else {
         let exception = Exceptions.AppContextLost()
         return reject(exception.code, exception.description, nil)

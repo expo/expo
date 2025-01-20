@@ -37,7 +37,7 @@ public final class ModuleDefinition: ObjectDefinition {
       .name ?? ""
 
     self.eventListeners = definitions.compactMap { $0 as? EventListener }
-    
+
     let viewDefinitions: [AnyViewDefinition] = definitions
       .compactMap { $0 as? AnyViewDefinition }
     var viewsDict = Dictionary(uniqueKeysWithValues: viewDefinitions.map { ($0.name, $0) })
@@ -74,11 +74,10 @@ public final class ModuleDefinition: ObjectDefinition {
     let object = JSIUtils.createNativeModuleObject(try appContext.runtime)
 
     try super.decorate(object: object, appContext: appContext)
-    
+
     let viewPrototypesObject = try appContext.runtime.createObject()
 
-
-    try views.forEach { (key, view) in
+    try views.forEach { key, view in
       let reactComponentPrototype = try view.createReactComponentPrototype(appContext: appContext)
       viewPrototypesObject.setProperty(key == DEFAULT_MODULE_VIEW ? name : "\(name)_\(view.name)", value: reactComponentPrototype)
     }

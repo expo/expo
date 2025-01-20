@@ -33,7 +33,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
     if isShadowView {
       return super.createPropBlock(propName, isShadowView: isShadowView)
     }
-    
+
     // If the prop is defined as an event, create our own event setter.
     if viewModuleWrapper?.viewDefinition?.eventNames.contains(propName) == true {
       return createEventSetter(eventName: propName, bridge: self.manager?.bridge)
@@ -122,7 +122,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
  Creates a setter for the event prop. Used only by Paper.
  */
 private func createEventSetter(eventName: String, bridge: RCTBridge?) -> RCTPropBlockAlias {
-  return { [weak bridge] (target: RCTComponent, value: Any) in
+  return { [weak bridge] (target: RCTComponent, _: Any) in
     installEventDispatcher(forEvent: eventName, onView: target) { [weak target] (body: [String: Any]) in
       if let target = target {
         let componentEvent = RCTComponentEvent(name: eventName, viewTag: target.reactTag, body: body)
