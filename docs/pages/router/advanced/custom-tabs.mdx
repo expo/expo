@@ -22,7 +22,7 @@ There are four components offered by `expo-router/ui` to create custom tab layou
 | `TabTrigger` | A trigger component to switch to the specified tab. It is used to define the route using `href` prop and a `name` for each tab. |
 | `TabSlot`    | A slot to render the currently selected tab.                                                                                    |
 
-A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a`TabSlot`, all within the `Tabs` component), as shown here:
+A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a`TabSlot`, all within the `Tabs` component, as shown here:
 
 ```tsx app/(tabs)/_layout.tsx|collapseHeight=440
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
@@ -59,7 +59,7 @@ Dynamic routes are allowed and can be provided with values via the `href`.
 
 <FileTree files={['_layout.tsx', ['[slug].tsx']]} />
 
-The trigger `<Trigger name="dynamic page" href="/hello-world" />` will create a tab for **[slug].tsx** with the params `{ slug: 'hello-world' }`. This setup can be useful for displaying an arbitrary number of tabs in the tab bar, based on end-user data, such as showing a separate tab for each user profile in an app.
+The trigger `<TabTrigger name="dynamic page" href="/hello-world" />` will create a tab for **[slug].tsx** with the params `{ slug: 'hello-world' }`. This setup can be useful for displaying an arbitrary number of tabs in the tab bar, based on end-user data, such as showing a separate tab for each user profile in an app.
 
 ### Ambiguous routes
 
@@ -240,7 +240,7 @@ All components also have a hook version and allows to you create the same functi
 
 ### Customizing how tab screens are rendered
 
-The `TabSlot` accepts an `options` prop with `renderFn` property. This function can be used to override how your screen is rendered, allowing you to implement advanced functionality such as animations or persisting/unmounting screens. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for more information.
+The `TabSlot` accepts a `renderFn` property. This function can be used to override how your screen is rendered, allowing you to implement advanced functionality such as animations or persisting/unmounting screens. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for more information.
 
 ## Common questions
 
