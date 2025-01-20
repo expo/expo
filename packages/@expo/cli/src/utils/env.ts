@@ -35,6 +35,11 @@ class Env {
     return boolish('EXPO_LOCAL', false);
   }
 
+  /** Enable having custom API server */
+  get EXPO_API_MIRROR() {
+    return string('EXPO_API_MIRROR', '');
+  }
+
   /** Is running in non-interactive CI mode */
   get CI() {
     return boolish('CI', false);
