@@ -14,7 +14,9 @@ export declare class EventEmitter<TEventsMap extends EventsMap> implements Event
 }
 export declare class NativeModule<TEventsMap extends Record<never, never>> extends EventEmitter<TEventsMap> implements NativeModuleType {
     [key: string]: any;
-    ViewPrototype?: object;
+    ViewPrototypes?: {
+        [viewName: string]: object;
+    };
     __expo_module_name__?: string;
 }
 export declare class SharedObject<TEventsMap extends Record<never, never>> extends EventEmitter<TEventsMap> implements SharedObjectType {
