@@ -1290,14 +1290,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private pendingRouteOperations = new Map<
     string,
-    Promise<{ src: string; filename: string; map: string } | null>
+    Promise<{ src: string; resolvedEntryFilePath: string; map: string } | null>
   >();
 
   // Bundle the API Route with Metro and return the string contents to be evaluated in the server.
   private async bundleApiRoute(
     filePath: string,
     { platform }: { platform: string }
-  ): Promise<{ src: string; filename: string; map?: any } | null | undefined> {
+  ): Promise<{ src: string; resolvedEntryFilePath: string; map?: any } | null | undefined> {
     if (this.pendingRouteOperations.has(filePath)) {
       return this.pendingRouteOperations.get(filePath);
     }
@@ -1348,7 +1348,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (!apiRoute?.src) {
         return null;
       }
-      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename);
+      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.resolvedEntryFilePath);
     } catch (error) {
       // Format any errors that were thrown in the global scope of the evaluation.
       if (error instanceof Error) {
