@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix adaptive color support for `PlatformColor` and add corresponding types ([#34214](https://github.com/expo/expo/pull/34214) by [@dlindenkreuz](https://github.com/dlindenkreuz))
+
 ### 💡 Others
 
 ## 14.0.1 — 2024-10-25
