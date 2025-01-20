@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Change metro.config check to look for custom transformer key instead of asset plugin.
+
 ## 11.0.1 — 2024-11-10
 
 ### 🐛 Bug fixes
