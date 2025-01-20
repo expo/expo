@@ -12,11 +12,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.views.ComposeProps
 
 data class SegmentedControlProps(
   val options: MutableState<Array<String>> = mutableStateOf(emptyArray()),
   val selectedIndex: MutableState<Int?> = mutableStateOf(null)
-)
+) : ComposeProps
 
 class SingleChoiceSegmentedControlView(context: Context, appContext: AppContext) : ExpoComposeView<SegmentedControlProps>(context, appContext) {
   override val props = SegmentedControlProps()

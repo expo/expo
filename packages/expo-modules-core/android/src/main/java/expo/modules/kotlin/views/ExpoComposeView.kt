@@ -12,11 +12,11 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 /**
  * A base class that should be used by compose views.
  */
-abstract class ExpoComposeView<T : Any>(
+abstract class ExpoComposeView<T : ComposeProps>(
   context: Context,
   appContext: AppContext
 ) : ExpoView(context, appContext) {
-  open val props: T? = null
+  open val props: ComposeProps? = null
 
   override val shouldUseAndroidLayout = true
 
