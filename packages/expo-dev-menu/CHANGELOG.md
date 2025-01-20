@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- rebuild bundles with 0.77.0-rc.7 ([#34292](https://github.com/expo/expo/pull/34292) by [@vonovak](https://github.com/vonovak))
+
 ## 6.0.17 — 2025-01-19
 
 ### 🎉 New features
