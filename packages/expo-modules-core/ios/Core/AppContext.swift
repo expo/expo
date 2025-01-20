@@ -300,11 +300,9 @@ public final class AppContext: NSObject {
    */
   @objc
   public func getViewManagers() -> [ViewModuleWrapper] {
-    return moduleRegistry.compactMap { holder in
-      if holder.definition.view != nil {
-        return ViewModuleWrapper(holder)
-      } else {
-        return nil
+    return moduleRegistry.flatMap { holder in
+      holder.definition.views.map { (key, viewDefinition) in
+        ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW) // TODO
       }
     }
   }
@@ -409,9 +407,10 @@ public final class AppContext: NSObject {
 
   private func viewManagersMetadata() -> [String: Any] {
     return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
-      if let viewDefinition = holder.definition.view {
-        acc[holder.name] = [
-          "propsNames": viewDefinition.props.map { $0.name }
+      holder.definition.views.forEach { (key, definition) in
+        let name = key == DEFAULT_MODULE_VIEW ? holder.name : "\(holder.name)_\(definition.name)"
+        acc[name] = [
+          "propsNames": definition.props.map { $0.name }
         ]
       }
     }

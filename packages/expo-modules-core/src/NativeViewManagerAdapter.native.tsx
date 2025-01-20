@@ -121,7 +121,7 @@ export function requireNativeViewManager<P>(
     const nativeModule = requireNativeModule(moduleName);
     const nativeViewPrototype =
       nativeModule.ViewPrototypes[viewName ? `${moduleName}_${viewName}` : moduleName];
-
+    console.log(nativeModule);
     if (nativeViewPrototype) {
       // Assign native view functions to the component prototype, so they can be accessed from the ref.
       Object.assign(NativeComponent.prototype, nativeViewPrototype);

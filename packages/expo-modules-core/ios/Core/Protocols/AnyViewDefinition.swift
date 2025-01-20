@@ -6,6 +6,8 @@ public protocol AnyViewDefinition {
    An array of view props supported by the view.
    */
   var props: [AnyViewProp] { get }
+  
+  var name: String { get }
 
   /**
    Names of the events that the view can send to JavaScript.

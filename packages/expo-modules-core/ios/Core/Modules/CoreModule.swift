@@ -24,7 +24,7 @@ internal final class CoreModule: Module {
       var directEventTypes: [String: Any] = [:]
       let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: getHolderName(moduleName))
 
-      guard let viewDefinition = moduleHolder?.definition.view else {
+      guard let viewDefinition = moduleHolder?.definition.views[viewName ?? DEFAULT_MODULE_VIEW] else {
         return nil
       }
       for propName in viewDefinition.getSupportedPropNames() {
