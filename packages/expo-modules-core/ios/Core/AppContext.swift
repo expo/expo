@@ -301,7 +301,7 @@ public final class AppContext: NSObject {
   @objc
   public func getViewManagers() -> [ViewModuleWrapper] {
     return moduleRegistry.flatMap { holder in
-      holder.definition.views.map { (key, viewDefinition) in
+      holder.definition.views.map { key, viewDefinition in
         ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW) // TODO
       }
     }
