@@ -30,17 +30,30 @@ const nativeComponentsCache = new Map<string, HostComponent<any>>();
 /**
  * Requires a React Native component using the static view config from an Expo module.
  */
-function requireNativeComponent<Props>(viewName: string): HostComponent<Props> {
-  return componentRegistryGet<Props>(viewName, () => {
-    const viewModuleName = viewName.replace('ViewManagerAdapter_', '');
-    const expoViewConfig = globalThis.expo?.getViewConfig(viewModuleName);
+function requireNativeComponent<Props>(
+  moduleName: string,
+  viewName?: string
+): HostComponent<Props> {
+  const appIdentifier = globalThis.expo?.['__expo_app_identifier__'] ?? '';
+  const viewNameSuffix = appIdentifier ? `_${appIdentifier}` : '';
+
+  const nativeViewName = viewName
+    ? `ViewManagerAdapter_${moduleName}_${viewName}${viewNameSuffix}`
+    : `ViewManagerAdapter_${moduleName}${viewNameSuffix}`;
+
+  return componentRegistryGet<Props>(nativeViewName, () => {
+    const expoViewConfig = globalThis.expo?.getViewConfig(moduleName, viewName);
 
     if (!expoViewConfig) {
-      console.warn('Unable to get the view config for %s', viewModuleName);
+      console.warn(
+        'Unable to get the view config for %s from module &s',
+        viewName ?? 'default view',
+        moduleName
+      );
     }
 
     return {
-      uiViewClassName: viewName,
+      uiViewClassName: nativeViewName,
       ...expoViewConfig,
     };
   });
@@ -51,12 +64,16 @@ function requireNativeComponent<Props>(viewName: string): HostComponent<Props> {
  * "Tried to register two views with the same name" errors on fast refresh, but
  * also when there are multiple versions of the same package with native component.
  */
-function requireCachedNativeComponent<Props>(viewName: string): HostComponent<Props> {
-  const cachedNativeComponent = nativeComponentsCache.get(viewName);
+function requireCachedNativeComponent<Props>(
+  moduleName: string,
+  viewName?: string
+): HostComponent<Props> {
+  const cacheKey = `${moduleName}_${viewName}`;
+  const cachedNativeComponent = nativeComponentsCache.get(cacheKey);
 
   if (!cachedNativeComponent) {
-    const nativeComponent = requireNativeComponent<Props>(viewName);
-    nativeComponentsCache.set(viewName, nativeComponent);
+    const nativeComponent = requireNativeComponent<Props>(moduleName, viewName);
+    nativeComponentsCache.set(cacheKey, nativeComponent);
     return nativeComponent;
   }
   return cachedNativeComponent;
@@ -65,26 +82,25 @@ function requireCachedNativeComponent<Props>(viewName: string): HostComponent<Pr
 /**
  * A drop-in replacement for `requireNativeComponent`.
  */
-export function requireNativeViewManager<P>(viewName: string): ComponentType<P> {
+export function requireNativeViewManager<P>(
+  moduleName: string,
+  viewName?: string
+): ComponentType<P> {
   const { viewManagersMetadata } = NativeModules.NativeUnimoduleProxy;
-  const viewManagerConfig = viewManagersMetadata?.[viewName];
+
+  const viewManagerConfig = viewManagersMetadata?.[moduleName];
 
   if (__DEV__ && !viewManagerConfig) {
     const exportedViewManagerNames = Object.keys(viewManagersMetadata).join(', ');
     console.warn(
-      `The native view manager required by name (${viewName}) from NativeViewManagerAdapter isn't exported by expo-modules-core. Views of this type may not render correctly. Exported view managers: [${exportedViewManagerNames}].`
+      `The native view manager for module(${moduleName}) ${viewName ? ` required by name (${viewName})` : ''}) from NativeViewManagerAdapter isn't exported by expo-modules-core. Views of this type may not render correctly. Exported view managers: [${exportedViewManagerNames}].`
     );
   }
 
-  const appIdentifier = globalThis.expo?.['__expo_app_identifier__'] ?? '';
-  const viewNameSuffix = appIdentifier ? `_${appIdentifier}` : '';
-  // Set up the React Native native component, which is an adapter to the universal module's view
-  // manager
-  const reactNativeViewName = `ViewManagerAdapter_${viewName}${viewNameSuffix}`;
-  const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
+  const ReactNativeComponent = requireCachedNativeComponent(moduleName, viewName);
 
   class NativeComponent extends PureComponent<P> {
-    static displayName = viewName;
+    static displayName = viewName ? viewName : moduleName;
 
     nativeRef = createRef<Component & NativeMethods>();
 
@@ -102,8 +118,9 @@ export function requireNativeViewManager<P>(viewName: string): ComponentType<P> 
   }
 
   try {
-    const nativeModule = requireNativeModule(viewName);
-    const nativeViewPrototype = nativeModule.ViewPrototype;
+    const nativeModule = requireNativeModule(moduleName);
+    const nativeViewPrototype =
+      nativeModule.ViewPrototypes[viewName ? `${moduleName}_${viewName}` : moduleName];
 
     if (nativeViewPrototype) {
       // Assign native view functions to the component prototype, so they can be accessed from the ref.
