@@ -104,11 +104,11 @@ interface BundleDirectResult {
 }
 
 interface MetroModuleContentsResult extends BundleDirectResult {
-  fileName: string;
+  filename: string;
 }
 
 interface SSRModuleContentsResult extends Omit<BundleDirectResult, 'bundle'> {
-  fileName: string;
+  filename: string;
   src: string;
   map: string;
 }
@@ -443,7 +443,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     ) {
       // Register SSR HMR
       const serverRoot = getMetroServerRoot(this.projectRoot);
-      const relativePath = path.relative(serverRoot, res.fileName);
+      const relativePath = path.relative(serverRoot, res.filename);
       const url = new URL(relativePath, this.getDevServerUrlOrAssert());
       this.setupHmr(url);
     }
@@ -451,7 +451,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return evalMetroAndWrapFunctions(
       this.projectRoot,
       res.src,
-      res.fileName,
+      res.filename,
       specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!
     );
   };
@@ -471,7 +471,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         artifacts: results.artifacts,
         assets: results.assets,
         src: results.src,
-        filename: results.fileName,
+        filename: results.filename,
         map: results.map,
       };
     }
@@ -537,7 +537,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       transformOptions,
     });
 
-    const fileName = createBundleOsPath({
+    const filename = createBundleOsPath({
       ...opts,
       mainModuleName: resolvedEntryFilePath,
     });
@@ -565,7 +565,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     return {
       ...results,
-      fileName,
+      filename,
     };
   }
 
@@ -605,20 +605,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
-    const { fileName, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
+    const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
     const scriptContents = wrapBundle(bundle);
 
     if (map) {
-      debug('Registering SSR source map for:', fileName);
-      cachedSourceMaps.set(fileName, { url: this.projectRoot, map });
+      debug('Registering SSR source map for:', filename);
+      cachedSourceMaps.set(filename, { url: this.projectRoot, map });
     } else {
-      debug('No SSR source map found for:', fileName);
+      debug('No SSR source map found for:', filename);
     }
 
     return {
       ...rest,
       src: scriptContents,
-      fileName,
+      filename,
       map,
     };
   }
@@ -1364,7 +1364,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (!apiRoute?.src) {
         return null;
       }
-      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.fileName);
+      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename);
     } catch (error) {
       // Format any errors that were thrown in the global scope of the evaluation.
       if (error instanceof Error) {
