@@ -45,3 +45,10 @@ public func OnViewDidUpdateProps<ViewType: UIView>(
 ) -> ViewLifecycleMethod<ViewType> {
   return ViewLifecycleMethod(type: .didUpdateProps, closure: closure)
 }
+
+/**
+ Sets the name of the view that is exported to the JavaScript world.
+ */
+public func ViewName(_ name: String) -> ViewNameDefinition {
+  return ViewNameDefinition(name: name)
+}
