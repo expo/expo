@@ -11,5 +11,8 @@ class ExpoUIModule : Module() {
     View(SingleChoiceSegmentedControlView::class) {
       Events("onOptionSelected")
     }
+    View(SliderView::class) {
+      Events("onValueChanged")
+    }
   }
 }

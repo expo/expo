@@ -7,5 +7,6 @@ public class ExpoUIModule: Module {
     Name("ExpoUI")
 
     View(SingleChoiceSegmentedControlView.self)
+    View(SliderView.self)
   }
 }
