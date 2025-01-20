@@ -14,7 +14,7 @@
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
     "async-retry": "^1.1.4",
-    "expo": "~52.0.26",
+    "expo": "~52.0.27",
     "expo-application": "~6.0.2",
     "expo-asset": "~11.0.2",
     "expo-av": "~15.0.2",

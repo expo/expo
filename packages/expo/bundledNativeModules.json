@@ -33,7 +33,7 @@
   "expo-constants": "~17.0.4",
   "expo-contacts": "~14.0.3",
   "expo-crypto": "~14.0.2",
-  "expo-dev-client": "~5.0.9",
+  "expo-dev-client": "~5.0.10",
   "expo-device": "~7.0.2",
   "expo-document-picker": "~13.0.2",
   "expo-face-detector": "~13.0.2",

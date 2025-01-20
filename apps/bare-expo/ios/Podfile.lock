@@ -47,18 +47,18 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.29.12):
     - ExpoModulesCore
-  - Expo (52.0.26):
+  - Expo (52.0.27):
     - ExpoModulesCore
-  - expo-dev-client (5.0.9):
+  - expo-dev-client (5.0.10):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (5.0.24):
+  - expo-dev-launcher (5.0.25):
     - DoubleConversion
     - EXManifests
-    - expo-dev-launcher/Main (= 5.0.24)
+    - expo-dev-launcher/Main (= 5.0.25)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -84,7 +84,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Main (5.0.24):
+  - expo-dev-launcher/Main (5.0.25):
     - DoubleConversion
     - EXManifests
     - expo-dev-launcher/Unsafe
@@ -113,7 +113,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Tests (5.0.24):
+  - expo-dev-launcher/Tests (5.0.25):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -146,7 +146,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Unsafe (5.0.24):
+  - expo-dev-launcher/Unsafe (5.0.25):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -174,10 +174,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu (6.0.17):
+  - expo-dev-menu (6.0.18):
     - DoubleConversion
-    - expo-dev-menu/Main (= 6.0.17)
-    - expo-dev-menu/ReactNativeCompatibles (= 6.0.17)
+    - expo-dev-menu/Main (= 6.0.18)
+    - expo-dev-menu/ReactNativeCompatibles (= 6.0.18)
     - glog
     - hermes-engine
     - RCT-Folly (= 2024.01.01.00)
@@ -198,7 +198,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - expo-dev-menu-interface (1.9.3)
-  - expo-dev-menu/Main (6.0.17):
+  - expo-dev-menu/Main (6.0.18):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu-interface
@@ -224,7 +224,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (6.0.17):
+  - expo-dev-menu/ReactNativeCompatibles (6.0.18):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -245,7 +245,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (6.0.17):
+  - expo-dev-menu/SafeAreaView (6.0.18):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -267,7 +267,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Tests (6.0.17):
+  - expo-dev-menu/Tests (6.0.18):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -292,7 +292,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/UITests (6.0.17):
+  - expo-dev-menu/UITests (6.0.18):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -315,7 +315,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Vendored (6.0.17):
+  - expo-dev-menu/Vendored (6.0.18):
     - DoubleConversion
     - expo-dev-menu/SafeAreaView
     - glog
@@ -353,7 +353,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (14.0.6):
     - ExpoModulesCore
-  - ExpoCamera (16.0.12):
+  - ExpoCamera (16.0.13):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -2860,7 +2860,7 @@ DEPENDENCIES:
   - "RNCPicker (from `../../../node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/@react-native-community/datetimepicker`)"
   - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
-  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
@@ -3256,7 +3256,7 @@ EXTERNAL SOURCES:
   RNFlashList:
     :path: "../../../node_modules/@shopify/flash-list"
   RNGestureHandler:
-    :path: "../../../node_modules/react-native-gesture-handler"
+    :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
@@ -3281,10 +3281,10 @@ SPEC CHECKSUMS:
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: 81324537a654111964f6e7994dbc351a4233dcfa
   EXNotifications: 17db1ed04f515dabe11aeb2768bd353b4c005385
-  Expo: 82e3bc2d2770d9ec484eff7244148aa55edaeb0e
-  expo-dev-client: dd1a126aea7831ee91a217fd4d00760d06f5a084
-  expo-dev-launcher: edc3a59510c7f0579abef06b85f84fdfcd6ecd00
-  expo-dev-menu: c5a46e94624a77ab9f7671ee9109309fc51928f2
+  Expo: 7021c4880d0bbd02781e88e213b6786c1200ebdf
+  expo-dev-client: a02392060ef8016e11facebb6f81ff172b39775f
+  expo-dev-launcher: edecd03a5fa273a831accb92c91aa5f03cb64d78
+  expo-dev-menu: f4789f284d2fa7b237eaf502abc6d0ba9de91052
   expo-dev-menu-interface: 00dc42302a72722fdecec3fa048de84a9133bcc4
   ExpoAppleAuthentication: ee61704f441b3ef10a3d1280acbb6b9e2e04a38d
   ExpoAsset: 6cc988c426b5fc997859cc0f8f6728d1376bf53f
@@ -3294,7 +3294,7 @@ SPEC CHECKSUMS:
   ExpoBlur: 5327b09a58e04e4066dd95fe994d8ef5539a1f26
   ExpoBrightness: d3f54a52ea62b6c4deb81bfb5569a8bc664487ab
   ExpoCalendar: 2494a630f176436783a8941efd3c38a9c657ae65
-  ExpoCamera: c5de43d3d08bd3019fe9b5505c1039d6ad15bb7f
+  ExpoCamera: c227d7473dc689f64f9fbbc7ee6bb6fbfdff2a40
   ExpoCellular: f3b9194876470c80df86face9b395deaf975ab9b
   ExpoClipboard: 5250b207b6d545f4e9aac5ea3c6e61c4f16d0aed
   ExpoContacts: eae63b58a8b43cab32ace4fdb6f119ccc8233e7e

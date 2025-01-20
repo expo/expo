@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 52.0.27 — 2025-01-20
+
+_This version does not introduce any user-facing changes._
+
 ## 52.0.26 — 2025-01-19
 
 ### 🎉 New features

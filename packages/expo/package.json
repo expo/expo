@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "52.0.26",
+  "version": "52.0.27",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -80,7 +80,7 @@
     "expo-file-system": "~18.0.7",
     "expo-font": "~13.0.3",
     "expo-keep-awake": "~14.0.2",
-    "expo-modules-autolinking": "2.0.6",
+    "expo-modules-autolinking": "2.0.7",
     "expo-modules-core": "2.1.4",
     "fbemitter": "^3.0.0",
     "web-streams-polyfill": "^3.3.2",
