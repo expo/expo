@@ -86,7 +86,7 @@ export function withMetroResolvers(
                   throw error;
                 }
                 debug(
-                  `Custom resolver threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform}, env: ${ctx.customResolverOptions?.environment}, origin: ${ctx.originModulePath})`
+                  `Custom resolver (${resolver.name || '<anonymous>'}) threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform}, env: ${ctx.customResolverOptions?.environment}, origin: ${ctx.originModulePath})`
                 );
               }
             }
