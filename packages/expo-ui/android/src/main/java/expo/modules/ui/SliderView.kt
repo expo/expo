@@ -28,10 +28,10 @@ class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<Sli
   private val onValueChanged by EventDispatcher()
   init {
     setContent {
-      val value by remember { props.value }
-      val min by remember { props.min }
-      val max by remember { props.max }
-      val steps by remember { props.steps }
+      val (value) = props.value
+      val (min) = props.min
+      val (max) = props.max
+      val (steps) = props.steps
       Slider(
         value = value.coerceAtLeast(min).coerceAtMost(max),
         valueRange = min..max,
