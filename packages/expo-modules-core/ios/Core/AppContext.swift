@@ -407,7 +407,7 @@ public final class AppContext: NSObject {
 
   private func viewManagersMetadata() -> [String: Any] {
     return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
-      holder.definition.views.forEach { (key, definition) in
+      holder.definition.views.forEach { key, definition in
         let name = key == DEFAULT_MODULE_VIEW ? holder.name : "\(holder.name)_\(definition.name)"
         acc[name] = [
           "propsNames": definition.props.map { $0.name }
