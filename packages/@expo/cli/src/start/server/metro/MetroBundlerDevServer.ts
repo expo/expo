@@ -430,7 +430,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return evalMetroAndWrapFunctions(
       this.projectRoot,
       res.src,
-      res.filename,
+      res.resolvedEntryFilePath,
       specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!
     );
   };
@@ -545,6 +545,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     return {
       ...results,
+      resolvedEntryFilePath,
       filename,
     };
   }
