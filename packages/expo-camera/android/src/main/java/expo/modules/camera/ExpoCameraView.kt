@@ -128,7 +128,6 @@ class ExpoCameraView(
   private var barcodeFormats: List<BarcodeType> = emptyList()
   private var glSurfaceTexture: SurfaceTexture? = null
 
-
   private var previewView = PreviewView(context).apply {
     elevation = 0f
   }
