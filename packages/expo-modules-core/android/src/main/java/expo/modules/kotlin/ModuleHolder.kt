@@ -50,7 +50,6 @@ class ModuleHolder<T : Module>(val module: T) {
       moduleDecorator.registerProperty("__expo_module_name__", false, emptyArray(), { name }, false, emptyArray(), null)
 
       val viewPrototypesDecorator = JSDecoratorsBridgingObject(jniDeallocator)
-      moduleDecorator.registerObject("ViewPrototypes", viewPrototypesDecorator)
       definition.viewManagerDefinitions.forEach { key, definition ->
         val viewFunctions = definition.asyncFunctions
         if (viewFunctions.isEmpty()) {
@@ -61,10 +60,10 @@ class ModuleHolder<T : Module>(val module: T) {
           viewFunctions.forEach { function ->
             function.attachToJSObject(appContext, viewDecorator, name)
           }
-
           viewPrototypesDecorator.registerObject(if (key == DEFAULT_MODULE_VIEW) name else "${name}_${definition.name}", viewDecorator)
         }
       }
+      moduleDecorator.registerObject("ViewPrototypes", viewPrototypesDecorator)
 
       trace("Attaching classes") {
         definition.classData.forEach { clazz ->
