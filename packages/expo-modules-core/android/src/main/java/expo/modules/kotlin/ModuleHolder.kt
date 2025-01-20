@@ -11,6 +11,7 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.functions.AsyncFunction
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
+import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.objects.ObjectDefinitionData
 import expo.modules.kotlin.tracing.trace
@@ -48,7 +49,9 @@ class ModuleHolder<T : Module>(val module: T) {
       // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
       moduleDecorator.registerProperty("__expo_module_name__", false, emptyArray(), { name }, false, emptyArray(), null)
 
-      definition.viewManagerDefinitions.values.forEach { definition ->
+      val viewPrototypesDecorator = JSDecoratorsBridgingObject(jniDeallocator)
+      moduleDecorator.registerObject("ViewPrototypes", viewPrototypesDecorator)
+      definition.viewManagerDefinitions.forEach { key, definition ->
         val viewFunctions = definition.asyncFunctions
         if (viewFunctions.isEmpty()) {
           return@forEach
@@ -56,10 +59,10 @@ class ModuleHolder<T : Module>(val module: T) {
         trace("Attaching view prototype") {
           val viewDecorator = JSDecoratorsBridgingObject(jniDeallocator)
           viewFunctions.forEach { function ->
-            function.attachToJSObject(appContext, viewDecorator, "${name}_${definition.name}")
+            function.attachToJSObject(appContext, viewDecorator, name)
           }
 
-          moduleDecorator.registerObject("ViewPrototype", viewDecorator)
+          viewPrototypesDecorator.registerObject(if (key == DEFAULT_MODULE_VIEW) name else "${name}_${definition.name}", viewDecorator)
         }
       }
 
