@@ -68,4 +68,14 @@ internal final class NotAvailableInDevClientException: Exception {
   }
 }
 
+internal final class NotAllowedUnlessLivingDangerouslyException: Exception {
+  override var code: String {
+    "ERR_NOT_ALLOWED"
+  }
+
+  override var reason: String {
+    "Must set allowMeToLiveDangerously configuration to use URL overriding"
+  }
+}
+
 // swiftlint:enable line_length

@@ -140,6 +140,10 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
         promise.reject(error)
       }
     }
+
+    Function("setUrlOverride") { (url: String) in
+      try AppController.sharedInstance.setUrlOverride(url)
+    }
   }
 
   public func onStateMachineContextEvent(context: UpdatesStateContext) {

@@ -247,4 +247,11 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
   public func getEmbeddedUpdate() -> Update? {
     return EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
   }
+
+  public func setUrlOverride(_ url: String) throws {
+    if (!config.allowMeToLiveDangerously) {
+      throw NotAllowedUnlessLivingDangerouslyException()
+    }
+    UserDefaults.standard.set(url, forKey: "updatesOverride")
+  }
 }

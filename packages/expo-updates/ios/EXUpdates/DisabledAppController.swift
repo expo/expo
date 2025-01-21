@@ -141,4 +141,8 @@ public class DisabledAppController: InternalAppControllerInterface {
   ) {
     errorBlockArg(UpdatesDisabledException("Updates.setExtraParamAsync()"))
   }
+
+  public func setUrlOverride(_ url: String) throws {
+    throw UpdatesDisabledException("Updates.setUrlOverride() is not supported when expo-updates is not enabled.")
+  }
 }
