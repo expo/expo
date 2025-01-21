@@ -210,7 +210,7 @@ export function useLinking(
   };
 }
 
-export async function getInitialURLWithTimeout(): Promise<string | null> {
+export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
   if (typeof window === 'undefined') {
     return '';
   } else if (Platform.OS === 'ios') {

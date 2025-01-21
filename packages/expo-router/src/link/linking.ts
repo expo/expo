@@ -36,7 +36,7 @@ export function getInitialURL(): ReturnType<
   }
 
   // TODO: Figure out if expo-linking on Android has full interop with the React Native implementation.
-  return getInitialURLWithTimeout().then(
+  return Promise.resolve(getInitialURLWithTimeout()).then(
     (url) =>
       parseExpoGoUrlFromListener(url) ??
       // The path will be nullish in bare apps when the app is launched from the home screen.
