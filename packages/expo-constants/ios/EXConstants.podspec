@@ -37,7 +37,9 @@ Pod::Spec.new do |s|
   s.script_phase = {
     :name => 'Generate app.config for prebuilt Constants.manifest',
     :script => 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh"',
-    :execution_position => :before_compile
+    :execution_position => :before_compile,
+    # always run the script without warning
+    :always_out_of_date => "1"
   }
 
   # Generate EXConstants.bundle without existing resources

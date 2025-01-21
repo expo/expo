@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android][ios] Updated Gradle build and Podspec files to ensure app.json/app.config.js values are correctly updated during each native build. ([#34228](https://github.com/expo/expo/pull/34228) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 17.0.4 — 2025-01-10
