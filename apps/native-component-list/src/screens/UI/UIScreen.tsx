@@ -3,6 +3,14 @@ import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
 export const UIScreens = [
   {
+    name: 'Button component',
+    route: 'ui/button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ButtonScreen'));
+    },
+  },
+  {
     name: 'Picker component',
     route: 'ui/picker',
     options: {},

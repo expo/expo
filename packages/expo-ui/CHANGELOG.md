@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add Button component.([#34340](https://github.com/expo/expo/pull/34340) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
