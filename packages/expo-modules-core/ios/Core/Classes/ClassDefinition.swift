@@ -81,12 +81,12 @@ public final class ClassDefinition: ObjectDefinition {
     try decorateWithClasses(object: prototype, appContext: appContext)
     try decorateWithProperties(object: prototype, appContext: appContext)
   }
-
+  
   private func createClass(appContext: AppContext, name: String, consturctor: @escaping ClassConstructorBlock) throws -> JavaScriptObject {
     if isSharedRef {
       return try appContext.runtime.createSharedRefClass(name, constructor: consturctor)
     }
-
+    
     return try appContext.runtime.createSharedObjectClass(name, constructor: consturctor)
   }
 }
@@ -119,6 +119,6 @@ extension SharedObject: ClassAssociatedObject {}
  - Redefining prototype's `constructor` is a bad idea so a function with this name
    needs to be filtered out when decorating the prototype.
  */
-private func isConstructor(_ item: AnyDefinition) -> Bool {
+fileprivate func isConstructor(_ item: AnyDefinition) -> Bool {
   return (item as? AnySyncFunctionDefinition)?.name == "constructor"
 }
