@@ -54,7 +54,7 @@ public final class ModuleHolder {
 
   // MARK: Calling functions
 
-  func call(function functionName: String, args: [Any], _ callback: @escaping (FunctionCallResult) -> Void = { _ in }) {
+  func call(function functionName: String, args: [Any], _ callback: @escaping (FunctionCallResult) -> () = { _ in }) {
     guard let appContext else {
       callback(.failure(Exceptions.AppContextLost()))
       return
