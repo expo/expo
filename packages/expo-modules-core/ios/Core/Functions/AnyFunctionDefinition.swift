@@ -44,7 +44,7 @@ internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder 
       - appContext: An app context where the function is being executed.
       - callback: A callback that receives a result of the function execution.
    */
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void)
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ())
 }
 
 extension AnyFunctionDefinition {
