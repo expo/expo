@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add basic support for App Clips.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
