@@ -5,7 +5,8 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-Add `textZoom` option to override font scaling applied by the user’s Android device settings. ([#33784](https://github.com/expo/expo/pull/33784) by [@BatDroid](https://github.com/BatDroid))
+
+- Add `textZoom` option to override font scaling applied by the user’s Android device settings. ([#33784](https://github.com/expo/expo/pull/33784) by [@BatDroid](https://github.com/BatDroid))
 
 ### 🐛 Bug fixes
 
