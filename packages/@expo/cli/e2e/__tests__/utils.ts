@@ -202,7 +202,7 @@ export async function setupTestProjectWithOptionsAsync(
 
   // Many of the factors in this test are based on the expected SDK version that we're testing against.
   const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  expect(exp.sdkVersion).toBe(sdkVersion);
+  assert(exp.sdkVersion === sdkVersion, `Expected exp.sdkVersion to be ${sdkVersion}`);
   return projectRoot;
 }
 

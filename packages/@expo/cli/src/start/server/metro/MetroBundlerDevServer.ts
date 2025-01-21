@@ -70,8 +70,8 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   convertPathToModuleSpecifier,
   createBundleUrlPath,
-  createBundleUrlOsPath,
   ExpoMetroOptions,
+  createBundleOsPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
@@ -91,6 +91,27 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
   specificOptions?: Partial<ExpoMetroOptions>,
   extras?: { hot?: boolean }
 ) => Promise<T>;
+
+interface BundleDirectResult {
+  numModifiedFiles: number;
+  lastModifiedDate: Date;
+  nextRevId: string;
+  bundle: string;
+  map: string;
+  /** Defined if the output is multi-bundle. */
+  artifacts?: SerialAsset[];
+  assets?: readonly BundleAssetWithFileHashes[];
+}
+
+interface MetroModuleContentsResult extends BundleDirectResult {
+  filename: string;
+}
+
+interface SSRModuleContentsResult extends Omit<BundleDirectResult, 'bundle'> {
+  filename: string;
+  src: string;
+  map: string;
+}
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -466,7 +487,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       sourceMapUrl?: string;
       unstable_transformProfile?: TransformProfile;
     } = {}
-  ) {
+  ): Promise<MetroModuleContentsResult> {
     const { baseUrl } = this.instanceMetroOptions;
     assert(baseUrl != null, 'The server must be started before calling metroLoadModuleContents.');
 
@@ -518,8 +539,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       transformOptions,
     });
 
-    // Use fully qualified URL with all options to represent the file path that's used for source maps and HMR. This prevents collisions.
-    const filename = createBundleUrlOsPath({
+    const filename = createBundleOsPath({
       ...opts,
       mainModuleName: resolvedEntryFilePath,
     });
@@ -554,7 +574,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private async ssrLoadModuleContents(
     filePath: string,
     specificOptions: Partial<ExpoMetroOptions> = {}
-  ) {
+  ): Promise<SSRModuleContentsResult> {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
     assert(
       baseUrl != null && routerRoot != null && isExporting != null,
@@ -1289,20 +1309,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   // API Routes
 
-  private pendingRouteOperations = new Map<
-    string,
-    Promise<{ src: string; filename: string; map: string } | null>
-  >();
+  private pendingRouteOperations = new Map<string, Promise<SSRModuleContentsResult | null>>();
 
   // Bundle the API Route with Metro and return the string contents to be evaluated in the server.
   private async bundleApiRoute(
     filePath: string,
     { platform }: { platform: string }
-  ): Promise<{ src: string; filename: string; map?: any } | null | undefined> {
+  ): Promise<SSRModuleContentsResult | null | undefined> {
     if (this.pendingRouteOperations.has(filePath)) {
       return this.pendingRouteOperations.get(filePath);
     }
-    const bundleAsync = async () => {
+    const bundleAsync = async (): Promise<SSRModuleContentsResult> => {
       try {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
         return await this.ssrLoadModuleContents(filePath, {
@@ -1453,17 +1470,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         lazy: boolean;
       };
     }
-  ): Promise<{
-    numModifiedFiles: number;
-    lastModifiedDate: Date;
-    nextRevId: string;
-    bundle: string;
-    map: string;
-
-    // Defined if the output is multi-bundle.
-    artifacts?: SerialAsset[];
-    assets?: readonly BundleAssetWithFileHashes[];
-  }> {
+  ): Promise<BundleDirectResult> {
     assert(this.metro, 'Metro server must be running to bundle directly.');
     const config = this.metro._config;
     const buildNumber = this.metro.getNewBuildNumber();
