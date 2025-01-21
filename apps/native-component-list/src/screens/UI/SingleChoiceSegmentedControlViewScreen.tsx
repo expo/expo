@@ -1,4 +1,4 @@
-import { SingleChoiceSegmentedControlView } from 'expo-ui';
+import { SingleChoiceSegmentedControlView } from '@expo/ui';
 import * as React from 'react';
 import { Platform, Text } from 'react-native';
 
