@@ -385,6 +385,9 @@ class ExpoCameraView(
         val preview = Preview.Builder()
           .setResolutionSelector(resolutionSelector)
           .build()
+          .also {
+            it.surfaceProvider = previewView.surfaceProvider
+          }
 
         glSurfaceTexture?.let {
           it.setDefaultBufferSize(previewView.width, previewView.height)
