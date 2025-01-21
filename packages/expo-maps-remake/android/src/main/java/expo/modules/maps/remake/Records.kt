@@ -5,7 +5,13 @@ package expo.modules.maps.remake
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import com.google.android.gms.maps.model.LatLng
+<<<<<<< HEAD
 import com.google.maps.android.compose.ComposeMapColorScheme
+||||||| parent of 8ffa2da7c6 (Add ui settings & events)
+=======
+import com.google.android.gms.maps.model.MapColorScheme
+import com.google.maps.android.compose.ComposeMapColorScheme
+>>>>>>> 8ffa2da7c6 (Add ui settings & events)
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings

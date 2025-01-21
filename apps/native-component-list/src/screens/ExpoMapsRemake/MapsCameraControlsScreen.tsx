@@ -35,7 +35,7 @@ export default function MapsBasicScreen() {
             zoom,
           }}
           properties={{
-            maxZoomPreference: 20,
+            maxZoomPreference: 99,
             minZoomPreference: 1,
           }}
         />
