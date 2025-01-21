@@ -345,6 +345,7 @@ const general = [
         makePage('guides/google-authentication.mdx'),
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
+        makePage('guides/using-logrocket.mdx'),
         makePage('guides/using-sentry.mdx'),
         makePage('guides/using-bugsnag.mdx'),
         makePage('guides/building-for-tv.mdx'),

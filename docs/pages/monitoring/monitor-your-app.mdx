@@ -7,26 +7,26 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal } from '~/ui/components/Snippet';
 
 Once your app is released, you can track anonymized usage data to give you insights on how users use your app. This data includes which updates are in use, when users experience bugs, and more.
 
-## Expo Insights
+## EAS Insights
 
-Expo provides the [`expo-insights`](/eas-insights/introduction/) library, which tracks information related to [EAS Update](/deploy/send-over-the-air-updates/). This data includes the app version, platform, OS version, and update adoption.
-
-You can install `expo-insights` with:
-
-<Terminal cmd={['$ npx expo install expo-insights']} />
-
-After you install it and release production builds on the app stores, you'll be able to see additional data on your project dashboard:
+Expo provides the [`expo-insights`](/eas-insights/introduction/) library, which tracks information related to [EAS Update](/deploy/send-over-the-air-updates/). This data includes the app version, platform, OS version, and update adoption. After you install it and release production builds on the app stores, you'll be able to see additional data on your project dashboard:
 
 <ContentSpotlight
   alt="Active user insights on the Expo dashboard."
   src="/static/images/monitoring/monitor-your-app/expo-insights.png"
 />
 
-You can learn more about insights with our [EAS Insights guide](/eas-insights/introduction/).
+Get started with the following guide:
+
+<BoxLink
+  title="EAS Insights"
+  description="Learn how to use EAS Insights to monitor your app."
+  href="/eas-insights/introduction/"
+  Icon={BookOpen02Icon}
+/>
 
 ## LogRocket
 
@@ -37,15 +37,39 @@ You can get more insights with [LogRocket](https://logrocket.com). LogRocket rec
   src="/static/images/monitoring/monitor-your-app/logrocket.png"
 />
 
-To get started, follow the following guide:
+Get started with the following guide:
 
 <BoxLink
-  title="Set Up LogRocket"
-  description="TODO TODO"
-  href="/guides/use-logrocket/"
+  title="Using LogRocket"
+  description="Learn how to use LogRocket to monitor your app."
+  href="/guides/using-logrocket/"
   Icon={BookOpen02Icon}
 />
 
 ## Sentry
 
-TODO...
+[Sentry](http://getsentry.com/) is a crash reporting platform that provides you with real-time insight into production deployments with info to reproduce and fix crashes.
+
+It notifies you of exceptions or errors that your users run into while using your app and organizes them for you on a web dashboard. Reported exceptions include stacktraces, device info, version, and other relevant context automatically. You can also provide additional context that is specific to your application such as the current route and user id.
+
+Get started with the following guide:
+
+<BoxLink
+  title="Using Sentry"
+  description="Learn how to use Sentry to monitor your app."
+  href="/guides/using-sentry/"
+  Icon={BookOpen02Icon}
+/>
+
+## BugSnag
+
+[BugSnag](https://www.bugsnag.com/) is a stability monitoring solution that provides rich, end-to-end error reporting and analytics to reproduce and fix errors with speed and precision. BugSnag supports the full stack with open-source libraries for more than 50 platforms, including React Native.
+
+Get started with the following guide:
+
+<BoxLink
+  title="Using BugSnag"
+  description="Learn how to use BugSnag to monitor your app."
+  href="/guides/using-bugsnag/"
+  Icon={BookOpen02Icon}
+/>
