@@ -34,6 +34,14 @@ export const MapsScreens = [
       return optionalRequire(() => require('./MapsMarkerScreen'));
     },
   },
+  {
+    name: 'Maps events',
+    route: 'expo-maps/events',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MapsEventsScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {

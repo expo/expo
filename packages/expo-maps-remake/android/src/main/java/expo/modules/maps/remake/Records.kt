@@ -127,3 +127,11 @@ data class MapPropertiesRecord(
     )
   }
 }
+
+data class POIRecord(
+  @Field
+  val name: String,
+
+  @Field
+  val coordinates: Coordinates
+): Record

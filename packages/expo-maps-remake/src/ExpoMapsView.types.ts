@@ -53,4 +53,6 @@ export type ExpoMapsProps = {
   uiSettings?: MapUiSettings;
   properties?: MapProperties;
   style?: StyleProp<ViewStyle>;
+  onMapClick?: (event: { coordinates: Coordinates }) => void;
+  onPOIClick?: (event: { name: string; coordinates: Coordinates }) => void;
 };

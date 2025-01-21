@@ -7,7 +7,9 @@ class MapsModule : Module() {
  override fun definition() = ModuleDefinition {
     Name("ExpoMapsRemake")
 
-    View(GoogleMapsView::class) {}
+    View(GoogleMapsView::class) {
+      Events("onMapClick", "onPOIClick")
+    }
   }
 
 }

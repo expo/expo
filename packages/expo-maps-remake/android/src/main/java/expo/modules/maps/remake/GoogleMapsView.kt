@@ -13,6 +13,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 
@@ -25,6 +26,9 @@ data class GoogleMapsViewProps(
 
 class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView<GoogleMapsViewProps>(context, appContext) {
   override val props = GoogleMapsViewProps()
+
+  private val onMapClick by EventDispatcher<Coordinates>()
+  private val onPOIClick by EventDispatcher<POIRecord>()
 
   init {
     setContent {
@@ -49,7 +53,20 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraState.value,
         uiSettings = props.uiSettings.value.toMapUiSettings(),
-        properties =  props.properties.value.toMapProperties()
+        properties = props.properties.value.toMapProperties(),
+        onMapClick = { latLng ->
+          onMapClick(
+            Coordinates(latLng.latitude, latLng.longitude)
+          )
+        },
+        onPOIClick = { poi ->
+          onPOIClick(
+            POIRecord(
+              poi.name,
+              Coordinates(poi.latLng.latitude, poi.latLng.longitude),
+            )
+          )
+        }
       ) {
         for ((marker, state) in markerState.value) {
           Marker(
