@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed black stuck screen when loading an unreachable server from last opened url. ([#34067](https://github.com/expo/expo/pull/34067) by [@kudo](https://github.com/kudo))
+- [iOS] Read EAS project id and url from manifest instead of updates interface. ([#34342](https://github.com/expo/expo/pull/34342) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
