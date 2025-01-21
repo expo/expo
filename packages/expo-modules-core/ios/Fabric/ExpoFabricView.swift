@@ -138,17 +138,17 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    but we can't do that as there might be more than one class with the same name (Expo Go) and allocating another one would return `nil`.
    */
   @objc
-  public static func makeViewClass(forAppContext appContext: AppContext, moduleName: String, className: String) -> AnyClass? {
+  public static func makeViewClass(forAppContext appContext: AppContext, moduleName: String, viewName: String, className: String) -> AnyClass? {
     if let viewClass = viewClassesRegistry[className] {
       inject(appContext: appContext)
-      injectInitializer(appContext: appContext, moduleName: moduleName, toViewClass: viewClass)
+      injectInitializer(appContext: appContext, moduleName: moduleName, viewName: viewName, toViewClass: viewClass)
       return viewClass
     }
     guard let viewClass = objc_allocateClassPair(ExpoFabricView.self, className, 0) else {
       fatalError("Cannot allocate a Fabric view class for '\(className)'")
     }
     inject(appContext: appContext)
-    injectInitializer(appContext: appContext, moduleName: moduleName, toViewClass: viewClass)
+    injectInitializer(appContext: appContext, moduleName: moduleName, viewName: viewName, toViewClass: viewClass)
 
     // Save the allocated view class in the registry for the later use (e.g. when the app is reloaded).
     viewClassesRegistry[className] = viewClass
@@ -164,14 +164,14 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     class_replaceMethod(object_getClass(ExpoFabricView.self), #selector(appContextFromClass), appContextBlockImp, "@@:")
   }
 
-  internal static func injectInitializer(appContext: AppContext, moduleName: String, toViewClass viewClass: AnyClass) {
+  internal static func injectInitializer(appContext: AppContext, moduleName: String, viewName: String, toViewClass viewClass: AnyClass) {
     // The default initializer for native views. It will be called by Fabric.
     let newBlock: @convention(block) () -> Any = {[weak appContext] in
       guard let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
         fatalError(Exceptions.AppContextLost().reason)
       }
-      guard let view = moduleHolder.definition.view?.createView(appContext: appContext) else {
-        fatalError("Cannot create a view from module '\(moduleName)'")
+      guard let view = moduleHolder.definition.views[viewName]?.createView(appContext: appContext) else {
+        fatalError("Cannot create a view '\(viewName)' from module '\(moduleName)'")
       }
       _ = Unmanaged.passRetained(view) // retain the view given this is an initializer
       return view
