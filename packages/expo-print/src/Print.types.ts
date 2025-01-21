@@ -114,7 +114,7 @@ export type FilePrintOptions = {
    */
   base64?: boolean;
   /**
-   * Number to override the device's font size defined in device's settings. 100 in case of needing it to be unchanged
+   * The text zoom of the page in percent. The default is 100.
    * @platform android
    */
   textZoom?: number;
