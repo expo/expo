@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- Change metro.config check to look for custom transformer key instead of asset plugin. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed cmd.exe warning. ([#33357](https://github.com/expo/expo/pull/33357) by [@keith-kurak](https://github.com/keith-kurak))
 - Exclude `@expo-google-fonts/*` packages from the New Architecture compatibility check. ([#34127](https://github.com/expo/expo/pull/34127) by [@Simek](https://github.com/Simek))
 

@@ -31,9 +31,7 @@ describe('runAsync', () => {
     jest.mocked(loadConfigAsync).mockResolvedValueOnce({
       // @ts-ignore: we don't need to mock the entire config
       transformer: {
-        assetPlugins: [
-          '/Users/keith/Github/just-kana/node_modules/expo-asset/tools/hashAssetFiles.js',
-        ],
+        _expoRelativeProjectRoot: '...',
       },
     });
     const check = new MetroConfigCheck();
@@ -48,9 +46,7 @@ describe('runAsync', () => {
     jest.mocked(configExistsAsync).mockResolvedValueOnce(true);
     jest.mocked(loadConfigAsync).mockResolvedValueOnce({
       // @ts-ignore: we don't need to mock the entire config
-      transformer: {
-        assetPlugins: [],
-      },
+      transformer: {},
     });
     const check = new MetroConfigCheck();
     const result = await check.runAsync({
