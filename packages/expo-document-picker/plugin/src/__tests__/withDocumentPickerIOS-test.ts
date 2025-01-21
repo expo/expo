@@ -26,7 +26,7 @@ describe(setICloudEntitlements, () => {
     expect(
       setICloudEntitlements(
         { ios: { usesIcloudStorage: true, bundleIdentifier: 'com.bacon.foobar' } },
-        { iCloudContainerEnvironment: 'Production', kvstoreIdentifier: 'ABC123.com.bacon.foobar' },
+        { iCloudContainerEnvironment: 'Production', kvStoreIdentifier: 'ABC123.com.bacon.foobar' },
         {}
       )
     ).toStrictEqual({

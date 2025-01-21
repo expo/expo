@@ -14,17 +14,17 @@ export type IosProps = {
    * of your Apple Team ID and the bundle identifier. However, this entitlement may need to reflect a previous Team ID if your
    * app was transferred from another team. Use this option to set this entitlement value manually.
    */
-  kvstoreIdentifier?: string;
+  kvStoreIdentifier?: string;
 };
 
 export const withDocumentPickerIOS: ConfigPlugin<IosProps> = (
   config,
-  { iCloudContainerEnvironment, kvstoreIdentifier } = {}
+  { iCloudContainerEnvironment, kvStoreIdentifier } = {}
 ) => {
   return withEntitlementsPlist(config, (config) => {
     config.modResults = setICloudEntitlements(
       config,
-      { iCloudContainerEnvironment, kvstoreIdentifier },
+      { iCloudContainerEnvironment, kvStoreIdentifier },
       config.modResults
     );
     return config;
@@ -33,7 +33,7 @@ export const withDocumentPickerIOS: ConfigPlugin<IosProps> = (
 
 export function setICloudEntitlements(
   config: Pick<ExpoConfig, 'ios'>,
-  { iCloudContainerEnvironment, kvstoreIdentifier }: IosProps,
+  { iCloudContainerEnvironment, kvStoreIdentifier }: IosProps,
   { 'com.apple.developer.icloud-container-environment': _env, ...entitlements }: Record<string, any>
 ): Record<string, any> {
   if (config.ios?.usesIcloudStorage) {
@@ -48,7 +48,7 @@ export function setICloudEntitlements(
       `iCloud.${config.ios.bundleIdentifier}`,
     ];
     entitlements['com.apple.developer.ubiquity-kvstore-identifier'] =
-      kvstoreIdentifier || `$(TeamIdentifierPrefix)${config.ios.bundleIdentifier}`;
+      kvStoreIdentifier || `$(TeamIdentifierPrefix)${config.ios.bundleIdentifier}`;
 
     entitlements['com.apple.developer.icloud-services'] = ['CloudDocuments'];
   }
