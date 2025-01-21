@@ -32,7 +32,7 @@ jobs:
       # @info Accesses the <CODE>fingerprint_hash</CODE> variable #
       - name: Print fingerprint hash
         run: |
-          echo "Fingerprint hash: ${ steps.fingerprint_hash_step.outputs.fingerprint_hash }"
+          echo "Fingerprint hash: ${{ steps.fingerprint_hash_step.outputs.fingerprint_hash }}"
       # @end #
   existing_build:
     needs: [fingerprint]
