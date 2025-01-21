@@ -6,9 +6,10 @@ function useNativeEvent(userHandler) {
         userHandler?.(event.nativeEvent);
     }, [userHandler]);
 }
-export default function ExpoMapsView({ onMapClick, onPOIClick, ...props }) {
+export default function ExpoMapsView({ onMapClick, onPOIClick, onMarkerClick, ...props }) {
     const onNativeMapClick = useNativeEvent(onMapClick);
     const onNativePOIClick = useNativeEvent(onPOIClick);
-    return <NativeView {...props} onMapClick={onNativeMapClick} onPOIClick={onNativePOIClick}/>;
+    const onNativeMarkerClick = useNativeEvent(onMarkerClick);
+    return (<NativeView {...props} onMapClick={onNativeMapClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick}/>);
 }
 //# sourceMappingURL=ExpoMapsView.js.map

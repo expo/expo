@@ -21,7 +21,8 @@ data class GoogleMapsViewProps(
   val cameraPosition: MutableState<CameraPositionRecord> = mutableStateOf(CameraPositionRecord()),
   val markers: MutableState<List<Marker>> = mutableStateOf(listOf()),
   val uiSettings: MutableState<MapUiSettingsRecord> = mutableStateOf(MapUiSettingsRecord()),
-  val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord())
+  val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
+  val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM)
 ) : ComposeProps
 
 class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView<GoogleMapsViewProps>(context, appContext) {
@@ -29,6 +30,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
 
   private val onMapClick by EventDispatcher<Coordinates>()
   private val onPOIClick by EventDispatcher<POIRecord>()
+  private val onMarkerClick by EventDispatcher<Marker>()
 
   init {
     setContent {
@@ -66,14 +68,19 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
               Coordinates(poi.latLng.latitude, poi.latLng.longitude),
             )
           )
-        }
+        },
+        mapColorScheme = props.colorScheme.value.toComposeMapColorScheme()
       ) {
         for ((marker, state) in markerState.value) {
           Marker(
             state = state,
             title = marker.title,
             snippet = marker.snippet,
-            draggable = marker.draggable
+            draggable = marker.draggable,
+            onClick = {
+              onMarkerClick(marker)
+              true
+            }
           )
         }
       }

@@ -1,6 +1,8 @@
 package expo.modules.maps.remake
 
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapColorScheme
+import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
@@ -135,3 +137,17 @@ data class POIRecord(
   @Field
   val coordinates: Coordinates
 ): Record
+
+enum class MapColorSchemeEnum : Enumerable {
+  LIGHT,
+  DARK,
+  FOLLOW_SYSTEM;
+
+  fun toComposeMapColorScheme():  ComposeMapColorScheme {
+    return when (this) {
+      LIGHT -> ComposeMapColorScheme.LIGHT
+      DARK -> ComposeMapColorScheme.DARK
+      FOLLOW_SYSTEM -> ComposeMapColorScheme.FOLLOW_SYSTEM
+    }
+  }
+}

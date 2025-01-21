@@ -25,6 +25,18 @@ export default function MapsEventsScreen() {
           onPOIClick={(e) => {
             setLastEvent(JSON.stringify({ type: 'onPOIClick', data: e }, null, 2));
           }}
+          onMarkerClick={(e) => {
+            setLastEvent(JSON.stringify({ type: 'onMarkerClick', data: e }, null, 2));
+          }}
+          markers={[
+            {
+              coordinates: {
+                latitude: 37.78825,
+                longitude: -122.4324,
+              },
+              title: 'San Francisco',
+            },
+          ]}
         />
       </View>
       <View>

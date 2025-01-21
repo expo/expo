@@ -47,12 +47,20 @@ export type MapProperties = {
   minZoomPreference?: number;
 };
 
+export enum MapColorScheme {
+  LIGHT = 'LIGHT',
+  DARK = 'DARK',
+  FOLLOW_SYSTEM = 'FOLLOW_SYSTEM',
+}
+
 export type ExpoMapsProps = {
   cameraPosition?: CameraPosition;
   markers?: Marker[];
   uiSettings?: MapUiSettings;
   properties?: MapProperties;
   style?: StyleProp<ViewStyle>;
+  colorScheme?: MapColorScheme;
   onMapClick?: (event: { coordinates: Coordinates }) => void;
   onPOIClick?: (event: { name: string; coordinates: Coordinates }) => void;
+  onMarkerClick?: (event: Marker) => void;
 };

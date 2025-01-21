@@ -14,9 +14,22 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
   );
 }
 
-export default function ExpoMapsView({ onMapClick, onPOIClick, ...props }: ExpoMapsProps) {
+export default function ExpoMapsView({
+  onMapClick,
+  onPOIClick,
+  onMarkerClick,
+  ...props
+}: ExpoMapsProps) {
   const onNativeMapClick = useNativeEvent(onMapClick);
   const onNativePOIClick = useNativeEvent(onPOIClick);
+  const onNativeMarkerClick = useNativeEvent(onMarkerClick);
 
-  return <NativeView {...props} onMapClick={onNativeMapClick} onPOIClick={onNativePOIClick} />;
+  return (
+    <NativeView
+      {...props}
+      onMapClick={onNativeMapClick}
+      onPOIClick={onNativePOIClick}
+      onMarkerClick={onNativeMarkerClick}
+    />
+  );
 }

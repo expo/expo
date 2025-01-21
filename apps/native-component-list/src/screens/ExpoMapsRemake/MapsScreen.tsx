@@ -27,6 +27,14 @@ export const MapsScreens = [
     },
   },
   {
+    name: 'Maps UI settings',
+    route: 'expo-maps/ui-settings',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MapsUISettingsScreen'));
+    },
+  },
+  {
     name: 'Markers',
     route: 'expo-maps/markers',
     options: {},
