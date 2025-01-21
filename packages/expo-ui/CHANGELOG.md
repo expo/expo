@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Rename to @expo/ui
+
 ## 0.0.0 — 2025-01-21
 
 ### 🎉 New features

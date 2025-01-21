@@ -1,6 +1,6 @@
 # expo-background-task
 
-Expo universal module for BackgroundTask API
+Expo Android and iOS module for Background Task APIs
 
 # API documentation
 

@@ -1,7 +1,7 @@
 {
   "name": "expo-background-task",
   "version": "0.0.0",
-  "description": "Expo universal module for BackgroundTask API",
+  "description": "Expo Android and iOS module for Background Task APIs",
   "main": "build/BackgroundTask.js",
   "types": "build/BackgroundTask.d.ts",
   "sideEffects": false,
