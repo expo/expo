@@ -43,6 +43,7 @@
 - Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
 - Added `--bytecode` option to `export:embed`. ([#33906](https://github.com/expo/expo/pull/33906) by [@kudo](https://github.com/kudo))
 - Exclude `@expo-google-fonts/*` packages from the New Architecture compatibility check. ([#34127](https://github.com/expo/expo/pull/34127) by [@Simek](https://github.com/Simek))
+- Pin to `internal-ip@6.1.0` ([#34325](https://github.com/expo/expo/pull/34325) by [@kitten](https://github.com/kitten))
 
 ## 0.22.7 - 2024-12-19
 
