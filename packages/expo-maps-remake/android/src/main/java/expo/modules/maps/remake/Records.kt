@@ -29,6 +29,9 @@ data class Marker(
 
   @Field
   val snippet: String = "",
+
+  @Field
+  val draggable: Boolean = false
 ) : Record
 
 
@@ -95,14 +98,21 @@ enum class MapTypeEnum : Enumerable {
 }
 
 data class MapPropertiesRecord(
+  @Field
   val isBuildingEnabled: Boolean = false,
+  @Field
   val isIndoorEnabled: Boolean = false,
+  @Field
   val isMyLocationEnabled: Boolean = false,
+  @Field
   val isTrafficEnabled: Boolean = false,
 //  val latLngBoundsForCameraTarget: LatLngBounds? = null,
 //  val mapStyleOptions: MapStyleOptions? = null,
+  @Field
   val mapType: MapTypeEnum = MapTypeEnum.NORMAL,
+  @Field
   val maxZoomPreference: Float = 21.0f,
+  @Field
   val minZoomPreference: Float = 3.0f
 ) : Record {
   fun toMapProperties(): MapProperties {

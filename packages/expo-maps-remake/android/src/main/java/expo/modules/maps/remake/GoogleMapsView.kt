@@ -1,7 +1,6 @@
 package expo.modules.maps.remake
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
@@ -46,31 +45,18 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         }
       }
 
-      val uiSettings = remember {
-        derivedStateOf {
-          props.uiSettings.value.toMapUiSettings()
-        }
-      }
-
-      val properties = remember {
-        derivedStateOf {
-          props.properties.value.toMapProperties()
-        }
-      }
-
-      Log.e("GoogleMapsView", "${properties.value.minZoomPreference}")
-
       GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraState.value,
-        uiSettings = uiSettings.value,
-        properties = properties.value
+        uiSettings = props.uiSettings.value.toMapUiSettings(),
+        properties =  props.properties.value.toMapProperties()
       ) {
         for ((marker, state) in markerState.value) {
           Marker(
             state = state,
             title = marker.title,
-            snippet = marker.snippet
+            snippet = marker.snippet,
+            draggable = marker.draggable
           )
         }
       }

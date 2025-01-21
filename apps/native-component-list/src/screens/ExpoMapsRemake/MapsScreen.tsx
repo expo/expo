@@ -18,6 +18,22 @@ export const MapsScreens = [
       return optionalRequire(() => require('./MapsCameraControlsScreen'));
     },
   },
+  {
+    name: 'Maps properties',
+    route: 'expo-maps/properties',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MapsPropertiesScreen'));
+    },
+  },
+  {
+    name: 'Markers',
+    route: 'expo-maps/markers',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MapsMarkerScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {

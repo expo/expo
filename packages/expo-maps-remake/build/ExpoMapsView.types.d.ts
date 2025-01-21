@@ -7,6 +7,7 @@ export type Marker = {
     coordinates?: Coordinates;
     title?: string;
     snippet?: string;
+    draggable?: boolean;
 };
 export type CameraPosition = {
     coordinates?: Coordinates;
