@@ -1,5 +1,4 @@
 import { Button } from '@expo/styleguide';
-import { ArrowDownIcon } from '@expo/styleguide-icons/outline/ArrowDownIcon';
 import { useState } from 'react';
 
 import { Talk } from '~/public/static/talks';
