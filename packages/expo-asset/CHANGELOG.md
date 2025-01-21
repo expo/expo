@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Deprecate `expo-asset/tools/hashAssetFiles` in favor of built-in hashing support in `expo/metro-config`. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 11.0.1 — 2024-11-10
 
 ### 🐛 Bug fixes

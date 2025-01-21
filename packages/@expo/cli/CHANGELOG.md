@@ -32,6 +32,7 @@
 - Catch system errors when determining local IP addresses. ([#34043](https://github.com/expo/expo/pull/34043) by [@kitten](https://github.com/kitten))
 - Add `EAI_AGAIN` DNS service errors to offline detection. ([#34014](https://github.com/expo/expo/pull/34014) by [@byCedric](https://github.com/byCedric))
 - Fix `static` and `server` projects not starting up correctly when project path contains URI-unsafe characters like spaces. ([#34289](https://github.com/expo/expo/pull/34289) by [@kitten](https://github.com/kitten))
+- Use POSIX path when converting route file name in API routes. ([#34307](https://github.com/expo/expo/pull/34307) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

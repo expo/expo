@@ -86,7 +86,7 @@ export class NativeModule<TEventsMap extends Record<never, never>>
   implements NativeModuleType
 {
   [key: string]: any;
-  ViewPrototype?: object;
+  ViewPrototypes?: { [viewName: string]: object };
   __expo_module_name__?: string;
 }
 

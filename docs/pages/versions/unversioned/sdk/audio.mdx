@@ -77,6 +77,8 @@ import { useEffect, useState } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
 import { useAudioPlayer } from 'expo-audio';
 
+const audioSource = require('./assets/Hello.mp3');
+
 export default function App() {
   const player = useAudioPlayer(audioSource);
 

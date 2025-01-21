@@ -194,8 +194,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const artifactFilename =
         route.page === rscPath
           ? // HACK: Add RSC renderer to the output...
-            path.join(outputDir, '.' + rscPath + '.js')
-          : path.join(outputDir, path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js')));
+            convertPathToModuleSpecifier(path.join(outputDir, '.' + rscPath + '.js'))
+          : convertPathToModuleSpecifier(
+              path.join(outputDir, path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js')))
+            );
 
       if (contents) {
         let src = contents.src;

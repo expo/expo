@@ -47,7 +47,7 @@ export interface ExpoGlobal {
    * Returns a static view config of the native view with the given name
    * or `null` if the view has not been registered.
    */
-  getViewConfig(viewName: string): ViewConfig | null;
+  getViewConfig(moduleName: string, viewName?: string): ViewConfig | null;
 
   /**
    * Reloads the app.
