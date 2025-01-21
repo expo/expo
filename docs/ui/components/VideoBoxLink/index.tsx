@@ -25,19 +25,17 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
         className
       )}
       isStyled
-      aria-label={`Watch video: ${title} (opens in new tab)`}
-      role="link">
+      aria-label={`Watch video: ${title} (opens in new tab)`}>
       <div
         className={mergeClasses(
           'relative flex max-w-[200px] items-center justify-center border-r border-secondary bg-element',
           'max-sm-gutters:max-w-full max-sm-gutters:border-b max-sm-gutters:border-r-0'
-        )}
-        role="img"
-        aria-label={`Video thumbnail for ${title}`}>
+        )}>
         <img
           src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
           className="aspect-video"
           alt={title}
+          aria-label={`Video thumbnail for ${title}`}
         />
         <div
           className="absolute right-[calc(50%-22px)] top-[calc(50%-22px)] flex size-[44px] items-center justify-center rounded-full bg-[#000a]"
@@ -46,7 +44,7 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
           <PlaySolidIcon className="icon-lg ml-0.5 text-palette-white" />
         </div>
       </div>
-      <div className="flex flex-col justify-center gap-1 bg-default px-4 py-2" role="text">
+      <div className="flex flex-col justify-center gap-1 bg-default px-4 py-2">
         <LABEL className="flex items-center gap-1.5 leading-normal">{title}</LABEL>
         {description && (
           <CALLOUT theme="secondary" className="flex items-center gap-2">
