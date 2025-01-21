@@ -442,7 +442,6 @@ export const Screens: ScreenConfig[] = [
   ...CameraScreens,
   ...ImageScreens,
   ...VideoScreens,
-  ...UIScreens,
   ...MapsScreens,
 ];
 
