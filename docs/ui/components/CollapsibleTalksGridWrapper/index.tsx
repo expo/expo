@@ -24,12 +24,10 @@ export function CollapsibleTalksGridWrapper({ items, initialCount = 8 }: Collaps
       {items.length > initialCount && !showAll && (
         <div className="mt-6 flex justify-center">
           <Button
-            size="lg"
             theme="secondary"
             onClick={() => {
               setShowAll(true);
-            }}
-            rightSlot={<ArrowDownIcon className="icon-sm" />}>
+            }}>
             Show More
           </Button>
         </div>
