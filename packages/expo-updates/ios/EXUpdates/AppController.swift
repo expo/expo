@@ -172,7 +172,7 @@ public protocol InternalAppControllerInterface: AppControllerInterface {
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   )
-  func setUrlOverride(_ url: String) throws
+  func setUrlOverride(_ url: String?) throws
 }
 
 @objc(EXUpdatesAppControllerDelegate)

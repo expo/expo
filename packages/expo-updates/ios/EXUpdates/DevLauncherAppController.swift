@@ -347,7 +347,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     errorBlockArg(NotAvailableInDevClientException("Updates.setExtraParamAsync()"))
   }
 
-  public func setUrlOverride(_ url: String) throws {
+  public func setUrlOverride(_ url: String?) throws {
     throw NotAvailableInDevClientException("Updates.setUrlOverride() is not supported in development builds.")
   }
 }

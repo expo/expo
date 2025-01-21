@@ -58,7 +58,8 @@ internal final class UpdatesBuildData {
   static func getBuildDataFromConfig(_ config: UpdatesConfig) -> [String: Any] {
     return [
       "EXUpdatesURL": config.updateUrl.absoluteString,
-      "EXUpdatesRequestHeaders": config.requestHeaders
+      "EXUpdatesRequestHeaders": config.requestHeaders,
+      "EXUpdatesHasEmbeddedUpdate": config.hasEmbeddedUpdate
     ]
   }
 

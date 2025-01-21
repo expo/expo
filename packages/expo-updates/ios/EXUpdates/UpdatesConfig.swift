@@ -237,7 +237,7 @@ public final class UpdatesConfig: NSObject {
       throw UpdatesConfigError.ExpoUpdatesMissingRuntimeVersionError
     }
 
-    let hasEmbeddedUpdate = config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
+    let hasEmbeddedUpdate = getHasEmbeddedUpdate(fromDictionary: config)
 
     let codeSigningConfiguration = config.optionalValue(forKey: EXUpdatesConfigCodeSigningCertificateKey).let { (certificateString: String) in
       let codeSigningMetadata: [String: String] = config.requiredValue(forKey: EXUpdatesConfigCodeSigningMetadataKey)
@@ -331,6 +331,14 @@ public final class UpdatesConfig: NSObject {
     return config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
       URL(string: it)
     }
+  }
+
+  private static func getHasEmbeddedUpdate(fromDictionary config: [String: Any]) -> Bool {
+    let allowMeToLiveDangerously = config.optionalValue(forKey: EXUpdatesConfigAllowMeToLiveDangerously) ?? false
+    if allowMeToLiveDangerously && UserDefaults.standard.string(forKey: "updatesOverride") != nil {
+      return false
+    }
+    return config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
   }
 }
 
