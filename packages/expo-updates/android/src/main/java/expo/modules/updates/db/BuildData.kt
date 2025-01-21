@@ -3,6 +3,8 @@ package expo.modules.updates.db
 import android.net.Uri
 import expo.modules.jsonutils.getNullable
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.db.dao.JSONDataDao
+import expo.modules.updates.manifest.ManifestMetadata
 import org.json.JSONObject
 
 /**
@@ -27,8 +29,6 @@ import org.json.JSONObject
  *   UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
  */
 object BuildData {
-  private var staticBuildDataKey = "staticBuildData"
-
   fun ensureBuildDataIsConsistent(
     updatesConfiguration: UpdatesConfiguration,
     database: UpdatesDatabase
@@ -39,6 +39,7 @@ object BuildData {
       setBuildDataInDatabase(database, updatesConfiguration)
     } else if (!isBuildDataConsistent(updatesConfiguration, buildJSON)) {
       clearAllUpdatesFromDatabase(database)
+      clearManifestMetadataFromDatabase(database)
       setBuildDataInDatabase(database, updatesConfiguration)
     }
   }
@@ -48,6 +49,10 @@ object BuildData {
     database.updateDao().deleteUpdates(allUpdates)
   }
 
+  fun clearManifestMetadataFromDatabase(database: UpdatesDatabase) {
+    ManifestMetadata.clearMetadataForBuildDataClearOperation(database)
+  }
+
   fun isBuildDataConsistent(
     updatesConfiguration: UpdatesConfiguration,
     databaseBuildData: JSONObject
@@ -55,7 +60,12 @@ object BuildData {
     val configBuildData = getBuildDataFromConfig(updatesConfiguration)
 
     val updateUrlKey = UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY
+    val scopeKeyKey = UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY
     val requestHeadersKey = UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
+    val hasEmbeddedUpdateKey = UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY
+
+    val isScopeKeyBuildDataConsistent = databaseBuildData.get(scopeKeyKey) == configBuildData.get(scopeKeyKey) || !databaseBuildData.has(hasEmbeddedUpdateKey)
+    val isHasEmbeddedUpdateBuildDataConsistent = databaseBuildData.get(hasEmbeddedUpdateKey) == configBuildData.get(hasEmbeddedUpdateKey) || (configBuildData.get(hasEmbeddedUpdateKey) == false && !databaseBuildData.has((hasEmbeddedUpdateKey)))
 
     // check equality of the two JSONObjects. The build data object is string valued with the
     // exception of "requestHeaders" which is a string valued object.
@@ -69,7 +79,7 @@ object BuildData {
       for (key in databaseBuildData.getJSONObject(requestHeadersKey).keys()) {
         add(databaseBuildData.getJSONObject(requestHeadersKey).getNullable<String>(key) == configBuildData.getJSONObject(requestHeadersKey).getNullable(key))
       }
-    }.all { it }
+    }.all { it } && isHasEmbeddedUpdateBuildDataConsistent && isScopeKeyBuildDataConsistent
   }
 
   fun setBuildDataInDatabase(
@@ -78,14 +88,14 @@ object BuildData {
   ) {
     val buildDataJSON = getBuildDataFromConfig(updatesConfiguration)
     database.jsonDataDao()?.setJSONStringForKey(
-      staticBuildDataKey,
+      JSONDataDao.JSONDataKey.STATIC_BUILD_DATA,
       buildDataJSON.toString(),
       updatesConfiguration.scopeKey
     )
   }
 
   fun getBuildDataFromDatabase(database: UpdatesDatabase, scopeKey: String): JSONObject? {
-    val buildJSONString = database.jsonDataDao()?.loadJSONStringForKey(staticBuildDataKey, scopeKey)
+    val buildJSONString = database.jsonDataDao()?.loadJSONStringForKey(JSONDataDao.JSONDataKey.STATIC_BUILD_DATA, scopeKey)
     return if (buildJSONString == null) null else JSONObject(buildJSONString)
   }
 
@@ -96,6 +106,7 @@ object BuildData {
     val buildData = JSONObject().apply {
       put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, updatesConfiguration.updateUrl)
       put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, requestHeadersJSON)
+      put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, updatesConfiguration.hasEmbeddedUpdate)
     }
     return buildData
   }

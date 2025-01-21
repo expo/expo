@@ -166,5 +166,5 @@ interface IUpdatesController {
 
   fun setExtraParam(key: String, value: String?, callback: ModuleCallback<Unit>)
 
-  fun setUrlOverride(url: String)
+  fun setUrlOverride(url: String?)
 }

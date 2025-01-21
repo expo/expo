@@ -363,7 +363,7 @@ class UpdatesDevLauncherController(
     callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
   }
 
-  override fun setUrlOverride(url: String) {
+  override fun setUrlOverride(url: String?) {
     throw NotAvailableInDevClientException("Updates.setUrlOverride() is not supported in development builds.")
   }
 

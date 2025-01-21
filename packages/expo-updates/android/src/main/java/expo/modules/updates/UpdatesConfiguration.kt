@@ -64,9 +64,9 @@ data class UpdatesConfiguration(
   constructor(context: Context?, overrideMap: Map<String, Any>?) : this(
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
-      updateUrl = getUpdatesUrl(context, overrideMap, allowMeToLiveDangerously = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ALLOW_ME_TO_LIVE_DANGEROUSLY) ?: context?.getMetadataValue("expo.modules.updates.ALLOW_ME_TO_LIVE_DANGEROUSLY") ?: false)!!
+      updateUrl = getUpdatesUrl(context, overrideMap, allowMeToLiveDangerously = getAllowMeToLiveDangerously(context, overrideMap))!!
     ),
-    updateUrl = getUpdatesUrl(context, overrideMap, allowMeToLiveDangerously = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ALLOW_ME_TO_LIVE_DANGEROUSLY) ?: context?.getMetadataValue("expo.modules.updates.ALLOW_ME_TO_LIVE_DANGEROUSLY") ?: false)!!,
+    updateUrl = getUpdatesUrl(context, overrideMap, allowMeToLiveDangerously = getAllowMeToLiveDangerously(context, overrideMap))!!,
     runtimeVersionRaw = getRuntimeVersion(context, overrideMap),
     launchWaitMs = overrideMap?.readValueCheckingType<Int>(UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS") ?: UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE,
     checkOnLaunch = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY)?.let {
@@ -86,7 +86,7 @@ data class UpdatesConfiguration(
         CheckAutomaticallyConfiguration.ALWAYS
       }
     },
-    hasEmbeddedUpdate = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY) ?: context?.getMetadataValue("expo.modules.updates.HAS_EMBEDDED_UPDATE") ?: true,
+    hasEmbeddedUpdate = getHasEmbeddedUpdate(context, overrideMap, allowMeToLiveDangerously = getAllowMeToLiveDangerously(context, overrideMap)),
     requestHeaders = overrideMap?.readValueCheckingType<Map<String, String>>(UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY) ?: (context?.getMetadataValue<String>("expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY") ?: "{}").let {
       UpdatesUtils.getMapFromJSONString(it)
     },
@@ -101,7 +101,7 @@ data class UpdatesConfiguration(
       UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS
     ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS") ?: false,
     enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false,
-    allowMeToLiveDangerously = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ALLOW_ME_TO_LIVE_DANGEROUSLY) ?: context?.getMetadataValue("expo.modules.updates.ALLOW_ME_TO_LIVE_DANGEROUSLY") ?: false
+    allowMeToLiveDangerously = getAllowMeToLiveDangerously(context, overrideMap)
   )
 
   val codeSigningConfiguration: CodeSigningConfiguration? by lazy {
@@ -142,13 +142,33 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL = "file:fingerprint"
     private const val FINGERPRINT_FILE_NAME = "fingerprint"
 
+    private fun getAllowMeToLiveDangerously(context: Context?, overrideMap: Map<String, Any>?): Boolean {
+      return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ALLOW_ME_TO_LIVE_DANGEROUSLY) ?: context?.getMetadataValue("expo.modules.updates.ALLOW_ME_TO_LIVE_DANGEROUSLY") ?: false
+    }
+
+    private fun getUpdatesUrlOverride(context: Context?): Uri? {
+      val updatesOverride =
+        context?.getSharedPreferences("updatesOverridePrefs", Context.MODE_PRIVATE)
+          ?.getString("updatesOverride", null)
+      if (updatesOverride != null) {
+        return updatesOverride.let { Uri.parse(it) }
+      }
+      return null
+    }
+
+    private fun getHasEmbeddedUpdate(context: Context?, overrideMap: Map<String, Any>?, allowMeToLiveDangerously: Boolean): Boolean {
+      if (allowMeToLiveDangerously) {
+        val updatesUrlOverride = getUpdatesUrlOverride(context)
+        return updatesUrlOverride != null
+      }
+      return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY) ?: context?.getMetadataValue("expo.modules.updates.HAS_EMBEDDED_UPDATE") ?: true
+    }
+
     private fun getUpdatesUrl(context: Context?, overrideMap: Map<String, Any>?, allowMeToLiveDangerously: Boolean): Uri? {
       if (allowMeToLiveDangerously) {
-        val updatesOverride =
-          context?.getSharedPreferences("updatesOverridePrefs", Context.MODE_PRIVATE)
-            ?.getString("updatesOverride", null)
+        val updatesOverride = getUpdatesUrlOverride(context)
         if (updatesOverride != null) {
-          return updatesOverride.let { Uri.parse(it) }
+          return updatesOverride
         }
       }
 

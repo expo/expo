@@ -6,6 +6,7 @@ import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
+import expo.modules.updates.db.dao.JSONDataDao
 import org.json.JSONObject
 
 /**
@@ -15,12 +16,8 @@ import org.json.JSONObject
 object ManifestMetadata {
   private val TAG = ManifestMetadata::class.java.simpleName
 
-  private const val EXTRA_PARAMS_KEY = "extraParams"
-  private const val MANIFEST_SERVER_DEFINED_HEADERS_KEY = "serverDefinedHeaders"
-  private const val MANIFEST_FILTERS_KEY = "manifestFilters"
-
   private fun getJSONObject(
-    key: String,
+    key: JSONDataDao.JSONDataKey,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration
   ): JSONObject? {
@@ -38,21 +35,21 @@ object ManifestMetadata {
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration
   ): JSONObject? {
-    return getJSONObject(MANIFEST_SERVER_DEFINED_HEADERS_KEY, database, configuration)
+    return getJSONObject(JSONDataDao.JSONDataKey.MANIFEST_SERVER_DEFINED_HEADERS, database, configuration)
   }
 
   fun getManifestFilters(
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration
   ): JSONObject? {
-    return getJSONObject(MANIFEST_FILTERS_KEY, database, configuration)
+    return getJSONObject(JSONDataDao.JSONDataKey.MANIFEST_FILTERS, database, configuration)
   }
 
   fun getExtraParams(
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration
   ): Map<String, String>? {
-    return getJSONObject(EXTRA_PARAMS_KEY, database, configuration)?.asStringStringMap()
+    return getJSONObject(JSONDataDao.JSONDataKey.EXTRA_PARAMS, database, configuration)?.asStringStringMap()
   }
 
   fun setExtraParam(
@@ -62,7 +59,7 @@ object ManifestMetadata {
     value: String?
   ) {
     // this is done within a transaction to ensure consistency
-    database.jsonDataDao()!!.updateJSONStringForKey(EXTRA_PARAMS_KEY, configuration.scopeKey) { previousValue ->
+    database.jsonDataDao()!!.updateJSONStringForKey(JSONDataDao.JSONDataKey.EXTRA_PARAMS, configuration.scopeKey) { previousValue ->
       val jsonObject = previousValue?.let { JSONObject(it) }
       val extraParamsToWrite = (jsonObject?.asStringStringMap()?.toMutableMap() ?: mutableMapOf()).also {
         if (value != null) {
@@ -85,16 +82,24 @@ object ManifestMetadata {
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration
   ) {
-    val fieldsToSet = mutableMapOf<String, String>()
+    val fieldsToSet = mutableMapOf<JSONDataDao.JSONDataKey, String>()
     if (responseHeaderData.serverDefinedHeaders != null) {
-      fieldsToSet[MANIFEST_SERVER_DEFINED_HEADERS_KEY] = responseHeaderData.serverDefinedHeaders.toString()
+      fieldsToSet[JSONDataDao.JSONDataKey.MANIFEST_SERVER_DEFINED_HEADERS] = responseHeaderData.serverDefinedHeaders.toString()
     }
     if (responseHeaderData.manifestFilters != null) {
-      fieldsToSet[MANIFEST_FILTERS_KEY] = responseHeaderData.manifestFilters.toString()
+      fieldsToSet[JSONDataDao.JSONDataKey.MANIFEST_FILTERS] = responseHeaderData.manifestFilters.toString()
     }
     if (fieldsToSet.isNotEmpty()) {
       database.jsonDataDao()!!.setMultipleFields(fieldsToSet, configuration.scopeKey)
     }
+  }
+
+  fun clearMetadataForBuildDataClearOperation(database: UpdatesDatabase) {
+    database.jsonDataDao()!!.deleteJSONDataForKeysForAllScopeKeys(listOf(
+      JSONDataDao.JSONDataKey.EXTRA_PARAMS,
+      JSONDataDao.JSONDataKey.MANIFEST_SERVER_DEFINED_HEADERS,
+      JSONDataDao.JSONDataKey.MANIFEST_FILTERS
+    ))
   }
 
   private fun JSONObject.asStringStringMap(): Map<String, String> {
