@@ -1,6 +1,6 @@
 {
   "name": "expo-ui",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "A collection of UI components",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
