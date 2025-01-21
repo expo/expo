@@ -8,13 +8,13 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Once your app is released, you can track anonymized usage data to give you insights on how users use your app. This data includes which updates are in use, when users experience bugs, and more.
 
-## Expo insights
+## Expo Insights
 
 Expo provides the [`expo-insights`](/eas-insights/introduction/) library, which tracks information related to [EAS Update](/deploy/send-over-the-air-updates/). This data includes the app version, platform, OS version, and update adoption.
 
 You can install `expo-insights` with:
 
-<Terminal cmd={['npx expo install expo-insights']} />
+<Terminal cmd={['$ npx expo install expo-insights']} />
 
 After you install it and release production builds on the app stores, you'll be able to see additional data on your project dashboard:
 
@@ -29,11 +29,11 @@ You can learn more about insights with our [EAS Insights guide](/eas-insights/in
 
 You can get more insights with [LogRocket](https://logrocket.com). LogRocket records user sessions and identifies bugs as your users use your app. To get started, you can install the LogRocket SDK with the following command:
 
-<Terminal cmd={['npx expo install @logrocket/react-native']} />
+<Terminal cmd={['$ npx expo install @logrocket/react-native expo-build-properties']} />
 
 Then, in your **app.json**/**app.config.ts**, include the LogRocket config plugin:
 
-```json app.json/app.config.ts
+```json app.json
 {
   "plugins": [
     [
@@ -49,10 +49,10 @@ Then, in your **app.json**/**app.config.ts**, include the LogRocket config plugi
 }
 ```
 
-Finally, initialize LogRocket in your app in a top-level file, like **app/\_layout.ts** or **App.js**:
+Finally, initialize LogRocket in your app in a top-level file, like **tsx app/\_layout.tsx**:
 
-```ts app/_layout.ts/App.js
-import React, { useEffect } from 'react';
+```tsx app/_layout.tsx
+import { useEffect } from 'react';
 import * as Updates from 'expo-updates';
 import LogRocket from '@logrocket/react-native';
 
@@ -76,9 +76,6 @@ After you release your app and users start using it, you'll see your users' sess
 
 To learn more about how to use LogRocket with Expo, check out the [LogRocket documentation](https://docs.logrocket.com/reference/react-native-expo-adding-the-sdk).
 
-## More ways to monitor
+## Sentry
 
-There are other services you can use to monitor your app, such as [Sentry](https://sentry.io) and [BugSnag](https://www.bugsnag.com). Check out our guides on how to set up these services with Expo:
-
-- [Sentry](/guides/using-sentry/)
-- [Bugsnag](/guides/using-bugsnag/)
+TODO...
