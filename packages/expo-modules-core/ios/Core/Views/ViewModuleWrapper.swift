@@ -26,7 +26,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
   var viewDefinition: AnyViewDefinition?
 
   /**
-  A boolean indicating if the view manager represents the default module view – the first exported definition available without specifying a view name.
+   A boolean indicating if the view manager represents the default module view – the first exported definition available without specifying a view name.
    */
   var isDefaultModuleView: Bool = true
 
