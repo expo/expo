@@ -25,7 +25,7 @@ extension ExpoSwiftUI {
     /**
      View controller that embeds the content view into the UIKit view hierarchy.
      */
-    private let hostingController: UIViewController
+    let hostingController: UIViewController
 
     /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
@@ -89,6 +89,7 @@ extension ExpoSwiftUI {
       children.insert(child, at: index)
 
       props.children = children
+      props.objectWillChange.send()
     }
 
     /**
@@ -100,7 +101,9 @@ extension ExpoSwiftUI {
 
       if let children = props.children {
         props.children = children.filter({ $0.view != childComponentView })
+        props.objectWillChange.send()
       }
+      
     }
 #endif // RCT_NEW_ARCH_ENABLED
 

@@ -38,7 +38,9 @@ extension ExpoSwiftUI {
     private lazy var dummyPropsMirror: Mirror = Mirror(reflecting: Props())
 
     init(_ viewType: ViewType.Type) {
-      super.init(HostingView<Props, ViewType>.self, elements: [])
+      // We assume SwiftUI views are exported as named views under the class name
+      let nameDefinitionElement = ViewNameDefinition(name: String(describing: viewType))
+      super.init(HostingView<Props, ViewType>.self, elements: [nameDefinitionElement])
     }
 
     public override func createView(appContext: AppContext) -> UIView? {

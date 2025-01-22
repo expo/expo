@@ -8,8 +8,12 @@ class ExpoUIModule : Module() {
     Name("ExpoUI")
 
     // Defines a single view for now – a single choice segmented control
-    View(SingleChoiceSegmentedControlView::class) {
+    View(PickerView::class) {
       Events("onOptionSelected")
+    }
+
+    View(SwitchView::class) {
+      Events("onCheckedChanged")
     }
   }
 }

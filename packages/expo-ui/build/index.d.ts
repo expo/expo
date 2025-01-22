@@ -1,4 +1,3 @@
-export { default } from './ExpoUIModule';
-export { default as SingleChoiceSegmentedControlView } from './ExpoUIView';
-export * from './ExpoUI.types';
+export type { Switch, SwitchProps } from './components/Switch';
+export type { Picker, PickerProps } from './components/Picker';
 //# sourceMappingURL=index.d.ts.map
