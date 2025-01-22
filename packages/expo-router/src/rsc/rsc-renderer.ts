@@ -313,10 +313,11 @@ export async function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpt
       get(_target, encodedId: string) {
         const [file, name] = encodedId.split('#') as [string, string];
         const { id } = resolveClientEntry(
-          file,
+          file
           // TODO: This might be react-server
-          'node'
+          // 'client'
         );
+        console.log('YOOOO:', id, file);
         return { id, chunks: [id], name, async: true };
       },
     }

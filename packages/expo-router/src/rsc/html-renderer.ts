@@ -14,7 +14,6 @@ import { createElement } from 'react';
 import { renderToReadableStream } from 'react-dom/server.edge';
 import { createFromReadableStream } from 'react-server-dom-webpack/client.edge';
 import { ServerRoot } from './router/host';
-import { fileURLToFilePath } from './path';
 
 // console.log('REACT VERSIONS:', {
 //   react: require('react/package.json').version,
@@ -106,15 +105,13 @@ export async function renderHtml({
         {},
         {
           get(_target, name: string) {
-            const params = filePath.match(/(.*)\?(platform=.*)/);
-            if (!params?.[2]) {
-              throw new Error('No platform specified in the request: ' + filePath);
-            }
-            const [, sanitizedFp, query] = params;
+            // const params = filePath.match(/(.*)\?(platform=.*)/);
+            // if (!params?.[2]) {
+            //   throw new Error('No platform specified in the request: ' + filePath);
+            // }
+            // const [, sanitizedFp, query] = params;
 
-            console.log('[SSR] Get module:', { sanitizedFp, query });
-
-            const fp = joinPath(serverRoot, sanitizedFp);
+            const fp = joinPath(serverRoot, filePath);
 
             const { id, chunks } = resolveClientEntry(fp, 'node');
             console.log('SSR module map:', { fp, filePath, name, id, chunks });
@@ -137,7 +134,7 @@ export async function renderHtml({
   console.log('moduleMap:', moduleMap);
   console.log('stream:', stream);
 
-  // Safe from waku
+  // Safe verbetim from waku
 
   const config = {
     basePath: '',
@@ -151,6 +148,7 @@ export async function renderHtml({
     ssrManifest: { moduleMap, moduleLoading: null },
   });
   console.log('elements:', elements);
+  console.log('renderToReadableStream:', renderToReadableStream);
   const body: Promise<ReactNode> = createFromReadableStream(ssrConfig.body, {
     ssrManifest: { moduleMap, moduleLoading: null },
   });
@@ -228,11 +226,22 @@ Promise.resolve(new Response(new ReadableStream({
   .map((line) => line.trim())
   .join('');
 
+/**
+ * Injects a script into the HTML stream.
+ * @param urlForFakeFetch - The URL for the fake fetch.
+ * @param mainJsPath - The path to the main JavaScript file (for DEV only, pass `''` for PRD).
+ * @returns A TransformStream that injects the script into the HTML stream.
+ */
 const injectScript = (
   urlForFakeFetch: string,
   mainJsPath: string // for DEV only, pass `''` for PRD
-) => {
-  const modifyHead = (data: string) => {
+): TransformStream<Uint8Array, Uint8Array> => {
+  /**
+   * Modifies the head of the HTML to include the prefetch script.
+   * @param data - The HTML data.
+   * @returns The modified HTML data.
+   */
+  const modifyHead = (data: string): string => {
     const matchPrefetched = data.match(
       // HACK This is very brittle
       /(.*<script[^>]*>\nglobalThis\.__EXPO_PREFETCHED__ = {\n)(.*?)(\n};.*)/s
@@ -260,11 +269,13 @@ const injectScript = (
     }
     return data;
   };
+
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
   let headSent = false;
   let data = '';
-  return new TransformStream({
+
+  return new TransformStream<Uint8Array, Uint8Array>({
     transform(chunk, controller) {
       if (!(chunk instanceof Uint8Array)) {
         throw new Error('Unknown chunk type');
@@ -292,16 +303,23 @@ const injectScript = (
 };
 
 // HACK for now, do we want to use HTML parser?
-const rectifyHtml = () => {
+/**
+ * A TransformStream that buffers HTML chunks and processes them when a closing tag is detected.
+ * This is useful for ensuring that HTML is properly rectified before further processing.
+ * @returns {TransformStream<Uint8Array, Uint8Array>} A TransformStream that buffers and processes HTML chunks.
+ */
+const rectifyHtml = (): TransformStream<Uint8Array, Uint8Array> => {
   const pending: Uint8Array[] = [];
   const decoder = new TextDecoder();
   let timer: ReturnType<typeof setTimeout> | undefined;
+
   return new TransformStream({
     transform(chunk, controller) {
       if (!(chunk instanceof Uint8Array)) {
         throw new Error('Unknown chunk type');
       }
       pending.push(chunk);
+      // Check if the chunk ends with a closing tag
       if (/<\/\w+>$/.test(decoder.decode(chunk))) {
         clearTimeout(timer);
         timer = setTimeout(() => {
@@ -317,8 +335,6 @@ const rectifyHtml = () => {
     },
   });
 };
-
-const filePathToFileURL = (filePath: string) => 'file://' + encodeURI(filePath);
 
 // for filePath
 const joinPath = (...paths: string[]) => {
@@ -372,14 +388,21 @@ const encodeInput = (input: string) => {
 const encoder = new TextEncoder();
 const trailer = '</body></html>';
 
-// Extracted cuz ESM in Node.js is stupid
-function injectRSCPayload(rscStream) {
+/**
+ * Injects RSC payload into the HTML stream.
+ * @param rscStream - The ReadableStream containing the RSC payload.
+ * @returns A TransformStream that injects the RSC payload into the HTML stream.
+ */
+function injectRSCPayload(
+  rscStream: ReadableStream<Uint8Array>
+): TransformStream<Uint8Array, Uint8Array> {
   const decoder = new TextDecoder();
-  let resolveFlightDataPromise;
-  const flightDataPromise = new Promise((resolve) => (resolveFlightDataPromise = resolve));
+  let resolveFlightDataPromise: () => void;
+  const flightDataPromise = new Promise<void>((resolve) => (resolveFlightDataPromise = resolve));
   let started = false;
+
   return new TransformStream({
-    transform(chunk, controller) {
+    async transform(chunk, controller) {
       let buf = decoder.decode(chunk);
       if (buf.endsWith(trailer)) {
         buf = buf.slice(0, -trailer.length);
@@ -405,14 +428,26 @@ function injectRSCPayload(rscStream) {
   });
 }
 
-async function writeRSCStream(rscStream, controller) {
+/**
+ * Asynchronously processes a ReadableStream of chunks, attempting to decode each chunk as a UTF-8 string.
+ * If decoding fails (e.g., due to binary data), the chunk is encoded as a base64 string and written as a Uint8Array.
+ *
+ * @param {ReadableStream<Uint8Array>} rscStream - The ReadableStream of Uint8Array chunks to process.
+ * @param {TransformStreamDefaultController<Uint8Array>} controller - The controller to which the processed chunks are written.
+ *
+ * @throws {Error} If an error occurs during decoding or encoding of the chunks.
+ */
+async function writeRSCStream(
+  rscStream: ReadableStream<Uint8Array>,
+  controller: TransformStreamDefaultController<Uint8Array>
+): Promise<void> {
   const decoder = new TextDecoder('utf-8', { fatal: true });
   for await (const chunk of rscStream) {
     // Try decoding the chunk to send as a string.
     // If that fails (e.g. binary data that is invalid unicode), write as base64.
     try {
       writeChunk(JSON.stringify(decoder.decode(chunk, { stream: true })), controller);
-    } catch (err) {
+    } catch {
       const base64 = JSON.stringify(btoa(String.fromCodePoint(...chunk)));
       writeChunk(`Uint8Array.from(atob(${base64}), m => m.codePointAt(0))`, controller);
     }
@@ -423,17 +458,22 @@ async function writeRSCStream(rscStream, controller) {
     writeChunk(JSON.stringify(remaining), controller);
   }
 }
-
-function writeChunk(chunk, controller) {
+/**
+ * Writes a chunk of data to the controller, escaping it for safe inclusion in a script tag.
+ * @param {string} chunk - The chunk of data to write.
+ * @param {WritableStreamDefaultWriter<string>} controller - The controller to which the chunk is written.
+ */
+function writeChunk(chunk: string, controller: TransformStreamDefaultController<Uint8Array>): void {
   controller.enqueue(
     encoder.encode(`<script>${escapeScript(`(self.__FLIGHT_DATA||=[]).push(${chunk})`)}</script>`)
   );
 }
 
-// Escape closing script tags and HTML comments in JS content.
-// https://www.w3.org/TR/html52/semantics-scripting.html#restrictions-for-contents-of-script-elements
-// Avoid replacing </script with <\/script as it would break the following valid JS: 0</script/ (i.e. regexp literal).
-// Instead, escape the s character.
-function escapeScript(script) {
+/**
+ * Escapes closing script tags and HTML comments in JavaScript content to prevent breaking out of the script context.
+ * @param {string} script - The script content to escape.
+ * @returns {string} - The escaped script content.
+ */
+function escapeScript(script: string): string {
   return script.replace(/<!--/g, '<\\!--').replace(/<\/(script)/gi, '</\\$1');
 }
