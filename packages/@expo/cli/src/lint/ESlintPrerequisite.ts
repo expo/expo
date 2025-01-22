@@ -25,16 +25,21 @@ const debug = require('debug')('expo:lint') as typeof console.log;
 /** Ensure the project has the required ESlint config. */
 export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
   async assertImplementation(): Promise<boolean> {
-    const hasEslintConfig = await eslintIsConfigured(this.projectRoot);
+    const hasEslintConfig = await isEslintConfigured(this.projectRoot);
+    const hasLegacyConfig = await isLegacyEslintConfigured(this.projectRoot);
     const hasLintScript = await lintScriptIsConfigured(this.projectRoot);
 
-    return hasEslintConfig && hasLintScript;
+    if (hasLegacyConfig) {
+      Log.warn(`Using legacy ESLing config. Consider upgrading to flat config.`);
+    }
+
+    return (hasEslintConfig || hasLegacyConfig) && hasLintScript;
   }
 
   async bootstrapAsync(): Promise<boolean> {
     debug('Setting up ESLint');
 
-    const hasEslintConfig = await eslintIsConfigured(this.projectRoot);
+    const hasEslintConfig = await isEslintConfigured(this.projectRoot);
     if (!hasEslintConfig) {
       if (!isInteractive()) {
         Log.warn(`No ESLint config found. Configuring automatically.`);
@@ -74,8 +79,8 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
       // }
 
       await fs.writeFile(
-        path.join(this.projectRoot, '.eslintrc.js'),
-        await fs.readFile(require.resolve(`@expo/cli/static/template/.eslintrc.js`), 'utf8'),
+        path.join(this.projectRoot, 'eslint.config.mjs'),
+        await fs.readFile(require.resolve(`@expo/cli/static/template/eslint.config.mjs`), 'utf8'),
         'utf8'
       );
     }
@@ -112,8 +117,9 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
         installMessage: 'ESLint is required to lint your project.',
         warningMessage: 'ESLint not installed, unable to set up linting for your project.',
         requiredPackages: [
-          { version: '^8.57.0', pkg: 'eslint', file: 'eslint/package.json', dev: true },
+          { version: '^9.0.0', pkg: 'eslint', file: 'eslint/package.json', dev: true },
           {
+            version: '8.0.2-canary-20250122-166c2cb',
             pkg: 'eslint-config-expo',
             file: 'eslint-config-expo/package.json',
             dev: true,
@@ -127,33 +133,45 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
   }
 }
 
-async function eslintIsConfigured(projectRoot: string) {
-  debug('Ensuring ESlint is configured in', projectRoot);
+async function isLegacyEslintConfigured(projectRoot: string) {
+  debug('Checking for legacy ESlint configuration', projectRoot);
 
-  // TODO(cedric): drop `package.json` check once we swap to flat config
   const packageFile = await JsonFile.readAsync(path.join(projectRoot, 'package.json'));
   if (
     typeof packageFile.eslintConfig === 'object' &&
     Object.keys(packageFile.eslintConfig as JSONObject).length > 0
   ) {
-    debug('Found ESlint config in package.json');
+    debug('Found legacy ESlint config in package.json');
     return true;
   }
 
   const eslintConfigFiles = [
-    // TODO(cedric): drop these files once we swap to flat config
-    // See: https://eslint.org/docs/latest/use/configure/configuration-files-deprecated
     '.eslintrc.js',
     '.eslintrc.cjs',
     '.eslintrc.yaml',
     '.eslintrc.yml',
     '.eslintrc.json',
-    // TODO(cedric): use these files once we swap to flat config
-    // See: https://eslint.org/docs/latest/use/configure/configuration-files
-    // 'eslint.config.js',
-    // 'eslint.config.mjs',
-    // 'eslint.config.cjs',
   ];
+  for (const configFile of eslintConfigFiles) {
+    const configPath = findFileInParents(projectRoot, configFile);
+    const configIsEmpty = configPath ? await eslintConfigIsEmpty(configPath) : null;
+
+    if (configPath && !configIsEmpty) {
+      debug('Found ESlint config file:', configPath);
+      return true;
+    } else if (configPath && configIsEmpty) {
+      debug('Skipping empty ESlint config file:', configPath);
+    }
+  }
+
+  return false;
+}
+
+// check for flat config
+async function isEslintConfigured(projectRoot: string) {
+  debug('Ensuring ESlint is configured in', projectRoot);
+
+  const eslintConfigFiles = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs'];
   for (const configFile of eslintConfigFiles) {
     const configPath = findFileInParents(projectRoot, configFile);
     const configIsEmpty = configPath ? await eslintConfigIsEmpty(configPath) : null;
