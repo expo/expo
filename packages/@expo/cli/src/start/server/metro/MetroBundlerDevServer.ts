@@ -460,7 +460,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   ) => {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
 
-    if (filePath.includes('html')) {
+    if (filePath.includes('rsc/router/client.js')) {
       console.log(res.src);
     }
 

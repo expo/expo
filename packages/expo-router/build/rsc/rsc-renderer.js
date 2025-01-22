@@ -214,10 +214,9 @@ async function getSsrConfig(args, opts) {
     const bundlerConfig = new Proxy({}, {
         get(_target, encodedId) {
             const [file, name] = encodedId.split('#');
-            const { id } = resolveClientEntry(file
+            const { id } = resolveClientEntry(file, 
             // TODO: This might be react-server
-            // 'client'
-            );
+            'client');
             console.log('YOOOO:', id, file);
             return { id, chunks: [id], name, async: true };
         },
