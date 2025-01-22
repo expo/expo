@@ -105,13 +105,13 @@ export async function renderHtml({
         {},
         {
           get(_target, name: string) {
-            // const params = filePath.match(/(.*)\?(platform=.*)/);
-            // if (!params?.[2]) {
-            //   throw new Error('No platform specified in the request: ' + filePath);
-            // }
-            // const [, sanitizedFp, query] = params;
+            const params = filePath.match(/(.*)\?(platform=.*)/);
+            if (!params?.[2]) {
+              throw new Error('No platform specified in the request: ' + filePath);
+            }
+            const [, sanitizedFp, query] = params;
 
-            const fp = joinPath(serverRoot, filePath);
+            const fp = joinPath(serverRoot, sanitizedFp);
 
             const { id, chunks } = resolveClientEntry(fp, 'node');
             console.log('SSR module map:', { fp, filePath, name, id, chunks });

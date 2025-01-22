@@ -216,7 +216,7 @@ async function getSsrConfig(args, opts) {
             const [file, name] = encodedId.split('#');
             const { id } = resolveClientEntry(file, 
             // TODO: This might be react-server
-            'client');
+            'node');
             console.log('YOOOO:', id, file);
             return { id, chunks: [id], name, async: true };
         },

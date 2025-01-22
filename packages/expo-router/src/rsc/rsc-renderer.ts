@@ -315,7 +315,7 @@ export async function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpt
         const { id } = resolveClientEntry(
           file,
           // TODO: This might be react-server
-          'client'
+          'node'
         );
         console.log('YOOOO:', id, file);
         return { id, chunks: [id], name, async: true };
