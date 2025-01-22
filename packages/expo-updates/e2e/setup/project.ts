@@ -474,7 +474,6 @@ function transformAppJsonForE2E(
     expo: {
       ...appJson.expo,
       name: projectName,
-      owner: 'expo-ci',
       runtimeVersion,
       plugins,
       newArchEnabled: false,
@@ -556,7 +555,6 @@ export function transformAppJsonForUpdatesDisabledE2E(
     expo: {
       ...appJson.expo,
       name: projectName,
-      owner: 'expo-ci',
       runtimeVersion,
       plugins,
       newArchEnabled: false,
