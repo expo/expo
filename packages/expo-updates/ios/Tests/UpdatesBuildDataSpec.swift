@@ -144,5 +144,44 @@ class UpdatesBuildDataSpec : ExpoSpec {
         }
       }
     }
+
+    describe("isEqualBuildData with defaultBuildData") {
+      it("should return true for same data") {
+        let sourceBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        let targetBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        expect(UpdatesBuildData.isEqualBuildData(sourceBuildData, targetBuildData)).to(beTrue())
+      }
+
+      it("should return false for EXUpdatesRequestHeaders change") {
+        let sourceBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        let targetBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "preview"],
+        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        expect(UpdatesBuildData.isEqualBuildData(sourceBuildData, targetBuildData)).to(beFalse())
+      }
+
+      it("should support migration with new EXUpdatesHasEmbeddedUpdate key") {
+        let sourceBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        let targetBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+          "EXUpdatesHasEmbeddedUpdate": true
+        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        expect(UpdatesBuildData.isEqualBuildData(sourceBuildData, targetBuildData)).to(beTrue())
+      }
+    }
   }
 }
