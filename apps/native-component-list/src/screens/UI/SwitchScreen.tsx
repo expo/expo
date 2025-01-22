@@ -15,7 +15,7 @@ export default function SwitchScreen() {
             setChecked(checked);
           }}
           label="Never gonna give you up"
-          type="switch"
+          variant="switch"
         />
       </Section>
       <Section title="Checkbox Switch">
@@ -26,7 +26,7 @@ export default function SwitchScreen() {
             setChecked(checked);
           }}
           label="Never gonna let you down"
-          type="checkbox"
+          variant="checkbox"
         />
       </Section>
       <Section title="Button Switch">
@@ -37,7 +37,7 @@ export default function SwitchScreen() {
             setChecked(checked);
           }}
           label="Never gonna run around and desert you"
-          type="button"
+          variant="button"
         />
       </Section>
     </Page>

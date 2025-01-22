@@ -14,7 +14,7 @@ import expo.modules.kotlin.views.ComposeProps
 
 data class SwitchProps(
   val checked: MutableState<Boolean> = mutableStateOf(false),
-  val type: MutableState<String> = mutableStateOf("switch")
+  val variant: MutableState<String> = mutableStateOf("switch")
 ): ComposeProps
 
 class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<SwitchProps>(context, appContext) {
@@ -24,7 +24,7 @@ class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<Swi
   init {
     setContent {
       val (checked) = props.checked
-      val (type) = props.type
+      val (variant) = props.variant
       val onCheckedChange = { checked: Boolean ->
         onCheckedChanged(mapOf("checked" to checked))
       }
@@ -45,7 +45,7 @@ class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<Swi
         )
       }
 
-      if(type == "switch") {
+      if(variant == "switch") {
         SwitchComposable()
       } else {
         CheckboxComposable()

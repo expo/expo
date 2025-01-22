@@ -15,7 +15,7 @@ export type SwitchProps = {
   /**
    * Type of the switch component. Can be 'checkbox', 'switch', or 'button'. The 'button' style is iOS only.
    */
-  type: 'checkbox' | 'switch' | 'button';
+  variant: 'checkbox' | 'switch' | 'button';
 
   /**
    * Callback function that is called when the checked state changes.
