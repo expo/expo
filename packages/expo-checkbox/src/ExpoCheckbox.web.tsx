@@ -15,7 +15,7 @@ import { StyleSheet, View, unstable_createElement as createElement } from 'react
 import type { CheckboxProps, CheckboxEvent } from './Checkbox.types';
 
 const ExpoCheckbox = React.forwardRef(
-  ({ color, disabled, onChange, onValueChange, style, value, ...other }: CheckboxProps, ref) => {
+  ({ color, disabled, onChange, onValueChange, style, value, id, ...other }: CheckboxProps, ref) => {
     const handleChange = (event: React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => {
       const value = event.nativeEvent.target.checked;
       event.nativeEvent.value = value;
@@ -40,6 +40,7 @@ const ExpoCheckbox = React.forwardRef(
       'aria-checked': value,
       'aria-disabled': disabled,
       checked: value,
+      id,
       disabled,
       onChange: handleChange,
       style: [styles.nativeControl, styles.cursorInherit],
