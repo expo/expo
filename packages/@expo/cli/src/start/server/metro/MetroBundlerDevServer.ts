@@ -460,10 +460,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   ) => {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
 
-    // if (filePath.includes('rsc/router/client.js')) {
-    //   console.log(res.src);
-    // }
-
     if (
       // TODO: hot should be a callback function for invalidating the related SSR module.
       extras.hot &&
