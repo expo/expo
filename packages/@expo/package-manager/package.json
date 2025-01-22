@@ -39,6 +39,7 @@
   "dependencies": {
     "@expo/json-file": "^9.0.0",
     "@expo/spawn-async": "^1.7.2",
+    "@vscode/sudo-prompt": "^9.3.1",
     "ansi-regex": "^5.0.0",
     "chalk": "^4.0.0",
     "find-up": "^5.0.0",
@@ -47,8 +48,7 @@
     "npm-package-arg": "^11.0.0",
     "ora": "^3.4.0",
     "resolve-workspace-root": "^2.0.0",
-    "split": "^1.0.1",
-    "sudo-prompt": "9.1.1"
+    "split": "^1.0.1"
   },
   "devDependencies": {
     "@types/js-yaml": "^3.12.5",
