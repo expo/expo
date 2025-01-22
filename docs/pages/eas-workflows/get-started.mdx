@@ -46,7 +46,7 @@ Finally, link the project you have locally with EAS:
   <Terminal cmd={['$ npx eas-cli@latest init']} />
 </Collapsible>
 
-Then, create a directory named **.eas/workflows** at the root of your project with a **.yaml** file inside of it. For example: **.eas/workflows/hello-world.yaml**.
+Then, create a directory named **.eas/workflows** at the root of your project with a YAML file inside of it. For example: **.eas/workflows/hello-world.yml**.
 
 ## Write a workflow
 
@@ -58,7 +58,7 @@ Each workflow consists of three top-level elements:
 
 Here's an example of a workflow that prints "Hello, world":
 
-```yaml .eas/workflows/hello-world.yaml
+```yaml .eas/workflows/hello-world.yml
 name: Hello World
 
 on:
@@ -73,7 +73,7 @@ jobs:
 
 Here's another example that creates and submits an iOS build of a project on every push to every branch. This is similar to running `eas build --platform ios --profile production --auto-submit`:
 
-```yaml .eas/workflows/ios-build-and-submit.yaml
+```yaml .eas/workflows/ios-build-and-submit.yml
 name: Release iOS app
 
 on:
@@ -106,7 +106,7 @@ Once you have a workflow file and your project is connected to Expo's GitHub app
 
 Alternatively, you can trigger a workflow manually by running the following command:
 
-<Terminal cmd={['$ npx eas-cli@latest workflow:run .eas/workflows/<your-workflow-file>.yaml']} />
+<Terminal cmd={['$ npx eas-cli@latest workflow:run .eas/workflows/<your-workflow-file>.yml']} />
 
 Once you do, you can see your workflow running on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows).
 
