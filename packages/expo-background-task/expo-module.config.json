@@ -1,7 +1,7 @@
 {
   "name": "expo-background-task",
-  "platforms": [ "ios", "android" ],
-  "ios": {
+  "platforms": [ "apple", "android" ],
+  "apple": {
     "appDelegateSubscribers": [ "BackgroundTaskAppDelegateSubscriber" ],
     "modules": [ "BackgroundTaskModule" ]
   },
