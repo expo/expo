@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- `id` parameter is now passed to `<input />` for web. ([#34351](https://github.com/expo/expo/pull/34351)) by [@Wolfleader101](https://github.com/Wolfleader101)
+- `id` parameter is now passed to `<input />` for web. ([#34351](https://github.com/expo/expo/pull/34351) by [@Wolfleader101](https://github.com/Wolfleader101))
 
 ## 4.0.0 — 2024-10-22
 
