@@ -31,17 +31,15 @@ internal final class UpdatesBuildData {
 
       let staticBuildData: [AnyHashable: Any]?
       do {
-        staticBuildData = (try database.staticBuildData(withScopeKey: scopeKey))?
-          .merging(defaultBuildData) { current, _ in current }
+        staticBuildData = try database.staticBuildData(withScopeKey: scopeKey)
       } catch {
         logger.warn(message: "Error getting static build data: \(error.localizedDescription)")
         return
       }
       let buildDataFromConfig = self.getBuildDataFromConfig(config)
-        .merging(defaultBuildData) { current, _ in current }
 
       if let staticBuildData,
-        !isEqualBuildData(staticBuildData, buildDataFromConfig) {
+        !isBuildDataConsistent(staticBuildData, buildDataFromConfig) {
         clearAllUpdatesAndSetStaticBuildData(database: database, config: config, logger: logger, scopeKey: scopeKey)
         clearManifestMetadataFromDatabase(database: database, logger: logger)
       } else {
@@ -58,7 +56,7 @@ internal final class UpdatesBuildData {
   /**
    Fallback data specifically for migration while database data doesn't have these keys
    */
-  internal static let defaultBuildData: [String: Any] = [
+  private static let defaultBuildData: [String: Any] = [
     "EXUpdatesHasEmbeddedUpdate": true
   ]
 
@@ -107,9 +105,13 @@ internal final class UpdatesBuildData {
     }
   }
 
-  internal static func isEqualBuildData(_ lhs: [AnyHashable: Any], _ rhs: [AnyHashable: Any]) -> Bool {
+  internal static func isBuildDataConsistent(_ lhs: [AnyHashable: Any], _ rhs: [AnyHashable: Any]) -> Bool {
+    let lhsWithDefault = lhs
+      .merging(defaultBuildData) { current, _ in current }
+    let rhsWithDefault = rhs
+      .merging(defaultBuildData) { current, _ in current }
     // safest dictionary comparison conversion is still in objective-c
     // swiftlint:disable:next legacy_objc_type
-    return NSDictionary(dictionary: lhs).isEqual(to: rhs)
+    return NSDictionary(dictionary: lhsWithDefault).isEqual(to: rhsWithDefault)
   }
 }

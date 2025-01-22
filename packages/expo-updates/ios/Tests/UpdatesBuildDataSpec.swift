@@ -145,42 +145,54 @@ class UpdatesBuildDataSpec : ExpoSpec {
       }
     }
 
-    describe("isEqualBuildData with defaultBuildData") {
+    describe("isBuildDataConsistent") {
       it("should return true for same data") {
         let sourceBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
-        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
+        ]
         let targetBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
-        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
-        expect(UpdatesBuildData.isEqualBuildData(sourceBuildData, targetBuildData)).to(beTrue())
+        ]
+        expect(UpdatesBuildData.isBuildDataConsistent(sourceBuildData, targetBuildData)).to(beTrue())
       }
 
       it("should return false for EXUpdatesRequestHeaders change") {
         let sourceBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
-        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
+        ]
         let targetBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "preview"],
-        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
-        expect(UpdatesBuildData.isEqualBuildData(sourceBuildData, targetBuildData)).to(beFalse())
+        ]
+        expect(UpdatesBuildData.isBuildDataConsistent(sourceBuildData, targetBuildData)).to(beFalse())
       }
 
       it("should support migration with new EXUpdatesHasEmbeddedUpdate key") {
         let sourceBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
-        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
+        ]
         let targetBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
           "EXUpdatesHasEmbeddedUpdate": true
-        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
-        expect(UpdatesBuildData.isEqualBuildData(sourceBuildData, targetBuildData)).to(beTrue())
+        ]
+        expect(UpdatesBuildData.isBuildDataConsistent(sourceBuildData, targetBuildData)).to(beTrue())
+      }
+
+      it("should not overwrite existing data from the default build data") {
+        let sourceBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesHasEmbeddedUpdate": false
+        ]
+        let targetBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesHasEmbeddedUpdate": false
+        ]
+        expect(UpdatesBuildData.isBuildDataConsistent(sourceBuildData, targetBuildData)).to(beTrue())
       }
     }
   }
