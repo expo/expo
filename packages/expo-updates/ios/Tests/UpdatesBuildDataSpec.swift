@@ -150,11 +150,11 @@ class UpdatesBuildDataSpec : ExpoSpec {
         let sourceBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
-        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
         let targetBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
-        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
         expect(UpdatesBuildData.isEqualBuildData(sourceBuildData, targetBuildData)).to(beTrue())
       }
 
@@ -162,11 +162,11 @@ class UpdatesBuildDataSpec : ExpoSpec {
         let sourceBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
-        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
         let targetBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "preview"],
-        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
         expect(UpdatesBuildData.isEqualBuildData(sourceBuildData, targetBuildData)).to(beFalse())
       }
 
@@ -174,12 +174,12 @@ class UpdatesBuildDataSpec : ExpoSpec {
         let sourceBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
-        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
         let targetBuildData = [
           "EXUpdatesURL": "https://example.com",
           "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
           "EXUpdatesHasEmbeddedUpdate": true
-        ].merging(UpdatesBuildData.defaultBuildData) { (current, _) in current}
+        ].merging(UpdatesBuildData.defaultBuildData) { current, _ in current }
         expect(UpdatesBuildData.isEqualBuildData(sourceBuildData, targetBuildData)).to(beTrue())
       }
     }

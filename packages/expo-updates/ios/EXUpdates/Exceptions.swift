@@ -68,6 +68,7 @@ internal final class NotAvailableInDevClientException: Exception {
   }
 }
 
+// swiftlint:disable:next type_name
 internal final class NotAllowedUnlessLivingDangerouslyException: Exception {
   override var code: String {
     "ERR_NOT_ALLOWED"

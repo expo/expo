@@ -249,7 +249,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
   }
 
   public func setUrlOverride(_ url: String?) throws {
-    if (!config.allowMeToLiveDangerously) {
+    if !config.allowMeToLiveDangerously {
       throw NotAllowedUnlessLivingDangerouslyException()
     }
     if let url, !url.isEmpty {

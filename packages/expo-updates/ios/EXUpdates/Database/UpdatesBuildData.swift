@@ -32,18 +32,18 @@ internal final class UpdatesBuildData {
       let staticBuildData: [AnyHashable: Any]?
       do {
         staticBuildData = (try database.staticBuildData(withScopeKey: scopeKey))?
-          .merging(defaultBuildData) { (current, _) in current}
+          .merging(defaultBuildData) { current, _ in current }
       } catch {
         logger.warn(message: "Error getting static build data: \(error.localizedDescription)")
         return
       }
       let buildDataFromConfig = self.getBuildDataFromConfig(config)
-        .merging(defaultBuildData) { (current, _) in current}
+        .merging(defaultBuildData) { current, _ in current }
 
       if let staticBuildData,
-         !isEqualBuildData(staticBuildData, buildDataFromConfig) {
-          clearAllUpdatesAndSetStaticBuildData(database: database, config: config, logger: logger, scopeKey: scopeKey)
-          clearManifestMetadataFromDatabase(database: database, logger: logger)
+        !isEqualBuildData(staticBuildData, buildDataFromConfig) {
+        clearAllUpdatesAndSetStaticBuildData(database: database, config: config, logger: logger, scopeKey: scopeKey)
+        clearManifestMetadataFromDatabase(database: database, logger: logger)
       } else {
         do {
           try database.setStaticBuildData(getBuildDataFromConfig(config), withScopeKey: scopeKey)
@@ -59,7 +59,7 @@ internal final class UpdatesBuildData {
    Fallback data specifically for migration while database data doesn't have these keys
    */
   internal static let defaultBuildData: [String: Any] = [
-    "EXUpdatesHasEmbeddedUpdate": true,
+    "EXUpdatesHasEmbeddedUpdate": true
   ]
 
   static func getBuildDataFromConfig(_ config: UpdatesConfig) -> [String: Any] {
@@ -99,7 +99,7 @@ internal final class UpdatesBuildData {
       try database.deleteJsonDataForAllScopeKeys(withKeys: [
         UpdatesDatabase.JSONDataKey.ExtraParmasKey,
         UpdatesDatabase.JSONDataKey.ServerDefinedHeadersKey,
-        UpdatesDatabase.JSONDataKey.ManifestFiltersKey,
+        UpdatesDatabase.JSONDataKey.ManifestFiltersKey
       ])
     } catch {
       logger.warn(message: "Error deleting JSON data from database: \(error.localizedDescription)")
