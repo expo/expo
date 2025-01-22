@@ -2,7 +2,7 @@
   "name": "expo-notifications",
   "platforms": ["ios", "android"],
   "ios": {
-    "modules": ["BadgeModule", "CategoriesModule", "ServerRegistrationModule", "PushTokenModule", "SchedulerModule", "PresentationModule"],
+    "modules": ["BadgeModule", "ServerRegistrationModule", "PushTokenModule", "SchedulerModule", "PresentationModule"],
     "appDelegateSubscribers": ["PushTokenAppDelegateSubscriber"]
   },
   "android": {
