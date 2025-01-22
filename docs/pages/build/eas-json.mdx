@@ -57,6 +57,8 @@ Build profiles can be extended to other build profile properties using the `exte
 
 For example, in the `preview` profile you might have `"extends": "production"`. This will make the `preview` profile inherit the configuration of the `production` profile.
 
+You can keep chaining profile extensions up to the depth of 5 as long as you avoid making circular dependencies.
+
 ## Common use cases
 
 Developers using Expo tools usually end up having three different types of builds: **development**, **preview**, and **production**.

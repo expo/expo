@@ -1601,7 +1601,7 @@ index 90bcc87b8e..51fbc1e5a7 100644
    </style>
  </resources>
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index 8181b282cd..e34231b2ff 100644
+index 8181b282cd..e119b72df9 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -2,64 +2,40 @@
@@ -1620,7 +1620,7 @@ index 8181b282cd..e34231b2ff 100644
 +        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '2.0.21'
  
 -        if (System.properties['os.arch'] == 'aarch64') {
 -            // For M1 Users we need to use the NDK 24 which added support for aarch64
@@ -1629,7 +1629,7 @@ index 8181b282cd..e34231b2ff 100644
 -            // Otherwise we default to the side-by-side NDK version from AGP.
 -            ndkVersion = '21.4.7075529'
 -        }
-+        ndkVersion = "26.1.10909125"
++        ndkVersion = "27.1.12297006"
      }
      repositories {
          google()
@@ -1904,12 +1904,12 @@ index 53a6b238d4..9b42019c79 100644
  goto fail
  
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index b3332319f9..46fda813ba 100644
+index b3332319f9..39b188e065 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
 @@ -1,17 +1,38 @@
 +pluginManagement {
-+    includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
++    includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().toString())
 +}
 +plugins { id("com.facebook.react.settings") }
 +
@@ -2342,7 +2342,7 @@ index a6e13e11ab..b27f83286d 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -124,43 +59,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
+@@ -124,43 +59,4 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
@@ -2820,7 +2820,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a41fdc0d8d..bfd1e57dac 100644
+index a41fdc0d8d..e20b462b95 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -2829,7 +2829,7 @@ index a41fdc0d8d..bfd1e57dac 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "47.0.26",
 +  "license": "0BSD",
-+  "version": "52.0.40",
++  "version": "52.0.56",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2842,10 +2842,10 @@ index a41fdc0d8d..bfd1e57dac 100644
 -    "expo-status-bar": "~1.4.2",
 -    "react": "18.1.0",
 -    "react-native": "0.70.8"
-+    "expo": "~52.0.9",
-+    "expo-status-bar": "~2.0.0",
++    "expo": "~52.0.27",
++    "expo-status-bar": "~2.0.1",
 +    "react": "18.3.1",
-+    "react-native": "0.76.2"
++    "react-native": "0.76.6"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"

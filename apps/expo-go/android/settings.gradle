@@ -70,6 +70,6 @@ useExpoModules([
         'expo-maps',
         'expo-network-addons',
         'expo-splash-screen',
-        'expo-ui'
+        '@expo/ui'
     ]
 ])
