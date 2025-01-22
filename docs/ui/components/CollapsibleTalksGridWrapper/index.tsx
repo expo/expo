@@ -9,7 +9,7 @@ type CollapsibleGridProps = {
   initialCount?: number;
 };
 
-export function CollapsibleTalksGridWrapper({ items, initialCount = 8 }: CollapsibleGridProps) {
+export function CollapsibleTalksGridWrapper({ items, initialCount = 9 }: CollapsibleGridProps) {
   const [showAll, setShowAll] = useState(false);
 
   return (
@@ -20,14 +20,14 @@ export function CollapsibleTalksGridWrapper({ items, initialCount = 8 }: Collaps
         ))}
       </TalkGridWrapper>
 
-      {items.length > initialCount && !showAll && (
+      {items.length > initialCount && (
         <div className="mt-6 flex justify-center">
           <Button
             theme="secondary"
             onClick={() => {
-              setShowAll(true);
+              setShowAll(!showAll);
             }}>
-            Show More
+            {showAll ? 'Show Less' : 'Show More'}
           </Button>
         </div>
       )}
