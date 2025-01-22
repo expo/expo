@@ -7,7 +7,7 @@ export function MyComp() {
   return (
     <>
       <p>Client</p>
-      <React.Suspense fallback={<p>Loading...</p>}>{renderChildren()}</React.Suspense>
+      {/* <React.Suspense fallback={<p>Loading...</p>}>{renderChildren()}</React.Suspense> */}
     </>
   );
 }
