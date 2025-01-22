@@ -595,6 +595,7 @@ export function createServerComponentsMiddleware(
       'expo-router/build/rsc/rsc-renderer',
       {
         environment: 'react-server',
+        modulesOnly: true,
         platform,
       }
     );
