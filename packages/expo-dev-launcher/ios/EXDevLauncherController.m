@@ -281,11 +281,11 @@
       if (!self) {
         return;
       }
-      
+
       [self navigateToLauncher];
     });
   };
-  
+
   NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
   if (initialUrl) {
     [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
@@ -784,30 +784,19 @@
     runtimeVersion = _updatesInterface.runtimeVersion ?: @"";
   }
 
-  // the project url field is added to app.json.updates when running `eas update:configure`
-  // the `u.expo.dev` determines that it is the modern manifest protocol
-  NSString *projectUrl = @"";
-  if (_updatesInterface) {
-    projectUrl = [constants valueForKeyPath:@"manifest.updates.url"];
-  }
+  NSString *expoUpdatesURLString = [_updatesInterface.updateURL absoluteString] ?: @"";
+  NSURL *expoUpdatesURL = [NSURL URLWithString:expoUpdatesURLString];
 
-  NSURL *url = [NSURL URLWithString:projectUrl];
-
-  BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
+  BOOL isEASUpdateManifestProtocol = [[expoUpdatesURL host] isEqualToString:@"u.expo.dev"] || [[expoUpdatesURL host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
-
-  NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: @"";
-  BOOL hasAppId = appId.length > 0;
-
-  BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;
+  BOOL usesEASUpdates = isEASUpdateManifestProtocol && expoUpdatesInstalled;
 
   [updatesConfig setObject:runtimeVersion forKey:@"runtimeVersion"];
-
   if (usesEASUpdates) {
+    NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: @"";
     [updatesConfig setObject:appId forKey:@"appId"];
-    [updatesConfig setObject:projectUrl forKey:@"projectUrl"];
+    [updatesConfig setObject:expoUpdatesURLString forKey:@"projectUrl"];
   }
-
   [updatesConfig setObject:@(usesEASUpdates) forKey:@"usesEASUpdates"];
 
   return updatesConfig;
@@ -845,7 +834,7 @@
   NSProcessInfo *processInfo = [NSProcessInfo processInfo];
   NSArray *arguments = [processInfo arguments];
   BOOL nextIsUrl = NO;
-  
+
   for (NSString *arg in arguments) {
     if (nextIsUrl) {
       NSURL *url = [NSURL URLWithString:arg];
