@@ -11,6 +11,6 @@ interface IReactNativeFeatureFlagsProvider {
  * `com.facebook.react.config.ReactFeatureFlags` and
  * `com.facebook.react.internal.featureflags.ReactNativeFeatureFlags`
  */
-object ReactNativeFeatureFlags: IReactNativeFeatureFlagsProvider {
+object ReactNativeFeatureFlags : IReactNativeFeatureFlagsProvider {
   override val enableBridgelessArchitecture = ReactNativeFeatureFlags.enableBridgelessArchitecture()
 }
