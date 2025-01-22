@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- [Android] Made ReactNativeFeatureFlags a parameter to the constructor of the ErrorRecovery class to be able to make tests pass
+- [Android] Made ReactNativeFeatureFlags a parameter to the constructor of the ErrorRecovery class to be able to make tests pass ([#34363](https://github.com/expo/expo/pull/34363) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Inject logger from controllers down to dependent objects. ([#34035](https://github.com/expo/expo/pull/34035) by [@wschurman](https://github.com/wschurman))
 
 ## 0.26.10 - 2024-12-05
