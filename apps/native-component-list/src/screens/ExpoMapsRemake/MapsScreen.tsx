@@ -11,7 +11,7 @@ export const MapsScreens = [
     },
   },
   {
-    name: 'Camera controlls',
+    name: 'Camera controls',
     route: 'expo-maps/camera-controls',
     options: {},
     getComponent() {
@@ -40,6 +40,14 @@ export const MapsScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MapsMarkerScreen'));
+    },
+  },
+  {
+    name: 'Annotations',
+    route: 'expo-maps/annotations',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MapsAnnotationsScreen'));
     },
   },
   {

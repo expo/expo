@@ -59,6 +59,12 @@ export type Marker = {
 >>>>>>> dee93c9a34 (clean up)
 };
 
+export type Annotation = {
+  backgroundColor?: string;
+  text?: string;
+  textColor?: string;
+} & Marker;
+
 export type CameraPosition = {
   /**
    * The middle point of the camera.

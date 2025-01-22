@@ -30,6 +30,11 @@ export type Marker = {
     showCallout?: boolean;
     icon?: SharedRefType<'image'>;
 };
+export type Annotation = {
+    backgroundColor?: string;
+    text?: string;
+    textColor?: string;
+} & Marker;
 export type CameraPosition = {
     /**
      * The middle point of the camera.

@@ -7,6 +7,10 @@ export default function MapsCameraControlsScreen() {
       <ExpoMapsView
         style={{ width: 'auto', height: '100%' }}
         cameraPosition={{
+          coordinates: {
+            latitude: 51.509865,
+            longitude: -0.1275,
+          },
           zoom: 1,
         }}
       />
