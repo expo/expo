@@ -102,7 +102,7 @@ global[`${__METRO_GLOBAL_PREFIX__}__d`] = define as DefineFn;
 global.__c = clear;
 global.__registerSegment = registerSegment;
 
-var modules = clear();
+var modules = (globalThis.__EXPO_SSR_SHARED_MODULES_CACHE ??= clear());
 
 // Don't use a Symbol here, it would pull in an extra polyfill with all sorts of
 // additional stuff (e.g. Array.from).
@@ -117,6 +117,7 @@ if (__DEV__) {
 
 function clear(): ModuleList {
   modules = new Map();
+  globalThis.__EXPO_SSR_SHARED_MODULES_CACHE = modules;
 
   // We return modules here so that we can assign an initial value to modules
   // when defining it. Otherwise, we would have to do "let modules = null",

@@ -11,7 +11,7 @@ import type {
   ComponentProps,
 } from 'react';
 import { createElement } from 'react';
-import { renderToReadableStream } from 'react-dom/server';
+import { renderToReadableStream } from 'react-dom/server.edge';
 import { createFromReadableStream } from 'react-server-dom-webpack/client.edge';
 import { ServerRoot } from './router/host';
 import { fileURLToFilePath } from './path';
