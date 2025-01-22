@@ -9,9 +9,31 @@
 // We'll disable their handling in production native builds to ensure missing modules are shown to the user.
 const disableReactNativeMissingModuleHandling =
   !__DEV__ && (process.env.EXPO_OS !== 'web' || typeof window === 'undefined');
+const prefix = globalThis.__METRO_GLOBAL_PREFIX__ ?? '';
+
+// console.log(
+//   'loadBundleAsync.setup:',
+//   globalThis.__webpack_chunk_load__,
+//   globalThis.__webpack_require__,
+//   globalThis.__METRO_GLOBAL_PREFIX__,
+//   // globalThis,
+//   // global,
+//   { prefix, r: globalThis[`${prefix}__r`] }
+// );
+
+const r = globalThis[`${prefix}__r`];
+
+if (!r) {
+  throw new Error('The Metro SSR runtime is malformed and missing runtime functions.');
+}
 
 globalThis.__webpack_chunk_load__ = (id) => {
-  return global[`${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`](id);
+  console.log('loadBundleAsync.1:', id);
+  const loadBundle = globalThis[`${prefix}__loadBundleAsync`];
+  if (!loadBundle) {
+    throw new Error('The Metro SSR runtime is malformed and missing runtime functions.');
+  }
+  return loadBundle(id);
 };
 
 globalThis.__webpack_require__ = (id) => {
@@ -25,8 +47,9 @@ globalThis.__webpack_require__ = (id) => {
       throw err;
     };
   }
+  // console.log('__webpack_require__.2:', r, id);
   try {
-    return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
+    return r(id);
   } finally {
     // Restore the original error handling.
     if (disableReactNativeMissingModuleHandling) {

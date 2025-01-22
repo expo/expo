@@ -6,4 +6,4 @@
  */
 import { buildAsyncRequire } from './buildAsyncRequire';
 
-global[`${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] = buildAsyncRequire();
+globalThis[`${globalThis.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] = buildAsyncRequire();

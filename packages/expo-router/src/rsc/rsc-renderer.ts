@@ -46,7 +46,10 @@ export type RenderRscArgs = {
   onError?: (err: unknown) => void;
 };
 
-type ResolveClientEntry = (id: string, server: boolean) => { id: string; chunks: string[] };
+type ResolveClientEntry = (
+  id: string,
+  env: 'client' | 'react-server' | 'node'
+) => { id: string; chunks: string[] };
 
 type RenderRscOpts = {
   isExporting: boolean;
@@ -65,7 +68,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     buildConfig,
   } = entries as (EntriesDev & { loadModule: never; buildConfig: never }) | EntriesPrd;
 
-  function resolveRequest(isServer: boolean, encodedId: string) {
+  function resolveRequest(env: 'client' | 'react-server' | 'node', encodedId: string) {
     const [
       // File is the on-disk location of the module, this is injected during the "use client" transformation (babel).
       file,
@@ -88,7 +91,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     });
     // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
     // This is similar to how we handle lazy bundling.
-    const resolved = resolveClientEntry(filePath, isServer);
+    const resolved = resolveClientEntry(filePath, env);
     return { id: resolved.id, chunks: resolved.chunks, name, async: true };
   }
 
@@ -96,7 +99,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     {},
     {
       get(_target, encodedId: string) {
-        return resolveRequest(false, encodedId);
+        return resolveRequest('client', encodedId);
       },
     }
   );
@@ -105,13 +108,13 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     {},
     {
       get(_target, encodedId: string) {
-        return resolveRequest(true, encodedId);
+        return resolveRequest('react-server', encodedId);
       },
     }
   );
 
   // @ts-ignore: Not part of global types. This is added to support server actions loading more actions.
-  global[`${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`] = opts.loadServerModuleRsc;
+  global[`${globalThis.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] = opts.loadServerModuleRsc;
 
   const renderWithContext = async (
     context: Record<string, unknown> | undefined,
@@ -276,3 +279,50 @@ const streamToString = async (stream: ReadableStream): Promise<string> => {
   outs.push(decoder.decode());
   return outs.join('');
 };
+
+export type GetSsrConfigArgs = {
+  config: Omit<ResolvedConfig, 'middleware'>;
+  pathname: string;
+  searchParams: URLSearchParams;
+};
+
+type GetSsrConfigOpts = {
+  entries: EntriesDev;
+  resolveClientEntry: ResolveClientEntry;
+};
+
+export async function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpts) {
+  const { pathname, searchParams } = args;
+  const { entries, resolveClientEntry } = opts;
+
+  const {
+    default: { getSsrConfig },
+    // buildConfig,
+  } = entries as (EntriesDev & { loadModule: never; buildConfig: never }) | EntriesPrd;
+
+  const ssrConfig = await getSsrConfig?.(pathname, {
+    searchParams,
+    // buildConfig,
+  });
+  if (!ssrConfig) {
+    return null;
+  }
+  const bundlerConfig = new Proxy(
+    {},
+    {
+      get(_target, encodedId: string) {
+        const [file, name] = encodedId.split('#') as [string, string];
+        const { id } = resolveClientEntry(
+          file,
+          // TODO: This might be react-server
+          'node'
+        );
+        return { id, chunks: [id], name, async: true };
+      },
+    }
+  );
+  return {
+    ...ssrConfig,
+    body: renderToReadableStream(ssrConfig.html, bundlerConfig),
+  };
+}

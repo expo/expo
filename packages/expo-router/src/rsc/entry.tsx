@@ -8,55 +8,15 @@
 'use client';
 
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Router } from './router/client';
-import { ErrorBoundary } from '../views/ErrorBoundary';
-import { ErrorBoundaryProps, Try } from '../views/Try';
-
-// Add root error recovery.
-function RootErrorBoundary(props: ErrorBoundaryProps) {
-  React.useEffect(() => {
-    function refetchRoute() {
-      if (props.error) {
-        props.retry();
-      }
-    }
-    // TODO: Only strip when not connected to a dev server.
-    if (process.env.NODE_ENV === 'development') {
-      globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
-      const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(
-        globalThis.__EXPO_REFETCH_ROUTE__
-      );
-      if (index !== -1) {
-        globalThis.__EXPO_RSC_RELOAD_LISTENERS__.splice(index, 1, refetchRoute);
-      } else {
-        globalThis.__EXPO_RSC_RELOAD_LISTENERS__.unshift(refetchRoute);
-      }
-      globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
-    }
-  }, [props.error, props.retry]);
-
-  return (
-    <ErrorBoundary
-      error={props.error}
-      retry={() => {
-        // TODO: Invalidate the cache automatically when the request fails.
-        // Invalidate the fetch cache so we can retry the request.
-        globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__?.();
-        return props.retry();
-      }}
-    />
-  );
-}
+import { RootWrap } from './router/root-wrap';
 
 // Must be exported or Fast Refresh won't update the context
 export function App() {
   return (
-    <SafeAreaProvider>
-      <Try catch={RootErrorBoundary}>
-        <Router />
-      </Try>
-    </SafeAreaProvider>
+    <RootWrap>
+      <Router />
+    </RootWrap>
   );
 }

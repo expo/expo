@@ -11,7 +11,7 @@ import type {
 import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type { Manifest as UpdatesManifest, ExpoUpdatesModule } from 'expo-updates';
-import { Platform, NativeModules } from 'react-native';
+import { NativeModules } from 'react-native';
 
 import {
   AndroidManifest,
@@ -232,7 +232,7 @@ function getManifest(suppressWarning = false): RawManifest | null {
     const invalidManifestType = rawManifest === null ? 'null' : 'undefined';
     if (
       nativeConstants.executionEnvironment === ExecutionEnvironment.Bare &&
-      Platform.OS !== 'web'
+      process.env.EXPO_OS !== 'web'
     ) {
       if (!suppressWarning) {
         console.warn(

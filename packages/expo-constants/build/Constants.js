@@ -1,5 +1,5 @@
 import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
-import { Platform, NativeModules } from 'react-native';
+import { NativeModules } from 'react-native';
 import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
 export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
@@ -171,7 +171,7 @@ function getManifest(suppressWarning = false) {
     if (!rawManifest) {
         const invalidManifestType = rawManifest === null ? 'null' : 'undefined';
         if (nativeConstants.executionEnvironment === ExecutionEnvironment.Bare &&
-            Platform.OS !== 'web') {
+            process.env.EXPO_OS !== 'web') {
             if (!suppressWarning) {
                 console.warn(`Constants.manifest is ${invalidManifestType} because the embedded app.config could not be read. Ensure that you have installed the expo-constants build scripts if you need to read from Constants.manifest.`);
             }

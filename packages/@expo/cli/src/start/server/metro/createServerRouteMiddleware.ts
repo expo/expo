@@ -27,7 +27,7 @@ export function createRouteHandlerMiddleware(
   options: {
     appDir: string;
     routerRoot: string;
-    getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
+    getStaticPageAsync: (req: Request) => Promise<Response | { content: string }>;
     bundleApiRoute: (
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;
@@ -69,9 +69,16 @@ export function createRouteHandlerMiddleware(
       },
       async getHtml(request) {
         try {
-          const { content } = await options.getStaticPageAsync(request.url);
+          const results = await options.getStaticPageAsync(request);
+          if (results instanceof Response) {
+            return results;
+          }
+          const { content } = results;
           return content;
         } catch (error: any) {
+          if (error == null) {
+            throw error;
+          }
           // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
 
           try {

@@ -7,7 +7,7 @@
  *
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/client.ts#L1
  */
-//// <reference types="react/canary" />
+/// <reference types="react/canary" />
 'use client';
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -23,6 +23,7 @@ const fetch_1 = require("./fetch");
 const utils_1 = require("./utils");
 const getDevServer_1 = require("../../getDevServer");
 const url_1 = require("../../head/url");
+const root_wrap_1 = require("./root-wrap");
 const { createFromFetch, encodeReply } = client_1.default;
 // TODO: Maybe this could be a bundler global instead.
 const IS_DOM = 
@@ -291,6 +292,6 @@ exports.Children = Children;
  * ServerRoot for SSR
  * This is not a public API.
  */
-const ServerRoot = ({ elements, children }) => (0, react_1.createElement)(ElementsContext.Provider, { value: elements }, children);
+const ServerRoot = ({ elements, children }) => (0, react_1.createElement)(root_wrap_1.RootWrap, null, (0, react_1.createElement)(ElementsContext.Provider, { value: elements }, children));
 exports.ServerRoot = ServerRoot;
 //# sourceMappingURL=host.js.map

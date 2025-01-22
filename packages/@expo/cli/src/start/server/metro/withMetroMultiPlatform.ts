@@ -336,7 +336,7 @@ export function withExtendedResolver(
 
         // Extern these modules in standard Node.js environments in development to prevent API routes side-effects
         // from leaking into the dev server process.
-        return /^(source-map-support(\/.*)?|react|react-native-helmet-async|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
+        return /^(source-map-support(\/.*)?|react-native-helmet-async|@radix-ui\/.+|@babel\/runtime\/.+|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
           moduleName
         );
       },
@@ -362,7 +362,7 @@ export function withExtendedResolver(
         }
 
         const isExternal = // Extern these modules in standard Node.js environments.
-          /^(deprecated-react-native-prop-types|react|react\/jsx-dev-runtime|scheduler|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
+          /^(deprecated-react-native-prop-types|react\/jsx-dev-runtime|scheduler|react-native|metro-runtime(\/.+)?)$/.test(
             moduleName
           ) ||
           // TODO: Add more
@@ -388,7 +388,9 @@ export function withExtendedResolver(
         // Match react production imports.
         (moduleName.match(/\.production(\.min)?\.js$/) &&
           // Match if the import originated from a react package.
-          context.originModulePath.match(/[\\/]node_modules[\\/](react[-\\/]|scheduler[\\/])/))
+          context.originModulePath.match(
+            /[\\/](node_modules|canary-full)[\\/](react[-\\/]|scheduler[\\/])/
+          ))
       ) {
         debug(`Skipping production module: ${moduleName}`);
         // /Users/path/to/expo/node_modules/react/index.js ./cjs/react.production.min.js

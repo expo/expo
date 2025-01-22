@@ -362,7 +362,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
-  private async getStaticPageAsync(pathname: string) {
+  private getStaticBundleUrlForDev() {
     const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
@@ -376,7 +376,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
     const platform = 'web';
 
-    const devBundleUrlPathname = createBundleUrlPath({
+    return createBundleUrlPath({
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
@@ -391,6 +391,28 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       clientBoundaries,
       bytecode: false,
     });
+  }
+  private async getStaticPageAsync(pathname: string) {
+    if (this.isReactServerComponentsEnabled) {
+      // Sanity...
+      throw new Error(
+        'Internal error: getStaticPageAsync is not supported with React Server Components.'
+      );
+    }
+    const { mode, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
+      this.instanceMetroOptions;
+    assert(
+      mode != null &&
+        isExporting != null &&
+        baseUrl != null &&
+        reactCompiler != null &&
+        routerRoot != null &&
+        asyncRoutes != null,
+      'The server must be started before calling getStaticPageAsync.'
+    );
+    const platform = 'web';
+
+    const devBundleUrlPathname = this.getStaticBundleUrlForDev();
 
     const bundleStaticHtml = async (): Promise<string> => {
       const { getStaticContent } = await this.ssrLoadModule<
@@ -437,6 +459,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     extras = {}
   ) => {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
+
+    if (filePath.includes('html')) {
+      console.log(res.src);
+    }
 
     if (
       // TODO: hot should be a callback function for invalidating the related SSR module.
@@ -1070,6 +1096,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
           createModuleId: metro._createModuleId.bind(metro),
+          getServerUrl: () => {
+            return this.getDevServerUrlOrAssert();
+          },
+          getStaticScriptUrl: () => {
+            return this.getStaticBundleUrlForDev();
+          },
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -1092,17 +1124,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               ...config.exp.extra?.router,
               bundleApiRoute: (functionFilePath) =>
                 this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
-              getStaticPageAsync: async (pathname) => {
+              getStaticPageAsync: async (request) => {
                 // TODO: Add server rendering when RSC is enabled.
                 if (isReactServerComponentsEnabled) {
+                  return this.rscRenderer?.htmlMiddleware(request);
                   // NOTE: This is a temporary hack to return the SPA/template index.html in development when RSC is enabled.
                   // While this technically works, it doesn't provide the correct experience of server rendering the React code to HTML first.
-                  const html = await manifestMiddleware.getSingleHtmlTemplateAsync();
-                  return { content: html };
+                  // const html = await manifestMiddleware.getSingleHtmlTemplateAsync();
+                  // return { content: html };
                 }
 
                 // Non-RSC apps will bundle the static HTML for a given pathname and respond with it.
-                return this.getStaticPageAsync(pathname);
+                return this.getStaticPageAsync(request.url);
               },
             })
           );
@@ -1119,6 +1152,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
           createModuleId: metro._createModuleId.bind(metro),
+          getServerUrl: () => {
+            return this.getDevServerUrlOrAssert();
+          },
+          getStaticScriptUrl: () => {
+            return this.getStaticBundleUrlForDev();
+          },
         });
         this.rscRenderer = rscMiddleware;
       }

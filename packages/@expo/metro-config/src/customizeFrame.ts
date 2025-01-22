@@ -8,61 +8,61 @@ type CustomizeFrameFunc = SymbolicatorConfigT['customizeFrame'];
 export const INTERNAL_CALLSITES_REGEX = new RegExp(
   [
     '/Libraries/Renderer/implementations/.+\\.js$',
-    '/Libraries/BatchedBridge/MessageQueue\\.js$',
-    '/Libraries/YellowBox/.+\\.js$',
-    '/Libraries/LogBox/.+\\.js$',
-    '/Libraries/Core/Timers/.+\\.js$',
-    'node_modules/react-devtools-core/.+\\.js$',
-    'node_modules/react-refresh/.+\\.js$',
-    'node_modules/scheduler/.+\\.js$',
-    // Metro replaces `require()` with a different method,
-    // we want to omit this method from the stack trace.
-    // This is akin to most React tooling.
-    '/metro/.*/polyfills/require.js$',
-    // Hide frames related to a fast refresh.
-    '/metro/.*/lib/bundle-modules/.+\\.js$',
-    'node_modules/react-native/Libraries/Utilities/HMRClient.js$',
-    'node_modules/eventemitter3/index.js',
-    'node_modules/event-target-shim/dist/.+\\.js$',
-    // Improve errors thrown by invariant (ex: `Invariant Violation: "main" has not been registered`).
-    'node_modules/invariant/.+\\.js$',
-    // Remove babel runtime additions
-    'node_modules/regenerator-runtime/.+\\.js$',
-    // Remove react native setImmediate ponyfill
-    'node_modules/promise/setimmediate/.+\\.js$',
-    // Babel helpers that implement language features
-    'node_modules/@babel/runtime/.+\\.js$',
-    // Hide Hermes internal bytecode
-    '/InternalBytecode/InternalBytecode\\.js$',
-    // Block native code invocations
-    `\\[native code\\]`,
-    // Hide react-dom (web)
-    'node_modules/react-dom/.+\\.js$',
-    // Hide node.js evaluation code
-    'node_modules/require-from-string/.+\\.js$',
-    // Block expo's metro-runtime
-    '@expo/metro-runtime/.+\\.ts',
-    '@expo/server/.+\\.ts',
-    // Block upstream metro-runtime
-    '/metro-runtime/.+\\.js$',
-    // Expo's metro-runtime require patch:
-    '@expo/metro-config/require/.+',
+    // '/Libraries/BatchedBridge/MessageQueue\\.js$',
+    // '/Libraries/YellowBox/.+\\.js$',
+    // '/Libraries/LogBox/.+\\.js$',
+    // '/Libraries/Core/Timers/.+\\.js$',
+    // 'node_modules/react-devtools-core/.+\\.js$',
+    // 'node_modules/react-refresh/.+\\.js$',
+    // 'node_modules/scheduler/.+\\.js$',
+    // // Metro replaces `require()` with a different method,
+    // // we want to omit this method from the stack trace.
+    // // This is akin to most React tooling.
+    // '/metro/.*/polyfills/require.js$',
+    // // Hide frames related to a fast refresh.
+    // '/metro/.*/lib/bundle-modules/.+\\.js$',
+    // 'node_modules/react-native/Libraries/Utilities/HMRClient.js$',
+    // 'node_modules/eventemitter3/index.js',
+    // 'node_modules/event-target-shim/dist/.+\\.js$',
+    // // Improve errors thrown by invariant (ex: `Invariant Violation: "main" has not been registered`).
+    // 'node_modules/invariant/.+\\.js$',
+    // // Remove babel runtime additions
+    // 'node_modules/regenerator-runtime/.+\\.js$',
+    // // Remove react native setImmediate ponyfill
+    // 'node_modules/promise/setimmediate/.+\\.js$',
+    // // Babel helpers that implement language features
+    // 'node_modules/@babel/runtime/.+\\.js$',
+    // // Hide Hermes internal bytecode
+    // '/InternalBytecode/InternalBytecode\\.js$',
+    // // Block native code invocations
+    // `\\[native code\\]`,
+    // // Hide react-dom (web)
+    // 'node_modules/react-dom/.+\\.js$',
+    // // Hide node.js evaluation code
+    // 'node_modules/require-from-string/.+\\.js$',
+    // // Block expo's metro-runtime
+    // '@expo/metro-runtime/.+\\.ts',
+    // '@expo/server/.+\\.ts',
+    // // Block upstream metro-runtime
+    // '/metro-runtime/.+\\.js$',
+    // // Expo's metro-runtime require patch:
+    // '@expo/metro-config/require/.+',
 
-    // Block all whatwg polyfills
-    'node_modules/whatwg-.+\\.js$',
-    // Hide expo-router warnings which are often wrapping all routes and imports.
-    'node_modules/expo-router/build/',
-    // No Expo CLI logs
-    '/@expo/cli/.+',
-    // No context modules as these are virtual
-    '.+?ctx=[a-zA-Z0-9]+$',
-    // Hide react-native-web warning wrappers. These are most likely related to style deprecations.
-    '/react-native-web/dist/.+\\.js$',
-    // React Server Components adapter (note we should probably use an Expo-Metro-specific version in the future).
-    'node_modules/react-server-dom-webpack/.+\\.js$',
+    // // Block all whatwg polyfills
+    // 'node_modules/whatwg-.+\\.js$',
+    // // Hide expo-router warnings which are often wrapping all routes and imports.
+    // 'node_modules/expo-router/build/',
+    // // No Expo CLI logs
+    // '/@expo/cli/.+',
+    // // No context modules as these are virtual
+    // '.+?ctx=[a-zA-Z0-9]+$',
+    // // Hide react-native-web warning wrappers. These are most likely related to style deprecations.
+    // '/react-native-web/dist/.+\\.js$',
+    // // React Server Components adapter (note we should probably use an Expo-Metro-specific version in the future).
+    // 'node_modules/react-server-dom-webpack/.+\\.js$',
 
-    // Block all node modules.
-    'node_modules/.+/',
+    // // Block all node modules.
+    // 'node_modules/.+/',
   ].join('|')
 );
 

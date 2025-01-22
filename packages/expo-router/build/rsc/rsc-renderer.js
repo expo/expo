@@ -9,7 +9,7 @@
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRsc = void 0;
+exports.getSsrConfig = exports.renderRsc = void 0;
 // This file must remain platform agnostic for production exports.
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
 require("@expo/metro-runtime/rsc/runtime");
@@ -23,7 +23,7 @@ async function renderRsc(args, opts) {
     const { default: { renderEntries }, 
     // @ts-expect-error
     buildConfig, } = entries;
-    function resolveRequest(isServer, encodedId) {
+    function resolveRequest(env, encodedId) {
         const [
         // File is the on-disk location of the module, this is injected during the "use client" transformation (babel).
         file, 
@@ -43,21 +43,21 @@ async function renderRsc(args, opts) {
         });
         // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
         // This is similar to how we handle lazy bundling.
-        const resolved = resolveClientEntry(filePath, isServer);
+        const resolved = resolveClientEntry(filePath, env);
         return { id: resolved.id, chunks: resolved.chunks, name, async: true };
     }
     const bundlerConfig = new Proxy({}, {
         get(_target, encodedId) {
-            return resolveRequest(false, encodedId);
+            return resolveRequest('client', encodedId);
         },
     });
     const serverConfig = new Proxy({}, {
         get(_target, encodedId) {
-            return resolveRequest(true, encodedId);
+            return resolveRequest('react-server', encodedId);
         },
     });
     // @ts-ignore: Not part of global types. This is added to support server actions loading more actions.
-    global[`${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`] = opts.loadServerModuleRsc;
+    global[`${globalThis.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] = opts.loadServerModuleRsc;
     const renderWithContext = async (context, input, params) => {
         const renderStore = {
             context: context || {},
@@ -198,4 +198,32 @@ const streamToString = async (stream) => {
     outs.push(decoder.decode());
     return outs.join('');
 };
+async function getSsrConfig(args, opts) {
+    const { pathname, searchParams } = args;
+    const { entries, resolveClientEntry } = opts;
+    const { default: { getSsrConfig },
+    // buildConfig,
+     } = entries;
+    const ssrConfig = await getSsrConfig?.(pathname, {
+        searchParams,
+        // buildConfig,
+    });
+    if (!ssrConfig) {
+        return null;
+    }
+    const bundlerConfig = new Proxy({}, {
+        get(_target, encodedId) {
+            const [file, name] = encodedId.split('#');
+            const { id } = resolveClientEntry(file, 
+            // TODO: This might be react-server
+            'node');
+            return { id, chunks: [id], name, async: true };
+        },
+    });
+    return {
+        ...ssrConfig,
+        body: (0, server_1.renderToReadableStream)(ssrConfig.html, bundlerConfig),
+    };
+}
+exports.getSsrConfig = getSsrConfig;
 //# sourceMappingURL=rsc-renderer.js.map

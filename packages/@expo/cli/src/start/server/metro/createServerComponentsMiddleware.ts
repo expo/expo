@@ -19,7 +19,10 @@ import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
 import { getIpAddress } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
-import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
+import {
+  createBuiltinAPIRequestHandler,
+  winterNext,
+} from '../middleware/createBuiltinAPIRequestHandler';
 import {
   createBundleUrlSearchParams,
   ExpoMetroOptions,
@@ -50,6 +53,8 @@ export function createServerComponentsMiddleware(
     ssrLoadModuleArtifacts,
     useClientRouter,
     createModuleId,
+    getServerUrl,
+    getStaticScriptUrl,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
@@ -60,8 +65,146 @@ export function createServerComponentsMiddleware(
       filePath: string,
       context: { platform: string; environment: string }
     ) => string | number;
+    getServerUrl: () => string;
+    getStaticScriptUrl: () => string;
   }
 ) {
+  const serverRoot = getMetroServerRootMemo(projectRoot);
+
+  async function getHtmlRendererAsync(platform: string) {
+    await ensureMemo();
+
+    // return require('expo-router/build/rsc/html-renderer');
+    // // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
+    // if (htmlRendererCache.has(platform)) {
+    //   return htmlRendererCache.get(platform)!;
+    // }
+    console.log('BACON:START');
+
+    const renderer = await ssrLoadModule<typeof import('expo-router/build/rsc/html-renderer')>(
+      'expo-router/build/rsc/html-renderer',
+      {
+        environment: 'node',
+        platform,
+        modulesOnly: true,
+      }
+    );
+
+    console.log('BACON:RENDERER', renderer);
+
+    // htmlRendererCache.set(platform, renderer);
+    return renderer;
+  }
+
+  const htmlMiddleware = {
+    async GET(req: Request): Promise<Response> {
+      // TODO: Add this from prod branch
+      // const getSsrConfig = () => ({ input: '', searchParams: new URLSearchParams(), body: new ReadableStream() });
+
+      const url = getFullUrl(req.url);
+
+      const platform =
+        url.searchParams.get('platform') ?? req.headers.get('expo-platform') ?? 'web';
+      if (typeof platform !== 'string' || !platform || platform !== 'web') {
+        throw winterNext();
+      }
+
+      // HACK: Execution order matters since the module names collide (maybe)
+      const entries = await getExpoRouterRscEntriesGetterAsync({ platform });
+
+      console.log('GET', url.pathname, platform);
+      const { renderHtml } = await getHtmlRendererAsync(platform);
+
+      const { getSsrConfig } = await getRscRendererAsync(platform);
+
+      console.log('GET.getSsrConfig', getSsrConfig);
+      const htmlHead = `<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />`;
+      // <meta name="generator" content="expo" />
+
+      const readable = await renderHtml({
+        // config:,
+        pathname: url.pathname,
+        searchParams: url.searchParams,
+        htmlHead,
+        scriptUrl: getStaticScriptUrl(),
+
+        // renderRscForHtml: async (input, searchParams) => {
+        //   ctx.req.url.pathname =
+        //     config.basePath + config.rscPath + '/' + encodeInput(input);
+        //   ctx.req.url.search = searchParams.toString();
+        //   const args: RenderRscArgs = {
+        //     config,
+        //     input,
+        //     searchParams: ctx.req.url.searchParams,
+        //     method: 'GET',
+        //     context: ctx.context,
+        //     body: ctx.req.body,
+        //     contentType: '',
+        //   };
+        //   const readable = await (devServer
+        //     ? renderRsc(args, {
+        //         isDev: true,
+        //         loadServerModuleRsc: devServer.loadServerModuleRsc,
+        //         resolveClientEntry: devServer.resolveClientEntry,
+        //         entries: await devServer.loadEntriesDev(config),
+        //       })
+        //     : renderRsc(args, { isDev: false, entries }));
+        //   return readable;
+        // },
+        isExporting: false,
+        serverRoot,
+        async renderRscForHtml(input, searchParams) {
+          console.log('SSR -> renderRscForHtml', input, searchParams);
+          return await renderRscToReadableStream({
+            input,
+            headers: req.headers,
+            decodedBody: searchParams.get('x-expo-params'),
+            method: 'GET',
+            contentType: '',
+            platform,
+            // ...args,
+            body: req.body ?? undefined,
+          });
+        },
+        async loadModule(id) {
+          // TODO: Implement this
+          console.warn('SSR -> loadModule not implemented', id);
+        },
+
+        resolveClientEntry: getResolveClientEntry({ platform }),
+        getSsrConfigForHtml: async (pathname, searchParams) => {
+          return getSsrConfig(
+            { config: {}, pathname, searchParams },
+            {
+              entries,
+              resolveClientEntry: getResolveClientEntry({ platform }),
+            }
+          );
+        },
+        // {
+        //   isDev: true,
+        //   loadServerModuleRsc: devServer.loadServerModuleRsc,
+        //   resolveClientEntry: devServer.resolveClientEntry,
+        //   entries: entriesDev!,
+        // },
+      });
+
+      console.log('GET.renderHtml', readable);
+      if (readable) {
+        return new Response(readable, {
+          headers: {
+            'content-type': 'text/html; charset=utf-8',
+          },
+        });
+      }
+
+      // TODO: Wrap with Metro error handling...
+
+      throw winterNext();
+    },
+  };
+
   const routerModule = useClientRouter
     ? 'expo-router/build/rsc/router/noopRouter'
     : 'expo-router/build/rsc/router/expo-definedRouter';
@@ -322,7 +465,7 @@ export function createServerComponentsMiddleware(
     ssrManifest?: Map<string, string>;
   }): (
     file: string,
-    isServer: boolean
+    environment: 'client' | 'react-server' | 'node'
   ) => {
     id: string;
     chunks: string[];
@@ -350,7 +493,7 @@ export function createServerComponentsMiddleware(
       `The server must be started. (isExporting: ${isExporting}, baseUrl: ${baseUrl}, mode: ${mode}, routerRoot: ${routerRoot}, asyncRoutes: ${asyncRoutes})`
     );
 
-    return (file: string, isServer: boolean) => {
+    return (file: string, environment: 'client' | 'react-server' | 'node') => {
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
         const relativeFilePath = toPosixPath(path.relative(serverRoot, file));
@@ -368,7 +511,7 @@ export function createServerComponentsMiddleware(
         };
       }
 
-      const environment = isServer ? 'react-server' : 'client';
+      // const environment = isServer ? 'react-server' : 'client';
       const searchParams = createBundleUrlSearchParams({
         mainModuleName: '',
         platform: context.platform,
@@ -390,7 +533,9 @@ export function createServerComponentsMiddleware(
         runModule: false,
       });
 
-      searchParams.set('resolver.clientboundary', String(true));
+      if (environment === 'client') {
+        searchParams.set('resolver.clientboundary', String(true));
+      }
 
       const clientReferenceUrl = new URL('http://a');
 
@@ -425,13 +570,12 @@ export function createServerComponentsMiddleware(
   let ensurePromise: Promise<any> | null = null;
   async function ensureSSRReady() {
     // TODO: Extract CSS Modules / Assets from the bundler process
-    const runtime = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
-      'metro-runtime/src/modules/empty-module.js',
-      {
-        environment: 'react-server',
-        platform: 'web',
-      }
-    );
+    const runtime = await ssrLoadModule('metro-runtime/src/modules/empty-module.js', {
+      environment: 'react-server',
+      platform: 'web',
+    });
+
+    // console.log('RUNTIME:', globalThis.__r);
     return runtime;
   }
   const ensureMemo = () => {
@@ -596,6 +740,8 @@ export function createServerComponentsMiddleware(
         })
       );
     },
+
+    htmlMiddleware: htmlMiddleware.GET,
 
     middleware: createBuiltinAPIRequestHandler(
       // Match `/_flight/[platform]/[...path]`

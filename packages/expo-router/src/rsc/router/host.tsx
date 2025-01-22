@@ -8,7 +8,7 @@
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/client.ts#L1
  */
 
-//// <reference types="react/canary" />
+/// <reference types="react/canary" />
 'use client';
 
 import Constants from 'expo-constants';
@@ -19,7 +19,6 @@ import {
   useCallback,
   useState,
   startTransition,
-  // @ts-expect-error
   use,
   useEffect,
 } from 'react';
@@ -31,6 +30,7 @@ import { fetch } from './fetch';
 import { encodeInput, encodeActionId } from './utils';
 import { getDevServer } from '../../getDevServer';
 import { getOriginFromConstants } from '../../head/url';
+import { RootWrap } from './root-wrap';
 
 const { createFromFetch, encodeReply } = RSDWClient;
 
@@ -412,4 +412,8 @@ export const Children = () => use(ChildrenContext);
  * This is not a public API.
  */
 export const ServerRoot = ({ elements, children }: { elements: Elements; children: ReactNode }) =>
-  createElement(ElementsContext.Provider, { value: elements }, children);
+  createElement(
+    RootWrap,
+    null,
+    createElement(ElementsContext.Provider, { value: elements }, children)
+  );

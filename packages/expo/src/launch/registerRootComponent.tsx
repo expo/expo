@@ -42,7 +42,10 @@ export default function registerRootComponent<P extends InitialProps>(
   AppRegistry.registerComponent('main', () => qualifiedComponent);
   // Skip querying the DOM if we're in a Node.js environment.
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
-    const rootTag = document.getElementById('root');
+    // If using RSC, hydrate on the body.
+    const rootTag = globalThis.__EXPO_PREFETCHED__
+      ? document.body
+      : document.getElementById('root');
     if (process.env.NODE_ENV !== 'production') {
       if (!rootTag) {
         throw new Error('Required HTML element with id "root" was not found in the document HTML.');
