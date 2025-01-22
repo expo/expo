@@ -30,6 +30,7 @@
 ### 💡 Others
 
 - Bump react-navigation versions. ([#33758](https://github.com/expo/expo/pull/33758) by [@marklawlor](https://github.com/marklawlor))
+- Add `withLayoutContext` example. ([#34346](https://github.com/expo/expo/pull/34346) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 4.0.14 - 2024-12-19
 
