@@ -1,5 +1,4 @@
 {
-  "name": "expo-background-task",
   "platforms": ["apple", "android"],
   "apple": {
     "appDelegateSubscribers": ["BackgroundTaskAppDelegateSubscriber"],
