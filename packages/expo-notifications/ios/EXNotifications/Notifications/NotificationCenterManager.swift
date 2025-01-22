@@ -1,5 +1,3 @@
-//  Copyright © 2024 650 Industries. All rights reserved.
-
 import ExpoModulesCore
 import Foundation
 
