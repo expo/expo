@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add basic support for App Clips.
+- [iOS] Add basic support for App Clips. ([#34327](https://github.com/expo/expo/pull/34327) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
