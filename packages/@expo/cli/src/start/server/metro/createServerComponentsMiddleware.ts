@@ -128,30 +128,6 @@ export function createServerComponentsMiddleware(
         searchParams: url.searchParams,
         htmlHead,
         scriptUrl: getStaticScriptUrl(),
-
-        // renderRscForHtml: async (input, searchParams) => {
-        //   ctx.req.url.pathname =
-        //     config.basePath + config.rscPath + '/' + encodeInput(input);
-        //   ctx.req.url.search = searchParams.toString();
-        //   const args: RenderRscArgs = {
-        //     config,
-        //     input,
-        //     searchParams: ctx.req.url.searchParams,
-        //     method: 'GET',
-        //     context: ctx.context,
-        //     body: ctx.req.body,
-        //     contentType: '',
-        //   };
-        //   const readable = await (devServer
-        //     ? renderRsc(args, {
-        //         isDev: true,
-        //         loadServerModuleRsc: devServer.loadServerModuleRsc,
-        //         resolveClientEntry: devServer.resolveClientEntry,
-        //         entries: await devServer.loadEntriesDev(config),
-        //       })
-        //     : renderRsc(args, { isDev: false, entries }));
-        //   return readable;
-        // },
         isExporting: false,
         serverRoot,
         async renderRscForHtml(input, searchParams) {
@@ -511,7 +487,6 @@ export function createServerComponentsMiddleware(
         };
       }
 
-      // const environment = isServer ? 'react-server' : 'client';
       const searchParams = createBundleUrlSearchParams({
         mainModuleName: '',
         platform: context.platform,
@@ -569,14 +544,10 @@ export function createServerComponentsMiddleware(
 
   let ensurePromise: Promise<any> | null = null;
   async function ensureSSRReady() {
-    // TODO: Extract CSS Modules / Assets from the bundler process
-    const runtime = await ssrLoadModule('metro-runtime/src/modules/empty-module.js', {
+    return ssrLoadModule('metro-runtime/src/modules/empty-module.js', {
       environment: 'react-server',
       platform: 'web',
     });
-
-    // console.log('RUNTIME:', globalThis.__r);
-    return runtime;
   }
   const ensureMemo = () => {
     ensurePromise ??= ensureSSRReady();
