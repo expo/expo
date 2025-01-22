@@ -13,7 +13,7 @@ type BoxLinkProps = AnchorHTMLAttributes<HTMLLinkElement> & {
 };
 
 export function BoxLink({ title, description, href, testID, Icon, imageUrl }: BoxLinkProps) {
-  const isExternal = Boolean(href && href.startsWith('http'));
+  const isExternal = Boolean(href?.startsWith('http'));
   const ArrowIcon = isExternal ? ArrowUpRightIcon : ArrowRightIcon;
   return (
     <A

@@ -1,11 +1,4 @@
 "use strict";
-/**
- * Copyright © 2023 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-// import '@expo/metro-runtime';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -33,7 +26,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBuildTimeServerManifestAsync = exports.getManifest = exports.getStaticContent = exports.getRootReactComponent = void 0;
+exports.getManifest = exports.getBuildTimeServerManifestAsync = exports.getStaticContent = void 0;
+/**
+ * Copyright © 2023 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+require("@expo/metro-runtime");
 const native_1 = require("@react-navigation/native");
 const Font = __importStar(require("expo-font/build/server"));
 const react_1 = __importDefault(require("react"));
@@ -42,27 +42,9 @@ const react_native_web_1 = require("react-native-web");
 const getRootComponent_1 = require("./getRootComponent");
 const _ctx_1 = require("../../_ctx");
 const ExpoRoot_1 = require("../ExpoRoot");
-const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
-const getRoutes_1 = require("../getRoutes");
 const head_1 = require("../head");
-const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
 const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
-/** Get the linking manifest from a Node.js process. */
-async function getManifest(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
-        preserveApiRoutes: true,
-        platform: 'web',
-        ...options,
-    });
-    if (!routeTree) {
-        throw new Error('No routes found');
-    }
-    // Evaluate all static params
-    await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
-    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routeTree, false);
-}
-exports.getManifest = getManifest;
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -71,29 +53,6 @@ function resetReactNavigationContexts() {
     const contexts = '__react_navigation__elements_contexts';
     global[contexts] = new Map();
 }
-async function getRootReactComponent(location) {
-    const headContext = {};
-    const ref = react_1.default.createRef();
-    const { 
-    // NOTE: The `element` that's returned adds two extra Views and
-    // the seemingly unused `RootTagContext.Provider`.
-    element, getStyleElement, } = react_native_web_1.AppRegistry.getApplication('App', {
-        initialProps: {
-            location,
-            context: _ctx_1.ctx,
-            wrapper: ({ children }) => (
-            // <Root>
-            <div id="root">{children}</div>
-            // {/* </Root> */}
-            ),
-        },
-    });
-    // const Root = getRootComponent();
-    return (<head_1.Head.Provider context={headContext}>
-      <native_1.ServerContainer ref={ref}>{element}</native_1.ServerContainer>
-    </head_1.Head.Provider>);
-}
-exports.getRootReactComponent = getRootReactComponent;
 async function getStaticContent(location) {
     const headContext = {};
     const ref = react_1.default.createRef();
@@ -144,6 +103,8 @@ function mixHeadComponentsWithStaticResults(helmet, html) {
     html = html.replace('<body ', `<body ${helmet?.bodyAttributes.toString()} `);
     return html;
 }
+// Re-export for use in server
 var getServerManifest_1 = require("./getServerManifest");
 Object.defineProperty(exports, "getBuildTimeServerManifestAsync", { enumerable: true, get: function () { return getServerManifest_1.getBuildTimeServerManifestAsync; } });
+Object.defineProperty(exports, "getManifest", { enumerable: true, get: function () { return getServerManifest_1.getManifest; } });
 //# sourceMappingURL=renderStaticContent.js.map

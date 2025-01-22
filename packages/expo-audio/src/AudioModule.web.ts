@@ -12,6 +12,7 @@ import {
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { RecordingPresets } from './RecordingConstants';
+import resolveAssetSource from './utils/resolveAssetSource';
 
 const nextId = (() => {
   let id = 0;
@@ -83,6 +84,7 @@ function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
     timeControlStatus: isPlaying ? 'playing' : 'paused',
     reasonForWaitingToPlay: '',
     playing: isPlaying,
+    didJustFinish: media.ended,
     isBuffering: false,
     playbackRate: media.playbackRate,
     shouldCorrectPitch: false,
@@ -209,7 +211,7 @@ export class AudioPlayerWeb
   }
 
   _createMediaElement(): HTMLAudioElement {
-    const newSource = typeof this.src === 'string' ? this.src : (this.src?.uri ?? '');
+    const newSource = getSourceUri(this.src);
     const media = new Audio(newSource);
 
     media.ontimeupdate = () => {
@@ -226,6 +228,20 @@ export class AudioPlayerWeb
 
     return media;
   }
+}
+
+function getSourceUri(source: AudioSource): string | undefined {
+  if (typeof source === 'string') {
+    return source;
+  }
+  if (typeof source === 'number') {
+    return resolveAssetSource(source)?.uri ?? undefined;
+  }
+  if (typeof source?.assetId === 'number' && !source?.uri) {
+    return resolveAssetSource(source.assetId)?.uri ?? undefined;
+  }
+
+  return source?.uri ?? undefined;
 }
 
 export class AudioRecorderWeb

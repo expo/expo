@@ -1,11 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import {
-  Link,
-  NavigationAction,
-  StackActions,
-  useLinkBuilder,
-  useLinkProps,
-} from '@react-navigation/native';
+import { Link, NavigationAction, useLinkBuilder, useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import {
   FlatList,
@@ -38,19 +32,14 @@ interface Props {
 function LinkButton({
   href,
   children,
-  screenName,
   ...rest
 }: Omit<React.ComponentProps<typeof Link>, 'action'> & {
   href: string;
   disabled?: boolean;
   children?: React.ReactNode;
-  screenName?: string;
 }) {
   const { buildAction } = useLinkBuilder();
-  let action: NavigationAction = buildAction(href);
-  if (screenName) {
-    action = StackActions.push(screenName);
-  }
+  const action: NavigationAction = buildAction(href);
 
   const { onPress, ...props } = useLinkProps({ href, action });
 
@@ -104,7 +93,6 @@ export default function ComponentListScreen(props: Props) {
       <LinkButton
         disabled={!isAvailable}
         href={route ?? screenName ?? exampleName}
-        screenName={screenName ?? exampleName}
         style={[styles.rowTouchable]}>
         <View
           pointerEvents="none"

@@ -97,7 +97,6 @@ describe('server', () => {
     await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
     await expo.startAsync();
   });
-
   afterAll(async () => {
     await expo.stopAsync();
   });
@@ -157,5 +156,42 @@ describe('server', () => {
       ]),
       mappings: expect.any(String),
     });
+  });
+});
+
+describe('start - dev clients', () => {
+  const expo = createExpoStart({
+    env: {
+      EXPO_USE_FAST_RESOLVER: 'true',
+    },
+  });
+
+  beforeAll(async () => {
+    const projectRoot = await setupTestProjectWithOptionsAsync('start-dev-clients', 'with-blank');
+    expo.options.cwd = projectRoot;
+
+    // Add a `.env` file with `TEST_SCHEME`
+    await fs.promises.writeFile(path.join(projectRoot, '.env'), `TEST_SCHEME=some-value`);
+    // Add a `app.config.js` that asserts an env var from .env
+    await fs.promises.writeFile(
+      path.join(projectRoot, 'app.config.js'),
+      `const assert = require('node:assert');
+      const { env } = require('node:process');
+  
+      module.exports = ({ config }) => {
+        assert(env.TEST_SCHEME, 'TEST_SCHEME is not defined');
+        return { ...config, scheme: env.TEST_ENV };
+      };`
+    );
+
+    await expo.startAsync(['--dev-client']);
+  });
+  afterAll(async () => {
+    await expo.stopAsync();
+  });
+
+  it('runs `npx expo start` in dev client mode, using environment variable from .env', async () => {
+    const response = await expo.fetchBundleAsync('/');
+    expect(response.ok).toBeTruthy();
   });
 });

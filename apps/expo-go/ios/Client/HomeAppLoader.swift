@@ -28,7 +28,7 @@ final class HomeAppLoader: AppLoader {
     completionQueue: DispatchQueue
   ) {
     self.manifestAndAssetRequestHeaders = manifestAndAssetRequestHeaders
-    self.downloader = FileDownloader(config: config)
+    self.downloader = FileDownloader(config: config, logger: logger)
     self.completionQueue = completionQueue
     super.init(config: config, logger: logger, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
   }

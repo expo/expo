@@ -64,7 +64,7 @@ class ModuleDefinitionBuilderTest {
     }
 
     Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)
-    Truth.assertThat(moduleDefinition.viewManagerDefinition).isNotNull()
+    Truth.assertThat(moduleDefinition.viewManagerDefinitions).isNotEmpty()
   }
 
   @Test

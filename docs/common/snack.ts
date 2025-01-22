@@ -26,7 +26,7 @@ export function getSnackFiles(config: Config) {
       if (isCode) {
         result[path] = {
           type: 'CODE',
-          url: url.match(/^https?:\/\//) ? url : `${baseURL}/${url}`,
+          url: /^https?:\/\//.test(url) ? url : `${baseURL}/${url}`,
         };
       } else {
         result[path] = {

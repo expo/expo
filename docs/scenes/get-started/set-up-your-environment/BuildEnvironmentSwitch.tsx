@@ -26,7 +26,7 @@ export function BuildEnvironmentSwitch() {
 
       const _query = query;
       delete _query.buildEnv;
-      router.push(
+      void router.push(
         {
           query: _query,
         },
@@ -36,7 +36,7 @@ export function BuildEnvironmentSwitch() {
     } else {
       setBuildEnv('local');
 
-      router.push(
+      void router.push(
         {
           query: {
             ...query,

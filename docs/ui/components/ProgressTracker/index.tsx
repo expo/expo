@@ -2,12 +2,12 @@ import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import React from 'react';
 
+import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
+import { P, A, DEMI } from '~/ui/components/Text';
+
 import { SuccessCheckmark } from './SuccessCheckmark';
 import { Chapter } from './TutorialData';
 import { Checkbox } from '../Form/Checkbox';
-
-import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
-import { P, A, DEMI } from '~/ui/components/Text';
 
 type ProgressTrackerProps = {
   currentChapterIndex: number;

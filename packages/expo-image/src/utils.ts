@@ -1,5 +1,6 @@
 import { SharedRef } from 'expo';
 import type { SharedRef as SharedRefType } from 'expo/types';
+import { type ImageResizeMode } from 'react-native';
 
 import {
   ImageContentFit,
@@ -20,7 +21,7 @@ let loggedFadeDurationDeprecationWarning = false;
  */
 export function resolveContentFit(
   contentFit?: ImageContentFit,
-  resizeMode?: ImageProps['resizeMode']
+  resizeMode?: ImageResizeMode
 ): ImageContentFit {
   if (contentFit) {
     return contentFit;
@@ -34,6 +35,7 @@ export function resolveContentFit(
     switch (resizeMode) {
       case 'contain':
       case 'cover':
+      case 'none':
         return resizeMode;
       case 'stretch':
         return 'fill';
@@ -44,6 +46,11 @@ export function resolveContentFit(
           console.log('[expo-image]: Resize mode "repeat" is no longer supported');
           loggedRepeatDeprecationWarning = true;
         }
+        return 'cover';
+      default: {
+        const exhaustiveCheck: never = resizeMode;
+        throw new Error(`Unhandled resizeMode case: ${exhaustiveCheck}`);
+      }
     }
   }
   return 'cover';

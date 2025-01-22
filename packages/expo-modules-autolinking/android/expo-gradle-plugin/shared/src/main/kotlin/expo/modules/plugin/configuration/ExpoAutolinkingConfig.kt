@@ -7,7 +7,8 @@ import kotlinx.serialization.modules.SerializersModule
 @Serializable
 data class ExpoAutolinkingConfig(
   val modules: List<ExpoModule> = emptyList(),
-  val extraDependencies: List<MavenRepo> = emptyList()
+  val extraDependencies: List<MavenRepo> = emptyList(),
+  val coreFeatures: List<String> = emptyList()
 ) {
   /**
    * Returns all gradle projects from all modules.

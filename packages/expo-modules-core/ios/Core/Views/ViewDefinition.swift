@@ -10,6 +10,11 @@ public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefiniti
   public let props: [AnyViewProp]
 
   /**
+   Name of the defined view. Falls back to the type name if not provided in the definition.
+   */
+  public var name: String
+
+  /**
    Names of the events that the view can send to JavaScript.
    */
   public let eventNames: [String]
@@ -25,6 +30,11 @@ public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefiniti
   init(_ viewType: ViewType.Type, elements: [AnyViewDefinitionElement]) {
     self.props = elements
       .compactMap { $0 as? AnyViewProp }
+
+    self.name = elements
+      .compactMap { $0 as? ViewNameDefinition }
+      .last?
+      .name ?? String(describing: viewType)
 
     self.eventNames = Array(
       elements
@@ -65,6 +75,10 @@ public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefiniti
     return props.map(\.name)
   }
 
+  public func getSupportedEventNames() -> [String] {
+    return eventNames
+  }
+
   public func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: UIView) {
     for method in lifecycleMethods where method.type == type {
       method(view)
@@ -103,4 +117,8 @@ extension UIView: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicViewType(innerType: Self.self)
   }
+}
+
+public struct ViewNameDefinition: AnyViewDefinitionElement {
+  let name: String
 }

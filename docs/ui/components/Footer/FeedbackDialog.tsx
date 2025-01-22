@@ -3,8 +3,8 @@ import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
+import { InlineHelp } from 'ui/components/InlineHelp';
 
-import { Callout } from '~/ui/components/Callout';
 import { Input, Textarea } from '~/ui/components/Form';
 import { CALLOUT, LABEL, RawH2 } from '~/ui/components/Text';
 
@@ -37,7 +37,6 @@ export const FeedbackDialog = ({ pathname }: Props) => {
     })
       .then(res => res.json())
       .then(res => {
-        console.log(res);
         if (res.errors) {
           setErrors(res.errors);
         } else {
@@ -134,11 +133,11 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                     </div>
                   </div>
                   {errors?.length && (
-                    <Callout type="error">
+                    <InlineHelp type="error">
                       <CALLOUT>
                         {errors.map(error => ('message' in error ? error.message : '')).join('\n')}
                       </CALLOUT>
-                    </Callout>
+                    </InlineHelp>
                   )}
                 </div>
                 <div className="flex min-h-[56px] items-center justify-end gap-2 bg-subtle px-3">

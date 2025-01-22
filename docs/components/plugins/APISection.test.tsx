@@ -2,9 +2,9 @@ import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import { createRequire } from 'node:module';
 
-import APISection from './APISection';
-
 import { renderWithHeadings } from '~/common/test-utilities';
+
+import APISection from './APISection';
 
 const require = createRequire(import.meta.url);
 
@@ -53,7 +53,7 @@ describe('APISection', () => {
       <APISection packageName="expo-pedometer" forceVersion="unversioned" testRequire={require} />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(11);
     expect(screen.getAllByRole('table')).toHaveLength(6);
 

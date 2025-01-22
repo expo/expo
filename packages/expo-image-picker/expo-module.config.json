@@ -1,9 +1,9 @@
 {
-  "platforms": ["android", "ios"],
-  "ios": {
-    "modulesClassNames": ["ImagePickerModule"]
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["ImagePickerModule"]
   },
   "android": {
-    "modulesClassNames": ["expo.modules.imagepicker.ImagePickerModule"]
+    "modules": ["expo.modules.imagepicker.ImagePickerModule"]
   }
 }

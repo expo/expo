@@ -11,6 +11,7 @@
 //// <reference types="react/canary" />
 'use client';
 
+import Constants from 'expo-constants';
 import {
   createContext,
   createElement,
@@ -63,6 +64,37 @@ if (BASE_PATH === '/') {
   );
 }
 
+if (process.env.EXPO_OS !== 'web' && !window.location?.href) {
+  // This will require a rebuild in bare-workflow to update.
+  const manifest = Constants.expoConfig;
+
+  const originFromConstants =
+    manifest?.extra?.router?.origin ?? manifest?.extra?.router?.generatedOrigin;
+
+  // In legacy cases, this can be extraneously set to false since it was the default before we had a production hosting solution for native servers.
+  if (originFromConstants === false) {
+    const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
+
+    if (isExpoGo) {
+      // Updating is a bit easier in Expo Go as you don't need a native rebuild.
+      throw new Error(
+        'The "origin" property in the app config (app.json) cannot be false when React Server Components is enabled. https://docs.expo.dev/guides/server-components/'
+      );
+    }
+
+    // Add more context about updating the app.json in development builds.
+    throw new Error(
+      'The "origin" property in the app config (app.json) cannot be "false" when React Server Components is enabled. Remove the "origin" property from your Expo config and rebuild the native app to resolve. https://docs.expo.dev/guides/server-components/'
+    );
+  }
+
+  // This can happen if the user attempts to use React Server Components without
+  // enabling the flags in the app.json. This will set origin to false and prevent the expo/metro-runtime polyfill from running.
+  throw new Error(
+    'window.location.href is not defined. This is required for React Server Components to work correctly. Ensure React Server Components is correctly enabled in your project and config. https://docs.expo.dev/guides/server-components/'
+  );
+}
+
 type OnFetchData = (data: unknown) => void;
 type SetElements = (updater: Elements | ((prev: Elements) => Elements)) => void;
 
@@ -102,15 +134,21 @@ const checkStatus = async (responsePromise: Promise<Response>): Promise<Response
   if (!response.ok) {
     // NOTE(EvanBacon): Transform the Metro development error into a JS error that can be used by LogBox.
     // This was tested against using a Class component in a server component.
-    if (response.status === 500) {
+    if (__DEV__ && (response.status === 500 || response.status === 404)) {
       const errorText = await response.text();
       let errorJson;
       try {
         errorJson = JSON.parse(errorText);
       } catch {
-        throw new ReactServerError(errorText, response.url, response.status);
+        // `Unable to resolve module` error should respond as JSON from the dev server and sent to the master red box, this can get corrupt when it's returned as the formatted string.
+        if (errorText.startsWith('Unable to resolve module')) {
+          console.error('Unexpected Metro error format from dev server');
+          // This is an unexpected state that occurs when the dev server renderer does not throw Metro errors in the expected JSON format.
+          throw new Error(errorJson);
+        }
+        throw new ReactServerError(errorText, response.url, response.status, response.headers);
       }
-      // TODO: This should be a dev-only error. Add handling for production equivalent.
+
       throw new MetroServerError(errorJson, response.url);
     }
 
@@ -118,9 +156,14 @@ const checkStatus = async (responsePromise: Promise<Response>): Promise<Response
     try {
       responseText = await response.text();
     } catch {
-      throw new ReactServerError(response.statusText, response.url, response.status);
+      throw new ReactServerError(
+        response.statusText,
+        response.url,
+        response.status,
+        response.headers
+      );
     }
-    throw new ReactServerError(responseText, response.url, response.status);
+    throw new ReactServerError(responseText, response.url, response.status, response.headers);
   }
   return response;
 };

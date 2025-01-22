@@ -64,7 +64,7 @@ export type LivePhotoViewType = {
   /**
    * Start the playback of the video part of the live photo.
    *
-   * @param playbackStyle - determines what (`PlaybackStyle`)[#playbackstyle] to use. If not provided, the full video will be played.
+   * @param playbackStyle Determines which playback style to use. If not provided, the full video will be played.
    */
   startPlayback: (playbackStyle?: PlaybackStyle) => void;
   /**
@@ -73,12 +73,15 @@ export type LivePhotoViewType = {
   stopPlayback: () => void;
 };
 
-export interface LivePhotoViewStatics {
+/**
+ * @hidden
+ */
+export type LivePhotoViewStatics = {
   /**
    * Determines whether the current device is capable of displaying live photos.
    */
   isAvailable(): boolean;
-}
+};
 
 /**
  * A live photo asset.

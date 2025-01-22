@@ -10,15 +10,12 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.logger
 
-class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>) {
-  private val definition: ViewManagerDefinition
-    get() = requireNotNull(moduleHolder.definition.viewManagerDefinition)
-
+class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, internal val definition: ViewManagerDefinition, internal val delegateName: String? = null) {
   internal val viewGroupDefinition: ViewGroupDefinition?
     get() = definition.viewGroupDefinition
 
   val name: String
-    get() = moduleHolder.name
+    get() = delegateName ?: "${moduleHolder.name}_${definition.name}"
 
   val props: Map<String, AnyViewProp>
     get() = definition.props

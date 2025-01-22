@@ -8,8 +8,10 @@ import { optionalRequire } from './routeBuilder';
 import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
+import { CameraScreens } from '../screens/Camera/CameraScreen';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
+import { UIScreens } from '../screens/UI/UIScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
 import { ScreenConfig } from '../types/ScreenConfig';
 
@@ -52,18 +54,6 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/Camera/CameraScreen'));
     },
     name: 'Camera',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenBarcode'));
-    },
-    name: 'Camera (barcode)',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenBarcodeFromURL'));
-    },
-    name: 'Camera (barcode from URL)',
   },
   {
     getComponent() {
@@ -389,6 +379,12 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/UI/UIScreen'));
+    },
+    name: 'Expo UI',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Screens'));
     },
     name: 'Screens',
@@ -436,8 +432,10 @@ export const Screens: ScreenConfig[] = [
     },
     name: 'MeshGradient',
   },
+  ...CameraScreens,
   ...ImageScreens,
   ...VideoScreens,
+  ...UIScreens,
 ];
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {

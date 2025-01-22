@@ -1,6 +1,6 @@
 {
   "name": "@expo/env",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "hydrate environment variables from .env files into process.env",
   "main": "build/index.js",
   "scripts": {

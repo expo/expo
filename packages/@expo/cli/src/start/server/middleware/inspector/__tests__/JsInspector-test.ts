@@ -33,7 +33,7 @@ describe(queryAllInspectorAppsAsync, () => {
       .get('/json/list')
       .reply(200, METRO_INSPECTOR_RESPONSE_FIXTURE);
 
-    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter(pageIsSupported);
+    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter(pageIsSupported).reverse();
 
     const result = await queryAllInspectorAppsAsync('http://localhost:8081');
 
@@ -50,7 +50,9 @@ describe(queryAllInspectorAppsAsync, () => {
       .get('/json/list')
       .reply(200, METRO_INSPECTOR_RESPONSE_FIXTURE);
 
-    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter((app) => pageIsSupported(app));
+    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter((app) =>
+      pageIsSupported(app)
+    ).reverse();
 
     const result = await queryAllInspectorAppsAsync('http://localhost:8081');
     expect(result.length).toBe(entities.length);

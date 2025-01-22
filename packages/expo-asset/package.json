@@ -13,6 +13,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
@@ -22,6 +23,16 @@
     "expo",
     "asset"
   ],
+  "exports": {
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js",
+    "./tools/hashAssetFiles": "./tools/hashAssetFiles.js",
+    "./package.json": "./package.json",
+    ".": {
+      "react-server": "./build/index.server.js",
+      "default": "./build/index.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",

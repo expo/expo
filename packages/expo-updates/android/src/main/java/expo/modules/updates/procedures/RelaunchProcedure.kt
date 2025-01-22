@@ -83,7 +83,7 @@ class RelaunchProcedure(
           if (shouldRunReaper) {
             runReaper()
           }
-          procedureContext.resetState()
+          procedureContext.resetStateAfterRestart()
           procedureContext.onComplete()
         }
       }

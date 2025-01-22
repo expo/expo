@@ -9,12 +9,19 @@
 ### 🐛 Bug fixes
 
 - Fix orphaned bridging header reference in prebuild. ([#33462](https://github.com/expo/expo/pull/33462) by [@EvanBacon](https://github.com/EvanBacon))
-- Resolve iOS build schemes on Windows. ([#33468](https://github.com/expo/expo/pull/33468) by [@byCedric](https://github.com/byCedric))
 - Don't apply `react-native-maps` plugin if it's not installed and the API key is not provided. ([#33530](https://github.com/expo/expo/pull/33530) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
 - Only add `UISupportedInterfaceOrientations~ipad` if tablet support is also enabled. ([#32361](https://github.com/expo/expo/pull/32361) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
+- Throw more descriptive error when string resource tag value is empty. ([#34212](https://github.com/expo/expo/pull/34212) by [@wschurman](https://github.com/wschurman))
+
+## 9.0.12 - 2024-12-05
+
+### 🐛 Bug fixes
+
+- Resolve iOS build schemes on Windows. ([#33468](https://github.com/expo/expo/pull/33468) by [@byCedric](https://github.com/byCedric))
 
 ## 9.0.10 — 2024-11-24
 

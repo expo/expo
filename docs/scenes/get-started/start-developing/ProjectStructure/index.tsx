@@ -1,6 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
 import { useState } from 'react';
 
+import { HEADLINE } from '~/ui/components/Text';
+
 import { Tab } from './Tab';
 import AppJson from './files/app-json.mdx';
 import App from './files/app.mdx';
@@ -11,8 +13,6 @@ import Hooks from './files/hooks.mdx';
 import PackageJson from './files/package-json.mdx';
 import Scripts from './files/scripts.mdx';
 import TsconfigJson from './files/tsconfig-json.mdx';
-
-import { HEADLINE } from '~/ui/components/Text';
 
 export function ProjectStructure() {
   const [selected, setSelected] = useState('app');
@@ -30,55 +30,73 @@ export function ProjectStructure() {
           )}>
           <Tab
             title="app"
-            onClick={() => setSelected('app')}
+            onClick={() => {
+              setSelected('app');
+            }}
             isSelected={selected === 'app'}
             type="directory"
           />
           <Tab
             title="assets"
-            onClick={() => setSelected('assets')}
+            onClick={() => {
+              setSelected('assets');
+            }}
             isSelected={selected === 'assets'}
             type="directory"
           />
           <Tab
             title="components"
-            onClick={() => setSelected('components')}
+            onClick={() => {
+              setSelected('components');
+            }}
             isSelected={selected === 'components'}
             type="directory"
           />
           <Tab
             title="constants"
-            onClick={() => setSelected('constants')}
+            onClick={() => {
+              setSelected('constants');
+            }}
             isSelected={selected === 'constants'}
             type="directory"
           />
           <Tab
             title="hooks"
-            onClick={() => setSelected('hooks')}
+            onClick={() => {
+              setSelected('hooks');
+            }}
             isSelected={selected === 'hooks'}
             type="directory"
           />
           <Tab
             title="scripts"
-            onClick={() => setSelected('scripts')}
+            onClick={() => {
+              setSelected('scripts');
+            }}
             isSelected={selected === 'scripts'}
             type="directory"
           />
           <Tab
             title="app.json"
-            onClick={() => setSelected('app.json')}
+            onClick={() => {
+              setSelected('app.json');
+            }}
             isSelected={selected === 'app.json'}
             type="file"
           />
           <Tab
             title="package.json"
-            onClick={() => setSelected('package.json')}
+            onClick={() => {
+              setSelected('package.json');
+            }}
             isSelected={selected === 'package.json'}
             type="file"
           />
           <Tab
             title="tsconfig.json"
-            onClick={() => setSelected('tsconfig.json')}
+            onClick={() => {
+              setSelected('tsconfig.json');
+            }}
             isSelected={selected === 'tsconfig.json'}
             type="file"
           />

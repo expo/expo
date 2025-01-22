@@ -153,7 +153,7 @@ struct AudioUtils {
       throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
     }
     if !mode.playsInSilentMode && mode.allowsRecording {
-      throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
+      throw InvalidAudioModeException("playsInSilentMode == false and allowsRecording == true cannot be set on iOS")
     }
     if !mode.playsInSilentMode && mode.shouldPlayInBackground {
       throw InvalidAudioModeException("playsInSilentMode == false and staysActiveInBackground == true cannot be set on iOS.")

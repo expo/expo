@@ -15,6 +15,7 @@ const path_1 = __importDefault(require("path"));
 async function syncConfigurationToNativeAsync(options) {
     if (options.workflow !== 'generic') {
         // not applicable to managed workflow
+        return;
     }
     switch (options.platform) {
         case 'android':

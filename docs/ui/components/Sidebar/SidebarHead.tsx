@@ -1,15 +1,16 @@
 import { DocsLogo, LinkBase } from '@expo/styleguide';
+import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { BookOpen02DuotoneIcon } from '@expo/styleguide-icons/duotone/BookOpen02DuotoneIcon';
 import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
 import { Home02DuotoneIcon } from '@expo/styleguide-icons/duotone/Home02DuotoneIcon';
 import { Stars02DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars02DuotoneIcon';
 import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 
-import { ApiVersionSelect } from './ApiVersionSelect';
-
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
 import { Search } from '~/ui/components/Search';
 import { SidebarSingleEntry } from '~/ui/components/Sidebar/SidebarSingleEntry';
+
+import { ApiVersionSelect } from './ApiVersionSelect';
 
 type SidebarHeadProps = {
   sidebarActiveGroup: string;
@@ -44,6 +45,12 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
           title="Guides"
           Icon={BookOpen02DuotoneIcon}
           isActive={sidebarActiveGroup === 'general'}
+        />
+        <SidebarSingleEntry
+          href="/eas/"
+          title="EAS"
+          Icon={PlanEnterpriseIcon}
+          isActive={sidebarActiveGroup === 'eas'}
         />
         <SidebarSingleEntry
           href="/versions/latest/"

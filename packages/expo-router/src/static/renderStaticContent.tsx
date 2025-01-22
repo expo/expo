@@ -15,32 +15,11 @@ import { AppRegistry } from 'react-native-web';
 import { getRootComponent } from './getRootComponent';
 import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
-import { getReactNavigationConfig } from '../getReactNavigationConfig';
-import { getRoutes, Options } from '../getRoutes';
 import { Head } from '../head';
-import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
 const debug = require('debug')('expo:router:renderStaticContent');
 
 AppRegistry.registerComponent('App', () => ExpoRoot);
-
-/** Get the linking manifest from a Node.js process. */
-async function getManifest(options: Options = {}) {
-  const routeTree = getRoutes(ctx, {
-    preserveApiRoutes: true,
-    platform: 'web',
-    ...options,
-  });
-
-  if (!routeTree) {
-    throw new Error('No routes found');
-  }
-
-  // Evaluate all static params
-  await loadStaticParamsAsync(routeTree);
-
-  return getReactNavigationConfig(routeTree, false);
-}
 
 function resetReactNavigationContexts() {
   // https://github.com/expo/router/discussions/588
@@ -154,5 +133,4 @@ function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
 }
 
 // Re-export for use in server
-export { getManifest };
-export { getBuildTimeServerManifestAsync } from './getServerManifest';
+export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';

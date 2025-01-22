@@ -1,9 +1,10 @@
 import { NavigationContainerRefWithCurrent } from '@react-navigation/native';
 import { ComponentType } from 'react';
+import { LinkToOptions } from './routing';
 import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
-import { RequireContext } from '../types';
+import { Href, RequireContext } from '../types';
 type ResultState = any;
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -48,6 +49,31 @@ export declare class RouterStore {
     rootStateSnapshot: () => any;
     routeInfoSnapshot: () => UrlObject;
     cleanup(): void;
+    getStateFromPath(href: Href, options?: LinkToOptions): (Partial<Omit<Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[] | undefined;
+        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>, "stale" | "routes">> & Readonly<{
+        stale?: true | undefined;
+        routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
+    }> & {
+        state?: (Partial<Omit<Readonly<{
+            key: string;
+            index: number;
+            routeNames: string[];
+            history?: unknown[] | undefined;
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+            type: string;
+            stale: false;
+        }>, "stale" | "routes">> & Readonly<{
+            stale?: true | undefined;
+            routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
+        }> & any) | undefined;
+    }) | undefined;
 }
 export declare const store: RouterStore;
 export declare function useExpoRouter(): RouterStore;

@@ -1,12 +1,12 @@
 import { TerminalSquareIcon } from '@expo/styleguide-icons/outline/TerminalSquareIcon';
 import { Language, Prism } from 'prism-react-renderer';
 
+import { CODE } from '~/ui/components/Text';
+
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 import { CopyAction } from '../actions/CopyAction';
-
-import { CODE } from '~/ui/components/Text';
 
 type TerminalProps = {
   cmd: string[];
@@ -39,7 +39,7 @@ function getDefaultCmdCopy(cmd: TerminalProps['cmd']) {
 }
 
 function renderCopyButton({ cmd, cmdCopy }: TerminalProps) {
-  const copyText = cmdCopy || getDefaultCmdCopy(cmd);
+  const copyText = cmdCopy ?? getDefaultCmdCopy(cmd);
   return copyText && <CopyAction alwaysDark text={copyText} />;
 }
 

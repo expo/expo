@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Expo
+import FirebaseCore
 
 @UIApplicationMain
 class AppDelegate: ExpoAppDelegate {
@@ -11,6 +12,8 @@ class AppDelegate: ExpoAppDelegate {
 
     // Tell `ExpoAppDelegate` to skip calling the React Native instance setup from `RCTAppDelegate`.
     self.shouldCallReactNativeSetup = false
+
+    FirebaseApp.configure()
 
     if application.applicationState != UIApplication.State.background {
       // App launched in foreground

@@ -16,20 +16,27 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.LazyKType
 import expo.modules.kotlin.types.toAnyType
+import expo.modules.kotlin.views.ComposeViewProp
+import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.typeOf
+
+const val DEFAULT_MODULE_VIEW = "DEFAULT_MODULE_VIEW"
 
 @DefinitionMarker
 class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) : ObjectDefinitionBuilder() {
+  @PublishedApi
   internal var name: String? = null
 
   @PublishedApi
-  internal var viewManagerDefinition: ViewManagerDefinition? = null
+  internal var viewManagerDefinitions = mutableMapOf<String, ViewManagerDefinition>()
 
   @PublishedApi
   internal val eventListeners = mutableMapOf<EventName, EventListener>()
@@ -46,7 +53,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     return ModuleDefinitionData(
       requireNotNull(moduleName),
       buildObject(),
-      viewManagerDefinition,
+      viewManagerDefinitions,
       eventListeners,
       registerContracts,
       classData
@@ -60,17 +67,46 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     this.name = name
   }
 
+  fun registerViewDefinition(definition: ViewManagerDefinition) {
+    // For backwards compatibility, the first View is also added to viewManagerDefinitions under the `DEFAULT` key
+    if (definition.name != null) {
+      require(!viewManagerDefinitions.contains(definition.name)) { "The module definition defines more than one view with name ${definition.name}." }
+      viewManagerDefinitions[definition.name] = definition
+    }
+    if (!viewManagerDefinitions.contains(DEFAULT_MODULE_VIEW)) {
+      viewManagerDefinitions[DEFAULT_MODULE_VIEW] = definition
+    }
+  }
+
   /**
    * Creates the view manager definition that scopes other view-related definitions.
    */
   inline fun <reified T : View> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
-    require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
     val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
 
     viewDefinitionBuilder.UseCSSProps()
 
     body.invoke(viewDefinitionBuilder)
-    viewManagerDefinition = viewDefinitionBuilder.build()
+    registerViewDefinition(viewDefinitionBuilder.build())
+  }
+
+  /**
+   * Creates the view manager definition that scopes other view-related definitions.
+   * Also collects all compose view props and generates setters.
+   */
+  @JvmName("ComposeView")
+  inline fun <reified T : ExpoComposeView<P>, reified P : Any> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
+    val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
+    P::class.memberProperties.forEach { prop ->
+      val kType = prop.returnType.arguments.first().type
+      if (kType != null) {
+        viewDefinitionBuilder.props[prop.name] = ComposeViewProp(prop.name, AnyType(kType), prop)
+      }
+    }
+
+    viewDefinitionBuilder.UseCSSProps()
+    body.invoke(viewDefinitionBuilder)
+    registerViewDefinition(viewDefinitionBuilder.build())
   }
 
   /**

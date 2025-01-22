@@ -19,11 +19,18 @@ createWebSocketConnection().onmessage = (message) => {
     case 'sendDevCommand':
       switch (data.params.name) {
         case 'rsc-reload':
+          if (data.params.platform && data.params.platform !== process.env.EXPO_OS) {
+            return;
+          }
           console.log(
             'HMR(Client): Reload received from server. Sending to listeners:',
             globalThis.__EXPO_RSC_RELOAD_LISTENERS__?.length
           );
-          globalThis.__EXPO_RSC_RELOAD_LISTENERS__?.forEach((l) => l());
+          if (!globalThis.__EXPO_RSC_RELOAD_LISTENERS__) {
+            // server function-only mode
+          } else {
+            globalThis.__EXPO_RSC_RELOAD_LISTENERS__?.forEach((l) => l());
+          }
           break;
       }
       break;

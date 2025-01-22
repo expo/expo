@@ -14,7 +14,6 @@
   "include": [
     "./src",
     "./types/expect.d.ts",
-    "./types/react-navigation.d.ts",
     "../@expo/cli/ts-declarations",
     "../expo/src/ts-declarations"
   ],

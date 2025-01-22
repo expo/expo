@@ -1,22 +1,15 @@
 import ReactMarkdown from 'react-markdown';
 
-import { ClassDefinitionData, GeneratedData, PropData } from './APIDataTypes';
+import { H2 } from '~/ui/components/Text';
+
+import { ClassDefinitionData, GeneratedData, PropData, TypeDocKind } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { renderMethod } from './APISectionMethods';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
-import {
-  CommentTextBlock,
-  getTagData,
-  getTagNamesList,
-  mdComponents,
-  TypeDocKind,
-  H3Code,
-  getCommentContent,
-  BoxSectionHeader,
-} from './APISectionUtils';
+import { getTagData, mdComponents, getCommentContent, getAllTagData } from './APISectionUtils';
+import { APIBoxHeader } from './components/APIBoxHeader';
+import { APIBoxSectionHeader } from './components/APIBoxSectionHeader';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { STYLES_APIBOX } from './styles';
-
-import { H2, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionNamespacesProps = {
   data: GeneratedData[];
@@ -41,31 +34,34 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
 
   const methods = getValidMethods(children);
   const returnComment = getTagData('returns', comment);
+  const namespacePlatforms = getAllTagData('platform', comment);
 
   return (
     <div key={`class-definition-${name}`} className={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} sticky />
-      <APISectionPlatformTags comment={comment} />
-      <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" className="wrap-anywhere">
-          {name}
-        </MONOSPACE>
-      </H3Code>
-      <CommentTextBlock comment={comment} includePlatforms={false} />
+      <APIBoxHeader name={name} comment={comment} />
+      <APICommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
-          <BoxSectionHeader text="Returns" />
+          <APIBoxSectionHeader text="Returns" />
           <ReactMarkdown components={mdComponents}>
             {getCommentContent(returnComment.content)}
           </ReactMarkdown>
         </>
       )}
-      {methods?.length ? (
+      {methods?.length > 0 && (
         <>
-          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={false} />
-          {methods.map(method => renderMethod(method, { sdkVersion, baseNestingLevel: 4 }))}
+          <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar={false} />
+          {methods.map(method =>
+            renderMethod(method, {
+              sdkVersion,
+              nested: true,
+              parentPlatforms: namespacePlatforms,
+              baseNestingLevel: 4,
+            })
+          )}
         </>
-      ) : undefined}
+      )}
     </div>
   );
 };

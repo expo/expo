@@ -9,12 +9,15 @@ import fs from 'fs';
 import path from 'path';
 import requireString from 'require-from-string';
 
-import { logMetroError } from './metro/metroErrorInterface';
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
 import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
+import { toPosixPath } from '../../utils/filePath';
 import { profile } from '../../utils/profile';
+
+const debug = require('debug')('expo:start:server:getStaticRenderFunctions') as typeof console.log;
 
 /** The list of input keys will become optional, everything else will remain the same. */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -88,11 +91,10 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
   filename: string,
-  isExporting: boolean,
-  global?: any
+  isExporting: boolean
 ): T {
   // TODO: Add back stack trace logic that hides traces from metro-runtime and other internal modules.
-  const contents = evalMetroNoHandling(projectRoot, script, filename, global);
+  const contents = evalMetroNoHandling(projectRoot, script, filename);
 
   if (!contents) {
     // This can happen if ErrorUtils isn't working correctly on web and failing to throw an error when a module throws.
@@ -113,9 +115,11 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
         return await fn.apply(this, props);
       } catch (error: any) {
         await logMetroError(projectRoot, { error });
-        if (isExporting) {
+
+        if (isExporting || error[IS_METRO_BUNDLE_ERROR_SYMBOL]) {
           throw error;
         } else {
+          // TODO: When does this happen?
           throw new SilentError(error);
         }
       }
@@ -124,19 +128,17 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   }, {} as any);
 }
 
-export function evalMetroNoHandling(
-  projectRoot: string,
-  src: string,
-  filename: string,
-  global?: any
-) {
+export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
   augmentLogs(projectRoot);
 
-  const res = profile(requireString, 'eval-metro-bundle')(src, filename);
-
-  if (global) {
-    return res(global);
+  // NOTE(@kitten): `require-from-string` derives a base path from the filename we pass it,
+  // but doesn't validate that the filename exists. These debug messages should help identify
+  // these problems, if they occur in user projects without reproductions
+  if (!fs.existsSync(path.dirname(filename))) {
+    debug(`evalMetroNoHandling received filename in a directory that does not exist: ${filename}`);
+  } else if (!toPosixPath(path.dirname(filename)).startsWith(toPosixPath(projectRoot))) {
+    debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
   }
 
-  return res;
+  return profile(requireString, 'eval-metro-bundle')(src, filename);
 }

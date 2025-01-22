@@ -1,12 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { H2, H4, MONOSPACE } from '~/ui/components/Text';
+
 import { EnumDefinitionData, EnumValueData } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
-import { APISectionPlatformTags } from './APISectionPlatformTags';
-import { CommentTextBlock, getTagNamesList, H3Code, BoxSectionHeader } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
 import { STYLES_APIBOX } from './styles';
-
-import { H2, H4, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -28,32 +29,34 @@ const renderEnumValue = (value: any, fallback?: string) =>
 
 function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefinitionData }) {
   return (
-    <div key={`enum-definition-${name}`} className={mergeClasses(STYLES_APIBOX, '!p-0')}>
-      <div className="px-5 pt-4">
-        <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} />
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
-            {name}
-          </MONOSPACE>
-        </H3Code>
-        <CommentTextBlock comment={comment} includePlatforms={false} />
-        <BoxSectionHeader text={`${name} Values`} className="!mb-0 !border-b-0" />
-      </div>
+    <div key={`enum-definition-${name}`} className={mergeClasses(STYLES_APIBOX)}>
+      <APISectionDeprecationNote comment={comment} sticky />
+      <APIBoxHeader name={name} comment={comment} />
+      <APICommentTextBlock comment={comment} includePlatforms={false} />
       {children.sort(sortByValue).map((enumValue: EnumValueData) => (
-        <div className="border-t border-t-secondary p-5 pb-0 pt-4" key={enumValue.name}>
+        <div
+          className="border-t border-t-palette-gray4 px-4 pb-0 pt-3 [&_h4]:mb-0.5"
+          key={enumValue.name}>
           <APISectionDeprecationNote comment={enumValue.comment} />
-          <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" disableFallback />
-          <H4 hideInSidebar>
-            <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
-          </H4>
-          <MONOSPACE theme="secondary" className="mb-3 inline-flex text-xs">
+          <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
+            <H4 hideInSidebar className="!font-medium">
+              <MONOSPACE className="!wrap-anywhere !text-sm !font-medium">
+                {enumValue.name}
+              </MONOSPACE>
+            </H4>
+            <APISectionPlatformTags comment={enumValue.comment} disableFallback className="mb-1" />
+          </div>
+          <MONOSPACE className="wrap-anywhere mb-2 inline-flex text-2xs text-tertiary">
             {`${name}.${enumValue.name} ＝ ${renderEnumValue(
               enumValue.type.value,
               enumValue.type.name
             )}`}
           </MONOSPACE>
-          <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
+          <APICommentTextBlock
+            comment={enumValue.comment}
+            includePlatforms={false}
+            includeSpacing={false}
+          />
         </div>
       ))}
     </div>

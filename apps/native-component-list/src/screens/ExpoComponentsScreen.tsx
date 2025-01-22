@@ -6,8 +6,6 @@ const screens = [
   'BlurView',
   'Button',
   'Camera',
-  'Camera (barcode)',
-  'Camera (barcode from URL)',
   'Checkbox',
   'ClipboardPasteButton',
   'DateTimePicker',
@@ -44,6 +42,7 @@ const screens = [
   'Touchables',
   'Video (expo-av)',
   'Video (expo-video)',
+  'Expo UI',
   'PagerView',
   'WebView',
 ];

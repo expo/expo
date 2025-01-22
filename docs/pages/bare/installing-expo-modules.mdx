@@ -31,10 +31,10 @@ To install and use Expo modules, the easiest way to get up and running is with t
 - <YesIcon small /> **When the command succeeds**, you will be able to add any Expo module in your
   app! Proceed to [Usage](#usage) for more information.
 
-- <NoIcon small /> **If the command fails**, please follow the manual installation instructions.
-  Updating code programmatically can be tricky, and if your project deviates significantly from a
-  default React Native project, then you need to perform manual installation and adapt the
-  instructions here to your codebase.
+- <NoIcon small /> **If the command fails**, follow the manual installation instructions. Updating
+  code programmatically can be tricky, and if your project deviates significantly from a default
+  React Native project, then you need to perform manual installation and adapt the instructions here
+  to your codebase.
 
 ## Manual installation
 
@@ -52,7 +52,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 <DiffBlock source="/static/diffs/expo-ios.diff" />
 
-Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L28-L55).
+Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/sdk-52/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L33-L60).
 
 Save all of your changes and update your iOS Deployment Target in Xcode to `iOS 15.1`:
 

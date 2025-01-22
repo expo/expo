@@ -15,7 +15,7 @@ import { ConfigReactNative, ConfigPluginProperties } from '~/ui/components/Confi
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
-import { PlatformTags } from '~/ui/components/Tag';
+import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -432,7 +432,7 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 A background notification (iOS) or a data-only notification (Android) is a remote notification that does not display an alert, play a sound, or add a badge to your app's icon. The purpose of a background notification is to provide a way to wake up your app to trigger an app data refresh in the background.
 
-To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](/versions/latest/config/app/), and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
+To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](../config/app/), and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
 and wasn't killed by the user. However, this is ultimately decided by the OS, so it might not always happen.
 
 On Android, data-only notifications are sent using the `data` key of the push notification request payload.
@@ -601,9 +601,7 @@ We encourage you to always ensure appropriate channels with informative names ar
 
 ### Custom notification icon and colors&ensp;<PlatformTags platforms={['android']} />
 
-You can configure the [`notification.icon`](../config/app.mdx#notification) and [`notification.color`](../config/app.mdx#notification) keys
-in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#expo-config).
-These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
+You can configure the [`notification.icon`](../config/app/#notification) and [`notification.color`](../config/app/#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#configurable-properties). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles)
 (the icon must be all white with a transparent background) or else it may not be displayed as intended.

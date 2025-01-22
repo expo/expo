@@ -11,6 +11,15 @@
 ### 💡 Others
 
 - Added `ReactNative78CompatPlugin` to support React Native 0.78. ([#33556](https://github.com/expo/expo/pull/33556) by [@kudo](https://github.com/kudo))
+- Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
+
+## 8.0.23 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.22 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 8.0.21 - 2024-11-29
 

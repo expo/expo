@@ -1,5 +1,3 @@
-import { TypeDocKind } from './APISectionUtils';
-
 // Generic data type
 
 export type GeneratedData = EnumDefinitionData &
@@ -10,6 +8,24 @@ export type GeneratedData = EnumDefinitionData &
   InterfaceDefinitionData &
   ConstantDefinitionData &
   ClassDefinitionData;
+
+/* eslint-disable @typescript-eslint/naming-convention */
+export enum TypeDocKind {
+  Namespace = 4,
+  Enum = 8,
+  Variable = 32,
+  Function = 64,
+  Class = 128,
+  Interface = 256,
+  Property = 1024,
+  Method = 2048,
+  Parameter = 32768,
+  TypeParameter = 131072,
+  Accessor = 262144,
+  TypeAlias = 2097152,
+  TypeAlias_Legacy = 4194304,
+}
+/* eslint-enable @typescript-eslint/naming-convention */
 
 // Shared data types
 
@@ -140,13 +156,14 @@ export type InterfaceDefinitionData = {
 
 export type ClassDefinitionData = InterfaceDefinitionData & {
   type?: TypeDefinitionData;
-  isSensor: boolean;
+  allowOverwrites: boolean;
 };
 
 // Methods section
 
 export type MethodDefinitionData = {
   name: string;
+  comment?: CommentData;
   signatures: MethodSignatureData[];
   getSignature?: MethodSignatureData[];
   setSignatures?: MethodSignatureData[];
@@ -155,6 +172,7 @@ export type MethodDefinitionData = {
 
 export type AccessorDefinitionData = {
   name: string;
+  comment?: CommentData;
   getSignature?: MethodSignatureData;
   kind: TypeDocKind;
 };
@@ -215,7 +233,7 @@ export type TypeDeclarationContentData = {
   kind?: TypeDocKind;
   indexSignature?: TypeSignaturesData;
   signatures?: TypeSignaturesData[];
-  parameters?: PropData[];
+  parameters?: MethodParamData[];
   children?: PropData[];
   comment?: CommentData;
 };

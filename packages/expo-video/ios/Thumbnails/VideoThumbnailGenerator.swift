@@ -6,11 +6,12 @@ import CoreMedia
 /**
  Generates an array of thumbnails from the given assets and options.
  */
-internal func generateThumbnails(asset: AVAsset, times: [CMTime]) async throws -> [VideoThumbnail] {
+internal func generateThumbnails(asset: AVAsset, times: [CMTime], options: VideoThumbnailOptions?) async throws -> [VideoThumbnail] {
   let generator = AVAssetImageGenerator(asset: asset)
 
   generator.appliesPreferredTrackTransform = true
   generator.requestedTimeToleranceAfter = .zero
+  generator.maximumSize = options?.getMaxSize() ?? .zero
 
   // `requestedTimeToleranceBefore` can only be set if times are less
   // than the video duration, otherwise it will fail to generate an image.

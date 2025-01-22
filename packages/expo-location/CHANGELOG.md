@@ -8,7 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Add missing ProGuard rule to fix task consumer failed ([#34098](https://github.com/expo/expo/pull/34098) by [@cornejobarraza](https://github.com/cornejobarraza))
+- [iOS] `startLocationUpdatesAsync` should not require background permissions ([#33617](https://github.com/expo/expo/pull/33617) by [@andrejpavlovic](https://github.com/andrejpavlovic)
+
 ### 💡 Others
+
+- On Android, remove dependency on `smart-location-lib`. ([#33609](https://github.com/expo/expo/pull/33609) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 18.0.4 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
 
 ## 18.0.3 - 2024-11-29
 

@@ -22,9 +22,10 @@ abstract class StateMachineProcedure {
     fun getCurrentState(): UpdatesStateValue
 
     /**
-     * Reset the machine to its starting state. Should only be called after the app restarts (reloadAsync()).
+     * Reset the machine to its starting state after a restart.
+     * Should only be called after the app restarts (reloadAsync()).
      */
-    fun resetState()
+    fun resetStateAfterRestart()
   }
 
   interface ProcedureContext : StateMachineProcedureContext {

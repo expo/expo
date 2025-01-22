@@ -11,7 +11,9 @@ import assert from 'assert';
 import path from 'path';
 import url from 'url';
 
-import { logMetroError } from './metroErrorInterface';
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
+import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
+import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
@@ -28,7 +30,6 @@ import {
   getMetroOptionsFromUrl,
 } from '../middleware/metroOptions';
 import { getMetroServerRoot } from '@expo/config/paths';
-import { ExportAssetMap } from '../../../export/saveAssets';
 import { PathSpec } from 'expo-router/build/rsc/path';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
@@ -227,6 +228,15 @@ export function createServerComponentsMiddleware(
         // TODO: Revisit all error handling now that we do direct metro bundling...
         await logMetroError(projectRoot, { error });
 
+        if (error[IS_METRO_BUNDLE_ERROR_SYMBOL]) {
+          throw new Response(JSON.stringify(error), {
+            status: isPossiblyUnableToResolveError(error) ? 404 : 500,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        }
+
         const sanitizedServerMessage = stripAnsi(error.message) ?? error.message;
         throw new Response(sanitizedServerMessage, {
           status: 500,
@@ -258,8 +268,11 @@ export function createServerComponentsMiddleware(
     // TODO: Support multiple entry points in a single split server bundle...
     const manifest: Record<string, [string, string]> = {};
     const nestedClientBoundaries: string[] = [];
+    const nestedServerBoundaries: string[] = [];
+    const processedEntryPoints = new Set<string>();
+    async function processEntryPoint(entryPoint: string) {
+      processedEntryPoints.add(entryPoint);
 
-    for (const entryPoint of uniqueEntryPoints) {
       const contents = await ssrLoadModuleArtifacts(entryPoint, {
         environment: 'react-server',
         platform,
@@ -277,6 +290,13 @@ export function createServerComponentsMiddleware(
 
       if (reactClientReferences) {
         nestedClientBoundaries.push(...reactClientReferences!);
+      }
+      const reactServerReferences = contents.artifacts
+        .filter((a) => a.type === 'js')[0]
+        .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+
+      if (reactServerReferences) {
+        nestedServerBoundaries.push(...reactServerReferences!);
       }
 
       // Naive check to ensure the module runtime is not included in the server action bundle.
@@ -303,6 +323,30 @@ export function createServerComponentsMiddleware(
       // Import relative to `dist/server/_expo/rsc/web/router.js`
       manifest[entryPoint] = [String(relativeName), outputName];
     }
+
+    async function processEntryPoints(entryPoints: string[], recursions = 0) {
+      // Arbitrary recursion limit to prevent infinite loops.
+      if (recursions > 10) {
+        throw new Error('Recursion limit exceeded while processing server boundaries');
+      }
+
+      for (const entryPoint of entryPoints) {
+        await processEntryPoint(entryPoint);
+      }
+
+      // When a server action has other server actions inside of it, we need to process those as well to ensure all entry points are in the manifest and accounted for.
+      let uniqueNestedServerBoundaries = [...new Set(nestedServerBoundaries)];
+      // Filter out values that have already been processed.
+      uniqueNestedServerBoundaries = uniqueNestedServerBoundaries.filter(
+        (value) => !processedEntryPoints.has(value)
+      );
+      if (uniqueNestedServerBoundaries.length) {
+        debug('bundling nested server action boundaries', uniqueNestedServerBoundaries);
+        return processEntryPoints(uniqueNestedServerBoundaries, recursions + 1);
+      }
+    }
+
+    await processEntryPoints(uniqueEntryPoints);
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
     files.set(`_expo/rsc/${platform}/action-manifest.js`, {
@@ -382,6 +426,7 @@ export function createServerComponentsMiddleware(
   >();
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
+    await ensureMemo();
     // We can only cache this if we're using the client router since it doesn't change or use HMR
     if (routerCache.has(platform) && useClientRouter) {
       return routerCache.get(platform)!;
@@ -393,7 +438,7 @@ export function createServerComponentsMiddleware(
       routerModule,
       {
         environment: 'react-server',
-        // modulesOnly: true,
+        modulesOnly: true,
         platform,
       },
       {
@@ -537,7 +582,25 @@ export function createServerComponentsMiddleware(
 
   const rscRendererCache = new Map<string, typeof import('expo-router/build/rsc/rsc-renderer')>();
 
+  let ensurePromise: Promise<any> | null = null;
+  async function ensureSSRReady() {
+    // TODO: Extract CSS Modules / Assets from the bundler process
+    const runtime = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
+      'metro-runtime/src/modules/empty-module.js',
+      {
+        environment: 'react-server',
+        platform: 'web',
+      }
+    );
+    return runtime;
+  }
+  const ensureMemo = () => {
+    ensurePromise ??= ensureSSRReady();
+    return ensurePromise;
+  };
+
   async function getRscRendererAsync(platform: string) {
+    await ensureMemo();
     // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
     if (rscRendererCache.has(platform)) {
       return rscRendererCache.get(platform)!;
@@ -926,11 +989,11 @@ export function createServerComponentsMiddleware(
       },
       rscMiddleware
     ),
-    onReloadRscEvent: () => {
+    onReloadRscEvent: (platform: string) => {
       // NOTE: We cannot clear the renderer context because it would break the mounted context state.
 
-      // Clear the render context to ensure that the next render is a fresh start.
-      rscRenderContext.clear();
+      rscRendererCache.delete(platform);
+      routerCache.delete(platform);
     },
   };
 }

@@ -111,7 +111,7 @@ export async function parsePackageNameAsync(
 }
 
 /**
- * Parse the Java or Kotlin class name to for `ReactPackage` or `TurboReactPackage`.
+ * Parse the Java or Kotlin class name to for `ReactPackage` or `(Base|Turbo)ReactPackage`.
  */
 export async function parseNativePackageClassNameAsync(
   packageRoot: string,
@@ -138,7 +138,7 @@ export async function parseNativePackageClassNameAsync(
 
 let lazyReactPackageRegex: RegExp | null = null;
 let lazyTurboReactPackageRegex: RegExp | null = null;
-function matchNativePackageClassName(filePath: string, contents: Buffer): string | null {
+export function matchNativePackageClassName(filePath: string, contents: Buffer): string | null {
   const fileContents = contents.toString();
 
   // [0] Match ReactPackage
@@ -151,10 +151,10 @@ function matchNativePackageClassName(filePath: string, contents: Buffer): string
     return matchReactPackage[1];
   }
 
-  // [1] Match TurboReactPackage
+  // [1] Match (Base|Turbo)ReactPackage
   if (!lazyTurboReactPackageRegex) {
     lazyTurboReactPackageRegex =
-      /class\s+(\w+[^(\s]*)[\s\w():]*(\s+extends\s+|:)[\s\w():,]*[^{]*TurboReactPackage/;
+      /class\s+(\w+[^(\s]*)[\s\w():]*(\s+extends\s+|:)[\s\w():,]*[^{]*(Base|Turbo)ReactPackage/;
   }
   const matchTurboReactPackage = fileContents.match(lazyTurboReactPackageRegex);
   if (matchTurboReactPackage) {
@@ -199,10 +199,10 @@ export async function parseLibraryNameAsync(
 
 export async function parseComponentDescriptorsAsync(
   packageRoot: string,
-  pacakgeJson: any
+  packageJson: any
 ): Promise<string[]> {
-  const jsRoot = pacakgeJson?.codegenConfig?.jsSrcsDir
-    ? path.join(packageRoot, pacakgeJson.codegenConfig.jsSrcsDir)
+  const jsRoot = packageJson?.codegenConfig?.jsSrcsDir
+    ? path.join(packageRoot, packageJson.codegenConfig.jsSrcsDir)
     : packageRoot;
   const results = await globMatchFunctorAllAsync(
     '**/*.{js,jsx,ts,tsx}',

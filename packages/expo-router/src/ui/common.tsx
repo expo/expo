@@ -90,7 +90,7 @@ export function triggersToScreens(
         ...routeInfo,
         segments: segmentsWithoutGroups,
       },
-      true
+      { relativeToDirectory: true }
     );
 
     let state = linking.getStateFromPath?.(resolvedHref, linking.config)?.routes[0];

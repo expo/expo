@@ -1035,21 +1035,9 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "name": "AppTheme",
-                  "parent": "Theme.AppCompat.Light.NoActionBar",
+                  "parent": "Theme.AppCompat.DayNight.NoActionBar",
                 },
                 "item": [
-                  {
-                    "$": {
-                      "name": "android:textColor",
-                    },
-                    "_": "@android:color/black",
-                  },
-                  {
-                    "$": {
-                      "name": "android:editTextStyle",
-                    },
-                    "_": "@style/ResetEditText",
-                  },
                   {
                     "$": {
                       "name": "android:editTextBackground",
@@ -1085,32 +1073,6 @@ exports[`built-in plugins introspects mods 1`] = `
                       "name": "android:windowBackground",
                     },
                     "_": "@color/activityBackground",
-                  },
-                ],
-              },
-              {
-                "$": {
-                  "name": "ResetEditText",
-                  "parent": "@android:style/Widget.EditText",
-                },
-                "item": [
-                  {
-                    "$": {
-                      "name": "android:padding",
-                    },
-                    "_": "0dp",
-                  },
-                  {
-                    "$": {
-                      "name": "android:textColorHint",
-                    },
-                    "_": "#c8c8c8",
-                  },
-                  {
-                    "$": {
-                      "name": "android:textColor",
-                    },
-                    "_": "@android:color/black",
                   },
                 ],
               },

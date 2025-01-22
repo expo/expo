@@ -1,15 +1,15 @@
 import { mergeClasses } from '@expo/styleguide';
 import ReactMarkdown from 'react-markdown';
 
-import { formatSchema } from './helpers';
-import { FormattedProperty, Property } from './types';
-
 import { HeadingType } from '~/common/headingManager';
 import { CodeBlock } from '~/components/base/code';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { P, CALLOUT, CODE, createPermalinkedComponent, LI, UL } from '~/ui/components/Text';
+
+import { formatSchema } from './helpers';
+import { FormattedProperty, Property } from './types';
 
 export type AppConfigSchemaProps = {
   schema: Record<string, Property>;
@@ -22,9 +22,9 @@ export default function AppConfigSchemaTable({ schema }: AppConfigSchemaProps) {
     <div>
       {formattedSchema.map((formattedProperty, index) => (
         <AppConfigProperty
-          {...formattedProperty}
           key={`${formattedProperty.name}-${index}`}
           nestingLevel={0}
+          {...formattedProperty}
         />
       ))}
     </div>
@@ -35,7 +35,7 @@ type PropertyNameProps = { name: string; nestingLevel: number };
 
 const Anchor = createPermalinkedComponent(P, {
   baseNestingLevel: 3,
-  sidebarType: HeadingType.InlineCode,
+  sidebarType: HeadingType.INLINE_CODE,
 });
 
 function PropertyName({ name, nestingLevel }: PropertyNameProps) {
@@ -63,7 +63,8 @@ function AppConfigProperty({
       className={mergeClasses(
         '!mb-0 !rounded-none !border-b-0 !shadow-none',
         '[&]:first-of-type:!rounded-t-md',
-        '[&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default'
+        '[&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default',
+        'px-4 py-3'
       )}>
       <PropertyName name={name} nestingLevel={nestingLevel} />
       <div className="my-3" data-text="true">
@@ -170,9 +171,9 @@ function AppConfigProperty({
         subproperties.length > 0 &&
         subproperties.map((formattedProperty, index) => (
           <AppConfigProperty
-            {...formattedProperty}
             key={`${name}-${formattedProperty.name}-${index}`}
             nestingLevel={nestingLevel + 1}
+            {...formattedProperty}
           />
         ))}
     </APIBox>
