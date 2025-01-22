@@ -1,5 +1,5 @@
 import spawnAsync, { SpawnOptions, SpawnPromise } from '@expo/spawn-async';
-import sudo from 'sudo-prompt';
+import sudo from '@vscode/sudo-prompt';
 
 /**
  * The pending spawn promise is similar to the spawn promise from `@expo/spawn-async`.
