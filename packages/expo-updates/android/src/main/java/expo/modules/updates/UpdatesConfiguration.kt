@@ -157,9 +157,8 @@ data class UpdatesConfiguration(
     }
 
     private fun getHasEmbeddedUpdate(context: Context?, overrideMap: Map<String, Any>?, allowMeToLiveDangerously: Boolean): Boolean {
-      if (allowMeToLiveDangerously) {
-        val updatesUrlOverride = getUpdatesUrlOverride(context)
-        return updatesUrlOverride != null
+      if (allowMeToLiveDangerously && getUpdatesUrlOverride(context) != null) {
+        return false
       }
       return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY) ?: context?.getMetadataValue("expo.modules.updates.HAS_EMBEDDED_UPDATE") ?: true
     }
