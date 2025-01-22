@@ -11,10 +11,10 @@ export type MemoryContext = Record<string, FileStub | NativeIntentStub> & {
     '+native-intent'?: NativeIntentStub;
 };
 export { requireContext };
-export declare function inMemoryContext(context: MemoryContext): ((id: string) => NativeIntent | ReactComponent | (Record<string, unknown> & {
+export declare function inMemoryContext(context: MemoryContext): ((id: string) => NativeIntent | (Record<string, unknown> & {
     default: ReactComponent;
     unstable_settings?: Record<string, any> | undefined;
-}) | {
+}) | ReactComponent | {
     default: NativeIntent | FileStub;
 }) & {
     resolve: (key: string) => string;
