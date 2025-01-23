@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Pass `platform` value through to the various config plugins and Xcode utils that now expect it. Will allow Prebuild to be adapted for use with `react-native-macos` in future. ([#34379](https://github.com/expo/expo/pull/34379) by [@shirakaba](https://github.com/shirakaba))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
