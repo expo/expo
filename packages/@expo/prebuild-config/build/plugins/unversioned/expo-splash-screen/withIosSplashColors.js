@@ -49,7 +49,7 @@ const withIosSplashColors = (config, splash) => {
     return config;
   }
   return (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
-    const iosNamedProjectRoot = _configPlugins().IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
+    const iosNamedProjectRoot = _configPlugins().IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot, config.modRequest.platform);
     await configureColorAssets({
       iosNamedProjectRoot,
       backgroundColor: splash.backgroundColor,

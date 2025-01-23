@@ -22,7 +22,7 @@ expect.extend({
       return matchers.toEqual(config[cacheSymbol].infoPlist, expected);
     }
 
-    const infoPlistPath = getInfoPlistPathLikePrebuild(config);
+    const infoPlistPath = getInfoPlistPathLikePrebuild(config, 'ios');
     const infoPlist = plist.parse(fs.readFileSync(infoPlistPath, 'utf8'));
 
     config[cacheSymbol] = config[cacheSymbol] || {};
@@ -31,7 +31,10 @@ expect.extend({
     return matchers.toEqual(infoPlist, expected);
   },
   toMatchAppleEntitlements(config: ExportedConfig, expected: any) {
-    const filePath = IOSConfig.Entitlements.getEntitlementsPath(getProjectRootLikePrebuild(config));
+    const filePath = IOSConfig.Entitlements.getEntitlementsPath(
+      getProjectRootLikePrebuild(config),
+      'ios'
+    );
     if (!filePath) throw new Error('iOS entitlements path not found');
     const data = plist.parse(fs.readFileSync(filePath, 'utf8'));
     return matchers.toEqual(data, expected);

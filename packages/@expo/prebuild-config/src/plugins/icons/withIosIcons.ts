@@ -1,4 +1,10 @@
-import { ConfigPlugin, IOSConfig, WarningAggregator, withDangerousMod } from '@expo/config-plugins';
+import {
+  ConfigPlugin,
+  IOSConfig,
+  ModPlatform,
+  WarningAggregator,
+  withDangerousMod,
+} from '@expo/config-plugins';
 import { ExpoConfig, IOSIcons } from '@expo/config-types';
 import { createSquareAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
@@ -15,7 +21,7 @@ export const withIosIcons: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      await setIconsAsync(config, config.modRequest.projectRoot);
+      await setIconsAsync(config, config.modRequest.projectRoot, config.modRequest.platform);
       return config;
     },
   ]);
@@ -45,7 +51,11 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
   return null;
 }
 
-export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
+export async function setIconsAsync(
+  config: ExpoConfig,
+  projectRoot: string,
+  platform: ModPlatform
+) {
   const icon = getIcons(config);
 
   if (
@@ -57,7 +67,7 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   }
 
   // Something like projectRoot/ios/MyApp/
-  const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
+  const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot, platform);
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
   await fs.promises.mkdir(join(iosNamedProjectRoot, IMAGESET_PATH), { recursive: true });
@@ -111,9 +121,9 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
  *
  * @param projectRoot Expo project root path.
  */
-function getIosNamedProjectPath(projectRoot: string): string {
-  const projectName = getProjectName(projectRoot);
-  return join(projectRoot, 'ios', projectName);
+function getIosNamedProjectPath(projectRoot: string, platform: ModPlatform): string {
+  const projectName = getProjectName(projectRoot, platform);
+  return join(projectRoot, platform, projectName);
 }
 
 function getAppleIconName(size: number, scale: number, appearance?: 'dark' | 'tinted'): string {

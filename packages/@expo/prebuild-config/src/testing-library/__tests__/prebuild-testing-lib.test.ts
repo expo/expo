@@ -14,6 +14,7 @@ jest.setTimeout(30 * 1000);
 jest.mock('fs');
 
 const originalWarn = console.warn;
+const platform = 'ios';
 
 beforeEach(async () => {
   console.warn = jest.fn();
@@ -106,7 +107,7 @@ it('compiles expo-camera without camera permission', async () => {
   );
   expect(config).toHaveModHistory('expo-camera');
 
-  expect(getInfoPlistPathLikePrebuild(config)).not.toMatch(/NSCameraUsageDescription/);
+  expect(getInfoPlistPathLikePrebuild(config, platform)).not.toMatch(/NSCameraUsageDescription/);
 });
 
 it('compiles expo-camera', async () => {

@@ -28,7 +28,10 @@ export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splas
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
+      const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(
+        config.modRequest.projectRoot,
+        config.modRequest.platform
+      );
 
       await configureImageAssets({
         projectRoot: config.modRequest.projectRoot,
