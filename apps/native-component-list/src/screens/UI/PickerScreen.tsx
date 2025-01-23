@@ -1,8 +1,8 @@
 import { Picker } from '@expo/ui/components/Picker';
 import * as React from 'react';
+import { ScrollView, Text } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
-import { ScrollView, Text } from 'react-native';
 
 export default function PickerScreen() {
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);

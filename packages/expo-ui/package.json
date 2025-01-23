@@ -2,7 +2,7 @@
   "name": "@expo/ui",
   "version": "0.0.1",
   "description": "A collection of UI components",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
