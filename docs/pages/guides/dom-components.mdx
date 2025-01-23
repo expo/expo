@@ -83,21 +83,7 @@ export default function App() {
 
 ## WebView props
 
-To pass props to the underlying native **WebView**, add a `dom` object to the component:
-
-```tsx my-component.tsx (web)
-'use dom';
-
-export default function DOMComponent({}: { dom: import('expo/dom').DOMProps }) {
-  return (
-    <div>
-      <h1>Hello, world!</h1>
-    </div>
-  );
-}
-```
-
-Now you can pass [`WebView` props](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md) to the DOM component:
+To pass props to the underlying native **WebView**, use the `dom` prop on the component. This prop is built into every DOM component and accepts an object with any [`WebView` props](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md) that you would like to change.
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
@@ -109,6 +95,20 @@ export default function App() {
         scrollEnabled: false,
       }}
     />
+  );
+}
+```
+
+On your DOM component, add the `dom` prop so it is recognized in TypeScript:
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent({}: { dom: import('expo/dom').DOMProps }) {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+    </div>
   );
 }
 ```
@@ -313,7 +313,7 @@ You may want to measure the size of a DOM component and report it back to the na
 
 ### Automatically with `matchContents` prop
 
-You need to use the `dom={{ matchContents: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
+You can use the `dom={{ matchContents: true }}` prop to measure the size of the DOM component automatically and resize the native view. This is particularly useful for certain layouts where the DOM component must have an intrinsic size in order to be displayed, such as when the component is centered within a parent view:
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
@@ -323,22 +323,30 @@ export default function Route() {
 }
 ```
 
-```tsx my-component.tsx (web)
-'use dom';
+### Manually by specifying a size
 
-export default function DOMComponent(_: { dom?: import('expo/dom').DOMProps }) {
-  return <div style={{ width: 500, height: 500, backgroundColor: 'blue' }} />;
-}
-```
-
-### Manually by resizing native action
-
-You can also manually measure the size of a DOM component and report it back to the native side using a native action:
+You can also manually provide a size by passing it to the `WebView` `style` prop via the `dom` prop:
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
 import { useState } from 'react';
 
+export default function Route() {
+  return (
+    <DOMComponent
+      dom={{
+        style: { width, height },
+      }}
+    />
+  );
+}
+```
+
+#### Observing changes in size
+
+You can report the DOM component's size back to the native side with the `updateSize` prop and manage the size in the native component's state:
+
+```tsx App.tsx (native)
 export default function Route() {
   const [height, setHeight] = useState(270);
   return (
