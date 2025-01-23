@@ -22,9 +22,9 @@ struct PickerView: ExpoSwiftUI.View {
         }
       }
 
-      .if(props.variant == "wheel", { $0.pickerStyle(.wheel)})
-      .if(props.variant == "segmented", { $0.pickerStyle(.segmented)})
-      .if(props.variant == "menu", { $0.pickerStyle(.menu)})
+      .if(props.variant == "wheel", { $0.pickerStyle(.wheel) })
+      .if(props.variant == "segmented", { $0.pickerStyle(.segmented) })
+      .if(props.variant == "menu", { $0.pickerStyle(.menu) })
       .onChange(of: selection, perform: { newValue in
         if props.selectedIndex == newValue {
           return

@@ -31,12 +31,12 @@ struct SwitchView: ExpoSwiftUI.View {
       $0.toggleStyle(.button)
     })
     .if(props.variant == "checkbox", transform: {
-      $0.toggleStyle(iOSCheckboxToggleStyle())
+      $0.toggleStyle(IOSCheckboxToggleStyle())
     })
   }
 }
 
-struct iOSCheckboxToggleStyle: ToggleStyle {
+struct IOSCheckboxToggleStyle: ToggleStyle {
   func makeBody(configuration: Configuration) -> some View {
     Button(action: {
       configuration.isOn.toggle()
