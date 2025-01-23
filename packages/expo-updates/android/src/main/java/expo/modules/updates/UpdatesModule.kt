@@ -213,8 +213,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       }
     }
 
-    Function("setUrlOverride") { url: String? ->
-      UpdatesController.instance.setUrlOverride(url)
+    Function("setUpdatesURLAndRequestHeadersOverrides") { overrides: UpdatesRuntimeOverrides? ->
+      UpdatesController.instance.setUpdatesURLAndRequestHeadersOverrides(overrides)
     }
   }
 

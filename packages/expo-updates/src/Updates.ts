@@ -306,6 +306,15 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   return result;
 }
 
-export function setUrlOverride(url: string): void {
-  ExpoUpdates.setUrlOverride(url);
+/**
+ * Overrides updates URL and reuqest headers in runtime from build time.
+ * This method allows you to load specific updates from a URL that you provide.
+ * Use this method at your own risk, as it may cause unexpected behavior.
+ * @experimental
+ * @hidden
+ */
+export function setUpdatesURLAndRequestHeadersOverrides(
+  overrides: { url: string; requestHeaders: Record<string, string> } | null
+): void {
+  ExpoUpdates.setUpdatesURLAndRequestHeadersOverrides(overrides);
 }

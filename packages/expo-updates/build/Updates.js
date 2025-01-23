@@ -243,7 +243,14 @@ export async function fetchUpdateAsync() {
     }
     return result;
 }
-export function setUrlOverride(url) {
-    ExpoUpdates.setUrlOverride(url);
+/**
+ * Overrides updates URL and reuqest headers in runtime from build time.
+ * This method allows you to load specific updates from a URL that you provide.
+ * Use this method at your own risk, as it may cause unexpected behavior.
+ * @experimental
+ * @hidden
+ */
+export function setUpdatesURLAndRequestHeadersOverrides(overrides) {
+    ExpoUpdates.setUpdatesURLAndRequestHeadersOverrides(overrides);
 }
 //# sourceMappingURL=Updates.js.map

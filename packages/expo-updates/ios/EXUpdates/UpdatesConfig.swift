@@ -88,6 +88,8 @@ public final class UpdatesConfig: NSObject {
 
   public static let EXUpdatesConfigRuntimeVersionReadFingerprintFileSentinel = "file:fingerprint"
 
+  internal static let kUpdatesRuntimeOverrides = "dev.expo.updates.updatesRuntimeOverrides"
+
   public let scopeKey: String
   public let updateUrl: URL
   public let requestHeaders: [String: String]
@@ -202,7 +204,7 @@ public final class UpdatesConfig: NSObject {
     }
     let scopeKey = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
 
-    let requestHeaders: [String: String] = config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
+    let requestHeaders = getRequestHeaders(fromDictionary: config)
     let launchWaitMs = config.optionalValue(forKey: EXUpdatesConfigLaunchWaitMsKey).let { (it: Any) in
       // The only way I can figure out how to detect numbers is to do a is NSNumber (is any Numeric didn't work).
       // This might be able to change when we switch out the plist decoder above
@@ -319,26 +321,39 @@ public final class UpdatesConfig: NSObject {
     }
   }
 
-  private static func getUpdatesUrl(fromDictionary config: [String: Any]) -> URL? {
-    let allowMeToLiveDangerously = config.optionalValue(forKey: EXUpdatesConfigAllowMeToLiveDangerously) ?? false
-    if allowMeToLiveDangerously {
-      let updatesOverride = UserDefaults.standard.string(forKey: "updatesOverride")
-      if let updatesOverride {
-        return URL(string: updatesOverride)
-      }
+  internal static var updatesRuntimeOverrides = UpdatesRuntimeOverrides.load() {
+    didSet {
+      UpdatesRuntimeOverrides.save(updatesRuntimeOverrides)
     }
+  }
 
+  private static func getAllowMeToLiveDangerously(fromDictionary config: [String: Any]) -> Bool {
+    return config.optionalValue(forKey: EXUpdatesConfigAllowMeToLiveDangerously) ?? false
+  }
+
+  private static func getHasEmbeddedUpdate(fromDictionary config: [String: Any]) -> Bool {
+    if getAllowMeToLiveDangerously(fromDictionary: config) && updatesRuntimeOverrides != nil {
+      return false
+    }
+    return config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
+  }
+
+  private static func getUpdatesUrl(fromDictionary config: [String: Any]) -> URL? {
+    if getAllowMeToLiveDangerously(fromDictionary: config),
+      let url = updatesRuntimeOverrides?.url {
+      return url
+    }
     return config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
       URL(string: it)
     }
   }
 
-  private static func getHasEmbeddedUpdate(fromDictionary config: [String: Any]) -> Bool {
-    let allowMeToLiveDangerously = config.optionalValue(forKey: EXUpdatesConfigAllowMeToLiveDangerously) ?? false
-    if allowMeToLiveDangerously && UserDefaults.standard.string(forKey: "updatesOverride") != nil {
-      return false
+  private static func getRequestHeaders(fromDictionary config: [String: Any]) -> [String: String] {
+    if getAllowMeToLiveDangerously(fromDictionary: config),
+      let requestHeaders = updatesRuntimeOverrides?.requestHeaders {
+      return requestHeaders
     }
-    return config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
+    return config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
   }
 }
 

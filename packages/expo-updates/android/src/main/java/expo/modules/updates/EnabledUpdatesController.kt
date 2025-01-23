@@ -262,19 +262,11 @@ class EnabledUpdatesController(
     }
   }
 
-  override fun setUrlOverride(url: String?) {
+  override fun setUpdatesURLAndRequestHeadersOverrides(overrides: UpdatesRuntimeOverrides?) {
     if (!updatesConfiguration.allowMeToLiveDangerously) {
-      throw CodedException("ERR_UPDATES_URL_OVERRIDE", "Must set allowMeToLiveDangerously configuration to use URL overriding", null)
+      throw CodedException("ERR_UPDATES_URL_OVERRIDE", "Must set allowMeToLiveDangerously configuration to use updates overriding", null)
     }
-    val sharedPreferences = context.getSharedPreferences("updatesOverridePrefs", Context.MODE_PRIVATE)
-    with (sharedPreferences.edit()) {
-      if (!url.isNullOrEmpty()) {
-        putString("updatesOverride", url)
-      } else {
-        remove("updatesOverride")
-      }
-      apply()
-    }
+    UpdatesRuntimeOverrides.save(context, overrides)
   }
 
   companion object {

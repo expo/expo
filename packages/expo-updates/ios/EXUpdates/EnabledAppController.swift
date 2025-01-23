@@ -248,14 +248,10 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     return EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
   }
 
-  public func setUrlOverride(_ url: String?) throws {
+  public func setUpdatesURLAndRequestHeadersOverrides(_ overrides: UpdatesRuntimeOverrides?) throws {
     if !config.allowMeToLiveDangerously {
       throw NotAllowedUnlessLivingDangerouslyException()
     }
-    if let url, !url.isEmpty {
-      UserDefaults.standard.set(url, forKey: "updatesOverride")
-    } else {
-      UserDefaults.standard.removeObject(forKey: "updatesOverride")
-    }
+    UpdatesConfig.updatesRuntimeOverrides = overrides
   }
 }

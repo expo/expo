@@ -141,8 +141,8 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
       }
     }
 
-    Function("setUrlOverride") { (url: String?) in
-      try AppController.sharedInstance.setUrlOverride(url)
+    Function("setUpdatesURLAndRequestHeadersOverrides") { (overrides: UpdatesRuntimeOverrides?) in
+      try AppController.sharedInstance.setUpdatesURLAndRequestHeadersOverrides(overrides)
     }
   }
 
