@@ -146,5 +146,8 @@
       "tailwindcss": {},
       "autoprefixer": {}
     }
+  },
+  "volta": {
+    "node": "22.13.1"
   }
 }

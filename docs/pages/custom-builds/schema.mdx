@@ -755,9 +755,9 @@ build:
     - eas/maestro_test:
         inputs:
           flow_path: |
-            maestro/sign_in.yaml
-            maestro/create_post.yaml
-            maestro/sign_out.yaml
+            maestro/sign_in.yml
+            maestro/create_post.yml
+            maestro/sign_out.yml
     # @end #
 ```
 
@@ -771,9 +771,9 @@ build:
         app_path: ./fixtures/my_app.app
         inputs:
           flow_path: |
-            maestro/sign_in.yaml
-            maestro/create_post.yaml
-            maestro/sign_out.yaml
+            maestro/sign_in.yml
+            maestro/create_post.yml
+            maestro/sign_out.yml
     # @end #
 ```
 
@@ -787,9 +787,9 @@ build:
         app_path: ./fixtures/my_app.apk
         inputs:
           flow_path: |
-            maestro/sign_in.yaml
-            maestro/create_post.yaml
-            maestro/sign_out.yaml
+            maestro/sign_in.yml
+            maestro/create_post.yml
+            maestro/sign_out.yml
     # @end #
 ```
 
@@ -841,7 +841,7 @@ build:
           fi
     - run:
         command: |
-          maestro test maestro/flow.yaml
+          maestro test maestro/flow.yml
     - eas/upload_artifact:
         name: Upload test artifact
         if: ${ always() }
@@ -884,7 +884,7 @@ steps:
         fi
   - run:
       command: |
-        maestro test maestro/flow.yaml
+        maestro test maestro/flow.yml
   - eas/upload_artifact:
       name: Upload test artifact
       if: ${ always() }

@@ -3,11 +3,19 @@ import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
 export const UIScreens = [
   {
-    name: 'SingleChoiceSegmentedControlView',
-    route: 'ui/single-choice-segmented-control-view',
+    name: 'Picker component',
+    route: 'ui/picker',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SingleChoiceSegmentedControlViewScreen'));
+      return optionalRequire(() => require('./PickerScreen'));
+    },
+  },
+  {
+    name: 'Switch component',
+    route: 'ui/switch',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SwitchScreen'));
     },
   },
 ];

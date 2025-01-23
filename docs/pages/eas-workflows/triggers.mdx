@@ -9,7 +9,7 @@ Triggers define when a workflow should kick off. When its conditions are met, th
 
 You can trigger a workflow on a push to a GitHub branch with the `push` trigger.
 
-```yaml .eas/workflows/hello-world.yaml
+```yaml .eas/workflows/hello-world.yml
 name: Hello World
 
 on:
@@ -27,7 +27,7 @@ jobs:
 
 You can trigger a workflow on a pull request with the `pull_request` trigger.
 
-```yaml .eas/workflows/hello-world.yaml
+```yaml .eas/workflows/hello-world.yml
 name: Hello World
 
 on:
@@ -44,7 +44,7 @@ jobs:
 
 EAS Workflows also support triggering on all branches, on both push and pull request events:
 
-```yaml .eas/workflows/hello-world.yaml
+```yaml .eas/workflows/hello-world.yml
 name: Hello World
 
 on:
