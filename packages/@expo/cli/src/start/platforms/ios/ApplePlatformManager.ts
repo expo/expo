@@ -38,7 +38,7 @@ export class ApplePlatformManager extends PlatformManager<Device> {
   }
 
   _getAppIdResolver(): AppIdResolver {
-    return new AppleAppIdResolver(this.projectRoot);
+    return new AppleAppIdResolver(this.projectRoot, this.props.platform);
   }
 
   _resolveAlternativeLaunchUrl(

@@ -1,4 +1,5 @@
 import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
+import { ModPlatform } from '@expo/config-plugins';
 
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { get } from '../../utils/obj';
@@ -8,7 +9,7 @@ export class AppIdResolver {
   constructor(
     protected projectRoot: string,
     /** Platform to use. */
-    protected platform: string,
+    protected platform: ModPlatform,
     /** Nested key in the Expo config like `android.package` or `ios.bundleIdentifier`. */
     protected configProperty: string
   ) {}

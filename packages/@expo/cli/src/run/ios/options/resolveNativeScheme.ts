@@ -1,4 +1,4 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { IOSConfig, ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 import path from 'path';
 
@@ -17,21 +17,23 @@ type NativeSchemeProps = {
 
 export async function resolveNativeSchemePropsAsync(
   projectRoot: string,
+  platform: ModPlatform,
   options: Pick<Options, 'scheme' | 'configuration'>,
   xcodeProject: ProjectInfo
 ): Promise<NativeSchemeProps> {
   return (
-    (await promptOrQueryNativeSchemeAsync(projectRoot, options)) ??
-    getDefaultNativeScheme(projectRoot, options, xcodeProject)
+    (await promptOrQueryNativeSchemeAsync(projectRoot, platform, options)) ??
+    getDefaultNativeScheme(projectRoot, platform, options, xcodeProject)
   );
 }
 
 /** Resolve the native iOS build `scheme` for a given `configuration`. If the `scheme` isn't provided then the user will be prompted to select one. */
 export async function promptOrQueryNativeSchemeAsync(
   projectRoot: string,
+  platform: ModPlatform,
   { scheme, configuration }: { scheme?: string | boolean; configuration?: XcodeConfiguration }
 ): Promise<NativeSchemeProps | null> {
-  const schemes = IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj(projectRoot, {
+  const schemes = IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj(projectRoot, platform, {
     configuration,
   });
 
@@ -68,6 +70,7 @@ export async function promptOrQueryNativeSchemeAsync(
 
 export function getDefaultNativeScheme(
   projectRoot: string,
+  platform: ModPlatform,
   options: Pick<Options, 'configuration'>,
   xcodeProject: Pick<ProjectInfo, 'name'>
 ): NativeSchemeProps {
@@ -75,6 +78,7 @@ export function getDefaultNativeScheme(
   // matches the provided configuration.
   const resolvedSchemes = profile(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj)(
     projectRoot,
+    platform,
     {
       configuration: options.configuration,
     }
