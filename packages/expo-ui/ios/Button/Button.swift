@@ -15,46 +15,32 @@ struct Button: ExpoSwiftUI.View {
       }
     })
     // TODO: Maybe there is a way to do a switch statement similarly to the `if` extension?
-    .if(props.buttonStyle == .bordered, {
+    .if(props.variant == .bordered, {
       $0.buttonStyle(.bordered)
     })
-    .if(props.buttonStyle == .plain, {
+    .if(props.variant == .plain, {
       $0.buttonStyle(.plain)
     })
-    .if(props.buttonStyle == .borderedProminent, {
+    .if(props.variant == .borderedProminent, {
       $0.buttonStyle(.borderedProminent)
     })
-    .if(props.buttonStyle == .borderless, {
+    .if(props.variant == .borderless, {
       $0.buttonStyle(.borderless)
     })
 
 #if os(macOS)
-    .if(props.buttonStyle == .accessoryBar, {
+    .if(props.variant == .accessoryBar, {
       $0.buttonStyle(.accessoryBar)
     })
-    .if(props.buttonStyle == .accessoryBarAction, {
+    .if(props.variant == .accessoryBarAction, {
       $0.buttonStyle(.accessoryBarAction)
     })
-    .if(props.buttonStyle == .card, {
+    .if(props.variant == .card, {
       $0.buttonStyle(.card)
     })
-    .if(props.buttonStyle == .link, {
+    .if(props.variant == .link, {
       $0.buttonStyle(.link)
     })
 #endif
-  }
-}
-
-extension View {
-  @ViewBuilder
-  func `if`<Transform: View>(
-    _ condition: Bool,
-    transform: (Self) -> Transform
-  ) -> some View {
-    if condition {
-      transform(self)
-    } else {
-      self
-    }
   }
 }

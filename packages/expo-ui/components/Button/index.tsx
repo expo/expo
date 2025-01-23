@@ -1,4 +1,5 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import { requireNativeView } from 'expo';
+import { StyleProp, ViewStyle } from 'react-native';
 
 /**
  * The role of the button.
@@ -9,7 +10,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
  */
 export type ButtonRole = 'default' | 'cancel' | 'destructive';
 
-/*
+/**
  * The built-in button styles available on iOS and Android.
  * Common styles:
  * - `default` - The default system button style.
@@ -30,7 +31,7 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
  * @platform android
  * @platform ios
  */
-export type ButtonStyle =
+export type ButtonVariant =
   // Common
   | 'default'
   | 'bordered'
@@ -55,7 +56,7 @@ export type ButtonProps = {
   /**
    * A callback that is called when the button is pressed.
    */
-  onButtonPressed?: () => void;
+  onPress?: () => void;
   /**
    * A string describing the system image to display in the button.
    * @platform ios
@@ -65,13 +66,39 @@ export type ButtonProps = {
    * Indicated the role of the button.
    * @platform ios
    */
-  buttonRole?: ButtonRole;
+  role?: ButtonRole;
   /**
    * The button variant.
    */
-  buttonStyle?: ButtonStyle;
+  variant?: ButtonVariant;
   /**
    * Additional styles to apply to the button.
    */
   style?: StyleProp<ViewStyle>;
 };
+
+// We have to work around the `role` and `onPress` props being reserved by React Native.
+export type NativeButtonProps = Omit<Omit<ButtonProps, 'role'>, 'onPress'> & {
+  buttonRole?: ButtonRole;
+  onButtonPressed?: () => void;
+};
+
+const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
+  'ExpoUI',
+  'Button'
+);
+
+export function Button(props: ButtonProps) {
+  // We have to work around the `role` and `onPress` props being reserved by React Native.
+  const restProps = { ...props, role: null, onPress: null };
+
+  // Min height from https://m3.material.io/components/buttons/specs, minWidth
+  return (
+    <ButtonNativeView
+      style={[{ minWidth: 80, minHeight: 40 }, props.style]}
+      buttonRole={props.role}
+      onButtonPressed={props.onPress}
+      {...restProps}
+    />
+  );
+}

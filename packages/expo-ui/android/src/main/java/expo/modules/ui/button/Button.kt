@@ -17,7 +17,7 @@ import androidx.compose.runtime.remember
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposeProps
 
-enum class ButtonStyle(val value: String) {
+enum class ButtonVariant(val value: String) {
   DEFAULT("default"),
   BORDERED("bordered"),
   BORDERLESS("borderless"),
@@ -27,17 +27,17 @@ enum class ButtonStyle(val value: String) {
 
 data class ButtonProps(
   val text: MutableState<String> = mutableStateOf(""),
-  val buttonStyle: MutableState<ButtonStyle?> = mutableStateOf(ButtonStyle.DEFAULT)
+  val variant: MutableState<ButtonVariant?> = mutableStateOf(ButtonVariant.DEFAULT)
 ) : ComposeProps
 
 @Composable
-fun StyledButton(style: ButtonStyle, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
+fun StyledButton(style: ButtonVariant, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
   when (style) {
-    ButtonStyle.DEFAULT -> androidx.compose.material3.Button(onPress, content = content)
-    ButtonStyle.BORDERED -> FilledTonalButton(onPress, content = content)
-    ButtonStyle.BORDERLESS -> TextButton(onPress, content = content)
-    ButtonStyle.OUTLINED -> OutlinedButton(onPress, content = content)
-    ButtonStyle.ELEVATED -> ElevatedButton(onPress, content = content)
+    ButtonVariant.DEFAULT -> androidx.compose.material3.Button(onPress, content = content)
+    ButtonVariant.BORDERED -> FilledTonalButton(onPress, content = content)
+    ButtonVariant.BORDERLESS -> TextButton(onPress, content = content)
+    ButtonVariant.OUTLINED -> OutlinedButton(onPress, content = content)
+    ButtonVariant.ELEVATED -> ElevatedButton(onPress, content = content)
     else -> androidx.compose.material3.Button(onPress, content = content)
   }
 }
@@ -48,9 +48,9 @@ class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonP
 
   init {
     setContent {
-      val buttonStyle by remember { props.buttonStyle }
+      val variant by remember { props.variant }
       val text by remember { props.text }
-      StyledButton(buttonStyle ?: ButtonStyle.DEFAULT, { onButtonPressed.invoke(Unit) }) {
+      StyledButton(variant ?: ButtonVariant.DEFAULT, { onButtonPressed.invoke(Unit) }) {
         Text(text)
       }
     }

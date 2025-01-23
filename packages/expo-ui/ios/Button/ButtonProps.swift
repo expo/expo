@@ -20,7 +20,7 @@ internal enum ButtonRole: String, Enumerable {
   }
 }
 
-internal enum ButtonStyle: String, Enumerable {
+internal enum ButtonVariant: String, Enumerable {
   case `default`
   case bordered
   case accessoryBar
@@ -36,6 +36,6 @@ class ButtonProps: ExpoSwiftUI.ViewProps {
   @Field var text: String = ""
   @Field var systemImage: String?
   @Field var buttonRole: ButtonRole? = .default
-  @Field var buttonStyle: ButtonStyle? = .default
+  @Field var variant: ButtonVariant? = .default
   var onButtonPressed = EventDispatcher()
 }

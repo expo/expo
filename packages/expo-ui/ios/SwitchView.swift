@@ -38,7 +38,7 @@ struct SwitchView: ExpoSwiftUI.View {
 
 struct IOSCheckboxToggleStyle: ToggleStyle {
   func makeBody(configuration: Configuration) -> some View {
-    Button(action: {
+    SwiftUI.Button(action: {
       configuration.isOn.toggle()
     }, label: {
       HStack {
@@ -46,19 +46,5 @@ struct IOSCheckboxToggleStyle: ToggleStyle {
         configuration.label
       }
     }).buttonStyle(BorderlessButtonStyle())
-  }
-}
-
-extension View {
-  @ViewBuilder
-  func `if`<Transform: View>(
-    _ condition: Bool,
-    transform: (Self) -> Transform
-  ) -> some View {
-    if condition {
-      transform(self)
-    } else {
-      self
-    }
   }
 }

@@ -1,5 +1,5 @@
 import { H4 } from '@expo/html-elements';
-import { Button, ButtonProps } from '@expo/ui';
+import { Button, ButtonProps } from '@expo/ui/components/Button';
 import * as React from 'react';
 import { Platform, FlatList, ScrollView, View, StyleSheet } from 'react-native';
 
@@ -9,7 +9,7 @@ function ButtonRenderItem(props: ButtonProps) {
   return (
     <Button
       style={styles.buttonStyle}
-      onButtonPressed={() => {
+      onPress={() => {
         console.log('Button pressed');
       }}
       {...props}
@@ -45,11 +45,11 @@ const buttonStylesData: ButtonProps[] = [
   },
   {
     text: 'Bordered',
-    buttonStyle: 'bordered',
+    variant: 'bordered',
   },
   {
     text: 'Borderless',
-    buttonStyle: 'borderless',
+    variant: 'borderless',
   },
 ];
 
@@ -57,11 +57,11 @@ if (Platform.OS === 'ios') {
   buttonStylesData.push(
     {
       text: 'Bordered Prominent',
-      buttonStyle: 'borderedProminent',
+      variant: 'borderedProminent',
     },
     {
       text: 'Plain',
-      buttonStyle: 'plain',
+      variant: 'plain',
     }
   );
 }
@@ -70,11 +70,11 @@ if (Platform.OS === 'android') {
   buttonStylesData.push(
     {
       text: 'Outlined',
-      buttonStyle: 'outlined',
+      variant: 'outlined',
     },
     {
       text: 'Elevated',
-      buttonStyle: 'elevated',
+      variant: 'elevated',
     }
   );
 }
@@ -101,15 +101,15 @@ const buttonImagesData: ButtonProps[] = [
 const buttonRolesData: ButtonProps[] = [
   {
     text: 'Default',
-    buttonRole: 'default',
+    role: 'default',
   },
   {
     text: 'Cancel',
-    buttonRole: 'cancel',
+    role: 'cancel',
   },
   {
     text: 'Destructive',
-    buttonRole: 'destructive',
+    role: 'destructive',
   },
 ];
 
