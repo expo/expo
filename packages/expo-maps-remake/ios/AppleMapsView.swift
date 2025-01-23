@@ -5,19 +5,15 @@ import ExpoModulesCore
 import MapKit
 
 @available(iOS 17.0, *)
+@Observable
 class MapPosition {
   var region: MapCameraPosition
   
-  init(cameraPosition: CameraPosition) {
-    let coordinates = cameraPosition.coordinates
-    region = MapCameraPosition.region(
-      MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: coordinates.latitude, longitude: coordinates.longitude),
-        span: MKCoordinateSpan(latitudeDelta: cameraPosition.zoom, longitudeDelta: cameraPosition.zoom)
-      )
-    )
+  init(position: CameraPosition) {
+    self.region = convertToMapCamera(position: position)
   }
 }
+
 
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
@@ -26,6 +22,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   var onMapClick = EventDispatcher()
+  var onMapCameraChange = EventDispatcher()
 }
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View {
@@ -50,6 +47,9 @@ struct AppleMapsView: View {
   @Namespace var mapScope
   
   var body: some View {
+    let properties = props.properties
+    let uiSettings = props.uiSettings
+    
     MapReader { reader in
       Map(position: $mapCameraPosition, selection: $selection) {
         if !props.markers.isEmpty {
@@ -64,11 +64,12 @@ struct AppleMapsView: View {
         
         if !props.annotations.isEmpty {
           ForEach(props.annotations) { annotation in
+            let coordinates = annotation.coordinates
             Annotation(
               annotation.title,
               coordinate: CLLocationCoordinate2D(
-                latitude: annotation.coordinates.latitude,
-                longitude: annotation.coordinates.longitude
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude
               )
             ) {
               ZStack {
@@ -91,25 +92,35 @@ struct AppleMapsView: View {
         }
       }
       .mapControls {
-        if props.uiSettings.compassEnabled {
+        if uiSettings.compassEnabled {
           MapCompass()
         }
-        if props.uiSettings.scaleBarEnabled {
+        if uiSettings.scaleBarEnabled {
           MapScaleView()
         }
-        if props.uiSettings.togglePitchEnabled {
+        if uiSettings.togglePitchEnabled {
           MapPitchToggle()
         }
-        if props.uiSettings.myLocationButtonEnabled {
+        if uiSettings.myLocationButtonEnabled {
           MapUserLocationButton()
         }
       }
-      .mapFeatureSelectionAccessory()
-      .mapStyle(props.properties.mapTypeIos.toMapStyle(
-        showsTraffic: props.properties.isTrafficEnabled
+      .onMapCameraChange(frequency: .onEnd) { change in
+        let cameraPosition = change.region.center
+        let zoomLevel = change.region.span.longitudeDelta
+    
+        props.onMapCameraChange([
+          "latitude": cameraPosition.latitude,
+          "longitude": cameraPosition.longitude,
+          "zoom": zoomLevel
+        ])
+      }
+      .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
+      .mapStyle(properties.mapTypeIos.toMapStyle(
+        showsTraffic: properties.isTrafficEnabled
       ))
       .onAppear {
-        mapCameraPosition = MapPosition(cameraPosition: props.cameraPosition).region
+        mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
     }
   }

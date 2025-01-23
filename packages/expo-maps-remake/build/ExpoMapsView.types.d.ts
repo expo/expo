@@ -139,6 +139,7 @@ export type MapProperties = {
      */
     mapType?: MapType;
     mapTypeIos?: AppleMapType;
+    selectionEnabled?: boolean;
     maxZoomPreference?: number;
     /**
      * The minimum zoom level for the map.

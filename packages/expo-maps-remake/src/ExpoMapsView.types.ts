@@ -177,6 +177,7 @@ export type MapProperties = {
    */
   mapType?: MapType;
   mapTypeIos?: AppleMapType;
+  selectionEnabled?: boolean;
   maxZoomPreference?: number;
 
   /**

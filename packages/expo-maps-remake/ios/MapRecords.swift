@@ -1,3 +1,5 @@
+// Copyright 2025-present 650 Industries. All rights reserved. 
+
 import ExpoModulesCore
 import SwiftUI
 import MapKit
@@ -45,13 +47,14 @@ struct MapAnnotation: Record, Identifiable {
 struct MapUISettings: Record {
   @Field var compassEnabled: Bool = true
   @Field var myLocationButtonEnabled: Bool = true
-  @Field var scaleBarEnabled: Bool = true
+  @Field var scaleBarEnabled: Bool = false
   @Field var togglePitchEnabled: Bool = true
 }
 
 struct MapProperties: Record {
   @Field var mapTypeIos: MapType = .standard
   @Field var isTrafficEnabled: Bool = false
+  @Field var selectionEnabled: Bool = true
 }
 
 enum MapType: String, Enumerable {

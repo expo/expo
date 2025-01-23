@@ -6,6 +6,13 @@ public class MapsModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoMapsRemake")
     
+    Property("isMapsAvailable") {
+      if #available(iOS 18.0, *) {
+        return true
+      }
+      return false
+    }
+    
     View(AppleMapsViewWrapper.self)
   }
 }
