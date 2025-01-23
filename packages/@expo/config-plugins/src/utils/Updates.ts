@@ -221,8 +221,8 @@ export function getUpdatesRequestHeadersStringified(
   return JSON.stringify(metadata);
 }
 
-export function getAllowMeToLiveDangerously(
+export function getDisableAntiBrickingMeasures(
   config: Pick<ExpoConfigUpdates, 'updates'>
 ): boolean | undefined {
-  return config.updates?.allowMeToLiveDangerously;
+  return config.updates?.disableAntiBrickingMeasures;
 }

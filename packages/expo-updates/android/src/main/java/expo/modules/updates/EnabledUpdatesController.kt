@@ -263,8 +263,8 @@ class EnabledUpdatesController(
   }
 
   override fun setUpdatesURLAndRequestHeadersOverrides(overrides: UpdatesRuntimeOverrides?) {
-    if (!updatesConfiguration.allowMeToLiveDangerously) {
-      throw CodedException("ERR_UPDATES_URL_OVERRIDE", "Must set allowMeToLiveDangerously configuration to use updates overriding", null)
+    if (!updatesConfiguration.disableAntiBrickingMeasures) {
+      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Must set disableAntiBrickingMeasures configuration to use updates overriding", null)
     }
     UpdatesRuntimeOverrides.save(context, overrides)
   }

@@ -210,9 +210,10 @@ export interface ExpoConfig {
      */
     assetPatternsToBeBundled?: string[];
     /**
-     * Allow expo-updates to be run in danger mode TM.
+     * Allow expo-updates to be run in danger mode. This may allow for the app to be bricked if an update fails.
+     * @default false
      */
-    allowMeToLiveDangerously?: boolean;
+    disableAntiBrickingMeasures?: boolean;
   };
   /**
    * Provide overrides by locale for System Dialog prompts like Permissions Boxes

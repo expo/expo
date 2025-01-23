@@ -13,6 +13,7 @@ import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-
 import { withPlugins } from '../plugins/withPlugins';
 import {
   ExpoConfigUpdates,
+  getDisableAntiBrickingMeasures,
   getExpoUpdatesPackageVersion,
   getRuntimeVersionNullableAsync,
   getUpdatesCheckOnLaunch,
@@ -23,7 +24,6 @@ import {
   getUpdatesTimeout,
   getUpdateUrl,
   getUpdatesUseEmbeddedUpdate,
-  getAllowMeToLiveDangerously,
 } from '../utils/Updates';
 import { addWarningAndroid } from '../utils/warnings';
 
@@ -37,7 +37,7 @@ export enum Config {
   UPDATES_HAS_EMBEDDED_UPDATE = 'expo.modules.updates.HAS_EMBEDDED_UPDATE',
   CODE_SIGNING_CERTIFICATE = 'expo.modules.updates.CODE_SIGNING_CERTIFICATE',
   CODE_SIGNING_METADATA = 'expo.modules.updates.CODE_SIGNING_METADATA',
-  ALLOW_ME_TO_LIVE_DANGEROUSLY = 'expo.modules.updates.ALLOW_ME_TO_LIVE_DANGEROUSLY',
+  DISABLE_ANTI_BRICKING_MEASURES = 'expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -165,11 +165,15 @@ export async function setUpdatesConfigAsync(
     );
   }
 
-  const allowMeToLiveDangerously = getAllowMeToLiveDangerously(config);
-  if (allowMeToLiveDangerously) {
-    addMetaDataItemToMainApplication(mainApplication, Config.ALLOW_ME_TO_LIVE_DANGEROUSLY, 'true');
+  const disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(config);
+  if (disableAntiBrickingMeasures) {
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      Config.DISABLE_ANTI_BRICKING_MEASURES,
+      'true'
+    );
   } else {
-    removeMetaDataItemFromMainApplication(mainApplication, Config.ALLOW_ME_TO_LIVE_DANGEROUSLY);
+    removeMetaDataItemFromMainApplication(mainApplication, Config.DISABLE_ANTI_BRICKING_MEASURES);
   }
 
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);

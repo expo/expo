@@ -68,7 +68,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["UPDATES_HAS_EMBEDDED_UPDATE"] = "expo.modules.updates.HAS_EMBEDDED_UPDATE";
   Config["CODE_SIGNING_CERTIFICATE"] = "expo.modules.updates.CODE_SIGNING_CERTIFICATE";
   Config["CODE_SIGNING_METADATA"] = "expo.modules.updates.CODE_SIGNING_METADATA";
-  Config["ALLOW_ME_TO_LIVE_DANGEROUSLY"] = "expo.modules.updates.ALLOW_ME_TO_LIVE_DANGEROUSLY";
+  Config["DISABLE_ANTI_BRICKING_MEASURES"] = "expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES";
   return Config;
 }({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
@@ -140,11 +140,11 @@ async function setUpdatesConfigAsync(projectRoot, config, androidManifest, expoU
   } else {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY);
   }
-  const allowMeToLiveDangerously = (0, _Updates().getAllowMeToLiveDangerously)(config);
-  if (allowMeToLiveDangerously) {
-    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.ALLOW_ME_TO_LIVE_DANGEROUSLY, 'true');
+  const disableAntiBrickingMeasures = (0, _Updates().getDisableAntiBrickingMeasures)(config);
+  if (disableAntiBrickingMeasures) {
+    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.DISABLE_ANTI_BRICKING_MEASURES, 'true');
   } else {
-    (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.ALLOW_ME_TO_LIVE_DANGEROUSLY);
+    (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.DISABLE_ANTI_BRICKING_MEASURES);
   }
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);
 }

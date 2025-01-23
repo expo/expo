@@ -249,8 +249,8 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
   }
 
   public func setUpdatesURLAndRequestHeadersOverrides(_ overrides: UpdatesRuntimeOverrides?) throws {
-    if !config.allowMeToLiveDangerously {
-      throw NotAllowedUnlessLivingDangerouslyException()
+    if !config.disableAntiBrickingMeasures {
+      throw NotAllowedAntiBrickingMeasuresException()
     }
     UpdatesConfig.updatesRuntimeOverrides = overrides
   }

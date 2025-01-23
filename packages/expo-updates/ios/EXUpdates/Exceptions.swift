@@ -69,13 +69,13 @@ internal final class NotAvailableInDevClientException: Exception {
 }
 
 // swiftlint:disable:next type_name
-internal final class NotAllowedUnlessLivingDangerouslyException: Exception {
+internal final class NotAllowedAntiBrickingMeasuresException: Exception {
   override var code: String {
-    "ERR_NOT_ALLOWED"
+    "ERR_UPDATES_RUNTIME_OVERRIDE"
   }
 
   override var reason: String {
-    "Must set allowMeToLiveDangerously configuration to use URL overriding"
+    "Must set disableAntiBrickingMeasures configuration to use updates overriding"
   }
 }
 

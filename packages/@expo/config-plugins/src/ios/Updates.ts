@@ -3,6 +3,7 @@ import { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
 import {
   ExpoConfigUpdates,
+  getDisableAntiBrickingMeasures,
   getExpoUpdatesPackageVersion,
   getRuntimeVersionNullableAsync,
   getUpdatesCheckOnLaunch,
@@ -13,7 +14,6 @@ import {
   getUpdatesTimeout,
   getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
-  getAllowMeToLiveDangerously,
 } from '../utils/Updates';
 import { addWarningIOS } from '../utils/warnings';
 
@@ -27,7 +27,7 @@ export enum Config {
   UPDATES_HAS_EMBEDDED_UPDATE = 'EXUpdatesHasEmbeddedUpdate',
   CODE_SIGNING_CERTIFICATE = 'EXUpdatesCodeSigningCertificate',
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
-  ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY = 'EXUpdatesAllowMeToLiveDangerously',
+  DISABLE_ANTI_BRICKING_MEASURES = 'EXUpdatesDisableAntiBrickingMeasures',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -110,11 +110,11 @@ export async function setUpdatesConfigAsync(
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
   }
 
-  const allowMeToLiveDangerously = getAllowMeToLiveDangerously(config);
-  if (allowMeToLiveDangerously) {
-    newExpoPlist[Config.ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY] = allowMeToLiveDangerously;
+  const disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(config);
+  if (disableAntiBrickingMeasures) {
+    newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES] = disableAntiBrickingMeasures;
   } else {
-    delete newExpoPlist[Config.ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY];
+    delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
   }
 
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);

@@ -79,7 +79,7 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey = "EXUpdatesCodeSigningIncludeManifestResponseCertificateChain"
   public static let EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey = "EXUpdatesConfigCodeSigningAllowUnsignedManifests"
   public static let EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey = "EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityMode"
-  public static let EXUpdatesConfigAllowMeToLiveDangerously = "EXUpdatesConfigAllowMeToLiveDangerously"
+  public static let EXUpdatesConfigDisableAntiBrickingMeasures = "EXUpdatesDisableAntiBrickingMeasures"
 
   public static let EXUpdatesConfigCheckOnLaunchValueAlways = "ALWAYS"
   public static let EXUpdatesConfigCheckOnLaunchValueWifiOnly = "WIFI_ONLY"
@@ -100,7 +100,7 @@ public final class UpdatesConfig: NSObject {
   public let enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   public let runtimeVersion: String
   public let hasEmbeddedUpdate: Bool
-  public let allowMeToLiveDangerously: Bool
+  public let disableAntiBrickingMeasures: Bool
 
   internal required init(
     scopeKey: String,
@@ -112,7 +112,7 @@ public final class UpdatesConfig: NSObject {
     runtimeVersion: String,
     hasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool,
-    allowMeToLiveDangerously: Bool
+    disableAntiBrickingMeasures: Bool
   ) {
     self.scopeKey = scopeKey
     self.updateUrl = updateUrl
@@ -123,7 +123,7 @@ public final class UpdatesConfig: NSObject {
     self.runtimeVersion = runtimeVersion
     self.hasEmbeddedUpdate = hasEmbeddedUpdate
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
-    self.allowMeToLiveDangerously = allowMeToLiveDangerously
+    self.disableAntiBrickingMeasures = disableAntiBrickingMeasures
   }
 
   private static func configDictionaryWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> [String: Any] {
@@ -268,7 +268,7 @@ public final class UpdatesConfig: NSObject {
       runtimeVersion: runtimeVersion,
       hasEmbeddedUpdate: hasEmbeddedUpdate,
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode,
-      allowMeToLiveDangerously: config.optionalValue(forKey: EXUpdatesConfigAllowMeToLiveDangerously) ?? false
+      disableAntiBrickingMeasures: getDisableAntiBrickingMeasures(fromDictionary: config)
     )
   }
 
@@ -327,19 +327,19 @@ public final class UpdatesConfig: NSObject {
     }
   }
 
-  private static func getAllowMeToLiveDangerously(fromDictionary config: [String: Any]) -> Bool {
-    return config.optionalValue(forKey: EXUpdatesConfigAllowMeToLiveDangerously) ?? false
+  private static func getDisableAntiBrickingMeasures(fromDictionary config: [String: Any]) -> Bool {
+    return config.optionalValue(forKey: EXUpdatesConfigDisableAntiBrickingMeasures) ?? false
   }
 
   private static func getHasEmbeddedUpdate(fromDictionary config: [String: Any]) -> Bool {
-    if getAllowMeToLiveDangerously(fromDictionary: config) && updatesRuntimeOverrides != nil {
+    if getDisableAntiBrickingMeasures(fromDictionary: config) && updatesRuntimeOverrides != nil {
       return false
     }
     return config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
   }
 
   private static func getUpdatesUrl(fromDictionary config: [String: Any]) -> URL? {
-    if getAllowMeToLiveDangerously(fromDictionary: config),
+    if getDisableAntiBrickingMeasures(fromDictionary: config),
       let url = updatesRuntimeOverrides?.url {
       return url
     }
@@ -349,7 +349,7 @@ public final class UpdatesConfig: NSObject {
   }
 
   private static func getRequestHeaders(fromDictionary config: [String: Any]) -> [String: String] {
-    if getAllowMeToLiveDangerously(fromDictionary: config),
+    if getDisableAntiBrickingMeasures(fromDictionary: config),
       let requestHeaders = updatesRuntimeOverrides?.requestHeaders {
       return requestHeaders
     }

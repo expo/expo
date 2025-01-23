@@ -48,7 +48,7 @@ class UpdatesUtilsTest : TestCase() {
       codeSigningIncludeManifestResponseCertificateChain = true,
       codeSigningAllowUnsignedManifests = true,
       enableExpoUpdatesProtocolV0CompatibilityMode = true,
-      allowMeToLiveDangerously = false
+      disableAntiBrickingMeasures = false
     )
 
     val runtimeOnlyConfig = baseConfig.copy()

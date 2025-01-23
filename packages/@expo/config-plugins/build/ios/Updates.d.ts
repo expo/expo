@@ -11,7 +11,7 @@ export declare enum Config {
     UPDATES_HAS_EMBEDDED_UPDATE = "EXUpdatesHasEmbeddedUpdate",
     CODE_SIGNING_CERTIFICATE = "EXUpdatesCodeSigningCertificate",
     CODE_SIGNING_METADATA = "EXUpdatesCodeSigningMetadata",
-    ALLOW_ME_TO_LIVE_DANGEROUSLY_KEY = "EXUpdatesAllowMeToLiveDangerously"
+    DISABLE_ANTI_BRICKING_MEASURES = "EXUpdatesDisableAntiBrickingMeasures"
 }
 export declare const withUpdates: ConfigPlugin;
 export declare function setUpdatesConfigAsync(projectRoot: string, config: ExpoConfigUpdates, expoPlist: ExpoPlist, expoUpdatesPackageVersion?: string | null): Promise<ExpoPlist>;

@@ -104,7 +104,7 @@ class BuildDataTest {
       codeSigningIncludeManifestResponseCertificateChain = false,
       codeSigningAllowUnsignedManifests = false,
       enableExpoUpdatesProtocolV0CompatibilityMode = false,
-      allowMeToLiveDangerously = false,
+      disableAntiBrickingMeasures = false,
     )
   }
 }
