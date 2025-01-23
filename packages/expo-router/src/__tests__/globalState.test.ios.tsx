@@ -75,11 +75,25 @@ describe(RouterStore, () => {
           },
         },
       }),
-      rootState: undefined,
-      initialState: undefined,
+      rootState: {
+        routes: [
+          {
+            name: 'index',
+            path: 'yourscheme:///',
+          },
+        ],
+      },
+      initialState: {
+        routes: [
+          {
+            name: 'index',
+            path: 'yourscheme:///',
+          },
+        ],
+      },
       routeInfo: {
-        unstable_globalHref: '',
-        pathname: '',
+        unstable_globalHref: '/',
+        pathname: '/',
         params: {},
         segments: [],
       },
