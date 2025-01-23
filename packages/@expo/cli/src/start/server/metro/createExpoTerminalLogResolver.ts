@@ -1,9 +1,14 @@
-import type { ResolutionContext } from 'metro-resolver';
+import type { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'node:path';
 
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
+
+type ExpoStrictResolver = (
+  context: ResolutionContext,
+  platform: string | null
+) => (moduleName: string) => Resolution;
 
 /**
  * React Native used to have logs from android/ios devices emitted in the terminal.
@@ -17,22 +22,44 @@ const debug = require('debug')('expo:start:server:metro:multi-platform') as type
  *   1. Expo CLI can't listen for new inspectable devices
  *   2. Fuxebox / inspector proxy only allows 1 debugger to be connected simultaneously
  */
-export function createExpoTerminalLogResolver(): ExpoCustomMetroResolver {
+export function createExpoTerminalLogResolver({
+  getStrictResolver,
+}: {
+  getStrictResolver: ExpoStrictResolver;
+}): ExpoCustomMetroResolver {
+  let originModulePath: string;
   const setupDevtoolsModule = require.resolve(
     '@expo/cli/static/virtual/react-native/Libraries/Core/setUpDeveloperTools.js'
   );
 
   return function requestExpoTerminalLogModule(context, moduleName, platform) {
-    if (
-      (platform === 'android' || platform === 'ios') &&
-      moduleIsSetupDevTools(context, moduleName)
-    ) {
+    if (platform !== 'android' && platform !== 'ios') {
+      return null;
+    }
+
+    // Resolve `react-native/Libraries/Core/setUpDeveloperTools` to forked version
+    if (moduleIsSetupDevTools(context, moduleName)) {
       debug('Redirecting module:', moduleName, '->', setupDevtoolsModule);
+
+      originModulePath = path.join(
+        path.dirname(context.originModulePath),
+        path.basename(moduleName)
+      );
 
       return {
         type: 'sourceFile',
         filePath: setupDevtoolsModule,
       };
+    }
+
+    // Resolve dependants of forked version to the original path
+    if (
+      originModulePath &&
+      context.originModulePath.endsWith(
+        '@expo/cli/static/virtual/react-native/Libraries/Core/setUpDeveloperTools.js'
+      )
+    ) {
+      return getStrictResolver({ ...context, originModulePath }, platform)(moduleName);
     }
 
     return null;

@@ -3,6 +3,13 @@
 // When the inspector proxy allows multiple debugger connections, and Expo receives the "inspectable device is avaible" event
 // we want to remove this override, and create a CLI-only system that uses CDP to emit logs to the terminal.
 
+    // NOTE(cedric): we both disable the Fusebox check and notification emitted by `notifyFuseboxConsoleEnabled`
+    // if (global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
+    //   HMRClient.unstable_notifyFuseboxConsoleEnabled();
+    // } else 
+
+
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -13,7 +20,7 @@
  * @format
  */
 
-import Platform from 'react-native/Libraries/Utilities/Platform';
+import Platform from '../Utilities/Platform';
 
 declare var console: {[string]: $FlowFixMe};
 
@@ -22,11 +29,9 @@ declare var console: {[string]: $FlowFixMe};
  * You can use this module directly, or just require InitializeCore.
  */
 if (__DEV__) {
-  require('react-native/Libraries/Core/setUpReactDevTools');
-
   // Set up inspector
-  const JSInspector = require('react-native/Libraries/JSInspector/JSInspector');
-  JSInspector.registerAgent(require('react-native/Libraries/JSInspector/NetworkAgent'));
+  const JSInspector = require('../JSInspector/JSInspector');
+  JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
 
   // Note we can't check if console is "native" because it would appear "native" in JSC and Hermes.
   // We also can't check any properties that don't exist in the Chrome worker environment.
@@ -44,8 +49,8 @@ if (__DEV__) {
      */
     global.navigator.appName === 'Netscape'; // Any real browser
 
-  if (true || !Platform.isTesting) {
-    const HMRClient = require('react-native/Libraries/Utilities/HMRClient');
+  if (!Platform.isTesting) {
+    const HMRClient = require('../Utilities/HMRClient');
 
     // NOTE(cedric): we both disable the Fusebox check and notification emitted by `notifyFuseboxConsoleEnabled`
     // if (global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
@@ -78,14 +83,14 @@ if (__DEV__) {
       HMRClient.log('log', [
         `JavaScript logs will appear in your ${
           isLikelyARealBrowser ? 'browser' : 'environment'
-        } nsole`,
+        } console`,
       ]);
     }
   }
 
-  require('react-native/Libraries/Core/setUpReactRefresh');
+  require('./setUpReactRefresh');
 
   global[
     `${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`
-  ] = require('react-native/Libraries/Core/Devtools/loadBundleFromServer');
+  ] = require('./Devtools/loadBundleFromServer');
 }

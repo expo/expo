@@ -569,7 +569,7 @@ export function withExtendedResolver(
     },
 
     // Enable (legacy) terminal logging without warnings
-    createExpoTerminalLogResolver(),
+    createExpoTerminalLogResolver({ getStrictResolver }),
 
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
