@@ -32,6 +32,7 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
+import { createExpoTerminalLogResolver } from './createExpoTerminalLogResolver';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -566,6 +567,9 @@ export function withExtendedResolver(
 
       return null;
     },
+
+    // Enable (legacy) terminal logging without warnings
+    createExpoTerminalLogResolver(),
 
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
