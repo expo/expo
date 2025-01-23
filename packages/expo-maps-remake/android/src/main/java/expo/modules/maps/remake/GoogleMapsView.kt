@@ -84,7 +84,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
             )
           )
         },
-        mapColorScheme = props.colorScheme.value.toComposeMapColorScheme(),
+        mapColorScheme = props.colorScheme.value.toComposeMapColorScheme()
       ) {
         for ((marker, state) in markerState.value) {
           val icon = getIconDescriptor(marker)
