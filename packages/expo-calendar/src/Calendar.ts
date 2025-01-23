@@ -1152,8 +1152,8 @@ export async function deleteAttendeeAsync(id: string): Promise<void> {
 export async function getRemindersAsync(
   calendarIds: (string | null)[],
   status: ReminderStatus | null,
-  startDate: Date,
-  endDate: Date
+  startDate: Date | null,
+  endDate: Date | null
 ): Promise<Reminder[]> {
   if (!ExpoCalendar.getRemindersAsync) {
     throw new UnavailabilityError('Calendar', 'getRemindersAsync');
@@ -1173,9 +1173,13 @@ export async function getRemindersAsync(
       'getRemindersAsync must be called with a non-empty array of calendarIds to search'
     );
   }
+
+  const formattedStartDate = startDate ? stringifyIfDate(startDate) : null;
+  const formattedEndDate = endDate ? stringifyIfDate(endDate) : null;
+
   return ExpoCalendar.getRemindersAsync(
-    stringifyIfDate(startDate) || null,
-    stringifyIfDate(endDate) || null,
+    formattedStartDate,
+    formattedEndDate,
     calendarIds,
     status || null
   );

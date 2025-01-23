@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)copyToClipboard:(NSString *)content;
 
-- (NSDictionary *)getUpdatesConfig;
+- (NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants;
 
 @end
 

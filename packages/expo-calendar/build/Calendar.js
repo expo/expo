@@ -461,7 +461,9 @@ export async function getRemindersAsync(calendarIds, status, startDate, endDate)
     if (!calendarIds || !calendarIds.length) {
         throw new Error('getRemindersAsync must be called with a non-empty array of calendarIds to search');
     }
-    return ExpoCalendar.getRemindersAsync(stringifyIfDate(startDate) || null, stringifyIfDate(endDate) || null, calendarIds, status || null);
+    const formattedStartDate = startDate ? stringifyIfDate(startDate) : null;
+    const formattedEndDate = endDate ? stringifyIfDate(endDate) : null;
+    return ExpoCalendar.getRemindersAsync(formattedStartDate, formattedEndDate, calendarIds, status || null);
 }
 // @needsAudit
 /**

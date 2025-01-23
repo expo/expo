@@ -78,8 +78,11 @@ class UpdatesDevLauncherController(
   }
 
   @get:Synchronized
-  override val launchAssetFile: String
-    get() = throw Exception("IUpdatesController.launchAssetFile should not be called in dev client")
+  override val launchAssetFile: String?
+    get() {
+      logger.warn("launchAssetFile should not be called from expo-dev-client build, except for Detox testing")
+      return null
+    }
 
   override val bundleAssetName: String
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")

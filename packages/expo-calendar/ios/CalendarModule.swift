@@ -156,7 +156,7 @@ public class CalendarModule: Module {
       return serialize(attendees: attendees)
     }
 
-    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendarIds: [String?], status: String?, promise: Promise) in
+    AsyncFunction("getRemindersAsync") { (startDateStr: String?, endDateStr: String?, calendarIds: [String?], status: String?, promise: Promise) in
       try checkRemindersPermissions()
       var reminderCalendars = [EKCalendar]()
       let startDate = parse(date: startDateStr)

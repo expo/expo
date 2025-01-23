@@ -13,9 +13,11 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixes view managers not deallocating when reloading. ([#33760](https://github.com/expo/expo/pull/33760) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fixes `AppContext` is lost in nested converters. ([#34373](https://github.com/expo/expo/pull/34373) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
+- [iOS] Enable named view exports. ([#34293](https://github.com/expo/expo/pull/34293) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Enable named view exports. ([#34161](https://github.com/expo/expo/pull/34161) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default. ([#33261](https://github.com/expo/expo/pull/33261) by [@lukmccall](https://github.com/lukmccall))
 - [Android]: Added callback to executeTask method signature after adding package expo-background-task ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))

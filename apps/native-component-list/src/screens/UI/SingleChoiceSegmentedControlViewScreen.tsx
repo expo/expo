@@ -1,10 +1,10 @@
-import { SingleChoiceSegmentedControlView } from 'expo-ui';
+import { SingleChoiceSegmentedControlView } from '@expo/ui';
 import * as React from 'react';
 import { Platform, Text } from 'react-native';
 
-import { Page, Section } from '../components/Page';
+import { Page, Section } from '../../components/Page';
 
-export default function UIScreen() {
+export default function SingleChoiceSegmentedControlViewScreen() {
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
   return (
     <Page>
@@ -30,6 +30,6 @@ export default function UIScreen() {
   );
 }
 
-UIScreen.navigationOptions = {
-  title: 'Expo UI',
+SingleChoiceSegmentedControlViewScreen.navigationOptions = {
+  title: 'SingleChoiceSegmentedControlViewScreen',
 };
