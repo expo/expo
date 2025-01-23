@@ -68,6 +68,7 @@ useExpoModules([
         'expo-dev-launcher',
         'expo-dev-client',
         'expo-maps',
+        'expo-maps-remake',
         'expo-network-addons',
         'expo-splash-screen',
         '@expo/ui'
