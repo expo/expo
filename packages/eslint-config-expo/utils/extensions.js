@@ -1,4 +1,5 @@
-const jsExtensions = ['.js', '.jsx'];
+const jsExtensions = ['.mjs', '.js', '.jsx'];
+
 const tsExtensions = ['.ts', '.tsx', '.d.ts'];
 
 const platformSubextensions = ['.android', '.ios', '.web', '.native'];
@@ -16,6 +17,5 @@ function computeExpoExtensions(baseExtensions, platformSubextensions) {
 module.exports = {
   jsExtensions,
   tsExtensions,
-  platformSubextensions,
-  computeExpoExtensions,
+  allExtensions: computeExpoExtensions([...jsExtensions, ...tsExtensions], platformSubextensions),
 };
