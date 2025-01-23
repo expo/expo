@@ -49,10 +49,10 @@ const withBuildSourceFile = (config, {
   overwrite
 }) => {
   return (0, _iosPlugins().withXcodeProject)(config, config => {
-    const projectName = (0, _Xcodeproj().getProjectName)(config.modRequest.projectRoot);
+    const projectName = (0, _Xcodeproj().getProjectName)(config.modRequest.projectRoot, config.modRequest.platform);
     config.modResults = createBuildSourceFile({
       project: config.modResults,
-      nativeProjectRoot: config.modRequest.platformProjectRoot,
+      nativeProjectRoot: config.modRequest.platform,
       fileContents: contents,
       filePath: _path().default.join(projectName, filePath),
       overwrite

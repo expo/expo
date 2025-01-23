@@ -1,6 +1,7 @@
 import { XcodeProject } from 'xcode';
 
 import { resolvePathOrProject } from './Xcodeproj';
+import { ModPlatform } from '../../Plugin.types';
 import { getXCBuildConfigurationFromPbxproj } from '../Target';
 
 /**
@@ -12,12 +13,13 @@ import { getXCBuildConfigurationFromPbxproj } from '../Target';
  */
 export function getInfoPlistPathFromPbxproj(
   projectRootOrProject: string | XcodeProject,
+  platform: ModPlatform,
   {
     targetName,
     buildConfiguration = 'Release',
   }: { targetName?: string; buildConfiguration?: string | 'Release' | 'Debug' } = {}
 ): string | null {
-  const project = resolvePathOrProject(projectRootOrProject);
+  const project = resolvePathOrProject(projectRootOrProject, platform);
   if (!project) {
     return null;
   }

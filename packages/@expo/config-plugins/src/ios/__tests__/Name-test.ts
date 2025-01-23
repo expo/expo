@@ -2,6 +2,7 @@ import type { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import { vol } from 'memfs';
 
+import { ModPlatform } from '../../Plugin.types';
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { getName, setDisplayName, setName, setProductName } from '../Name';
 import { getPbxproj, isBuildConfig, isNotComment } from '../utils/Xcodeproj';
@@ -31,6 +32,7 @@ describe(setName, () => {
 });
 describe(setProductName, () => {
   const projectRoot = '/';
+  const platform = 'ios';
   beforeAll(async () => {
     vol.fromJSON(
       {
@@ -52,7 +54,7 @@ describe(setProductName, () => {
       ['h"&<world/>🚀', `"hworld"`],
     ]) {
       // Ensure the value can be parsed and written.
-      const project = setProductNameForRoot({ name: input, slug: '' }, projectRoot);
+      const project = setProductNameForRoot({ name: input, slug: '' }, projectRoot, platform);
       expect(
         Object.entries(project.pbxXCBuildConfigurationSection())
           .filter(isNotComment)
@@ -64,8 +66,8 @@ describe(setProductName, () => {
   });
 });
 
-function setProductNameForRoot(config: ExpoConfig, projectRoot: string) {
-  let project = getPbxproj(projectRoot);
+function setProductNameForRoot(config: ExpoConfig, projectRoot: string, platform: ModPlatform) {
+  let project = getPbxproj(projectRoot, platform);
   project = setProductName(config, project);
   fs.writeFileSync(project.filepath, project.writeSync());
   return project;

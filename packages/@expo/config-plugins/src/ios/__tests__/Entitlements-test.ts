@@ -24,6 +24,7 @@ const exampleEntitlements = `<?xml version="0.0" encoding="UTF-8"?>
 
 describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
   const projectRoot = '/app';
+  const platform = 'ios';
 
   afterEach(() => {
     vol.reset();
@@ -31,9 +32,9 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
 
   it('creates a new entitlements file when none exists', async () => {
     vol.fromJSON(rnFixture, projectRoot);
-    const entitlementsPathBefore = getEntitlementsPath(projectRoot);
-    ensureApplicationTargetEntitlementsFileConfigured(projectRoot);
-    const entitlementsPath = getEntitlementsPath(projectRoot);
+    const entitlementsPathBefore = getEntitlementsPath(projectRoot, platform);
+    ensureApplicationTargetEntitlementsFileConfigured(projectRoot, platform);
+    const entitlementsPath = getEntitlementsPath(projectRoot, platform);
     expect(entitlementsPathBefore).toBeNull();
     expect(entitlementsPath).toBe('/app/ios/HelloWorld/HelloWorld.entitlements');
 
@@ -55,8 +56,8 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
       },
       projectRoot
     );
-    ensureApplicationTargetEntitlementsFileConfigured(projectRoot);
-    const entitlementsPath = getEntitlementsPath(projectRoot);
+    ensureApplicationTargetEntitlementsFileConfigured(projectRoot, platform);
+    const entitlementsPath = getEntitlementsPath(projectRoot, platform);
     expect(entitlementsPath).toBe('/app/ios/testproject/testproject.entitlements');
 
     // New file has the contents of the old entitlements file
@@ -76,8 +77,8 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
       },
       projectRoot
     );
-    ensureApplicationTargetEntitlementsFileConfigured(projectRoot);
-    const entitlementsPath = getEntitlementsPath(projectRoot);
+    ensureApplicationTargetEntitlementsFileConfigured(projectRoot, platform);
+    const entitlementsPath = getEntitlementsPath(projectRoot, platform);
     expect(entitlementsPath).toBe('/app/ios/testapp/example.entitlements');
 
     // New file has the contents of the old entitlements file
@@ -91,6 +92,7 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
 
 describe(getEntitlementsPath, () => {
   const projectRoot = '/app';
+  const platform = 'ios';
 
   afterEach(() => {
     vol.reset();
@@ -106,7 +108,7 @@ describe(getEntitlementsPath, () => {
       projectRoot
     );
 
-    const entitlementsPath = getEntitlementsPath(projectRoot);
+    const entitlementsPath = getEntitlementsPath(projectRoot, platform);
     expect(entitlementsPath).toBeNull();
   });
   it('returns path if CODE_SIGN_ENTITLEMENTS is specified and file exists', async () => {
@@ -122,7 +124,7 @@ describe(getEntitlementsPath, () => {
       projectRoot
     );
 
-    const entitlementsPath = getEntitlementsPath(projectRoot);
+    const entitlementsPath = getEntitlementsPath(projectRoot, platform);
     expect(entitlementsPath).toBe('/app/ios/testapp/example.entitlements');
   });
 });

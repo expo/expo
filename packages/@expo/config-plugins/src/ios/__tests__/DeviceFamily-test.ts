@@ -2,6 +2,7 @@ import { ExpoConfig } from '@expo/config-types';
 import * as fs from 'fs';
 import { vol } from 'memfs';
 
+import { ModPlatform } from '../../Plugin.types';
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as WarningAggregator from '../../utils/warnings';
 import {
@@ -85,6 +86,7 @@ describe('device family', () => {
 
 describe(setDeviceFamily, () => {
   const projectRoot = '/tablet';
+  const platform = 'ios';
   beforeAll(async () => {
     vol.fromJSON(
       {
@@ -101,14 +103,22 @@ describe(setDeviceFamily, () => {
   });
 
   it('updates device families without throwing', async () => {
-    setDeviceFamilyForRoot({ name: '', slug: '', ios: {} }, projectRoot);
-    setDeviceFamilyForRoot({ name: '', slug: '', ios: { supportsTablet: true } }, projectRoot);
-    setDeviceFamilyForRoot({ name: '', slug: '', ios: { isTabletOnly: true } }, projectRoot);
+    setDeviceFamilyForRoot({ name: '', slug: '', ios: {} }, projectRoot, platform);
+    setDeviceFamilyForRoot(
+      { name: '', slug: '', ios: { supportsTablet: true } },
+      projectRoot,
+      platform
+    );
+    setDeviceFamilyForRoot(
+      { name: '', slug: '', ios: { isTabletOnly: true } },
+      projectRoot,
+      platform
+    );
   });
 });
 
-function setDeviceFamilyForRoot(config: ExpoConfig, projectRoot: string) {
-  let project = getPbxproj(projectRoot);
+function setDeviceFamilyForRoot(config: ExpoConfig, projectRoot: string, platform: ModPlatform) {
+  let project = getPbxproj(projectRoot, platform);
   project = setDeviceFamily(config, { project });
   fs.writeFileSync(project.filepath, project.writeSync());
 }

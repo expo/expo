@@ -90,14 +90,14 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  * LICENSE file in the root directory of this source tree.
  */
 
-function getProjectName(projectRoot) {
-  const sourceRoot = Paths().getSourceRoot(projectRoot);
+function getProjectName(projectRoot, platform) {
+  const sourceRoot = Paths().getSourceRoot(projectRoot, platform);
   return _path().default.basename(sourceRoot);
 }
-function resolvePathOrProject(projectRootOrProject) {
+function resolvePathOrProject(projectRootOrProject, platform) {
   if (typeof projectRootOrProject === 'string') {
     try {
-      return getPbxproj(projectRootOrProject);
+      return getPbxproj(projectRootOrProject, platform);
     } catch {
       return null;
     }
@@ -118,10 +118,10 @@ function sanitizedNameForProjects(name) {
 // the ios project paths. Overall this function needs to be revamped, just a
 // placeholder for now! Make this more robust when we support applying config
 // at any time (currently it's only applied on eject).
-function getHackyProjectName(projectRoot, config) {
+function getHackyProjectName(projectRoot, platform, config) {
   // Attempt to get the current ios folder name (apply).
   try {
-    return getProjectName(projectRoot);
+    return getProjectName(projectRoot, platform);
   } catch {
     // If no iOS project exists then create a new one (eject).
     const projectName = config.name;
@@ -334,8 +334,8 @@ function ensureGroupRecursively(project, filepath) {
 /**
  * Get the pbxproj for the given path
  */
-function getPbxproj(projectRoot) {
-  const projectPath = Paths().getPBXProjectPath(projectRoot);
+function getPbxproj(projectRoot, platform) {
+  const projectPath = Paths().getPBXProjectPath(projectRoot, platform);
   const project = _xcode().default.project(projectPath);
   project.parseSync();
   return project;

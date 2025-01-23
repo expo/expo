@@ -4,7 +4,7 @@ import xcode, { type XCBuildConfiguration } from 'xcode';
 
 import { getAllPBXProjectPaths } from './Paths';
 import { getNativeTargets } from './Target';
-import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import type { ConfigPlugin, ModPlatform, XcodeProject } from '../Plugin.types';
 import { getBuildConfigurationsForListId } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
 import { withXcodeProject } from '../plugins/ios-plugins';
@@ -70,11 +70,16 @@ export function updateDevelopmentTeamForPbxproj(
  * Updates the Apple development team ID for pbx projects inside the ios directory of the given project root
  *
  * @param {string} projectRoot Path to project root containing the ios directory
+ * @param {ModPlatform} platform Platform name, e.g. 'ios'
  * @param {[string]} appleTeamId Desired Apple development team ID
  */
-export function setDevelopmentTeamForPbxproj(projectRoot: string, appleTeamId?: string): void {
-  // Get all pbx projects in the ${projectRoot}/ios directory
-  const pbxprojPaths = getAllPBXProjectPaths(projectRoot);
+export function setDevelopmentTeamForPbxproj(
+  projectRoot: string,
+  platform: ModPlatform,
+  appleTeamId?: string
+): void {
+  // Get all pbx projects in the ${projectRoot}/${platform} directory
+  const pbxprojPaths = getAllPBXProjectPaths(projectRoot, platform);
 
   for (const pbxprojPath of pbxprojPaths) {
     let project = xcode.project(pbxprojPath);

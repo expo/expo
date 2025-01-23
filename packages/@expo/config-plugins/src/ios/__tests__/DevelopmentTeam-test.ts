@@ -17,6 +17,8 @@ jest.mock('fs');
 jest.mock('node:fs', () => require('memfs').fs);
 
 describe('DevelopmentTeam module', () => {
+  const platform = 'ios';
+
   describe(getDevelopmentTeam, () => {
     it('returns `null` if no `developmentTeam` is set', () => {
       expect(getDevelopmentTeam(baseExpoConfig)).toBe(null);
@@ -30,19 +32,20 @@ describe('DevelopmentTeam module', () => {
 
   describe(setDevelopmentTeamForPbxproj, () => {
     const projectRoot = '/testproject';
-    const pbxProjPath = 'ios/testproject.xcodeproj/project.pbxproj';
+    const pbxProjPath = `${platform}/testproject.xcodeproj/project.pbxproj`;
 
     afterEach(() => vol.reset());
 
     it('adds the `DEVELOPMENT_TEAM` to all build configurations when providing a team id', () => {
-      const fixtureWithoutDevelopmentTeam = rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'];
+      const fixtureWithoutDevelopmentTeam =
+        rnFixture[`${platform}/HelloWorld.xcodeproj/project.pbxproj`];
       vol.fromJSON({ [pbxProjPath]: fixtureWithoutDevelopmentTeam }, projectRoot);
 
       // Ensure the test fixture has NO development team
       expect(fixtureWithoutDevelopmentTeam).not.toContain('DEVELOPMENT_TEAM');
 
       // Add the development team
-      setDevelopmentTeamForPbxproj(projectRoot, 'X0XX00XXXX');
+      setDevelopmentTeamForPbxproj(projectRoot, platform, 'X0XX00XXXX');
 
       // Esnure the development team has been added
       const contents = memfs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
@@ -60,7 +63,7 @@ describe('DevelopmentTeam module', () => {
       expect(fixtureWithDevelopmentTeam).toContain('DEVELOPMENT_TEAM');
 
       // Remove the development team
-      setDevelopmentTeamForPbxproj(projectRoot);
+      setDevelopmentTeamForPbxproj(projectRoot, platform);
 
       // Ensure the development team has been removed
       const contents = memfs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
