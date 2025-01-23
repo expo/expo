@@ -3,30 +3,29 @@
 import SwiftUI
 
 extension ExpoSwiftUI {
-  
   public struct AxisSet: OptionSet {
     public init(rawValue: Int) {
       self.rawValue = rawValue
     }
     public let rawValue: Int
-    
+
     public static let horizontal = AxisSet(rawValue: 1 << 0)
     public static let vertical = AxisSet(rawValue: 1 << 1)
-    
+
     public static let both: AxisSet = [.horizontal, .vertical]
   }
-  
+
   public struct AutoSizingStack<Content: SwiftUI.View>: SwiftUI.View {
     let content: Content
     let viewUtils: ViewUtils
     let axis: AxisSet
-    
+
     public init(viewUtils: ViewUtils, axis: AxisSet = .both, @ViewBuilder _ content: () -> Content) {
       self.viewUtils = viewUtils
       self.content = content()
       self.axis = axis
     }
-    
+
     public var body: some SwiftUI.View {
       if #available(iOS 16.0, *) {
         content.fixedSize(horizontal: axis.contains(.horizontal), vertical: axis.contains(.vertical))
