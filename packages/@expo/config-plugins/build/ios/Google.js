@@ -77,6 +77,7 @@ const withGoogleServicesFile = config => {
   return (0, _iosPlugins().withXcodeProject)(config, config => {
     config.modResults = setGoogleServicesFile(config, {
       projectRoot: config.modRequest.projectRoot,
+      platform: config.modRequest.platform,
       project: config.modResults
     });
     return config;
@@ -115,15 +116,16 @@ function setGoogleConfig(config, infoPlist, modRequest) {
 }
 function setGoogleServicesFile(config, {
   projectRoot,
-  project
+  project,
+  platform
 }) {
   const googleServicesFileRelativePath = getGoogleServicesFile(config);
   if (googleServicesFileRelativePath === null) {
     return project;
   }
   const googleServiceFilePath = _path().default.resolve(projectRoot, googleServicesFileRelativePath);
-  _fs().default.copyFileSync(googleServiceFilePath, _path().default.join((0, _Paths().getSourceRoot)(projectRoot), 'GoogleService-Info.plist'));
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
+  _fs().default.copyFileSync(googleServiceFilePath, _path().default.join((0, _Paths().getSourceRoot)(projectRoot, platform), 'GoogleService-Info.plist'));
+  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot, platform);
   const plistFilePath = `${projectName}/GoogleService-Info.plist`;
   if (!project.hasFile(plistFilePath)) {
     project = (0, _Xcodeproj().addResourceFileToGroup)({

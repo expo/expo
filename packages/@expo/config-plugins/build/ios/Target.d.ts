@@ -1,4 +1,5 @@
 import { PBXNativeTarget, XCBuildConfiguration, XcodeProject } from 'xcode';
+import { ModPlatform } from '../Plugin.types';
 import { NativeTargetSectionEntry } from './utils/Xcodeproj';
 export declare enum TargetType {
     APPLICATION = "com.apple.product-type.application",
@@ -19,7 +20,7 @@ export declare function getXCBuildConfigurationFromPbxproj(project: XcodeProject
     targetName?: string;
     buildConfiguration?: string;
 }): XCBuildConfiguration | null;
-export declare function findApplicationTargetWithDependenciesAsync(projectRoot: string, scheme: string): Promise<Target>;
+export declare function findApplicationTargetWithDependenciesAsync(projectRoot: string, platform: ModPlatform, scheme: string): Promise<Target>;
 export declare function isTargetOfType(target: PBXNativeTarget, targetType: TargetType): boolean;
 export declare function getNativeTargets(project: XcodeProject): NativeTargetSectionEntry[];
 export declare function findSignableTargets(project: XcodeProject): NativeTargetSectionEntry[];

@@ -8,6 +8,7 @@ jest.mock('fs');
 const originalFs = jest.requireActual('fs');
 
 const projectRoot = '/app/';
+const platform = 'ios';
 
 beforeAll(() => {
   vol.fromJSON(
@@ -26,21 +27,25 @@ beforeAll(() => {
   );
 });
 it('returns correct Info.plist path for the default build configuration (Release)', () => {
-  const plistPath = getInfoPlistPathFromPbxproj(projectRoot, {
+  const plistPath = getInfoPlistPathFromPbxproj(projectRoot, platform, {
     targetName: 'multitarget',
   });
   expect(plistPath).toBe('multitarget/Info.plist');
 });
 it('returns with default props', () => {
-  const plistPath = getInfoPlistPathFromPbxproj(projectRoot);
+  const plistPath = getInfoPlistPathFromPbxproj(projectRoot, platform);
   expect(plistPath).toBe('multitarget/Info.plist');
 });
 it('returns with custom target name', () => {
-  const plistPath = getInfoPlistPathFromPbxproj(projectRoot, { targetName: 'shareextension' });
+  const plistPath = getInfoPlistPathFromPbxproj(projectRoot, platform, {
+    targetName: 'shareextension',
+  });
   expect(plistPath).toBe('shareextension/Info.plist');
 });
 it('throws on invalid target name', () => {
   expect(() =>
-    getInfoPlistPathFromPbxproj(projectRoot, { targetName: 'shareextension-invalid' })
+    getInfoPlistPathFromPbxproj(projectRoot, platform, {
+      targetName: 'shareextension-invalid',
+    })
   ).toThrowError(/Could not find target/);
 });
