@@ -1,6 +1,7 @@
 import { PBXNativeTarget, PBXTargetDependency, XCBuildConfiguration, XcodeProject } from 'xcode';
 
 import { getApplicationTargetNameForSchemeAsync } from './BuildScheme';
+import { ModPlatform } from '../Plugin.types';
 import {
   getBuildConfigurationForListIdAndName,
   getPbxproj,
@@ -45,10 +46,15 @@ export function getXCBuildConfigurationFromPbxproj(
 
 export async function findApplicationTargetWithDependenciesAsync(
   projectRoot: string,
+  platform: ModPlatform,
   scheme: string
 ): Promise<Target> {
-  const applicationTargetName = await getApplicationTargetNameForSchemeAsync(projectRoot, scheme);
-  const project = getPbxproj(projectRoot);
+  const applicationTargetName = await getApplicationTargetNameForSchemeAsync(
+    projectRoot,
+    platform,
+    scheme
+  );
+  const project = getPbxproj(projectRoot, platform);
   const [, applicationTarget] = findNativeTargetByName(project, applicationTargetName);
   const dependencies = getTargetDependencies(project, applicationTarget);
   return {

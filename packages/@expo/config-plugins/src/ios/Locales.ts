@@ -4,7 +4,7 @@ import fs from 'fs';
 import { join, relative } from 'path';
 import { XcodeProject } from 'xcode';
 
-import { ConfigPlugin } from '../Plugin.types';
+import { ConfigPlugin, ModPlatform } from '../Plugin.types';
 import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import { addWarningIOS } from '../utils/warnings';
@@ -17,6 +17,7 @@ export const withLocales: ConfigPlugin = (config) => {
   return withXcodeProject(config, async (config) => {
     config.modResults = await setLocalesAsync(config, {
       projectRoot: config.modRequest.projectRoot,
+      platform: config.modRequest.platform,
       project: config.modResults,
     });
     return config;
@@ -31,7 +32,11 @@ export function getLocales(
 
 export async function setLocalesAsync(
   config: Pick<ExpoConfig, 'locales'>,
-  { projectRoot, project }: { projectRoot: string; project: XcodeProject }
+  {
+    projectRoot,
+    platform,
+    project,
+  }: { projectRoot: string; platform: ModPlatform; project: XcodeProject }
 ): Promise<XcodeProject> {
   const locales = getLocales(config);
   if (!locales) {
@@ -40,8 +45,8 @@ export async function setLocalesAsync(
   // possibly validate CFBundleAllowMixedLocalizations is enabled
   const localesMap = await getResolvedLocalesAsync(projectRoot, locales);
 
-  const projectName = getProjectName(projectRoot);
-  const supportingDirectory = join(projectRoot, 'ios', projectName, 'Supporting');
+  const projectName = getProjectName(projectRoot, platform);
+  const supportingDirectory = join(projectRoot, platform, projectName, 'Supporting');
 
   // TODO: Should we delete all before running? Revisit after we land on a lock file.
   const stringName = 'InfoPlist.strings';

@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 import { InfoPlist } from './IosConfig.types';
-import { ConfigPlugin } from '../Plugin.types';
+import { ConfigPlugin, ModPlatform } from '../Plugin.types';
 export declare const withBundleIdentifier: ConfigPlugin<{
     bundleIdentifier?: string;
 }>;
@@ -21,11 +21,12 @@ declare function setBundleIdentifier(config: ExpoConfig, infoPlist: InfoPlist): 
  * Defaults to 'Release'.
  *
  * @param {string} projectRoot Path to project root containing the ios directory
+ * @param {ModPlatform} platform Platform name, e.g. 'ios'
  * @param {string} targetName Target name
  * @param {string} buildConfiguration Build configuration. Defaults to 'Release'.
  * @returns {string | null} bundle identifier of the Xcode project or null if the project is not configured
  */
-declare function getBundleIdentifierFromPbxproj(projectRoot: string, { targetName, buildConfiguration, }?: {
+declare function getBundleIdentifierFromPbxproj(projectRoot: string, platform: ModPlatform, { targetName, buildConfiguration, }?: {
     targetName?: string;
     buildConfiguration?: string;
 }): string | null;
@@ -41,10 +42,11 @@ declare function updateBundleIdentifierForPbxproj(pbxprojPath: string, bundleIde
  * Updates the bundle identifier for pbx projects inside the ios directory of the given project root
  *
  * @param {string} projectRoot Path to project root containing the ios directory
+ * @param {string} platform Platform name, e.g. 'ios'
  * @param {string} bundleIdentifier Desired bundle identifier
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
-declare function setBundleIdentifierForPbxproj(projectRoot: string, bundleIdentifier: string, updateProductName?: boolean): void;
-declare function resetAllPlistBundleIdentifiers(projectRoot: string): void;
+declare function setBundleIdentifierForPbxproj(projectRoot: string, platform: ModPlatform, bundleIdentifier: string, updateProductName?: boolean): void;
+declare function resetAllPlistBundleIdentifiers(projectRoot: string, platform: ModPlatform): void;
 declare function resetPlistBundleIdentifier(plistPath: string): void;
 export { getBundleIdentifier, setBundleIdentifier, getBundleIdentifierFromPbxproj, updateBundleIdentifierForPbxproj, setBundleIdentifierForPbxproj, resetAllPlistBundleIdentifiers, resetPlistBundleIdentifier, };
