@@ -22,7 +22,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   var onMapClick = EventDispatcher()
-  var onMapCameraChange = EventDispatcher()
+  var onCameraMove = EventDispatcher()
 }
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View {
@@ -83,7 +83,7 @@ struct AppleMapsView: View {
           }
         }
       }
-      .onTapGesture { position in
+      .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
           props.onMapClick([
             "latitude": coordinate.latitude,
@@ -109,10 +109,13 @@ struct AppleMapsView: View {
         let cameraPosition = change.region.center
         let zoomLevel = change.region.span.longitudeDelta
     
-        props.onMapCameraChange([
-          "latitude": cameraPosition.latitude,
-          "longitude": cameraPosition.longitude,
-          "zoom": zoomLevel
+        props.onCameraMove([
+          "coordinates": [
+            "latitude": cameraPosition.latitude,
+            "longitude": cameraPosition.longitude,
+          ],
+          "zoom": zoomLevel,
+          "tilt": change.camera.pitch
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)

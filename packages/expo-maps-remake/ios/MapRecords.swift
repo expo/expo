@@ -13,6 +13,7 @@ struct MapMarker: Identifiable, Record {
   @Field var id: String = UUID().uuidString
   @Field var coordinates: Coordinate
   @Field var title: String = ""
+  @Field var icon: SharedRef<UIImage>?
   
   var clLocationCoordinate2D: CLLocationCoordinate2D {
     CLLocationCoordinate2D(

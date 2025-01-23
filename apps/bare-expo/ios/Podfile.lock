@@ -545,7 +545,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (5.0.0):
     - ExpoModulesCore
-  - ExpoUI (0.1.0):
+  - ExpoUI (0.0.1):
     - ExpoModulesCore
   - ExpoVideo (2.0.1):
     - ExpoModulesCore
@@ -555,7 +555,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (4.0.0)
   - EXStructuredHeaders/Tests (4.0.0)
-  - EXTaskManager (12.0.3):
+  - EXTaskManager (13.0.0):
     - ExpoModulesCore
     - UMAppLoader
   - EXUpdates (0.26.9):
@@ -3309,7 +3309,7 @@ SPEC CHECKSUMS:
   ExpoAsset: 6e707be0cb7e792faa06e42d8ebc85600921af89
   ExpoAudio: ee3c2a6d63c84ab9f72c0ee330ee7a135ec15eee
   ExpoBackgroundFetch: a3080ab72736b60441adf5f452919426c62e0533
-  ExpoBackgroundTask: 41ae85d76c5883ec0e3f15a55a1b0769082bd4a2
+  ExpoBackgroundTask: 0a81fb8ea62e12ab313d3074ee5a6c195a0c47d4
   ExpoBattery: 71bb388c37c3bcd0e87077e06e95780ea34fa6c8
   ExpoBlur: 562b3da84d3cd79016c411671eaf71a404266415
   ExpoBrightness: ce777f6a365592f745428cb0acc9066b400182e8
@@ -3359,12 +3359,12 @@ SPEC CHECKSUMS:
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
   ExpoSystemUI: 97ec8f20af5e8ca18d3191c5c72e8a04e6e2f02d
   ExpoTrackingTransparency: 10b0304d6d2b95ea41391bf92684c1078f633e39
-  ExpoUI: 081105686dd0943b4902ada170be21bc929802c3
+  ExpoUI: 8d94ff1e65f431682aa4f036305d4237b154ca08
   ExpoVideo: 85750319df61d76237b5952fca5a9f39504c6b9b
   ExpoVideoThumbnails: 8b6bbe3cb76dd2225910667b896b27855bbda694
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
-  EXTaskManager: afcec33a6643f24fed4a89062757037b185c8a88
+  EXTaskManager: 8e915e1120894daead363cf31ff85cd4d182cd89
   EXUpdates: d058f908357f7a924c64c33c1bfdfa619e2a3a17
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
