@@ -97,7 +97,7 @@ open class AppLoader: NSObject {
     preconditionFailure("Must override in concrete class")
   }
 
-  open func downloadAsset(_ asset: UpdateAsset) {
+  open func downloadAsset(_ asset: UpdateAsset, requestedUpdate: Update) {
     preconditionFailure("Must override in concrete class")
   }
 
@@ -226,11 +226,11 @@ open class AppLoader: NSObject {
                   self.handleAssetDownloadAlreadyExists(asset)
                 }
               } else {
-                self.downloadAsset(asset)
+                self.downloadAsset(asset, requestedUpdate: updateManifest)
               }
             }
           } else {
-            self.downloadAsset(asset)
+            self.downloadAsset(asset, requestedUpdate: updateManifest)
           }
         }
       } else {
