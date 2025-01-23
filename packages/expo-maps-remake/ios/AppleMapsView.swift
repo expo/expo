@@ -8,12 +8,11 @@ import MapKit
 @Observable
 class MapPosition {
   var region: MapCameraPosition
-  
+
   init(position: CameraPosition) {
     self.region = convertToMapCamera(position: position)
   }
 }
-
 
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
@@ -27,7 +26,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View {
   @EnvironmentObject var props: AppleMapsViewProps
-  
+
   var body: some View {
     if #available(iOS 18.0, *) {
       AppleMapsView()
@@ -43,13 +42,13 @@ struct AppleMapsView: View {
   @EnvironmentObject var props: AppleMapsViewProps
   @State private var mapCameraPosition: MapCameraPosition = .automatic
   @State var selection: MapSelection<MKMapItem>?
-  
+
   @Namespace var mapScope
-  
+
   var body: some View {
     let properties = props.properties
     let uiSettings = props.uiSettings
-    
+
     MapReader { reader in
       Map(position: $mapCameraPosition, selection: $selection) {
         if !props.markers.isEmpty {
@@ -61,7 +60,7 @@ struct AppleMapsView: View {
             .tag(MapSelection(marker.mapItem))
           }
         }
-        
+
         if !props.annotations.isEmpty {
           ForEach(props.annotations) { annotation in
             let coordinates = annotation.coordinates
@@ -108,11 +107,11 @@ struct AppleMapsView: View {
       .onMapCameraChange(frequency: .onEnd) { change in
         let cameraPosition = change.region.center
         let zoomLevel = change.region.span.longitudeDelta
-    
+
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude,
+            "longitude": cameraPosition.longitude
           ],
           "zoom": zoomLevel,
           "tilt": change.camera.pitch

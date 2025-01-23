@@ -14,18 +14,18 @@ struct MapMarker: Identifiable, Record {
   @Field var coordinates: Coordinate
   @Field var title: String = ""
   @Field var icon: SharedRef<UIImage>?
-  
+
   var clLocationCoordinate2D: CLLocationCoordinate2D {
     CLLocationCoordinate2D(
       latitude: coordinates.latitude,
       longitude: coordinates.longitude
     )
   }
-  
+
   var mkPlacemark: MKPlacemark {
     MKPlacemark(coordinate: clLocationCoordinate2D)
   }
-  
+
   var mapItem: MKMapItem {
     MKMapItem(placemark: mkPlacemark)
   }
@@ -62,7 +62,7 @@ enum MapType: String, Enumerable {
   case standard = "STANDARD"
   case hybrid = "HYBRID"
   case imagery = "IMAGERY"
-  
+
   @available(iOS 17.0, *)
   func toMapStyle(showsTraffic: Bool = false) -> MapStyle {
     switch self {
