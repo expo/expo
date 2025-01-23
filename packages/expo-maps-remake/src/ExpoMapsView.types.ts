@@ -237,6 +237,12 @@ export type ExpoMapsProps = {
   markers?: Marker[];
 
   /**
+   * The array of annotations to display on the map.
+   * @platform ios
+   */
+  annotations?: Annotation[];
+
+  /**
    * The `MapUiSettings` to be used for UI-specific settings on the map.
    */
   uiSettings?: MapUiSettings;
