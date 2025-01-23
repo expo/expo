@@ -52,8 +52,6 @@ private interface WebBrowserModuleTestInterface {
   fun warmUpAsync(browserPackage: String?): Bundle
 
   fun coolDownAsync(browserPackage: String?): Bundle
-
-  fun mayInitWithUrlAsync(url: String, browserPackage: String?): Bundle
 }
 
 private inline fun withWebBrowserMock(
@@ -124,7 +122,7 @@ internal class WebBrowserModuleTest {
   @Test
   fun testArgumentsCorrectlyPassedToIntent() = withWebBrowserMock {
     // given
-    val intentSlot = slot<Intent>()
+    val intentSlot = slot<CustomTabsIntent>()
     val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
     initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
@@ -142,15 +140,13 @@ internal class WebBrowserModuleTest {
       )
     )
 
-    intentSlot.captured.let {
-      assertEquals("com.browser.package", it.`package`)
-    }
+    assertEquals("com.browser.package", intentSlot.captured.intent.`package`)
   }
 
   @Test
   fun testTrueFlagsCorrectlyPassedToIntent() = withWebBrowserMock {
     // given
-    val intentSlot = slot<Intent>()
+    val intentSlot = slot<CustomTabsIntent>()
     val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
     initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
@@ -167,7 +163,7 @@ internal class WebBrowserModuleTest {
       )
     )
 
-    intentSlot.captured.let {
+    intentSlot.captured.intent.let {
       assertTrue(it.hasExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING))
       assertTrue(it.getBooleanExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false))
       assertTrue((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
@@ -179,7 +175,7 @@ internal class WebBrowserModuleTest {
   @Test
   fun testFalseFlagsCorrectlyPassedToIntent() = withWebBrowserMock {
     // given
-    val intentSlot = slot<Intent>()
+    val intentSlot = slot<CustomTabsIntent>()
     val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
     initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
@@ -196,7 +192,7 @@ internal class WebBrowserModuleTest {
       )
     )
 
-    intentSlot.captured.let {
+    intentSlot.captured.intent.let {
       assertFalse(it.getBooleanExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, true))
       assertTrue((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
       assertTrue((it.flags and Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) > 0)
@@ -207,7 +203,7 @@ internal class WebBrowserModuleTest {
   @Test
   fun testCreateTaskFalseCorrectlyPassedToIntent() = withWebBrowserMock {
     // given
-    val intentSlot = slot<Intent>()
+    val intentSlot = slot<CustomTabsIntent>()
     val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
     initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
@@ -221,7 +217,7 @@ internal class WebBrowserModuleTest {
       )
     )
 
-    intentSlot.captured.let {
+    intentSlot.captured.intent.let {
       assertFalse((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
       assertFalse((it.flags and Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) > 0)
       assertFalse((it.flags and Intent.FLAG_ACTIVITY_NO_HISTORY) > 0)

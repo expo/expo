@@ -1,22 +1,20 @@
 package expo.modules.webbrowser
 
 import android.app.Activity
-import expo.modules.core.errors.CurrentActivityNotFoundException
-import android.content.pm.ResolveInfo
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
+import android.content.pm.ResolveInfo
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
-import expo.modules.core.interfaces.ActivityProvider
-import java.util.ArrayList
-import java.util.LinkedHashSet
+import androidx.core.net.toUri
+import expo.modules.core.errors.CurrentActivityNotFoundException
+import expo.modules.kotlin.AppContext
 
 private const val DUMMY_URL = "https://expo.dev"
 
 internal class CustomTabsActivitiesHelper(
-  private val activityProvider: ActivityProvider?
+  private val appContext: AppContext
 ) {
 
   // region Actual custom tabs activities helper methods
@@ -25,7 +23,8 @@ internal class CustomTabsActivitiesHelper(
    * @throws CurrentActivityNotFoundException
    * @throws PackageManagerNotFoundException
    */
-  fun canResolveIntent(intent: Intent): Boolean = getResolvingActivities(intent).isNotEmpty()
+  fun canResolveIntent(customTabsIntent: CustomTabsIntent): Boolean =
+    getResolvingActivities(customTabsIntent).isNotEmpty()
 
   /**
    * @throws PackageManagerNotFoundException
@@ -62,15 +61,17 @@ internal class CustomTabsActivitiesHelper(
    */
   val defaultCustomTabsResolvingActivity: String?
     get() {
-      val info = packageManager.resolveActivity(createDefaultCustomTabsIntent(), 0)
+      val info = packageManager.resolveActivity(createDefaultCustomTabsIntent().intent, 0)
       return info?.activityInfo?.packageName
     }
 
   /**
    * @throws CurrentActivityNotFoundException
    */
-  fun startCustomTabs(intent: Intent) {
-    currentActivity.startActivity(intent)
+  fun startCustomTabs(tabsIntent: CustomTabsIntent) {
+    tabsIntent.intent.data?.let {
+      tabsIntent.launchUrl(currentActivity, it)
+    } ?: throw NoUrlProvidedException()
   }
 
   // endregion
@@ -81,8 +82,8 @@ internal class CustomTabsActivitiesHelper(
    * @throws CurrentActivityNotFoundException
    * @throws PackageManagerNotFoundException
    */
-  private fun getResolvingActivities(intent: Intent): List<ResolveInfo> {
-    return packageManager.queryIntentActivities(intent, 0)
+  private fun getResolvingActivities(customTabsIntent: CustomTabsIntent): List<ResolveInfo> {
+    return packageManager.queryIntentActivities(customTabsIntent.intent, 0)
   }
 
   /**
@@ -96,9 +97,7 @@ internal class CustomTabsActivitiesHelper(
    * @throws CurrentActivityNotFoundException
    */
   private val currentActivity: Activity
-    get() {
-      return activityProvider?.currentActivity ?: throw CurrentActivityNotFoundException()
-    }
+    get() = appContext.throwingActivity
 
   // endregion
 }
@@ -111,10 +110,10 @@ private inline fun <T, R> Collection<T>.mapToDistinctArrayList(mapper: (T) -> R)
   return ArrayList(resultSet)
 }
 
-private fun createDefaultCustomTabsIntent(): Intent {
+private fun createDefaultCustomTabsIntent(): CustomTabsIntent {
   val customTabsIntent = CustomTabsIntent.Builder().build()
-  return customTabsIntent.intent.apply {
-    data = Uri.parse(DUMMY_URL)
+  return customTabsIntent.apply {
+    intent.data = DUMMY_URL.toUri()
   }
 }
 
