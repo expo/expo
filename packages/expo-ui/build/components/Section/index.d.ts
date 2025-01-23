@@ -7,6 +7,6 @@ export type SectionProps = {
 };
 export declare function Section({ title, children }: {
     title: string;
-    children: any;
+    children: React.ReactNode;
 }): React.JSX.Element;
 //# sourceMappingURL=index.d.ts.map

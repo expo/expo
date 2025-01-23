@@ -23,12 +23,12 @@ function OutlinedCard(props: { children: React.ReactNode }) {
   );
 }
 
-export function Section({ title, children }: { title: string; children: any }) {
+export function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <OutlinedCard>
       <Text style={{ fontSize: 30, fontWeight: 'bold', paddingHorizontal: 20 }}>{title}</Text>
 
-      {children.map((c, idx) => (
+      {React.Children.map(children, (c, idx) => (
         <>
           <View
             key={idx}
@@ -39,7 +39,7 @@ export function Section({ title, children }: { title: string; children: any }) {
             }}>
             {c}
           </View>
-          {idx !== children.length - 1 && (
+          {idx !== React.Children.count(children) - 1 && (
             <View
               key={'separator' + idx}
               style={{
