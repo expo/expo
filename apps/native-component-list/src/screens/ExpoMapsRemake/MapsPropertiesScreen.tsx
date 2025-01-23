@@ -37,6 +37,12 @@ const parameters: FunctionParameter[] = [
     initial: false,
   },
   {
+    name: 'selectionEnabled',
+    type: 'boolean',
+    initial: true,
+    platforms: ['ios'],
+  },
+  {
     name: 'isMyLocationEnabled',
     type: 'boolean',
     initial: false,
@@ -57,11 +63,12 @@ export default function MapsCameraControlsScreen() {
     mapType,
     mapTypeIos,
     isIndoorEnabled,
+    selectionEnabled,
     isMyLocationEnabled,
     isTrafficEnabled,
     minZoomPreference,
     maxZoomPreference,
-  ] = args as [boolean, MapType, AppleMapType, boolean, boolean, boolean, number, number];
+  ] = args as [boolean, MapType, AppleMapType, boolean, boolean, boolean, boolean, number, number];
   return (
     <View style={styles.container}>
       <View style={styles.container}>
@@ -79,6 +86,7 @@ export default function MapsCameraControlsScreen() {
             mapType,
             mapTypeIos,
             isIndoorEnabled,
+            selectionEnabled,
             isMyLocationEnabled,
             isTrafficEnabled,
             minZoomPreference,
