@@ -249,6 +249,11 @@ class Env {
   get EXPO_NO_DEPENDENCY_VALIDATION(): boolean {
     return boolish('EXPO_NO_DEPENDENCY_VALIDATION', false);
   }
+
+  /** Disable the terminal logs override within React Native that re-enables console logging in the terminal */
+  get EXPO_NO_TERMINAL_LOGS(): boolean {
+    return boolish('EXPO_NO_TERMINAL_LOGS', false);
+  }
 }
 
 export const env = new Env();

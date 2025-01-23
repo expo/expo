@@ -2,6 +2,7 @@ import type { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'node:path';
 
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
+import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
@@ -27,6 +28,10 @@ export function createExpoTerminalLogResolver({
 }: {
   getStrictResolver: ExpoStrictResolver;
 }): ExpoCustomMetroResolver {
+  if (env.EXPO_NO_TERMINAL_LOGS) {
+    return () => null;
+  }
+
   let originModulePath: string;
   const setupDevtoolsModule = require.resolve(
     '@expo/cli/static/virtual/react-native/Libraries/Core/setUpDeveloperTools.js'
