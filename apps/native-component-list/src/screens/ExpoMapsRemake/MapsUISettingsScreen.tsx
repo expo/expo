@@ -64,6 +64,16 @@ const parameters: FunctionParameter[] = [
     type: 'boolean',
     initial: true,
   },
+  {
+    name: 'scaleBarEnabled',
+    type: 'boolean',
+    initial: true,
+  },
+  {
+    name: 'togglePitchEnabled',
+    type: 'boolean',
+    initial: true,
+  },
 ];
 
 export default function MapsUISettings() {
@@ -80,8 +90,12 @@ export default function MapsUISettings() {
     tiltGesturesEnabled,
     zoomControlsEnabled,
     zoomGesturesEnabled,
+    scaleBarEnabled,
+    togglePitchEnabled,
   ] = args as [
     MapColorScheme,
+    boolean,
+    boolean,
     boolean,
     boolean,
     boolean,
@@ -117,6 +131,8 @@ export default function MapsUISettings() {
             tiltGesturesEnabled,
             zoomControlsEnabled,
             zoomGesturesEnabled,
+            scaleBarEnabled,
+            togglePitchEnabled,
           }}
         />
       </View>

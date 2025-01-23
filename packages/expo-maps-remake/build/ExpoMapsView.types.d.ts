@@ -36,6 +36,11 @@ export type Marker = {
      */
     icon?: SharedRefType<'image'>;
 };
+export type Annotation = {
+    backgroundColor?: string;
+    text?: string;
+    textColor?: string;
+} & Marker;
 export type CameraPosition = {
     /**
      * The middle point of the camera.
@@ -89,6 +94,16 @@ export type MapUiSettings = {
      * Whether the zoom gestures are enabled.
      */
     zoomGesturesEnabled?: boolean;
+    /**
+     * Whether the scale bar is displayed when zooming.
+     * @platform ios
+     */
+    scaleBarEnabled?: boolean;
+    /**
+     * Whether the user is allowed to change the pitch type.
+     * @platform ios
+     */
+    togglePitchEnabled?: boolean;
 };
 /**
  * The type of map to display.
@@ -110,6 +125,20 @@ export declare enum MapType {
      * Topographic data.
      */
     TERRAIN = "TERRAIN"
+}
+export declare enum AppleMapType {
+    /**
+     * Satellite imagery with roads and points of interest overlayed.
+     */
+    HYBRID = "HYBRID",
+    /**
+     * Creates a standard map style.
+     */
+    STANDARD = "STANDARD",
+    /**
+     * A map style that represents a satellite image of the area the map displays.
+     */
+    IMAGERY = "IMAGERY"
 }
 export type MapProperties = {
     /**
@@ -133,11 +162,23 @@ export type MapProperties = {
      */
     mapType?: MapType;
     /**
+     * Defines which map type should be used.
+     * @platform ios
+     */
+    mapTypeIos?: AppleMapType;
+    /**
+     * If true, the user can select a location on the map to get more information.
+     * @platform ios
+     */
+    selectionEnabled?: boolean;
+    /**
      * The maximum zoom level for the map.
+     * @platform android
      */
     maxZoomPreference?: number;
     /**
      * The minimum zoom level for the map.
+     * @platform android
      */
     minZoomPreference?: number;
 };
@@ -156,6 +197,11 @@ export type ExpoMapsProps = {
      * The array of markers to display on the map.
      */
     markers?: Marker[];
+    /**
+     * The array of annotations to display on the map.
+     * @platform ios
+     */
+    annotations?: Annotation[];
     /**
      * The `MapUiSettings` to be used for UI-specific settings on the map.
      */

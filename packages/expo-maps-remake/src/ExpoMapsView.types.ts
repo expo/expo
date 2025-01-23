@@ -6,6 +6,7 @@ export type Coordinates = {
    * The latitude of the coordinate.
    */
   latitude?: number;
+
   /**
    * The longitude of the coordinate.
    */
@@ -17,33 +18,45 @@ export type Marker = {
    * The coordinates of the marker.
    */
   coordinates?: Coordinates;
+
   /**
    * The title of the marker, displayed in the callout when the marker is clicked.
    */
   title?: string;
+
   /**
    * The snippet of the marker, Displayed in the callout when the marker is clicked.
    */
   snippet?: string;
+
   /**
    * Whether the marker is draggable.
    */
   draggable?: boolean;
+
   /**
    * Whether the callout should be shown when the marker is clicked.
    */
   showCallout?: boolean;
+
   /**
    * The custom icon to display for the marker.
    */
   icon?: SharedRefType<'image'>;
 };
 
+export type Annotation = {
+  backgroundColor?: string;
+  text?: string;
+  textColor?: string;
+} & Marker;
+
 export type CameraPosition = {
   /**
    * The middle point of the camera.
    */
   coordinates?: Coordinates;
+
   /**
    * The zoom level of the camera.
    * For some view sizez, lower zoom levels might not be available.
@@ -57,42 +70,63 @@ export type MapUiSettings = {
    * If enabled, the compass is only visible when the map is rotated.
    */
   compassEnabled?: boolean;
+
   /**
    * Whether the indoor level picker is enabled .
    */
   indoorLevelPickerEnabled?: boolean;
+
   /**
    * Whether the map toolbar is visible.
    */
   mapToolbarEnabled?: boolean;
+
   /**
    * Whether the my location button is visible.
    */
   myLocationButtonEnabled?: boolean;
+
   /**
    * Whether rotate gestures are enabled.
    */
   rotationGesturesEnabled?: boolean;
+
   /**
    * Whether the scroll gestures are enabled.
    */
   scrollGesturesEnabled?: boolean;
+
   /**
    * Whether the scroll gestures are enabled during rotation or zoom.
    */
   scrollGesturesEnabledDuringRotateOrZoom?: boolean;
+
   /**
    * Whether the tilt gestures are enabled.
    */
   tiltGesturesEnabled?: boolean;
+
   /**
    * Whether the zoom controls are visible.
    */
   zoomControlsEnabled?: boolean;
+
   /**
    * Whether the zoom gestures are enabled.
    */
   zoomGesturesEnabled?: boolean;
+
+  /**
+   * Whether the scale bar is displayed when zooming.
+   * @platform ios
+   */
+  scaleBarEnabled?: boolean;
+
+  /**
+   * Whether the user is allowed to change the pitch type.
+   * @platform ios
+   */
+  togglePitchEnabled?: boolean;
 };
 
 /**
@@ -115,6 +149,21 @@ export enum MapType {
    * Topographic data.
    */
   TERRAIN = 'TERRAIN',
+}
+
+export enum AppleMapType {
+  /**
+   * Satellite imagery with roads and points of interest overlayed.
+   */
+  HYBRID = 'HYBRID',
+  /**
+   * Creates a standard map style.
+   */
+  STANDARD = 'STANDARD',
+  /**
+   * A map style that represents a satellite image of the area the map displays.
+   */
+  IMAGERY = 'IMAGERY',
 }
 
 export type MapProperties = {
@@ -144,12 +193,26 @@ export type MapProperties = {
   mapType?: MapType;
 
   /**
+   * Defines which map type should be used.
+   * @platform ios
+   */
+  mapTypeIos?: AppleMapType;
+
+  /**
+   * If true, the user can select a location on the map to get more information.
+   * @platform ios
+   */
+  selectionEnabled?: boolean;
+
+  /**
    * The maximum zoom level for the map.
+   * @platform android
    */
   maxZoomPreference?: number;
 
   /**
    * The minimum zoom level for the map.
+   * @platform android
    */
   minZoomPreference?: number;
 };
@@ -172,6 +235,12 @@ export type ExpoMapsProps = {
    * The array of markers to display on the map.
    */
   markers?: Marker[];
+
+  /**
+   * The array of annotations to display on the map.
+   * @platform ios
+   */
+  annotations?: Annotation[];
 
   /**
    * The `MapUiSettings` to be used for UI-specific settings on the map.

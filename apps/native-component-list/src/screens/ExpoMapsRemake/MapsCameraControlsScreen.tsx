@@ -35,7 +35,7 @@ export default function MapsBasicScreen() {
             zoom,
           }}
           properties={{
-            maxZoomPreference: 99,
+            maxZoomPreference: 20,
             minZoomPreference: 1,
           }}
         />
@@ -55,8 +55,8 @@ export default function MapsBasicScreen() {
       <View style={styles.zoomContainer}>
         <Text>Zoom level: {zoom}</Text>
         <Slider
-          minimumValue={1}
-          maximumValue={20}
+          minimumValue={0}
+          maximumValue={10}
           step={0.1}
           onValueChange={(v) => setZoom(parseFloat(v.toFixed(1)))}
         />

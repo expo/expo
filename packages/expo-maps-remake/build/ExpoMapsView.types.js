@@ -20,6 +20,21 @@ export var MapType;
      */
     MapType["TERRAIN"] = "TERRAIN";
 })(MapType || (MapType = {}));
+export var AppleMapType;
+(function (AppleMapType) {
+    /**
+     * Satellite imagery with roads and points of interest overlayed.
+     */
+    AppleMapType["HYBRID"] = "HYBRID";
+    /**
+     * Creates a standard map style.
+     */
+    AppleMapType["STANDARD"] = "STANDARD";
+    /**
+     * A map style that represents a satellite image of the area the map displays.
+     */
+    AppleMapType["IMAGERY"] = "IMAGERY";
+})(AppleMapType || (AppleMapType = {}));
 export var MapColorScheme;
 (function (MapColorScheme) {
     MapColorScheme["LIGHT"] = "LIGHT";

@@ -116,6 +116,8 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (14.0.1):
     - ExpoModulesCore
+  - ExpoMapsRemake (0.1.0):
+    - ExpoModulesCore
   - ExpoMediaLibrary (17.0.3):
     - ExpoModulesCore
     - React-Core
@@ -2620,6 +2622,7 @@ DEPENDENCIES:
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoLocation (from `../../../packages/expo-location/ios`)
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
+  - ExpoMapsRemake (from `../../../packages/expo-maps-remake/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
@@ -2877,6 +2880,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-location/ios"
   ExpoMailComposer:
     :path: "../../../packages/expo-mail-composer/ios"
+  ExpoMapsRemake:
+    :path: "../../../packages/expo-maps-remake/ios"
   ExpoMediaLibrary:
     :path: "../../../packages/expo-media-library/ios"
   ExpoMeshGradient:
@@ -3151,6 +3156,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: e0c5b5212381b0b800a2c1f715be823d17c51b05
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
+  ExpoMapsRemake: 2fc7965f585a7b11f1e0818193b7c63c15262d1c
   ExpoMediaLibrary: 2d20778aafaa2e6f60640167f0618cfacee6f81c
   ExpoMeshGradient: 0a9aca4028bd131bd8313b1899c004aad7526c37
   ExpoModulesCore: bb3f481a7912159f2289a653e4195146170f0a00
