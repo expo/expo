@@ -258,9 +258,20 @@ export type ExpoMapsProps = {
   colorScheme?: MapColorScheme;
 
   /**
-   * Lambda invoked when the map is clicked
+   * Lambda invoked when the map is loaded.
+   */
+  onMapLoaded?: () => void;
+
+  /**
+   * Lambda invoked when the user clicks on the map.
+   * It won't be invoked if the user clicks on POI or a marker.
    */
   onMapClick?: (event: { coordinates: Coordinates }) => void;
+
+  /**
+   * Lambda invoked when the user long presses on the map.
+   */
+  onMapLongClick?: (event: { coordinates: Coordinates }) => void;
 
   /**
    * Lambda invoked when a POI is clicked.

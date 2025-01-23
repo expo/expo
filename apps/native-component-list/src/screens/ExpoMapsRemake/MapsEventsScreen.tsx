@@ -19,8 +19,14 @@ export default function MapsEventsScreen() {
             },
             zoom: 8,
           }}
+          onMapLoaded={() => {
+            setLastEvent(JSON.stringify({ type: 'onMapLoaded' }, null, 2));
+          }}
           onMapClick={(e) => {
             setLastEvent(JSON.stringify({ type: 'onMapClick', data: e }, null, 2));
+          }}
+          onMapLongClick={(e) => {
+            setLastEvent(JSON.stringify({ type: 'onMapLongClick', data: e }, null, 2));
           }}
           onPOIClick={(e) => {
             setLastEvent(JSON.stringify({ type: 'onPOIClick', data: e }, null, 2));

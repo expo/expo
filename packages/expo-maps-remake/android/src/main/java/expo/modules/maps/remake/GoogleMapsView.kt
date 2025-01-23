@@ -41,10 +41,16 @@ data class GoogleMapsViewProps(
 class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView<GoogleMapsViewProps>(context, appContext) {
   override val props = GoogleMapsViewProps()
 
+  private val onMapLoaded by EventDispatcher<Unit>()
+
   private val onMapClick by EventDispatcher<Coordinates>()
+  private val onMapLongClick by EventDispatcher<Coordinates>()
   private val onPOIClick by EventDispatcher<POIRecord>()
   private val onMarkerClick by EventDispatcher<MarkerRecord>()
+
   private val onCameraMove by EventDispatcher<CameraMoveEvent>()
+
+  private var wasLoaded = mutableStateOf<Boolean>(false)
 
   init {
     setContent {
@@ -56,8 +62,17 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         cameraPositionState = cameraState.value,
         uiSettings = props.uiSettings.value.toMapUiSettings(),
         properties = props.properties.value.toMapProperties(),
+        onMapLoaded = {
+          onMapLoaded(Unit)
+          wasLoaded.value = true
+        },
         onMapClick = { latLng ->
           onMapClick(
+            Coordinates(latLng.latitude, latLng.longitude)
+          )
+        },
+        onMapLongClick = { latLng ->
+          onMapLongClick(
             Coordinates(latLng.latitude, latLng.longitude)
           )
         },
@@ -112,6 +127,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
     }
 
     LaunchedEffect(cameraState.value.position) {
+      // We don't want to send the event when the map is not loaded yet
+      if (!wasLoaded.value) {
+        return@LaunchedEffect
+      }
+
       val position = cameraState.value.position
       onCameraMove(
         CameraMoveEvent(

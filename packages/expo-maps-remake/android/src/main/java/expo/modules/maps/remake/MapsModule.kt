@@ -8,7 +8,7 @@ class MapsModule : Module() {
     Name("ExpoMapsRemake")
 
     View(GoogleMapsView::class) {
-      Events("onMapClick", "onPOIClick", "onMarkerClick", "onCameraMove")
+      Events("onMapLoaded", "onMapClick", "onMapLongClick", "onPOIClick", "onMarkerClick", "onCameraMove")
     }
   }
 }
