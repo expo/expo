@@ -1,6 +1,5 @@
 import { Slider } from '@expo/ui/components/Slider';
 import * as React from 'react';
-import { ScrollView, View } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
 

@@ -1,9 +1,7 @@
+import { Picker } from '@expo/ui/components/Picker';
 import { Section } from '@expo/ui/components/Section';
 import * as React from 'react';
-
-import { Page } from '../../components/Page';
 import { ScrollView, Text } from 'react-native';
-import { Picker } from '@expo/ui/components/Picker';
 
 export default function SectionScreen() {
   return (
