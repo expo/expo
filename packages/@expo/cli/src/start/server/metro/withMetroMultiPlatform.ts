@@ -808,6 +808,12 @@ export async function withMetroMultiPlatformAsync(
     if (isReactCanaryEnabled) {
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
+    } else {
+      // If React Canary is disabled, only add the swapped modules
+      // @ts-expect-error: watchFolders is readonly
+      config.watchFolders.push(
+        path.join(require.resolve('@expo/cli/package.json'), '../static/virtual')
+      );
     }
   }
 
