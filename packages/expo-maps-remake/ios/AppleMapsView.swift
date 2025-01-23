@@ -8,7 +8,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {}
 
 struct AppleMapsView: ExpoSwiftUI.View {
   @EnvironmentObject var props: AppleMapsViewProps
-  
+
   var body: some View {
     if #available(iOS 17.0, *) {
       let cameraPosition = MapCameraPosition.region(
@@ -17,7 +17,7 @@ struct AppleMapsView: ExpoSwiftUI.View {
           span: MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1)
         )
       )
-  
+
       Map(initialPosition: cameraPosition)
     }
   }
