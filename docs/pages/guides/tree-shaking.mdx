@@ -394,7 +394,7 @@ You can mark if your module has side-effects in the **package.json**:
 
 Side-effects will prevent the removal of unused modules and disable module inlining to ensure JS code runs in the expected order. Side-effects will be removed if they're empty or contain only comments and directives (`"use strict"`, `"use client"`, and so on).
 
-When Expo tree shaking is enabled, you can safely enable `inlineRequires` in your `metro.config.js` for production bundles. This will lazily load modules when they're evaluated, leading to faster startup time. Avoid using this feature without Expo tree shaking as it will move modules around in ways that can change the execution order of side-effects.
+When Expo tree shaking is enabled, you can safely enable `inlineRequires` in your **metro.config.js** for production bundles. This will lazily load modules when they're evaluated, leading to faster startup time. Avoid using this feature without Expo tree shaking as it will move modules around in ways that can change the execution order of side-effects.
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');

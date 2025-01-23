@@ -1,6 +1,6 @@
-import type {
-  EventEmitter as EventEmitterType,
-  EventSubscription,
+import {
+  type EventEmitter as EventEmitterType,
+  type EventSubscription,
   EventsMap,
 } from '../ts-declarations/EventEmitter';
 import type { NativeModule as NativeModuleType } from '../ts-declarations/NativeModule';
@@ -86,7 +86,7 @@ export class NativeModule<TEventsMap extends Record<never, never>>
   implements NativeModuleType
 {
   [key: string]: any;
-  ViewPrototype?: object | undefined;
+  ViewPrototypes?: { [viewName: string]: object };
   __expo_module_name__?: string;
 }
 

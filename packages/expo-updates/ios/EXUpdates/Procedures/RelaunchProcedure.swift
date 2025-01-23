@@ -53,7 +53,8 @@ final class RelaunchProcedure: StateMachineProcedure {
       config: config,
       database: database,
       directory: updatesDirectory,
-      completionQueue: controllerQueue
+      completionQueue: controllerQueue,
+      logger: self.logger
     )
   }
 
@@ -62,7 +63,7 @@ final class RelaunchProcedure: StateMachineProcedure {
   }
 
   func run(procedureContext: ProcedureContext) {
-    procedureContext.processStateEvent(UpdatesStateEventRestart())
+    procedureContext.processStateEvent(.restart)
     launcherWithDatabase.launchUpdate(withSelectionPolicy: selectionPolicy) { error, success in
       DispatchQueue.main.async {
         if success {
@@ -81,7 +82,7 @@ final class RelaunchProcedure: StateMachineProcedure {
           }
 
           // Reset the state machine
-          procedureContext.resetState()
+          procedureContext.resetStateAfterRestart()
           procedureContext.onComplete()
         } else {
           // swiftlint:disable:next force_unwrapping
@@ -100,7 +101,8 @@ final class RelaunchProcedure: StateMachineProcedure {
         database: database,
         directory: updatesDirectory,
         selectionPolicy: selectionPolicy,
-        launchedUpdate: launchedUpdate
+        launchedUpdate: launchedUpdate,
+        logger: self.logger
       )
     }
   }

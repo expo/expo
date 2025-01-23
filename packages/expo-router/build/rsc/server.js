@@ -8,6 +8,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.unstable_headers = exports.getContext = exports.rerender = exports.runWithRenderStore = exports.defineEntries = exports.REQUEST_HEADERS = void 0;
+const async_hooks_1 = require("async_hooks");
 exports.REQUEST_HEADERS = '__expo_requestHeaders';
 function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
     return { renderEntries, getBuildConfig, getSsrConfig };
@@ -16,46 +17,27 @@ exports.defineEntries = defineEntries;
 // TODO(EvanBacon): This can leak between platforms and runs.
 // We need to share this module between the server action module and the renderer module, per platform, and invalidate on refreshes.
 function getGlobalCacheForPlatform() {
+    // HACK: This is a workaround for the shared middleware being shared between web and native.
+    // In production the shared middleware is web-only and that causes the first version of this module
+    // to be bound to web.
+    const platform = globalThis.__expo_platform_header ?? process.env.EXPO_OS;
     if (!globalThis.__EXPO_RSC_CACHE__) {
         globalThis.__EXPO_RSC_CACHE__ = new Map();
     }
-    if (globalThis.__EXPO_RSC_CACHE__.has(process.env.EXPO_OS)) {
-        return globalThis.__EXPO_RSC_CACHE__.get(process.env.EXPO_OS);
+    if (globalThis.__EXPO_RSC_CACHE__.has(platform)) {
+        return globalThis.__EXPO_RSC_CACHE__.get(platform);
     }
-    try {
-        const { AsyncLocalStorage } = require('node:async_hooks');
-        // @ts-expect-error: This is a Node.js feature.
-        const serverCache = new AsyncLocalStorage();
-        globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS, serverCache);
-        return serverCache;
-    }
-    catch (error) {
-        console.log('[RSC]: Failed to create cache:', error);
-        // Fallback to a simple in-memory cache.
-        const cache = new Map();
-        const serverCache = {
-            getStore: () => cache.get('store'),
-            run: (store, fn) => {
-                cache.set('store', store);
-                try {
-                    return fn();
-                }
-                finally {
-                    cache.delete('store');
-                }
-            },
-        };
-        globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS, serverCache);
-        return serverCache;
-    }
+    const serverCache = new async_hooks_1.AsyncLocalStorage();
+    globalThis.__EXPO_RSC_CACHE__.set(platform, serverCache);
+    return serverCache;
 }
 let previousRenderStore;
 let currentRenderStore;
-const renderStorage = getGlobalCacheForPlatform();
 /**
  * This is an internal function and not for public use.
  */
 const runWithRenderStore = (renderStore, fn) => {
+    const renderStorage = getGlobalCacheForPlatform();
     if (renderStorage) {
         return renderStorage.run(renderStore, fn);
     }
@@ -69,18 +51,20 @@ const runWithRenderStore = (renderStore, fn) => {
     }
 };
 exports.runWithRenderStore = runWithRenderStore;
-function rerender(input, params) {
-    const renderStore = renderStorage?.getStore() ?? currentRenderStore;
+async function rerender(input, params) {
+    const renderStorage = getGlobalCacheForPlatform();
+    const renderStore = renderStorage.getStore() ?? currentRenderStore;
     if (!renderStore) {
-        throw new Error('Render store is not available');
+        throw new Error('Render store is not available for rerender');
     }
     renderStore.rerender(input, params);
 }
 exports.rerender = rerender;
 function getContext() {
-    const renderStore = renderStorage?.getStore() ?? currentRenderStore;
+    const renderStorage = getGlobalCacheForPlatform();
+    const renderStore = renderStorage.getStore() ?? currentRenderStore;
     if (!renderStore) {
-        throw new Error('Render store is not available');
+        throw new Error('Render store is not available for accessing context');
     }
     return renderStore.context;
 }

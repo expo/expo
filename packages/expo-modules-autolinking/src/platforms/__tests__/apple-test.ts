@@ -134,6 +134,40 @@ describe(resolveModuleAsync, () => {
     });
   });
 
+  it('should contain coreFeature field', async () => {
+    const name = 'react-native-third-party';
+    const podName = 'RNThirdParty';
+    const pkgDir = path.join('node_modules', name);
+
+    registerGlobMock(glob, [`ios/${podName}.podspec`], pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['ios'], coreFeatures: ['swiftui'] }),
+      },
+      { searchPaths: [expoRoot], platform: 'ios' }
+    );
+    expect(result).toEqual({
+      packageName: 'react-native-third-party',
+      pods: [
+        {
+          podName: 'RNThirdParty',
+          podspecDir: 'node_modules/react-native-third-party/ios',
+        },
+      ],
+      swiftModuleNames: ['RNThirdParty'],
+      flags: undefined,
+      modules: [],
+      appDelegateSubscribers: [],
+      reactDelegateHandlers: [],
+      debugOnly: false,
+      coreFeatures: ['swiftui'],
+    });
+  });
+
   it('should resolve multiple podspecs', async () => {
     const name = 'react-native-third-party';
     const podName = 'RNThirdParty';

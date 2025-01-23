@@ -274,7 +274,7 @@ index 90bcc87b8e..51fbc1e5a7 100644
    </style>
  </resources>
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index 513b766148..e34231b2ff 100644
+index 513b766148..e119b72df9 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -2,13 +2,13 @@
@@ -289,10 +289,10 @@ index 513b766148..e34231b2ff 100644
 +        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
          targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
 -        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
-+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '2.0.21'
  
 -        ndkVersion = "25.1.8937393"
-+        ndkVersion = "26.1.10909125"
++        ndkVersion = "27.1.12297006"
      }
      repositories {
          google()
@@ -434,12 +434,12 @@ index 53a6b238d4..9b42019c79 100644
  goto fail
  
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index 0fcba3d9bb..46fda813ba 100644
+index 0fcba3d9bb..39b188e065 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
 @@ -1,3 +1,26 @@
 +pluginManagement {
-+    includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
++    includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().toString())
 +}
 +plugins { id("com.facebook.react.settings") }
 +
@@ -563,7 +563,7 @@ diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm 
 index 37d415b57d..b27f83286d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-@@ -18,10 +18,10 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+@@ -18,10 +18,10 @@
  
  - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
  {
@@ -907,7 +907,7 @@ index b3978b9515..f740040e7b 100644
 -  end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index f8f8993585..bfd1e57dac 100644
+index f8f8993585..e20b462b95 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -916,7 +916,7 @@ index f8f8993585..bfd1e57dac 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "50.0.43",
 +  "license": "0BSD",
-+  "version": "52.0.40",
++  "version": "52.0.56",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -928,10 +928,10 @@ index f8f8993585..bfd1e57dac 100644
 -    "expo-status-bar": "~1.11.1",
 -    "react": "18.2.0",
 -    "react-native": "0.73.6"
-+    "expo": "~52.0.9",
-+    "expo-status-bar": "~2.0.0",
++    "expo": "~52.0.27",
++    "expo-status-bar": "~2.0.1",
 +    "react": "18.3.1",
-+    "react-native": "0.76.2"
++    "react-native": "0.76.6"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

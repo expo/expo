@@ -8,10 +8,16 @@
     "ios": "expo start --ios"
   },
   "dependencies": {
+    "@react-navigation/bottom-tabs": "^7.2.0",
+    "@react-navigation/native": "^7.0.14",
     "expo": "~52.0.0",
+    "expo-linking": "~7.0.3",
     "expo-router": "^4.0.0",
+    "expo-splash-screen": "~0.29.13",
     "react": "18.3.1",
-    "react-native": "0.76.3"
+    "react-native": "0.77.0",
+    "react-native-safe-area-context": "5.1.0",
+    "react-native-screens": "~4.5.0"
   },
   "devDependencies": {
     "babel-preset-expo": "~12.0.0"

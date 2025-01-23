@@ -76,7 +76,7 @@ it('runs `npx expo customize`', async () => {
     'App.js',
     'app.json',
     'babel.config.js',
-    'bun.lockb',
+    'bun.lock',
     'metro.config.js',
     'package.json',
     'public/index.html',

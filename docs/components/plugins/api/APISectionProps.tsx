@@ -3,7 +3,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { APITypeOrSignatureType } from '~/components/plugins/api/components/APITypeOrSignatureType';
-import { CODE, H2, H3, H4, LI, UL } from '~/ui/components/Text';
+import { CODE, H2, H3, H4, LI, MONOSPACE, UL } from '~/ui/components/Text';
 
 import {
   DefaultPropsDefinitionData,
@@ -16,10 +16,11 @@ import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
   extractDefaultPropValue,
   getCommentOrSignatureComment,
+  getTagData,
   resolveTypeName,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
-import { STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
+import { ELEMENT_SPACING, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -112,8 +113,13 @@ export const renderProp = (
     <div
       key={`prop-entry-${name}`}
       className={mergeClasses('border-t border-palette-gray4 first:border-t-0')}>
-      <APISectionDeprecationNote comment={extractedComment} sticky />
-      <APIBoxHeader name={name} comment={extractedComment} baseNestingLevel={baseNestingLevel} />
+      <APISectionDeprecationNote comment={extractedComment} className="mx-4 mb-0 mt-3" />
+      <APIBoxHeader
+        name={name}
+        comment={extractedComment}
+        baseNestingLevel={baseNestingLevel}
+        deprecated={Boolean(getTagData('deprecated', extractedComment))}
+      />
       <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
@@ -130,6 +136,22 @@ export const renderProp = (
         )}
       </div>
       <APICommentTextBlock comment={extractedComment} includePlatforms={false} inlineHeaders />
+      {extractedSignatures?.length &&
+        extractedSignatures[0].parameters?.map(param => (
+          <div
+            className={mergeClasses(
+              STYLES_SECONDARY,
+              VERTICAL_SPACING,
+              ELEMENT_SPACING,
+              'flex flex-col gap-0.5 border-l-2 border-secondary pl-2.5 font-normal'
+            )}
+            key={param.name}>
+            <MONOSPACE>
+              {param.name}: {resolveTypeName(param.type, sdkVersion)}
+            </MONOSPACE>
+            <APICommentTextBlock comment={param.comment} />
+          </div>
+        ))}
     </div>
   );
 };
@@ -153,8 +175,8 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
           {baseProp?.comment && <APICommentTextBlock comment={baseProp.comment} />}
+          <APIBoxSectionHeader text={header} exposeInSidebar baseNestingLevel={99} />
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>

@@ -69,7 +69,7 @@ jobs:
       - name: 📦 Get commit message
         run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=oneline | head -c1000)" >> $GITHUB_ENV
       - name: 📦 Set test project location
-        run: echo "TEST_PROJECT_ROOT=$GITHUB_WORKSPACE/updates-e2e" >> $GITHUB_ENV
+        run: echo "TEST_PROJECT_ROOT=${{ runner.temp }}/updates-e2e" >> $GITHUB_ENV
       - name: 📦 Setup test project for updates E2E fingerprint tests
         run: yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-fingerprint-eas-project.ts
       - name: 🚀 Build with EAS for ${{ matrix.platform }}
@@ -78,14 +78,14 @@ jobs:
         with:
           platform: ${{ env.EAS_PLATFORM }}
           profile: ${{ matrix.variant }}
-          projectRoot: './updates-e2e'
+          projectRoot: '${{ runner.temp }}/updates-e2e'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           noWait: ${{ github.event.schedule }}
           message: ${{ github.event.pull_request.title }}
       - name: On ${{ matrix.platform }} workflow canceled
         if: ${{ cancelled() && steps.build_eas.outputs.build_id }}
         run: eas build:cancel ${{ steps.build_eas.outputs.build_id }}
-        working-directory: './updates-e2e'
+        working-directory: '${{ runner.temp }}/updates-e2e'
         env:
           EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           EAS_BUILD_PROFILE: ${{ matrix.variant }}

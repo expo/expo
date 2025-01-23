@@ -156,7 +156,7 @@ export type InterfaceDefinitionData = {
 
 export type ClassDefinitionData = InterfaceDefinitionData & {
   type?: TypeDefinitionData;
-  isSensor: boolean;
+  allowOverwrites: boolean;
 };
 
 // Methods section

@@ -156,7 +156,7 @@ public class CalendarModule: Module {
       return serialize(attendees: attendees)
     }
 
-    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendarIds: [String?], status: String?, promise: Promise) in
+    AsyncFunction("getRemindersAsync") { (startDateStr: String?, endDateStr: String?, calendarIds: [String?], status: String?, promise: Promise) in
       try checkRemindersPermissions()
       var reminderCalendars = [EKCalendar]()
       let startDate = parse(date: startDateStr)
@@ -441,12 +441,14 @@ public class CalendarModule: Module {
       throw PermissionsManagerNotFoundException()
     }
 
-    var requester: AnyClass?
+    var requester: EXPermissionsRequester.Type?
     switch entity {
     case .event:
       requester = CalendarPermissionsRequester.self
     case .reminder:
       requester = RemindersPermissionRequester.self
+    @unknown default:
+      requester = nil
     }
     if let requester, !permissionsManager.hasGrantedPermission(usingRequesterClass: requester) {
       let message = requester.permissionType().uppercased()

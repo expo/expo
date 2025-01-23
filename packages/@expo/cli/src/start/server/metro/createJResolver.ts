@@ -149,6 +149,17 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
     const pkg = options.readPackageSync!(options.readFileSync!, closestPackageJson);
     assert(pkg, 'package.json should be read by `readPackageSync`');
 
+    // Added support for the package.json "imports" field (#-prefixed paths)
+    if (path.startsWith('#')) {
+      const resolved = resolve.imports(pkg, path, createResolveOptions(options.conditions));
+      if (resolved) {
+        // TODO: Should we attempt to resolve every path in the array?
+        return pathResolve(dirname(closestPackageJson), resolved[0]);
+      }
+      // NOTE: resolve.imports would have thrown by this point.
+      return path;
+    }
+
     if (pkg.name === moduleName) {
       const resolved = resolve.exports(
         pkg,

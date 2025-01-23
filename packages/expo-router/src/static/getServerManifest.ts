@@ -6,6 +6,7 @@
  */
 
 import { ctx } from '../../_ctx';
+import { getReactNavigationConfig } from '../getReactNavigationConfig';
 import { getRoutes, Options } from '../getRoutes';
 import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
@@ -33,4 +34,22 @@ export async function getBuildTimeServerManifestAsync(
   await loadStaticParamsAsync(routeTree);
 
   return getServerManifest(routeTree);
+}
+
+/** Get the linking manifest from a Node.js process. */
+export async function getManifest(options: Options = {}) {
+  const routeTree = getRoutes(ctx, {
+    preserveApiRoutes: true,
+    platform: 'web',
+    ...options,
+  });
+
+  if (!routeTree) {
+    throw new Error('No routes found');
+  }
+
+  // Evaluate all static params
+  await loadStaticParamsAsync(routeTree);
+
+  return getReactNavigationConfig(routeTree, false);
 }

@@ -78,7 +78,11 @@ You can also use EAS CLI to pick up another `submit` profile by specifying it wi
 
 ## Share configuration between `submit` profiles
 
-A `submit` profile can extend another profile using the `extends` key. For example, in the `preview` profile you may have `"extends": "production"`. This makes the `preview` profile inherit the configuration of the `production` profile.
+A `submit` profile can extend another profile using the `extends` key.
+
+For example, in the `preview` profile you may have `"extends": "production"`. This makes the `preview` profile inherit the configuration of the `production` profile.
+
+You can keep chaining profile extensions up to the depth of 5 as long as you avoid making circular dependencies.
 
 ## Next step
 

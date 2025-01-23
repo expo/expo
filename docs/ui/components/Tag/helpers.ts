@@ -2,11 +2,21 @@ import { capitalize } from '~/components/plugins/api/APISectionUtils';
 import { PlatformName } from '~/types/common';
 
 export function getPlatformName(text: string): PlatformName {
-  if (text.toLowerCase().includes('ios')) return 'ios';
-  if (text.toLowerCase().includes('android')) return 'android';
-  if (text.toLowerCase().includes('web')) return 'web';
-  if (text.toLowerCase().includes('macos')) return 'macos';
-  if (text.toLowerCase().includes('tvos')) return 'tvos';
+  if (text.toLowerCase().includes('ios')) {
+    return 'ios';
+  }
+  if (text.toLowerCase().includes('android')) {
+    return 'android';
+  }
+  if (text.toLowerCase().includes('web')) {
+    return 'web';
+  }
+  if (text.toLowerCase().includes('macos')) {
+    return 'macos';
+  }
+  if (text.toLowerCase().includes('tvos')) {
+    return 'tvos';
+  }
   return '';
 }
 

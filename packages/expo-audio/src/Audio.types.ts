@@ -41,6 +41,7 @@ export type AudioStatus = {
   duration: number;
   playing: boolean;
   loop: boolean;
+  didJustFinish: boolean;
   isBuffering: boolean;
   isLoaded: boolean;
   playbackRate: number;
@@ -280,12 +281,31 @@ export type RecordingOptionsAndroid = {
   maxFileSize?: number;
 };
 
-// @docsMissing
 export type AudioMode = {
+  /**
+   * Determines if audio playback is allowed when the device is in silent mode.
+   * @platform ios
+   */
   playsInSilentMode: boolean;
+  /**
+   * Determines how the audio session interacts with other sessions.
+   *
+   * @platform ios
+   */
   interruptionMode: InterruptionMode;
+  /**
+   * Whether the audio session allows recording.
+   * @platform ios
+   */
   allowsRecording: boolean;
+  /**
+   * Whether the audio session stays active when the app moves to the background.
+   */
   shouldPlayInBackground: boolean;
+  /**
+   * Whether the audio should route through the earpiece.
+   * @platform android
+   */
   shouldRouteThroughEarpiece: boolean;
 };
 

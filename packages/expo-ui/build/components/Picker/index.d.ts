@@ -1,0 +1,34 @@
+import { StyleProp, ViewStyle } from 'react-native';
+/**
+ * Props for the Picker component.
+ */
+export type PickerProps = {
+    /**
+     * An array of options to be displayed in the picker.
+     */
+    options: string[];
+    /**
+     * The index of the currently selected option.
+     */
+    selectedIndex: number | null;
+    /**
+     * Callback function that is called when an option is selected.
+     */
+    onOptionSelected: (event: {
+        nativeEvent: {
+            index: number;
+            label: string;
+        };
+    }) => void;
+    /**
+     * The variant of the picker, which determines its appearance and behavior.
+     * The 'wheel' and 'menu' variants are iOS only.
+     */
+    variant: 'wheel' | 'segmented' | 'menu';
+    /**
+     * Optional style to apply to the picker component.
+     */
+    style?: StyleProp<ViewStyle>;
+};
+export declare function Picker(props: PickerProps): import("react").JSX.Element;
+//# sourceMappingURL=index.d.ts.map

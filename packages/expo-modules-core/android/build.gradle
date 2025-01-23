@@ -5,9 +5,31 @@ apply plugin: 'com.android.library'
 group = 'host.exp.exponent'
 version = '2.0.6'
 
+// List of features that are required by linked modules
+def coreFeatures = project.findProperty("coreFeatures") ?: []
+
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
 applyKotlinExpoModulesCorePlugin()
+
+buildscript {
+  def KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
+  if(KOTLIN_MAJOR_VERSION < 2) {
+    logger.warn("You need to use at least Kotlin 2.0.0 to enable jetpack compose support.")
+    return
+  }
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+try {
+  apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+} catch (ignored) {}
+
 useDefaultAndroidSdkVersions()
 useExpoPublishing()
 
@@ -177,6 +199,8 @@ dependencies {
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
   api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
   api "androidx.core:core-ktx:1.13.1"
+
+  implementation 'androidx.compose.foundation:foundation-android:1.7.6'
 
   implementation("androidx.tracing:tracing-ktx:1.2.0")
 

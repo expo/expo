@@ -1,10 +1,10 @@
 {
   "name": "expo-clipboard",
-  "platforms": ["ios", "android", "web"],
-  "ios": {
-    "modulesClassNames": ["ClipboardModule"]
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ClipboardModule"]
   },
   "android": {
-    "modulesClassNames": ["expo.modules.clipboard.ClipboardModule"]
+    "modules": ["expo.modules.clipboard.ClipboardModule"]
   }
 }

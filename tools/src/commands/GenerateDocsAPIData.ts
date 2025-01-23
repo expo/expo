@@ -5,7 +5,6 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
-import { Application, Configuration, TSConfigReader, TypeDocReader } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -32,6 +31,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
+  'expo-background-task': ['BackgroundTask.ts'],
   'expo-battery': ['Battery.ts'],
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-blur': ['index.ts'],
@@ -106,6 +106,8 @@ const executeCommand = async (
   entryPoint: EntryPoint = 'index.ts',
   packageName: string = jsonFileName
 ) => {
+  const { Application, Configuration, TSConfigReader, TypeDocReader } = await import('typedoc');
+
   const dataPath = path.join(
     EXPO_DIR,
     'docs',
@@ -179,20 +181,7 @@ const executeCommand = async (
     const { readme, symbolIdMap, ...trimmedOutput } = output;
 
     if (MINIFY_JSON) {
-      const minifiedJson = recursiveOmitBy(trimmedOutput, ({ key, node }) => {
-        return (
-          [
-            'id',
-            'groups',
-            'kindString',
-            'originalName',
-            'files',
-            'sourceFileName',
-            'target',
-          ].includes(key) ||
-          (key === 'flags' && !Object.keys(node).length)
-        );
-      });
+      const minifiedJson = filterOutKeys(filterOutKeys(trimmedOutput));
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
       await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));
@@ -201,6 +190,18 @@ const executeCommand = async (
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
   }
 };
+
+const KEYS_TO_OMIT = ['id', 'groups', 'kindString', 'originalName', 'files', 'sourceFileName'];
+
+function filterOutKeys(data: Record<string, any>) {
+  return recursiveOmitBy(data, ({ key, node }) => {
+    return (
+      KEYS_TO_OMIT.includes(key) ||
+      (key === 'flags' && !Object.keys(node).length) ||
+      (key === 'target' && typeof node !== 'object')
+    );
+  });
+}
 
 async function action({ packageName, sdk }: ActionOptions) {
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);

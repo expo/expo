@@ -57,7 +57,7 @@ type RenderStore = {
  * This is an internal function and not for public use.
  */
 export declare const runWithRenderStore: <T>(renderStore: RenderStore, fn: () => T) => T;
-export declare function rerender(input: string, params?: unknown): void;
+export declare function rerender(input: string, params?: unknown): Promise<void>;
 export declare function getContext<RscContext extends Record<string, unknown> = Record<string, unknown>>(): RscContext;
 /** Get the request headers used to make the server component or action request. */
 export declare function unstable_headers(): Promise<Headers>;

@@ -1,11 +1,11 @@
 ---
-modificationDate: November 27, 2024
+modificationDate: January 3, 2025
 title: Additional resources
 description: A reference of resources that are useful to learn about Expo tooling and services.
 ---
 
 import { TALKS, PODCASTS, LIVE_STREAMS } from '~/public/static/talks';
-import { TalkGridWrapper, TalkGridCell } from '~/ui/components/Home/sections';
+import { CollapsibleTalksGridWrapper } from '~/ui/components/CollapsibleTalksGridWrapper';
 
 The following resources are useful for learning about Expo tooling and services.
 
@@ -52,24 +52,12 @@ The following resources are useful for learning about Expo tooling and services.
 
 ## Talks
 
-<TalkGridWrapper>
-  {TALKS.map(talk => (
-    <TalkGridCell key={talk.videoId} {...talk} />
-  ))}
-</TalkGridWrapper>
+<CollapsibleTalksGridWrapper items={TALKS} />
 
 ## Podcasts
 
-<TalkGridWrapper>
-  {PODCASTS.map(podcast => (
-    <TalkGridCell key={podcast.videoId ?? podcast.event} {...podcast} />
-  ))}
-</TalkGridWrapper>
+<CollapsibleTalksGridWrapper items={PODCASTS} />
 
 ## Live streams recordings
 
-<TalkGridWrapper>
-  {LIVE_STREAMS.map(stream => (
-    <TalkGridCell key={stream.videoId} {...stream} />
-  ))}
-</TalkGridWrapper>
+<CollapsibleTalksGridWrapper items={LIVE_STREAMS} />

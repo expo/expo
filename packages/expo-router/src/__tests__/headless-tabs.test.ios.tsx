@@ -193,7 +193,7 @@ it('allows for custom elements', () => {
 it('can dynamically add tabs', () => {
   renderRouter(
     {
-      _layout: () => {
+      _layout: function TabLayout() {
         const [showAll, setShowAll] = useState(false);
 
         const tabs = showAll ? (

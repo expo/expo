@@ -33,7 +33,16 @@ export async function createReactNativeConfigAsync({
     ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
     ...findProjectLocalDependencyRoots(projectConfig),
   };
-  const reactNativePath = dependencyRoots['react-native'];
+
+  // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
+  // the Cocoapods resolution will detect path mismatches and generate nonsensical
+  // relative paths that won't resolve
+  let reactNativePath: string;
+  try {
+    reactNativePath = await fs.realpath(dependencyRoots['react-native']);
+  } catch {
+    reactNativePath = dependencyRoots['react-native'];
+  }
 
   const dependencyConfigs = await Promise.all(
     Object.entries(dependencyRoots).map(async ([name, packageRoot]) => {

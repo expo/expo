@@ -20,6 +20,7 @@ export async function syncConfigurationToNativeAsync(
 ): Promise<void> {
   if (options.workflow !== 'generic') {
     // not applicable to managed workflow
+    return;
   }
 
   switch (options.platform) {

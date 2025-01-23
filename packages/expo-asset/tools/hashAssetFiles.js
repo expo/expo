@@ -1,3 +1,5 @@
+// NOTE(Jan 17, 2025): This file is now deprecated in favor of `@expo/metro-config`. It should probably be removed for SDK 53.
+
 'use strict';
 
 const md5File = require('md5-file/promise');

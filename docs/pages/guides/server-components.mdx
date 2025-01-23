@@ -23,8 +23,9 @@ Your project must use Expo Router and React Native new architecture (default in 
 
 To use React Server Components in your Expo app, you need to:
 
-1. Ensure the entry module is `expo-router/entry` (default) in **package.json**.
-2. Enable the flag in the project app config:
+1. Install the required RSC dependency `react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610`
+2. Ensure the entry module is `expo-router/entry` (default) in **package.json**.
+3. Enable the flag in the project app config:
 
 ```json app.json
 {
@@ -36,7 +37,8 @@ To use React Server Components in your Expo app, you need to:
 }
 ```
 
-3. Create an initial route **app/index.tsx**:
+4. Ensure `"origin": "false"` is not set anywhere in your app config.
+5. Create an initial route **app/index.tsx**:
 
 ```tsx app/index.tsx (Client Component)
 /// <reference types="react/canary" />
@@ -498,6 +500,26 @@ Routes marked with `static` output will be rendered at build-time and embedded i
 
 The current default is `dynamic` rendering. In the future, we'll change the caching and optimizations to be smarter and more automatic.
 
+You can generate static pages at build-time with the `generateStaticParams` function. This is useful for components that must only run at build-time and not on the server.
+
+```tsx app/shapes/[shape].tsx
+import { Text } from 'react-native';
+
+// Adding `unstable_settings.render: 'static'` will prevent this component from running on the server.
+export const unstable_settings = {
+  render: 'static',
+};
+
+// This function will generate static pages for each shape.
+export async function generateStaticParams() {
+  return [{ shape: 'square' }];
+}
+
+export default function ShapeRoute({ shape }) {
+  return <Text>{shape}</Text>;
+}
+```
+
 ### CSS
 
 > This is limited to full React Server Components mode.
@@ -536,7 +558,7 @@ Production exports for React Server Components on native are not yet supported. 
 - DOM components cannot use Server Functions yet.
 - Production deployment is very limited and not recommended yet.
 - Server Rendering RSC payloads to HTML is not supported yet. This means static and server output doesn't fully work yet.
-- [`generateStaticParams`](/router/reference/static-rendering/#generatestaticparams) is not yet supported.
+- [`generateStaticParams`](/router/reference/static-rendering/#generatestaticparams) is only partially supported in full React Server Components mode.
 - HTML `form` integration with Server Functions is not supported yet (this partially works automatically, but data is not encrypted).
 - `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
 - Server Functions that invoke other Server Functions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.

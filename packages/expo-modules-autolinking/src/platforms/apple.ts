@@ -62,6 +62,7 @@ export async function resolveModuleAsync(
   }));
 
   const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.appleSwiftModuleNames());
+  const coreFeatures = revision.config?.coreFeatures() ?? [];
 
   return {
     packageName,
@@ -72,6 +73,7 @@ export async function resolveModuleAsync(
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
+    ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
   };
 }
 

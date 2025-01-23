@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { AssetData, Module } from 'metro';
+import type { AssetData, Module } from 'metro';
 import { ReadOnlyDependencies } from '../serializer/getCssDeps';
 type Options = {
     processModuleFilter: (modules: Module) => boolean;

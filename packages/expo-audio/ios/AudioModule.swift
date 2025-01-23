@@ -85,7 +85,7 @@ public class AudioModule: Module {
       }
 
       Property("playing") { player in
-        player.playing
+        player.isPlaying
       }
 
       Property("mute") { player in
@@ -105,11 +105,7 @@ public class AudioModule: Module {
       }
 
       Property("duration") { player in
-        if player.ref.status == .readyToPlay {
-          player.duration
-        } else {
-          0.0
-        }
+        player.ref.status == .readyToPlay ? player.duration : 0.0
       }
 
       Property("playbackRate") { player in
@@ -140,7 +136,7 @@ public class AudioModule: Module {
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        if player.playing {
+        if player.isPlaying {
           player.ref.rate = playerRate
         }
         player.currentRate = playerRate
@@ -151,7 +147,7 @@ public class AudioModule: Module {
       }
 
       Function("replace") { (player, source: AudioSource) in
-        player.ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
+        player.replaceCurrentSource(source: source)
       }
 
       Function("pause") { player in
@@ -286,6 +282,10 @@ public class AudioModule: Module {
           recorder.ref.stop()
           recorder.allowsRecording = false
         }
+      }
+    } else {
+      AudioComponentRegistry.shared.recorders.values.forEach { recorder in
+        recorder.allowsRecording = true
       }
     }
     #endif

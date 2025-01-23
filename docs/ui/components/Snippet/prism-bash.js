@@ -1,4 +1,5 @@
 // Base code has been copied over from `prismjs/components/prism-bash`
+/* eslint-disable unicorn/better-regex */
 
 import { Prism } from 'prism-react-renderer';
 
@@ -20,7 +21,7 @@ import { Prism } from 'prism-react-renderer';
   const insideString = {
     bash: commandAfterHeredoc,
     environment: {
-      pattern: RegExp('\\$' + envVars),
+      pattern: new RegExp('\\$' + envVars),
       alias: 'constant',
     },
     variable: [
@@ -60,7 +61,7 @@ import { Prism } from 'prism-react-renderer';
           operator: /:[-=?+]?|[!/]|##?|%%?|\^\^?|,,?/,
           punctuation: /[[\]]/,
           environment: {
-            pattern: RegExp('(\\{)' + envVars),
+            pattern: new RegExp('(\\{)' + envVars),
             lookbehind: true,
             alias: 'constant',
           },
@@ -110,7 +111,7 @@ import { Prism } from 'prism-react-renderer';
       pattern: /(^|[\s;|&]|[<>]\()\w+(?:\.\w+)*(?=\+?=)/,
       inside: {
         environment: {
-          pattern: RegExp('(^|[\\s;|&]|[<>]\\()' + envVars),
+          pattern: new RegExp('(^|[\\s;|&]|[<>]\\()' + envVars),
           lookbehind: true,
           alias: 'constant',
         },
@@ -166,7 +167,7 @@ import { Prism } from 'prism-react-renderer';
       },
     ],
     environment: {
-      pattern: RegExp('\\$?' + envVars),
+      pattern: new RegExp('\\$?' + envVars),
       alias: 'constant',
     },
     variable: insideString.variable,
