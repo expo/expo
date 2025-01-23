@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
@@ -172,7 +173,7 @@ private val namedColors = mapOf(
 class ColorTypeConverter(
   isOptional: Boolean
 ) : DynamicAwareTypeConverters<Color>(isOptional) {
-  override fun convertFromDynamic(value: Dynamic): Color {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Color {
     return when (value.type) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
       ReadableType.String -> colorFromString(value.asString())
@@ -184,7 +185,7 @@ class ColorTypeConverter(
     }
   }
 
-  override fun convertFromAny(value: Any): Color {
+  override fun convertFromAny(value: Any, context: AppContext?): Color {
     return when (value) {
       is Int -> {
         colorFromInt(value)
