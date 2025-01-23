@@ -4,7 +4,7 @@ import type { SourceSkips } from './sourcer/SourceSkips';
 export type FingerprintSource = HashSource & {
     /**
      * Hash value of the `source`.
-     * If the source is excluding by `Options.dirExcludes`, the value will be null.
+     * If the source is excluded the value will be null.
      */
     hash: string | null;
     /**
@@ -15,11 +15,11 @@ export type FingerprintSource = HashSource & {
 };
 export interface Fingerprint {
     /**
-     * Sources and their hash values to generate a fingerprint
+     * Sources and their hash values from which the project fingerprint was generated.
      */
     sources: FingerprintSource[];
     /**
-     * The final hash value of the whole fingerprint
+     * The final hash value of the whole project fingerprint.
      */
     hash: string;
 }
@@ -122,7 +122,7 @@ export interface Options {
 }
 type SourceSkipsKeys = keyof typeof SourceSkips;
 /**
- * Supported options from fingerprint.config.js
+ * Supported options for use in fingerprint.config.js
  */
 export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'ignorePaths' | 'extraSources' | 'enableReactImportsPatcher' | 'useRNCoreAutolinkingFromExpo' | 'debug' | 'fileHookTransform'> & {
     sourceSkips?: SourceSkips | SourceSkipsKeys[];
@@ -157,18 +157,6 @@ export type FileHookTransformSource = {
 } | {
     type: 'contents';
     id: string;
-};
-export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
-    platforms: NonNullable<Options['platforms']>;
-    concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
-    hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
-    sourceSkips: NonNullable<Options['sourceSkips']>;
-    enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
-    ignorePathMatchObjects: IMinimatch[];
-    /**
-     * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
-     */
-    ignoreDirMatchObjects: IMinimatch[];
 };
 export interface HashSourceFile {
     type: 'file';
@@ -232,4 +220,19 @@ export interface HashResultContents {
     debugInfo?: DebugInfoContents;
 }
 export type HashResult = HashResultFile | HashResultDir | HashResultContents;
+/**
+ * @hidden
+ */
+export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
+    platforms: NonNullable<Options['platforms']>;
+    concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
+    hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
+    sourceSkips: NonNullable<Options['sourceSkips']>;
+    enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
+    ignorePathMatchObjects: IMinimatch[];
+    /**
+     * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
+     */
+    ignoreDirMatchObjects: IMinimatch[];
+};
 export {};
