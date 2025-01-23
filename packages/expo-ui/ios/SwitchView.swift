@@ -42,8 +42,8 @@ struct IOSCheckboxToggleStyle: ToggleStyle {
       configuration.isOn.toggle()
     }, label: {
       HStack {
-          Image(systemName: configuration.isOn ? "checkmark.square" : "square")
-          configuration.label
+        Image(systemName: configuration.isOn ? "checkmark.square" : "square")
+        configuration.label
       }
     }).buttonStyle(BorderlessButtonStyle())
   }
