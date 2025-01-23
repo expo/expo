@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.spawnSudoAsync = exports.createPendingSpawnAsync = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
-const sudo_prompt_1 = __importDefault(require("sudo-prompt"));
+const sudo_prompt_1 = __importDefault(require("@expo/sudo-prompt"));
 function createPendingSpawnAsync(actionAsync, spawnAsync) {
     // Manually rsolve the child promise whenever the prepending async action is resolved.
     // Avoid `childReject` to prevent "unhandled promise rejection" for one of the two promises.
