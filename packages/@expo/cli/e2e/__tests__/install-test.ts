@@ -86,7 +86,7 @@ it('runs `npx expo install expo-sms`', async () => {
   expect(findProjectFiles(projectRoot)).toStrictEqual([
     'App.js',
     'app.json',
-    'bun.lockb',
+    'bun.lock',
     'metro.config.js',
     'package.json',
   ]);

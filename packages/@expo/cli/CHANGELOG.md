@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- fix tests for bun 1.2 (bun lockfile change) ([#34383](https://github.com/expo/expo/pull/34383) by [@vonovak](https://github.com/vonovak))
+
 ## 0.22.17 — 2025-02-19
 
 ### 🐛 Bug fixes
