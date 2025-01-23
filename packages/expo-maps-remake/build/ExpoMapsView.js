@@ -13,6 +13,7 @@ export default function ExpoMapsView({ onMapClick, onPOIClick, onMarkerClick, on
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const parsedMarkers = markers?.map((marker) => ({
         ...marker,
+        // @ts-expect-error
         icon: marker.icon?.__expo_shared_object_id__,
     }));
     return (<NativeView {...props} markers={parsedMarkers} onMapClick={onNativeMapClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove}/>);

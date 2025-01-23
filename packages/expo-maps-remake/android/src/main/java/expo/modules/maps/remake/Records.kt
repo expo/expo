@@ -48,7 +48,6 @@ data class MarkerRecord(
   val showCallout: Boolean = true
 ) : Record
 
-
 data class CameraPositionRecord(
   @Field
   val coordinates: Coordinates = Coordinates(),
@@ -120,6 +119,7 @@ data class MapPropertiesRecord(
   val isMyLocationEnabled: Boolean = false,
   @Field
   val isTrafficEnabled: Boolean = false,
+  // TODO(@lukmccall): supports these properties
 //  val latLngBoundsForCameraTarget: LatLngBounds? = null,
 //  val mapStyleOptions: MapStyleOptions? = null,
   @Field
@@ -148,14 +148,14 @@ data class POIRecord(
 
   @Field
   val coordinates: Coordinates
-): Record
+) : Record
 
 enum class MapColorSchemeEnum : Enumerable {
   LIGHT,
   DARK,
   FOLLOW_SYSTEM;
 
-  fun toComposeMapColorScheme():  ComposeMapColorScheme {
+  fun toComposeMapColorScheme(): ComposeMapColorScheme {
     return when (this) {
       LIGHT -> ComposeMapColorScheme.LIGHT
       DARK -> ComposeMapColorScheme.DARK
@@ -176,4 +176,4 @@ data class CameraMoveEvent(
 
   @Field
   val bearing: Float
-): Record
+) : Record

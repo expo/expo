@@ -29,6 +29,7 @@ export default function ExpoMapsView({
 
   const parsedMarkers = markers?.map((marker) => ({
     ...marker,
+    // @ts-expect-error
     icon: marker.icon?.__expo_shared_object_id__,
   }));
 
