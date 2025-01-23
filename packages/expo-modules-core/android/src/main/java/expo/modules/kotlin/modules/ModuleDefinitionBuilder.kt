@@ -31,7 +31,12 @@ import kotlin.reflect.typeOf
 const val DEFAULT_MODULE_VIEW = "DEFAULT_MODULE_VIEW"
 
 @DefinitionMarker
-class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) : ObjectDefinitionBuilder() {
+class ModuleDefinitionBuilder(
+  @PublishedApi internal val module: Module? = null
+) : ObjectDefinitionBuilder(
+  module
+    ?.customConverterProvider()
+) {
   @PublishedApi
   internal var name: String? = null
 
