@@ -345,6 +345,8 @@ PODS:
     - ExpoModulesCore
   - ExpoBackgroundFetch (13.0.4):
     - ExpoModulesCore
+  - ExpoBackgroundTask (0.0.1):
+    - ExpoModulesCore
   - ExpoBattery (9.0.2):
     - ExpoModulesCore
   - ExpoBlur (14.0.3):
@@ -353,7 +355,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (14.0.6):
     - ExpoModulesCore
-  - ExpoCamera (16.0.13):
+  - ExpoCamera (16.0.14):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -2715,6 +2717,7 @@ DEPENDENCIES:
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
+  - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
@@ -2939,6 +2942,9 @@ EXTERNAL SOURCES:
   ExpoBackgroundFetch:
     inhibit_warnings: false
     :path: "../../../packages/expo-background-fetch/ios"
+  ExpoBackgroundTask:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-background-task/ios"
   ExpoBattery:
     inhibit_warnings: false
     :path: "../../../packages/expo-battery/ios"
@@ -3272,12 +3278,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BenchmarkingModule: 3549f9ab20c3630235351b4a6691eafcaaf5c377
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
-  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
+  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
+  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: d7420d607795707821b8bcd30ab7444159e802e0
   EXApplication: 27a524f5c3e671c6218220fba04752629466a1a9
   EXAV: 57ea461614a714b8b8fcc72c6fbc298b8f1ec78b
-  EXConstants: cc788e18fb962b77999c16f6b90e551542b1bcf4
+  EXConstants: 71a2ad0aac7f716952ba59b7e61902881e7f692e
   EXImageLoader: 759063a65ab016b836f73972d3bb25404888713d
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: 81324537a654111964f6e7994dbc351a4233dcfa
@@ -3291,11 +3297,12 @@ SPEC CHECKSUMS:
   ExpoAsset: 6cc988c426b5fc997859cc0f8f6728d1376bf53f
   ExpoAudio: 4e15220669743c6b5abf6ca64fd8f3a1935cc5af
   ExpoBackgroundFetch: 73e5944fdead7b37850d1dd47e3d6d322bf07c60
+  ExpoBackgroundTask: 41ae85d76c5883ec0e3f15a55a1b0769082bd4a2
   ExpoBattery: c04a49448ee6e84749df3b85e1421dac38584348
   ExpoBlur: 567af66164e3043a9a30069594aed1ddf0a88d97
   ExpoBrightness: d3f54a52ea62b6c4deb81bfb5569a8bc664487ab
   ExpoCalendar: 2494a630f176436783a8941efd3c38a9c657ae65
-  ExpoCamera: c227d7473dc689f64f9fbbc7ee6bb6fbfdff2a40
+  ExpoCamera: 5fae8d4e487f1015df31298603fd1b38770934f6
   ExpoCellular: f3b9194876470c80df86face9b395deaf975ab9b
   ExpoClipboard: 5250b207b6d545f4e9aac5ea3c6e61c4f16d0aed
   ExpoContacts: eae63b58a8b43cab32ace4fdb6f119ccc8233e7e
@@ -3349,7 +3356,7 @@ SPEC CHECKSUMS:
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: dac4f80f363d25f0f06bbca8a982e583c71e18ae
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: e929405329190e9df3ef45cea87293072747f2ef

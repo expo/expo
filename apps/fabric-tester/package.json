@@ -13,7 +13,7 @@
     "expo-apple-authentication": "~7.1.3",
     "expo-av": "~15.0.2",
     "expo-blur": "~14.0.3",
-    "expo-camera": "~16.0.13",
+    "expo-camera": "~16.0.14",
     "expo-dev-client": "~5.0.10",
     "expo-image": "^2.0.4",
     "expo-linear-gradient": "~14.0.2",
