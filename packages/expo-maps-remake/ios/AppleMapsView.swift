@@ -8,7 +8,7 @@ import MapKit
 @Observable
 class MapPosition {
   var region: MapCameraPosition
-
+  
   init(position: CameraPosition) {
     self.region = convertToMapCamera(position: position)
   }
@@ -20,13 +20,13 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var cameraPosition: CameraPosition
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
-  var onMapClick = EventDispatcher()
-  var onCameraMove = EventDispatcher()
+  let onMapClick = EventDispatcher()
+  let onCameraMove = EventDispatcher()
 }
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View {
   @EnvironmentObject var props: AppleMapsViewProps
-
+  
   var body: some View {
     if #available(iOS 18.0, *) {
       AppleMapsView()
@@ -42,42 +42,38 @@ struct AppleMapsView: View {
   @EnvironmentObject var props: AppleMapsViewProps
   @State private var mapCameraPosition: MapCameraPosition = .automatic
   @State var selection: MapSelection<MKMapItem>?
-
+  
   @Namespace var mapScope
-
+  
   var body: some View {
     let properties = props.properties
     let uiSettings = props.uiSettings
-
+    
     MapReader { reader in
       Map(position: $mapCameraPosition, selection: $selection) {
-        if !props.markers.isEmpty {
-          ForEach(props.markers) { marker in
-            Marker(
-              coordinate: marker.clLocationCoordinate2D,
-              label: { Text(marker.title) }
-            )
-            .tag(MapSelection(marker.mapItem))
-          }
+        ForEach(props.markers) { marker in
+          Marker(
+            coordinate: marker.clLocationCoordinate2D,
+            label: { Text(marker.title) }
+          )
+          .tag(MapSelection(marker.mapItem))
         }
-
-        if !props.annotations.isEmpty {
-          ForEach(props.annotations) { annotation in
-            let coordinates = annotation.coordinates
-            Annotation(
-              annotation.title,
-              coordinate: CLLocationCoordinate2D(
-                latitude: coordinates.latitude,
-                longitude: coordinates.longitude
-              )
-            ) {
-              ZStack {
-                RoundedRectangle(cornerRadius: 5)
-                  .fill(annotation.backgroundColor)
-                Text(annotation.text)
-                  .foregroundStyle(annotation.textColor)
-                  .padding(5)
-              }
+        
+        ForEach(props.annotations) { annotation in
+          let coordinates = annotation.coordinates
+          Annotation(
+            annotation.title,
+            coordinate: CLLocationCoordinate2D(
+              latitude: coordinates.latitude,
+              longitude: coordinates.longitude
+            )
+          ) {
+            ZStack {
+              RoundedRectangle(cornerRadius: 5)
+                .fill(annotation.backgroundColor)
+              Text(annotation.text)
+                .foregroundStyle(annotation.textColor)
+                .padding(5)
             }
           }
         }
@@ -107,7 +103,7 @@ struct AppleMapsView: View {
       .onMapCameraChange(frequency: .onEnd) { change in
         let cameraPosition = change.region.center
         let zoomLevel = change.region.span.longitudeDelta
-
+        
         props.onCameraMove([
           "coordinates": [
             "latitude": cameraPosition.latitude,
