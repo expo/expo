@@ -30,10 +30,18 @@ export type Marker = {
    */
   draggable?: boolean;
 <<<<<<< HEAD
+<<<<<<< HEAD
   /**
    * Whether the callout should be shown when the marker is clicked.
    */
+||||||| parent of dee93c9a34 (clean up)
+=======
+  /**
+   * Whether the callout should be shown when the marker is clicked.
+   */
+>>>>>>> dee93c9a34 (clean up)
   showCallout?: boolean;
+<<<<<<< HEAD
   /**
    * The custom icon to display for the marker.
    */
@@ -42,6 +50,13 @@ export type Marker = {
 =======
   showCallout?: boolean;
 >>>>>>> 0c5aae5205 (Add icon to marker and move event)
+||||||| parent of dee93c9a34 (clean up)
+=======
+  /**
+   * The custom icon to display for the marker.
+   */
+  icon?: SharedRefType<'image'>;
+>>>>>>> dee93c9a34 (clean up)
 };
 
 export type CameraPosition = {

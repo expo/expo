@@ -28,9 +28,6 @@ export type Marker = {
      */
     draggable?: boolean;
     showCallout?: boolean;
-    /**
-     * The custom icon to display for the marker.
-     */
     icon?: SharedRefType<'image'>;
 };
 export type CameraPosition = {
