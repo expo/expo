@@ -1,17 +1,17 @@
-import { ExpoMapsView, MapColorScheme } from 'expo-maps-remake';
+import { GoogleMaps } from 'expo-maps-remake';
 import { View, StyleSheet } from 'react-native';
 
-import { FunctionParameter, useArguments } from '../../components/FunctionDemo';
-import Configurator from '../../components/FunctionDemo/Configurator';
+import { FunctionParameter, useArguments } from '../../../components/FunctionDemo';
+import Configurator from '../../../components/FunctionDemo/Configurator';
 
 const parameters: FunctionParameter[] = [
   {
     name: 'colorScheme',
     type: 'enum',
     values: [
-      { name: 'FOLLOW_SYSTEM', value: MapColorScheme.FOLLOW_SYSTEM },
-      { name: 'LIGHT', value: MapColorScheme.LIGHT },
-      { name: 'DARK', value: MapColorScheme.DARK },
+      { name: 'FOLLOW_SYSTEM', value: GoogleMaps.MapColorScheme.FOLLOW_SYSTEM },
+      { name: 'LIGHT', value: GoogleMaps.MapColorScheme.LIGHT },
+      { name: 'DARK', value: GoogleMaps.MapColorScheme.DARK },
     ],
   },
   {
@@ -93,7 +93,7 @@ export default function MapsUISettings() {
     scaleBarEnabled,
     togglePitchEnabled,
   ] = args as [
-    MapColorScheme,
+    GoogleMaps.MapColorScheme,
     boolean,
     boolean,
     boolean,
@@ -110,7 +110,7 @@ export default function MapsUISettings() {
   return (
     <View style={styles.container}>
       <View style={styles.container}>
-        <ExpoMapsView
+        <GoogleMaps.View
           style={{ width: 'auto', height: '100%' }}
           cameraPosition={{
             coordinates: {

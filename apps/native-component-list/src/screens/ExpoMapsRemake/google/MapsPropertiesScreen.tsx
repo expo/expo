@@ -1,8 +1,8 @@
-import { AppleMapType, ExpoMapsView, MapType } from 'expo-maps-remake';
+import { GoogleMaps } from 'expo-maps-remake';
 import { View, StyleSheet } from 'react-native';
 
-import { FunctionParameter, useArguments } from '../../components/FunctionDemo';
-import Configurator from '../../components/FunctionDemo/Configurator';
+import { FunctionParameter, useArguments } from '../../../components/FunctionDemo';
+import Configurator from '../../../components/FunctionDemo/Configurator';
 
 const parameters: FunctionParameter[] = [
   {
@@ -14,22 +14,12 @@ const parameters: FunctionParameter[] = [
     name: 'mapType',
     type: 'enum',
     values: [
-      { name: 'NORMAL', value: MapType.NORMAL },
-      { name: 'HYBRID', value: MapType.HYBRID },
-      { name: 'SATELLITE', value: MapType.SATELLITE },
-      { name: 'TERRAIN', value: MapType.TERRAIN },
+      { name: 'NORMAL', value: GoogleMaps.MapType.NORMAL },
+      { name: 'HYBRID', value: GoogleMaps.MapType.HYBRID },
+      { name: 'SATELLITE', value: GoogleMaps.MapType.SATELLITE },
+      { name: 'TERRAIN', value: GoogleMaps.MapType.TERRAIN },
     ],
     platforms: ['android'],
-  },
-  {
-    name: 'mapTypeIos',
-    type: 'enum',
-    values: [
-      { name: 'STANDARD', value: AppleMapType.STANDARD },
-      { name: 'HYBRID', value: AppleMapType.HYBRID },
-      { name: 'IMAGERY', value: AppleMapType.IMAGERY },
-    ],
-    platforms: ['ios'],
   },
   {
     name: 'isIndoorEnabled',
@@ -61,18 +51,17 @@ export default function MapsCameraControlsScreen() {
   const [
     isBuildingEnabled,
     mapType,
-    mapTypeIos,
     isIndoorEnabled,
     selectionEnabled,
     isMyLocationEnabled,
     isTrafficEnabled,
     minZoomPreference,
     maxZoomPreference,
-  ] = args as [boolean, MapType, AppleMapType, boolean, boolean, boolean, boolean, number, number];
+  ] = args as [boolean, GoogleMaps.MapType, boolean, boolean, boolean, boolean, number, number];
   return (
     <View style={styles.container}>
       <View style={styles.container}>
-        <ExpoMapsView
+        <GoogleMaps.View
           style={{ width: 'auto', height: '100%' }}
           cameraPosition={{
             coordinates: {
@@ -84,7 +73,6 @@ export default function MapsCameraControlsScreen() {
           properties={{
             isBuildingEnabled,
             mapType,
-            mapTypeIos,
             isIndoorEnabled,
             selectionEnabled,
             isMyLocationEnabled,

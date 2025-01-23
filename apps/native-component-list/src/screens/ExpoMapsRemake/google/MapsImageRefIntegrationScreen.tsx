@@ -1,5 +1,5 @@
 import { useImage } from 'expo-image';
-import { ExpoMapsView } from 'expo-maps-remake';
+import { GoogleMaps } from 'expo-maps-remake';
 import { View } from 'react-native';
 
 export default function MapsCameraControlsScreen() {
@@ -17,7 +17,7 @@ export default function MapsCameraControlsScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ExpoMapsView
+      <GoogleMaps.View
         style={{ width: 'auto', height: '100%' }}
         cameraPosition={{
           zoom: 10,
