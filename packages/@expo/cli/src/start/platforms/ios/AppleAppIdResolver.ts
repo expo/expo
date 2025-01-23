@@ -1,4 +1,4 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { IOSConfig, ModPlatform } from '@expo/config-plugins';
 import plist from '@expo/plist';
 import fs from 'fs';
 
@@ -8,15 +8,15 @@ const debug = require('debug')('expo:start:platforms:ios:AppleAppIdResolver') as
 
 /** Resolves the iOS bundle identifier from the Expo config or native files. */
 export class AppleAppIdResolver extends AppIdResolver {
-  constructor(projectRoot: string) {
-    super(projectRoot, 'ios', 'ios.bundleIdentifier');
+  constructor(projectRoot: string, platform: ModPlatform) {
+    super(projectRoot, platform, `${platform}.bundleIdentifier`);
   }
 
   /** @return `true` if the app has valid `*.pbxproj` file */
   async hasNativeProjectAsync(): Promise<boolean> {
     try {
       // Never returns nullish values.
-      return !!IOSConfig.Paths.getAllPBXProjectPaths(this.projectRoot).length;
+      return !!IOSConfig.Paths.getAllPBXProjectPaths(this.projectRoot, this.platform).length;
     } catch (error: any) {
       debug('Expected error checking for native project:', error.message);
       return false;
@@ -26,7 +26,10 @@ export class AppleAppIdResolver extends AppIdResolver {
   async resolveAppIdFromNativeAsync(): Promise<string | null> {
     // Check xcode project
     try {
-      const bundleId = IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj(this.projectRoot);
+      const bundleId = IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj(
+        this.projectRoot,
+        this.platform
+      );
       if (bundleId) {
         return bundleId;
       }
@@ -36,7 +39,7 @@ export class AppleAppIdResolver extends AppIdResolver {
 
     // Check Info.plist
     try {
-      const infoPlistPath = IOSConfig.Paths.getInfoPlistPath(this.projectRoot);
+      const infoPlistPath = IOSConfig.Paths.getInfoPlistPath(this.projectRoot, this.platform);
       const data = await plist.parse(fs.readFileSync(infoPlistPath, 'utf8'));
       if (data.CFBundleIdentifier && !data.CFBundleIdentifier.startsWith('$(')) {
         return data.CFBundleIdentifier;

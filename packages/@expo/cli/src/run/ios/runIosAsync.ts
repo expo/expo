@@ -32,12 +32,13 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const install = !!options.install;
 
-  if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
+  const platform = 'ios';
+  if ((await ensureNativeProjectAsync(projectRoot, { platform, install })) && install) {
     await maybePromptToSyncPodsAsync(projectRoot);
   }
 
   // Resolve the CLI arguments into useable options.
-  const props = await profile(resolveOptionsAsync)(projectRoot, options);
+  const props = await profile(resolveOptionsAsync)(projectRoot, platform, options);
 
   if (options.rebundle) {
     Log.warn(`The --unstable-rebundle flag is experimental and may not work as expected.`);
@@ -48,7 +49,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       if (!props.isSimulator) {
         throw new Error('Re-bundling on physical devices requires the --binary flag.');
       }
-      const appId = await new AppleAppIdResolver(projectRoot).getAppIdAsync();
+      const appId = await new AppleAppIdResolver(projectRoot, platform).getAppIdAsync();
       const possibleBinaryPath = await getContainerPathAsync(props.device, {
         appId,
       });
@@ -79,7 +80,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       await exportEagerAsync(projectRoot, {
         resetCache: false,
         dev: false,
-        platform: 'ios',
+        platform,
         assetsDest: path.join(options.binary, 'assets'),
         bundleOutput: possibleBundleOutput,
       });
@@ -99,7 +100,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       eagerBundleOptions = JSON.stringify(
         await exportEagerAsync(projectRoot, {
           dev: false,
-          platform: 'ios',
+          platform,
         })
       );
     }
@@ -145,7 +146,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       ? // If launching a custom binary, use the schemes in the Info.plist.
         launchInfo.schemes[0]
       : // If a scheme is specified then use that instead of the package name.
-        (await getSchemesForIosAsync(projectRoot))?.[0],
+        (await getSchemesForIosAsync(projectRoot, platform))?.[0],
   });
 
   // Install and launch the app binary on a device.

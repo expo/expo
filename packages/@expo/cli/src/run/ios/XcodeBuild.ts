@@ -154,6 +154,7 @@ export function getProcessOptions({
 export async function getXcodeBuildArgsAsync(
   props: Pick<
     BuildProps,
+    | 'platform'
     | 'buildCache'
     | 'projectRoot'
     | 'xcodeProject'
@@ -174,8 +175,11 @@ export async function getXcodeBuildArgsAsync(
     `id=${props.device.udid}`,
   ];
 
-  if (!props.isSimulator || simulatorBuildRequiresCodeSigning(props.projectRoot)) {
-    const developmentTeamId = await ensureDeviceIsCodeSignedForDeploymentAsync(props.projectRoot);
+  if (!props.isSimulator || simulatorBuildRequiresCodeSigning(props.projectRoot, props.platform)) {
+    const developmentTeamId = await ensureDeviceIsCodeSignedForDeploymentAsync(
+      props.projectRoot,
+      props.platform
+    );
     if (developmentTeamId) {
       args.push(
         `DEVELOPMENT_TEAM=${developmentTeamId}`,
