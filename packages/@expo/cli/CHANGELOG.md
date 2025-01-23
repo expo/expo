@@ -44,6 +44,7 @@
 - Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
 - Added `--bytecode` option to `export:embed`. ([#33906](https://github.com/expo/expo/pull/33906) by [@kudo](https://github.com/kudo))
 - Exclude `@expo-google-fonts/*` packages from the New Architecture compatibility check. ([#34127](https://github.com/expo/expo/pull/34127) by [@Simek](https://github.com/Simek))
+- Re-enable terminal logs from React Native devices. ([#34393](https://github.com/expo/expo/pull/34393) by [@byCedric](https://github.com/byCedric))
 
 ## 0.22.7 - 2024-12-19
 
