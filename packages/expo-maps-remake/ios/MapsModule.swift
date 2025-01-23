@@ -6,6 +6,6 @@ public class MapsModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoMapsRemake")
     
-    View(AppleMapsView.self) 
+    View(AppleMapsViewWrapper.self)
   }
 }

@@ -7,4 +7,20 @@ public struct ModuleDefinitionBuilder {
   public static func buildBlock(_ definitions: AnyDefinition...) -> ModuleDefinition {
     return ModuleDefinition(definitions: definitions)
   }
+  
+  public static func buildOptional(_ component: ModuleDefinition?) -> ModuleDefinition {
+    return component ?? ModuleDefinition(definitions: [])
+  }
+    
+  public static func buildEither(first component: ModuleDefinition) -> ModuleDefinition {
+    return component
+  }
+  
+  public static func buildEither(second component: ModuleDefinition) -> ModuleDefinition {
+    return component
+  }
+  
+  public static func buildLimitedAvailability(_ component: ModuleDefinition) -> ModuleDefinition {
+    return component
+  }
 }

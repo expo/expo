@@ -1,4 +1,4 @@
-import { ExpoMapsView, MapType } from 'expo-maps-remake';
+import { AppleMapType, ExpoMapsView, MapType } from 'expo-maps-remake';
 import { View, StyleSheet } from 'react-native';
 
 import { FunctionParameter, useArguments } from '../../components/FunctionDemo';
@@ -19,8 +19,18 @@ const parameters: FunctionParameter[] = [
       { name: 'SATELLITE', value: MapType.SATELLITE },
       { name: 'TERRAIN', value: MapType.TERRAIN },
     ],
+    platforms: ['android'],
   },
-
+  {
+    name: 'mapTypeIos',
+    type: 'enum',
+    values: [
+      { name: 'STANDARD', value: AppleMapType.STANDARD },
+      { name: 'HYBRID', value: AppleMapType.HYBRID },
+      { name: 'IMAGERY', value: AppleMapType.IMAGERY },
+    ],
+    platforms: ['ios'],
+  },
   {
     name: 'isIndoorEnabled',
     type: 'boolean',
@@ -45,12 +55,13 @@ export default function MapsCameraControlsScreen() {
   const [
     isBuildingEnabled,
     mapType,
+    mapTypeIos,
     isIndoorEnabled,
     isMyLocationEnabled,
     isTrafficEnabled,
     minZoomPreference,
     maxZoomPreference,
-  ] = args as [boolean, MapType, boolean, boolean, boolean, number, number];
+  ] = args as [boolean, MapType, AppleMapType, boolean, boolean, boolean, number, number];
   return (
     <View style={styles.container}>
       <View style={styles.container}>
@@ -66,6 +77,7 @@ export default function MapsCameraControlsScreen() {
           properties={{
             isBuildingEnabled,
             mapType,
+            mapTypeIos,
             isIndoorEnabled,
             isMyLocationEnabled,
             isTrafficEnabled,

@@ -20,6 +20,12 @@ export var MapType;
      */
     MapType["TERRAIN"] = "TERRAIN";
 })(MapType || (MapType = {}));
+export var AppleMapType;
+(function (AppleMapType) {
+    AppleMapType["HYBRID"] = "HYBRID";
+    AppleMapType["STANDARD"] = "STANDARD";
+    AppleMapType["IMAGERY"] = "IMAGERY";
+})(AppleMapType || (AppleMapType = {}));
 export var MapColorScheme;
 (function (MapColorScheme) {
     MapColorScheme["LIGHT"] = "LIGHT";

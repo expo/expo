@@ -119,6 +119,8 @@ export type MapUiSettings = {
    * Whether the zoom gestures are enabled.
    */
   zoomGesturesEnabled?: boolean;
+  scaleBarEnabled?: boolean;
+  togglePitchEnabled?: boolean;
 };
 
 /**
@@ -141,6 +143,12 @@ export enum MapType {
    * Topographic data.
    */
   TERRAIN = 'TERRAIN',
+}
+
+export enum AppleMapType {
+  HYBRID = 'HYBRID',
+  STANDARD = 'STANDARD',
+  IMAGERY = 'IMAGERY',
 }
 
 export type MapProperties = {
@@ -168,10 +176,7 @@ export type MapProperties = {
    * Defines which map type should be used.
    */
   mapType?: MapType;
-
-  /**
-   * The maximum zoom level for the map.
-   */
+  mapTypeIos?: AppleMapType;
   maxZoomPreference?: number;
 
   /**
