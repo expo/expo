@@ -27,9 +27,6 @@ export type Marker = {
      * Whether the marker is draggable.
      */
     draggable?: boolean;
-    /**
-     * Whether the callout should be shown when the marker is clicked.
-     */
     showCallout?: boolean;
     /**
      * The custom icon to display for the marker.

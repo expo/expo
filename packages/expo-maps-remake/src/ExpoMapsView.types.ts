@@ -29,6 +29,7 @@ export type Marker = {
    * Whether the marker is draggable.
    */
   draggable?: boolean;
+<<<<<<< HEAD
   /**
    * Whether the callout should be shown when the marker is clicked.
    */
@@ -37,6 +38,10 @@ export type Marker = {
    * The custom icon to display for the marker.
    */
   icon?: SharedRefType<'image'>;
+||||||| parent of 0c5aae5205 (Add icon to marker and move event)
+=======
+  showCallout?: boolean;
+>>>>>>> 0c5aae5205 (Add icon to marker and move event)
 };
 
 export type CameraPosition = {

@@ -6,10 +6,15 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import com.google.android.gms.maps.model.LatLng
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.google.maps.android.compose.ComposeMapColorScheme
 ||||||| parent of 8ffa2da7c6 (Add ui settings & events)
 =======
 import com.google.android.gms.maps.model.MapColorScheme
+||||||| parent of 0c5aae5205 (Add icon to marker and move event)
+import com.google.android.gms.maps.model.MapColorScheme
+=======
+>>>>>>> 0c5aae5205 (Add icon to marker and move event)
 import com.google.maps.android.compose.ComposeMapColorScheme
 >>>>>>> 8ffa2da7c6 (Add ui settings & events)
 import com.google.maps.android.compose.MapProperties
@@ -45,7 +50,21 @@ data class MarkerRecord(
   val snippet: String = "",
 
   @Field
+<<<<<<< HEAD
   val draggable: Boolean = false,
+||||||| parent of 0c5aae5205 (Add icon to marker and move event)
+  val draggable: Boolean = false
+) : Record
+=======
+  val draggable: Boolean = false,
+
+  @Field
+  val icon: Either<SharedRef<Drawable>, SharedRef<Bitmap>>? = null,
+
+  @Field
+  val showCallout: Boolean = true
+) : Record
+>>>>>>> 0c5aae5205 (Add icon to marker and move event)
 
   @Field
   val icon: Either<SharedRef<Drawable>, SharedRef<Bitmap>>? = null,

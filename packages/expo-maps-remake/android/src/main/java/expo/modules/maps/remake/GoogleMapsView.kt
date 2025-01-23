@@ -7,8 +7,13 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.fillMaxSize
+<<<<<<< HEAD
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+||||||| parent of 0c5aae5205 (Add icon to marker and move event)
+=======
+import androidx.compose.runtime.LaunchedEffect
+>>>>>>> 0c5aae5205 (Add icon to marker and move event)
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
