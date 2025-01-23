@@ -72,8 +72,6 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
 
   // MARK: - ExpoFabricViewInterface
-  
-  
 
   public override func updateProps(_ props: [String: Any]) {
     guard let context = appContext, let propsDict = viewManagerPropDict else {
