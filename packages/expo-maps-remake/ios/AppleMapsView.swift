@@ -49,6 +49,7 @@ struct AppleMapsView: View {
     let properties = props.properties
     let uiSettings = props.uiSettings
     
+    // swiftlint:disable:next closure_body_length
     MapReader { reader in
       Map(position: $mapCameraPosition, selection: $selection) {
         ForEach(props.markers) { marker in
