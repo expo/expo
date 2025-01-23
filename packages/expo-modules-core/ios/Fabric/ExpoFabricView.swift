@@ -36,6 +36,10 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     super.init(frame: frame)
   }
 
+  public func setViewSize(_ size: CGSize) {
+    super.setShadowNodeSize(Float(size.width), height: Float(size.height))
+  }
+
   required public init(appContext: AppContext? = nil) {
     self.appContext = appContext
     super.init(frame: .zero)
@@ -68,6 +72,8 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
 
   // MARK: - ExpoFabricViewInterface
+  
+  
 
   public override func updateProps(_ props: [String: Any]) {
     guard let context = appContext, let propsDict = viewManagerPropDict else {

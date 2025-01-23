@@ -21,6 +21,10 @@ extension ExpoSwiftUI {
      It's an environment object that is observed by the content view.
      */
     private let props: Props
+    /**
+     Additiional utilities for controlling shadow node behavior.
+     */
+    private let utils: ViewUtils = ViewUtils()
 
     /**
      View controller that embeds the content view into the UIKit view hierarchy.
@@ -31,12 +35,17 @@ extension ExpoSwiftUI {
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
-      let rootView = ContentView().environmentObject(props)
+      let rootView = ContentView().environmentObject(props).environmentObject(utils)
 
       self.props = props
       self.hostingController = UIHostingController(rootView: rootView)
 
       super.init(appContext: appContext)
+
+      utils.setViewSize = { size in
+        self.setViewSize(size)
+      }
+      utils.objectWillChange.send()
 
       #if os(iOS) || os(tvOS)
       // Hosting controller has white background by default,
