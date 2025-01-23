@@ -26,6 +26,22 @@ export const UIScreens = [
       return optionalRequire(() => require('./SwitchScreen'));
     },
   },
+  {
+    name: 'Section component',
+    route: 'ui/section',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SectionScreen'));
+    },
+  },
+  {
+    name: 'Slider component',
+    route: 'ui/slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SliderScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

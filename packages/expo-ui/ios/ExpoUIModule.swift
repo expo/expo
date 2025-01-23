@@ -9,5 +9,7 @@ public class ExpoUIModule: Module {
     View(Button.self)
     View(PickerView.self)
     View(SwitchView.self)
+    View(SectionView.self)
+    View(SliderView.self)
   }
 }
