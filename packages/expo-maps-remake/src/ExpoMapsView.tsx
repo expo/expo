@@ -15,14 +15,20 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
 }
 
 export default function ExpoMapsView({
+  onMapLoaded,
   onMapClick,
+  onMapLongClick,
   onPOIClick,
   onMarkerClick,
   onCameraMove,
   markers,
   ...props
 }: ExpoMapsProps) {
+  const onNativeMapLoaded = React.useCallback(() => {
+    onMapLoaded?.();
+  }, [onMapLoaded]);
   const onNativeMapClick = useNativeEvent(onMapClick);
+  const onNativeMapLongClick = useNativeEvent(onMapLongClick);
   const onNativePOIClick = useNativeEvent(onPOIClick);
   const onNativeMarkerClick = useNativeEvent(onMarkerClick);
   const onNativeCameraMove = useNativeEvent(onCameraMove);
@@ -37,7 +43,9 @@ export default function ExpoMapsView({
     <NativeView
       {...props}
       markers={parsedMarkers}
+      onMapLoaded={onNativeMapLoaded}
       onMapClick={onNativeMapClick}
+      onMapLongClick={onNativeMapLongClick}
       onPOIClick={onNativePOIClick}
       onMarkerClick={onNativeMarkerClick}
       onCameraMove={onNativeCameraMove}

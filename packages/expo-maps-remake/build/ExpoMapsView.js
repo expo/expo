@@ -6,8 +6,12 @@ function useNativeEvent(userHandler) {
         userHandler?.(event.nativeEvent);
     }, [userHandler]);
 }
-export default function ExpoMapsView({ onMapClick, onPOIClick, onMarkerClick, onCameraMove, markers, ...props }) {
+export default function ExpoMapsView({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onCameraMove, markers, ...props }) {
+    const onNativeMapLoaded = React.useCallback(() => {
+        onMapLoaded?.();
+    }, [onMapLoaded]);
     const onNativeMapClick = useNativeEvent(onMapClick);
+    const onNativeMapLongClick = useNativeEvent(onMapLongClick);
     const onNativePOIClick = useNativeEvent(onPOIClick);
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
@@ -16,6 +20,6 @@ export default function ExpoMapsView({ onMapClick, onPOIClick, onMarkerClick, on
         // @ts-expect-error
         icon: marker.icon?.__expo_shared_object_id__,
     }));
-    return (<NativeView {...props} markers={parsedMarkers} onMapClick={onNativeMapClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove}/>);
+    return (<NativeView {...props} markers={parsedMarkers} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove}/>);
 }
 //# sourceMappingURL=ExpoMapsView.js.map
