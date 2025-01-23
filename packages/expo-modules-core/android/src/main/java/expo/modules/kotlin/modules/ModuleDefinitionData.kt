@@ -15,7 +15,6 @@ class ModuleDefinitionData(
   val registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null,
   val classData: List<ClassDefinitionData> = emptyList()
 ) {
-
   val constantsProvider = objectDefinition.constantsProvider
   val syncFunctions = objectDefinition.syncFunctions
   val asyncFunctions = objectDefinition.asyncFunctions
