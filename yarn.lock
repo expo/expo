@@ -1549,6 +1549,11 @@
   resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-1.0.1.tgz#b9889266664f885dad15566b5b2956e086b1aa22"
   integrity sha512-VhmMYcOhzQKcng3QH0RBkwK9knhXXFEVzqwjftLK2S4457k6z3OumdyIHp/4P6h5HmfCydtXWvvsFmL7Ui6Pwg==
 
+"@expo/sudo-prompt@^9.3.2":
+  version "9.3.2"
+  resolved "https://registry.yarnpkg.com/@expo/sudo-prompt/-/sudo-prompt-9.3.2.tgz#0fd2813402a42988e49145cab220e25bea74b308"
+  integrity sha512-HHQigo3rQWKMDzYDLkubN5WQOYXJJE2eNqIQC2axC2iO3mHdwnIR7FgZVvHWtBwAdzBgAP0ECp8KqS8TiMKvgw==
+
 "@expo/vector-icons@^14.0.0":
   version "14.0.4"
   resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-14.0.4.tgz#fa9d4351877312badf91a806598b2f0bab16039a"
@@ -4701,11 +4706,6 @@
   version "0.38.1"
   resolved "https://registry.yarnpkg.com/@vercel/ncc/-/ncc-0.38.1.tgz#13f08738111e1d9e8a22fd6141f3590e54d9a60e"
   integrity sha512-IBBb+iI2NLu4VQn3Vwldyi2QwaXt5+hTyh58ggAMoCGE6DJmPvwL3KPBWcJl1m9LYPChBLE980Jw+CS4Wokqxw==
-
-"@vscode/sudo-prompt@^9.3.1":
-  version "9.3.1"
-  resolved "https://registry.yarnpkg.com/@vscode/sudo-prompt/-/sudo-prompt-9.3.1.tgz#c562334bc6647733649fd42afc96c0eea8de3b65"
-  integrity sha512-9ORTwwS74VaTn38tNbQhsA5U44zkJfcb0BdTSyyG6frP4e8KMtHuTXYmwefe5dpL8XB1aGSIVTaLjD3BbWb5iA==
 
 "@web3-storage/multipart-parser@^1.0.0":
   version "1.0.0"
