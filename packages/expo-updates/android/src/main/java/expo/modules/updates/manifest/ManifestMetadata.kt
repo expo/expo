@@ -95,11 +95,13 @@ object ManifestMetadata {
   }
 
   fun clearMetadataForBuildDataClearOperation(database: UpdatesDatabase) {
-    database.jsonDataDao()!!.deleteJSONDataForKeysForAllScopeKeys(listOf(
-      JSONDataDao.JSONDataKey.EXTRA_PARAMS,
-      JSONDataDao.JSONDataKey.MANIFEST_SERVER_DEFINED_HEADERS,
-      JSONDataDao.JSONDataKey.MANIFEST_FILTERS
-    ))
+    database.jsonDataDao()!!.deleteJSONDataForKeysForAllScopeKeys(
+      listOf(
+        JSONDataDao.JSONDataKey.EXTRA_PARAMS,
+        JSONDataDao.JSONDataKey.MANIFEST_SERVER_DEFINED_HEADERS,
+        JSONDataDao.JSONDataKey.MANIFEST_FILTERS
+      )
+    )
   }
 
   private fun JSONObject.asStringStringMap(): Map<String, String> {

@@ -1,7 +1,6 @@
 package expo.modules.updates
 
 import android.content.Context
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import expo.modules.kotlin.Promise

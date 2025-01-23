@@ -1,7 +1,5 @@
 package expo.modules.updates.db
 
-import android.net.Uri
-import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.toMap
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.dao.JSONDataDao
@@ -96,6 +94,6 @@ object BuildData {
    * Fallback data specifically for migration while database data doesn't have these keys
    */
   private val defaultBuildData = mapOf(
-    UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY to true,
+    UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY to true
   )
 }

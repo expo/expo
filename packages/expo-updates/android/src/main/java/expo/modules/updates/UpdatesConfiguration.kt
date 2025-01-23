@@ -7,7 +7,6 @@ import android.util.Log
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.updates.codesigning.CodeSigningConfiguration
 import org.apache.commons.io.IOUtils
-import org.json.JSONObject
 import java.nio.charset.StandardCharsets
 
 enum class UpdatesConfigurationValidationResult {
@@ -68,7 +67,7 @@ data class UpdatesConfiguration(
     disableAntiBrickingMeasures: Boolean = getDisableAntiBrickingMeasures(context, overrideMap),
     runtimeOverrides: UpdatesRuntimeOverrides? =
       if (context != null) UpdatesRuntimeOverrides.load(context) else null
-    ) : this(
+  ) : this(
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
       updateUrl = getUpdatesUrl(context, overrideMap, disableAntiBrickingMeasures, runtimeOverrides)!!

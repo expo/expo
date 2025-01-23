@@ -1,20 +1,15 @@
 package expo.modules.updates
 
-import android.net.Uri
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.manifests.core.toMap
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.manifest.Update
 import expo.modules.updates.statemachine.UpdatesStateContext
-import org.json.JSONObject
 import java.io.File
 import java.util.Date
 import kotlin.time.Duration

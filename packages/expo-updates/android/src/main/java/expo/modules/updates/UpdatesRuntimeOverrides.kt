@@ -33,7 +33,7 @@ data class UpdatesRuntimeOverrides(
 
     internal fun save(context: Context, overrides: UpdatesRuntimeOverrides?) {
       val prefs = context.getSharedPreferences(UpdatesConfiguration.UPDATES_PREFS_FILE, Context.MODE_PRIVATE)
-      with (prefs.edit()) {
+      with(prefs.edit()) {
         if (overrides != null) {
           putString(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_RUNTIME_OVERRIDES, overrides.toJSONObject().toString())
         } else {
