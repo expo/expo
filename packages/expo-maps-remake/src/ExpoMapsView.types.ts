@@ -10,6 +10,7 @@ export type Marker = {
   title?: string;
   snippet?: string;
   draggable?: boolean;
+  showCallout?: boolean;
 };
 
 export type CameraPosition = {
@@ -63,4 +64,10 @@ export type ExpoMapsProps = {
   onMapClick?: (event: { coordinates: Coordinates }) => void;
   onPOIClick?: (event: { name: string; coordinates: Coordinates }) => void;
   onMarkerClick?: (event: Marker) => void;
+  onCameraMove?: (event: {
+    coordinates: Coordinates;
+    zoom: number;
+    tilt: number;
+    bearing: number;
+  }) => void;
 };

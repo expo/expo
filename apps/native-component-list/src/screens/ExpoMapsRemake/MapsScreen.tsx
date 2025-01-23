@@ -50,6 +50,14 @@ export const MapsScreens = [
       return optionalRequire(() => require('./MapsEventsScreen'));
     },
   },
+  {
+    name: 'Marker with custom image',
+    route: 'expo-maps/image-ref',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MapsImageRefIntegrationScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {

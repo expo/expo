@@ -28,6 +28,9 @@ export default function MapsEventsScreen() {
           onMarkerClick={(e) => {
             setLastEvent(JSON.stringify({ type: 'onMarkerClick', data: e }, null, 2));
           }}
+          onCameraMove={(e) => {
+            setLastEvent(JSON.stringify({ type: 'onCameraMove', data: e }, null, 2));
+          }}
           markers={[
             {
               coordinates: {

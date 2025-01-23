@@ -1,13 +1,19 @@
+@file:OptIn(EitherType::class)
+
 package expo.modules.maps.remake
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapColorScheme
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 
 data class Coordinates(
@@ -22,7 +28,7 @@ data class Coordinates(
   }
 }
 
-data class Marker(
+data class MarkerRecord(
   @Field
   val coordinates: Coordinates = Coordinates(),
 
@@ -33,7 +39,13 @@ data class Marker(
   val snippet: String = "",
 
   @Field
-  val draggable: Boolean = false
+  val draggable: Boolean = false,
+
+  @Field
+  val icon: Either<SharedRef<Drawable>, SharedRef<Bitmap>>? = null,
+
+  @Field
+  val showCallout: Boolean = true
 ) : Record
 
 
@@ -151,3 +163,17 @@ enum class MapColorSchemeEnum : Enumerable {
     }
   }
 }
+
+data class CameraMoveEvent(
+  @Field
+  val coordinates: Coordinates,
+
+  @Field
+  val zoom: Float,
+
+  @Field
+  val tilt: Float,
+
+  @Field
+  val bearing: Float
+): Record
