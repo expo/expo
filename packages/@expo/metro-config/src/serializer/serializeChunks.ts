@@ -33,9 +33,12 @@ import { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
 
-type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
-
-type SerializerParameters = Parameters<Serializer>;
+type SerializerParameters = [
+  entryPoint: string | string[],
+  preModules: readonly Module[],
+  graph: ReadOnlyGraph,
+  options: SerializerOptions,
+];
 
 type ChunkSettings = {
   /** Match the initial modules. */
@@ -74,82 +77,90 @@ export async function graphToSerialAssetsAsync(
 }> {
   const [entryFile, preModules, graph, options] = props;
 
-  const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
-    entryFile,
-    projectRoot: options.projectRoot,
-  });
+  const entryFiles = Array.isArray(entryFile) ? entryFile : [entryFile];
+
+  const cssDeps = entryFiles
+    .map((entryFile) =>
+      getCssSerialAssets<MixedOutput>(graph.dependencies, {
+        entryFile,
+        projectRoot: options.projectRoot,
+      })
+    )
+    .flat();
 
   // Create chunks for splitting.
   const chunks = new Set<Chunk>();
 
-  [
-    {
+  entryFiles
+    .map((entryFile) => ({
       test: pathToRegex(entryFile),
-    },
-  ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
+    }))
+    .map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
 
-  // Get the common modules and extract them into a separate chunk.
-  const entryChunk = [...chunks.values()].find(
-    (chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile)
-  );
-  if (entryChunk) {
-    for (const chunk of chunks.values()) {
-      if (chunk !== entryChunk && chunk.isAsync) {
-        for (const dep of chunk.deps.values()) {
-          if (entryChunk.deps.has(dep)) {
-            // Remove the dependency from the async chunk since it will be loaded in the main chunk.
-            chunk.deps.delete(dep);
+  for (const entryFile of entryFiles) {
+    // Get the common modules and extract them into a separate chunk.
+    const entryChunk = [...chunks.values()].find(
+      (chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile)
+    );
+    if (entryChunk) {
+      for (const chunk of chunks.values()) {
+        if (chunk !== entryChunk && chunk.isAsync) {
+          for (const dep of chunk.deps.values()) {
+            if (entryChunk.deps.has(dep)) {
+              // Remove the dependency from the async chunk since it will be loaded in the main chunk.
+              chunk.deps.delete(dep);
+            }
           }
         }
       }
-    }
 
-    const toCompare = [...chunks.values()];
+      const toCompare = [...chunks.values()];
 
-    const commonDependencies = [];
+      const commonDependencies = [];
 
-    while (toCompare.length) {
-      const chunk = toCompare.shift()!;
-      for (const chunk2 of toCompare) {
-        if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
-          const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
+      while (toCompare.length) {
+        const chunk = toCompare.shift()!;
+        for (const chunk2 of toCompare) {
+          if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
+            const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
 
-          for (const dep of commonDeps) {
-            chunk.deps.delete(dep);
-            chunk2.deps.delete(dep);
+            for (const dep of commonDeps) {
+              chunk.deps.delete(dep);
+              chunk2.deps.delete(dep);
+            }
+
+            commonDependencies.push(...commonDeps);
           }
-
-          commonDependencies.push(...commonDeps);
         }
       }
-    }
 
-    // If common dependencies were found, extract them to the entry chunk.
-    // TODO: Extract the metro-runtime to a common chunk apart from the entry chunk then load the common dependencies before the entry chunk.
-    if (commonDependencies.length) {
-      for (const dep of commonDependencies) {
-        entryChunk.deps.add(dep);
+      // If common dependencies were found, extract them to the entry chunk.
+      // TODO: Extract the metro-runtime to a common chunk apart from the entry chunk then load the common dependencies before the entry chunk.
+      if (commonDependencies.length) {
+        for (const dep of commonDependencies) {
+          entryChunk.deps.add(dep);
+        }
+        // const commonDependenciesUnique = [...new Set(commonDependencies)];
+        // const commonChunk = new Chunk(
+        //   chunkIdForModules(commonDependenciesUnique),
+        //   commonDependenciesUnique,
+        //   graph,
+        //   options,
+        //   false,
+        //   true
+        // );
+        // entryChunk.requiredChunks.add(commonChunk);
+        // chunks.add(commonChunk);
       }
-      // const commonDependenciesUnique = [...new Set(commonDependencies)];
-      // const commonChunk = new Chunk(
-      //   chunkIdForModules(commonDependenciesUnique),
-      //   commonDependenciesUnique,
-      //   graph,
-      //   options,
-      //   false,
-      //   true
-      // );
-      // entryChunk.requiredChunks.add(commonChunk);
-      // chunks.add(commonChunk);
-    }
 
-    // TODO: Optimize this pass more.
-    // Remove all dependencies from async chunks that are already in the common chunk.
-    for (const chunk of [...chunks.values()]) {
-      if (chunk !== entryChunk) {
-        for (const dep of chunk.deps) {
-          if (entryChunk.deps.has(dep)) {
-            chunk.deps.delete(dep);
+      // TODO: Optimize this pass more.
+      // Remove all dependencies from async chunks that are already in the common chunk.
+      for (const chunk of [...chunks.values()]) {
+        if (chunk !== entryChunk) {
+          for (const dep of chunk.deps) {
+            if (entryChunk.deps.has(dep)) {
+              chunk.deps.delete(dep);
+            }
           }
         }
       }

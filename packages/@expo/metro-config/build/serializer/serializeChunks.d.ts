@@ -1,10 +1,14 @@
-import { AssetData, MetroConfig, MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { ConfigT, SerializerConfigT } from 'metro-config';
+import { AssetData, MetroConfig, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import { SerializerConfigT } from 'metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { SerialAsset } from './serializerAssets';
 import { SerializerConfigOptions } from './withExpoSerializers';
-type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
-type SerializerParameters = Parameters<Serializer>;
+type SerializerParameters = [
+    entryPoint: string | string[],
+    preModules: readonly Module[],
+    graph: ReadOnlyGraph,
+    options: SerializerOptions
+];
 export type SerializeChunkOptions = {
     includeSourceMaps: boolean;
     splitChunks: boolean;

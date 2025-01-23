@@ -124,6 +124,15 @@ export async function exportAppAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
+  console.log(
+    await devServer.getStaticResourcesAsync(
+      [path.resolve(projectRoot, 'a.js'), path.resolve(projectRoot, 'b.js')],
+      {}
+    )
+  );
+
+  process.exit();
+
   const bundles: Partial<Record<Platform, BundleOutput>> = {};
   const domComponentAssetsMetadata: Partial<Record<Platform, PlatformMetadata['assets']>> = {};
 

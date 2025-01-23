@@ -97,7 +97,7 @@ export function createDefaultExportCustomSerializer(
   configOptions: SerializerConfigOptions = {}
 ): Serializer {
   return async (
-    entryPoint: string,
+    entryPoint: string | string[],
     preModules: readonly Module<MixedOutput>[],
     graph: ReadOnlyGraph<MixedOutput>,
     inputOptions: SerializerOptions<MixedOutput>
@@ -251,7 +251,7 @@ function getDefaultSerializer(
     fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
 
   return async (
-    entryPoint: string,
+    entryPoint: string | string[],
     preModules: readonly Module<MixedOutput>[],
     graph: ReadOnlyGraph<MixedOutput>,
     inputOptions: ExpoSerializerOptions

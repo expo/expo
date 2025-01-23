@@ -79,6 +79,9 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { ResolverInputOptions } from 'metro/src/shared/types';
+import { OtherOptions } from 'metro/src/IncrementalBundler';
+import getPrependedScripts from 'metro/src/lib/getPrependedScripts';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -318,17 +321,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  async getStaticResourcesAsync({
-    includeSourceMaps,
-    mainModuleName,
-    clientBoundaries = this.instanceMetroOptions.clientBoundaries ?? [],
-    platform = 'web',
-  }: {
-    includeSourceMaps?: boolean;
-    mainModuleName?: string;
-    clientBoundaries?: string[];
-    platform?: string;
-  } = {}) {
+  async getStaticResourcesAsync(
+    entry: string[],
+    {
+      includeSourceMaps,
+      mainModuleName,
+      clientBoundaries = this.instanceMetroOptions.clientBoundaries ?? [],
+      platform = 'web',
+    }: {
+      includeSourceMaps?: boolean;
+      mainModuleName?: string;
+      clientBoundaries?: string[];
+      platform?: string;
+    } = {}
+  ) {
     const { mode, minify, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
@@ -343,7 +349,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const resolvedMainModuleName =
       mainModuleName ?? './' + resolveMainModuleName(this.projectRoot, { platform });
-    return await this.metroImportAsArtifactsAsync(resolvedMainModuleName, {
+    return await this.metroImportAsArtifactsAsync(entry, {
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
@@ -459,7 +465,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   };
 
   private async metroImportAsArtifactsAsync(
-    filePath: string,
+    filePath: string | string[],
     specificOptions: Partial<Omit<ExpoMetroOptions, 'serializerOutput'>> = {}
   ) {
     const results = await this.ssrLoadModuleContents(filePath, {
@@ -481,7 +487,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private async metroLoadModuleContents(
-    filePath: string,
+    filePath: string | string[],
     specificOptions: ExpoMetroOptions,
     extraOptions: {
       sourceMapUrl?: string;
@@ -534,14 +540,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
     };
 
-    const resolvedEntryFilePath = await this.resolveRelativePathAsync(filePath, {
-      resolverOptions,
-      transformOptions,
-    });
+    const entryList = Array.isArray(filePath) ? filePath : [filePath];
+
+    const resolvedEntryFilePath = await Promise.all(
+      entryList.map((entry) =>
+        this.resolveRelativePathAsync(entry, {
+          resolverOptions,
+          transformOptions,
+        })
+      )
+    );
 
     const filename = createBundleOsPath({
       ...opts,
-      mainModuleName: resolvedEntryFilePath,
+      // TODO: Fix this for multi-entry
+      mainModuleName: resolvedEntryFilePath[0],
     });
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
@@ -572,7 +585,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private async ssrLoadModuleContents(
-    filePath: string,
+    filePath: string | string[],
     specificOptions: Partial<ExpoMetroOptions> = {}
   ): Promise<SSRModuleContentsResult> {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
@@ -581,9 +594,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       'The server must be started before calling ssrLoadModuleContents.'
     );
 
+    const listOfEntries = Array.isArray(filePath) ? filePath : [filePath];
+
     const opts: ExpoMetroOptions = {
       // TODO: Possibly issues with using an absolute path here...
-      mainModuleName: convertPathToModuleSpecifier(filePath),
+      mainModuleName: convertPathToModuleSpecifier(
+        // TODO: Support multi-entry somehow
+        listOfEntries[0]
+      ),
       lazy: false,
       asyncRoutes: false,
       inlineSourceMap: false,
@@ -1445,7 +1463,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   // Emulates the Metro dev server .bundle endpoint without having to go through a server.
   private async _bundleDirectAsync(
-    resolvedEntryFilePath: string,
+    resolvedEntryFilePath: string | string[],
     {
       transformOptions,
       resolverOptions,
@@ -1504,7 +1522,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bundleDetails: {
         bundleType: transformOptions.type,
         dev: transformOptions.dev,
-        entryFile: resolvedEntryFilePath,
+        entryFile: Array.isArray(resolvedEntryFilePath)
+          ? resolvedEntryFilePath[0]
+          : resolvedEntryFilePath,
         minify: transformOptions.minify,
         platform: transformOptions.platform,
         customResolverOptions: resolverOptions.customResolverOptions,
@@ -1518,14 +1538,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       let delta: DeltaResult;
       let revision: GraphRevision;
 
+      // NOTE: Using absolute path instead of relative input path is a breaking change.
+      // entryFile,
+      const listOfEntries = Array.isArray(resolvedEntryFilePath)
+        ? resolvedEntryFilePath
+        : [resolvedEntryFilePath];
+      const isMultiEntry = listOfEntries.length > 1;
       // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
       // We should resolve the bug because it results in ~6x faster bundling to reuse the graph revision.
       if (transformOptions.customTransformOptions?.environment === 'react-server') {
-        const props = await this.metro.getBundler().initializeGraph(
-          // NOTE: Using absolute path instead of relative input path is a breaking change.
-          // entryFile,
-          resolvedEntryFilePath,
-
+        const props = await this.initializeMultiGraph(
+          listOfEntries,
           transformOptions,
           resolverOptions,
           {
@@ -1539,19 +1562,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       } else {
         const props = await (revPromise != null
           ? this.metro.getBundler().updateGraph(await revPromise, false)
-          : this.metro.getBundler().initializeGraph(
-              // NOTE: Using absolute path instead of relative input path is a breaking change.
-              // entryFile,
-              resolvedEntryFilePath,
-
-              transformOptions,
-              resolverOptions,
-              {
-                onProgress,
-                shallow: graphOptions.shallow,
-                lazy: graphOptions.lazy,
-              }
-            ));
+          : this.initializeMultiGraph(listOfEntries, transformOptions, resolverOptions, {
+              onProgress,
+              shallow: graphOptions.shallow,
+              lazy: graphOptions.lazy,
+            }));
         delta = props.delta;
         revision = props.revision;
       }
@@ -1571,7 +1586,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const bundle = await serializer(
         // NOTE: Using absolute path instead of relative input path is a breaking change.
         // entryFile,
-        resolvedEntryFilePath,
+        resolvedEntryFilePath as unknown as string,
 
         revision.prepend as any,
         revision.graph as any,
@@ -1592,10 +1607,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           dev: transformOptions.dev,
           projectRoot: config.projectRoot,
           modulesOnly: serializerOptions.modulesOnly,
-          runBeforeMainModule: config.serializer.getModulesRunBeforeMainModule(
-            resolvedEntryFilePath
-            // path.relative(config.projectRoot, entryFile)
-          ),
+          // TODO: `runBeforeMainModule` does not support multi-entry bundles.
+          runBeforeMainModule: isMultiEntry
+            ? []
+            : config.serializer.getModulesRunBeforeMainModule(
+                listOfEntries[0]
+                // path.relative(config.projectRoot, entryFile)
+              ),
           runModule: serializerOptions.runModule,
           sourceMapUrl: serializerOptions.sourceMapUrl,
           sourceUrl: serializerOptions.sourceUrl,
@@ -1702,6 +1720,77 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
   }
 
+  // Custom version of Metro internal that works with multiple entry points.
+  private async initializeMultiGraph(
+    entryFile: string[],
+    transformOptions: TransformInputOptions,
+    resolverOptions: ResolverInputOptions,
+    otherOptions?: OtherOptions
+  ): Promise<{
+    delta: DeltaResult;
+    revision: GraphRevision;
+  }> {
+    const graphId = entryFile
+      .map((entryFile) =>
+        getGraphId(entryFile, transformOptions, {
+          resolverOptions,
+          shallow: otherOptions.shallow,
+          lazy: otherOptions.lazy,
+          unstable_allowRequireContext:
+            this.metro!.getBundler()._config.transformer.unstable_allowRequireContext,
+        })
+      )
+      .join();
+    const revisionId = createRevisionId();
+    const revisionPromise = (async () => {
+      const { type: _, ...transformOptionsWithoutType } = transformOptions;
+
+      const prepend = await getPrependedScripts(
+        this.metro!.getBundler()._config,
+        transformOptionsWithoutType,
+        resolverOptions,
+        this.metro!.getBundler()._bundler,
+        this.metro!.getBundler()._deltaBundler
+      );
+
+      const graph = await this.metro!.getBundler().buildGraphForEntries(
+        entryFile,
+        transformOptions,
+        resolverOptions,
+        otherOptions
+      );
+      return {
+        id: revisionId,
+        date: new Date(),
+        graphId,
+        graph,
+        prepend,
+      };
+    })();
+
+    this.metro!.getBundler()._revisionsById.set(revisionId, revisionPromise);
+    this.metro!.getBundler()._revisionsByGraphId.set(graphId, revisionPromise);
+    try {
+      const revision = await revisionPromise;
+      const delta = {
+        added: revision.graph.dependencies,
+        modified: new Map(),
+        deleted: new Set<string>(),
+        reset: true,
+      };
+      return {
+        revision,
+        delta,
+      };
+    } catch (err) {
+      // Evict a bad revision from the cache since otherwise
+      // we'll keep getting it even after the build is fixed.
+      this.metro!.getBundler()._revisionsById.delete(revisionId);
+      this.metro!.getBundler()._revisionsByGraphId.delete(graphId);
+      throw err;
+    }
+  }
+
   private getMetroSerializer() {
     return (
       this.metro?._config?.serializer.customSerializer ||
@@ -1711,7 +1800,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private getMetroRevision(
-    resolvedEntryFilePath: string,
+    resolvedEntryFilePath: string | string[],
     {
       graphOptions,
       transformOptions,
@@ -1731,7 +1820,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     assert(this.metro, 'Metro server must be running to bundle directly.');
     const config = this.metro._config;
 
-    const graphId = getGraphId(resolvedEntryFilePath, transformOptions, {
+    const id = Array.isArray(resolvedEntryFilePath)
+      ? resolvedEntryFilePath.join()
+      : resolvedEntryFilePath;
+    const graphId = getGraphId(id, transformOptions, {
       unstable_allowRequireContext: config.transformer.unstable_allowRequireContext,
       resolverOptions,
       shallow: graphOptions.shallow,
@@ -1785,3 +1877,8 @@ async function sourceMapStringAsync(
 function unique<T>(array: T[]): T[] {
   return Array.from(new Set(array));
 }
+
+function createRevisionId(): string {
+  return crypto.randomBytes(8).toString('hex');
+}
+const crypto = require('crypto');
