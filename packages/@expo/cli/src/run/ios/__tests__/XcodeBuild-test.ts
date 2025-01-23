@@ -15,10 +15,13 @@ jest.mock('../codeSigning/configureCodeSigning');
 const fs = jest.requireActual('fs') as typeof import('fs');
 
 describe(getXcodeBuildArgsAsync, () => {
+  const platform = 'ios';
+
   it(`returns fully qualified arguments for a build`, async () => {
     jest.mocked(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce('my-dev-team');
     await expect(
       getXcodeBuildArgsAsync({
+        platform,
         projectRoot: '/path/to/project',
         buildCache: false,
         configuration: 'Debug',
@@ -49,6 +52,7 @@ describe(getXcodeBuildArgsAsync, () => {
   it(`returns standard simulator arguments`, async () => {
     await expect(
       getXcodeBuildArgsAsync({
+        platform,
         projectRoot: '/path/to/project',
         buildCache: true,
         configuration: 'Release',

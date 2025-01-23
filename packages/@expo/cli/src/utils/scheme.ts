@@ -1,5 +1,5 @@
 import { getConfig } from '@expo/config';
-import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
+import { AndroidConfig, IOSConfig, ModPlatform } from '@expo/config-plugins';
 import { getInfoPlistPathFromPbxproj } from '@expo/config-plugins/build/ios/utils/getInfoPlistPath';
 import plist from '@expo/plist';
 import fs from 'fs';
@@ -32,12 +32,15 @@ function resolveExpoOrLongestScheme(schemes: string[]): string[] {
 }
 
 // TODO: Revisit and test after run code is merged.
-export async function getSchemesForIosAsync(projectRoot: string): Promise<string[]> {
+export async function getSchemesForIosAsync(
+  projectRoot: string,
+  platform: ModPlatform
+): Promise<string[]> {
   try {
-    const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(projectRoot);
+    const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(projectRoot, platform);
     debug(`ios application Info.plist path:`, infoPlistBuildProperty);
     if (infoPlistBuildProperty) {
-      const configPath = path.join(projectRoot, 'ios', infoPlistBuildProperty);
+      const configPath = path.join(projectRoot, platform, infoPlistBuildProperty);
       const rawPlist = fs.readFileSync(configPath, 'utf8');
       const plistObject = plist.parse(rawPlist);
       const schemes = IOSConfig.Scheme.getSchemesFromPlist(plistObject);
@@ -86,12 +89,12 @@ export async function getOptionalDevClientSchemeAsync(
   projectRoot: string
 ): Promise<{ scheme: string | null; resolution: 'config' | 'shared' | 'android' | 'ios' }> {
   const [hasIos, hasAndroid] = await Promise.all([
-    hasRequiredIOSFilesAsync(projectRoot),
+    hasRequiredIOSFilesAsync(projectRoot, 'ios'),
     hasRequiredAndroidFilesAsync(projectRoot),
   ]);
 
   const [ios, android] = await Promise.all([
-    getSchemesForIosAsync(projectRoot),
+    getSchemesForIosAsync(projectRoot, 'ios'),
     getSchemesForAndroidAsync(projectRoot),
   ]);
 
