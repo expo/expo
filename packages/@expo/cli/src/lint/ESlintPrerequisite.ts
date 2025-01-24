@@ -30,7 +30,7 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
     const hasLintScript = await lintScriptIsConfigured(this.projectRoot);
 
     if (hasLegacyConfig) {
-      Log.warn(`Using legacy ESLing config. Consider upgrading to flat config.`);
+      Log.warn(`Using legacy ESLint config. Consider upgrading to flat config.`);
     }
 
     return (hasEslintConfig || hasLegacyConfig) && hasLintScript;
@@ -97,7 +97,7 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
     }
 
     Log.log();
-    Log.log('ESlint has been configured 🎉');
+    Log.log('ESLint has been configured 🎉');
     Log.log();
 
     return true;
@@ -134,14 +134,14 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
 }
 
 async function isLegacyEslintConfigured(projectRoot: string) {
-  debug('Checking for legacy ESlint configuration', projectRoot);
+  debug('Checking for legacy ESLint configuration', projectRoot);
 
   const packageFile = await JsonFile.readAsync(path.join(projectRoot, 'package.json'));
   if (
     typeof packageFile.eslintConfig === 'object' &&
     Object.keys(packageFile.eslintConfig as JSONObject).length > 0
   ) {
-    debug('Found legacy ESlint config in package.json');
+    debug('Found legacy ESLint config in package.json');
     return true;
   }
 
@@ -157,10 +157,10 @@ async function isLegacyEslintConfigured(projectRoot: string) {
     const configIsEmpty = configPath ? await eslintConfigIsEmpty(configPath) : null;
 
     if (configPath && !configIsEmpty) {
-      debug('Found ESlint config file:', configPath);
+      debug('Found ESLint config file:', configPath);
       return true;
     } else if (configPath && configIsEmpty) {
-      debug('Skipping empty ESlint config file:', configPath);
+      debug('Skipping empty ESLint config file:', configPath);
     }
   }
 
@@ -169,7 +169,7 @@ async function isLegacyEslintConfigured(projectRoot: string) {
 
 // check for flat config
 async function isEslintConfigured(projectRoot: string) {
-  debug('Ensuring ESlint is configured in', projectRoot);
+  debug('Ensuring ESLint is configured in', projectRoot);
 
   const eslintConfigFiles = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs'];
   for (const configFile of eslintConfigFiles) {
@@ -177,10 +177,10 @@ async function isEslintConfigured(projectRoot: string) {
     const configIsEmpty = configPath ? await eslintConfigIsEmpty(configPath) : null;
 
     if (configPath && !configIsEmpty) {
-      debug('Found ESlint config file:', configPath);
+      debug('Found ESLint config file:', configPath);
       return true;
     } else if (configPath && configIsEmpty) {
-      debug('Skipping empty ESlint config file:', configPath);
+      debug('Skipping empty ESLint config file:', configPath);
     }
   }
 
