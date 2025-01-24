@@ -4,15 +4,6 @@ import SwiftUI
 import ExpoModulesCore
 import MapKit
 
-@available(iOS 17.0, *)
-@Observable
-class MapPosition {
-  var region: MapCameraPosition
-
-  init(position: CameraPosition) {
-    self.region = convertToMapCamera(position: position)
-  }
-}
 
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
@@ -104,9 +95,10 @@ struct AppleMapsView: View {
       .onChange(of: props.cameraPosition) { _, newValue in
         mapCameraPosition = convertToMapCamera(position: newValue)
       }
-      .onMapCameraChange(frequency: .onEnd) { change in
-        let cameraPosition = change.region.center
-        let zoomLevel = change.region.span.longitudeDelta
+      .onMapCameraChange(frequency: .onEnd) { context in
+        let cameraPosition = context.region.center
+        let longitudeDelta = context.region.span.longitudeDelta
+        let zoomLevel = log2(360 / longitudeDelta)
 
         props.onCameraMove([
           "coordinates": [
@@ -114,7 +106,8 @@ struct AppleMapsView: View {
             "longitude": cameraPosition.longitude
           ],
           "zoom": zoomLevel,
-          "tilt": change.camera.pitch
+          "tilt": context.camera.pitch,
+          "bearing": context.camera.heading
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
