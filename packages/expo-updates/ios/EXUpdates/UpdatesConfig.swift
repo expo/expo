@@ -88,8 +88,6 @@ public final class UpdatesConfig: NSObject {
 
   public static let EXUpdatesConfigRuntimeVersionReadFingerprintFileSentinel = "file:fingerprint"
 
-  internal static let kUpdatesConfigOverride = "dev.expo.updates.updatesConfigOverride"
-
   public let scopeKey: String
   public let updateUrl: URL
   public let requestHeaders: [String: String]
