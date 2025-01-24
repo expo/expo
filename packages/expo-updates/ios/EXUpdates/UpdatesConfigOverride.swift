@@ -9,26 +9,26 @@ public struct UpdatesConfigOverride: Record, Codable {
   public init() {
   }
 
-  @Field var url: URL?
+  @Field var updateUrl: URL?
   @Field var requestHeaders: [String: String]
 
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
-    let urlString = try container.decode(String.self, forKey: .url)
-    self.url = URL(string: urlString)
+    let urlString = try container.decode(String.self, forKey: .updateUrl)
+    self.updateUrl = URL(string: urlString)
     self.requestHeaders = try container.decode([String: String].self, forKey: .requestHeaders)
   }
 
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
-    if let url {
-      try container.encode(url.absoluteString, forKey: .url)
+    if let updateUrl {
+      try container.encode(updateUrl.absoluteString, forKey: .updateUrl)
     }
     try container.encode(self.requestHeaders, forKey: .requestHeaders)
   }
 
   private enum CodingKeys: String, CodingKey {
-    case url
+    case updateUrl
     case requestHeaders
   }
 

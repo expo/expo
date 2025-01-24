@@ -314,7 +314,7 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
  * @hidden
  */
 export function setUpdatesURLAndRequestHeadersOverrides(
-  overrides: { url: string; requestHeaders: Record<string, string> } | null
+  overrides: { updateUrl: string; requestHeaders: Record<string, string> } | null
 ): void {
   ExpoUpdates.setUpdatesURLAndRequestHeadersOverrides(overrides);
 }

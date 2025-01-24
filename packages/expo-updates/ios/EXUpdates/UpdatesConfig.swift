@@ -181,7 +181,7 @@ public final class UpdatesConfig: NSObject {
       return UpdatesConfigurationValidationResult.InvalidNotEnabled
     }
 
-    let updateUrl = getUpdatesUrl(fromDictionary: dictionary)
+    let updateUrl = getUpdateUrl(fromDictionary: dictionary)
     guard updateUrl != nil else {
       return UpdatesConfigurationValidationResult.InvalidMissingURL
     }
@@ -199,7 +199,7 @@ public final class UpdatesConfig: NSObject {
   }
 
   public static func config(fromDictionary config: [String: Any]) throws -> UpdatesConfig {
-    guard let updateUrl = getUpdatesUrl(fromDictionary: config) else {
+    guard let updateUrl = getUpdateUrl(fromDictionary: config) else {
       throw UpdatesConfigError.ExpoUpdatesConfigMissingURLError
     }
     let scopeKey = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
@@ -338,10 +338,10 @@ public final class UpdatesConfig: NSObject {
     return config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
   }
 
-  private static func getUpdatesUrl(fromDictionary config: [String: Any]) -> URL? {
+  private static func getUpdateUrl(fromDictionary config: [String: Any]) -> URL? {
     if getDisableAntiBrickingMeasures(fromDictionary: config),
-      let url = updatesConfigOverride?.url {
-      return url
+      let updateUrl = updatesConfigOverride?.updateUrl {
+      return updateUrl
     }
     return config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
       URL(string: it)

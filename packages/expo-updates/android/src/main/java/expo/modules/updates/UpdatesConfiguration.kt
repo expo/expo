@@ -70,9 +70,9 @@ data class UpdatesConfiguration(
   ) : this(
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
-      updateUrl = getUpdatesUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride)!!
+      updateUrl = getUpdateUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride)!!
     ),
-    updateUrl = getUpdatesUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride)!!,
+    updateUrl = getUpdateUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride)!!,
     runtimeVersionRaw = getRuntimeVersion(context, overrideMap),
     launchWaitMs = overrideMap?.readValueCheckingType<Int>(UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS") ?: UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE,
     checkOnLaunch = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY)?.let {
@@ -167,7 +167,7 @@ data class UpdatesConfiguration(
         ?: true
     }
 
-    private fun getUpdatesUrl(
+    private fun getUpdateUrl(
       context: Context?,
       overrideMap: Map<String, Any>?,
       disableAntiBrickingMeasures: Boolean,
@@ -175,7 +175,7 @@ data class UpdatesConfiguration(
     ): Uri? {
       if (disableAntiBrickingMeasures) {
         configOverride?.let {
-          return it.url
+          return it.updateUrl
         }
       }
       return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_UPDATE_URL_KEY)
@@ -223,7 +223,7 @@ data class UpdatesConfiguration(
       }
       val disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap)
       val configOverride = if (context != null) UpdatesConfigurationOverride.load(context) else null
-      getUpdatesUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride) ?: return UpdatesConfigurationValidationResult.INVALID_MISSING_URL
+      getUpdateUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride) ?: return UpdatesConfigurationValidationResult.INVALID_MISSING_URL
 
       if (getRuntimeVersion(context, overrideMap).isNullOrEmpty()) {
         return UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION

@@ -182,7 +182,7 @@ export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
  * @hidden
  */
 export declare function setUpdatesURLAndRequestHeadersOverrides(overrides: {
-    url: string;
+    updateUrl: string;
     requestHeaders: Record<string, string>;
 } | null): void;
 //# sourceMappingURL=Updates.d.ts.map
