@@ -172,7 +172,7 @@ public protocol InternalAppControllerInterface: AppControllerInterface {
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   )
-  func setUpdatesURLAndRequestHeadersOverrides(_ configOverride: UpdatesConfigOverride?) throws
+  func setUpdatesURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws
 }
 
 @objc(EXUpdatesAppControllerDelegate)

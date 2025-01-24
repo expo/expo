@@ -181,7 +181,7 @@ export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
  * @experimental
  * @hidden
  */
-export declare function setUpdatesURLAndRequestHeadersOverrides(overrides: {
+export declare function setUpdatesURLAndRequestHeadersOverride(configOverride: {
     updateUrl: string;
     requestHeaders: Record<string, string>;
 } | null): void;

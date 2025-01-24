@@ -250,7 +250,7 @@ export async function fetchUpdateAsync() {
  * @experimental
  * @hidden
  */
-export function setUpdatesURLAndRequestHeadersOverrides(overrides) {
-    ExpoUpdates.setUpdatesURLAndRequestHeadersOverrides(overrides);
+export function setUpdatesURLAndRequestHeadersOverride(configOverride) {
+    ExpoUpdates.setUpdatesURLAndRequestHeadersOverride(configOverride);
 }
 //# sourceMappingURL=Updates.js.map
