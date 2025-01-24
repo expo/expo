@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Started using expo modules gradle plugin.
+
 ## 0.0.1 — 2025-01-21
 
 ### 💡 Others
