@@ -100,6 +100,17 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigReactNative>
 
+### Background location
+
+Background location allows your app to receive location updates while it is running in the background and includes both location updates and region monitoring through geofencing. This feature is subject to platform API limitations and system constraints:
+
+- Background location will stop if the user terminates the app.
+- Background location resume if the user restarts the app.
+- On Android, a terminated app will not automatically restart when a location or geofencing event occurs due to platform limitations. <PlatformTag platform="android" />
+- On iOS, terminated apps will be restarted by the system when new geofence event occurs. <PlatformTag platform="ios" />
+
+> **Info** On Android, the result of removing an app from the recent apps list varies by device vendor. For example, some implementations treat removing an app from the recent apps list as killing it. Read more about these differences here: [https://dontkillmyapp.com](https://dontkillmyapp.com).
+
 ### Background location configuration&ensp;<PlatformTag platform="ios" />
 
 To be able to run background location on iOS, you need to add the `location` value to the `UIBackgroundModes` array in your app's **Info.plist** file.
