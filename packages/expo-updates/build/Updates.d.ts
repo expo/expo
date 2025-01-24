@@ -174,4 +174,15 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  * timeout communicating with the server. It also rejects when `expo-updates` is not enabled.
  */
 export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
+/**
+ * Overrides updates URL and reuqest headers in runtime from build time.
+ * This method allows you to load specific updates from a URL that you provide.
+ * Use this method at your own risk, as it may cause unexpected behavior.
+ * @experimental
+ * @hidden
+ */
+export declare function setUpdatesURLAndRequestHeadersOverride(configOverride: {
+    updateUrl: string;
+    requestHeaders: Record<string, string>;
+} | null): void;
 //# sourceMappingURL=Updates.d.ts.map

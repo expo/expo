@@ -1,6 +1,7 @@
 package expo.modules.updates
 
 import android.content.Context
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import expo.modules.kotlin.Promise
@@ -8,6 +9,8 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -211,6 +214,10 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
         }
       }
     }
+
+    Function("setUpdatesURLAndRequestHeadersOverride") { configOverride: UpdatesConfigurationOverrideParam? ->
+      UpdatesController.instance.setUpdatesURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
+    }
   }
 
   companion object {
@@ -252,5 +259,14 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
 
   override fun onStateMachineContextEvent(context: UpdatesStateContext) {
     sendEvent(UpdatesJSEvent.StateChange, Bundle().apply { putBundle("context", context.bundle) })
+  }
+
+  internal data class UpdatesConfigurationOverrideParam(
+    @Field val updateUrl: Uri,
+    @Field val requestHeaders: Map<String, String>
+  ) : Record {
+    fun toUpdatesConfigurationOverride(): UpdatesConfigurationOverride {
+      return UpdatesConfigurationOverride(updateUrl, requestHeaders)
+    }
   }
 }
