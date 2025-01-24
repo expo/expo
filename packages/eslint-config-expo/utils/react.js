@@ -22,7 +22,8 @@ module.exports = [
       },
     },
 
-    rules: Object.assign(pluginReactHooks.configs.recommended.rules, {
+    rules: {
+      ...pluginReactHooks.configs.recommended.rules,
       'react/display-name': 'warn',
       'react/jsx-no-duplicate-props': 'error',
       'react/jsx-no-undef': 'error',
@@ -42,6 +43,6 @@ module.exports = [
       'react/no-this-in-sfc': 'warn',
       'react/no-unknown-property': 'warn',
       'react/require-render-return': 'warn',
-    }),
+    },
   },
 ];
