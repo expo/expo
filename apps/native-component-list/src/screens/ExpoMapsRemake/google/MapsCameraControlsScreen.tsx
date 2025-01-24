@@ -1,6 +1,6 @@
 import Slider from '@react-native-community/slider';
 import { Picker } from '@react-native-picker/picker';
-import { ExpoMapsView } from 'expo-maps-remake';
+import { GoogleMaps } from 'expo-maps-remake';
 import { useState } from 'react';
 import { Platform, View, StyleSheet, Text } from 'react-native';
 
@@ -28,7 +28,7 @@ export default function MapsBasicScreen() {
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
-        <ExpoMapsView
+        <GoogleMaps.View
           style={styles.map}
           cameraPosition={{
             coordinates: cameraCoordinates[currentSourceIndex - 1],

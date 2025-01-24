@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
 
-import { ExpoMapsProps } from './ExpoMapsView.types';
+import type { MapProps } from './GoogleMaps.types';
 
-const NativeView: React.ComponentType<ExpoMapsProps> = requireNativeView('ExpoMapsRemake');
+const NativeView: React.ComponentType<MapProps> = requireNativeView('ExpoGoogleMapsRemake');
 
 function useNativeEvent<T>(userHandler?: (data: T) => void) {
   return React.useCallback(
@@ -14,7 +14,7 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
   );
 }
 
-export default function ExpoMapsView({
+export function MapView({
   onMapLoaded,
   onMapClick,
   onMapLongClick,
@@ -23,7 +23,7 @@ export default function ExpoMapsView({
   onCameraMove,
   markers,
   ...props
-}: ExpoMapsProps) {
+}: MapProps) {
   const onNativeMapLoaded = React.useCallback(() => {
     onMapLoaded?.();
   }, [onMapLoaded]);

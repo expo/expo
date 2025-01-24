@@ -1,17 +1,7 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-export type Coordinates = {
-  /**
-   * The latitude of the coordinate.
-   */
-  latitude?: number;
-
-  /**
-   * The longitude of the coordinate.
-   */
-  longitude?: number;
-};
+import { Coordinates } from '../shared.types';
 
 export type Marker = {
   /**
@@ -44,12 +34,6 @@ export type Marker = {
    */
   icon?: SharedRefType<'image'>;
 };
-
-export type Annotation = {
-  backgroundColor?: string;
-  text?: string;
-  textColor?: string;
-} & Marker;
 
 export type CameraPosition = {
   /**
@@ -151,21 +135,6 @@ export enum MapType {
   TERRAIN = 'TERRAIN',
 }
 
-export enum AppleMapType {
-  /**
-   * Satellite imagery with roads and points of interest overlayed.
-   */
-  HYBRID = 'HYBRID',
-  /**
-   * Creates a standard map style.
-   */
-  STANDARD = 'STANDARD',
-  /**
-   * A map style that represents a satellite image of the area the map displays.
-   */
-  IMAGERY = 'IMAGERY',
-}
-
 export type MapProperties = {
   /**
    * Whether the building layer is enabled on the map.
@@ -193,12 +162,6 @@ export type MapProperties = {
   mapType?: MapType;
 
   /**
-   * Defines which map type should be used.
-   * @platform ios
-   */
-  mapTypeIos?: AppleMapType;
-
-  /**
    * If true, the user can select a location on the map to get more information.
    * @platform ios
    */
@@ -223,7 +186,7 @@ export enum MapColorScheme {
   FOLLOW_SYSTEM = 'FOLLOW_SYSTEM',
 }
 
-export type ExpoMapsProps = {
+export type MapProps = {
   style?: StyleProp<ViewStyle>;
 
   /**
@@ -235,12 +198,6 @@ export type ExpoMapsProps = {
    * The array of markers to display on the map.
    */
   markers?: Marker[];
-
-  /**
-   * The array of annotations to display on the map.
-   * @platform ios
-   */
-  annotations?: Annotation[];
 
   /**
    * The `MapUiSettings` to be used for UI-specific settings on the map.

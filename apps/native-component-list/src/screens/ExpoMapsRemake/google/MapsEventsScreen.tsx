@@ -1,8 +1,8 @@
-import { ExpoMapsView } from 'expo-maps-remake';
+import { GoogleMaps } from 'expo-maps-remake';
 import React from 'react';
 import { View } from 'react-native';
 
-import ConsoleBox from '../../components/ConsoleBox';
+import ConsoleBox from '../../../components/ConsoleBox';
 
 export default function MapsEventsScreen() {
   const [lastEvent, setLastEvent] = React.useState<string>('');
@@ -10,7 +10,7 @@ export default function MapsEventsScreen() {
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <ExpoMapsView
+        <GoogleMaps.View
           style={{ width: 'auto', height: '100%' }}
           cameraPosition={{
             coordinates: {
