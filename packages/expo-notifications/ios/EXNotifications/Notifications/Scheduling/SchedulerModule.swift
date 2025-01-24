@@ -20,19 +20,6 @@ let calendarNotificationTriggerComponentsKey = "value"
 let calendarNotificationTriggerTimezoneKey = "timezone"
 // swiftlint:enable identifier_name
 
-let dateComponentsMatchMap: [String: Calendar.Component] = [
-  "year": .year,
-  "month": .month,
-  "day": .day,
-  "hour": .hour,
-  "minute": .minute,
-  "second": .second,
-  "weekday": .weekday,
-  "weekOfMonth": .weekOfMonth,
-  "weekOfYear": .weekOfYear,
-  "weekdayOrdinal": .weekdayOrdinal
-]
-
 public class SchedulerModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationScheduler")
@@ -121,85 +108,28 @@ public class SchedulerModule: Module {
     switch triggerType {
     case timeIntervalNotificationTriggerType:
       let timeIntervalTrigger = try TimeIntervalTriggerRecord(from: params, appContext: appContext)
-      var trigger: UNNotificationTrigger?
-      try EXUtilities.catchException {
-        trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeIntervalTrigger.seconds, repeats: timeIntervalTrigger.repeats)
-      }
-      return trigger
+      return try timeIntervalTrigger.toUNNotificationTrigger()
     case dateNotificationTriggerType:
       let dateTrigger = try DateTriggerRecord(from: params, appContext: appContext)
-      let timestamp: Int = Int(dateTrigger.timestamp / 1000)
-      let date: Date = Date(timeIntervalSince1970: TimeInterval(timestamp))
-      var trigger: UNNotificationTrigger?
-      try EXUtilities.catchException {
-        trigger = UNTimeIntervalNotificationTrigger(timeInterval: date.timeIntervalSinceNow, repeats: false)
-      }
-      return trigger
+      return try dateTrigger.toUNNotificationTrigger()
     case dailyNotificationTriggerType:
       let dailyTrigger = try DailyTriggerRecord(from: params, appContext: appContext)
-      let dateComponents: DateComponents = DateComponents(hour: dailyTrigger.hour, minute: dailyTrigger.minute)
-      var trigger: UNNotificationTrigger?
-      try EXUtilities.catchException {
-        trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-      }
-      return trigger
+      return try dailyTrigger.toUNNotificationTrigger()
     case weeklyNotificationTriggerType:
       let weeklyTrigger = try WeeklyTriggerRecord(from: params, appContext: appContext)
-      let dateComponents: DateComponents = DateComponents(hour: weeklyTrigger.hour, minute: weeklyTrigger.minute, weekday: weeklyTrigger.weekday)
-      var trigger: UNNotificationTrigger?
-      try EXUtilities.catchException {
-        trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-      }
-      return trigger
+      return try weeklyTrigger.toUNNotificationTrigger()
     case monthlyNotificationTriggerType:
       let monthlyTrigger = try MonthlyTriggerRecord(from: params, appContext: appContext)
-      let dateComponents: DateComponents = DateComponents(day: monthlyTrigger.day, hour: monthlyTrigger.hour, minute: monthlyTrigger.minute)
-      var trigger: UNNotificationTrigger?
-      try EXUtilities.catchException {
-        trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-      }
-      return trigger
+      return try monthlyTrigger.toUNNotificationTrigger()
     case yearlyNotificationTriggerType:
       let yearlyTrigger = try YearlyTriggerRecord(from: params, appContext: appContext)
-      let dateComponents: DateComponents = DateComponents(
-        month: yearlyTrigger.month,
-        day: yearlyTrigger.day,
-        hour: yearlyTrigger.hour,
-        minute: yearlyTrigger.minute
-      )
-      var trigger: UNNotificationTrigger?
-      try EXUtilities.catchException {
-        trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-      }
-      return trigger
+      return try yearlyTrigger.toUNNotificationTrigger()
     case calendarNotificationTriggerType:
       let calendarTrigger = try CalendarTriggerRecord(from: params, appContext: appContext)
-      let dateComponents: DateComponents = dateComponentsFrom(calendarTrigger) ?? DateComponents()
-      let repeats = calendarTrigger.repeats ?? false
-      var trigger: UNNotificationTrigger?
-      try EXUtilities.catchException {
-        trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: repeats)
-      }
-      return trigger
+      return try calendarTrigger.toUNNotificationTrigger()
     default:
       return nil
     }
-  }
-
-  func dateComponentsFrom(_ calendarTrigger: CalendarTriggerRecord) -> DateComponents? {
-    var dateComponents = DateComponents()
-    // TODO: Verify that DoW matches JS getDay()
-    dateComponents.calendar = Calendar.init(identifier: .iso8601)
-    if let timeZone = calendarTrigger.timezone {
-      dateComponents.timeZone = TimeZone(identifier: timeZone)
-    }
-    dateComponentsMatchMap.keys.forEach { key in
-      let calendarComponent = dateComponentsMatchMap[key] ?? .day
-      if let value = calendarTrigger.toDictionary()[key] as? Int {
-        dateComponents.setValue(value, for: calendarComponent)
-      }
-    }
-    return dateComponents
   }
 
   func serializeNotificationRequests(_ requests: [UNNotificationRequest]) -> [Any] {
@@ -218,9 +148,10 @@ public class SchedulerModule: Module {
     guard let appContext = appContext else {
       return nil
     }
+    let requestContentRecord = try NotificationRequestContentRecord(from: contentInput, appContext: appContext)
     return try UNNotificationRequest(
       identifier: identifier,
-      content: NotificationBuilder.content(contentInput, appContext: appContext),
+      content: requestContentRecord.toUNMutableNotificationContent(),
       trigger: triggerFromParams(triggerInput, appContext: appContext)
     )
   }
