@@ -6,7 +6,6 @@ import androidx.compose.ui.platform.ComposeView
 import expo.modules.kotlin.AppContext
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.facebook.react.bridge.Arguments
 
 /**
  * A base class that should be used by compose views.

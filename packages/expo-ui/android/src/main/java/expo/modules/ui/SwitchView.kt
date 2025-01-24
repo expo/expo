@@ -55,7 +55,7 @@ class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<Swi
           onCheckedChange = onCheckedChange
         )
       }
-      AutoSizingComposable(utils){
+      AutoSizingComposable(shadowNodeProxy){
         if (variant == "switch") {
           SwitchComposable()
         } else {

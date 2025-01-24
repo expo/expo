@@ -20,7 +20,7 @@ abstract class ExpoView(
 
   var stateWrapper: StateWrapper? = null
 
-  val utils: ShadowNodeProxy? = ShadowNodeProxy(this)
+  val shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy(this)
 
   /**
    * If set to `true`, the view utilizes the Android layout system rather than React Native's.

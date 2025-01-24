@@ -28,7 +28,7 @@ class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<Pic
     setContent {
       val selectedIndex by remember { props.selectedIndex }
       val options by remember { props.options }
-      AutoSizingComposable(utils) {
+      AutoSizingComposable(shadowNodeProxy) {
         SingleChoiceSegmentedButtonRow {
           options.forEachIndexed { index, label ->
             SegmentedButton(
