@@ -28,6 +28,9 @@ abstract class JSONDataDao {
   @Query("DELETE FROM json_data WHERE `key` = :key AND scope_key = :scopeKey;")
   protected abstract fun deleteJSONDataForKeyInternal(key: String, scopeKey: String)
 
+  @Query("DELETE FROM json_data WHERE `key` IN (:keys)")
+  protected abstract fun deleteJSONDataForKeysForAllScopeKeysInternal(keys: List<String>)
+
   /**
    * for public use
    */
@@ -61,5 +64,10 @@ abstract class JSONDataDao {
     val previousValue = loadJSONStringForKey(key, scopeKey)
     deleteJSONDataForKeyInternal(key.key, scopeKey)
     insertJSONDataInternal(JSONDataEntity(key.key, updater(previousValue), Date(), scopeKey))
+  }
+
+  @Transaction
+  open fun deleteJSONDataForKeysForAllScopeKeys(keys: List<JSONDataKey>) {
+    deleteJSONDataForKeysForAllScopeKeysInternal(keys.map { it.key })
   }
 }
