@@ -2,7 +2,7 @@
   "name": "expo-maps",
   "platforms": ["android", "apple"],
   "android": {
-    "modulesClassNames": ["expo.modules.maps.remake.MapsModule"]
+    "modulesClassNames": ["expo.modules.maps.MapsModule"]
   },
   "ios": {
     "modulesClassNames": ["MapsModule"]
