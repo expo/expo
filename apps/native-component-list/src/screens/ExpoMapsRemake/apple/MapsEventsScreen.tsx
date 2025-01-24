@@ -22,9 +22,6 @@ export default function MapsEventsScreen() {
           onMapClick={(e) => {
             setLastEvent(JSON.stringify({ type: 'onMapClick', data: e }, null, 2));
           }}
-          onMarkerClick={(e) => {
-            setLastEvent(JSON.stringify({ type: 'onMarkerClick', data: e }, null, 2));
-          }}
           onCameraMove={(e) => {
             setLastEvent(JSON.stringify({ type: 'onCameraMove', data: e }, null, 2));
           }}

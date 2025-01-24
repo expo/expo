@@ -16,7 +16,6 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
 
 export function MapView({ onMapClick, onMarkerClick, onCameraMove, markers, ...props }: MapProps) {
   const onNativeMapClick = useNativeEvent(onMapClick);
-  const onNativeMarkerClick = useNativeEvent(onMarkerClick);
   const onNativeCameraMove = useNativeEvent(onCameraMove);
 
   const parsedMarkers = markers?.map((marker) => ({
@@ -30,7 +29,6 @@ export function MapView({ onMapClick, onMarkerClick, onCameraMove, markers, ...p
       {...props}
       markers={parsedMarkers}
       onMapClick={onNativeMapClick}
-      onMarkerClick={onNativeMarkerClick}
       onCameraMove={onNativeCameraMove}
     />
   );
