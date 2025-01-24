@@ -83,7 +83,21 @@ export default function App() {
 
 ## WebView props
 
-To pass props to the underlying native **WebView**, use the `dom` prop on the component. This prop is built into every DOM component and accepts an object with any [`WebView` props](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md) that you would like to change.
+To pass props to the underlying native **WebView**, add a `dom` object to the component:
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent({}: { dom: import('expo/dom').DOMProps }) {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+    </div>
+  );
+}
+```
+
+Now you can pass [`WebView` props](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md) to the DOM component:
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
@@ -95,20 +109,6 @@ export default function App() {
         scrollEnabled: false,
       }}
     />
-  );
-}
-```
-
-On your DOM component, add the `dom` prop so it is recognized in TypeScript:
-
-```tsx my-component.tsx (web)
-'use dom';
-
-export default function DOMComponent({}: { dom: import('expo/dom').DOMProps }) {
-  return (
-    <div>
-      <h1>Hello, world!</h1>
-    </div>
   );
 }
 ```
@@ -313,7 +313,7 @@ You may want to measure the size of a DOM component and report it back to the na
 
 ### Automatically with `matchContents` prop
 
-You can use the `dom={{ matchContents: true }}` prop to measure the size of the DOM component automatically and resize the native view. This is particularly useful for certain layouts where the DOM component must have an intrinsic size in order to be displayed, such as when the component is centered within a parent view:
+You need to use the `dom={{ matchContents: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
@@ -323,49 +323,57 @@ export default function Route() {
 }
 ```
 
-### Manually by specifying a size
+```tsx my-component.tsx (web)
+'use dom';
 
-You can also manually provide a size by passing it to the `WebView` `style` prop via the `dom` prop:
+export default function DOMComponent(_: { dom?: import('expo/dom').DOMProps }) {
+  return <div style={{ width: 500, height: 500, backgroundColor: 'blue' }} />;
+}
+```
+
+### Manually by resizing native action
+
+You can also manually measure the size of a DOM component and report it back to the native side using a native action:
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
+import { useState } from 'react';
 
 export default function Route() {
+  const [height, setHeight] = useState(270);
   return (
     <DOMComponent
+      updateSize={async size => {
+        if (size[1] !== height) {
+          setHeight(size[1]);
+        }
+      }}
       dom={{
-        style: { width, height },
+        style: { height },
       }}
     />
   );
 }
 ```
 
-### Observing changes in size
-
-If you would like to report changes in the size of the DOM component back to the native side, you can add a native action to your DOM component that is called whenever the size is changed:
-
 ```tsx my-component.tsx (web)
 'use dom';
 
 import { useEffect } from 'react';
 
-function useSize(callback: (size: { width: number; height: number }) => void) {
+function useSize(callback: (size: [number, number]) => void) {
   useEffect(() => {
     // Observe window size changes
     const observer = new ResizeObserver(entries => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
-        callback({ width, height });
+        callback([width, height]);
       }
     });
 
     observer.observe(document.body);
 
-    callback({
-      width: document.body.clientWidth,
-      height: document.body.clientHeight,
-    });
+    callback([document.body.clientWidth, document.body.clientHeight]);
 
     return () => {
       observer.disconnect();
@@ -374,48 +382,14 @@ function useSize(callback: (size: { width: number; height: number }) => void) {
 }
 
 export default function DOMComponent({
-  onDOMLayout,
+  onLayout,
 }: {
   dom?: import('expo/dom').DOMProps;
-  onDOMLayout: (size: { width: number; height: number }) => void;
+  onLayout(size: [number, number]);
 }) {
-  useSize(onDOMLayout);
+  useSize(onLayout);
 
-  return <div style={{ width: 500, height: 500, background: 'blue' }} />;
-}
-```
-
-Then update your native code to set the size in state whenever the DOM component reports a change in size:
-
-```tsx App.tsx (native)
-import DOMComponent from '@/components/my-component';
-import { useState } from 'react';
-import { View, ScrollView } from 'react-native';
-
-export default function App() {
-  const [containerSize, setContainerSize] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
-  return (
-    <View style={{ flex: 1 }}>
-      <ScrollView>
-        <DOMComponent
-          onDOMLayout={async ({ width, height }) => {
-            if (containerSize?.width !== width || containerSize?.height !== height) {
-              setContainerSize({ width, height });
-            }
-          }}
-          dom={{
-            containerStyle:
-              containerSize != null
-                ? { width: containerSize.width, height: containerSize.height }
-                : null,
-          }}
-        />
-      </ScrollView>
-    </View>
-  );
+  return <div />;
 }
 ```
 
