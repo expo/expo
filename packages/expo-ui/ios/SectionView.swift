@@ -12,18 +12,16 @@ struct SectionView: ExpoSwiftUI.View {
   @EnvironmentObject var props: SectionProps
 
   var body: some View {
-    if #available(iOS 16.0, *) {
-      Form {
-        Section(header: Text(props.title ?? "")) {
-          Children().padding(EdgeInsets(top: 0, leading: 0, bottom: props.heightOffset, trailing: 0))
-        }
-      }.scrollDisabled(true)
-    } else {
-      Form {
-        Section(header: Text(props.title ?? "")) {
-          Children().padding(EdgeInsets(top: 0, leading: 0, bottom: props.heightOffset, trailing: 0))
-        }
+    var form = Form {
+      Section(header: Text(props.title ?? "")) {
+        Children().padding(EdgeInsets(top: 0, leading: 0, bottom: props.heightOffset, trailing: 0))
       }
+    }
+    
+    if #available(iOS 16.0, *) {
+      form.scrollDisabled(true)
+    } else {
+      form
     }
   }
 }

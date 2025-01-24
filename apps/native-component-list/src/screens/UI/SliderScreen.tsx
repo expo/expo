@@ -11,7 +11,7 @@ export default function SliderScreen() {
         <Slider
           style={{ minHeight: 60 }}
           value={value}
-          onValueChanged={({ nativeEvent: { value } }) => {
+          onValueChange={(value) => {
             setValue(value);
           }}
         />
@@ -21,7 +21,7 @@ export default function SliderScreen() {
           style={{ minHeight: 60 }}
           value={value}
           steps={5}
-          onValueChanged={({ nativeEvent: { value } }) => {
+          onValueChange={(value) => {
             setValue(value);
           }}
         />
@@ -30,6 +30,8 @@ export default function SliderScreen() {
         <Slider
           style={{ minHeight: 60 }}
           value={value}
+          min={-1}
+          max={5}
           colors={{
             thumbColor: '#ff0000',
             activeTrackColor: '#ffff00',
@@ -37,7 +39,7 @@ export default function SliderScreen() {
             activeTickColor: '#ff0000',
             inactiveTickColor: '#00ff00',
           }}
-          onValueChanged={({ nativeEvent: { value } }) => {
+          onValueChange={(value) => {
             setValue(value);
           }}
         />

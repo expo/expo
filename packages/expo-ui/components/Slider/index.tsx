@@ -1,11 +1,13 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
+import { ViewEvent } from '../../src';
+
 export type SliderProps = {
   /**
    * Custom styles for the slider component.
    */
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   /**
    * The current value of the slider.
    * @default 0
@@ -40,17 +42,12 @@ export type SliderProps = {
   /**
    * Callback triggered on dragging along the slider.
    */
-  onValueChanged: (event: {
-    nativeEvent: {
-      value: number;
-    };
-  }) => void;
+  onValueChange?: (value: number) => void;
 };
 
-const SliderNativeView: React.ComponentType<SliderProps> = requireNativeView(
-  'ExpoUI',
-  'SliderView'
-);
+const SliderNativeView: React.ComponentType<
+  Omit<SliderProps, 'onValueChange'> & ViewEvent<'onValueChanged', { value: number }>
+> = requireNativeView('ExpoUI', 'SliderView');
 
 export function Slider(props: SliderProps) {
   return (
@@ -61,6 +58,9 @@ export function Slider(props: SliderProps) {
       max={props.max ?? 1}
       steps={props.steps ?? 0}
       value={props.value ?? 0}
+      onValueChanged={({ nativeEvent: { value } }) => {
+        props?.onValueChange?.(value);
+      }}
     />
   );
 }

@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { Children } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 export type SectionProps = {
@@ -17,8 +18,7 @@ const HOSTING_CONTAINER_OFFSET = 65;
 const HORIZONTAL_PADDING = 20;
 
 export function Section(props: SectionProps) {
-  const children = Array.isArray(props.children) ? props.children : [props.children];
-
+  const children = Children.toArray(props.children);
   return (
     <SectionNativeView {...props} heightOffset={-HOSTING_CONTAINER_OFFSET}>
       <View
@@ -26,7 +26,7 @@ export function Section(props: SectionProps) {
         collapsableChildren={false}
         style={{ paddingBottom: HOSTING_CONTAINER_OFFSET }}>
         <View style={{ paddingHorizontal: HORIZONTAL_PADDING }}>
-          {children?.flatMap((c, idx) =>
+          {children.flatMap((c, idx) =>
             [
               <View
                 onPointerDown={console.log}

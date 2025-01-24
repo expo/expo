@@ -36,7 +36,6 @@ class SliderColors : Record {
   val activeTickColor: Color? = null
   @Field
   val inactiveTickColor: Color? = null
-
 }
 
 fun convertColor(color: Color?): androidx.compose.ui.graphics.Color? {
@@ -60,6 +59,7 @@ data class SliderProps(
 class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<SliderProps>(context, appContext) {
   override val props = SliderProps()
   private val onValueChanged by EventDispatcher()
+
   init {
     setContent {
       val (value) = props.value
@@ -74,11 +74,11 @@ class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<Sli
           onValueChanged(mapOf("value" to it))
         },
         colors = SliderDefaults.colors(
-          thumbColor =  convertColor(props.colors.value.thumbColor) ?: SliderDefaults.colors().thumbColor,
-          activeTrackColor =  convertColor(props.colors.value.activeTrackColor) ?: SliderDefaults.colors().activeTrackColor,
-          inactiveTrackColor =  convertColor(props.colors.value.inactiveTrackColor) ?: SliderDefaults.colors().inactiveTrackColor,
-          activeTickColor =  convertColor(props.colors.value.activeTickColor) ?: SliderDefaults.colors().activeTickColor,
-          inactiveTickColor =  convertColor(props.colors.value.inactiveTickColor) ?: SliderDefaults.colors().inactiveTickColor,
+          thumbColor = convertColor(props.colors.value.thumbColor) ?: SliderDefaults.colors().thumbColor,
+          activeTrackColor = convertColor(props.colors.value.activeTrackColor) ?: SliderDefaults.colors().activeTrackColor,
+          inactiveTrackColor = convertColor(props.colors.value.inactiveTrackColor) ?: SliderDefaults.colors().inactiveTrackColor,
+          activeTickColor = convertColor(props.colors.value.activeTickColor) ?: SliderDefaults.colors().activeTickColor,
+          inactiveTickColor = convertColor(props.colors.value.inactiveTickColor) ?: SliderDefaults.colors().inactiveTickColor,
         )
       )
     }
