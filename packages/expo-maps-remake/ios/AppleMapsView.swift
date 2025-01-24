@@ -4,7 +4,6 @@ import SwiftUI
 import ExpoModulesCore
 import MapKit
 
-
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
   @Field var annotations: [MapAnnotation] = []
