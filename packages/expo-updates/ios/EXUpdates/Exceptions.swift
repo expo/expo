@@ -68,7 +68,6 @@ internal final class NotAvailableInDevClientException: Exception {
   }
 }
 
-// swiftlint:disable:next type_name
 internal final class NotAllowedAntiBrickingMeasuresException: Exception {
   override var code: String {
     "ERR_UPDATES_RUNTIME_OVERRIDE"
