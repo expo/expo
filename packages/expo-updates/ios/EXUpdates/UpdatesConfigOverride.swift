@@ -6,11 +6,13 @@ import ExpoModulesCore
  `UpdatesConfig` values set at runtime that override build-time configuration.
  */
 public struct UpdatesConfigOverride: Codable {
+  private static let kUpdatesConfigOverride = "dev.expo.updates.updatesConfigOverride"
+
   let updateUrl: URL?
   let requestHeaders: [String: String]
 
   public static func load() -> UpdatesConfigOverride? {
-    guard let data = UserDefaults.standard.data(forKey: UpdatesConfig.kUpdatesConfigOverride) else {
+    guard let data = UserDefaults.standard.data(forKey: kUpdatesConfigOverride) else {
       return nil
     }
     let decoder = JSONDecoder()
@@ -23,24 +25,9 @@ public struct UpdatesConfigOverride: Codable {
       guard let data = try? encoder.encode(configOverride) else {
         return
       }
-      UserDefaults.standard.set(data, forKey: UpdatesConfig.kUpdatesConfigOverride)
+      UserDefaults.standard.set(data, forKey: kUpdatesConfigOverride)
     } else {
-      UserDefaults.standard.removeObject(forKey: UpdatesConfig.kUpdatesConfigOverride)
+      UserDefaults.standard.removeObject(forKey: kUpdatesConfigOverride)
     }
-  }
-}
-
-/**
- `UpdatesConfigOverride` parameters passing from JavaScript.
- */
-internal struct UpdatesConfigOverrideParam: Record {
-  @Field var updateUrl: URL?
-  @Field var requestHeaders: [String: String]
-
-  func toUpdatesConfigOverride() -> UpdatesConfigOverride {
-    return UpdatesConfigOverride(
-      updateUrl: updateUrl,
-      requestHeaders: requestHeaders
-    )
   }
 }
