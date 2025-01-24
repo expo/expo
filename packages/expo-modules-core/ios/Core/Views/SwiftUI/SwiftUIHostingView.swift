@@ -21,7 +21,7 @@ extension ExpoSwiftUI {
      It's an environment object that is observed by the content view.
      */
     private let props: Props
-    
+
     /**
      Additiional utilities for controlling shadow node behavior.
      */
