@@ -3,6 +3,7 @@ package expo.modules.updates.db
 import android.net.Uri
 import expo.modules.jsonutils.getNullable
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.db.dao.JSONDataDao
 import org.json.JSONObject
 
 /**
@@ -27,8 +28,6 @@ import org.json.JSONObject
  *   UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
  */
 object BuildData {
-  private var staticBuildDataKey = "staticBuildData"
-
   fun ensureBuildDataIsConsistent(
     updatesConfiguration: UpdatesConfiguration,
     database: UpdatesDatabase
@@ -78,14 +77,14 @@ object BuildData {
   ) {
     val buildDataJSON = getBuildDataFromConfig(updatesConfiguration)
     database.jsonDataDao()?.setJSONStringForKey(
-      staticBuildDataKey,
+      JSONDataDao.JSONDataKey.STATIC_BUILD_DATA,
       buildDataJSON.toString(),
       updatesConfiguration.scopeKey
     )
   }
 
   fun getBuildDataFromDatabase(database: UpdatesDatabase, scopeKey: String): JSONObject? {
-    val buildJSONString = database.jsonDataDao()?.loadJSONStringForKey(staticBuildDataKey, scopeKey)
+    val buildJSONString = database.jsonDataDao()?.loadJSONStringForKey(JSONDataDao.JSONDataKey.STATIC_BUILD_DATA, scopeKey)
     return if (buildJSONString == null) null else JSONObject(buildJSONString)
   }
 
