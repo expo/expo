@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix: restore `EXAppDelegateWrapper` for SDK-52 ([#34434](https://github.com/expo/expo/pull/34434) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 - [Android]: Added callback to executeTask method signature after adding package expo-background-task ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))
