@@ -253,6 +253,16 @@ You can configure your app to check for updates manually by doing the following 
 
 </Collapsible>
 
+## Testing
+
+Most of the methods and constants in this library can be used or tested only in release builds. In debug builds, the default behavior is to always load the latest JavaScript from a development server. It is possible to [build a debug version of your app with the same updates behavior as a release build](/eas-update/debug-advanced/#debugging-of-native-code-while-loading-the-app-through-expo-updates). Such an app will not open the latest JavaScript from your development server &mdash; it will load published updates just as a release build does. This may be useful for debugging the behavior of your app when it is not connected to a development server.
+
+**To test the content of an update in a development build**, run [`eas update`](/eas-update/getting-started/) and then browse to the update in your development build. Note that this only simulates what an update will look like in your app, and most of the [Updates API](#api) is unavailable when running in a development build.
+
+**To test updates in a release build**, you can create a [**.apk**](/build-reference/apk) or a [simulator build](/build-reference/simulators), or make a release build locally with `npx expo run:android --variant release` and `npx expo run:ios --configuration Release` (you don't need to submit this build to the store to test). The full [Updates API](#api) is available in a release build.
+
+**To test the content of an update in Expo Go**, run [`eas update`](/eas-update/getting-started/) and then browse to the update in Expo Go. Note that this only simulates what an update will look like in your app, and most of the [Updates API](#api) is unavailable when running in Expo Go. Also note that only updates using [Expo Go-compatible libraries](/workflow/using-libraries/#determining-third-party-library-compatibility) are supported.
+
 ## API
 
 ```js
