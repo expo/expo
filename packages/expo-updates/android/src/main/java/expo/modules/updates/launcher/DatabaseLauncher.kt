@@ -92,7 +92,7 @@ class DatabaseLauncher(
       this.callback!!.onFailure(Exception("Launch asset relative path should not be null. Debug info: ${launchedUpdate!!.debugInfo()}"))
     }
 
-    val launchAssetFile = ensureAssetExists(launchAsset, database)
+    val launchAssetFile = ensureAssetExists(launchAsset, database, launchedUpdate)
     if (launchAssetFile != null) {
       this.launchAssetFile = launchAssetFile.toString()
     }
@@ -107,7 +107,7 @@ class DatabaseLauncher(
         }
         val filename = asset.relativePath
         if (filename != null) {
-          val assetFile = ensureAssetExists(asset, database)
+          val assetFile = ensureAssetExists(asset, database, launchedUpdate)
           if (assetFile != null) {
             this[asset] = Uri.fromFile(assetFile).toString()
           }
@@ -170,13 +170,13 @@ class DatabaseLauncher(
     }
   }
 
-  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase): File? {
+  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, requestedUpdate: UpdateEntity?): File? {
     val assetFile = File(updatesDirectory, asset.relativePath ?: "")
     var assetFileExists = assetFile.exists()
+    val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
     if (!assetFileExists) {
       // something has gone wrong, we're missing this asset
       // first we check to see if a copy is embedded in the binary
-      val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
       if (embeddedUpdate != null) {
         val embeddedAssets = embeddedUpdate.assetEntityList
         var matchingEmbeddedAsset: AssetEntity? = null
@@ -204,9 +204,12 @@ class DatabaseLauncher(
     return if (!assetFileExists) {
       // we still don't have the asset locally, so try downloading it remotely
       assetsToDownload++
+
+      val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(asset, launchedUpdate, embeddedUpdate?.updateEntity, requestedUpdate)
       fileDownloader.downloadAsset(
         asset,
         updatesDirectory,
+        extraHeaders,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
             logger.error("Failed to load asset from disk or network", e, UpdatesErrorCode.AssetsFailedToLoad)
