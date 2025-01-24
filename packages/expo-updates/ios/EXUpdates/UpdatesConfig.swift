@@ -88,7 +88,7 @@ public final class UpdatesConfig: NSObject {
 
   public static let EXUpdatesConfigRuntimeVersionReadFingerprintFileSentinel = "file:fingerprint"
 
-  internal static let kUpdatesRuntimeOverrides = "dev.expo.updates.updatesRuntimeOverrides"
+  internal static let kUpdatesConfigOverride = "dev.expo.updates.updatesConfigOverride"
 
   public let scopeKey: String
   public let updateUrl: URL
@@ -321,9 +321,9 @@ public final class UpdatesConfig: NSObject {
     }
   }
 
-  internal static var updatesRuntimeOverrides = UpdatesRuntimeOverrides.load() {
+  internal static var updatesConfigOverride = UpdatesConfigOverride.load() {
     didSet {
-      UpdatesRuntimeOverrides.save(updatesRuntimeOverrides)
+      UpdatesConfigOverride.save(updatesConfigOverride)
     }
   }
 
@@ -332,7 +332,7 @@ public final class UpdatesConfig: NSObject {
   }
 
   private static func getHasEmbeddedUpdate(fromDictionary config: [String: Any]) -> Bool {
-    if getDisableAntiBrickingMeasures(fromDictionary: config) && updatesRuntimeOverrides != nil {
+    if getDisableAntiBrickingMeasures(fromDictionary: config) && updatesConfigOverride != nil {
       return false
     }
     return config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
@@ -340,7 +340,7 @@ public final class UpdatesConfig: NSObject {
 
   private static func getUpdatesUrl(fromDictionary config: [String: Any]) -> URL? {
     if getDisableAntiBrickingMeasures(fromDictionary: config),
-      let url = updatesRuntimeOverrides?.url {
+      let url = updatesConfigOverride?.url {
       return url
     }
     return config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
@@ -350,7 +350,7 @@ public final class UpdatesConfig: NSObject {
 
   private static func getRequestHeaders(fromDictionary config: [String: Any]) -> [String: String] {
     if getDisableAntiBrickingMeasures(fromDictionary: config),
-      let requestHeaders = updatesRuntimeOverrides?.requestHeaders {
+      let requestHeaders = updatesConfigOverride?.requestHeaders {
       return requestHeaders
     }
     return config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]

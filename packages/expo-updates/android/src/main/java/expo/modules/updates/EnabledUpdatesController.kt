@@ -262,11 +262,11 @@ class EnabledUpdatesController(
     }
   }
 
-  override fun setUpdatesURLAndRequestHeadersOverrides(overrides: UpdatesRuntimeOverrides?) {
+  override fun setUpdatesURLAndRequestHeadersOverrides(configOverride: UpdatesConfigurationOverride?) {
     if (!updatesConfiguration.disableAntiBrickingMeasures) {
       throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Must set disableAntiBrickingMeasures configuration to use updates overriding", null)
     }
-    UpdatesRuntimeOverrides.save(context, overrides)
+    UpdatesConfigurationOverride.save(context, configOverride)
   }
 
   companion object {

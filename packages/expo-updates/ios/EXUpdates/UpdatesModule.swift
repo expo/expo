@@ -141,8 +141,8 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
       }
     }
 
-    Function("setUpdatesURLAndRequestHeadersOverrides") { (overrides: UpdatesRuntimeOverrides?) in
-      try AppController.sharedInstance.setUpdatesURLAndRequestHeadersOverrides(overrides)
+    Function("setUpdatesURLAndRequestHeadersOverrides") { (configOverride: UpdatesConfigOverride?) in
+      try AppController.sharedInstance.setUpdatesURLAndRequestHeadersOverrides(configOverride)
     }
   }
 

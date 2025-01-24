@@ -10,7 +10,7 @@ import org.json.JSONObject
 /**
  * Runtime overridable config from build time [UpdatesConfiguration]
  */
-data class UpdatesRuntimeOverrides(
+data class UpdatesConfigurationOverride(
   @Field val url: Uri,
   @Field val requestHeaders: Map<String, String>
 ) : Record {
@@ -22,32 +22,32 @@ data class UpdatesRuntimeOverrides(
   }
 
   companion object {
-    internal fun load(context: Context): UpdatesRuntimeOverrides? {
-      val overrides =
+    internal fun load(context: Context): UpdatesConfigurationOverride? {
+      val configOverride =
         context.getSharedPreferences(UpdatesConfiguration.UPDATES_PREFS_FILE, Context.MODE_PRIVATE)
-          ?.getString(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_RUNTIME_OVERRIDES, null)
-      return overrides?.let {
+          ?.getString(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE, null)
+      return configOverride?.let {
         fromJSONObject(JSONObject(it))
       }
     }
 
-    internal fun save(context: Context, overrides: UpdatesRuntimeOverrides?) {
+    internal fun save(context: Context, configOverride: UpdatesConfigurationOverride?) {
       val prefs = context.getSharedPreferences(UpdatesConfiguration.UPDATES_PREFS_FILE, Context.MODE_PRIVATE)
       with(prefs.edit()) {
-        if (overrides != null) {
-          putString(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_RUNTIME_OVERRIDES, overrides.toJSONObject().toString())
+        if (configOverride != null) {
+          putString(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE, configOverride.toJSONObject().toString())
         } else {
-          remove(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_RUNTIME_OVERRIDES)
+          remove(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE)
         }
         apply()
       }
     }
 
-    private fun fromJSONObject(json: JSONObject): UpdatesRuntimeOverrides {
+    private fun fromJSONObject(json: JSONObject): UpdatesConfigurationOverride {
       val requestHeaders = json.getJSONObject("requestHeaders")
         .toMap()
         .mapValues { it.value.toString() }
-      return UpdatesRuntimeOverrides(
+      return UpdatesConfigurationOverride(
         url = Uri.parse(json.getString("url")),
         requestHeaders = requestHeaders
       )

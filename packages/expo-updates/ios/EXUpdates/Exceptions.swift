@@ -70,7 +70,7 @@ internal final class NotAvailableInDevClientException: Exception {
 
 internal final class NotAllowedAntiBrickingMeasuresException: Exception {
   override var code: String {
-    "ERR_UPDATES_RUNTIME_OVERRIDE"
+    "ERR_UPDATES_CONFIG_OVERRIDE"
   }
 
   override var reason: String {

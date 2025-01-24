@@ -5,7 +5,7 @@ import ExpoModulesCore
 /**
  Runtime overridable config from build time UpdatesConfig
  */
-public struct UpdatesRuntimeOverrides: Record, Codable {
+public struct UpdatesConfigOverride: Record, Codable {
   public init() {
   }
 
@@ -32,23 +32,23 @@ public struct UpdatesRuntimeOverrides: Record, Codable {
     case requestHeaders
   }
 
-  internal static func load() -> UpdatesRuntimeOverrides? {
-    guard let data = UserDefaults.standard.data(forKey: UpdatesConfig.kUpdatesRuntimeOverrides) else {
+  internal static func load() -> UpdatesConfigOverride? {
+    guard let data = UserDefaults.standard.data(forKey: UpdatesConfig.kUpdatesConfigOverride) else {
       return nil
     }
     let decoder = JSONDecoder()
-    return try? decoder.decode(UpdatesRuntimeOverrides.self, from: Data(data))
+    return try? decoder.decode(UpdatesConfigOverride.self, from: Data(data))
   }
 
-  internal static func save(_ overrides: UpdatesRuntimeOverrides?) {
-    if let overrides {
+  internal static func save(_ configOverride: UpdatesConfigOverride?) {
+    if let configOverride {
       let encoder = JSONEncoder()
-      guard let data = try? encoder.encode(overrides) else {
+      guard let data = try? encoder.encode(configOverride) else {
         return
       }
-      UserDefaults.standard.set(data, forKey: UpdatesConfig.kUpdatesRuntimeOverrides)
+      UserDefaults.standard.set(data, forKey: UpdatesConfig.kUpdatesConfigOverride)
     } else {
-      UserDefaults.standard.removeObject(forKey: UpdatesConfig.kUpdatesRuntimeOverrides)
+      UserDefaults.standard.removeObject(forKey: UpdatesConfig.kUpdatesConfigOverride)
     }
   }
 }
