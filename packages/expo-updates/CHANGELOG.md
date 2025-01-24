@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added experimental `Updates.setUpdatesURLAndRequestHeadersOverride()` to allow update overrides. ([#34422](https://github.com/expo/expo/pull/34422) by [@kudo](https://github.com/kudo))
+- Added experimental `Updates.setUpdatesURLAndRequestHeadersOverride()` to allow update overrides. ([#34422](https://github.com/expo/expo/pull/34422), [#34423](https://github.com/expo/expo/pull/34423) by [@kudo](https://github.com/kudo), [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
