@@ -20,13 +20,13 @@ try {
 }
 
 group = 'host.exp.exponent'
-version = '0.1.0'
+version = '0.6.1'
 
 android {
   namespace "expo.modules.maps"
   defaultConfig {
     versionCode 1
-    versionName "0.1.0"
+    versionName "0.6.1"
   }
   buildFeatures {
     compose true
