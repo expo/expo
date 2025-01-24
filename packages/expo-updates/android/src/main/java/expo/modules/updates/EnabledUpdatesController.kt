@@ -262,6 +262,13 @@ class EnabledUpdatesController(
     }
   }
 
+  override fun setUpdatesURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
+    if (!updatesConfiguration.disableAntiBrickingMeasures) {
+      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Must set disableAntiBrickingMeasures configuration to use updates overriding", null)
+    }
+    UpdatesConfigurationOverride.save(context, configOverride)
+  }
+
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName
   }

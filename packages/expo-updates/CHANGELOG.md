@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
+- Added experimental `Updates.setUpdatesURLAndRequestHeadersOverride()` to allow update overrides. ([#34422](https://github.com/expo/expo/pull/34422) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

@@ -165,4 +165,6 @@ interface IUpdatesController {
   fun getExtraParams(callback: ModuleCallback<Bundle>)
 
   fun setExtraParam(key: String, value: String?, callback: ModuleCallback<Unit>)
+
+  fun setUpdatesURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?)
 }
