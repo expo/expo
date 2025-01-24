@@ -648,5 +648,16 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
         }
       }
     });
+
+    it('Contacts.updateContactAsync() with image', async () => {
+      const contactId = await createContactWithImage({
+        [Contacts.Fields.FirstName]: 'Kenny',
+        [Contacts.Fields.LastName]: 'Bday guy',
+      });
+      expect(typeof contactId).toBe('string');
+      const contact = await Contacts.getContactByIdAsync(contactId);
+      const modifiedId = await Contacts.updateContactAsync(contact);
+      expect(typeof modifiedId).toBe('string');
+    });
   });
 }
