@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "BareExpo",
-    "slug": "bare-expo",
+    "name": "sdk52",
+    "slug": "sdk52",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -14,18 +14,45 @@
     "facebookDisplayName": "Expo APIs",
     "privacy": "unlisted",
     "version": "1.0.0",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "userInterfaceStyle": "automatic",
     "android": {
-      "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
+      "scheme": [
+        "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2",
+        "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000020"
       },
-      "package": "dev.expo.payments"
+      "package": "dev.expo.payments",
+      "permissions": [
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+        "com.google.android.gms.permission.AD_ID",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+        "com.google.android.gms.permission.AD_ID"
+      ]
     },
     "ios": {
       "scheme": [
+        "msauth.dev.expo.Payments",
+        "com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e",
         "msauth.dev.expo.Payments",
         "com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e"
       ],
@@ -33,7 +60,10 @@
       "supportsTablet": true,
       "requireFullScreen": false,
       "entitlements": {
-        "com.apple.security.application-groups": ["group.dev.expo.Payments"]
+        "com.apple.security.application-groups": [
+          "group.dev.expo.Payments",
+          "group.dev.expo.Payments"
+        ]
       }
     },
     "web": {
@@ -43,22 +73,16 @@
       "serviceWorkerPath": "/expo-service-worker.js",
       "vapidPublicKey": "BNHvR05XkY5LH9GdN0GreLx2wZnK9IwNJGVmo3jujIkFni4of26E3U3fnt9nUrZfM7h0omdIHKM0eshkzTSFOWQ"
     },
-    "extra": {
-      "eas": {
-        "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774"
-      }
-    },
     "runtimeVersion": "1.0.0",
-    "updates": {
-      "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
-    },
     "plugins": [
       "expo-video",
       "expo-background-fetch",
       [
         "expo-font",
         {
-          "fonts": ["./assets/icomoon.ttf"]
+          "fonts": [
+            "./assets/icomoon.ttf"
+          ]
         }
       ],
       [
@@ -73,7 +97,9 @@
         {
           "icon": "./assets/ic_stat_notifications.png",
           "color": "#4630EB",
-          "sounds": ["./assets/notification.wav"]
+          "sounds": [
+            "./assets/notification.wav"
+          ]
         }
       ],
       [
@@ -92,6 +118,14 @@
       ],
       "./plugins/withAndroidNetworkSecurityConfig",
       "./plugins/withBenchmarkModules"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2b85f8ed-765b-4228-8ad8-2f397e32800a"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2b85f8ed-765b-4228-8ad8-2f397e32800a"
+    }
   }
 }
