@@ -2,8 +2,6 @@ package expo.modules.updates
 
 import android.content.Context
 import android.net.Uri
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
 import expo.modules.manifests.core.toMap
 import org.json.JSONObject
 
@@ -22,22 +20,25 @@ data class UpdatesConfigurationOverride(
   }
 
   companion object {
+    private const val UPDATES_PREFS_FILE = "dev.expo.updates.prefs"
+    private const val UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE = "updatesConfigOverride"
+
     internal fun load(context: Context): UpdatesConfigurationOverride? {
       val configOverride =
-        context.getSharedPreferences(UpdatesConfiguration.UPDATES_PREFS_FILE, Context.MODE_PRIVATE)
-          ?.getString(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE, null)
+        context.getSharedPreferences(UPDATES_PREFS_FILE, Context.MODE_PRIVATE)
+          ?.getString(UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE, null)
       return configOverride?.let {
         fromJSONObject(JSONObject(it))
       }
     }
 
     internal fun save(context: Context, configOverride: UpdatesConfigurationOverride?) {
-      val prefs = context.getSharedPreferences(UpdatesConfiguration.UPDATES_PREFS_FILE, Context.MODE_PRIVATE)
+      val prefs = context.getSharedPreferences(UPDATES_PREFS_FILE, Context.MODE_PRIVATE)
       with(prefs.edit()) {
         if (configOverride != null) {
-          putString(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE, configOverride.toJSONObject().toString())
+          putString(UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE, configOverride.toJSONObject().toString())
         } else {
-          remove(UpdatesConfiguration.UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE)
+          remove(UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE)
         }
         apply()
       }
@@ -52,17 +53,5 @@ data class UpdatesConfigurationOverride(
         requestHeaders = requestHeaders
       )
     }
-  }
-}
-
-/**
- * [UpdatesConfigurationOverride] parameters passing from JavaScript.
- */
-internal data class UpdatesConfigurationOverrideParam(
-  @Field val updateUrl: Uri,
-  @Field val requestHeaders: Map<String, String>
-) : Record {
-  fun toUpdatesConfigurationOverride(): UpdatesConfigurationOverride {
-    return UpdatesConfigurationOverride(updateUrl, requestHeaders)
   }
 }

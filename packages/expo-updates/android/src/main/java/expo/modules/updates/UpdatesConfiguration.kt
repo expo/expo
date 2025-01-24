@@ -63,10 +63,19 @@ data class UpdatesConfiguration(
 
   constructor(
     context: Context?,
+    overrideMap: Map<String, Any>?
+  ) : this(
+    context,
+    overrideMap,
+    disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap),
+    configOverride = context?.let { UpdatesConfigurationOverride.load(context) }
+  )
+
+  private constructor(
+    context: Context?,
     overrideMap: Map<String, Any>?,
-    disableAntiBrickingMeasures: Boolean = getDisableAntiBrickingMeasures(context, overrideMap),
-    configOverride: UpdatesConfigurationOverride? =
-      if (context != null) UpdatesConfigurationOverride.load(context) else null
+    disableAntiBrickingMeasures: Boolean,
+    configOverride: UpdatesConfigurationOverride?
   ) : this(
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
@@ -145,9 +154,6 @@ data class UpdatesConfiguration(
 
     const val UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL = "file:fingerprint"
     private const val FINGERPRINT_FILE_NAME = "fingerprint"
-
-    internal const val UPDATES_PREFS_FILE = "dev.expo.updates.prefs"
-    internal const val UPDATES_PREFS_KEY_UPDATES_CONFIGURATION_OVERRIDE = "updatesConfigOverride"
 
     private fun getDisableAntiBrickingMeasures(context: Context?, overrideMap: Map<String, Any>?): Boolean {
       return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_DISABLE_ANTI_BRICKING_MEASURES) ?: context?.getMetadataValue("expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES") ?: false
