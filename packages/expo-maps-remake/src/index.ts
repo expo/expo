@@ -24,7 +24,7 @@ export namespace AppleMaps {
 
   export const MapType = AppleTypes.MapType;
   export type MapType = AppleTypes.MapType;
-
+  export type CameraPosition = AppleTypes.CameraPosition;
   export type MapProperties = AppleTypes.MapProperties;
   export type MapUiSettings = AppleTypes.MapUiSettings;
   export type Marker = AppleTypes.Marker;

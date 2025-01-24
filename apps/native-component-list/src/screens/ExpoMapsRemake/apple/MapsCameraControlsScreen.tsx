@@ -24,7 +24,7 @@ const cameraCoordinates = [
 ];
 export default function MapsBasicScreen() {
   const [currentSourceIndex, setCurrentSourceIndex] = useState(1);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(10);
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
@@ -52,7 +52,8 @@ export default function MapsBasicScreen() {
         <Text>Zoom level: {zoom}</Text>
         <Slider
           minimumValue={0}
-          maximumValue={10}
+          maximumValue={21}
+          value={zoom}
           step={0.1}
           onValueChange={(v) => setZoom(parseFloat(v.toFixed(1)))}
         />
