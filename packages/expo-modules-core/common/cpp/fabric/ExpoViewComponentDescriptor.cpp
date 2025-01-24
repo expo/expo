@@ -2,6 +2,7 @@
 
 #include "ExpoViewComponentDescriptor.h"
 #include <react/renderer/core/ShadowNode.h>
+#include <cmath>
 
 namespace expo {
 
@@ -22,7 +23,7 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
 
   const auto snode = dynamic_cast<ExpoViewShadowNode *>(&shadowNode);
   const auto state = snode->getStateData();
-  if(state._width >= 0 or state._height >= 0){
+  if(!isnan(state._width) or !isnan(state._height)){
     snode->setSize({state._width, state._height});
   }
   ConcreteComponentDescriptor::adopt(shadowNode);

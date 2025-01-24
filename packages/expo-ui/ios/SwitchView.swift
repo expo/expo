@@ -12,11 +12,11 @@ class SwitchProps: ExpoSwiftUI.ViewProps {
 
 struct SwitchView: ExpoSwiftUI.View {
   @EnvironmentObject var props: SwitchProps
-  @EnvironmentObject var utils: ExpoSwiftUI.ViewUtils
+  @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State var checked: Bool = false
 
   var body: some View {
-    ExpoSwiftUI.AutoSizingStack(viewUtils: utils, axis: .both) {
+    ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {
       Toggle(isOn: $checked, label: { props.label != nil ? Text(props.label ?? "") : nil })
       .onChange(of: checked, perform: { newValue in
         if props.checked == newValue {

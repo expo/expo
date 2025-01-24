@@ -17,11 +17,11 @@ extension ExpoSwiftUI {
 
   public struct AutoSizingStack<Content: SwiftUI.View>: SwiftUI.View {
     let content: Content
-    let viewUtils: ViewUtils
+    let proxy: ShadowNodeProxy
     let axis: AxisSet
 
-    public init(viewUtils: ViewUtils, axis: AxisSet = .both, @ViewBuilder _ content: () -> Content) {
-      self.viewUtils = viewUtils
+    public init(shadowNodeProxy: ShadowNodeProxy, axis: AxisSet = .both, @ViewBuilder _ content: () -> Content) {
+      self.proxy = shadowNodeProxy
       self.content = content()
       self.axis = axis
     }
@@ -32,8 +32,8 @@ extension ExpoSwiftUI {
         .onGeometryChange(for: CGSize.self) { proxy in
           proxy.size
         } action: {
-          let size = CGSize(width: axis.contains(.horizontal) ? $0.width : -1, height: axis.contains(.vertical) ? $0.height : -1)
-          viewUtils.setViewSize?(size)
+          let size = CGSize(width: axis.contains(.horizontal) ? $0.width : Double.nan, height: axis.contains(.vertical) ? $0.height : Double.nan)
+          proxy.setViewSize?(size)
         }
       } else {
         // TODO: throw a warning
