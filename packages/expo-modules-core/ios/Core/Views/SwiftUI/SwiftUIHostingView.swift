@@ -23,6 +23,11 @@ extension ExpoSwiftUI {
     private let props: Props
 
     /**
+     Additiional utilities for controlling shadow node behavior.
+     */
+    private let shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
+
+    /**
      View controller that embeds the content view into the UIKit view hierarchy.
      */
     private let hostingController: UIViewController
@@ -31,12 +36,17 @@ extension ExpoSwiftUI {
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
-      let rootView = ContentView().environmentObject(props)
+      let rootView = ContentView().environmentObject(props).environmentObject(shadowNodeProxy)
 
       self.props = props
       self.hostingController = UIHostingController(rootView: rootView)
 
       super.init(appContext: appContext)
+
+      shadowNodeProxy.setViewSize = { size in
+        self.setViewSize(size)
+      }
+      shadowNodeProxy.objectWillChange.send()
 
       #if os(iOS) || os(tvOS)
       // Hosting controller has white background by default,
