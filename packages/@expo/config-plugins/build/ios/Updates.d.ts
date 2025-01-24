@@ -10,7 +10,8 @@ export declare enum Config {
     UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "EXUpdatesRequestHeaders",
     UPDATES_HAS_EMBEDDED_UPDATE = "EXUpdatesHasEmbeddedUpdate",
     CODE_SIGNING_CERTIFICATE = "EXUpdatesCodeSigningCertificate",
-    CODE_SIGNING_METADATA = "EXUpdatesCodeSigningMetadata"
+    CODE_SIGNING_METADATA = "EXUpdatesCodeSigningMetadata",
+    DISABLE_ANTI_BRICKING_MEASURES = "EXUpdatesDisableAntiBrickingMeasures"
 }
 export declare const withUpdates: ConfigPlugin;
 export declare function setUpdatesConfigAsync(projectRoot: string, config: ExpoConfigUpdates, expoPlist: ExpoPlist, expoUpdatesPackageVersion?: string | null): Promise<ExpoPlist>;
