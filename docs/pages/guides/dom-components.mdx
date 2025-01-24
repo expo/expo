@@ -353,7 +353,7 @@ import { useEffect } from 'react';
 function useSize(callback: (size: { width: number; height: number }) => void) {
   useEffect(() => {
     // Observe window size changes
-    const observer = new ResizeObserver((entries) => {
+    const observer = new ResizeObserver(entries => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         callback({ width, height });
@@ -385,7 +385,7 @@ export default function DOMComponent({
 }
 ```
 
-Then update your native code to set the size in state whenever the DOM component reports a change in size: 
+Then update your native code to set the size in state whenever the DOM component reports a change in size:
 
 ```tsx App.tsx (native)
 import DOMComponent from '@/components/my-component';
@@ -402,10 +402,7 @@ export default function App() {
       <ScrollView>
         <DOMComponent
           onDOMLayout={async ({ width, height }) => {
-            if (
-              containerSize?.width !== width ||
-              containerSize?.height !== height
-            ) {
+            if (containerSize?.width !== width || containerSize?.height !== height) {
               setContainerSize({ width, height });
             }
           }}
