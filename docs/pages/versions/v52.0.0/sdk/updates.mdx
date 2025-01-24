@@ -263,45 +263,6 @@ Most of the methods and constants in this library can be used or tested only in 
 
 **To test the content of an update in Expo Go**, run [`eas update`](/eas-update/getting-started/) and then browse to the update in Expo Go. Note that this only simulates what an update will look like in your app, and most of the [Updates API](#api) is unavailable when running in Expo Go. Also note that only updates using [Expo Go-compatible libraries](/workflow/using-libraries/#determining-third-party-library-compatibility) are supported.
 
-## How to trace an update ID back to the Expo Dashboard
-
-When working with [EAS Updates](/eas-update/introduction/), you might encounter a scenario where you need to trace an `updateId` back to the [Expo dashboard](https://expo.dev/accounts/[account]). This can be challenging because `Updates.updateId` always returns an ID, regardless of whether [`Updates.isEmbeddedLaunch`](/#updatesisembeddedlaunch) is `true` or `false`. However, if the app is running an embedded update, attempting to look up the `updateId` in the [Expo dashboard](https://expo.dev/accounts/[account]) will result in an error. This happens because embedded updates are not tracked in the dashboard.
-
-### Determine if the Update is Embedded or Downloaded
-
-To avoid this issue, you can use the [`Updates.isEmbeddedLaunch`](/#updatesisembeddedlaunch) property to determine if the app is running an embedded update or one downloaded from the server. If `isEmbeddedLaunch` is `true`, the currently running update is embedded in the build, meaning it won't be available in the [Expo dashboard](https://expo.dev/accounts/[account]).
-
-Here's an example of how you can display whether the update is embedded or downloaded:
-
-```tsx UpdateStatus.tsx
-import * as Updates from 'expo-updates';
-import { ThemedText } from './components/ThemedText';
-
-export default function UpdateStatus() {
-  return (
-    <ThemedText type="default" style={{ fontSize: 12 }}>
-      {Updates.isEmbeddedLaunch
-        ? '(Embedded) ❌ You cannot trace this update in the Expo dashboard.'
-        : '(Downloaded) ✅ You can trace this update in the Expo dashboard.'}
-    </ThemedText>
-  );
-}
-```
-
-When you navigate to an update group in the Expo dashboard (open your project, select Updates, and click a specific update), the URL displays as:
-
-```tsx
-// https://expo.dev/accounts/[accountName]/projects/[projectName]/updates/[updateGroupId]
-```
-
-You can replace `updateGroupId` with the `Updates.updateId` to navigate directly to a specific platform update:
-
-```tsx
-// https://expo.dev/accounts/[accountName]/projects/[projectName]/updates/[updateId]
-```
-
-This opens the corresponding update group for the platform-specific update.
-
 ## API
 
 ```js
