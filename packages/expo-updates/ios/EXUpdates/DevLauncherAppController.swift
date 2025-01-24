@@ -344,6 +344,10 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   public func setExtraParam(key: String, value: String?, success successBlockArg: @escaping () -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
     errorBlockArg(NotAvailableInDevClientException("Updates.setExtraParamAsync()"))
   }
+
+  public func setUpdatesURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws {
+    throw NotAvailableInDevClientException("Updates.setUpdatesURLAndRequestHeadersOverride() is not supported in development builds.")
+  }
 }
 
 // swiftlint:enable force_unwrapping
