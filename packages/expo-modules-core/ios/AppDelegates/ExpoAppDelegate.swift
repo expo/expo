@@ -15,7 +15,6 @@ var reactDelegateHandlers = [ExpoReactDelegateHandler]()
 open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   open var window: UIWindow?
 
-
   @objc
   public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
