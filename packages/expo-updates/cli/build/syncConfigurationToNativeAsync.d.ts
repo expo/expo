@@ -1,7 +1,8 @@
+import { ModPlatform } from '@expo/config-plugins';
 import { Workflow } from '../../utils/build/workflow';
 type SyncConfigurationToNativeOptions = {
     projectRoot: string;
-    platform: 'ios' | 'android';
+    platform: ModPlatform;
     workflow: Workflow;
 };
 /**
