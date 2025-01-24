@@ -3,6 +3,10 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import { Coordinates } from '../shared.types';
 export type Marker = {
     /**
+     * The SF symbol to display for the marker.
+     */
+    systemImage?: string;
+    /**
      * The coordinates of the marker.
      */
     coordinates?: Coordinates;
@@ -11,9 +15,9 @@ export type Marker = {
      */
     title?: string;
     /**
-     * The custom icon to display for the marker.
+     * The tint color of the marker.
      */
-    icon?: SharedRefType<'image'>;
+    tintColor?: string;
 };
 export type CameraPosition = {
     /**
@@ -80,6 +84,10 @@ export type Annotation = {
     backgroundColor?: string;
     text?: string;
     textColor?: string;
+    /**
+     * The custom icon to display for the marker.
+     */
+    icon?: SharedRefType<'image'>;
 } & Marker;
 export type MapProps = {
     style?: StyleProp<ViewStyle>;
