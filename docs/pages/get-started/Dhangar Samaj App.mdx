@@ -1,0 +1,196 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'User Registration',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: UserRegistration(),
+    );
+  }
+}
+
+class UserRegistration extends StatefulWidget {
+  @override
+  _UserRegistrationState createState() => _UserRegistrationState();
+}
+
+class _UserRegistrationState extends State<UserRegistration> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  String _selectedBranch = 'Dhangar';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('User Registration')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Full Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _mobileController,
+                decoration: InputDecoration(labelText: 'Mobile Number'),
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your mobile number';
+                  }
+                  return null;
+                },
+              ),
+              DropdownButtonFormField<String>(
+                value: _selectedBranch,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedBranch = newValue!;
+                  });
+                },
+                items: <String>[
+                  'Dhangar', 'Pal', 'Baghel', 'Nikhar', 'Gaddariya', 'Mevada Gayri', 'Gwala Ghosi', 'Gaddi', 'Shreepal'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                decoration: InputDecoration(labelText: 'Select Branch'),
+              ),
+              TextFormField(
+                controller: _addressController,
+                decoration: InputDecoration(labelText: 'Address'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your address';
+                  }
+                  return null;
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // Process data and save to backend
+                      print('User registered: ${_nameController.text}');
+                    }
+                  },
+                  child: Text('Submit'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+class LoginScreen extends StatelessWidget {
+  final TextEditingController _mobileController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              controller: _mobileController,
+              decoration: InputDecoration(labelText: 'Enter Mobile Number'),
+              keyboardType: TextInputType.phone,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  // Validate and navigate to OTP screen
+                },
+                child: Text('Get OTP'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+from django.db import models
+
+class User(models.Model):
+    name = models.CharField(max_length=100)
+    mobile_number = models.CharField(max_length=15, unique=True)
+    branch = models.CharField(max_length=50)
+    address = models.TextField()
+    
+    def __str__(self):
+        return self.name
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import User
+from .serializers import UserSerializer
+
+class UserRegister(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from rest_framework import serializers
+from .models import User
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['name', 'mobile_number', 'branch', 'address']
+from django.urls import path
+from .views import UserRegister
+
+urlpatterns = [
+    path('register/', UserRegister.as_view(), name='user-register'),
+]
+dependencies:
+  http: ^0.13.3
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+void registerUser(String name, String mobile, String branch, String address) async {
+  final response = await http.post(
+    Uri.parse('http://your_api_url/register/'),
+    headers: {"Content-Type": "application/json"},
+    body: json.encode({
+      'name': name,
+      'mobile_number': mobile,
+      'branch': branch,
+      'address': address,
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    print('User registered successfully');
+  } else {
+    print('Failed to register user');
+  }
+}
+flutter build apk --release
