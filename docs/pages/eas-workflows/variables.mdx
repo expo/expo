@@ -8,7 +8,7 @@ Variables can be used in workflows to pass data between jobs or steps. They are 
 
 You can set variables in the workflow file with the `set-output` function:
 
-```yaml .eas/workflows/variables.yaml
+```yaml .eas/workflows/variables.yml
 jobs:
   fingerprint:
     outputs:
@@ -32,7 +32,7 @@ jobs:
       # @info Accesses the <CODE>fingerprint_hash</CODE> variable #
       - name: Print fingerprint hash
         run: |
-          echo "Fingerprint hash: ${ steps.fingerprint_hash_step.fingerprint_hash }"
+          echo "Fingerprint hash: ${{ steps.fingerprint_hash_step.outputs.fingerprint_hash }}"
       # @end #
   existing_build:
     needs: [fingerprint]

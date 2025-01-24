@@ -89,6 +89,7 @@ extension ExpoSwiftUI {
       children.insert(child, at: index)
 
       props.children = children
+      props.objectWillChange.send()
     }
 
     /**
@@ -100,6 +101,7 @@ extension ExpoSwiftUI {
 
       if let children = props.children {
         props.children = children.filter({ $0.view != childComponentView })
+        props.objectWillChange.send()
       }
     }
 #endif // RCT_NEW_ARCH_ENABLED

@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useLinking = exports.series = void 0;
+exports.getInitialURLWithTimeout = exports.useLinking = exports.series = void 0;
 const native_1 = require("@react-navigation/native");
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
@@ -368,4 +368,8 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
     };
 }
 exports.useLinking = useLinking;
+function getInitialURLWithTimeout() {
+    return typeof window === 'undefined' ? '' : window.location.href;
+}
+exports.getInitialURLWithTimeout = getInitialURLWithTimeout;
 //# sourceMappingURL=useLinking.js.map
