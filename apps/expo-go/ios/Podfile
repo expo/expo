@@ -56,7 +56,8 @@ target 'Expo Go' do
       'expo-network-addons',
       'expo-insights',
       'expo-splash-screen',
-      'expo-audio'
+      'expo-audio',
+      'expo-maps-remake'
     ],
     includeTests: true,
     flags: {

@@ -5,10 +5,10 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 class MapsModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExpoMapsRemake")
+    Name("ExpoGoogleMapsRemake")
 
     View(GoogleMapsView::class) {
-      Events("onMapClick", "onPOIClick", "onMarkerClick", "onCameraMove")
+      Events("onMapLoaded", "onMapClick", "onMapLongClick", "onPOIClick", "onMarkerClick", "onCameraMove")
     }
   }
 }

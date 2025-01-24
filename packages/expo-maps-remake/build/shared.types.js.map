@@ -1,0 +1,1 @@
+{"version":3,"file":"shared.types.js","sourceRoot":"","sources":["../src/shared.types.ts"],"names":[],"mappings":"","sourcesContent":["export type Coordinates = {\n  /**\n   * The latitude of the coordinate.\n   */\n  latitude?: number;\n\n  /**\n   * The longitude of the coordinate.\n   */\n  longitude?: number;\n};\n"]}
