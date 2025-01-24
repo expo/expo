@@ -4,7 +4,7 @@ import ExpoModulesCore
 
 public class MapsModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoMapsRemake")
+    Name("ExpoAppleMapsRemake")
 
     Property("isMapsAvailable") {
       if #available(iOS 18.0, *) {

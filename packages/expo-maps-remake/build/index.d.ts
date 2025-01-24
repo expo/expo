@@ -1,3 +1,5 @@
+import * as AppleTypes from './apple/AppleMaps.types';
+import { MapView as AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
 import { MapView as GoogleMapsView } from './google/GoogleMapsView';
 export declare namespace GoogleMaps {
@@ -11,6 +13,14 @@ export declare namespace GoogleMaps {
     type MapUiSettings = GoogleTypes.MapUiSettings;
     type MapProperties = GoogleTypes.MapProperties;
     type MapProps = GoogleTypes.MapProps;
+}
+export declare namespace AppleMaps {
+    const View: typeof AppleMapsView;
+    const MapType: typeof AppleTypes.MapType;
+    type MapType = AppleTypes.MapType;
+    type MapProperties = AppleTypes.MapProperties;
+    type MapUiSettings = AppleTypes.MapUiSettings;
+    type Marker = AppleTypes.Marker;
 }
 export * from './shared.types';
 //# sourceMappingURL=index.d.ts.map
