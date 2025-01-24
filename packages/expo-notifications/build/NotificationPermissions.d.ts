@@ -29,7 +29,7 @@ export declare function getPermissionsAsync(): Promise<import("./NotificationPer
  * ```ts
  * import * as Notifications from 'expo-notifications';
  *
- * export function requestPermissionsAsync() {
+ * export async function requestPermissionsAsync() {
  *   return await Notifications.requestPermissionsAsync({
  *     ios: {
  *       allowAlert: true,
