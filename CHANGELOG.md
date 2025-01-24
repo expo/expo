@@ -508,9 +508,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Add missing dependencies and follow proper dependency chains. ([#30500](https://github.com/expo/expo/pull/30500) by [@byCedric](https://github.com/byCedric))
 - **`expo-apple-authentication`**
   - Add missing `react-native` peer dependency. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
-- **`expo-router`**
-  - Add missing `query-string` dependency ([#34442](https://github.com/expo/expo/pull/34442)) by [@michbil](https://github.com/michbil)
-  
+
 ### 💡 Others
 
 - **`expo-web-browser`**
