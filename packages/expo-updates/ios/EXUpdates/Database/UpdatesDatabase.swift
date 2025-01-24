@@ -531,6 +531,21 @@ public final class UpdatesDatabase: NSObject {
     }
   }
 
+  internal func deleteJsonDataForAllScopeKeys(withKeys keys: [JSONDataKey]) throws {
+    sqlite3_exec(db, "BEGIN;", nil, nil, nil)
+    let deleteSql = """
+      DELETE FROM json_data WHERE "keys" IN (?1);
+    """
+    let keysArg = keys.map { $0.rawValue }.joined(separator: ",")
+    do {
+      _ = try execute(sql: deleteSql, withArgs: [keysArg])
+    } catch {
+      sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
+      throw UpdatesDatabaseError.setJsonDataError(cause: error)
+    }
+    sqlite3_exec(db, "COMMIT;", nil, nil, nil)
+  }
+
   public func serverDefinedHeaders(withScopeKey scopeKey: String) throws -> [String: Any]? {
     return try jsonData(withKey: JSONDataKey.ServerDefinedHeadersKey, scopeKey: scopeKey)
   }
