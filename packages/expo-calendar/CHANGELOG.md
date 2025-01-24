@@ -17,6 +17,7 @@
 
 - [android][calendar] Add `EventRecurrenceUtils` unit tests. ([#33863](https://github.com/expo/expo/pull/33863) by [@mateoguzmana](https://github.com/mateoguzmana))
 - [ios][calendar] Use EXPermissionStatus instead of CalendarPermissionsStatus in calendar permissions requesters ([#33453](https://github.com/expo/expo/pull/33453) by [@ryanduffin](https://github.com/ryanduffin)
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 
 ## 14.0.4 - 2024-11-29
 
