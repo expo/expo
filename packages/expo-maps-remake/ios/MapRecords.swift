@@ -53,7 +53,7 @@ struct MapUISettings: Record {
 }
 
 struct MapProperties: Record {
-  @Field var mapTypeIos: MapType = .standard
+  @Field var mapType: MapType = .standard
   @Field var isTrafficEnabled: Bool = false
   @Field var selectionEnabled: Bool = true
 }

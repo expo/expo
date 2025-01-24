@@ -115,7 +115,7 @@ struct AppleMapsView: View {
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
-      .mapStyle(properties.mapTypeIos.toMapStyle(
+      .mapStyle(properties.mapType.toMapStyle(
         showsTraffic: properties.isTrafficEnabled
       ))
       .onAppear {

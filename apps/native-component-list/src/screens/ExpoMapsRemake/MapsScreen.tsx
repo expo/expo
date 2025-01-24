@@ -62,6 +62,72 @@ export const MapsScreens = Platform.select({
       },
     },
   ],
+  ios: [
+    {
+      name: 'Basic map',
+      route: 'expo-maps/basic',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsBasicScreen'));
+      },
+    },
+    {
+      name: 'Camera controls',
+      route: 'expo-maps/camera-controls',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsCameraControlsScreen'));
+      },
+    },
+    {
+      name: 'Maps properties',
+      route: 'expo-maps/properties',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsPropertiesScreen'));
+      },
+    },
+    {
+      name: 'Maps Annotations',
+      route: 'expo-maps/annotations',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsAnnotationsScreen'));
+      },
+    },
+    {
+      name: 'Maps UI settings',
+      route: 'expo-maps/ui-settings',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsUISettingsScreen'));
+      },
+    },
+    {
+      name: 'Markers',
+      route: 'expo-maps/markers',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsMarkerScreen'));
+      },
+    },
+    {
+      name: 'Maps events',
+      route: 'expo-maps/events',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsEventsScreen'));
+      },
+    },
+    {
+      name: 'Marker with custom image',
+      route: 'expo-maps/image-ref',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsImageRefIntegrationScreen'));
+      },
+    },
+  ],
   default: [],
 });
 
