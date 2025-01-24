@@ -113,15 +113,70 @@ export function cleanContent(content) {
     return '';
   }
 
-  const parts = content.split(/(```[\S\s]*?```)/);
+  const parts = content.split(/(```[\S\s]*?```|```\w+[\S\s]*?```)/);
 
   const processed = parts.map((part, index) => {
+    if (index % 2 === 1) {
+      return part
+        .split('\n')
+        .filter(
+          line =>
+            !line.includes('/* @info') &&
+            !line.includes('/* @hide') &&
+            !line.includes('/* @end') &&
+            !line.includes('/* @tutinfo')
+        )
+        .join('\n');
+    }
+
     let processed = part
       .replace(/\/\*\s*@(?:info|hide)\s*\*\/(?:(?!\/\*\s*@end)[\S\s])*\/\*\s*@end\s*\*\//g, '')
+      .replace(/\/\*\s*@tutinfo(?:\s*<CODE>.*?<\/CODE>)?.*?\*\//g, '')
       .replace(/{\s*\/\*\s*TODO:[\S\s]*?\*\/\s*}/g, '')
       .replace(/<BoxLink[\S\s]*?Icon={[^}]*}\s*\/>/g, '')
       .replace(/\s*<\/>\s*}\s*Icon={[^}]*}\s*\/>/g, '')
-      .replace(/\s*}\s*Icon={[^}]*}\s*\/>/g, '');
+      .replace(/\s*}\s*Icon={[^}]*}\s*\/>/g, '')
+      .replace(/<CODE>[\S\s]*?<\/CODE>/g, '')
+      .replace(/{\s*\/\*\s*prettier-ignore\s*\*\/\s*}/g, '')
+      .replace(/{\s*\/\*\s*vale off\s*\*\/\s*}/g, '')
+      .replace(/{\s*\/\*\s*vale on\s*\*\/\s*}/g, '')
+      .replace(/<TabsGroup>/g, '')
+      .replace(/<\/TabsGroup>/g, '')
+      .replace(/<Tabs[^>]*>/g, '')
+      .replace(/<\/Tabs>/g, '')
+      .replace(/<Tab>/g, '')
+      .replace(/<\/Tab>/g, '')
+      .replace(/<Step label="([\d.]+)">/g, 'Step $1: ')
+      .replace(/<\/Step>/g, '')
+      .replace(/<Collapsible summary="([^"]*)">/g, `Note: $1\n---\n`)
+      .replace(/<\/Collapsible>/g, '\n---\n')
+      .replace(/<Tab label="([^"]+)">/g, 'For $1: ')
+      .replace(
+        /<ContentSpotlight(?:\s+(?:src|file|alt|controls|caption|className|loop|containerClassName)(?:="[^"]*"|={`[^`]*`})?)*\s*\/>/g,
+        ''
+      )
+      .replace(
+        /<Diagram\s+source="[^"]*"\s+darkSource="[^"]*"\s+alt="[^"]*"(?:\s+[^>]*)?\s*\/>/g,
+        ''
+      )
+      .replace(/<DiffBlock[^>]*raw={`([\S\s]*?)`}\s*\/>/g, (_, content) => {
+        return '```diff\n' + content + '\n```';
+      })
+      .replace(
+        /<VideoBoxLink\s+videoId="([^"]*)"\s+title="([^"]*)"\s+description="[^"]*"\s*\/>/g,
+        (_, videoId, title) =>
+          `Video Tutorial: [${title}](https://www.youtube.com/watch?v=${videoId})`
+      )
+      .replace(
+        /<Terminal\s+(?:cmdCopy="[^"]*"\s*)?cmd={\[([\S\s]*?)]}\s*(?:cmdCopy="[^"]*")?\s*\/>/g,
+        (_, cmds) => {
+          const commands = cmds
+            .split(',')
+            .map(cmd => cmd.trim().replace(/^["']|["']$/g, ''))
+            .filter(cmd => cmd && !cmd.startsWith('#'));
+          return '```sh\n' + commands.join('\n') + '\n```';
+        }
+      );
 
     if (index % 2 === 0) {
       processed = processed.replace(/^import\s+.*?from\s+["'].*?["'];?\s*\n/gm, '');

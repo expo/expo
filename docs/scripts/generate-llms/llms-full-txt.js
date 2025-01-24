@@ -15,7 +15,7 @@ function generateFullMarkdown({ title, description, sections }) {
   return `# ${title}\n\n${description}\n\n` + sections.map(generateSectionMarkdown).join('');
 }
 
-export async function generateExpoDocs() {
+export async function generateLlmsFullTxt() {
   try {
     const sections = [
       ...home.map(section => ({ ...processSection(section), category: 'Home' })),

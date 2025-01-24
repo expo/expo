@@ -15,7 +15,7 @@ function generateFullMarkdown({ title, description, sections }) {
   return `# ${title}\n\n${description}\n\n` + sections.map(generateSectionMarkdown).join('');
 }
 
-export async function generateEasDocs() {
+export async function generateLlmsEasTxt() {
   try {
     const sections = eas.map(section => ({ ...processSection(section), category: 'Eas' }));
 
