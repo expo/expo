@@ -18,6 +18,7 @@ export declare namespace AppleMaps {
     const View: typeof AppleMapsView;
     const MapType: typeof AppleTypes.MapType;
     type MapType = AppleTypes.MapType;
+    type CameraPosition = AppleTypes.CameraPosition;
     type MapProperties = AppleTypes.MapProperties;
     type MapUiSettings = AppleTypes.MapUiSettings;
     type Marker = AppleTypes.Marker;

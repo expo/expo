@@ -24,7 +24,7 @@ const cameraCoordinates = [
 ];
 export default function MapsBasicScreen() {
   const [currentSourceIndex, setCurrentSourceIndex] = useState(1);
-  const [zoom, setZoom] = useState(5);
+  const [zoom, setZoom] = useState(10);
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
