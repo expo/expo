@@ -37,7 +37,8 @@ data class UpdatesConfiguration(
   val codeSigningMetadata: Map<String, String>?,
   val codeSigningIncludeManifestResponseCertificateChain: Boolean,
   private val codeSigningAllowUnsignedManifests: Boolean,
-  val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
+  val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean, // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
+  val disableAntiBrickingMeasures: Boolean
 ) {
   enum class CheckAutomaticallyConfiguration {
     NEVER {
@@ -58,12 +59,27 @@ data class UpdatesConfiguration(
     }
   }
 
-  constructor(context: Context?, overrideMap: Map<String, Any>?) : this(
+  constructor(
+    context: Context?,
+    overrideMap: Map<String, Any>?
+  ) : this(
+    context,
+    overrideMap,
+    disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap),
+    configOverride = context?.let { UpdatesConfigurationOverride.load(context) }
+  )
+
+  private constructor(
+    context: Context?,
+    overrideMap: Map<String, Any>?,
+    disableAntiBrickingMeasures: Boolean,
+    configOverride: UpdatesConfigurationOverride?
+  ) : this(
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
-      updateUrl = getUpdatesUrl(context, overrideMap)!!
+      updateUrl = getUpdateUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride)!!
     ),
-    updateUrl = getUpdatesUrl(context, overrideMap)!!,
+    updateUrl = getUpdateUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride)!!,
     runtimeVersionRaw = getRuntimeVersion(context, overrideMap),
     launchWaitMs = overrideMap?.readValueCheckingType<Int>(UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS") ?: UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE,
     checkOnLaunch = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY)?.let {
@@ -83,10 +99,8 @@ data class UpdatesConfiguration(
         CheckAutomaticallyConfiguration.ALWAYS
       }
     },
-    hasEmbeddedUpdate = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY) ?: context?.getMetadataValue("expo.modules.updates.HAS_EMBEDDED_UPDATE") ?: true,
-    requestHeaders = overrideMap?.readValueCheckingType<Map<String, String>>(UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY) ?: (context?.getMetadataValue<String>("expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY") ?: "{}").let {
-      UpdatesUtils.getMapFromJSONString(it)
-    },
+    hasEmbeddedUpdate = getHasEmbeddedUpdate(context, overrideMap, disableAntiBrickingMeasures, configOverride),
+    requestHeaders = getRequestHeaders(context, overrideMap, disableAntiBrickingMeasures, configOverride),
     codeSigningCertificate = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_CERTIFICATE"),
     codeSigningMetadata = overrideMap?.readValueCheckingType<Map<String, String>>(UPDATES_CONFIGURATION_CODE_SIGNING_METADATA) ?: (context?.getMetadataValue<String>("expo.modules.updates.CODE_SIGNING_METADATA") ?: "{}").let {
       UpdatesUtils.getMapFromJSONString(it)
@@ -97,7 +111,8 @@ data class UpdatesConfiguration(
     codeSigningAllowUnsignedManifests = overrideMap?.readValueCheckingType<Boolean>(
       UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS
     ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS") ?: false,
-    enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false
+    enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false,
+    disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap)
   )
 
   val codeSigningConfiguration: CodeSigningConfiguration? by lazy {
@@ -126,6 +141,7 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs"
     const val UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate"
     const val UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE = "enableExpoUpdatesProtocolCompatibilityMode"
+    const val UPDATES_CONFIGURATION_DISABLE_ANTI_BRICKING_MEASURES = "disableAntiBrickingMeasures"
 
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_METADATA = "codeSigningMetadata"
@@ -137,10 +153,55 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL = "file:fingerprint"
     private const val FINGERPRINT_FILE_NAME = "fingerprint"
 
-    private fun getUpdatesUrl(context: Context?, overrideMap: Map<String, Any>?): Uri? {
+    private fun getDisableAntiBrickingMeasures(context: Context?, overrideMap: Map<String, Any>?): Boolean {
+      return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_DISABLE_ANTI_BRICKING_MEASURES) ?: context?.getMetadataValue("expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES") ?: false
+    }
+
+    private fun getHasEmbeddedUpdate(
+      context: Context?,
+      overrideMap: Map<String, Any>?,
+      disableAntiBrickingMeasures: Boolean,
+      configOverride: UpdatesConfigurationOverride?
+    ): Boolean {
+      if (disableAntiBrickingMeasures && configOverride != null) {
+        return false
+      }
+      return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY)
+        ?: context?.getMetadataValue("expo.modules.updates.HAS_EMBEDDED_UPDATE")
+        ?: true
+    }
+
+    private fun getUpdateUrl(
+      context: Context?,
+      overrideMap: Map<String, Any>?,
+      disableAntiBrickingMeasures: Boolean,
+      configOverride: UpdatesConfigurationOverride?
+    ): Uri? {
+      if (disableAntiBrickingMeasures) {
+        configOverride?.let {
+          return it.updateUrl
+        }
+      }
       return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_UPDATE_URL_KEY)
         ?: context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")
           ?.let { Uri.parse(it) }
+    }
+
+    private fun getRequestHeaders(
+      context: Context?,
+      overrideMap: Map<String, Any>?,
+      disableAntiBrickingMeasures: Boolean,
+      configOverride: UpdatesConfigurationOverride?
+    ): Map<String, String> {
+      if (disableAntiBrickingMeasures) {
+        configOverride?.let {
+          return it.requestHeaders
+        }
+      }
+      return overrideMap?.readValueCheckingType<Map<String, String>>(UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY)
+        ?: (context?.getMetadataValue<String>("expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY") ?: "{}").let {
+          UpdatesUtils.getMapFromJSONString(it)
+        }
     }
 
     private fun getIsEnabled(context: Context?, overrideMap: Map<String, Any>?): Boolean {
@@ -164,7 +225,9 @@ data class UpdatesConfiguration(
       if (!isEnabledConfigSetting) {
         return UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED
       }
-      getUpdatesUrl(context, overrideMap) ?: return UpdatesConfigurationValidationResult.INVALID_MISSING_URL
+      val disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap)
+      val configOverride = if (context != null) UpdatesConfigurationOverride.load(context) else null
+      getUpdateUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride) ?: return UpdatesConfigurationValidationResult.INVALID_MISSING_URL
 
       if (getRuntimeVersion(context, overrideMap).isNullOrEmpty()) {
         return UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION
