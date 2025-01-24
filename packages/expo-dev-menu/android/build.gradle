@@ -4,8 +4,8 @@ def useLegacyExpoModulesCorePlugin = {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
   apply from: expoModulesCorePlugin
   applyKotlinExpoModulesCorePlugin()
+  useCoreDependencies()
   useDefaultAndroidSdkVersions()
-  useExpoPublishing()
 }
 
 def usesModernPlugin = true
