@@ -326,7 +326,7 @@ class ContactsModule : Module() {
     get() = (appContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
 
   private fun mutateContact(initContact: Contact?, data: Map<String, Any>): Contact {
-    val contact = initContact ?: Contact(UUID.randomUUID().toString(), currentActivity)
+    val contact = initContact ?: Contact(UUID.randomUUID().toString(), appContext)
 
     data.safeGet<String>("firstName")?.let { contact.firstName = it }
     data.safeGet<String>("middleName")?.let { contact.middleName = it }
@@ -660,7 +660,7 @@ class ContactsModule : Module() {
       val contactId = cursor.getString(columnIndex)
 
       // add or update existing contact for iterating data based on contact id
-      val contact = map.getOrPut(contactId) { Contact(contactId, currentActivity) }
+      val contact = map.getOrPut(contactId) { Contact(contactId, appContext) }
       contact.fromCursor(cursor)
     }
     return map
