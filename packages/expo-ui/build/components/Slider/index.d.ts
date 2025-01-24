@@ -3,7 +3,7 @@ export type SliderProps = {
     /**
      * Custom styles for the slider component.
      */
-    style: StyleProp<ViewStyle>;
+    style?: StyleProp<ViewStyle>;
     /**
      * The current value of the slider.
      * @default 0
@@ -38,11 +38,7 @@ export type SliderProps = {
     /**
      * Callback triggered on dragging along the slider.
      */
-    onValueChanged: (event: {
-        nativeEvent: {
-            value: number;
-        };
-    }) => void;
+    onValueChange?: (value: number) => void;
 };
 export declare function Slider(props: SliderProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
