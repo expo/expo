@@ -17,12 +17,12 @@ public:
   ExpoViewState() {}
   
   ExpoViewState(float width, float height) {
-    if(width >= 0) {
+    if (width >= 0) {
       _width = width;
     } else {
       _width = std::numeric_limits<float>::quiet_NaN();
     }
-    if(height >= 0) {
+    if (height >= 0) {
       _height = height;
     } else {
       _height = std::numeric_limits<float>::quiet_NaN();

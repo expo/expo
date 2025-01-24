@@ -168,9 +168,9 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   // Implemented in `ExpoFabricView.swift`
 }
 
-- (void)setShadowNodeSize: (float) width height:(float) height
+- (void)setShadowNodeSize:(float)width height:(float)height
 {
-  if(_state) {
+  if (_state) {
     _state->updateState(ExpoViewState(width,height));
   }
 }

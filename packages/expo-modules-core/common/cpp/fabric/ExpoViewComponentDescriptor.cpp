@@ -23,7 +23,7 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
 
   const auto snode = dynamic_cast<ExpoViewShadowNode *>(&shadowNode);
   const auto state = snode->getStateData();
-  if(!isnan(state._width) or !isnan(state._height)){
+  if (!isnan(state._width) or !isnan(state._height)) {
     snode->setSize({state._width, state._height});
   }
   ConcreteComponentDescriptor::adopt(shadowNode);
