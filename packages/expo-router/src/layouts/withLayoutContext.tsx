@@ -79,7 +79,7 @@ export function useFilterScreenChildren(
  * Enables use of other built-in React Navigation navigators and other navigators built with the React Navigation custom navigator API.
  *
  *  @example
- * ```tsx app/\_layout.tsx
+ * ```tsx app/_layout.tsx
  * import { ParamListBase, TabNavigationState } from "@react-navigation/native";
  * import {
  *   createMaterialTopTabNavigator,
