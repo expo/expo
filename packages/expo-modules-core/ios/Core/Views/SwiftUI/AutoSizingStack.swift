@@ -32,7 +32,9 @@ extension ExpoSwiftUI {
         .onGeometryChange(for: CGSize.self) { proxy in
           proxy.size
         } action: {
-          let size = CGSize(width: axis.contains(.horizontal) ? $0.width : Double.nan, height: axis.contains(.vertical) ? $0.height : Double.nan)
+          let width = axis.contains(.horizontal) ? $0.width : ShadowNodeProxy.UNDEFINED_SIZE
+          let height = axis.contains(.vertical) ? $0.height : ShadowNodeProxy.UNDEFINED_SIZE
+          let size = CGSize(width: width, height: height)
           proxy.setViewSize?(size)
         }
       } else {
