@@ -101,7 +101,7 @@ struct AppleMapsView: View {
           MapUserLocationButton()
         }
       }
-      .onChange(of: props.cameraPosition) { oldValue, newValue in
+      .onChange(of: props.cameraPosition) { _, newValue in
           mapCameraPosition = convertToMapCamera(position: newValue)
       }
       .onMapCameraChange(frequency: .onEnd) { change in
