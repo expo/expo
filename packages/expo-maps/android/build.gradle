@@ -19,6 +19,18 @@ try {
   useLegacyExpoModulesCorePlugin()
 }
 
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+
 group = 'host.exp.exponent'
 version = '0.6.1'
 
