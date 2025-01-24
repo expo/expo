@@ -5,32 +5,9 @@ import ExpoModulesCore
 /**
  `UpdatesConfig` values set at runtime that override build-time configuration.
  */
-public struct UpdatesConfigOverride: Record, Codable {
-  public init() {
-  }
-
-  @Field var updateUrl: URL?
-  @Field var requestHeaders: [String: String]
-
-  public init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    let urlString = try container.decode(String.self, forKey: .updateUrl)
-    self.updateUrl = URL(string: urlString)
-    self.requestHeaders = try container.decode([String: String].self, forKey: .requestHeaders)
-  }
-
-  public func encode(to encoder: Encoder) throws {
-    var container = encoder.container(keyedBy: CodingKeys.self)
-    if let updateUrl {
-      try container.encode(updateUrl.absoluteString, forKey: .updateUrl)
-    }
-    try container.encode(self.requestHeaders, forKey: .requestHeaders)
-  }
-
-  private enum CodingKeys: String, CodingKey {
-    case updateUrl
-    case requestHeaders
-  }
+public struct UpdatesConfigOverride: Codable {
+  let updateUrl: URL?
+  let requestHeaders: [String: String]
 
   internal static func load() -> UpdatesConfigOverride? {
     guard let data = UserDefaults.standard.data(forKey: UpdatesConfig.kUpdatesConfigOverride) else {
@@ -50,5 +27,20 @@ public struct UpdatesConfigOverride: Record, Codable {
     } else {
       UserDefaults.standard.removeObject(forKey: UpdatesConfig.kUpdatesConfigOverride)
     }
+  }
+}
+
+/**
+ `UpdatesConfigOverride` parameters passing from JavaScript.
+ */
+internal struct UpdatesConfigOverrideParam: Record {
+  @Field var updateUrl: URL?
+  @Field var requestHeaders: [String: String]
+
+  func toUpdatesConfigOverride() -> UpdatesConfigOverride {
+    return UpdatesConfigOverride(
+      updateUrl: updateUrl,
+      requestHeaders: requestHeaders
+    )
   }
 }

@@ -11,9 +11,9 @@ import org.json.JSONObject
  * [UpdatesConfiguration] values set at runtime that override build-time configuration.
  */
 data class UpdatesConfigurationOverride(
-  @Field val updateUrl: Uri,
-  @Field val requestHeaders: Map<String, String>
-) : Record {
+  val updateUrl: Uri,
+  val requestHeaders: Map<String, String>
+) {
   private fun toJSONObject(): JSONObject {
     return JSONObject().apply {
       put("updateUrl", updateUrl.toString())
@@ -52,5 +52,17 @@ data class UpdatesConfigurationOverride(
         requestHeaders = requestHeaders
       )
     }
+  }
+}
+
+/**
+ * [UpdatesConfigurationOverride] parameters passing from JavaScript.
+ */
+internal data class UpdatesConfigurationOverrideParam(
+  @Field val updateUrl: Uri,
+  @Field val requestHeaders: Map<String, String>
+) : Record {
+  fun toUpdatesConfigurationOverride(): UpdatesConfigurationOverride {
+    return UpdatesConfigurationOverride(updateUrl, requestHeaders)
   }
 }
