@@ -76,7 +76,7 @@ export interface SQLiteOpenOptions {
     remoteOnly?: boolean;
 
     /**
-     * The internval to sync the local database with the remote database.
+     * The interval to sync the local database with the remote database.
      * Only works when `remoteOnly` is `false`.
      * @default 0 and disable automatic sync.
      */
