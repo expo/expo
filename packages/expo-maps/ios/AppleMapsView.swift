@@ -44,9 +44,11 @@ struct AppleMapsView: View {
       Map(position: $mapCameraPosition, selection: $selection) {
         ForEach(props.markers) { marker in
           Marker(
-            coordinate: marker.clLocationCoordinate2D,
-            label: { Text(marker.title) }
+            marker.title,
+            systemImage: marker.systemImage,
+            coordinate: marker.clLocationCoordinate2D
           )
+          .tint(marker.tintColor)
           .tag(MapSelection(marker.mapItem))
         }
 

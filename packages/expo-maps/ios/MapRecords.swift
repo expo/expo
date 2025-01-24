@@ -12,8 +12,9 @@ struct Coordinate: Record {
 struct MapMarker: Identifiable, Record {
   @Field var id: String = UUID().uuidString
   @Field var coordinates: Coordinate
+  @Field var systemImage: String = ""
+  @Field var tintColor: Color = .red
   @Field var title: String = ""
-  @Field var icon: SharedRef<UIImage>?
 
   var clLocationCoordinate2D: CLLocationCoordinate2D {
     CLLocationCoordinate2D(
@@ -49,6 +50,7 @@ struct MapAnnotation: Record, Identifiable {
   @Field var backgroundColor: Color = .white
   @Field var textColor: Color = .black
   @Field var text: String = ""
+  @Field var icon: SharedRef<UIImage>?
 }
 
 struct MapUISettings: Record {
