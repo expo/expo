@@ -79,8 +79,8 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
       // }
 
       await fs.writeFile(
-        path.join(this.projectRoot, 'eslint.config.mjs'),
-        await fs.readFile(require.resolve(`@expo/cli/static/template/eslint.config.mjs`), 'utf8'),
+        path.join(this.projectRoot, 'eslint.config.js'),
+        await fs.readFile(require.resolve(`@expo/cli/static/template/eslint.config.js`), 'utf8'),
         'utf8'
       );
     }
