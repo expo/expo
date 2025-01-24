@@ -681,17 +681,33 @@ export default function App() {
   }, [discoveryDocument, request, response]);
 
   const logout = async () => {
-    const revokeResponse = await revokeAsync(
-      {
-        clientId: clientId,
-        token: authTokens.refreshToken,
-      },
-      discoveryDocument
-    );
-    if (revokeResponse) {
-      setAuthTokens(null);
+    if (!authTokens?.refreshToken || !discoveryDocument || !config.clientId) {
+      return;
     }
-  };
+    try {
+      const urlParams = new URLSearchParams({
+        client_id: config.clientId || '',
+        logout_uri: redirectUri,
+      });
+      // Open the logout page in the browser
+      await WebBrowser.openAuthSessionAsync(`${config.webBaseUrl}/logout?${urlParams.toString()}`);
+      // Revoke the refresh token
+      const revokeResponse = await revokeAsync(
+        {
+          clientId: config.clientId || '',
+          token: authTokens?.refreshToken,
+        },
+        discoveryDocument
+      );
+      if (revokeResponse) {
+        setAuthTokens(undefined);
+      }
+    } catch (error) {
+      // Log the error but don't throw it since we want to continue with clearing tokens
+      console.error('Error during token revocation:', error);
+    }
+  }
+  
   console.log('authTokens: ' + JSON.stringify(authTokens));
   return authTokens ? (
     <Button title="Logout" onPress={() => logout()} />

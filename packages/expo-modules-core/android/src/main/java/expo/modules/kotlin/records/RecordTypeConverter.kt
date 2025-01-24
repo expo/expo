@@ -2,6 +2,7 @@ package expo.modules.kotlin.records
 
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableMap
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.allocators.ObjectConstructor
 import expo.modules.kotlin.allocators.ObjectConstructorFactory
 import expo.modules.kotlin.exception.FieldCastException
@@ -45,14 +46,15 @@ class RecordTypeConverter<T : Record>(
       .toMap()
   }
 
-  override fun convertFromDynamic(value: Dynamic): T = exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
-    val jsMap = value.asMap()
-    return convertFromReadableMap(jsMap)
-  }
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?): T =
+    exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
+      val jsMap = value.asMap()
+      return convertFromReadableMap(jsMap, context)
+    }
 
-  override fun convertFromAny(value: Any): T {
+  override fun convertFromAny(value: Any, context: AppContext?): T {
     if (value is ReadableMap) {
-      return convertFromReadableMap(value)
+      return convertFromReadableMap(value, context)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -63,7 +65,7 @@ class RecordTypeConverter<T : Record>(
 
   override fun isTrivial(): Boolean = false
 
-  private fun convertFromReadableMap(jsMap: ReadableMap): T {
+  private fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?): T {
     val kClass = type.classifier as KClass<*>
     val instance = getObjectConstructor(kClass).construct()
 
@@ -83,7 +85,7 @@ class RecordTypeConverter<T : Record>(
           val javaField = property.javaField!!
 
           val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
-            descriptor.typeConverter.convert(this)
+            descriptor.typeConverter.convert(this, context)
           }
 
           if (casted != null) {

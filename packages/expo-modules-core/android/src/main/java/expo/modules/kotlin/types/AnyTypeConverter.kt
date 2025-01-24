@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 
@@ -12,7 +13,7 @@ import expo.modules.kotlin.jni.ExpectedType
  * In that way, we produce the same output for JSI and bridge implementation.
  */
 class AnyTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Any>(isOptional) {
-  override fun convertFromDynamic(value: Dynamic): Any {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Any {
     return when (value.type) {
       ReadableType.Boolean -> value.asBoolean()
       ReadableType.Number -> value.asDouble()
@@ -23,7 +24,7 @@ class AnyTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Any>(is
     }
   }
 
-  override fun convertFromAny(value: Any): Any = value
+  override fun convertFromAny(value: Any, context: AppContext?): Any = value
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.ANY)
 }

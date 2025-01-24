@@ -1,0 +1,10 @@
+{
+  "name": "expo-maps-remake",
+  "platforms": ["android", "apple"],
+  "android": {
+    "modulesClassNames": ["expo.modules.maps.remake.MapsModule"]
+  },
+  "ios": {
+    "modulesClassNames": ["MapsModule"]
+  }
+}

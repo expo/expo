@@ -22,6 +22,7 @@ const screens = [
   'LivePhoto',
   'Lottie',
   'Maps',
+  'ExpoMaps (Remake)',
   'MaskedView',
   'MeshGradient',
   'Modal',
