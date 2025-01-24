@@ -6,7 +6,6 @@ def useLegacyExpoModulesCorePlugin = {
   applyKotlinExpoModulesCorePlugin()
   useCoreDependencies()
   useDefaultAndroidSdkVersions()
-  useExpoPublishing()
 }
 
 try {
