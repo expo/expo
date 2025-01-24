@@ -8,7 +8,7 @@ import expo.modules.manifests.core.toMap
 import org.json.JSONObject
 
 /**
- * Runtime overridable config from build time [UpdatesConfiguration]
+ * [UpdatesConfiguration] values set at runtime that override build-time configuration.
  */
 data class UpdatesConfigurationOverride(
   @Field val url: Uri,

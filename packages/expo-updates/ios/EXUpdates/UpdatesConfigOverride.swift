@@ -3,7 +3,7 @@
 import ExpoModulesCore
 
 /**
- Runtime overridable config from build time UpdatesConfig
+ `UpdatesConfig` values set at runtime that override build-time configuration.
  */
 public struct UpdatesConfigOverride: Record, Codable {
   public init() {
