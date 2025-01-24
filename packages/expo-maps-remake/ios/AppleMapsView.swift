@@ -101,6 +101,9 @@ struct AppleMapsView: View {
           MapUserLocationButton()
         }
       }
+      .onChange(of: props.cameraPosition) { _, newValue in
+        mapCameraPosition = convertToMapCamera(position: newValue)
+      }
       .onMapCameraChange(frequency: .onEnd) { change in
         let cameraPosition = change.region.center
         let zoomLevel = change.region.span.longitudeDelta
