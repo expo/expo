@@ -166,5 +166,5 @@ interface IUpdatesController {
 
   fun setExtraParam(key: String, value: String?, callback: ModuleCallback<Unit>)
 
-  fun setUpdatesURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?)
+  fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?)
 }
