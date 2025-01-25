@@ -61,6 +61,14 @@ export const MapsScreens = Platform.select({
         return optionalRequire(() => require('./google/MapsImageRefIntegrationScreen'));
       },
     },
+    {
+      name: 'Street view',
+      route: 'expo-maps/street-view',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsStreetViewScreen'));
+      },
+    },
   ],
   ios: [
     {

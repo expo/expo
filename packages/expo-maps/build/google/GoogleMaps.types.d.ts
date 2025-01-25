@@ -214,4 +214,12 @@ export type MapProps = {
         bearing: number;
     }) => void;
 };
+export type StreetViewProps = {
+    style?: StyleProp<ViewStyle>;
+    position?: Coordinates;
+    isPanningGesturesEnabled?: boolean;
+    isStreetNamesEnabled?: boolean;
+    isUserNavigationEnabled?: boolean;
+    isZoomGesturesEnabled?: boolean;
+};
 //# sourceMappingURL=GoogleMaps.types.d.ts.map
