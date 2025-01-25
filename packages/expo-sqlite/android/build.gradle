@@ -22,6 +22,7 @@ String toPlatformIndependentPath(File path) {
 
 ext {
   USE_SQLCIPHER = findProperty('expo.sqlite.useSQLCipher') == 'true'
+  USE_LIBSQL = findProperty('expo.sqlite.useLibSQL') == 'true'
 }
 def SQLITE3_SRC_DIR = new File("${projectDir}/../vendor/sqlite3")
 if (ext.USE_SQLCIPHER) {
@@ -54,6 +55,7 @@ android {
   defaultConfig {
     versionCode 18
     versionName "15.0.6"
+    buildConfigField "boolean", "USE_LIBSQL", project.ext.USE_LIBSQL.toString()
 
     externalNativeBuild {
       cmake {
@@ -61,7 +63,8 @@ android {
         arguments "-DANDROID_STL=c++_shared",
           "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}",
           "-DSQLITE_BUILDFLAGS=${getSQLiteBuildFlags()}",
-          "-DUSE_SQLCIPHER=${project.ext.USE_SQLCIPHER}"
+          "-DUSE_SQLCIPHER=${project.ext.USE_SQLCIPHER}",
+          "-DUSE_LIBSQL=${project.ext.USE_LIBSQL}"
       }
     }
   }
@@ -71,6 +74,7 @@ android {
     }
   }
   buildFeatures {
+    buildConfig true
     prefab true
   }
 }
