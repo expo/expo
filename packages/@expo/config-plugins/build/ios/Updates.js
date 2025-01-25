@@ -38,6 +38,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["UPDATES_HAS_EMBEDDED_UPDATE"] = "EXUpdatesHasEmbeddedUpdate";
   Config["CODE_SIGNING_CERTIFICATE"] = "EXUpdatesCodeSigningCertificate";
   Config["CODE_SIGNING_METADATA"] = "EXUpdatesCodeSigningMetadata";
+  Config["DISABLE_ANTI_BRICKING_MEASURES"] = "EXUpdatesDisableAntiBrickingMeasures";
   return Config;
 }({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
@@ -98,6 +99,12 @@ async function setUpdatesConfigAsync(projectRoot, config, expoPlist, expoUpdates
     newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders;
   } else {
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
+  }
+  const disableAntiBrickingMeasures = (0, _Updates().getDisableAntiBrickingMeasures)(config);
+  if (disableAntiBrickingMeasures) {
+    newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES] = disableAntiBrickingMeasures;
+  } else {
+    delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
   }
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);
 }

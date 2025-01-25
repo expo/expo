@@ -128,7 +128,7 @@ export const MapsScreens = Platform.select({
       },
     },
     {
-      name: 'Marker with custom image',
+      name: 'Annotation with custom image',
       route: 'expo-maps/image-ref',
       options: {},
       getComponent() {

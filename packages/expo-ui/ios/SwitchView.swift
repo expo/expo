@@ -29,12 +29,12 @@ struct SwitchView: ExpoSwiftUI.View {
       .onReceive(props.objectWillChange, perform: {
         checked = props.checked
       })
-      .if(props.variant == "button", transform: {
+      .if(props.variant == "button") {
         $0.toggleStyle(.button)
-      })
-      .if(props.variant == "checkbox", transform: {
+      }
+      .if(props.variant == "checkbox") {
         $0.toggleStyle(IOSCheckboxToggleStyle())
-      })
+      }
       .fixedSize()
     }
   }

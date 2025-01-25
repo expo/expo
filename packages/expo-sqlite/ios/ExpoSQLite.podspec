@@ -17,7 +17,6 @@ Pod::Spec.new do |s|
     :osx => '11.0'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.static_framework = true
   s.dependency 'ExpoModulesCore'
 
   # Copy SQLite vendored sources to the ios directory,
@@ -60,5 +59,18 @@ Pod::Spec.new do |s|
   }
 
   s.source_files = "**/*.{c,h,m,swift}"
-  s.ios.vendored_frameworks = 'crsqlite.xcframework'
+
+  vendored_frameworks = ['crsqlite.xcframework']
+  if podfile_properties['expo.sqlite.useLibSQL'] === 'true'
+    vendored_frameworks << 'libsql.xcframework'
+    s.private_header_files = [
+      'libsql.xcframework/**/*.h',
+    ]
+    s.exclude_files = ['SQLiteModule.swift', 'sqlite3.c', 'sqlite3.h', 'CRSQLiteLoader.m', 'CRSQLiteLoader.h']
+    Pod::UI.message('SQLite: use libSQL integration')
+  else
+    s.exclude_files = ['libsql/**/*', 'libsql.xcframework/**/*', 'SQLiteModuleLibSQL.swift']
+  end
+
+  s.ios.vendored_frameworks = vendored_frameworks
 end

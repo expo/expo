@@ -33,8 +33,6 @@ struct AppleMapsView: View {
   @State private var mapCameraPosition: MapCameraPosition = .automatic
   @State var selection: MapSelection<MKMapItem>?
 
-  @Namespace var mapScope
-
   var body: some View {
     let properties = props.properties
     let uiSettings = props.uiSettings
@@ -62,8 +60,14 @@ struct AppleMapsView: View {
             )
           ) {
             ZStack {
-              RoundedRectangle(cornerRadius: 5)
-                .fill(annotation.backgroundColor)
+              if let icon = annotation.icon {
+                Image(uiImage: icon.ref)
+                  .resizable()
+                  .frame(width: 50, height: 50)
+              } else {
+                RoundedRectangle(cornerRadius: 5)
+                  .fill(annotation.backgroundColor)
+              }
               Text(annotation.text)
                 .foregroundStyle(annotation.textColor)
                 .padding(5)

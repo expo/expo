@@ -56,9 +56,9 @@ internal class InvalidSqlException: Exception {
   }
 }
 
-internal class InvalidArgumentsException: Exception {
+internal final class InvalidArgumentsException: GenericException<String> {
   override var reason: String {
-    "args must be an array"
+    "Invalid arguments: \(param)"
   }
 }
 
@@ -85,4 +85,17 @@ internal class SQLiteErrorException: GenericException<String> {
 }
 
 internal class InvalidConvertibleException: GenericException<String> {
+}
+
+internal final class UnsupportedOperationException: GenericException<String?> {
+  convenience init() {
+    self.init(nil)
+  }
+
+  override var reason: String {
+    if let param = param {
+      return "Unsupported operations: \(param)"
+    }
+    return "Unsupported operations"
+  }
 }
