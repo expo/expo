@@ -20,7 +20,7 @@
 
 - [Android] Add checks to methods that will throw without permissions being granted. ([#33986](https://github.com/expo/expo/pull/33986) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
-- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#33779](https://github.com/expo/expo/pull/33779) by [@reichhartd](https://github.com/reichhartd))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
 ## 0.3.1 - 2024-12-16
 
