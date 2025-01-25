@@ -439,7 +439,7 @@ export type CameraViewProps = ViewProps & {
  * @hidden
  */
 export interface CameraViewRef {
-  readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
+  readonly takePictureAsync: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
   readonly getAvailablePictureSizes: () => Promise<string[]>;
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
   readonly toggleRecording: () => Promise<void>;
