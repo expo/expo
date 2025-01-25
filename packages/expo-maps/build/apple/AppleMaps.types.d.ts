@@ -86,7 +86,7 @@ export type Annotation = {
      */
     backgroundColor?: string;
     /**
-     * Then text to display in the annotation.
+     * The text to display in the annotation.
      */
     text?: string;
     /**
