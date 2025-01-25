@@ -13,7 +13,7 @@ export default function MapsCameraControlsScreen() {
     latitude: 49.246292,
     longitude: -123.116226,
   };
-  const markers = image ? [{ title: 'Vancouver', coordinates, icon: image }] : [];
+  const annotations = image ? [{ title: 'Vancouver', coordinates, icon: image }] : [];
 
   return (
     <View style={{ flex: 1 }}>
@@ -23,7 +23,7 @@ export default function MapsCameraControlsScreen() {
           zoom: 10,
           coordinates,
         }}
-        markers={markers}
+        annotations={annotations}
       />
     </View>
   );

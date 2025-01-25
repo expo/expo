@@ -14,20 +14,26 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
   );
 }
 
-export function MapView({ onMapClick, onMarkerClick, onCameraMove, markers, ...props }: MapProps) {
+export function MapView({
+  onMapClick,
+  onMarkerClick,
+  onCameraMove,
+  annotations,
+  ...props
+}: MapProps) {
   const onNativeMapClick = useNativeEvent(onMapClick);
   const onNativeCameraMove = useNativeEvent(onCameraMove);
 
-  const parsedMarkers = markers?.map((marker) => ({
-    ...marker,
+  const parsedAnnotations = annotations?.map((annotation) => ({
+    ...annotation,
     // @ts-expect-error
-    icon: marker.icon?.__expo_shared_object_id__,
+    icon: annotation.icon?.__expo_shared_object_id__,
   }));
 
   return (
     <NativeView
       {...props}
-      markers={parsedMarkers}
+      annotations={parsedAnnotations}
       onMapClick={onNativeMapClick}
       onCameraMove={onNativeCameraMove}
     />
