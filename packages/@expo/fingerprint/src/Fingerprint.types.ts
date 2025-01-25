@@ -13,6 +13,10 @@ export type FingerprintSource = HashSource & {
    * as opposed to programmatically.
    */
   debugInfo?: DebugInfo;
+  /**
+   * Whether the file is assumed to have CRLF line endings.
+   */
+  isCRLF?: boolean;
 };
 
 export interface Fingerprint {
@@ -139,6 +143,11 @@ export interface Options {
    * A custom hook function to transform file content sources before hashing.
    */
   fileHookTransform?: FileHookTransformFunction;
+
+  /**
+   * Don't warn about project files with CRLF line endings.
+   */
+  allowProjectFilesWithCRLF?: boolean;
 }
 
 type SourceSkipsKeys = keyof typeof SourceSkips;
@@ -275,6 +284,7 @@ export interface HashResultFile {
   id: string;
   hex: string;
   debugInfo?: DebugInfoFile;
+  isCRLF?: boolean;
 }
 
 export interface HashResultDir {

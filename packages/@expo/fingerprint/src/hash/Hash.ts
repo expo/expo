@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { createHash } from 'crypto';
 import { createReadStream } from 'fs';
 import fs from 'fs/promises';
@@ -36,6 +37,36 @@ export async function createFingerprintFromSourcesAsync(
   const fingerprintSources = await Promise.all(
     sources.map((source) => createFingerprintSourceAsync(source, limiter, projectRoot, options))
   );
+
+  if (!options.allowProjectFilesWithCRLF) {
+    const filesWithCRLF = [];
+    for (const source of fingerprintSources) {
+      if (source.isCRLF && source.type === 'file') {
+        filesWithCRLF.push(source.filePath);
+      }
+    }
+
+    if (filesWithCRLF.length > 0) {
+      console.log(chalk.yellow('The following files use CRLF:'));
+      console.log(filesWithCRLF.join('\n'));
+      console.log();
+
+      console.log(
+        chalk.yellow(
+          'This could be problematic together with git auto-crlf enabled, which is the default on Git for Windows.'
+        )
+      );
+      console.log();
+      console.log(
+        chalk.yellow(
+          'You can ignore this warning by setting allowProjectFilesWithCRLF to true in the fingerprint options.'
+        )
+      );
+      console.log();
+
+      throw new Error('CRLF detected in files. Aborting.');
+    }
+  }
 
   const hasher = createHash(options.hashAlgorithm);
   for (const source of fingerprintSources) {
@@ -85,6 +116,7 @@ export async function createFingerprintSourceAsync(
     ...source,
     hash: result?.hex ?? null,
     ...(options.debug ? { debugInfo: result?.debugInfo } : undefined),
+    ...((result as HashResultFile)?.isCRLF ? { isCRLF: true } : undefined),
   };
 }
 
@@ -126,6 +158,7 @@ export async function createFileHashResultsAsync(
       }
 
       let resolved = false;
+
       const hasher = createHash(options.hashAlgorithm);
       const fileHookTransform: FileHookTransform | null = options.fileHookTransform
         ? new FileHookTransform(
@@ -156,8 +189,17 @@ export async function createFileHashResultsAsync(
           }
         });
       }
+
+      let sawCR = false;
+      let sawLF = false;
+      let fileAssumedBinary = false;
+
+      if (!options.allowProjectFilesWithCRLF) {
+      }
       stream.on('close', () => {
         if (!resolved) {
+          const sawCRLF = sawCR && sawLF;
+
           const hex = hasher.digest('hex');
           const isTransformed = fileHookTransform?.isTransformed;
           const debugInfo = options.debug
@@ -172,6 +214,7 @@ export async function createFileHashResultsAsync(
             id: filePath,
             hex,
             ...(debugInfo ? { debugInfo } : undefined),
+            ...(sawCRLF && !fileAssumedBinary ? { isCRLF: true } : undefined),
           });
           resolved = true;
         }
@@ -179,8 +222,33 @@ export async function createFileHashResultsAsync(
       stream.on('error', (e) => {
         reject(e);
       });
-      stream.on('data', (chunk) => {
+      stream.on('data', (chunk: Buffer | string) => {
         hasher.update(chunk);
+
+        if (
+          !options.allowProjectFilesWithCRLF ||
+          fileAssumedBinary ||
+          filePath.startsWith('node_modules')
+        ) {
+          return;
+        }
+
+        if (typeof chunk === 'string') {
+          if (chunk.includes('\r')) sawCR = true;
+          if (chunk.includes('\n')) sawLF = true;
+        } else {
+          for (const byte of chunk) {
+            // Consider bytes in the range 0x07 (bell) or below or 0x7F (DEL) or above as suspicious,
+            // ignoring 0x0A, 0x0D, 0x09 (LF, CR, tab).
+            if ((byte < 0x20 && ![0x09, 0x0a, 0x0d].includes(byte)) || byte === 0x7f) {
+              fileAssumedBinary = true;
+              return;
+            }
+
+            if (byte === 0x0d) sawCR = true;
+            if (byte === 0x0a) sawLF = true;
+          }
+        }
       });
     });
   });
