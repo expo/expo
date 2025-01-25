@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "android"],
   "android": {
-    "modules": ["expo.modules.maps.MapsModule"]
+    "modules": ["expo.modules.maps.MapsModule", "expo.modules.maps.StreetViewModule"]
   },
   "apple": {
     "modules": ["MapsModule"]

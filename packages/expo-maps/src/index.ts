@@ -2,9 +2,11 @@ import * as AppleTypes from './apple/AppleMaps.types';
 import { MapView as AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
 import { MapView as GoogleMapsView } from './google/GoogleMapsView';
+import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 
 export namespace GoogleMaps {
   export const View = GoogleMapsView;
+  export const StreetView = GoogleStreetView;
 
   export const MapType = GoogleTypes.MapType;
   export type MapType = GoogleTypes.MapType;
