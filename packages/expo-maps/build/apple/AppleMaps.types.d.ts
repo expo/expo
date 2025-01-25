@@ -81,11 +81,20 @@ export type MapProperties = {
     selectionEnabled?: boolean;
 };
 export type Annotation = {
+    /**
+     * The background color of the annotation.
+     */
     backgroundColor?: string;
+    /**
+     * Then text to display in the annotation.
+     */
     text?: string;
+    /**
+     * The text color of the annotation.
+     */
     textColor?: string;
     /**
-     * The custom icon to display for the marker.
+     * The custom icon to display in the annotation.
      */
     icon?: SharedRefType<'image'>;
 } & Marker;
