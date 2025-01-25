@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.FINGERPRINT_RUNTIME_VERSION_SENTINEL = void 0;
 exports.getAppVersion = getAppVersion;
+exports.getDisableAntiBrickingMeasures = getDisableAntiBrickingMeasures;
 exports.getExpoUpdatesPackageVersion = getExpoUpdatesPackageVersion;
 exports.getNativeVersion = getNativeVersion;
 exports.getRuntimeVersionAsync = getRuntimeVersionAsync;
@@ -222,5 +223,8 @@ function getUpdatesRequestHeadersStringified(config) {
     return undefined;
   }
   return JSON.stringify(metadata);
+}
+function getDisableAntiBrickingMeasures(config) {
+  return config.updates?.disableAntiBrickingMeasures;
 }
 //# sourceMappingURL=Updates.js.map
