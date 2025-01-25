@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added `updates.disableAntiBrickingMeasures` support. ([#34428](https://github.com/expo/expo/pull/34428) by [@kudo](https://github.com/kudo))
+
 ## 9.0.14 — 2025-01-10
 
 _This version does not introduce any user-facing changes._
