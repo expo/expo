@@ -51,6 +51,13 @@ struct MapAnnotation: Record, Identifiable {
   @Field var textColor: Color = .black
   @Field var text: String = ""
   @Field var icon: SharedRef<UIImage>?
+
+  var clLocationCoordinate2D: CLLocationCoordinate2D {
+    CLLocationCoordinate2D(
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude
+    )
+  }
 }
 
 struct MapUISettings: Record {
