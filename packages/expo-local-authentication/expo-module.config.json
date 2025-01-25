@@ -1,5 +1,4 @@
 {
-  "name": "expo-local-authentication",
   "platforms": ["apple", "android"],
   "apple": {
     "modules": ["LocalAuthenticationModule"]

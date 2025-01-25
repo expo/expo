@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
 ### ⚠️ Notices
 
 - [iOS] Swift conversion 1: badge and server registration. ([#32069](https://github.com/expo/expo/pull/32069) by [@douglowder](https://github.com/douglowder))

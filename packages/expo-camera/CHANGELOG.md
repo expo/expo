@@ -20,6 +20,7 @@
 
 - On `Android`, parse the `pictureSize` prop safely to prevent invalid values causing exceptions. ([#33566](https://github.com/expo/expo/pull/33566) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
 ## 16.0.8 - 2024-11-29
 
