@@ -2,10 +2,8 @@ package expo.modules.kotlin.views
 
 import android.content.Context
 import android.graphics.Canvas
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.UiThread
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.StateWrapper
 import expo.modules.kotlin.AppContext

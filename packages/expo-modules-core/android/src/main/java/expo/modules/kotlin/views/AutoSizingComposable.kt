@@ -1,7 +1,6 @@
 package expo.modules.kotlin.views
 
 import android.content.res.Resources
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,20 +17,20 @@ fun AutoSizingComposable(shadowNodeProxy: ShadowNodeProxy, axis: EnumSet<Directi
   Layout(
     content = content,
     modifier = Modifier.fillMaxSize(),
-    measurePolicy = {
-      measurables, constraints ->
+    measurePolicy = { measurables, constraints ->
       val measurable = measurables.first()
       val minIntrinsicWidth = measurable.minIntrinsicWidth(constraints.minHeight)
       val minIntrinsicHeight = measurable.minIntrinsicHeight(constraints.minWidth)
       val placeable = measurable.measure(constraints)
       val intrinsicWidth = minIntrinsicWidth.toDouble() / Resources.getSystem().displayMetrics.density
       val intrinsicHeight = minIntrinsicHeight.toDouble() / Resources.getSystem().displayMetrics.density
-      val width: Double = if(axis.contains(Direction.HORIZONTAL)) intrinsicWidth else Double.NaN
-      val height: Double = if(axis.contains(Direction.VERTICAL)) intrinsicHeight else Double.NaN
+      val width: Double = if (axis.contains(Direction.HORIZONTAL)) intrinsicWidth else Double.NaN
+      val height: Double = if (axis.contains(Direction.VERTICAL)) intrinsicHeight else Double.NaN
 
       shadowNodeProxy.setViewSize(width, height)
       layout(placeable.measuredWidth, placeable.measuredHeight) {
         placeable.place(0, 0)
       }
-  })
+    }
+  )
 }
