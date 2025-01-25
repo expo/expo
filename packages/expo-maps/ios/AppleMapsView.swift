@@ -51,13 +51,9 @@ struct AppleMapsView: View {
         }
 
         ForEach(props.annotations) { annotation in
-          let coordinates = annotation.coordinates
           Annotation(
             annotation.title,
-            coordinate: CLLocationCoordinate2D(
-              latitude: coordinates.latitude,
-              longitude: coordinates.longitude
-            )
+            coordinate: annotation.clLocationCoordinate2D
           ) {
             ZStack {
               if let icon = annotation.icon {

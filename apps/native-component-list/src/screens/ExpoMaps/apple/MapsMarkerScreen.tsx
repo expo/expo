@@ -11,7 +11,7 @@ export default function MapsCameraControlsScreen() {
             latitude: 50,
             longitude: 10,
           },
-          zoom: 3,
+          zoom: 7,
         }}
         markers={[
           {
