@@ -21,7 +21,7 @@ export const nativeApplicationVersion = ExpoApplication
  * `CFBundleVersion` (set with `ios.buildNumber` value in app config in a standalone app).
  * On web, this value is `null`. The return type on Android and iOS is `string`.
  * @example
- * Android: `"114"`, iOS: `"2.11.0"`
+ * `"114"`
  */
 export const nativeBuildVersion = ExpoApplication
     ? ExpoApplication.nativeBuildVersion || null
