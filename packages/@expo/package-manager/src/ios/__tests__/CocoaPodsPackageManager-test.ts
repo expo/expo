@@ -20,7 +20,21 @@ function getRoot(...args) {
   return path.join(projectRoot, ...args);
 }
 
-jest.mock('@expo/spawn-async');
+jest.mock('@expo/spawn-async', () => {
+  const actualModule = jest.requireActual('@expo/spawn-async');
+
+  return {
+    __esModule: true,
+    ...actualModule,
+    // minimal implementation is needed here because the packager manager depends on the child property to exist.
+    default: jest.fn((_command, _args, _options) => {
+      const promise = new Promise((resolve, _reject) => resolve({}));
+      // @ts-ignore: TypeScript isn't aware the Promise constructor argument runs synchronously
+      promise.child = {};
+      return promise;
+    }),
+  };
+});
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalConsoleWarn = console.warn;
@@ -31,6 +45,10 @@ beforeAll(() => {
   process.env.FORCE_COLOR = '1';
   // Hide lots of warn statements from the output
   console.warn = jest.fn();
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
 });
 
 afterAll(() => {
@@ -313,5 +331,42 @@ describe('isAvailable', () => {
     expect(CocoaPodsPackageManager.isAvailable(projectRoot, false)).toBe(false);
     expect(console.log).toBeCalledTimes(1);
     expect(message).toMatch(/not supported in this project/);
+  });
+});
+
+describe('isUsingRubyBundler', () => {
+  it('supports no Gemfile', async () => {
+    const projectRoot = getRoot('cocoapods-detect-gemfile');
+    await fs.ensureDir(projectRoot);
+    const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
+
+    expect(CocoaPodsPackageManager.isUsingRubyBundler(projectRoot)).toBe(false);
+  });
+
+  it('supports Gemfile - ruby bundler', async () => {
+    const projectRoot = getRoot('cocoapods-detect-gemfile');
+    await fs.ensureDir(projectRoot);
+    const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
+
+    fs.writeFileSync(path.join(projectRoot, 'Gemfile'), '...');
+    expect(CocoaPodsPackageManager.isUsingRubyBundler(projectRoot)).toBe(true);
+  });
+});
+
+describe('spawnPodCommandAsync', () => {
+  it('supports no Gemfile', async () => {
+    const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
+    const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+
+    await manager.spawnPodCommandAsync(['install']);
+    expect(spawnAsync).toBeCalledWith('pod', ['install'], undefined);
+  });
+
+  it('supports Gemfile', async () => {
+    const { CocoaPodsBundlerPackageManager } = require('../CocoaPodsPackageManager');
+    const manager = new CocoaPodsBundlerPackageManager({ cwd: projectRoot });
+
+    await manager.spawnPodCommandAsync(['install']);
+    expect(spawnAsync).toBeCalledWith('bundle', ['exec', 'pod', 'install'], undefined);
   });
 });
