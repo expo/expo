@@ -133,8 +133,7 @@ export async function digestStringAsync(algorithm, data, options = { encoding: C
  * ```
  */
 export function getRandomValues(typedArray) {
-    ExpoCrypto.getRandomValues(typedArray);
-    return typedArray;
+    return ExpoCrypto.getRandomValues(typedArray);
 }
 /**
  * The `randomUUID()` method returns a unique identifier based on the V4 UUID spec (RFC4122).
