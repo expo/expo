@@ -247,7 +247,9 @@ class Env {
 
   /** Disable the dependency validation when installing other dependencies and starting the project */
   get EXPO_NO_DEPENDENCY_VALIDATION(): boolean {
-    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', false);
+    // Default to disabling when running in a web container (stackblitz, bolt, etc).
+    const isWebContainer = process.versions.webcontainer != null;
+    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', isWebContainer);
   }
 }
 
