@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Disable networking in webcontainers to improve compatibility. ([#34474](https://github.com/expo/expo/pull/34474) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.22.10 — 2025-01-19
