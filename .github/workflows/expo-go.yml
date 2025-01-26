@@ -1,4 +1,4 @@
-name: Home app
+name: Expo Go app
 
 on:
   workflow_dispatch: {}
@@ -38,13 +38,13 @@ jobs:
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🛠 Compile Home sources
+      - name: 🛠 Compile Expo Go sources
         run: yarn tsc
         working-directory: apps/expo-go
-      - name: 🧪 Run Home tests
+      - name: 🧪 Run Expo Go tests
         run: yarn jest --maxWorkers 1
         working-directory: apps/expo-go
-      - name: 🚨 Lint Home app
+      - name: 🚨 Lint Expo Go app
         run: yarn lint --max-warnings 0
         working-directory: apps/expo-go
       - name: 🔔 Notify on Slack
