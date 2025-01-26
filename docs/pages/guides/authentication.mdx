@@ -152,9 +152,9 @@ export default function App() {
 ```tsx Asgardeo Auth Example
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
-import * as AuthSession from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-import jwtDecode from "jwt-decode";
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import jwtDecode from 'jwt-decode';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -507,8 +507,8 @@ import {
   makeRedirectUri,
   useAuthRequest,
   exchangeCodeAsync,
-} from "expo-auth-session";
-import { useEffect, useState } from "react";
+} from 'expo-auth-session';
+import { useEffect, useState } from 'react';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native, this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -707,7 +707,7 @@ export default function App() {
       console.error('Error during token revocation:', error);
     }
   }
-  
+
   console.log('authTokens: ' + JSON.stringify(authTokens));
   return authTokens ? (
     <Button title="Logout" onPress={() => logout()} />
@@ -757,10 +757,10 @@ import {
   makeRedirectUri,
   TokenResponse,
   useAuthRequest,
-} from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-import { useEffect, useMemo, useReducer, useRef } from "react";
-import { Button } from "react-native";
+} from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -1363,7 +1363,7 @@ export default function App() {
 
 {/* prettier-ignore */}
 ```jsx Logto Auth Example
-import { LogtoProvider, useLogto } from "@logto/rn";
+import { LogtoProvider, useLogto } from '@logto/rn';
 
 // Use `useLogto()` hook to sign in and sign out
 const Content = () => {

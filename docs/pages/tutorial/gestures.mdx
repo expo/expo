@@ -58,7 +58,7 @@ An `Animated` component looks at the `style` prop of the component and determine
 ```tsx components/EmojiSticker.tsx
 import { View } from 'react-native';
 /* @tutinfo Import <CODE>Animated</CODE> from <CODE>react-native-reanimated</CODE>. */import Animated from 'react-native-reanimated';/* @end */
-import { type ImageSource } from "expo-image";
+import { type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;
@@ -148,7 +148,7 @@ Next, wrap the `<Animated.Image>` component with the `<GestureDetector>` and mod
 import { View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { type ImageSource } from "expo-image";
+import { type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;
@@ -269,7 +269,7 @@ Next, inside the JSX code:
 ```tsx components/EmojiSticker.tsx
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { type ImageSource } from "expo-image";
+import { type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;

@@ -103,7 +103,7 @@ Update your **.env** files to prefix any variables used within your JavaScript c
 Then update your code to use `process.env.EXPO_PUBLIC_[VARNAME]`:
 
 ```diff
-- import Config from "react-native-config";
+- import Config from 'react-native-config';
 
 - const apiUrl = Config.API_URL;
 + const apiUrl = process.env.EXPO_PUBLIC_API_URL;
