@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Rewrite module using Jetpack Compose and SwiftUI. ([#34446](https://github.com/expo/expo/pull/34446) by [@lukmccall](https://github.com/lukmccall) & [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
