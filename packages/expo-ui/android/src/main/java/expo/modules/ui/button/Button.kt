@@ -44,7 +44,6 @@ class ButtonColors : Record {
   val disabledContentColor: Color? = null
 }
 
-
 data class ButtonProps(
   val text: MutableState<String> = mutableStateOf(""),
   val variant: MutableState<ButtonVariant?> = mutableStateOf(ButtonVariant.DEFAULT),
@@ -54,42 +53,61 @@ data class ButtonProps(
 
 @Composable
 fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
-
   when (variant) {
-    ButtonVariant.BORDERED -> FilledTonalButton(onPress, content = content, colors = ButtonDefaults.filledTonalButtonColors(
-      containerColor = convertColor(colors.containerColor),
-      contentColor = convertColor(colors.contentColor),
-      disabledContainerColor = convertColor(colors.disabledContainerColor),
-      disabledContentColor = convertColor(colors.disabledContentColor),
-    ))
+    ButtonVariant.BORDERED -> FilledTonalButton(
+      onPress,
+      content = content,
+      colors = ButtonDefaults.filledTonalButtonColors(
+        containerColor = convertColor(colors.containerColor),
+        contentColor = convertColor(colors.contentColor),
+        disabledContainerColor = convertColor(colors.disabledContainerColor),
+        disabledContentColor = convertColor(colors.disabledContentColor)
+      )
+    )
 
-    ButtonVariant.BORDERLESS -> TextButton(onPress, content = content, colors = ButtonDefaults.textButtonColors(
-      containerColor = convertColor(colors.containerColor),
-      contentColor = convertColor(colors.contentColor),
-      disabledContainerColor = convertColor(colors.disabledContainerColor),
-      disabledContentColor = convertColor(colors.disabledContentColor),
-    ))
+    ButtonVariant.BORDERLESS -> TextButton(
+      onPress,
+      content = content,
+      colors = ButtonDefaults.textButtonColors(
+        containerColor = convertColor(colors.containerColor),
+        contentColor = convertColor(colors.contentColor),
+        disabledContainerColor = convertColor(colors.disabledContainerColor),
+        disabledContentColor = convertColor(colors.disabledContentColor)
+      )
+    )
 
-    ButtonVariant.OUTLINED -> OutlinedButton(onPress, content = content, colors = ButtonDefaults.outlinedButtonColors(
-      containerColor = convertColor(colors.containerColor),
-      contentColor = convertColor(colors.contentColor),
-      disabledContainerColor = convertColor(colors.disabledContainerColor),
-      disabledContentColor = convertColor(colors.disabledContentColor),
-    ))
+    ButtonVariant.OUTLINED -> OutlinedButton(
+      onPress,
+      content = content,
+      colors = ButtonDefaults.outlinedButtonColors(
+        containerColor = convertColor(colors.containerColor),
+        contentColor = convertColor(colors.contentColor),
+        disabledContainerColor = convertColor(colors.disabledContainerColor),
+        disabledContentColor = convertColor(colors.disabledContentColor)
+      )
+    )
 
-    ButtonVariant.ELEVATED -> ElevatedButton(onPress, content = content, colors = ButtonDefaults.elevatedButtonColors(
-      containerColor = convertColor(colors.containerColor),
-      contentColor = convertColor(colors.contentColor),
-      disabledContainerColor = convertColor(colors.disabledContainerColor),
-      disabledContentColor = convertColor(colors.disabledContentColor),
-    ))
+    ButtonVariant.ELEVATED -> ElevatedButton(
+      onPress,
+      content = content,
+      colors = ButtonDefaults.elevatedButtonColors(
+        containerColor = convertColor(colors.containerColor),
+        contentColor = convertColor(colors.contentColor),
+        disabledContainerColor = convertColor(colors.disabledContainerColor),
+        disabledContentColor = convertColor(colors.disabledContentColor)
+      )
+    )
 
-    else -> androidx.compose.material3.Button(onPress, content = content, colors = ButtonDefaults.buttonColors(
-      containerColor = convertColor(colors.containerColor),
-      contentColor = convertColor(colors.contentColor),
-      disabledContainerColor = convertColor(colors.disabledContainerColor),
-      disabledContentColor = convertColor(colors.disabledContentColor),
-    ))
+    else -> androidx.compose.material3.Button(
+      onPress,
+      content = content,
+      colors = ButtonDefaults.buttonColors(
+        containerColor = convertColor(colors.containerColor),
+        contentColor = convertColor(colors.contentColor),
+        disabledContainerColor = convertColor(colors.disabledContainerColor),
+        disabledContentColor = convertColor(colors.disabledContentColor)
+      )
+    )
   }
 }
 
@@ -106,12 +124,14 @@ class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonP
       val (text) = props.text
       val (colors) = props.colors
       DynamicTheme {
-        StyledButton(variant ?: ButtonVariant.DEFAULT, colors,
-          { onButtonPressed.invoke(Unit) }) {
+        StyledButton(
+          variant ?: ButtonVariant.DEFAULT,
+          colors,
+          { onButtonPressed.invoke(Unit) }
+        ) {
           Text(text)
         }
       }
     }
   }
 }
-

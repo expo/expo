@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposeProps
 
