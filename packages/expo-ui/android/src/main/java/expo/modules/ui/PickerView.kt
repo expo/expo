@@ -27,19 +27,21 @@ class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<Pic
     setContent {
       val (selectedIndex) = props.selectedIndex
       val (options) = props.options
-      SingleChoiceSegmentedButtonRow {
-        options.forEachIndexed { index, label ->
-          SegmentedButton(
-            shape = SegmentedButtonDefaults.itemShape(
-              index = index,
-              count = options.size
-            ),
-            onClick = {
-              onOptionSelected(mapOf("index" to index, "label" to label))
-            },
-            selected = index == selectedIndex,
-            label = { Text(label) }
-          )
+      DynamicTheme {
+        SingleChoiceSegmentedButtonRow {
+          options.forEachIndexed { index, label ->
+            SegmentedButton(
+              shape = SegmentedButtonDefaults.itemShape(
+                index = index,
+                count = options.size
+              ),
+              onClick = {
+                onOptionSelected(mapOf("index" to index, "label" to label))
+              },
+              selected = index == selectedIndex,
+              label = { Text(label) }
+            )
+          }
         }
       }
     }

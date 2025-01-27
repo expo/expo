@@ -56,21 +56,24 @@ class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<Sli
       val (min) = props.min
       val (max) = props.max
       val (steps) = props.steps
-      Slider(
-        value = value.coerceAtLeast(min).coerceAtMost(max),
-        valueRange = min..max,
-        steps = steps,
-        onValueChange = {
-          onValueChanged(mapOf("value" to it))
-        },
-        colors = SliderDefaults.colors(
-          thumbColor = convertColor(props.colors.value.thumbColor),
-          activeTrackColor = convertColor(props.colors.value.activeTrackColor),
-          inactiveTrackColor = convertColor(props.colors.value.inactiveTrackColor),
-          activeTickColor = convertColor(props.colors.value.activeTickColor),
-          inactiveTickColor = convertColor(props.colors.value.inactiveTickColor),
+      DynamicTheme {
+        Slider(
+          value = value.coerceAtLeast(min).coerceAtMost(max),
+          valueRange = min..max,
+          steps = steps,
+          onValueChange = {
+            onValueChanged(mapOf("value" to it))
+          },
+          colors = SliderDefaults.colors(
+            thumbColor = convertColor(props.colors.value.thumbColor),
+            activeTrackColor = convertColor(props.colors.value.activeTrackColor),
+            inactiveTrackColor = convertColor(props.colors.value.inactiveTrackColor),
+            activeTickColor = convertColor(props.colors.value.activeTickColor),
+            inactiveTickColor = convertColor(props.colors.value.inactiveTickColor),
+          )
         )
-      )
+      }
+
     }
   }
 }

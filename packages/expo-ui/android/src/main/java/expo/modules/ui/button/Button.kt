@@ -19,7 +19,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.ui.DynamicTheme
 import expo.modules.ui.convertColor
+
 enum class ButtonVariant(val value: String) : Enumerable {
   DEFAULT("default"),
   BORDERED("bordered"),
@@ -31,14 +33,16 @@ enum class ButtonVariant(val value: String) : Enumerable {
 class ButtonColors : Record {
   @Field
   val containerColor: Color? = null
+
   @Field
   val contentColor: Color? = null
+
   @Field
   val disabledContainerColor: Color? = null
+
   @Field
   val disabledContentColor: Color? = null
 }
-
 
 
 data class ButtonProps(
@@ -58,24 +62,28 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
       disabledContainerColor = convertColor(colors.disabledContainerColor),
       disabledContentColor = convertColor(colors.disabledContentColor),
     ))
-    ButtonVariant.BORDERLESS -> TextButton(onPress, content = content, colors =  ButtonDefaults.textButtonColors(
+
+    ButtonVariant.BORDERLESS -> TextButton(onPress, content = content, colors = ButtonDefaults.textButtonColors(
       containerColor = convertColor(colors.containerColor),
       contentColor = convertColor(colors.contentColor),
       disabledContainerColor = convertColor(colors.disabledContainerColor),
       disabledContentColor = convertColor(colors.disabledContentColor),
     ))
+
     ButtonVariant.OUTLINED -> OutlinedButton(onPress, content = content, colors = ButtonDefaults.outlinedButtonColors(
       containerColor = convertColor(colors.containerColor),
       contentColor = convertColor(colors.contentColor),
       disabledContainerColor = convertColor(colors.disabledContainerColor),
       disabledContentColor = convertColor(colors.disabledContentColor),
     ))
+
     ButtonVariant.ELEVATED -> ElevatedButton(onPress, content = content, colors = ButtonDefaults.elevatedButtonColors(
       containerColor = convertColor(colors.containerColor),
       contentColor = convertColor(colors.contentColor),
       disabledContainerColor = convertColor(colors.disabledContainerColor),
       disabledContentColor = convertColor(colors.disabledContentColor),
     ))
+
     else -> androidx.compose.material3.Button(onPress, content = content, colors = ButtonDefaults.buttonColors(
       containerColor = convertColor(colors.containerColor),
       contentColor = convertColor(colors.contentColor),
@@ -92,14 +100,18 @@ class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonP
   init {
     clipToPadding = false // needed for elevated buttons to work
     clipChildren = false
+
     setContent {
       val (variant) = props.variant
       val (text) = props.text
       val (colors) = props.colors
-      StyledButton(variant ?: ButtonVariant.DEFAULT, colors,
-        { onButtonPressed.invoke(Unit) }) {
-        Text(text)
+      DynamicTheme {
+        StyledButton(variant ?: ButtonVariant.DEFAULT, colors,
+          { onButtonPressed.invoke(Unit) }) {
+          Text(text)
+        }
       }
     }
   }
 }
+

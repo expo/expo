@@ -45,10 +45,12 @@ class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<Swi
         )
       }
 
-      if (variant == "switch") {
-        SwitchComposable()
-      } else {
-        CheckboxComposable()
+      DynamicTheme {
+        if (variant == "switch") {
+          SwitchComposable()
+        } else {
+          CheckboxComposable()
+        }
       }
     }
   }
