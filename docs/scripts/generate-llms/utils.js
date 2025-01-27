@@ -182,6 +182,11 @@ export function cleanContent(content) {
         return '```diff\n' + content + '\n```';
       })
       .replace(
+        /<VideoBoxLink\s+videoId="([^"]*)"\s+title="([^"]*)"\s*\/>/g,
+        (_, videoId, title) =>
+          `Video Tutorial: [${title}](https://www.youtube.com/watch?v=${videoId})`
+      )
+      .replace(
         /<VideoBoxLink\s+videoId="([^"]*)"\s+title="([^"]*)"\s+description="[^"]*"\s*\/>/g,
         (_, videoId, title) =>
           `Video Tutorial: [${title}](https://www.youtube.com/watch?v=${videoId})`
