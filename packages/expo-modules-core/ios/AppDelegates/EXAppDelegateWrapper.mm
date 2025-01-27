@@ -24,7 +24,8 @@
 - (instancetype)init
 {
   if (self = [super init]) {
-    _expoAppDelegate = [[EXExpoAppDelegate alloc] init];
+    // TODO(kudo) to remove the `initWithAppDelegate` initializer when `EXAppDelegateWrapper` is removed
+    _expoAppDelegate = [[EXExpoAppDelegate alloc] initWithAppDelegate:self];
     _expoAppDelegate.shouldCallReactNativeSetup = NO;
   }
   return self;
