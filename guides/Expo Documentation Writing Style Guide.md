@@ -206,6 +206,10 @@ Use [internal links](https://github.com/expo/expo/blob/main/docs/README.md#inter
 
 - When referencing Expo CLI in a standalone apps document, instead of going through the steps of installing the Expo CLI from scratch, mention that Expo CLI is required and use internal linking to Expo CLI installation steps mentioned in the "Getting Started" section.
 
+#### Linking to Expo FYI pages
+
+When linking to the [Expo FYI pages](https://github.com/expo/fyi), use shorthand links, such as https://expo.fyi/bundle-identifier instead of the full URL (https://github.com/expo/fyi/blob/main/bundle-identifier.md).
+
 ### Accessibility
 
 An accessible document is created to be as easily readable by a sighted reader as a low vision or non-sighted reader. One of the key points to keep in mind when writing documentation and using images and videos is to add an "alt" text to them.
