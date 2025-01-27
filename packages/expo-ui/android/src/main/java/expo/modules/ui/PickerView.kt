@@ -25,8 +25,8 @@ class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<Pic
 
   init {
     setContent {
-      val selectedIndex by remember { props.selectedIndex }
-      val options by remember { props.options }
+      val (selectedIndex) = props.selectedIndex
+      val (options) = props.options
       SingleChoiceSegmentedButtonRow {
         options.forEachIndexed { index, label ->
           SegmentedButton(
