@@ -10,10 +10,6 @@
 
 ### 💡 Others
 
-## 51.0.40 — 2025-01-27
-
-_This version does not introduce any user-facing changes._
-
 ## 51.0.39 — 2024-11-08
 
 _This version does not introduce any user-facing changes._
