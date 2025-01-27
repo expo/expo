@@ -99,8 +99,6 @@ declare module 'react-native' {
     /** @platform web */
     touchAction?: string;
     /** @platform web */
-    transformOrigin?: string;
-    /** @platform web */
     transitionDelay?: string;
     /** @platform web */
     transitionDuration?: string;
@@ -219,8 +217,6 @@ declare module 'react-native' {
     perspectiveOrigin?: string;
     /** @platform web */
     touchAction?: string;
-    /** @platform web */
-    transformOrigin?: string;
     /** @platform web */
     transitionDelay?: string;
     /** @platform web */
