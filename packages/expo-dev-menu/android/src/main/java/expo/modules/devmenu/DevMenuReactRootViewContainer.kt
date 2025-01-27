@@ -13,11 +13,6 @@ import androidx.core.view.doOnLayout
 import com.facebook.react.ReactRootView
 import expo.modules.devmenu.fab.MovableFloatingActionButton
 
-/**
- * We want to hide the FAB behind the feature flag for now.
- */
-private const val enableFAB = false
-
 class DevMenuReactRootViewContainer(context: Context) : FrameLayout(context) {
   private val updateSystemGestureExclusionRects: () -> Unit = {
     val marginLayoutParams = fab.layoutParams as MarginLayoutParams
@@ -56,7 +51,10 @@ class DevMenuReactRootViewContainer(context: Context) : FrameLayout(context) {
 
   override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
     super.addView(child, index, params)
-    if (enableFAB && child is ReactRootView) {
+
+    // TODO: figure out why getSettings() is null when you boot directly into
+    // the app, without going through the dev launcher
+    if (DevMenuManager.getSettings()?.buttonGestureEnabled == true && child is ReactRootView) {
       addView(fab)
     }
   }
