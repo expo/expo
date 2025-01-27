@@ -9,6 +9,7 @@ import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
+import { MapsScreens } from '../screens/ExpoMaps/MapsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
 import { ScreenConfig } from '../types/ScreenConfig';
@@ -371,7 +372,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ExpoMaps/ExpoMapsScreen'));
+      return optionalRequire(() => require('../screens/ExpoMaps/MapsScreen'));
     },
     name: 'ExpoMaps',
   },
@@ -438,6 +439,7 @@ export const Screens: ScreenConfig[] = [
   },
   ...ImageScreens,
   ...VideoScreens,
+  ...MapsScreens,
 ];
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
