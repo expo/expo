@@ -20,7 +20,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.ui.DynamicTheme
-import expo.modules.ui.convertColor
+import expo.modules.ui.compose
 
 enum class ButtonVariant(val value: String) : Enumerable {
   DEFAULT("default"),
@@ -58,10 +58,10 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
       onPress,
       content = content,
       colors = ButtonDefaults.filledTonalButtonColors(
-        containerColor = convertColor(colors.containerColor),
-        contentColor = convertColor(colors.contentColor),
-        disabledContainerColor = convertColor(colors.disabledContainerColor),
-        disabledContentColor = convertColor(colors.disabledContentColor)
+        containerColor = colors.containerColor.compose,
+        contentColor = colors.contentColor.compose,
+        disabledContainerColor = colors.disabledContainerColor.compose,
+        disabledContentColor = colors.disabledContentColor.compose
       )
     )
 
@@ -69,10 +69,10 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
       onPress,
       content = content,
       colors = ButtonDefaults.textButtonColors(
-        containerColor = convertColor(colors.containerColor),
-        contentColor = convertColor(colors.contentColor),
-        disabledContainerColor = convertColor(colors.disabledContainerColor),
-        disabledContentColor = convertColor(colors.disabledContentColor)
+        containerColor = colors.containerColor.compose,
+        contentColor = colors.contentColor.compose,
+        disabledContainerColor = colors.disabledContainerColor.compose,
+        disabledContentColor = colors.disabledContentColor.compose
       )
     )
 
@@ -80,10 +80,10 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
       onPress,
       content = content,
       colors = ButtonDefaults.outlinedButtonColors(
-        containerColor = convertColor(colors.containerColor),
-        contentColor = convertColor(colors.contentColor),
-        disabledContainerColor = convertColor(colors.disabledContainerColor),
-        disabledContentColor = convertColor(colors.disabledContentColor)
+        containerColor = colors.containerColor.compose,
+        contentColor = colors.contentColor.compose,
+        disabledContainerColor = colors.disabledContainerColor.compose,
+        disabledContentColor = colors.disabledContentColor.compose
       )
     )
 
@@ -91,10 +91,10 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
       onPress,
       content = content,
       colors = ButtonDefaults.elevatedButtonColors(
-        containerColor = convertColor(colors.containerColor),
-        contentColor = convertColor(colors.contentColor),
-        disabledContainerColor = convertColor(colors.disabledContainerColor),
-        disabledContentColor = convertColor(colors.disabledContentColor)
+        containerColor = colors.containerColor.compose,
+        contentColor = colors.contentColor.compose,
+        disabledContainerColor = colors.disabledContainerColor.compose,
+        disabledContentColor = colors.disabledContentColor.compose
       )
     )
 
@@ -102,10 +102,10 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
       onPress,
       content = content,
       colors = ButtonDefaults.buttonColors(
-        containerColor = convertColor(colors.containerColor),
-        contentColor = convertColor(colors.contentColor),
-        disabledContainerColor = convertColor(colors.disabledContainerColor),
-        disabledContentColor = convertColor(colors.disabledContentColor)
+        containerColor = colors.containerColor.compose,
+        contentColor = colors.contentColor.compose,
+        disabledContainerColor = colors.disabledContainerColor.compose,
+        disabledContentColor = colors.disabledContentColor.compose
       )
     )
   }

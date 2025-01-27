@@ -84,6 +84,8 @@ export type ButtonProps = {
   colors?: {
     containerColor?: string;
     contentColor?: string;
+    disabledContainerColor?: string;
+    disabledContentColor?: string;
   };
 };
 

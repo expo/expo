@@ -7,7 +7,6 @@ import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +50,7 @@ class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<Sli
       val (min) = props.min
       val (max) = props.max
       val (steps) = props.steps
+      val (colors) = props.colors
       DynamicTheme {
         Slider(
           value = value.coerceAtLeast(min).coerceAtMost(max),
@@ -60,11 +60,11 @@ class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<Sli
             onValueChanged(mapOf("value" to it))
           },
           colors = SliderDefaults.colors(
-            thumbColor = convertColor(props.colors.value.thumbColor),
-            activeTrackColor = convertColor(props.colors.value.activeTrackColor),
-            inactiveTrackColor = convertColor(props.colors.value.inactiveTrackColor),
-            activeTickColor = convertColor(props.colors.value.activeTickColor),
-            inactiveTickColor = convertColor(props.colors.value.inactiveTickColor)
+            thumbColor = colors.thumbColor.compose,
+            activeTrackColor = colors.activeTrackColor.compose,
+            inactiveTrackColor = colors.inactiveTrackColor.compose,
+            activeTickColor = colors.activeTickColor.compose,
+            inactiveTickColor = colors.inactiveTickColor.compose
           )
         )
       }

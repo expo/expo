@@ -11,16 +11,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-fun convertColor(color: Color?): androidx.compose.ui.graphics.Color {
-  return color?.let {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      androidx.compose.ui.graphics.Color(it.red(), it.green(), it.blue(), it.alpha())
-    } else {
-      androidx.compose.ui.graphics.Color.Unspecified
-    }
-  } ?: androidx.compose.ui.graphics.Color.Unspecified
-}
-
 @Composable
 fun DynamicTheme(content: @Composable (() -> Unit)) {
   val context = LocalContext.current
@@ -40,3 +30,16 @@ fun DynamicTheme(content: @Composable (() -> Unit)) {
     content()
   }
 }
+
+fun colorToComposeColor(color: Color?): androidx.compose.ui.graphics.Color {
+  return color?.let {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      androidx.compose.ui.graphics.Color(it.red(), it.green(), it.blue(), it.alpha())
+    } else {
+      androidx.compose.ui.graphics.Color.Unspecified
+    }
+  } ?: androidx.compose.ui.graphics.Color.Unspecified
+}
+
+val Color?.compose: androidx.compose.ui.graphics.Color
+  get() = colorToComposeColor(this)
