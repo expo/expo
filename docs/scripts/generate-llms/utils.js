@@ -149,6 +149,8 @@ export function cleanContent(content) {
       .replace(/<\/Tab>/g, '')
       .replace(/<Step label="([\d.]+)">/g, 'Step $1: ')
       .replace(/<\/Step>/g, '')
+      .replace(/<SnackInline\s+label="([^"]+)"[^>]*>/g, '#### $1\n\n')
+      .replace(/<\/SnackInline>/g, '')
       .replace(/<Collapsible summary={\s*<>([^<]*)<\/>\s*}>/g, 'Note: $1\n---\n')
       .replace(/<Collapsible summary="([^"]*)">/g, `Note: $1\n---\n`)
       .replace(/<\/Collapsible>/g, '\n---\n')
