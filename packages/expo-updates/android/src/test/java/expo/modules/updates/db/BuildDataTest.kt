@@ -23,7 +23,7 @@ class BuildDataTest {
       put("expo-channel-name", "default")
     }
     val targetBuildData = JSONObject().apply {
-      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, Uri.parse("https://example.com"))
+      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, "https://example.com")
       put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, targetRequestHeader)
     }
     Assert.assertTrue(BuildData.isBuildDataConsistent(sourceBuildData, targetBuildData))
@@ -41,7 +41,7 @@ class BuildDataTest {
       put("expo-channel-name", "preview")
     }
     val targetBuildData = JSONObject().apply {
-      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, Uri.parse("https://example.com"))
+      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, "https://example.com")
       put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, targetRequestHeader)
     }
     Assert.assertFalse(BuildData.isBuildDataConsistent(sourceBuildData, targetBuildData))
@@ -59,7 +59,7 @@ class BuildDataTest {
       put("expo-channel-name", "default")
     }
     val targetBuildData = JSONObject().apply {
-      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, Uri.parse("https://example.com"))
+      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, "https://example.com")
       put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, targetRequestHeader)
       put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, true)
     }
@@ -79,7 +79,7 @@ class BuildDataTest {
       put("expo-channel-name", "default")
     }
     val targetBuildData = JSONObject().apply {
-      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, Uri.parse("https://example.com"))
+      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, "https://example.com")
       put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, targetRequestHeader)
       put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, false)
     }
