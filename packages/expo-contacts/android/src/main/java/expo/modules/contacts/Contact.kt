@@ -523,7 +523,7 @@ class Contact(var contactId: String, var appContext: AppContext) {
     }
 
   private fun getThumbnailBitmap(photoUri: String?): Bitmap {
-    val context = appContext.reactContext ?: throw Exceptions.AppContextLost()
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
     val uri = Uri.parse(photoUri)
     context.contentResolver.openInputStream(uri).use { inputStream ->
       return BitmapFactory.decodeStream(inputStream)
