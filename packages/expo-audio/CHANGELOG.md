@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- [web] Add `AudioRecorder` metering. ([#19515](https://github.com/expo/expo/issues/19515) by [@amitchell-tboxs](https://github.com/amitchell-tboxs))
+- [web] Add `AudioRecorder` metering. ([#19515](https://github.com/expo/expo/issues/19515) by [@amitchell-tboxs](https://github.com/amitchell-tboxs)) ([#34492](https://github.com/expo/expo/pull/34492) by [@radvansky-tomas](https://github.com/radvansky-tomas))
 
 ### 🛠 Breaking changes
 
