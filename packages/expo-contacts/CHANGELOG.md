@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed saving a contact with photos on Android. ([#34432](https://github.com/expo/expo/pull/34432) by [@chrfalch](https://github.com/chrfalch))
 - Fixed `the native view manager required by name (ExpoContactAccessButton) from NativeViewManagerAdapter isn't exported` warning. ([#33993](https://github.com/expo/expo/pull/33993) by [@lukmccall](https://github.com/lukmccall))
 - Fixed corrupted contact after `updateContactAsync`. ([#34186](https://github.com/expo/expo/pull/34186) by [@freeboub](https://github.com/34186))
 
