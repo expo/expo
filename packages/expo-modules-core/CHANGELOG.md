@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.2.0 — 2025-01-27
+
+### 🎉 New features
+
 - [Android] Added support for Jetpack Compose views. ([#33759](https://github.com/expo/expo/pull/33759) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes

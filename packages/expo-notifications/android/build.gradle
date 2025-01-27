@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-parcelize'
 
 group = 'host.exp.exponent'
-version = '0.29.12'
+version = '0.29.13'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -15,7 +15,7 @@ android {
   namespace "expo.modules.notifications"
   defaultConfig {
     versionCode 21
-    versionName '0.29.12'
+    versionName '0.29.13'
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 

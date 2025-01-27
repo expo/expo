@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- `DateTriggerInput` to only accept an object ([#33551](https://github.com/expo/expo/pull/33551) by [@vonovak](https://github.com/vonovak))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.29.13 — 2025-01-27
+
+### 🛠 Breaking changes
+
+- `DateTriggerInput` to only accept an object ([#33551](https://github.com/expo/expo/pull/33551) by [@vonovak](https://github.com/vonovak))
 
 ## 0.29.12 — 2025-01-10
 

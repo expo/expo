@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@expo/image-utils": "^0.6.4",
-    "expo-constants": "~17.0.4",
+    "expo-constants": "~17.0.5",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3"
   },

@@ -37,13 +37,13 @@ if (KOTLIN_MAJOR_VERSION >= 2) {
 }
 
 group = 'host.exp.exponent'
-version = '0.6.1'
+version = '0.7.0'
 
 android {
   namespace "expo.modules.maps"
   defaultConfig {
     versionCode 1
-    versionName "0.6.1"
+    versionName "0.7.0"
   }
   buildFeatures {
     compose true

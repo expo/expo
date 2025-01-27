@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Add basic support for App Clips. ([#34327](https://github.com/expo/expo/pull/34327) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 7.0.5 — 2025-01-27
+
+### 🎉 New features
+
+- [iOS] Add basic support for App Clips. ([#34327](https://github.com/expo/expo/pull/34327) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 7.0.4 — 2025-01-10
 

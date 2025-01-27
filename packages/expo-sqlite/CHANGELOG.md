@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177), [#34205](https://github.com/expo/expo/pull/34205) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 15.1.0 — 2025-01-27
+
+### 🎉 New features
+
+- Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177), [#34205](https://github.com/expo/expo/pull/34205) by [@kudo](https://github.com/kudo))
 
 ## 15.0.6 — 2025-01-10
 

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- added the ability to read and write starred property (as "isFavorite") of contacts on Android ([#33208](https://github.com/expo/expo/pull/33208) by [@NorseGaud](https://github.com/NorseGaud))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 14.0.4 — 2025-01-27
+
+### 🎉 New features
+
+- added the ability to read and write starred property (as "isFavorite") of contacts on Android ([#33208](https://github.com/expo/expo/pull/33208) by [@NorseGaud](https://github.com/NorseGaud))
 
 ## 14.0.3 — 2025-01-10
 
