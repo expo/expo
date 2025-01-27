@@ -22,7 +22,7 @@
   "expo-background-fetch": "~12.0.1",
   "expo-barcode-scanner": "~13.0.1",
   "expo-battery": "~8.0.1",
-  "expo-blur": "~13.0.2",
+  "expo-blur": "~13.0.3",
   "expo-brightness": "~12.0.1",
   "expo-build-properties": "~0.12.5",
   "expo-calendar": "~13.0.5",
