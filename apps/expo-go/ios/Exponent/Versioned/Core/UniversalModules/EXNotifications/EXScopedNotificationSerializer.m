@@ -1,5 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+// TODO: rework the new Swift Notification code for ExpoGo
+
+/*
 #import "EXScopedNotificationSerializer.h"
 #import "EXScopedNotificationsUtils.h"
 
@@ -46,3 +49,4 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+ */

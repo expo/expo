@@ -3,10 +3,11 @@
   "apple": {
     "modules": [
       "BadgeModule",
-      "ServerRegistrationModule",
+      "CategoriesModule",
+      "PresentationModule",
       "PushTokenModule",
-      "SchedulerModule",
-      "PresentationModule"
+      "ServerRegistrationModule",
+      "SchedulerModule"
     ],
     "appDelegateSubscribers": ["PushTokenAppDelegateSubscriber"]
   },
