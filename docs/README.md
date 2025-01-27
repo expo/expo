@@ -287,7 +287,7 @@ When you need to update versioned documentation data late in the SDK lifecycle, 
 
 2. Make branch changes:
 
-- Switch to the `sdk *` branch
+- Switch to the `sdk *` branch and make your changes
 - Run command: `et gdad -p expo-library --sdk 52`, where `expo-library` is the library you want to update and `52` is the SDK version.
 - Store/shelf the changes locally (you can use `git stash`)
 
