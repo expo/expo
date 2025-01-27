@@ -22,6 +22,8 @@ import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import java.io.ByteArrayOutputStream
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -29,7 +31,7 @@ import java.util.Calendar
 import java.util.Locale
 
 // TODO: MaidenName Nickname
-class Contact(var contactId: String) {
+class Contact(var contactId: String, var appContext: AppContext) {
   private var rawContactId: String? = null
   var lookupKey: String? = null
   private var displayName: String? = null
@@ -521,7 +523,10 @@ class Contact(var contactId: String) {
     }
 
   private fun getThumbnailBitmap(photoUri: String?): Bitmap {
-    val path = Uri.parse(photoUri).path
-    return BitmapFactory.decodeFile(path)
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+    val uri = Uri.parse(photoUri)
+    context.contentResolver.openInputStream(uri).use { inputStream ->
+      return BitmapFactory.decodeStream(inputStream)
+    }
   }
 }

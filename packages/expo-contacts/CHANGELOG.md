@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed saving a contact with photos on Android. ([#34432](https://github.com/expo/expo/pull/34432) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 14.0.4 — 2025-01-27
