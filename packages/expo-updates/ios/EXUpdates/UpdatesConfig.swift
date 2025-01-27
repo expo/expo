@@ -199,9 +199,13 @@ public final class UpdatesConfig: NSObject {
     return try UpdatesConfig.config(fromDictionary: dictionary)
   }
 
-  public static func config(
+  public static func config(fromDictionary config: [String: Any]) throws -> UpdatesConfig {
+    return try UpdatesConfig.config(fromDictionary: config, configOverride: UpdatesConfigOverride.load())
+  }
+
+  private static func config(
     fromDictionary config: [String: Any],
-    configOverride: UpdatesConfigOverride? = UpdatesConfigOverride.load()
+    configOverride: UpdatesConfigOverride?
   ) throws -> UpdatesConfig {
     guard let updateUrl = getUpdateUrl(fromDictionary: config, configOverride: configOverride) else {
       throw UpdatesConfigError.ExpoUpdatesConfigMissingURLError

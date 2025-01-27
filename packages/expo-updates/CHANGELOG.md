@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build error on iOS Expo Go. ([#34485](https://github.com/expo/expo/pull/34485) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.26.19 — 2025-02-19
