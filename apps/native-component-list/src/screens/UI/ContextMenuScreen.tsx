@@ -4,7 +4,7 @@ import { Picker } from '@expo/ui/components/Picker';
 import { Switch } from '@expo/ui/components/Switch';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
-import { View, Platform, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import { Section } from '../../components/Page';
 

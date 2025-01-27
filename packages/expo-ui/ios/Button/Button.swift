@@ -11,7 +11,6 @@ struct Button: ExpoSwiftUI.View {
       role: props.buttonRole?.toNativeRole(),
       action: {
         props.onButtonPressed()
-        props.internalOnPress?()
       },
       label: {
         if let systemImage = props.systemImage {

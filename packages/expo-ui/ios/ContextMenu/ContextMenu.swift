@@ -15,17 +15,17 @@ struct MenuItems: View {
     fromElements?.forEach { element in
       let id = element.contextMenuElementID
       if let button = element.button {
-        button.internalOnPress = {
+        button.onButtonPressed.onEventSent = { map in
           props?.onContextMenuButtonPressed(addId(id, toMap: nil))
         }
       }
       if let `switch` = element.switch {
-        `switch`.internalOnCheckedChanged = { map in
+        `switch`.onCheckedChanged.onEventSent = { map in
           props?.onContextMenuSwitchCheckedChanged(addId(id, toMap: map))
         }
       }
       if let picker = element.picker {
-        picker.internalOnOptionSelected = { map in
+        picker.onOptionSelected.onEventSent = { map in
           props?.onContextMenuPickerOptionSelected(addId(id, toMap: map))
         }
       }

@@ -8,13 +8,13 @@ class SwitchProps: ExpoSwiftUI.ViewProps {
   @Field var variant: String?
   @Field var label: String?
   var onCheckedChanged = EventDispatcher()
-  var internalOnCheckedChanged: (([String: Any]) -> Void)?
 }
 
 struct SwitchView: ExpoSwiftUI.View {
   @EnvironmentObject var props: SwitchProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State var checked: Bool = false
+  
 
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {
@@ -27,11 +27,13 @@ struct SwitchView: ExpoSwiftUI.View {
           "checked": newValue
         ]
         props.onCheckedChanged(payload)
-        props.internalOnCheckedChanged?(payload)
       })
       .onReceive(props.objectWillChange, perform: {
         checked = props.checked
       })
+      .onAppear() {
+        checked = props.checked
+      }
       #if !os(tvOS)
       .if(props.variant == "button") {
         $0.toggleStyle(.button)

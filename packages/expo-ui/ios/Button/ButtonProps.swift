@@ -39,5 +39,4 @@ class ButtonProps: ExpoSwiftUI.ViewProps, Observable {
   @Field var buttonRole: ButtonRole? = .default
   @Field var variant: ButtonVariant? = .default
   var onButtonPressed = EventDispatcher()
-  var internalOnPress: (() -> Void)?
 }
