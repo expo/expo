@@ -22,6 +22,7 @@ import org.json.JSONObject
  * cause bugs when they do. The tracked fields are:
  *
  *   UPDATES_CONFIGURATION_UPDATE_URL_KEY
+ *   UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY
  *
  * and all of the values in json
  *

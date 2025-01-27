@@ -1,18 +1,18 @@
 package expo.modules.updates.db
 
 import android.net.Uri
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class BuildDataTest {
+@RunWith(AndroidJUnit4ClassRunner::class)
+class BuildDataConsistencyTest {
   @Test
-  fun `isBuildDataConsistent should return true for same data`() {
+  fun test_isBuildDataConsistent_true_same_data() {
     val sourceBuildData = createUpdatesConfiguration(
       updateUrl = "https://example.com",
       requestHeaders = mapOf(
@@ -30,7 +30,7 @@ class BuildDataTest {
   }
 
   @Test
-  fun `isBuildDataConsistent should return false for EXUpdatesRequestHeaders change`() {
+  fun test_isBuildDataConsistent_false_headers_change() {
     val sourceBuildData = createUpdatesConfiguration(
       updateUrl = "https://example.com",
       requestHeaders = mapOf(
@@ -48,7 +48,7 @@ class BuildDataTest {
   }
 
   @Test
-  fun `isBuildDataConsistent support migration with new UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY key`() {
+  fun test_isBuildDataConsistent_migration_hasEmbeddedUpdate() {
     val sourceBuildData = createUpdatesConfiguration(
       updateUrl = "https://example.com",
       requestHeaders = mapOf(
@@ -67,7 +67,7 @@ class BuildDataTest {
   }
 
   @Test
-  fun `isBuildDataConsistent should not overwrite existing data from the default build data`() {
+  fun test_isBuildDataConsistent_does_not_override_existing_with_default() {
     val sourceBuildData = createUpdatesConfiguration(
       updateUrl = "https://example.com",
       requestHeaders = mapOf(
