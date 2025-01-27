@@ -1,9 +1,14 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
+import { Platform } from 'react-native';
 
 import type { MapProps } from './GoogleMaps.types';
 
-const NativeView: React.ComponentType<MapProps> = requireNativeView('ExpoGoogleMaps');
+let NativeView: React.ComponentType<MapProps> | null = null;
+
+if (Platform.OS === 'android') {
+  NativeView = requireNativeView('ExpoGoogleMaps');
+}
 
 function useNativeEvent<T>(userHandler?: (data: T) => void) {
   return React.useCallback(
@@ -39,6 +44,9 @@ export function MapView({
     icon: marker.icon?.__expo_shared_object_id__,
   }));
 
+  if (!NativeView) {
+    return null;
+  }
   return (
     <NativeView
       {...props}
