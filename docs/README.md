@@ -2,11 +2,10 @@
 
 This is the public documentation for **Expo**, its SDK, client, and services (**EAS**). This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
 
-> [!NOTE] 
-> **Contributors:** Please make sure that you edit the docs in the **pages/versions/unversioned** for SDK reference if you want your changes to apply to the next SDK version too!
+> [!NOTE] > **Contributors:** Please make sure that you edit the docs in the **pages/versions/unversioned** for SDK reference if you want your changes to apply to the next SDK version too!
 
 > [!NOTE]
-> If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
+> If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
 ## To run locally in development mode
 
@@ -45,7 +44,7 @@ The documentation is divided into four main sections:
 
 - **Home**: Provides a guided path from starting a project from scratch to deploying it to app stores.
 - **Guides**: General purpose and fundamental guides that help you understand how Expo works and how to use it.
-- **EAS**: DEtailed documentation for all EAS services.
+- **EAS**: Detailed documentation for all EAS services.
 - **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See [Update latest version of docs](#update-latest-version-of-docs) for more information.
 - **Learn**: Tutorials and guides that help you learn how to use Expo and React Native.
 
@@ -112,7 +111,7 @@ This is some text that will be ignored by Vale.
 ```
 
 > [!NOTE]
-> Ideally, to add new services or features, the Vale lint rules should upgrade accordingly when there's a pattern. If you want to update a rule, see the [**.vale**](https://github.com/expo/expo/tree/main/docs/.vale/writing-styles/expo-docs) directory for already established rules.
+> Ideally, to add new services or features, the Vale lint rules should upgrade accordingly when there's a pattern. If you want to update a rule, see the [**.vale**](/docs/.vale/writing-styles/expo-docs) directory for already established rules.
 
 <details>
 
@@ -131,7 +130,7 @@ Open the doc file (`*.mdx`) that you are working on and you'll may see suggested
 
 ### Server-side redirects
 
-These redirects are limited in their expressiveness &mdash; you can map a path to another path, but no regular expressions are supported. See [client-side redirects](#client-side-redirects) for more on that. Server-side redirects are re-created on each run of **deploy.sh**.
+These redirects are limited in their expressiveness &mdash; you can map a path to another path, but no regular expressions are supported. See [client-side redirects](#client-side-redirects) for more information on that. Server-side redirects are re-created on each run of **deploy.sh**.
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
@@ -336,7 +335,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 Code blocks are a great way to add code snippets to our docs. We leverage the usual code block Markdown syntax, but it's expanded to support code block titles and additional params.
 
 <!-- prettier-ignore -->
-````mdx
+```mdx
     {/* For plain code block the syntax is unchanged (but we recommend to always add a title to the snippet): */}
     ```js
     // Your code goes in here
@@ -357,7 +356,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
     ```js collapseHeight=200
     // Your code goes in here
     ```
-````
+```
 
 #### Supported additional params
 
@@ -367,7 +366,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 
 ### Add inline Snack examples
 
-Snacks are a great way to add instantly-runnable examples to our docs. The [`SnackInline`](https://github.com/expo/expo/blob/main/docs/ui/components/Snippet/blocks/SnackInline.tsx) component can be imported to any markdown file, and used like this:
+Snacks are a great way to add instantly-runnable examples to our docs. The [`SnackInline`](/docs/ui/components/Snippet/blocks/SnackInline.tsx) component can be imported to any markdown file, and used like this:
 
 <!-- prettier-ignore -->
 ```mdx
@@ -485,7 +484,7 @@ modificationDate: April 8th, 2024
 ---
 ```
 
-This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](https://github.com/expo/expo/edit/main/docs/pages/build-reference/infrastructure.mdx).
+This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](/docs/pages/build-reference/infrastructure.mdx).
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
 
@@ -497,7 +496,7 @@ If you have a code block using `/* @info */` highlighting, use `{/* prettier-ign
 
 ### Use Step for procedural guides
 
-For procedural guides, use [`Step`](https://github.com/expo/expo/blob/main/docs/ui/components/Step/Step.tsx) component:
+For procedural guides, use [`Step`](/docs/ui/components/Step/Step.tsx) component:
 
 ```mdx
 import { Step } from '~/ui/components/Step';
