@@ -20,15 +20,21 @@ try {
 }
 
 buildscript {
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  ext.KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
+
+  if (KOTLIN_MAJOR_VERSION >= 2) {
+    repositories {
+      mavenCentral()
+    }
+    dependencies {
+      classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+    }
   }
 }
 
-apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+if (KOTLIN_MAJOR_VERSION >= 2) {
+  apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+}
 
 group = 'host.exp.exponent'
 version = '0.6.1'
@@ -41,6 +47,11 @@ android {
   }
   buildFeatures {
     compose true
+  }
+  if (KOTLIN_MAJOR_VERSION < 2) {
+    composeOptions {
+      kotlinCompilerExtensionVersion = "1.5.14"
+    }
   }
   lintOptions {
     abortOnError false
