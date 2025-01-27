@@ -213,7 +213,7 @@ You can deploy the server for production using [EAS Hosting](/eas/hosting/get-st
 
 ### Native deployment
 
-> **warning**: This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
+> **warning** This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
 
 Server features (API routes, and React Server Components) in Expo Router are centered around native implementations of `window.location` and `fetch` which point to the remote server. In development, we automatically point to the dev server running with `npx expo start`, but for production native builds to work you'll need to deploy the server to a secure host and set the `origin` property of the Expo Router Config Plugin.
 
@@ -232,7 +232,7 @@ Also ensure you aren't using `app.config.js` as this is not supported with autom
 
 <Step label="2">
 
-Ensure [hosting](/eas/hosting/get-started) is setup for the project by deploying once locally first.
+Setup [hosting](/eas/hosting/get-started) for the project by deploying once locally first.
 
 <Terminal cmd={['$ npx expo export -p web', '$ eas deploy']} />
 
@@ -250,11 +250,13 @@ EXPO_UNSTABLE_DEPLOY_SERVER=1
 
 <Step label="4">
 
-Create an `EXPO_TOKEN` for the project and add it to the `.env` file. https://expo.dev/accounts/[account]/settings/access-tokens
+Create an `EXPO_TOKEN` for the project and add it to the `.env` file. See: [Access Tokens](https://expo.dev/accounts/[account]/settings/access-tokens).
 
 ```sh .env
 EXPO_UNSTABLE_DEPLOY_SERVER=1
+# @info <a target="_blank" href="https://expo.dev/accounts/[account]/settings/access-tokens" style="text-decoration:underline;">Setup the token</a> #
 EXPO_TOKEN=xxxxxxx
+# @end #
 ```
 
 </Step>
@@ -275,11 +277,11 @@ Set the `owner` field in the `app.json` to the owner of the project (this is usu
 
 <Step label="6">
 
-You're now ready to use automatic server deployment!
+You're now ready to use automatic server deployment! Run the build command to start the process.
 
 <Terminal cmd={['$ eas build']} />
 
-You can alternatively run this locally with:
+You can also run this locally with:
 
 <Terminal
   cmd={[
@@ -292,6 +294,8 @@ You can alternatively run this locally with:
 
 </Step>
 
+Notes about automatic server deployment for native apps:
+
 - Server failures may occur during the `Bundle JavaScript` phase of EAS Build if something was not setup correctly.
 - You can manually deploy the server and set the `origin` URL before building the app if you'd like.
 - Automatic deployment can be force skipped with the environment variable `EXPO_NO_DEPLOY=1`.
@@ -303,11 +307,9 @@ You can alternatively run this locally with:
 
 It can often be useful to test the production build against a local dev server to ensure everything is working as expected. This can speed up the debugging process substantially.
 
-To do this, follow these steps:
-
 <Step label="1">
 
-Export the production server for your target platform:
+First, export the production server:
 
 <Terminal cmd={['$ npx expo export']} />
 
