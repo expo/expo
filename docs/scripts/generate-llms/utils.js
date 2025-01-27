@@ -170,6 +170,7 @@ export function cleanContent(content) {
       .replace(/<\/PaddedAPIBox>/g, '')
       .replace(/<CodeBlocksTable[^>]*>/g, '')
       .replace(/<\/CodeBlocksTable>/g, '')
+      .replace(/<FileTree[\S\s]*?\/>/g, '')
       .replace(
         /<ContentSpotlight(?:\s+(?:src|file|alt|controls|caption|className|loop|containerClassName)(?:="[^"]*"|={`[^`]*`})?)*\s*\/>/g,
         ''
