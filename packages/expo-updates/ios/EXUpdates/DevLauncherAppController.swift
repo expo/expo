@@ -345,8 +345,8 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     errorBlockArg(NotAvailableInDevClientException("Updates.setExtraParamAsync()"))
   }
 
-  public func setUpdatesURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws {
-    throw NotAvailableInDevClientException("Updates.setUpdatesURLAndRequestHeadersOverride() is not supported in development builds.")
+  public func setUpdateURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws {
+    throw NotAvailableInDevClientException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported in development builds.")
   }
 }
 
