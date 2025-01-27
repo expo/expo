@@ -152,6 +152,19 @@ export function cleanContent(content) {
       .replace(/<\/Collapsible>/g, '\n---\n')
       .replace(/<Tab label="([^"]+)">/g, 'For $1: ')
       .replace(
+        /<Pad{2}edAPIBox\s*header="([^"]+)"\s*platforms={\[(["'])([^\]]+)\2]}/g,
+        (_, header, quote, platform) => {
+          const platformText = platform.includes('ios') ? ', iOS only' : ', Android only';
+          return `#### ${header}${platformText}`;
+        }
+      )
+      .replace(/<Pad{2}edAPIBox\s*platforms={\[(["'])([^\]]+)\1]}/g, (_, quote, platform) => {
+        return platform.includes('ios') ? '#### iOS Only' : '#### Android Only';
+      })
+      .replace(/<Pad{2}edAPIBox\s*header="([^"]+)"/g, '#### $1')
+      .replace(/<PaddedAPIBox>/g, '')
+      .replace(/<\/PaddedAPIBox>/g, '')
+      .replace(
         /<ContentSpotlight(?:\s+(?:src|file|alt|controls|caption|className|loop|containerClassName)(?:="[^"]*"|={`[^`]*`})?)*\s*\/>/g,
         ''
       )
