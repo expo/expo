@@ -3187,7 +3187,13 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
+<<<<<<< Updated upstream
   hermes-engine: f9a2d084c7c8f315727872389a89fe0327513d67
+||||||| Stash base
+  hermes-engine: d2361c7bc98b837c714c337901f6655c97a366ee
+=======
+  hermes-engine: 31f6a71ea9aadfc695ad304c45e884e6b4fd2ab3
+>>>>>>> Stashed changes
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f

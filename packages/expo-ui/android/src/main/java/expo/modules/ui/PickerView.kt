@@ -17,7 +17,7 @@ import expo.modules.kotlin.views.ComposeProps
 data class PickerProps(
   val options: MutableState<Array<String>> = mutableStateOf(emptyArray()),
   val selectedIndex: MutableState<Int?> = mutableStateOf(null)
-) : ComposeProps
+) : ComposeProps()
 
 class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<PickerProps>(context, appContext) {
   override val props = PickerProps()

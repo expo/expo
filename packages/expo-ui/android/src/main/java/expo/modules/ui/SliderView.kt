@@ -54,7 +54,7 @@ data class SliderProps(
   val max: MutableState<Float> = mutableFloatStateOf(1.0f),
   val steps: MutableState<Int> = mutableIntStateOf(0),
   val colors: MutableState<SliderColors> = mutableStateOf(SliderColors())
-): ComposeProps
+) : ComposeProps()
 
 class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<SliderProps>(context, appContext) {
   override val props = SliderProps()

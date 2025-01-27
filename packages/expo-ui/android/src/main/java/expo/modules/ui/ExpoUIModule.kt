@@ -21,6 +21,10 @@ class ExpoUIModule : Module() {
       Events("onButtonPressed")
     }
 
+    View(BottomSheetView::class) {
+      Events("onSheetClosed")
+    }
+
     View(SliderView::class) {
       Events("onValueChanged")
     }

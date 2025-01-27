@@ -15,7 +15,7 @@ import expo.modules.kotlin.views.ComposeProps
 data class SwitchProps(
   val checked: MutableState<Boolean> = mutableStateOf(false),
   val variant: MutableState<String> = mutableStateOf("switch")
-): ComposeProps
+) : ComposeProps()
 
 class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<SwitchProps>(context, appContext) {
   override val props = SwitchProps()

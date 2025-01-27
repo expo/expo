@@ -102,7 +102,7 @@ class ModuleDefinitionBuilder(
   @JvmName("ComposeView")
   inline fun <reified T : ExpoComposeView<P>, reified P : Any> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
     val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
-    P::class.memberProperties.forEach { prop ->
+    P::class.memberProperties.filter { it.name != "children" }.forEach { prop ->
       val kType = prop.returnType.arguments.first().type
       if (kType != null) {
         viewDefinitionBuilder.props[prop.name] = ComposeViewProp(prop.name, AnyType(kType), prop)

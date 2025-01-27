@@ -1,11 +1,16 @@
 package expo.modules.kotlin.views
 
 import android.content.Context
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import expo.modules.kotlin.AppContext
 import androidx.compose.ui.InternalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.viewinterop.AndroidView
 
 /**
  * A base class that should be used by compose views.
@@ -25,6 +30,26 @@ abstract class ExpoComposeView<T : ComposeProps>(
       return
     }
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+  }
+
+  override fun addView(child: View?, index: Int) {
+    println("${child?.javaClass?.simpleName} added to ${this.javaClass.simpleName}, index ${index}")
+    if(child != null && child !is ComposeView) {
+//      super.addView(child, index)
+      props?.children?.add(index, child)
+    } else {
+      super.addView(child, index)
+    }
+  }
+
+  @Composable
+  fun Children() {
+    for (child in props?.children.orEmpty()) {
+      AndroidView(modifier = Modifier.fillMaxSize(), factory = { context ->
+        // Creates view
+        child
+      })
+    }
   }
 
   @OptIn(InternalComposeUiApi::class)

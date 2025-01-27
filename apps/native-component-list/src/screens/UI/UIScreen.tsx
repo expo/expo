@@ -42,6 +42,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./SliderScreen'));
     },
   },
+  {
+    name: 'Bottom Sheet component',
+    route: 'ui/bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BottomSheetScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

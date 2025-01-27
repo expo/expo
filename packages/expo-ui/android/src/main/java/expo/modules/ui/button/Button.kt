@@ -28,7 +28,7 @@ enum class ButtonVariant(val value: String) {
 data class ButtonProps(
   val text: MutableState<String> = mutableStateOf(""),
   val variant: MutableState<ButtonVariant?> = mutableStateOf(ButtonVariant.DEFAULT)
-) : ComposeProps
+) : ComposeProps()
 
 @Composable
 fun StyledButton(style: ButtonVariant, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
