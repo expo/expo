@@ -531,7 +531,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
         fields: [Contacts.Fields.IsFavorite],
       });
       const favoriteContact = contacts.data.find((contact) => contact.isFavorite);
-      console.log('favoriteContact', favoriteContact);
       expect(favoriteContact).toBeDefined();
       expect(typeof favoriteContact.isFavorite).toBe('boolean');
       expect(favoriteContact.isFavorite).toBe(true);
