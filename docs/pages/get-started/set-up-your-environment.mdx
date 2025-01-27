@@ -1,4 +1,83 @@
----
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Calendar, Clock, Music, Camera } from "lucide-react";
+
+export default function AsheApp() {
+  return (
+    <div className="min-h-screen bg-gray-100 p-4">
+      {/* Header */}
+      <header className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-800">ASHÉ Studio App</h1>
+        <p className="text-lg text-gray-600">Todo lo que necesitas para aprender, grabar y crear.</p>
+      </header>
+
+      {/* Tabs for main sections */}
+      <Tabs defaultValue="school" className="w-full max-w-4xl mx-auto">
+        <TabsList className="grid grid-cols-4 gap-4 mb-6">
+          <TabsTrigger value="school" className="flex items-center gap-2">
+            <Music className="w-5 h-5" /> Escuela de Música
+          </TabsTrigger>
+          <TabsTrigger value="studio" className="flex items-center gap-2">
+            <Clock className="w-5 h-5" /> Estudio de Grabación
+          </TabsTrigger>
+          <TabsTrigger value="rental" className="flex items-center gap-2">
+            <Calendar className="w-5 h-5" /> Alquiler
+          </TabsTrigger>
+          <TabsTrigger value="media" className="flex items-center gap-2">
+            <Camera className="w-5 h-5" /> Foto & Video
+          </TabsTrigger>
+        </TabsList>
+
+        {/* School of Music */}
+        <TabsContent value="school">
+          <Card>
+            <CardContent className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Escuela de Música</h2>
+              <p className="text-gray-600 mb-4">Descubre clases de música personalizadas y contenido exclusivo para mejorar tus habilidades.</p>
+              <Button className="w-full">Ver Clases Disponibles</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Recording Studio */}
+        <TabsContent value="studio">
+          <Card>
+            <CardContent className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Estudio de Grabación</h2>
+              <p className="text-gray-600 mb-4">Reserva sesiones de grabación y lleva tus proyectos al siguiente nivel.</p>
+              <Button className="w-full">Reservar una Sesión</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Rentals */}
+        <TabsContent value="rental">
+          <Card>
+            <CardContent className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Alquiler de Instrumentos y Espacios</h2>
+              <p className="text-gray-600 mb-4">Consulta disponibilidad de instrumentos o reserva espacios para ensayos.</p>
+              <Button className="w-full">Ver Opciones de Alquiler</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Media (Photo & Video) */}---
+        <TabsContent value="media">
+          <Card>
+            <CardContent className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Foto & Video</h2>
+              <p className="text-gray-600 mb-4">Alquila el estudio para sesiones de fotos o videos profesionales.</p>
+              <Button className="w-full">Reservar Estudio</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
 title: Set up your environment
 description: Learn how to set up your development environment to start building with Expo.
 hideTOC: true
