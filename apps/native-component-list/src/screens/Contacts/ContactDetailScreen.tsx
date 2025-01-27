@@ -224,6 +224,9 @@ function ContactDetailView({
   }, [contact]);
 
   const onPressImage = async () => {
+    if (!isIos) {
+      return;
+    }
     _selectPhoto();
   };
 
