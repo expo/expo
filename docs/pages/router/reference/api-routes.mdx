@@ -211,6 +211,154 @@ You can deploy the server for production using [EAS Hosting](/eas/hosting/get-st
   Icon={Cloud01Icon}
 />
 
+### Native deployment
+
+> **warning**: This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
+
+Server features (API routes, and React Server Components) in Expo Router are centered around native implementations of `window.location` and `fetch` which point to the remote server. In development, we automatically point to the dev server running with `npx expo start`, but for production native builds to work you'll need to deploy the server to a secure host and set the `origin` property of the Expo Router Config Plugin.
+
+When configured, features like relative fetch requests `fetch('/my-endpoint')` will automatically point to the server origin.
+
+This deployment process can experimentally be automated to ensure correct versioning during native builds with the `EXPO_UNSTABLE_DEPLOY_SERVER=1` environment variable.
+
+Here's how to configure your native app to automatically deploy and link a versioned production server on build:
+
+<Step label="1">
+
+Ensure the `origin` field is **NOT** set in the `app.json` or in the `expo.extra.router.origin` field.
+Also ensure you aren't using `app.config.js` as this is not supported with automatically linked deployments yet.
+
+</Step>
+
+<Step label="2">
+
+Ensure [hosting](/eas/hosting/get-started) is setup for the project by deploying once locally first.
+
+<Terminal cmd={['$ npx expo export -p web', '$ eas deploy']} />
+
+</Step>
+
+<Step label="3">
+
+Set the `EXPO_UNSTABLE_DEPLOY_SERVER` environment variable in your `.env` file. This will be used to enable the experimental server deployment functionality during EAS Build.
+
+```sh .env
+EXPO_UNSTABLE_DEPLOY_SERVER=1
+```
+
+</Step>
+
+<Step label="4">
+
+Create an `EXPO_TOKEN` for the project and add it to the `.env` file. https://expo.dev/accounts/[account]/settings/access-tokens
+
+```sh .env
+EXPO_UNSTABLE_DEPLOY_SERVER=1
+EXPO_TOKEN=xxxxxxx
+```
+
+</Step>
+
+<Step label="5">
+
+Set the `owner` field in the `app.json` to the owner of the project (this is usually your EAS username).
+
+```json app.json
+{
+  "expo": {
+    "owner": "bacon"
+  }
+}
+```
+
+</Step>
+
+<Step label="6">
+
+You're now ready to use automatic server deployment!
+
+<Terminal cmd={['$ eas build']} />
+
+You can alternatively run this locally with:
+
+<Terminal
+  cmd={[
+    '# iOS',
+    '$ npx expo run:ios --configuration Release',
+    '# Android',
+    '$ npx expo run:android --variant release',
+  ]}
+/>
+
+</Step>
+
+- Server failures may occur during the `Bundle JavaScript` phase of EAS Build if something was not setup correctly.
+- You can manually deploy the server and set the `origin` URL before building the app if you'd like.
+- Automatic deployment can be force skipped with the environment variable `EXPO_NO_DEPLOY=1`.
+- Automatic deployment does not support `app.config.js` files yet.
+- Logs from the deployment will be written to `.expo/logs/deploy.log`.
+- Deployment will not run in `EXPO_OFFLINE` mode.
+
+### Testing the native production app locally
+
+It can often be useful to test the production build against a local dev server to ensure everything is working as expected. This can speed up the debugging process substantially.
+
+To do this, follow these steps:
+
+<Step label="1">
+
+Export the production server for your target platform:
+
+<Terminal cmd={['$ npx expo export']} />
+
+</Step>
+<Step label="2">
+
+Host the production server locally:
+
+<Terminal cmd={['$ npx expo serve']} />
+
+</Step>
+
+<Step label="3">
+
+Set the origin in the `app.json`'s `origin` field. Ensure no generated value is in `expo.extra.router.origin`. This should be `http://localhost:8081` (assuming `npx expo serve` is running on the default port).
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "http://localhost:8081"
+        }
+      ]
+    ]
+  }
+}
+```
+
+Remember to remove this `origin` value when deploying to production!
+
+</Step>
+
+<Step label="4">
+
+Build the app in release mode on to a simulator:
+
+<Terminal cmd={['$ EXPO_NO_DEPLOY=1 npx expo run:ios --configuration Release']} />
+
+</Step>
+
+You should now see requests coming in to the local server. Use a tool like [Proxyman](https://proxyman.com/) to inspect network traffic for the simulator and gain better insight.
+
+You can experimentally change the URL and quickly rebuild for iOS using the `--unstable-rebundle` flag. This will swap out the app.json and client assets for a new ones, skipping the native rebuild.
+
+For example, you can run `eas deploy` to get a new deployment URL, add it to the `app.json`, then run `npx expo run:ios --unstable-rebundle --configuration Release` to quickly rebuild the app with the new URL.
+
+You will want to make a clean build before sending to the store to ensure no transient issues are present.
+
 ## Hosting on third-party services
 
 > **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
