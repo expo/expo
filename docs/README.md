@@ -106,7 +106,7 @@ For exceptional cases, you can switch off the prose linter for a specific line o
 ```mdx
 {/* vale off */}
 
-This is some text that will not be linted by Vale.
+This is some text that will be ignored by Vale.
 
 {/* vale on */}
 ```
