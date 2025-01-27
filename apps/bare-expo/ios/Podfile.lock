@@ -428,8 +428,6 @@ PODS:
     - ExpoModulesCore
   - ExpoMaps (0.6.1):
     - ExpoModulesCore
-    - GoogleMaps (= 7.4.0)
-    - GooglePlaces (= 7.3.0)
   - ExpoMediaLibrary (17.0.5):
     - ExpoModulesCore
     - React-Core
@@ -612,12 +610,6 @@ PODS:
   - FBLazyVector (0.76.6)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - GoogleMaps (7.4.0):
-    - GoogleMaps/Maps (= 7.4.0)
-  - GoogleMaps/Base (7.4.0)
-  - GoogleMaps/Maps (7.4.0):
-    - GoogleMaps/Base
-  - GooglePlaces (7.3.0)
   - hermes-engine (0.76.6):
     - hermes-engine/Pre-built (= 0.76.6)
   - hermes-engine/Pre-built (0.76.6)
@@ -2872,8 +2864,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - GoogleMaps
-    - GooglePlaces
     - libavif
     - libdav1d
     - libwebp
@@ -3325,7 +3315,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: e36b911e04d371c6c6624ef818e56229bf51c498
   ExpoLocation: a4b472b3cb2d42f1a3f3d7e2ec0e7a4db061ea22
   ExpoMailComposer: 3b73ba608b6ae7d8effe64c58e25924962e3d8cc
-  ExpoMaps: 03f99cbb20655c2beb1bffdca0e6de6a0124f69e
+  ExpoMaps: b84e936b1c90ec650f8b6e9f1979f7479c3a28f6
   ExpoMediaLibrary: 87f214ba1275d4551b74e18de6206c36c5c1001b
   ExpoMeshGradient: 367f2ea040ac76edd8b4ef915bd832924646e180
   ExpoModulesCore: 8dc3ee6a2324ab1b5e8be9ede5c4e60b948c1f7f
@@ -3355,8 +3345,6 @@ SPEC CHECKSUMS:
   FBLazyVector: be509404b5de73a64a74284edcaf73a5d1e128b1
   fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
-  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
-  GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: 1949ca944b195a8bde7cbf6316b9068e19cf53c6
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
