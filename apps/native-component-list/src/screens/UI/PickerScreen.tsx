@@ -34,10 +34,12 @@ export default function PickerScreen() {
             onOptionSelected={({ nativeEvent: { index } }) => {
               setSelectedIndex(index);
             }}
+            label="Cost"
             variant="menu"
             style={{
               width: 300,
               height: 100,
+              flex: 1,
             }}
           />
         </Section>

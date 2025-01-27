@@ -1,27 +1,50 @@
 apply plugin: 'com.android.library'
 
-group = 'host.exp.exponent'
-version = '15.0.1'
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useCoreDependencies()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
 
-def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
-def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-  ? findProject(":ReactAndroid").getProjectDir().parent
-  : file(providers.exec {
+def usesModernPlugin = true
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  usesModernPlugin = false
+  useLegacyExpoModulesCorePlugin()
+}
+
+def getReactNativeDir = {
+  if (usesModernPlugin) {
+    return project.extensions.getByType(expo.modules.plugin.gradle.ExpoModuleExtension).reactNativeDir
+  } else {
+    // TODO(@lukmccall): Remove when we drop support for the legacy core plugin
+    def buildFromSource = findProject(":ReactAndroid") != null
+    return buildFromSource
+        ? findProject(":ReactAndroid").getProjectDir().parent
+        : file(providers.exec {
       workingDir(rootDir)
       commandLine("node", "--print", "require.resolve('react-native/package.json')")
     }.standardOutput.asText.get().trim()).parent
+  }
+}
+
+def REACT_NATIVE_DIR = getReactNativeDir()
 
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+group = 'host.exp.exponent'
+version = '15.0.1'
 
 android {
   if (rootProject.hasProperty("ndkPath")) {

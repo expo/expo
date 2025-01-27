@@ -1,5 +1,4 @@
 {
-  "name": "expo-clipboard",
   "platforms": ["apple", "android", "web"],
   "apple": {
     "modules": ["ClipboardModule"]

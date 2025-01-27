@@ -501,6 +501,7 @@ const eas = [
       makePage('eas-update/standalone-service.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/migrate-from-classic-updates.mdx'),
+      makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/faq.mdx'),
     ]),
   ]),

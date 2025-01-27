@@ -139,7 +139,7 @@ export default function Modal() {
     <View style={styles.container}>
       <Text>Modal screen</Text>
       /* @info On web, use <CODE>../</CODE> as a simple way to navigate to the root. This is not analogous to <CODE>goBack</CODE>.*/
-      {!isPresented && <Link href="../">Dismiss modal</Link>}
+      {isPresented && <Link href="../">Dismiss modal</Link>}
       /* @end */
     </View>
   );

@@ -116,8 +116,6 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (14.0.1):
     - ExpoModulesCore
-  - ExpoMapsRemake (0.1.0):
-    - ExpoModulesCore
   - ExpoMediaLibrary (17.0.3):
     - ExpoModulesCore
     - React-Core
@@ -227,8 +225,6 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (5.0.0):
     - ExpoModulesCore
-  - ExpoUI (0.1.0):
-    - ExpoModulesCore
   - ExpoVideo (2.0.1):
     - ExpoModulesCore
   - ExpoVideoThumbnails (9.0.2):
@@ -237,7 +233,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (4.0.0)
   - EXStructuredHeaders/Tests (4.0.0)
-  - EXTaskManager (12.0.3):
+  - EXTaskManager (13.0.0):
     - ExpoModulesCore
     - UMAppLoader
   - EXUpdates (0.26.9):
@@ -2622,7 +2618,6 @@ DEPENDENCIES:
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoLocation (from `../../../packages/expo-location/ios`)
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
-  - ExpoMapsRemake (from `../../../packages/expo-maps-remake/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
@@ -2643,7 +2638,6 @@ DEPENDENCIES:
   - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
-  - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
@@ -2880,8 +2874,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-location/ios"
   ExpoMailComposer:
     :path: "../../../packages/expo-mail-composer/ios"
-  ExpoMapsRemake:
-    :path: "../../../packages/expo-maps-remake/ios"
   ExpoMediaLibrary:
     :path: "../../../packages/expo-media-library/ios"
   ExpoMeshGradient:
@@ -2918,8 +2910,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-system-ui/ios"
   ExpoTrackingTransparency:
     :path: "../../../packages/expo-tracking-transparency/ios"
-  ExpoUI:
-    :path: "../../../packages/expo-ui/ios"
   ExpoVideo:
     :path: "../../../packages/expo-video/ios"
   ExpoVideoThumbnails:
@@ -3127,7 +3117,7 @@ SPEC CHECKSUMS:
   ExpoAppleAuthentication: 218e275c9bf19963247a198c450ce3852e6a9342
   ExpoAsset: 6e707be0cb7e792faa06e42d8ebc85600921af89
   ExpoBackgroundFetch: a3080ab72736b60441adf5f452919426c62e0533
-  ExpoBackgroundTask: 41ae85d76c5883ec0e3f15a55a1b0769082bd4a2
+  ExpoBackgroundTask: 0a81fb8ea62e12ab313d3074ee5a6c195a0c47d4
   ExpoBattery: 71bb388c37c3bcd0e87077e06e95780ea34fa6c8
   ExpoBlur: 562b3da84d3cd79016c411671eaf71a404266415
   ExpoBrightness: ce777f6a365592f745428cb0acc9066b400182e8
@@ -3156,7 +3146,6 @@ SPEC CHECKSUMS:
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: e0c5b5212381b0b800a2c1f715be823d17c51b05
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
-  ExpoMapsRemake: 2fc7965f585a7b11f1e0818193b7c63c15262d1c
   ExpoMediaLibrary: 2d20778aafaa2e6f60640167f0618cfacee6f81c
   ExpoMeshGradient: 0a9aca4028bd131bd8313b1899c004aad7526c37
   ExpoModulesCore: bb3f481a7912159f2289a653e4195146170f0a00
@@ -3170,17 +3159,16 @@ SPEC CHECKSUMS:
   ExpoSharing: 39a198e64bf522948fe60e270e49a0c7757912c1
   ExpoSMS: 884d6627c0848795ff9492fbfc7ba6087111e344
   ExpoSpeech: 27bb25844919711ebf0e201ce0bef2897d3693c7
-  ExpoSQLite: 56051549ddac62c16460d4391b84994faf494f00
+  ExpoSQLite: 0a97e8932a344abb39882001ca15307c9f172396
   ExpoStoreReview: f3439c43f13fa497cfe07d16b095f39101ed5548
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
   ExpoSystemUI: 97ec8f20af5e8ca18d3191c5c72e8a04e6e2f02d
   ExpoTrackingTransparency: 10b0304d6d2b95ea41391bf92684c1078f633e39
-  ExpoUI: 081105686dd0943b4902ada170be21bc929802c3
   ExpoVideo: 85750319df61d76237b5952fca5a9f39504c6b9b
   ExpoVideoThumbnails: 8b6bbe3cb76dd2225910667b896b27855bbda694
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
-  EXTaskManager: afcec33a6643f24fed4a89062757037b185c8a88
+  EXTaskManager: 8e915e1120894daead363cf31ff85cd4d182cd89
   EXUpdates: c35f6924eb729c633c472eca04a8f04b1f26948e
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   FBLazyVector: be7314029d6ec6b90f0f75ce1195b8130ed9ac4f
@@ -3199,7 +3187,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: d2361c7bc98b837c714c337901f6655c97a366ee
+  hermes-engine: f9a2d084c7c8f315727872389a89fe0327513d67
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3306,6 +3294,6 @@ SPEC CHECKSUMS:
   Yoga: 3deb2471faa9916c8a82dda2a22d3fba2620ad37
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 8c7220860d6fd530eca70da461198f5a2007bf70
+PODFILE CHECKSUM: 7bf572a9e490bdde01cd39bf74a0ef2638865a2d
 
 COCOAPODS: 1.15.2
