@@ -526,6 +526,26 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(result[Contacts.Fields.FirstName]).toEqual('Andy');
     });
 
+    it('Contacts.updateContactAsync() and toggle isFavorite', async () => {
+      const contacts = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.IsFavorite],
+      });
+      const favoriteContact = contacts.data.find((contact) => contact.isFavorite);
+      console.log('favoriteContact', favoriteContact);
+      expect(favoriteContact).toBeDefined();
+      expect(typeof favoriteContact.isFavorite).toBe('boolean');
+      expect(favoriteContact.isFavorite).toBe(true);
+      await Contacts.updateContactAsync({
+        id: favoriteContact.id,
+        [Contacts.Fields.IsFavorite]: false,
+      });
+      const modifiedContact = await Contacts.getContactByIdAsync(favoriteContact.id, [
+        Contacts.Fields.IsFavorite,
+      ]);
+      expect(typeof modifiedContact.isFavorite).toBe('boolean');
+      expect(modifiedContact.isFavorite).toBe(false);
+    });
+
     it('Contacts.removeContactAsync() finishes successfully', async () => {
       const contactId = await createSimpleContact('Hi', 'Joe');
 
