@@ -138,7 +138,8 @@ function getInfoPlistTemplate() {
     UIRequiredDeviceCapabilities: ['armv7'],
     UIViewControllerBasedStatusBarAppearance: false,
     UIStatusBarStyle: 'UIStatusBarStyleDefault',
-    CADisableMinimumFrameDurationOnPhone: true
+    CADisableMinimumFrameDurationOnPhone: true,
+    ITSAppUsesNonExemptEncryption: false
   };
 }
 const defaultProviders = {
