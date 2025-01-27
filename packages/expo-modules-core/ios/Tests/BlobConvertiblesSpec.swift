@@ -46,7 +46,7 @@ final class DataUint8ArrayConvertiblesSpec: ExpoSpec {
         .eval(
           "expo.modules.BlobModule.echoAsync(new Uint8Array([0x00, 0xff])).then((result) => { globalThis.result = result; })"
         )
-      expect(safeBoolEval("globalThis.result instanceof Uint8Array")).toEventually(beTrue())
+      expect(safeBoolEval("globalThis.result instanceof Uint8Array")).toEventually(beTrue(), timeout: .milliseconds(500))
       let array = try runtime.eval("Array.from(globalThis.result)").asArray()
       expect(array[0]?.getInt()) == 0x00
       expect(array[1]?.getInt()) == 0xff
@@ -57,7 +57,7 @@ final class DataUint8ArrayConvertiblesSpec: ExpoSpec {
         .eval(
           "expo.modules.BlobModule.echoMapAsync({ key: new Uint8Array([0x00, 0xff]) }).then((result) => { globalThis.result = result; })"
         )
-      expect(safeBoolEval("globalThis.result != null && globalThis.result.key instanceof Uint8Array")).toEventually(beTrue())
+      expect(safeBoolEval("globalThis.result != null && globalThis.result.key instanceof Uint8Array")).toEventually(beTrue(), timeout: .milliseconds(500))
       let array = try runtime.eval("Array.from(globalThis.result.key)").asArray()
       expect(array[0]?.getInt()) == 0x00
       expect(array[1]?.getInt()) == 0xff
