@@ -191,7 +191,8 @@ export function cleanContent(content) {
             .filter(cmd => cmd && !cmd.startsWith('#'));
           return '```sh\n' + commands.join('\n') + '\n```';
         }
-      );
+      )
+      .replace(/<br\s*\/?>/g, '');
 
     if (index % 2 === 0) {
       processed = processed.replace(/^import\s+.*?from\s+["'].*?["'];?\s*\n/gm, '');
