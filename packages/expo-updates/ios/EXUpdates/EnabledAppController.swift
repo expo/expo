@@ -248,7 +248,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     return EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
   }
 
-  public func setUpdatesURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws {
+  public func setUpdateURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws {
     if !config.disableAntiBrickingMeasures {
       throw NotAllowedAntiBrickingMeasuresException()
     }
