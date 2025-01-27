@@ -91,7 +91,7 @@ yarn lint
 
 ### Prose linter
 
-When you are done writing or editing docs, run the following script to lint your docs for style and grammar based on [Expo's writing style guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md):
+When you are done writing or editing docs, run the following script to lint your docs for style and grammar based on [Expo's writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md):
 
 ```sh
 yarn run lint-prose
