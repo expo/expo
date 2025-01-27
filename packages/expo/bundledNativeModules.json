@@ -45,7 +45,7 @@
   "expo-image": "~1.13.0",
   "expo-image-loader": "~4.7.0",
   "expo-image-manipulator": "~12.0.5",
-  "expo-image-picker": "~15.0.7",
+  "expo-image-picker": "~15.1.0",
   "expo-intent-launcher": "~11.0.1",
   "expo-insights": "~0.7.0",
   "expo-keep-awake": "~13.0.2",
