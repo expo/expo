@@ -230,7 +230,6 @@ public final class FileDownloader {
     requestedUpdate: Update?,
     assetExtraHeaders: [String: Any]?
   ) -> [String: Any] {
-
     var extraHeaders: [String: Any] = assetExtraHeaders ?? [:]
     if let launchedUpdate = launchedUpdate {
       extraHeaders["Expo-Current-Update-ID"] = launchedUpdate.updateId.uuidString.lowercased()
