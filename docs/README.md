@@ -2,7 +2,8 @@
 
 This is the public documentation for **Expo**, its SDK, client, and services (**EAS**). This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
 
-> [!NOTE] > **Contributors:** Please make sure that you edit the docs in the **pages/versions/unversioned** for SDK reference if you want your changes to apply to the next SDK version too!
+> [!NOTE]
+> For contributors: Please make sure that you edit the docs in the **pages/versions/unversioned** for SDK reference if you want your changes to apply to the next SDK version too!
 
 > [!TIP]
 > If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
