@@ -285,17 +285,42 @@ class Contact(var contactId: String) {
           .build()
       )
     }
+
+    // Flush all data from linked db
+    rawContactId?.let { id ->
+      baseModelsContentType.forEach {
+        ops.add(getFlushOperation(it, id))
+      }
+    }
+
+    // add updated data
     for (map in baseModels) {
       for (item in map) {
-        ops.add(item.getDeleteOperation(rawContactId!!))
         ops.add(item.getInsertOperation(rawContactId))
       }
     }
     return ops
   }
 
+  private fun getFlushOperation(contentType: String, rawId: String): ContentProviderOperation {
+    return ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+      .withSelection("${ContactsContract.Data.MIMETYPE}=? AND ${ContactsContract.Data.RAW_CONTACT_ID}=?", arrayOf(contentType, rawId))
+      .build()
+  }
+
   private val baseModels: Array<List<BaseModel>>
     get() = arrayOf(dates, emails, imAddresses, phones, addresses, relationships, urlAddresses, extraNames)
+  private val baseModelsContentType: Array<String>
+    get() = arrayOf(
+      CommonDataKinds.Event.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Email.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Im.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+      CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Relation.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Website.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Nickname.CONTENT_ITEM_TYPE
+    )
 
   // convert to react native object
   @Throws(ParseException::class)
