@@ -2,9 +2,9 @@
 
 This is the public documentation for **Expo**, its SDK, client, and services (**EAS**). This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
 
-> **Note** **Contributors:** Please make sure that you edit the docs in the **pages/versions/unversioned** for SDK reference if you want your changes to apply to the next SDK version too!
+> [!NOTE] **Contributors:** Please make sure that you edit the docs in the **pages/versions/unversioned** for SDK reference if you want your changes to apply to the next SDK version too!
 
-> **Note**
+> [!NOTE]
 > If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
 ## To run locally in development mode
@@ -43,11 +43,12 @@ All documentation-related content is inside the **pages** directory. We write do
 The documentation is divided into four main sections:
 
 - **Home**: Provides a guided path from starting a project from scratch to deploying it to app stores.
-- **Guides**: General purpose and fundamental guides that help you understand how Expo works and how to use it. This section also contains all EAS related documentation.
+- **Guides**: General purpose and fundamental guides that help you understand how Expo works and how to use it.
+- **EAS**: DEtailed documentation for all EAS services.
 - **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See [Update latest version of docs](#update-latest-version-of-docs) for more information.
 - **Learn**: Tutorials and guides that help you learn how to use Expo and React Native.
 
-> **Note**
+> [!NOTE]
 > We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command for some Expo libraries.
 
 ### Metadata of a page
@@ -89,13 +90,28 @@ yarn lint
 
 ### Prose linter
 
-We use [Vale](https://vale.sh/) to lint our docs for style and grammar based on [Expo's writing style guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
-
-In a terminal window, run the following script which will run Vale for all markdown files inside the **pages** directory:
+When you are done writing or editing docs, run the following script to lint your docs for style and grammar based on [Expo's writing style guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md):
 
 ```sh
 yarn run lint-prose
 ```
+
+We use [Vale](https://vale.sh/) to lint our docs.
+
+#### Switch off Prose linter
+
+For exceptional cases, you can switch off the prose linter for a specific line or block of text by adding by using a [comment delimiter](https://vale.sh/docs/keys/commentdelimiters):
+
+```mdx
+{/* vale off */}
+
+This is some text that will not be linted by Vale.
+
+{/* vale on */}
+```
+
+> [!NOTE]
+> Ideally, to add new services or features, the Vale lint rules should upgrade accordingly when there's a pattern. If you want to update a rule, see the [**.vale**](https://github.com/expo/expo/tree/main/docs/.vale/writing-styles/expo-docs) directory for already established rules.
 
 <details>
 
@@ -114,7 +130,7 @@ Open the doc file (`*.mdx`) that you are working on and you'll may see suggested
 
 ### Server-side redirects
 
-These redirects are limited in their expressiveness &mdash; you can map a path to another path, but no regular expressions are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of **deploy.sh**.
+These redirects are limited in their expressiveness &mdash; you can map a path to another path, but no regular expressions are supported. See [client-side redirects](#client-side-redirects) for more on that. Server-side redirects are re-created on each run of **deploy.sh**.
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
@@ -131,19 +147,22 @@ You can add your own client-side redirect rules in `common/error-utilities.ts`.
 
 ## Search
 
-We use Algolia as a main search results provider for our docs. Besides the query, results are also filtered based on the `version` tag which represents the user's current location. The tag is set in the `components/DocumentationPage.tsx` head.
+We use Algolia as the main search results provider for our docs. This is set up in the `@expo/styleguide` library, which provides a universal search component that is used both in the docs and on the Expo dashboard.
 
-In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
+Besides the query, the results are also filtered based on the `version` tag. This tag represents the user's current location. The tag is set in the `components/DocumentationPage.tsx` head.
 
-- all unversioned pages use the version tag `none`,
-- all versioned pages use the SDK version (for example, `v51.0.0` or `v50.0.0`),
-- all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
+Inside `@expo/styleguide` library, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]` in [`packages/search-ui/src/components/CommandMenu.tsx`](https://github.com/expo/styleguide/blob/main/packages/search-ui/src/components/CommandMenu.tsx). Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version.
+
+- All unversioned pages use the version tag `none`
+- All versioned pages use the SDK version (for example, `v51.0.0` or `v50.0.0`)
+- All pages with `hideFromSearch: true` frontmatter entry don't have the version tag
 
 Currently, the base results for Expo docs are combined with other results from multiple sources, such as:
 
-- manually defined paths for Expo dashboard located in `ui/components/CommandMenu/expoEntries.ts`,
-- public Algolia index for React Native website,
-- React Native directory public API, see the directory [README.md](https://github.com/react-native-community/directory#i-dont-like-your-website-can-i-hit-an-api-instead-and-build-my-own-better-stuff) for more details.
+- Manually defined paths for Expo dashboard located in `ui/components/Search/expoEntries.ts`
+- Public Algolia index for React Native website
+- React Native directory public API, see the directory [README.md](https://github.com/react-native-community/directory#i-dont-like-your-website-can-i-hit-an-api-instead-and-build-my-own-better-stuff) for more details
+- Expo Blog public API
 
 ## Quirks
 
@@ -157,23 +176,22 @@ The docs are deployed automatically via a GitHub Action each time a PR with docs
 
 ### Internal linking
 
-If you need to link from one MDX file to another, please use the static/full path to this file (avoid relative links):
+If you need to link from one MDX file to another, use the static/full path to this file (avoid relative links):
 
-- from: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
-- from: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
+- From: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
+- From: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
 Validate all current links by running `yarn lint-links` script.
 
-### Update latest version of docs
+### Update latest version of API reference docs
 
 When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well.
 
 Make sure to also grab the upgrade instructions from the release notes blog post and put them in **upgrading-expo-sdk-walkthrough.mdx**.
 
-That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
+The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
-Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX.
-So, if you wish to override the alphabetical ordering, manipulate page titles in **constants/navigation.js**.
+Since the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you want to override the alphabetical ordering, manipulate page titles in **constants/navigation.js**.
 
 ### Update API reference docs
 
@@ -271,9 +289,9 @@ This will make sure that the ExpoBot on GitHub will not complain about updating 
 
 Some of the packages have documentation spread over multiple pages. For example, `expo-av` package has a separate base interface, and some of the information is separated into `Audio` and `Video` components. For such packages, always make sure to check the [name of the package](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts#L24) for `et` command.
 
-### Sync app.json/app.config.js with the schema
+### Sync app config with the schema
 
-To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema.
+To render the [app config](https://docs.expo.dev/versions/latest/config/app/) properties table, we currently store a local copy of the appropriate version of the schema.
 
 If the schema is updated, to sync and rewrite our local copy, run `yarn run schema-sync <SDK version integer>` or `yarn run schema-sync unversioned`.
 
@@ -281,7 +299,7 @@ If the schema is updated, to sync and rewrite our local copy, run `yarn run sche
 
 You can add images and assets to the **public/static** directory. They'll be served by the production and staging servers at **static**.
 
-#### Add videos
+### Add videos
 
 - Record the video using QuickTime
 - Install `ffmpeg` (`brew install ffmpeg`)
@@ -289,19 +307,35 @@ You can add images and assets to the **public/static** directory. They'll be ser
 - If the width of the video is larger than ~1200px, then run this to shrink it: `ffmpeg -i your-video.mp4 -filter:v scale="1280:trunc(ow/a/2)*2" your-video-smaller.mp4`
 - Put the video in the appropriate location in `public/static/videos` and use it in your docs page MDX like this:
 
-```js
+```tsx
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 // Change the path to point to the relative path to your video from within the `static/videos` directory
 <ContentSpotlight file="guides/color-schemes.mp4" />;
 ```
 
+### Add video links from Expo's YouTube channel
+
+To reference a video from Expo's YouTube channel, use the `VideBoxLink` component. This component is imported from `~/ui/components/VideBoxLink`.
+
+```tsx
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+<VideoBoxLink videoId="Gk7RHDWsLsQ" title="Required title" description="Optional" />;
+```
+
+| Param       | Description                                                                                                                                                                        |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `videoId`   | **Required**. The ID of the video from YouTube. You can find this in the URL of the video. For example, in `https://www.youtube.com/watch?v=Gk7RHDWsLsQ`, the ID is `Gk7RHDWsLsQ`. |
+| title       | **Required**. The title of the video.                                                                                                                                              |
+| description | **Optional**. The description of the video.                                                                                                                                        |
+
 ### Add code block
 
 Code blocks are a great way to add code snippets to our docs. We leverage the usual code block Markdown syntax, but it's expanded to support code block titles and additional params.
 
 <!-- prettier-ignore -->
-```mdx
+````mdx
     {/* For plain code block the syntax is unchanged (but we recommend to always add a title to the snippet): */}
     ```js
     // Your code goes in here
@@ -322,7 +356,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
     ```js collapseHeight=200
     // Your code goes in here
     ```
-```
+````
 
 #### Supported additional params
 
@@ -332,7 +366,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 
 ### Add inline Snack examples
 
-Snacks are a great way to add instantly-runnable examples to our docs. The `SnackInline` component can be imported to any markdown file, and used like this:
+Snacks are a great way to add instantly-runnable examples to our docs. The [`SnackInline`](https://github.com/expo/expo/blob/main/docs/ui/components/Snippet/blocks/SnackInline.tsx) component can be imported to any markdown file, and used like this:
 
 <!-- prettier-ignore -->
 ```mdx
@@ -361,8 +395,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ### Add multiple code variants
 
-Sometimes it's useful to show multiple ways of doing something, for instance, maybe you'd like to have an example using a React class component, and also an example of a functional component.
-The `Tabs` plugin is really useful for this, and this is how you'd use it in a markdown file:
+Sometimes it's useful to show multiple ways of doing something, for instance, maybe you'd like to have an example using a React class component, and also an example of a functional component. The `Tabs` plugin is useful for this, and this is how you'd use it in a markdown file:
 
 <!-- prettier-ignore -->
 ```mdx
@@ -390,14 +423,14 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 </Tabs>
 ```
 
-**Note:** The components should not be indented or they will not be parsed correctly.
+> [!NOTE]
+> The components should not be indented or they will not be parsed correctly.
 
 ### Exclude pages from DocSearch
 
 To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page and filters it from our facet-based search.
 
-Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google.
-For a page to be hidden even from search engine results, you need to edit the sitemap that is generated via our Next.js config (**next.config.js**).
+Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google. To hide a page from search engine results, you need to edit the sitemap that is generated via our Next.js config (**next.config.js**).
 
 ### Exclude directories from the sidebar
 
@@ -460,3 +493,17 @@ This pattern is used for some of the pages where we manually update the modifica
 Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
 
 If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
+
+### Use Step for procedural guides
+
+For procedural guides, use [`Step`](https://github.com/expo/expo/blob/main/docs/ui/components/Step/Step.tsx) component:
+
+```mdx
+import { Step } from '~/ui/components/Step';
+
+<Step label="1">
+
+This is some text.
+
+</Step>
+```
