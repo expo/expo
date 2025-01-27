@@ -287,6 +287,10 @@ class Contact(var contactId: String, var appContext: AppContext) {
           .build()
       )
     }
+    op = ContentProviderOperation.newUpdate(ContactsContract.Contacts.CONTENT_URI)
+      .withSelection("${ContactsContract.Contacts._ID}=?", arrayOf(contactId))
+      .withValue(ContactsContract.Contacts.STARRED, if (isFavorite) 1 else 0)
+    ops.add(op.build())
     for (map in baseModels) {
       for (item in map) {
         ops.add(item.getDeleteOperation(rawContactId!!))
@@ -523,7 +527,7 @@ class Contact(var contactId: String, var appContext: AppContext) {
     }
 
   private fun getThumbnailBitmap(photoUri: String?): Bitmap {
-    val context = appContext.reactContext ?: throw Exceptions.AppContextLost()
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
     val uri = Uri.parse(photoUri)
     context.contentResolver.openInputStream(uri).use { inputStream ->
       return BitmapFactory.decodeStream(inputStream)

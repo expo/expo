@@ -163,6 +163,35 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(contact.isFavorite).toBe(isAndroid ? true : undefined);
     });
 
+    it('Contacts.updateContactAsync() and toggle isFavorite', async () => {
+      const contacts = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.IsFavorite],
+      });
+      const favoriteContact = contacts.data.find((contact) => contact.isFavorite);
+      console.log('favoriteContact', favoriteContact);
+      expect(favoriteContact).toBeDefined();
+      expect(typeof favoriteContact.isFavorite).toBe('boolean');
+      const modifiedId = await Contacts.updateContactAsync({
+        id: favoriteContact.id,
+        [Contacts.Fields.IsFavorite]: false,
+      });
+      expect(typeof modifiedId).toBe('string');
+      const modifiedContact = await Contacts.getContactByIdAsync(modifiedId, [
+        Contacts.Fields.IsFavorite,
+      ]);
+      expect(typeof modifiedContact.isFavorite).toBe('boolean');
+      expect(modifiedContact.isFavorite).toBe(false);
+      await Contacts.updateContactAsync({
+        id: modifiedId,
+        [Contacts.Fields.IsFavorite]: true,
+      });
+      const modifiedContact2 = await Contacts.getContactByIdAsync(modifiedId, [
+        Contacts.Fields.IsFavorite,
+      ]);
+      expect(typeof modifiedContact2.isFavorite).toBe('boolean');
+      expect(modifiedContact2.isFavorite).toBe(true);
+    });
+
     it('Contacts.createContactAsync() with birthday', async () => {
       const originalBirthday = {
         day: 30,
@@ -648,5 +677,17 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
         }
       }
     });
+
+    it('Contacts.updateContactAsync() with image', async () => {
+      const contactId = await createContactWithImage({
+        [Contacts.Fields.FirstName]: 'Kenny',
+        [Contacts.Fields.LastName]: 'Bday guy',
+      });
+      expect(typeof contactId).toBe('string');
+      const contact = await Contacts.getContactByIdAsync(contactId);
+      const modifiedId = await Contacts.updateContactAsync(contact);
+      expect(typeof modifiedId).toBe('string');
+    });
+
   });
 }
