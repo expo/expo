@@ -403,6 +403,38 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       }
     });
 
+    it('Contacts.getContactsAsync() returns contacts matching the given phone number', async () => {
+      const contact = {
+        [Contacts.Fields.FirstName]: 'Homer',
+        [Contacts.Fields.LastName]: 'Simpson',
+        [Contacts.Fields.JobTitle]: 'Citizen',
+        [Contacts.Fields.PhoneNumbers]: [
+          {
+            number: '111222333',
+            label: 'springfield',
+          },
+        ],
+      };
+
+      const fakeContactId = await createContact(contact);
+
+      const contacts = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.PhoneNumbers],
+        pageSize: 1,
+        phoneNumber: '111222',
+      });
+
+      expect(contacts.data.length).toBe(1);
+
+      contacts.data.forEach((contact) => {
+        expect(contact.phoneNumbers).toBeDefined();
+        expect(contact.phoneNumbers.length).toBe(1);
+        expect(contact.phoneNumbers[0].number).toMatch(/111222333/);
+      });
+
+      await Contacts.removeContactAsync(fakeContactId);
+    });
+
     it('Contacts.getContactByIdAsync() gets a result of right shape', async () => {
       const fields = {
         [Contacts.Fields.FirstName]: 'Tommy',

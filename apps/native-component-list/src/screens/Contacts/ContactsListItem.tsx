@@ -8,6 +8,7 @@ export default function ContactsListItem(props: {
   contactId: string;
   name: string;
   subtitle?: string;
+  phoneNumber?: string;
   isMe?: boolean;
   onPress: (contactId: string) => void;
 }) {
@@ -15,13 +16,14 @@ export default function ContactsListItem(props: {
     props.onPress && props.onPress(props.contactId);
   };
 
-  const { name, subtitle, isMe } = props;
+  const { name, subtitle, isMe, phoneNumber } = props;
   return (
     <TouchableHighlight underlayColor={Colors.listItemTouchableHighlight} onPress={onPress}>
       <View style={styles.container}>
         <View>
           <Text style={styles.title}>{name}</Text>
           {subtitle && <Text style={styles.link}>{subtitle}</Text>}
+          {props.phoneNumber && <Text>{phoneNumber}</Text>}
         </View>
         {isMe && <Text style={styles.subtitle}>me</Text>}
         <Ionicons size={24} color={Colors.tabIconDefault} name="arrow-forward" />

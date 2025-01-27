@@ -425,6 +425,10 @@ export type ContactQuery = {
      * @platform ios
      */
     rawContacts?: boolean;
+    /**
+     * Get all contacts whose phone number contains the provided string.
+     */
+    phoneNumber?: string;
 };
 /**
  * Denotes the functionality of a native contact form.
