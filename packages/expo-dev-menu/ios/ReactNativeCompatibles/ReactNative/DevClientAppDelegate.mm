@@ -58,7 +58,7 @@
   RCTSetNewArchEnabled([self newArchEnabled]);
   RCTEnableTurboModule(self.turboModuleEnabled);
 
-  self.rootViewFactory = [self createRCTRootViewFactory];
+  self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self];
 
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
