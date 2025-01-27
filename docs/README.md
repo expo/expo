@@ -4,7 +4,7 @@ This is the public documentation for **Expo**, its SDK, client, and services (**
 
 > [!NOTE] > **Contributors:** Please make sure that you edit the docs in the **pages/versions/unversioned** for SDK reference if you want your changes to apply to the next SDK version too!
 
-> [!NOTE]
+> [!TIP]
 > If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
 ## To run locally in development mode
@@ -276,6 +276,31 @@ et gdad -p expo-constants --sdk 51
 Now, in the terminal window, navigate to **expo/docs** repo and run the command `yarn run dev` to see the changes applied
 
 - Open [http://localhost:3002/](http://localhost:3002/) in the browser and go to the API doc to see the changes you have made. Make sure to select the right SDK version to see the changes in the left sidebar.
+
+<details>
+<summary>Updating versioned documentation data after SDK lifecycle is latest or already released</summary>
+
+When you need to update versioned documentation data late in the SDK lifecycle, follow these steps:
+
+1. Ensure the related code change exists on the `main` branch and `sdk-*` branch.
+
+2. Make branch changes:
+
+- Switch to the sdk-\* branch
+- Run command: `et gdad -p expo-library --sdk 52`, where `expo-library` is the library you want to update and `52` is the SDK version.
+- Store/shelf the changes locally (you can use `git stash`)
+
+3. Update main branch:
+
+- Switch back to main branch
+- Run command: `et gdad -p expo-library`
+
+4. Finalize changes:
+
+- Add previously stored versioned `expo-library.json` to the main changeset
+- Create as a Pull Request
+
+</details>
 
 #### Tips
 
