@@ -71,7 +71,7 @@ data class UpdatesConfiguration(
     configOverride = context?.let { UpdatesConfigurationOverride.load(context) }
   )
 
-  private constructor(
+  internal constructor(
     context: Context?,
     overrideMap: Map<String, Any>?,
     disableAntiBrickingMeasures: Boolean,

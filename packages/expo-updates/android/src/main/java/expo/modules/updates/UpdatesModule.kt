@@ -215,8 +215,8 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       }
     }
 
-    Function("setUpdatesURLAndRequestHeadersOverride") { configOverride: UpdatesConfigurationOverrideParam? ->
-      UpdatesController.instance.setUpdatesURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
+    Function("setUpdateURLAndRequestHeadersOverride") { configOverride: UpdatesConfigurationOverrideParam? ->
+      UpdatesController.instance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
     }
   }
 

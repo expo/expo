@@ -366,8 +366,8 @@ class UpdatesDevLauncherController(
     callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
   }
 
-  override fun setUpdatesURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
-    throw NotAvailableInDevClientException("Updates.setUpdatesURLAndRequestHeadersOverride() is not supported in development builds.")
+  override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
+    throw NotAvailableInDevClientException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported in development builds.")
   }
 
   companion object {

@@ -313,8 +313,8 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
  * @experimental
  * @hidden
  */
-export function setUpdatesURLAndRequestHeadersOverride(
+export function setUpdateURLAndRequestHeadersOverride(
   configOverride: { updateUrl: string; requestHeaders: Record<string, string> } | null
 ): void {
-  ExpoUpdates.setUpdatesURLAndRequestHeadersOverride(configOverride);
+  ExpoUpdates.setUpdateURLAndRequestHeadersOverride(configOverride);
 }
