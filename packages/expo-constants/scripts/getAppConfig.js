@@ -11,6 +11,10 @@ if (fs.existsSync(path.join(possibleProjectRoot, 'package.json'))) {
   projectRoot = possibleProjectRoot;
 } else if (fs.existsSync(path.join(possibleProjectRoot, '..', 'package.json'))) {
   projectRoot = path.resolve(possibleProjectRoot, '..');
+} else if (fs.existsSync(path.join(possibleProjectRoot, '..', '..', 'package.json'))) {
+  projectRoot = path.resolve(possibleProjectRoot, '..', '..');
+} else if (fs.existsSync(path.join(possibleProjectRoot, '..', '..', '..', 'package.json'))) {
+  projectRoot = path.resolve(possibleProjectRoot, '..', '..', '..');
 }
 
 process.chdir(projectRoot);
