@@ -255,6 +255,13 @@ export class AudioRecorderWeb
 
   async setup() {
     this.mediaRecorder = await this.createMediaRecorder(this.options);
+
+    // Set up Web Audio API context and analyser
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    this.analyserNode = audioContext.createAnalyser();
+    this.analyserNode.fftSize = 128;
+    this.analyserNode.smoothingTimeConstant = 0.1;
+    this.audioContext = audioContext;
   }
 
   id = nextId();
@@ -266,6 +273,8 @@ export class AudioRecorderWeb
   private mediaRecorderUptimeOfLastStartResume = 0;
   private mediaRecorderIsRecording = false;
   private timeoutIds: number[] = [];
+  private analyserNode: AnalyserNode | null = null;
+  private audioContext: AudioContext | null = null;
 
   get isRecording(): boolean {
     return this.mediaRecorder?.state === 'recording';
@@ -282,6 +291,11 @@ export class AudioRecorderWeb
       this.mediaRecorder.resume();
     } else {
       this.mediaRecorder?.start();
+      // Connect audio stream to analyser
+      const stream = this.audioContext?.createMediaStreamSource(
+        this.mediaRecorder.stream as MediaStream
+      );
+      stream?.connect(this.analyserNode!);
     }
   }
 
@@ -302,6 +316,7 @@ export class AudioRecorderWeb
   }
 
   getStatus(): RecorderState {
+    const metering = this.getMeteringLevel();
     return {
       canRecord:
         this.mediaRecorder?.state === 'recording' || this.mediaRecorder?.state === 'inactive',
@@ -309,6 +324,7 @@ export class AudioRecorderWeb
       durationMillis: this.getAudioRecorderDurationMillis(),
       mediaServicesDidReset: false,
       url: this.uri,
+      metering,
     };
   }
 
@@ -421,6 +437,20 @@ export class AudioRecorderWeb
       duration += Date.now() - this.mediaRecorderUptimeOfLastStartResume;
     }
     return duration;
+  }
+
+  private getMeteringLevel(): number {
+    if (!this.analyserNode) return -Infinity; // Return a default value if AnalyserNode is not initialized
+  
+    const dataArray = new Uint8Array(this.analyserNode.frequencyBinCount); // Array length is fftSize / 2
+    this.analyserNode.getByteFrequencyData(dataArray);
+  
+    // Calculate the average power level
+    const sum = dataArray.reduce((a, b) => a + b, 0);
+    const average = sum / dataArray.length;
+  
+    // Convert the average power level to decibels (dB)
+    return 20 * Math.log10(average / 255 || 1); // Avoid log of zero with `|| 1`
   }
 }
 
