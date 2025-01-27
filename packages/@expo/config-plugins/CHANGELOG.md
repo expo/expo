@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Set `ios.infoPlist.ITSAppUsesNonExemptEncryption` to `false` by default.
+- Set `ios.infoPlist.ITSAppUsesNonExemptEncryption` to `false` by default. ([#34487](https://github.com/expo/expo/pull/34487) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
