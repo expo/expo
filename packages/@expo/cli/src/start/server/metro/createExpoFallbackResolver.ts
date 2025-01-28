@@ -14,15 +14,15 @@ import type { StrictResolver, StrictResolverFactory } from './withMetroMultiPlat
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 
 /** A record of dependencies that we know are only used for scripts and config-plugins
-  * @privateRemarks
-  * This includes dependencies we never resolve indirectly. Generally, we only want
-  * to add fallback resolutions for dependencies of `expo` and `expo-router` that
-  * are either transpiled into output code or resolved from other Expo packages
-  * without them having direct dependencies on these dependencies.
-  * Meaning: If you update this list, exclude what a user might use when they
-  * forget to specify their own dependencies, rather than what we use ourselves
-  * only in `expo` and `expo-router`.
-  */
+ * @privateRemarks
+ * This includes dependencies we never resolve indirectly. Generally, we only want
+ * to add fallback resolutions for dependencies of `expo` and `expo-router` that
+ * are either transpiled into output code or resolved from other Expo packages
+ * without them having direct dependencies on these dependencies.
+ * Meaning: If you update this list, exclude what a user might use when they
+ * forget to specify their own dependencies, rather than what we use ourselves
+ * only in `expo` and `expo-router`.
+ */
 const EXCLUDE_ORIGIN_MODULES: Record<string, true | undefined> = {
   '@expo/config': true,
   '@expo/config-plugins': true,
@@ -42,7 +42,10 @@ interface PackageMeta {
   readonly exports?: any; // unused
   readonly dependencies?: Record<string, unknown>;
   readonly peerDependencies?: Record<string, unknown>;
-  readonly peerDependenciesMeta?: Record<string, PackageMetaPeerDependenciesMetaEntry | undefined | null>;
+  readonly peerDependenciesMeta?: Record<
+    string,
+    PackageMetaPeerDependenciesMetaEntry | undefined | null
+  >;
 }
 
 interface ModuleDescription {
@@ -140,7 +143,7 @@ export function createFallbackModuleResolver({
   const getModuleDescription = (
     immutableContext: ResolutionContext,
     originModuleName: string,
-    platform: string | null,
+    platform: string | null
   ) => {
     if (_moduleDescriptionsCache[originModuleName] !== undefined) {
       return _moduleDescriptionsCache[originModuleName];
@@ -153,13 +156,17 @@ export function createFallbackModuleResolver({
     return (_moduleDescriptionsCache[originModuleName] = getModuleDescriptionWithResolver(
       context,
       getStrictResolver(context, platform),
-      originModuleName,
+      originModuleName
     ));
   };
 
+  const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
+
   return function requestFallbackModule(immutableContext, moduleName, platform) {
     // Early return if `moduleName` cannot be a module specifier
-    if (moduleName[0] === '.' || moduleName[0] === '/') {
+    // This doesn't have to be accurate as this resolver is a fallback for failed resolutions and
+    // we're only doing this to avoid unnecessary resolution work
+    if (fileSpecifierRe.test(moduleName)) {
       return null;
     }
 
