@@ -15,18 +15,21 @@ jest.mock('../resolveDevice', () => ({
 }));
 
 describe(resolveOptionsAsync, () => {
+  const platform = 'ios';
+
   afterEach(() => vol.reset());
 
   it(`resolves default options`, async () => {
     vol.fromJSON(rnFixture, '/');
 
-    expect(await resolveOptionsAsync('/', {})).toEqual({
+    expect(await resolveOptionsAsync('/', platform, {})).toEqual({
       buildCache: true,
       configuration: 'Debug',
       device: { name: 'mock', udid: '123' },
       isSimulator: true,
       port: 8081,
       projectRoot: '/',
+      platform,
       scheme: 'ReactNativeProject',
       shouldSkipInitialBundling: false,
       shouldStartBundler: true,
@@ -39,7 +42,7 @@ describe(resolveOptionsAsync, () => {
     jest.mocked(isSimulatorDevice).mockImplementationOnce(() => false);
 
     expect(
-      await resolveOptionsAsync('/', {
+      await resolveOptionsAsync('/', platform, {
         buildCache: false,
         bundler: true,
         device: 'search',
@@ -55,6 +58,7 @@ describe(resolveOptionsAsync, () => {
       isSimulator: false,
       port: 8081,
       projectRoot: '/',
+      platform,
       scheme: 'MyScheme',
       shouldSkipInitialBundling: false,
       shouldStartBundler: true,

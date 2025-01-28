@@ -6,6 +6,7 @@ import {
   compileModsAsync as compileInternalModsAsync,
   type ExportedConfig,
   IOSConfig,
+  type ModPlatform,
   withPlugins,
 } from '@expo/config-plugins';
 import { getInfoPlistPathFromPbxproj } from '@expo/config-plugins/build/ios/utils/getInfoPlistPath';
@@ -98,10 +99,10 @@ export function getProjectRootLikePrebuild(config: ExpoConfig): string {
   return projectRoot;
 }
 
-export function getInfoPlistPathLikePrebuild(config: ExpoConfig): string {
+export function getInfoPlistPathLikePrebuild(config: ExpoConfig, platform: ModPlatform): string {
   const projectRoot = getProjectRootLikePrebuild(config);
-  const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
-  const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(project);
+  const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot, platform);
+  const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(project, platform);
   if (!infoPlistBuildProperty) {
     throw new Error('Info.plist file linked to Xcode project does not exist');
   }

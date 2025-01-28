@@ -12,6 +12,8 @@ jest.mock('../../utils/warnings');
 
 describe(setBitcodeWithConfig, () => {
   const projectRoot = '/tablet';
+  const platform = 'ios';
+
   beforeEach(async () => {
     vol.fromJSON(
       {
@@ -28,11 +30,11 @@ describe(setBitcodeWithConfig, () => {
   });
 
   it('defaults to not modifying the bitcode settings', async () => {
-    setBitcodeEnabledForRoot({ ios: {} }, projectRoot, validateDefaultBitcode);
+    setBitcodeEnabledForRoot({ ios: {} }, projectRoot, platform, validateDefaultBitcode);
   });
 
   it('enables bitcode for everything', async () => {
-    setBitcodeEnabledForRoot({ ios: { bitcode: true } }, projectRoot, (project) => {
+    setBitcodeEnabledForRoot({ ios: { bitcode: true } }, projectRoot, platform, (project) => {
       const configurations = getConfigurations(project);
       for (const [, configuration] of configurations) {
         expect(configuration.buildSettings.ENABLE_BITCODE).toBe('YES');
@@ -41,7 +43,7 @@ describe(setBitcodeWithConfig, () => {
   });
 
   it('disables bitcode for everything', async () => {
-    setBitcodeEnabledForRoot({ ios: { bitcode: false } }, projectRoot, (project) => {
+    setBitcodeEnabledForRoot({ ios: { bitcode: false } }, projectRoot, platform, (project) => {
       const configurations = getConfigurations(project);
       for (const [, configuration] of configurations) {
         expect(configuration.buildSettings.ENABLE_BITCODE).toBe('NO');
@@ -50,7 +52,7 @@ describe(setBitcodeWithConfig, () => {
   });
 
   it('enables bitcode on specific configuration', async () => {
-    setBitcodeEnabledForRoot({ ios: { bitcode: 'Debug' } }, projectRoot, (project) => {
+    setBitcodeEnabledForRoot({ ios: { bitcode: 'Debug' } }, projectRoot, platform, (project) => {
       const configurations = getConfigurations(project);
       for (const [, configuration] of configurations) {
         // ensure all others are disabled
@@ -62,7 +64,12 @@ describe(setBitcodeWithConfig, () => {
   });
 
   it('warns when enabling bitcode on an invalid configuration', async () => {
-    setBitcodeEnabledForRoot({ ios: { bitcode: 'Bacon' } }, projectRoot, validateDefaultBitcode);
+    setBitcodeEnabledForRoot(
+      { ios: { bitcode: 'Bacon' } },
+      projectRoot,
+      platform,
+      validateDefaultBitcode
+    );
     expect(WarningAggregator.addWarningIOS).toHaveBeenLastCalledWith(
       'ios.bitcode',
       'No configuration named "Bacon". Expected one of: "Debug", "Release".'
@@ -77,9 +84,10 @@ function getConfigurations(project: XcodeProject) {
 function setBitcodeEnabledForRoot(
   config: { ios?: { bitcode?: boolean | string } & any },
   projectRoot: string,
+  platform: string,
   validate: (project: XcodeProject) => void
 ) {
-  let project = getPbxproj(projectRoot);
+  let project = getPbxproj(projectRoot, platform);
   project = setBitcodeWithConfig(config, { project });
   validate(project);
   fs.writeFileSync(project.filepath, project.writeSync());
