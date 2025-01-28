@@ -1,7 +1,7 @@
 ---
 sidebar_title: Get started
-title: Deploy your first Expo Router and React Native web app
-description: Learn how to deploy your Expo Router and React Native web apps to EAS Hosting.
+title: Deploy your first Expo Router and React app
+description: Learn how to deploy your Expo Router and React apps to EAS Hosting.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -9,11 +9,23 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-EAS Hosting allows you to deploy an exported Expo web build to a preview or production URL.
+EAS Hosting is a react hosting service that allows you to deploy an exported Expo web build to a preview or production URL.
 
 This guide will walk you through the process of creating your first web deployment.
 
 <VideoBoxLink videoId="NaKsfWciJLo" title="Watch: Deploy your Expo Router web project" />
+
+## Why EAS Hosting
+
+Historically, traditional website hosting services were recommended for deploying Expo Router and React apps. However, this approach doesn't address the unique challenges of dealing with native apps. Here are some key limitations:
+
+- Version synchronization: During the app store publishing process, you may need to deploy new versions of your servers.
+
+- Request routing complexity: Different versions of your native app may require routing to specific server versions. This can create additional complexity when handling requests.
+
+- Platform-specific analysis: When running native apps, you need enhanced observability for platform-specific metrics.
+
+The introduction of EAS Hosting aims to address these limitations.
 
 ## Prerequisites
 
