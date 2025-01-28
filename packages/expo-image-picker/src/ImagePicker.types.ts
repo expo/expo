@@ -58,7 +58,7 @@ export type MediaType = 'images' | 'videos' | 'livePhotos';
  * The default tab with which the image picker will be opened.
  * - `'photos'` - the photos/videos tab will be opened.
  * - `'albums'` - the albums tab will be opened.
- * 
+ *
  * @platform android
  */
 export type DefaultTab = 'photos' | 'albums';
