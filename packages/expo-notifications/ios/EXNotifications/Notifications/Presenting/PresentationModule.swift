@@ -25,7 +25,8 @@ public class PresentationModule: Module, NotificationDelegate {
           promise.reject("ERR_NOTIF_PRESENT", error.localizedDescription)
           return
         }
-        let content = try NotificationBuilder.content(notificationSpec, appContext: appContext)
+        let requestContentRecord = try NotificationRequestContentRecord(from: notificationSpec, appContext: appContext)
+        let content = requestContentRecord.toUNMutableNotificationContent()
         var request: UNNotificationRequest?
         try EXUtilities.catchException {
           request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
