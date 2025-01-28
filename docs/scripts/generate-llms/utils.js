@@ -133,7 +133,6 @@ export function cleanContent(content) {
       .replace(/\/\*\s*@(?:info|hide)\s*\*\/(?:(?!\/\*\s*@end)[\S\s])*\/\*\s*@end\s*\*\//g, '')
       .replace(/{\s*\/\*\s*todo:\s*[\S\s]*?\*\/\s*}/gi, '')
       .replace(/\/\*\s*@tutinfo(?:\s*<CODE>.*?<\/CODE>)?.*?\*\//g, '')
-      .replace(/{\s*\/\*\s*TODO:[\S\s]*?\*\/\s*}/g, '')
       .replace(/<BoxLink[\S\s]+?\/>/g, '')
       .replace(/\s*<\/>\s*}\s*Icon={[^}]*}\s*\/>/g, '')
       .replace(/\s*}\s*href="[^"]*"\s*Icon={[^}]+}\s*\/>/g, '')
