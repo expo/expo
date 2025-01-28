@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Fixed an issue on iOS where social profile urls were badly stored. ([#31771](https://github.com/expo/expo/pull/31771) by [@mlecoq](https://github.com/mlecoq))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
