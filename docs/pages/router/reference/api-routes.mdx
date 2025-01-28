@@ -225,14 +225,13 @@ Here's how to configure your native app to automatically deploy and link a versi
 
 <Step label="1">
 
-Ensure the `origin` field is **NOT** set in the `app.json` or in the `expo.extra.router.origin` field.
-Also ensure you aren't using `app.config.js` as this is not supported with automatically linked deployments yet.
+Ensure the `origin` field is **NOT** set in the **app.json** or in the `expo.extra.router.origin` field. Also, ensure you aren't using **app.config.js** as this is not supported with automatically linked deployments yet.
 
 </Step>
 
 <Step label="2">
 
-Setup [hosting](/eas/hosting/get-started) for the project by deploying once locally first.
+Setup [EAS Hosting](/eas/hosting/get-started) for the project by deploying once locally first.
 
 <Terminal cmd={['$ npx expo export -p web', '$ eas deploy']} />
 
@@ -263,7 +262,7 @@ EXPO_TOKEN=xxxxxxx
 
 <Step label="5">
 
-Set the `owner` field in the `app.json` to the owner of the project (this is usually your EAS username).
+Set the `owner` field in the **app.json** to the owner of the project (this is usually your EAS username).
 
 ```json app.json
 {
@@ -285,10 +284,11 @@ You can also run this locally with:
 
 <Terminal
   cmd={[
-    '# iOS',
-    '$ npx expo run:ios --configuration Release',
     '# Android',
     '$ npx expo run:android --variant release',
+    '',
+    '# iOS',
+    '$ npx expo run:ios --configuration Release',
   ]}
 />
 
@@ -309,7 +309,7 @@ It can often be useful to test the production build against a local dev server t
 
 <Step label="1">
 
-First, export the production server:
+Export the production server:
 
 <Terminal cmd={['$ npx expo export']} />
 
@@ -324,7 +324,7 @@ Host the production server locally:
 
 <Step label="3">
 
-Set the origin in the `app.json`'s `origin` field. Ensure no generated value is in `expo.extra.router.origin`. This should be `http://localhost:8081` (assuming `npx expo serve` is running on the default port).
+Set the origin in the **app.json**'s `origin` field. Ensure no generated value is in `expo.extra.router.origin`. This should be `http://localhost:8081` (assuming `npx expo serve` is running on the default port).
 
 ```json app.json
 {
@@ -341,7 +341,7 @@ Set the origin in the `app.json`'s `origin` field. Ensure no generated value is 
 }
 ```
 
-Remember to remove this `origin` value when deploying to production!
+Remember to remove this `origin` value when deploying to production.
 
 </Step>
 
@@ -355,9 +355,9 @@ Build the app in release mode on to a simulator:
 
 You should now see requests coming in to the local server. Use a tool like [Proxyman](https://proxyman.com/) to inspect network traffic for the simulator and gain better insight.
 
-You can experimentally change the URL and quickly rebuild for iOS using the `--unstable-rebundle` flag. This will swap out the app.json and client assets for a new ones, skipping the native rebuild.
+You can experimentally change the URL and quickly rebuild for iOS using the `--unstable-rebundle` flag. This will swap out the **app.json** and client assets for new ones, skipping the native rebuild.
 
-For example, you can run `eas deploy` to get a new deployment URL, add it to the `app.json`, then run `npx expo run:ios --unstable-rebundle --configuration Release` to quickly rebuild the app with the new URL.
+For example, you can run `eas deploy` to get a new deployment URL, add it to the **app.json**, then run `npx expo run:ios --unstable-rebundle --configuration Release` to quickly rebuild the app with the new URL.
 
 You will want to make a clean build before sending to the store to ensure no transient issues are present.
 
