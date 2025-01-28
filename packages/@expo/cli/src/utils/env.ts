@@ -251,6 +251,11 @@ class Env {
     const isWebContainer = process.versions.webcontainer != null;
     return boolish('EXPO_NO_DEPENDENCY_VALIDATION', isWebContainer);
   }
+
+  /** Disable the terminal logs override within React Native that re-enables console logging in the terminal */
+  get EXPO_NO_TERMINAL_LOGS(): boolean {
+    return boolish('EXPO_NO_TERMINAL_LOGS', false);
+  }
 }
 
 export const env = new Env();

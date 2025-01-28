@@ -33,6 +33,7 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
+import { createExpoTerminalLogResolver } from './createExpoTerminalLogResolver';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -594,6 +595,9 @@ export function withExtendedResolver(
       return null;
     },
 
+    // Enable (legacy) terminal logging without warnings
+    createExpoTerminalLogResolver({ getStrictResolver }),
+
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     function requestPostRewrites(
@@ -842,6 +846,12 @@ export async function withMetroMultiPlatformAsync(
     if (isReactCanaryEnabled) {
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
+    } else {
+      // If React Canary is disabled, only add the swapped modules
+      // @ts-expect-error: watchFolders is readonly
+      config.watchFolders.push(
+        path.join(require.resolve('@expo/cli/package.json'), '../static/virtual')
+      );
     }
   }
 
