@@ -1,4 +1,4 @@
-import { Picker } from '@expo/ui/components/Picker';
+import { Picker } from '@expo/ui';
 import * as React from 'react';
 import { ScrollView, Text } from 'react-native';
 
