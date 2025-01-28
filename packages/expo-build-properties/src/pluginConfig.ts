@@ -445,7 +445,8 @@ export interface PluginConfigTypeAndroidQueries {
  */
 export interface PluginConfigTypeAndroidQueriesIntent {
   /**
-   * A string naming the action to perform. Usually one of the platform-defined values, such as `ACTION_SEND` or `ACTION_VIEW`.
+   * A string naming the action to perform. Usually one of the platform-defined values, such as `SEND` or `VIEW`.
+   * See https://developer.android.com/guide/topics/manifest/action-element
    */
   action?: string;
   /**
