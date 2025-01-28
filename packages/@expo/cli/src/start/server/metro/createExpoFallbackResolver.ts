@@ -1,3 +1,12 @@
+// This file creates the fallback resolver
+// The fallback resolver applies only to module imports and should be the last resolver
+// in the chain. It applies to failed Node module resolution of modules and will attempt
+// to resolve them to `expo` and `expo-router` dependencies that couldn't be resolved.
+// This resolves isolated dependency issues, where we expect dependencies of `expo`
+// and `expo-router` to be resolvable, due to hoisting, but they aren't hoisted in
+// a user's project.
+// See: https://github.com/expo/expo/pull/34286
+
 import fs from 'fs';
 import type { ResolutionContext } from 'metro-resolver';
 import path from 'path';
@@ -5,7 +14,16 @@ import path from 'path';
 import type { StrictResolver, StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 
-/** A record of dependencies that we know are only used for scripts and config-plugins */
+/** A record of dependencies that we know are only used for scripts and config-plugins
+  * @privateRemarks
+  * This includes dependencies we never resolve indirectly. Generally, we only want
+  * to add fallback resolutions for dependencies of `expo` and `expo-router` that
+  * are either transpiled into output code or resolved from other Expo packages
+  * without them having direct dependencies on these dependencies.
+  * Meaning: If you update this list, exclude what a user might use when they
+  * forget to specify their own dependencies, rather than what we use ourselves
+  * only in `expo` and `expo-router`.
+  */
 const EXCLUDE_ORIGIN_MODULES: Record<string, true | undefined> = {
   '@expo/config': true,
   '@expo/config-plugins': true,
