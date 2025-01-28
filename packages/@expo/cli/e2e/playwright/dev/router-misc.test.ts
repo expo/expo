@@ -39,6 +39,19 @@ test.describe(inputDir, () => {
     await expoStart.stopAsync();
   });
 
+  test('url hash and search params are parsed correctly when both are set in URL', async ({ page }) => {
+    await expoStart.fetchAsync('/');
+
+    const url = new URL('/hash-support?foo=bar#my-hash', expoStart.url).href;
+
+    await page.goto(url)
+
+    // Ensure the hash and param are correct
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('my-hash');
+    await expect(page.locator('[data-testid="foo-param"]')).toHaveText('bar');
+    expect(page.url()).toEqual(url);
+  });
+
   test('url hash', async ({ page }) => {
     // Listen for console logs and errors
     const pageErrors = pageCollectErrors(page);
