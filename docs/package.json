@@ -21,7 +21,7 @@
     "generate-static-resources": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
     "copy-latest": "node ./scripts/copy-latest.js",
-    "generate-llms": "node ./scripts/generate-llms-txt.js",
+    "generate-llms": "node ./scripts/generate-llms/index.js",
     "postinstall": "yarn copy-latest && yarn generate-static-resources"
   },
   "packageManager": "yarn@4.6.0",
