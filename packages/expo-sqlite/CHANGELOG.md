@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed resolving libsql binary issue on iOS. ([#34529](https://github.com/expo/expo/pull/34529) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 15.1.0 — 2025-01-27
