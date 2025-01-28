@@ -7,7 +7,6 @@
 // a user's project.
 // See: https://github.com/expo/expo/pull/34286
 
-import fs from 'fs';
 import type { ResolutionContext } from 'metro-resolver';
 import path from 'path';
 
@@ -37,10 +36,13 @@ interface PackageMetaPeerDependenciesMetaEntry {
 }
 
 interface PackageMeta {
-  [propName: string]: unknown;
-  dependencies?: Record<string, unknown>;
-  peerDependencies?: Record<string, unknown>;
-  peerDependenciesMeta?: Record<string, PackageMetaPeerDependenciesMetaEntry | undefined | null>;
+  readonly [propName: string]: unknown;
+  readonly name?: string;
+  readonly main?: string;
+  readonly exports?: any; // unused
+  readonly dependencies?: Record<string, unknown>;
+  readonly peerDependencies?: Record<string, unknown>;
+  readonly peerDependenciesMeta?: Record<string, PackageMetaPeerDependenciesMetaEntry | undefined | null>;
 }
 
 interface ModuleDescription {
@@ -56,11 +58,12 @@ const dependenciesToRegex = (dependencies: string[]) =>
 
 /** Resolves an origin module and outputs a filter regex and target path for it */
 const getModuleDescriptionWithResolver = (
+  context: ResolutionContext,
   resolve: StrictResolver,
   originModuleName: string
 ): ModuleDescription | null => {
   let filePath: string | undefined;
-  let packageMeta: PackageMeta;
+  let packageMeta: PackageMeta | undefined | null;
   try {
     const resolution = resolve(`${originModuleName}/package.json`);
     if (resolution.type !== 'sourceFile') {
@@ -68,7 +71,10 @@ const getModuleDescriptionWithResolver = (
       return null;
     }
     filePath = resolution.filePath;
-    packageMeta = JSON.parse(fs.readFileSync(resolution.filePath, 'utf8'));
+    packageMeta = context.getPackage(filePath);
+    if (!packageMeta) {
+      return null;
+    }
   } catch (error: any) {
     debug(
       `Fallback module resolution threw: ${error.constructor.name}. (module: ${filePath || originModuleName})`
@@ -133,8 +139,8 @@ export function createFallbackModuleResolver({
 
   const getModuleDescription = (
     immutableContext: ResolutionContext,
+    originModuleName: string,
     platform: string | null,
-    originModuleName: string
   ) => {
     if (_moduleDescriptionsCache[originModuleName] !== undefined) {
       return _moduleDescriptionsCache[originModuleName];
@@ -145,8 +151,9 @@ export function createFallbackModuleResolver({
       originModulePath: `${originModuleName}/package.json`,
     };
     return (_moduleDescriptionsCache[originModuleName] = getModuleDescriptionWithResolver(
+      context,
       getStrictResolver(context, platform),
-      originModuleName
+      originModuleName,
     ));
   };
 
@@ -157,7 +164,7 @@ export function createFallbackModuleResolver({
     }
 
     for (const originModuleName of originModuleNames) {
-      const moduleDescription = getModuleDescription(immutableContext, platform, originModuleName);
+      const moduleDescription = getModuleDescription(immutableContext, originModuleName, platform);
       if (moduleDescription && moduleDescription.moduleTestRe.test(moduleName)) {
         // We instead resolve as if it was depended on by the `originModulePath` (the module named in `originModuleNames`)
         const context: ResolutionContext = {

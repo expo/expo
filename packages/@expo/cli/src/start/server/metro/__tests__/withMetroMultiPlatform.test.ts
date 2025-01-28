@@ -67,6 +67,7 @@ function getResolverContext(
     sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
     customResolverOptions: {},
     originModulePath: '/index.js',
+    getPackage: () => null,
     ...context,
   } as any;
 }
@@ -130,6 +131,7 @@ describe(withExtendedResolver, () => {
         sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
         customResolverOptions: {},
         originModulePath: expect.anything(),
+        getPackage: expect.any(Function),
       }),
       'react-native',
       platform
@@ -575,6 +577,7 @@ describe(withExtendedResolver, () => {
         unstable_conditionNames: ['node', 'import', 'require', 'react-server', 'workerd'],
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
+        getPackage: expect.any(Function),
       },
       'react-foobar',
       platform
@@ -616,6 +619,7 @@ describe(withExtendedResolver, () => {
         unstable_conditionNames: ['node', 'import', 'require', 'react-server', 'workerd'],
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
+        getPackage: expect.any(Function),
       },
       'react-foobar',
       platform
@@ -657,6 +661,7 @@ describe(withExtendedResolver, () => {
         unstable_conditionNames: ['node', 'require'],
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
+        getPackage: expect.any(Function),
       },
       'react-foobar',
       platform
@@ -926,19 +931,6 @@ describe(withExtendedResolver, () => {
     }
 
     it('resolves `@babel/runtime/helpers/interopRequireDefault` as a fallback module', () => {
-      vol.fromJSON(
-        {
-          'node_modules/expo/package.json': JSON.stringify({
-            name: 'expo',
-            dependencies: {
-              // Needs to define that it depends on `@babel/runtime`
-              '@babel/runtime': '*',
-            },
-          }),
-        },
-        '/'
-      );
-
       const platform = 'ios';
       const modified = getModifiedConfig();
 
@@ -958,7 +950,21 @@ describe(withExtendedResolver, () => {
       });
 
       modified.resolver.resolveRequest!(
-        getDefaultRequestContext(),
+        getResolverContext({
+          getPackage(name) {
+            if (name.endsWith('expo/package.json')) {
+              return {
+                name: 'expo',
+                dependencies: {
+                  // Needs to define that it depends on `@babel/runtime`
+                  '@babel/runtime': '*',
+                },
+              };
+            } else {
+              return null;
+            }
+          },
+        }),
         '@babel/runtime/helpers/interopRequireDefault',
         platform
       );
@@ -994,22 +1000,6 @@ describe(withExtendedResolver, () => {
     });
 
     it('resolves fallback modules for `expo-router` dependencies', () => {
-      vol.fromJSON(
-        {
-          'node_modules/expo/package.json': JSON.stringify({
-            name: 'expo',
-            dependencies: {},
-          }),
-          'node_modules/expo-router/package.json': JSON.stringify({
-            name: 'expo-router',
-            dependencies: {
-              example: '*',
-            },
-          }),
-        },
-        '/'
-      );
-
       const platform = 'ios';
       const modified = getModifiedConfig();
 
@@ -1025,7 +1015,29 @@ describe(withExtendedResolver, () => {
         }
       });
 
-      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'example', platform);
+      modified.resolver.resolveRequest!(
+        getResolverContext({
+          getPackage(name) {
+            if (name.endsWith('expo/package.json')) {
+              return {
+                name: 'expo',
+                dependencies: {},
+              };
+            } else if (name.endsWith('expo-router/package.json')) {
+              return {
+                name: 'expo-router',
+                dependencies: {
+                  example: '*',
+                },
+              };
+            } else {
+              return null;
+            }
+          },
+        }),
+        'example',
+        platform
+      );
 
       expect(getResolveFunc()).toHaveBeenCalledTimes(4);
 
@@ -1066,8 +1078,6 @@ describe(withExtendedResolver, () => {
     });
 
     it('resolves no fallback modules if no origin modules were found', () => {
-      vol.fromJSON({}, '/');
-
       const platform = 'ios';
       const modified = getModifiedConfig();
 
