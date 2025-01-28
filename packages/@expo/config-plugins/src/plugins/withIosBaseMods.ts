@@ -50,6 +50,7 @@ function getInfoPlistTemplate() {
     UIViewControllerBasedStatusBarAppearance: false,
     UIStatusBarStyle: 'UIStatusBarStyleDefault',
     CADisableMinimumFrameDurationOnPhone: true,
+    ITSAppUsesNonExemptEncryption: false,
   };
 }
 
