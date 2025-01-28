@@ -5,7 +5,7 @@ export class FileSystemReadableStreamSource implements UnderlyingByteSource {
   size: number = 1024;
   type = 'bytes' as const;
 
-  constructor(handle) {
+  constructor(handle: FileHandle) {
     this.handle = handle;
   }
 
@@ -36,7 +36,7 @@ export class FileSystemReadableStreamSource implements UnderlyingByteSource {
       theView.set(bytes, theView.byteOffset);
     } else {
       for (let i = 0; i < bytes.length; i++) {
-        theView[i + theView.byteOffset] = bytes[i];
+        (theView as any)[i + theView.byteOffset] = bytes[i];
       }
     }
     controller.byobRequest.respond(bytes.length);
@@ -46,7 +46,7 @@ export class FileSystemReadableStreamSource implements UnderlyingByteSource {
 export class FileSystemWritableSink implements UnderlyingSink {
   handle: FileHandle;
 
-  constructor(handle) {
+  constructor(handle: FileHandle) {
     this.handle = handle;
   }
 
