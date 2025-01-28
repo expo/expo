@@ -47,9 +47,11 @@ export declare enum MediaTypeOptions {
  */
 export type MediaType = 'images' | 'videos' | 'livePhotos';
 /**
- * The default tab with which the image picker will be opened (Android only).
+ * The default tab with which the image picker will be opened.
  * - `'photos'` - the photos/videos tab will be opened.
  * - `'albums'` - the albums tab will be opened.
+ *
+ * @platform android
  */
 export type DefaultTab = 'photos' | 'albums';
 export declare enum VideoExportPreset {
@@ -462,7 +464,7 @@ export type ImagePickerOptions = {
      */
     orderedSelection?: boolean;
     /**
-     * Choose the default tab with which the image picker will be opened (Android only).
+     * Choose the default tab with which the image picker will be opened.
      * @default 'photos'
      * @platform android
      */
