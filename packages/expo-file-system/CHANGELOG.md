@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [expo-file-system][next] Add options to the create function. ([#32909](https://github.com/expo/expo/pull/32909) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Add options to `downloadFileAsync` function. ([#34188](https://github.com/expo/expo/pull/34188) by [@leonhh](https://github.com/leonhh))
 
 ### 🐛 Bug fixes
 
