@@ -13,6 +13,7 @@
 
 - Fix error 'WeakSet key must be an object' in fast-refresh for invalid exports like cpp host objects. ([#34026](https://github.com/expo/expo/pull/34026) by [@chrfalch](https://github.com/chrfalch))
 - Fix render store (unstable_headers) on native platforms. ([#33978](https://github.com/expo/expo/pull/33978) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix jest fake timers config being overridden by `renderRouter` ([#34388](https://github.com/expo/expo/pull/34388) by [@matthieugicquel](https://github.com/matthieugicquel))
 
 ### 💡 Others
 
