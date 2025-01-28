@@ -216,7 +216,7 @@ abstract class Loader protected constructor(
   }
 
   private fun downloadAllAssets(update: Update) {
-    val assetList: List<AssetEntity> = update.assetEntityList
+    val assetList = update.assetEntityList
     assetTotal = assetList.size
     for (assetEntityCur in assetList) {
       var assetEntity = assetEntityCur
