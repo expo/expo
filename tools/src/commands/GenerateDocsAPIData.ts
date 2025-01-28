@@ -98,6 +98,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
   'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
+  '@expo/fingerprint': ['index.ts'],
 };
 
 const executeCommand = async (
