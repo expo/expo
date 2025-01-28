@@ -5,17 +5,17 @@ import androidx.compose.material3.Checkbox
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.ComposeProps
 
 data class SwitchProps(
   val checked: MutableState<Boolean> = mutableStateOf(false),
   val variant: MutableState<String> = mutableStateOf("switch")
-): ComposeProps
+) : ComposeProps
 
 class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<SwitchProps>(context, appContext) {
   override val props = SwitchProps()
@@ -44,11 +44,12 @@ class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<Swi
           onCheckedChange = onCheckedChange
         )
       }
-
-      if (variant == "switch") {
-        SwitchComposable()
-      } else {
-        CheckboxComposable()
+      AutoSizingComposable(shadowNodeProxy) {
+        if (variant == "switch") {
+          SwitchComposable()
+        } else {
+          CheckboxComposable()
+        }
       }
     }
   }
