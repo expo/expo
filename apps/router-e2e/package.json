@@ -26,7 +26,7 @@
     "expo-linking": "~7.0.5",
     "expo-router": "^4.0.17",
     "expo-speech": "~13.0.1",
-    "expo-sqlite": "~15.1.0",
+    "expo-sqlite": "~15.1.1",
     "react": "18.3.1",
     "react-native": "0.76.6",
     "react-native-safe-area-context": "~5.1.0",
