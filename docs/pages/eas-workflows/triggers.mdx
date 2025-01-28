@@ -9,6 +9,8 @@ Triggers define when a workflow should kick off. When its conditions are met, th
 
 You can trigger a workflow on a push to a GitHub branch with the `push` trigger.
 
+With the `branches` array you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']` only pushes to `main` branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on push events to all branches.
+
 ```yaml .eas/workflows/hello-world.yml
 name: Hello World
 
@@ -25,16 +27,26 @@ jobs:
 
 ## On pull request
 
-You can trigger a workflow on a pull request with the `pull_request` trigger.
+You can trigger a workflow on a pull request events with the `pull_request` trigger.
+
+With the `branches` array you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']` only pull requests to `main` branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches.
+
+With the `types` array you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']` only the `pull_request.opened` event (sent when pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
+- `opened`
+- `reopened`
+- `synchronize`
 
 ```yaml .eas/workflows/hello-world.yml
 name: Hello World
 
 on:
   pull_request:
-	  branches:
-		  - 'main'
-		  # other branch names and globs
+    branches:
+      - 'main'
+      # other branch names and globs
+    types:
+      - 'opened'
+      # other event types
 
 jobs:
   # ...
