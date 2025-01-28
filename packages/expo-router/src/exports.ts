@@ -23,6 +23,7 @@ export { Navigator, Slot };
 // Expo Router Views
 export { ExpoRoot } from './ExpoRoot';
 export { Unmatched } from './views/Unmatched';
+export { Sitemap } from './views/Sitemap';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
 export type { ScreenProps } from './useScreens';
