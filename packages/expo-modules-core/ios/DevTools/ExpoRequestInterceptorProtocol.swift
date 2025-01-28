@@ -138,6 +138,17 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     completionHandler(request)
   }
 
+  public func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    didReceive challenge: URLAuthenticationChallenge,
+    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+  ) {
+    let sender = URLAuthenticationChallengeForwardSender(completionHandler: completionHandler)
+    let challengeWithSender = URLAuthenticationChallenge(authenticationChallenge: challenge, sender: sender)
+    client?.urlProtocol(self, didReceive: challengeWithSender)
+  }
+
   /**
    Data structure to save the response for redirection
    */

@@ -31,7 +31,7 @@ function useLocalSearchParamsTest() {
   const aboutAnyValue: string | string[] = aboutParams['string-index'];
 
   // @ts-expect-error - This is not a valid route
-  useLocalSearchParams<'/fruit/invalid'>();
+  useLocalSearchParams<'/invalid/route'>();
 
   let fruitValue: string = useLocalSearchParams<'/fruit/[fruit]'>()['fruit'];
   fruitValue = useLocalSearchParams<'/(a)/fruit/[fruit]'>()['fruit'];
@@ -58,7 +58,7 @@ function useGlobalSearchParamsTest() {
   const aboutAnyValue: string | string[] = aboutParams['string-index'];
 
   // @ts-expect-error - This is not a valid route
-  useGlobalSearchParams<'/fruit/invalid'>();
+  useGlobalSearchParams<'/invalid/fruit'>();
 
   let fruitValue: string = useGlobalSearchParams<'/fruit/[fruit]'>()['fruit'];
   fruitValue = useGlobalSearchParams<'/(a)/fruit/[fruit]'>()['fruit'];
@@ -99,13 +99,13 @@ function useGlobalSearchParamsTest() {
 }
 
 function useSegmentsTest() {
-  const plainSegements = useSegments();
-  const firstUnion: '' | 'about' | 'fruit' | '(a)' | '_sitemap' = plainSegements[0];
-  const secondUnion: 'fruit' | '[fruit]' | undefined = plainSegements[1];
-  const thirdUnion: '[fruit]' | '[...other]' = plainSegements[2];
-  const forthUnion: '[...other]' = plainSegements[3];
+  const plainSegments = useSegments();
+  const firstUnion: '' | 'about' | 'fruit' | '(a)' | '_sitemap' = plainSegments[0];
+  const secondUnion: 'fruit' | '[fruit]' | undefined = plainSegments[1];
+  const thirdUnion: '[fruit]' | '[...other]' = plainSegments[2];
+  const forthUnion: '[...other]' = plainSegments[3];
   // @ts-expect-error - No extra segments are possible
-  plainSegements[4];
+  plainSegments[4];
 
   const appleSegments = useSegments<'/fruit/[fruit]'>();
   const firstAppleUnion: 'fruit' = appleSegments[0];

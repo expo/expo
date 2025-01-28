@@ -10,6 +10,7 @@ platforms: ['android', 'ios', 'web']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { Collapsible } from '~/ui/components/Collapsible';
 import {
   ConfigReactNative,
   ConfigPluginExample,
@@ -17,7 +18,7 @@ import {
 } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
-import { PlatformTag } from '~/ui/components/Tag';
+import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
@@ -25,7 +26,7 @@ import { PlatformTag } from '~/ui/components/Tag';
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
 You can configure `expo-location` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -99,7 +100,40 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigReactNative>
 
-### Background Location methods
+### Background location
+
+Background location allows your app to receive location updates while it is running in the background and includes both location updates and region monitoring through geofencing. This feature is subject to platform API limitations and system constraints:
+
+- Background location will stop if the user terminates the app.
+- Background location resumes if the user restarts the app.
+- <PlatformTag platform="android" /> A terminated app will not automatically restart when a location
+  or geofencing event occurs due to platform limitations.
+- <PlatformTag platform="ios" /> The system will restart the terminated app when a new geofence
+  event occurs.
+
+> **Info** On Android, the result of removing an app from the recent apps list varies by device vendor. For example, some implementations treat removing an app from the recent apps list as killing it. Read more about these differences here: [https://dontkillmyapp.com](https://dontkillmyapp.com).
+
+### Background location configuration&ensp;<PlatformTag platform="ios" />
+
+To be able to run background location on iOS, you need to add the `location` value to the `UIBackgroundModes` array in your app's **Info.plist** file.
+
+**If you're using [CNG](/workflow/continuous-native-generation/)**, the required `UIBackgroundModes` configuration will be applied automatically by prebuild.
+
+<Collapsible summary="Configure UIBackgroundModes manually on iOS">
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native iOS project, then you'll need to add the following to your **Expo.plist** file:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+  </array>
+</key>
+```
+
+</Collapsible>
+
+### Background location methods
 
 > **warning** **Warning:** Background location tracking support is provided as-is and is not guaranteed to work in all scenarios. We currently are not prioritizing resources to improve it, but we hope to in the future. You may want to use [`react-native-background-geolocation`](https://github.com/transistorsoft/react-native-background-geolocation) instead &mdash; it requires purchasing a license and is a well-maintained and supported library that includes a config plugin.
 
@@ -108,8 +142,11 @@ To use Background Location methods, the following requirements apply:
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 - <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
-  specified in **Info.plist** file. See [background tasks configuration
-  guide](/versions/latest/sdk/task-manager/#configuration-in-appjsonappconfigjs).
+  specified in **Info.plist** file. See [Background location
+  configuration](#background-location-configuration).
+- <PlatformTag platform="ios" className="float-left" /> You must use a [development
+  build](/develop/development-builds/introduction/) to use background location since it is not
+  supported in the Expo Go app.
 
 ### Geofencing methods
 
@@ -117,7 +154,17 @@ To use Geofencing methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
 - The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
-- On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
+
+When using Geofencing, the following platform differences apply:
+
+- <PlatformTag platform="android" /> You are allowed [up to
+  100](https://developer.android.com/develop/sensors-and-location/location/geofencing) active
+  geofences per app.
+- <PlatformTag platform="ios" /> Expo Location will report the initial state of the registered
+  geofence(s) at app startup.
+- <PlatformTag platform="ios" /> There is a [limit of
+  20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions)
+  `regions` that can be simultaneously monitored.
 
 ## Usage
 

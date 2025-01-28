@@ -1,4 +1,4 @@
-import { CameraType } from '../legacy/Camera.types';
+import { CameraType, ImageType } from '../Camera.types';
 export declare const VIDEO_ASPECT_RATIOS: {
     '3840x2160': number;
     '1920x1080': number;
@@ -7,17 +7,8 @@ export declare const VIDEO_ASPECT_RATIOS: {
     '352x288': number;
 };
 export declare const PictureSizes: string[];
-export declare const ImageTypeFormat: {
-    jpg: string;
-    png: string;
-};
+export declare const ImageTypeFormat: Record<ImageType, string>;
 export declare const MinimumConstraints: MediaStreamConstraints;
-export declare const CameraTypeToFacingMode: {
-    front: string;
-    back: string;
-};
-export declare const FacingModeToCameraType: {
-    user: CameraType;
-    environment: CameraType;
-};
+export declare const CameraTypeToFacingMode: Record<CameraType, string>;
+export declare const FacingModeToCameraType: Record<string, CameraType>;
 //# sourceMappingURL=WebConstants.d.ts.map

@@ -1,0 +1,1 @@
+Object.defineProperty(exports,"__esModule",{value:true});exports.RCTWebView2=exports.RCTWebView=void 0;var _reactNative=require("react-native");var RCTWebView=exports.RCTWebView=(0,_reactNative.requireNativeComponent)('RCTWebView');var RCTWebView2=exports.RCTWebView2=(0,_reactNative.requireNativeComponent)('RCTWebView2');

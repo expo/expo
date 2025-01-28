@@ -1,6 +1,6 @@
 {
   "name": "@expo/html-elements",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "Universal semantic HTML React components for iOS, Android, web, and desktop",
   "main": "build/Elements.js",
   "types": "build/Elements.d.ts",
@@ -57,6 +57,6 @@
     ]
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   }
 }

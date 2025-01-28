@@ -10,12 +10,9 @@
  */
 import type { JSONObject as PackageJSON } from '@expo/json-file';
 import assert from 'assert';
-import fs from 'fs';
 import { dirname, isAbsolute, resolve as pathResolve } from 'path';
 import { sync as resolveSync, SyncOpts as UpstreamResolveOptions } from 'resolve';
 import * as resolve from 'resolve.exports';
-
-import { directoryExistsSync, fileExistsSync } from '../../../utils/dir';
 
 /**
  * Allows transforming parsed `package.json` contents.
@@ -95,35 +92,15 @@ const defaultResolver = (
     enablePackageExports,
     blockList = [],
     ...options
-  }: Omit<ResolverOptions, 'defaultResolver' | 'getPackageForModule'>
+  }: Omit<ResolverOptions, 'defaultResolver' | 'getPackageForModule'> & {
+    isDirectory: (file: string) => boolean;
+    isFile: (file: string) => boolean;
+    pathExists: (file: string) => boolean;
+  }
 ): string => {
   // @ts-expect-error
   const resolveOptions: UpstreamResolveOptionsWithConditions = {
     ...options,
-
-    isDirectory(file) {
-      if (blockList.some((regex) => regex.test(file))) {
-        return false;
-      }
-      return directoryExistsSync(file);
-    },
-    isFile(file) {
-      if (blockList.some((regex) => regex.test(file))) {
-        return false;
-      }
-      return fileExistsSync(file);
-    },
-    pathExists(file) {
-      if (blockList.some((regex) => regex.test(file))) {
-        return false;
-      }
-      try {
-        fs.accessSync(path, fs.constants.F_OK);
-        return true; // File exists
-      } catch {
-        return false; // File doesn't exist
-      }
-    },
     preserveSymlinks: options.preserveSymlinks,
     defaultResolver,
   };
@@ -171,6 +148,17 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
   if (closestPackageJson) {
     const pkg = options.readPackageSync!(options.readFileSync!, closestPackageJson);
     assert(pkg, 'package.json should be read by `readPackageSync`');
+
+    // Added support for the package.json "imports" field (#-prefixed paths)
+    if (path.startsWith('#')) {
+      const resolved = resolve.imports(pkg, path, createResolveOptions(options.conditions));
+      if (resolved) {
+        // TODO: Should we attempt to resolve every path in the array?
+        return pathResolve(dirname(closestPackageJson), resolved[0]);
+      }
+      // NOTE: resolve.imports would have thrown by this point.
+      return path;
+    }
 
     if (pkg.name === moduleName) {
       const resolved = resolve.exports(

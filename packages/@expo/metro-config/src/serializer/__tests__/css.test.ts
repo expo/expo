@@ -9,6 +9,16 @@ jest.mock('../exportHermes', () => {
   };
 });
 
+const originalWarn = console.warn;
+
+beforeEach(() => {
+  console.warn = jest.fn(originalWarn);
+});
+
+afterAll(() => {
+  console.warn = originalWarn;
+});
+
 it(`supports global CSS files`, async () => {
   const [, artifacts] = await serializeOptimizeAsync({
     'index.js': `
@@ -99,24 +109,75 @@ it(`supports url for style attributes`, async () => {
   );
 });
 
-it(`asserts that local imports in attributes are not yet supported`, async () => {
-  await expect(
-    serializeOptimizeAsync(
-      {
-        'index.js': `
+it(`supports url with abstract imports for style attributes`, async () => {
+  const [, artifacts] = await serializeOptimizeAsync(
+    {
+      'index.js': `
           import './styles.css';
         `,
-        'styles.css': `        
+      'styles.css': `        
+        .other {
+          background: url("data:image/svg+xml;charset=utf8,...");
+        }
+        .container {
+          background-image: url(/icon-mask.svg);
+          stroke: url(#edge-gradient);
+        }
+        `,
+    },
+    {
+      minify: true,
+    }
+  );
+  expect(artifacts.length).toBe(2);
+  expect(artifacts[1].source).toMatch(
+    '.other{background:url("data:image/svg+xml;charset=utf8,...")}.container{stroke:url("#edge-gradient");background-image:url("/icon-mask.svg")}'
+  );
+});
+
+it(`supports url with abstract imports for style attributes in CSS module`, async () => {
+  const [, artifacts] = await serializeOptimizeAsync(
+    {
+      'index.js': `
+          import './styles.module.css';
+        `,
+      'styles.module.css': `        
+        .appIcon {
+            mask: url("data:xxx") center/100% 100% no-repeat;
+        }
+        `,
+    },
+    {
+      minify: true,
+      dev: true,
+    }
+  );
+  expect(artifacts.length).toBe(2);
+  // Ensure the HMR code contains the updates.
+  expect(artifacts[0].source).toMatch('mask:url(\\"data:xxx\\")');
+  expect(artifacts[1].source).toMatch(
+    '.EcQGha_appIcon{mask:url("data:xxx") 50%/100% 100% no-repeat}'
+  );
+});
+
+it(`asserts that local imports in attributes are not yet supported`, async () => {
+  await serializeOptimizeAsync(
+    {
+      'index.js': `
+          import './styles.css';
+        `,
+      'styles.css': `        
         .container {
           background: url('./image.png');
         }
         `,
-      },
-      {
-        minify: true,
-      }
-    )
-  ).rejects.toThrowErrorMatchingSnapshot();
+    },
+    {
+      minify: true,
+    }
+  );
+
+  expect(console.warn).toHaveBeenCalledTimes(1);
 });
 
 describe('css modules', () => {

@@ -237,41 +237,12 @@ xdescribe('within Expo Go', () => {
   });
 });
 
-describe('in standalone app', () => {
+describe('in bare app', () => {
   afterEach(() => {
     clearMemory();
   });
 
-  // NOTE(brentvatne): we need to disable scoping on native side on iOS
-  // in standalone apps: https://github.com/expo/expo/issues/5118
-  xit(`does not scope font names`, async () => {
-    const fontName = 'test-font';
-    const mockAsset = _createMockAsset();
-    await Font.loadAsync(fontName, mockAsset);
-    expect(Font.isLoaded(fontName)).toBe(true);
-
-    const processedFontFamily = Font.processFontFamily(fontName);
-    expect(processedFontFamily).toEqual(fontName);
-  });
-});
-
-describe('in bare workflow', () => {
-  afterEach(() => {
-    clearMemory();
-  });
-
-  it(`does not scope font names`, async () => {
-    const fontName = 'test-font';
-    const mockAsset = _createMockAsset();
-    expect(Font.isLoaded(fontName)).toBe(false);
-    await Font.loadAsync(fontName, mockAsset);
-    expect(Font.isLoaded(fontName)).toBe(true);
-
-    const processedFontFamily = Font.processFontFamily(fontName);
-    expect(processedFontFamily).toEqual(fontName);
-  });
-
-  it('getLoadedFonts is available', () => {
+  it('can call getLoadedFonts()', () => {
     expect(Font.getLoadedFonts()).toHaveLength(0);
     expect(ExpoFontLoader.getLoadedFonts).toHaveBeenCalledTimes(1);
   });

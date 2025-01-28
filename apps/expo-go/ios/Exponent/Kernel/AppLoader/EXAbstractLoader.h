@@ -50,6 +50,7 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
 @property (nonatomic, readonly) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
 @property (nonatomic, readonly) BOOL shouldShowRemoteUpdateStatus;
 @property (nonatomic, readonly) BOOL isUpToDate;
+@property (nonatomic, readonly, nullable) NSNumber * launchDuration;
 
 @property (nonatomic, weak) id<EXAppLoaderDelegate> delegate;
 @property (nonatomic, weak) id<EXAppFetcherDataSource> dataSource;

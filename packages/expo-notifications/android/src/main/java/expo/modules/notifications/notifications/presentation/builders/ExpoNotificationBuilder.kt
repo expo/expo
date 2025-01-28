@@ -5,26 +5,93 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.RemoteInput
 import expo.modules.notifications.notifications.SoundResolver
 import expo.modules.notifications.notifications.enums.NotificationPriority
+import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.model.NotificationAction
+import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.NotificationResponse
+import expo.modules.notifications.notifications.model.TextInputNotificationAction
+import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.NotificationsService.Companion.createNotificationResponseIntent
+import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
+import java.io.IOException
 import kotlin.math.max
 import kotlin.math.min
 
 /**
  * [NotificationBuilder] interpreting a JSON request object.
  */
-open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotificationBuilder(context) {
+open class ExpoNotificationBuilder(
+  context: Context,
+  notification: expo.modules.notifications.notifications.model.Notification,
+  private val store: SharedPreferencesNotificationCategoriesStore
+) : BaseNotificationBuilder(context, notification) {
+
+  open fun addActionsToBuilder(
+    builder: NotificationCompat.Builder,
+    categoryIdentifier: String
+  ) {
+    var actions = emptyList<NotificationAction>()
+    try {
+      val category: NotificationCategory? = store.getNotificationCategory(categoryIdentifier)
+      if (category != null) {
+        actions = category.actions
+      }
+    } catch (e: ClassNotFoundException) {
+      Log.e(
+        "expo-notifications",
+        String.format(
+          "Could not read category with identifier: %s. %s",
+          categoryIdentifier,
+          e.message
+        )
+      )
+    } catch (e: IOException) {
+      Log.e(
+        "expo-notifications",
+        String.format(
+          "Could not read category with identifier: %s. %s",
+          categoryIdentifier,
+          e.message
+        )
+      )
+    }
+    for (action in actions) {
+      if (action is TextInputNotificationAction) {
+        builder.addAction(buildTextInputAction(action))
+      } else {
+        builder.addAction(buildButtonAction(action))
+      }
+    }
+  }
+
+  protected fun buildButtonAction(action: NotificationAction): NotificationCompat.Action {
+    val intent = createNotificationResponseIntent(context, notification, action)
+    return NotificationCompat.Action.Builder(icon, action.title, intent).build()
+  }
+
+  protected fun buildTextInputAction(action: TextInputNotificationAction): NotificationCompat.Action {
+    val intent = createNotificationResponseIntent(context, notification, action)
+    val remoteInput = RemoteInput.Builder(NotificationsService.USER_TEXT_RESPONSE_KEY)
+      .setLabel(action.placeholder)
+      .build()
+
+    return NotificationCompat.Action.Builder(icon, action.title, intent)
+      .addRemoteInput(remoteInput).build()
+  }
+
   override suspend fun build(): Notification {
-    val builder = super.createBuilder()
+    val builder = createBuilder()
+
     builder.setSmallIcon(icon)
     builder.setPriority(priority)
 
@@ -33,40 +100,19 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
     builder.setAutoCancel(content.isAutoDismiss)
     builder.setOngoing(content.isSticky)
 
+    // see "Notification anatomy" https://developer.android.com/develop/ui/views/notifications#Templates
     builder.setContentTitle(content.title)
     builder.setContentText(content.text)
-    builder.setSubText(content.subtitle)
+    builder.setSubText(content.subText)
     // Sets the text/contentText as the bigText to allow the notification to be expanded and the
     // entire text to be viewed.
     builder.setStyle(NotificationCompat.BigTextStyle().bigText(content.text))
 
     color?.let { builder.color = it.toInt() }
+    notificationContent.badgeCount?.toInt()?.let { builder.setNumber(it) }
+    notificationContent.categoryId?.let { addActionsToBuilder(builder, it) }
 
-    val shouldPlayDefaultSound = shouldPlaySound() && content.shouldPlayDefaultSound
-    if (shouldPlayDefaultSound && shouldVibrate()) {
-      builder.setDefaults(NotificationCompat.DEFAULT_ALL) // set sound, vibration and lights
-    } else if (shouldVibrate()) {
-      builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE)
-    } else if (shouldPlayDefaultSound) {
-      builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
-    } else {
-      // Notification will not vibrate or play sound, regardless of channel
-      builder.setSilent(true)
-    }
-
-    if (shouldPlaySound() && content.soundName != null) {
-      content.soundName?.let { soundName ->
-        val soundUri = SoundResolver(context).resolve(soundName)
-        builder.setSound(soundUri)
-      }
-    } else if (shouldPlayDefaultSound) {
-      builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-    }
-
-    val vibrationPatternOverride = content.vibrationPattern
-    if (shouldVibrate() && vibrationPatternOverride != null) {
-      builder.setVibrate(vibrationPatternOverride)
-    }
+    applySoundsAndVibrations(content, builder)
 
     if (content.body != null) {
       // Add body - JSON data - to extras
@@ -110,6 +156,42 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
     return builder.build()
   }
 
+  private fun applySoundsAndVibrations(content: INotificationContent, builder: NotificationCompat.Builder) {
+    val shouldPlaySound = shouldPlaySound()
+    val shouldVibrate = shouldVibrate()
+
+    if (!shouldPlaySound && !shouldVibrate) {
+      // Notification will not vibrate or play sound, regardless of channel
+      builder.setSilent(true)
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      // the calls below are ignored on Android O and newer because the sound and vibration are set in the channel
+      val shouldPlayDefaultSound = shouldPlaySound && content.shouldPlayDefaultSound
+      val shouldUseDefaultVibrationPattern = shouldVibrate && content.shouldUseDefaultVibrationPattern
+      if (shouldUseDefaultVibrationPattern && shouldPlayDefaultSound) {
+        builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+      } else {
+        if (shouldPlaySound) {
+          if (content.soundName != null) {
+            val soundUri = SoundResolver(context).resolve(content.soundName)
+            builder.setSound(soundUri)
+          } else if (shouldPlayDefaultSound) {
+            builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
+            builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+          }
+        }
+        if (shouldVibrate) {
+          val vibrationPatternOverride = content.vibrationPattern
+          if (vibrationPatternOverride != null) {
+            builder.setVibrate(vibrationPatternOverride)
+          } else if (shouldUseDefaultVibrationPattern) {
+            builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+          }
+        }
+      }
+    }
+  }
+
   /**
    * Marshalls [NotificationRequest] into to a byte array.
    *
@@ -147,10 +229,9 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
    * @return Whether the notification should play a sound.
    */
   private fun shouldPlaySound(): Boolean {
-    val behaviorAllowsSound =
-      notificationBehavior == null || notificationBehavior.shouldPlaySound()
-
-    val contentAllowsSound = notificationContent.shouldPlayDefaultSound || notificationContent.soundName != null
+    val behaviorAllowsSound = notificationBehavior?.shouldPlaySound() ?: true
+    val contentAllowsSound =
+      notificationContent.shouldPlayDefaultSound || notificationContent.soundName != null
 
     return behaviorAllowsSound && contentAllowsSound
   }
@@ -166,8 +247,7 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
    * @return Whether the notification should vibrate.
    */
   private fun shouldVibrate(): Boolean {
-    val behaviorAllowsVibration =
-      notificationBehavior == null || notificationBehavior.shouldPlaySound()
+    val behaviorAllowsVibration = notificationBehavior?.shouldPlaySound() ?: true
 
     val contentAllowsVibration =
       notificationContent.shouldUseDefaultVibrationPattern || notificationContent.vibrationPattern != null
@@ -194,6 +274,7 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
     get() {
       val requestPriority = notificationContent.priority
 
+      val notificationBehavior = notificationBehavior
       // If we know of a behavior guideline, let's honor it...
       if (notificationBehavior != null) {
         // ...by using the priority override...
@@ -290,27 +371,29 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
      * or null if the default should be used.
      */
     get() {
-      if (notificationContent.color != null) {
-        return notificationContent.color
-      }
-
-      try {
-        val ai = context.packageManager.getApplicationInfo(
-          context.packageName,
-          PackageManager.GET_META_DATA
-        )
-        if (ai.metaData.containsKey(META_DATA_DEFAULT_COLOR_KEY)) {
-          return context.resources.getColor(
-            ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY),
-            null
+      return notificationContent.color ?: run {
+        try {
+          val ai = context.packageManager.getApplicationInfo(
+            context.packageName,
+            PackageManager.GET_META_DATA
+          )
+          if (ai.metaData.containsKey(META_DATA_DEFAULT_COLOR_KEY)) {
+            return context.resources.getColor(
+              ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY),
+              null
+            )
+          }
+        } catch (e: Exception) {
+          Log.e(
+            "expo-notifications",
+            "Could not have fetched default notification color.",
+            e
           )
         }
-      } catch (e: Exception) {
-        Log.e("expo-notifications", "Could not have fetched default notification color.", e)
-      }
 
-      // No custom color
-      return null
+        // No custom color
+        return null
+      }
     }
 
   companion object {

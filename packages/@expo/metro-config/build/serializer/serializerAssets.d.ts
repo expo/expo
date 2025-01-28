@@ -8,6 +8,7 @@ export type SerialAsset = {
         isAsync?: boolean;
         modulePaths?: string[];
         paths?: Record<string, Record<string, string>>;
+        reactServerReferences?: string[];
         reactClientReferences?: string[];
         expoDomComponentReferences?: string[];
         requires?: string[];

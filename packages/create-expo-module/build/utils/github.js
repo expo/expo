@@ -20,8 +20,11 @@ async function findGitHubUserFromEmail(email) {
         },
     });
     const json = (await response.json());
-    if (json.data.total_count > 0) {
-        return json.data.items[0].login;
+    const data = json.data ?? json;
+    if (data?.total_count > 0) {
+        if (data.items?.[0]?.login) {
+            return data.items[0].login;
+        }
     }
     return await findGitHubUserFromEmailByCommits(email);
 }
@@ -39,8 +42,9 @@ async function findGitHubUserFromEmailByCommits(email) {
         },
     });
     const json = (await response.json());
-    if (json.data.total_count > 0) {
-        return json.data.items[0].author?.login ?? null;
+    const data = json.data ?? json;
+    if (data?.total_count > 0) {
+        return data.items[0].author?.html_url ?? null;
     }
     return null;
 }

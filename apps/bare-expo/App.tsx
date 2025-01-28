@@ -1,4 +1,5 @@
 import { ThemeProvider } from 'ThemeProvider';
+import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
@@ -9,6 +10,16 @@ try {
 } catch {
   // do nothing
 }
+
+Splashscreen.setOptions({ fade: true, duration: 800 });
+
+// Require the `BackgroundTaskScreen` component from `native-component-list` if it's available
+// so that we load the module and register its background task on startup.
+optionalRequire(() => require('native-component-list/src/screens/BackgroundTaskScreen'));
+
+// Require the `BackgroundFetchScreen` component from `native-component-list` if it's available
+// so that we load the module and register its background task on startup.
+optionalRequire(() => require('native-component-list/src/screens/BackgroundFetchScreen'));
 
 const loadAssetsAsync =
   optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??
@@ -22,6 +33,7 @@ function useLoaded() {
     loadAssetsAsync()
       .then(() => {
         if (isMounted) setLoaded(true);
+        Splashscreen.hide();
       })
       .catch((e) => {
         console.warn('Error loading assets: ' + e.message);

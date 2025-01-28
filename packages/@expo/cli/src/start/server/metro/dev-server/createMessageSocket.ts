@@ -11,6 +11,10 @@ type MessageSocketOptions = {
   };
 };
 
+/**
+ * Client "command" server that dispatches basic commands to connected clients.
+ * This basic client to client communication, reload, or open dev menu cli commands.
+ */
 export function createMessagesSocket(options: MessageSocketOptions) {
   const clients = createSocketMap();
   const broadcast = createBroadcaster(clients.map);
@@ -81,7 +85,7 @@ function createClientMessageHandler(
 
     // Handle broadcast messages
     if (messageIsBroadcast(message)) {
-      return broadcast(null, data);
+      return broadcast(null, data.toString());
     }
 
     // Handle incoming requests from clients

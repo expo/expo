@@ -2,9 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.shouldHandleMouseEvent = void 0;
 const react_native_1 = require("react-native");
-const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
 const matchers_1 = require("../matchers");
+const useDomComponentNavigation_1 = require("./useDomComponentNavigation");
+const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
+const url_1 = require("../utils/url");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;
@@ -28,12 +30,19 @@ function useLinkToPathProps({ href, ...options }) {
     const { linkTo } = (0, router_store_1.useExpoRouter)();
     const onPress = (event) => {
         if (shouldHandleMouseEvent(event)) {
+            if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
+                return;
+            }
             linkTo(href, options);
         }
     };
+    let strippedHref = (0, matchers_1.stripGroupSegmentsFromPath)(href) || '/';
+    // Append base url only if needed.
+    if (!(0, url_1.shouldLinkExternally)(strippedHref)) {
+        strippedHref = (0, getPathFromState_forks_1.appendBaseUrl)(strippedHref);
+    }
     return {
-        // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
-        href: (0, getPathFromState_1.appendBaseUrl)((0, matchers_1.stripGroupSegmentsFromPath)(href) || '/'),
+        href: strippedHref,
         role: 'link',
         onPress,
     };

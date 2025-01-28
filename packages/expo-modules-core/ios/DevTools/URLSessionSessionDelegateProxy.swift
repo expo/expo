@@ -82,4 +82,22 @@ public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDeleg
         completionHandler: completionHandler)
     }
   }
+
+  public func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    didReceive challenge: URLAuthenticationChallenge,
+    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+  ) {
+    if let delegate = getDelegate(task: task),
+      delegate.responds(to: #selector(URLSessionTaskDelegate.urlSession(_:task:didReceive:completionHandler:))) {
+      delegate.urlSession?(
+        session,
+        task: task,
+        didReceive: challenge,
+        completionHandler: completionHandler)
+    } else {
+      completionHandler(.performDefaultHandling, nil)
+    }
+  }
 }

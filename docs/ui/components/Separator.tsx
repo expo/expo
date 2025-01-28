@@ -1,3 +1,3 @@
 export function Separator() {
-  return <hr className="mt-4 mb-6 bg-palette-gray6 border-0 h-[0.05rem]" />;
+  return <hr className="mb-6 mt-4 h-[0.05rem] border-0 bg-palette-gray6" />;
 }

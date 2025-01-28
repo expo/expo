@@ -1,5 +1,12 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
+import {
+  StyleProp,
+  View as NativeView,
+  ViewStyle as NativeViewStyle,
+  BoxShadowValue,
+  FilterFunction,
+  type ColorValue,
+} from 'react-native';
 
 import { createDevView } from './createDevView';
 import { createSafeStyledView } from '../css/createSafeStyledView';
@@ -47,7 +54,7 @@ export interface WebViewStyle {
   /** @platform web */
   backgroundSize?: string;
   /** @platform web */
-  boxShadow?: string;
+  boxShadow?: string | readonly BoxShadowValue[];
   /** @platform web */
   boxSizing?: string;
   /** @platform web */
@@ -55,7 +62,7 @@ export interface WebViewStyle {
   /** @platform web */
   cursor?: string;
   /** @platform web */
-  filter?: string;
+  filter?: string | readonly FilterFunction[];
   /** @platform web */
   gridAutoColumns?: string;
   /** @platform web */
@@ -83,7 +90,7 @@ export interface WebViewStyle {
   /** @platform web */
   outline?: string;
   /** @platform web */
-  outlineColor?: string;
+  outlineColor?: ColorValue;
   /** @platform web */
   overflowX?: string;
   /** @platform web */

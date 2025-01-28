@@ -79,22 +79,49 @@ export type Locale = {
     languageCode: string | null;
     /**
      * The region code for your device that comes from the Region setting under Language & Region on iOS, Region settings on Android and is parsed from locale on Web (can be `null` on Web).
+     * @example
+     * `'US'`.
      */
     regionCode: string | null;
     /**
+     * The region code for the preferred language. When the language is not region-specific, it returns the same value as `regionCode`. When the language is region-specific, it returns the region code for the language (`en-CA` -> `CA`).
+     * Prefer using `regionCode` for any internalization purposes.
+     * @example
+     * `'US'`.
+     */
+    languageRegionCode: string | null;
+    /**
      * Currency code for the locale.
+     * On iOS, it's the currency code from the `Region` setting under Language & Region, not for the current locale.
+     * On Android, it's the currency specifc to the locale in the list, as there are no separate settings for selecting a region.
      * Is `null` on Web, use a table lookup based on region instead.
      * @example
      * `'USD'`, `'EUR'`, `'PLN'`.
      */
     currencyCode: string | null;
     /**
-     * Currency symbol for the locale.
-     * Is `null` on Web, use a table lookup based on region (if available) instead.
+     * Currency symbol for the currency specified by `currencyCode`.
      * @example
      * `'$'`, `'€'`, `'zł'`.
      */
     currencySymbol: string | null;
+    /**
+     * Currency code for the locale.
+     * On iOS, it's the currency code for the current locale in the list, not the device region.
+     * On Android, it's equal to `currencyCode`.
+     * Is `null` on Web.
+     * Prefer using `currencyCode` for any internalization purposes.
+     * @example
+     * `'USD'`, `'EUR'`, `'PLN'`.
+     */
+    langageCurrencyCode: string | null;
+    /**
+     * Currency symbol for the currency specified by `langageCurrencyCode`.
+     * Prefer using `currencySymbol` for any internalization purposes.
+     * @example
+     * `'$'`, `'€'`, `'zł'`.
+     */
+    langageCurrencySymbol: string | null;
     /**
      * Decimal separator used for formatting numbers with fractional parts.
      * @example

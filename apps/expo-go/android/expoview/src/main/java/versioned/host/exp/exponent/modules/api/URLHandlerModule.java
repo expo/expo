@@ -39,13 +39,12 @@ public class URLHandlerModule extends ReactContextBaseJavaModule {
     schemes.add("exp");
     schemes.add("exps");
 
-    Map<String, Object> constants = MapBuilder.of(
+      // source application, referrer
+    return MapBuilder.of(
         "schemes", schemes,
         "initialURL", null,
         "settingsURL", "http://settings"
     );
-    // source application, referrer
-    return constants;
   }
 
   @ReactMethod

@@ -1,8 +1,9 @@
-import { Link } from 'expo-router/build/rsc/exports';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Link } from 'expo-router';
+import { Image, Text, ScrollView } from 'react-native';
 
 import { Counter } from '../components/counter';
 import { Pokemon } from '../components/pokemon';
-import { Image, Text, ScrollView } from '../lib/react-native';
 
 export default function IndexRoute({ path, query }) {
   return (
@@ -26,6 +27,7 @@ export default function IndexRoute({ path, query }) {
         style={{ width: 100, height: 100 }}
       />
 
+      <Ionicons name="airplane" />
       <Counter />
 
       <Pokemon id={45} />

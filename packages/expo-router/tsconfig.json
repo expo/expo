@@ -4,7 +4,12 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
-    "types": ["jest", "jest-require", "node"]
+    "resolveJsonModule": true,
+    "types": [
+      "jest",
+      "jest-require",
+      "node"
+    ]
   },
   "include": [
     "./src",

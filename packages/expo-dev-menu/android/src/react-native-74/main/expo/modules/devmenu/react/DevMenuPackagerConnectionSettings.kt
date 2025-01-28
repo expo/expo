@@ -11,7 +11,7 @@ class DevMenuPackagerConnectionSettings(
   private val serverIp: String,
   applicationContext: Context
 ) : PackagerConnectionSettings(applicationContext) {
-  override fun getDebugServerHost(): String = serverIp
-
-  override fun setDebugServerHost(host: String) = Unit
+  override var debugServerHost: String
+    get() = serverIp
+    set(host: String) {}
 }

@@ -1,11 +1,12 @@
 import { mergeClasses } from '@expo/styleguide';
 import { useState } from 'react';
 
+import { HEADLINE } from '~/ui/components/Text';
+
 import { Tab } from './Tab';
 import AppJson from './files/app-json.mdx';
 import App from './files/app.mdx';
 import Assets from './files/assets.mdx';
-import BabelConfigJs from './files/babel-config-js.mdx';
 import Components from './files/components.mdx';
 import Constants from './files/constants.mdx';
 import Hooks from './files/hooks.mdx';
@@ -13,79 +14,89 @@ import PackageJson from './files/package-json.mdx';
 import Scripts from './files/scripts.mdx';
 import TsconfigJson from './files/tsconfig-json.mdx';
 
-import { HEADLINE } from '~/ui/components/Text';
-
 export function ProjectStructure() {
   const [selected, setSelected] = useState('app');
 
   return (
-    <div className="text-default rounded-md overflow-hidden border border-default">
-      <div className="bg-subtle p-3 flex pl-4 border-b border-default">
+    <div className="overflow-hidden rounded-md border border-default text-default">
+      <div className="flex border-b border-default bg-subtle p-3 pl-4">
         <HEADLINE>Files</HEADLINE>
       </div>
       <div className="grid grid-cols-[250px_minmax(0,_1fr)] max-md-gutters:grid-cols-1">
         <div
           className={mergeClasses(
-            'p-3 flex flex-col gap-1 border-r border-default',
-            'max-md-gutters:border-r-0 max-md-gutters:border-b'
+            'flex flex-col gap-1 border-r border-default p-3',
+            'max-md-gutters:border-b max-md-gutters:border-r-0'
           )}>
           <Tab
             title="app"
-            onClick={() => setSelected('app')}
+            onClick={() => {
+              setSelected('app');
+            }}
             isSelected={selected === 'app'}
             type="directory"
           />
           <Tab
             title="assets"
-            onClick={() => setSelected('assets')}
+            onClick={() => {
+              setSelected('assets');
+            }}
             isSelected={selected === 'assets'}
             type="directory"
           />
           <Tab
             title="components"
-            onClick={() => setSelected('components')}
+            onClick={() => {
+              setSelected('components');
+            }}
             isSelected={selected === 'components'}
             type="directory"
           />
           <Tab
             title="constants"
-            onClick={() => setSelected('constants')}
+            onClick={() => {
+              setSelected('constants');
+            }}
             isSelected={selected === 'constants'}
             type="directory"
           />
           <Tab
             title="hooks"
-            onClick={() => setSelected('hooks')}
+            onClick={() => {
+              setSelected('hooks');
+            }}
             isSelected={selected === 'hooks'}
             type="directory"
           />
           <Tab
             title="scripts"
-            onClick={() => setSelected('scripts')}
+            onClick={() => {
+              setSelected('scripts');
+            }}
             isSelected={selected === 'scripts'}
             type="directory"
           />
           <Tab
             title="app.json"
-            onClick={() => setSelected('app.json')}
+            onClick={() => {
+              setSelected('app.json');
+            }}
             isSelected={selected === 'app.json'}
             type="file"
           />
           <Tab
-            title="babel.config.js"
-            onClick={() => setSelected('babel.config.js')}
-            isSelected={selected === 'babel.config.js'}
-            type="file"
-          />
-          <Tab
             title="package.json"
-            onClick={() => setSelected('package.json')}
+            onClick={() => {
+              setSelected('package.json');
+            }}
             isSelected={selected === 'package.json'}
             type="file"
           />
           <Tab
             title="tsconfig.json"
-            onClick={() => setSelected('tsconfig.json')}
+            onClick={() => {
+              setSelected('tsconfig.json');
+            }}
             isSelected={selected === 'tsconfig.json'}
             type="file"
           />
@@ -98,7 +109,6 @@ export function ProjectStructure() {
           {selected === 'hooks' ? <Hooks /> : null}
           {selected === 'scripts' ? <Scripts /> : null}
           {selected === 'app.json' ? <AppJson /> : null}
-          {selected === 'babel.config.js' ? <BabelConfigJs /> : null}
           {selected === 'package.json' ? <PackageJson /> : null}
           {selected === 'tsconfig.json' ? <TsconfigJson /> : null}
         </div>

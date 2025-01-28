@@ -14,7 +14,7 @@ const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 const BACKGROUND_TASK_SUCCESSFUL = 'Background task successfully ran!';
 const BACKGROUND_TEST_INFO = `To test background notification handling:\n(1) Background the app.\n(2) Send a push notification from your terminal. The push token can be found in your logs, and the command to send a notification can be found at https://docs.expo.dev/push-notifications/sending-notifications/#http2-api. On iOS, you need to include "_contentAvailable": "true" in your payload.\n(3) After receiving the notification, check your terminal for:\n"${BACKGROUND_TASK_SUCCESSFUL}"`;
 
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, (_data) => {
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async () => {
   console.log(BACKGROUND_TASK_SUCCESSFUL);
 });
 
@@ -88,6 +88,28 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={this._presentLocalNotificationAsync}
           title="Present a notification immediately"
+        />
+        <ListButton
+          onPress={async () => {
+            await this._obtainUserFacingNotifPermissionsAsync();
+            await Notifications.setNotificationChannelAsync('high-importance', {
+              name: 'important notification',
+              importance: Notifications.AndroidImportance.MAX,
+              bypassDnd: true,
+            });
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                categoryIdentifier: 'welcome',
+                title: 'Here is a notification!',
+                body: 'This one has buttons!',
+                autoDismiss: true,
+              },
+              trigger: {
+                channelId: 'high-importance',
+              },
+            });
+          }}
+          title="Present a notification with action buttons"
         />
         <ListButton
           onPress={this._scheduleLocalNotificationAsync}
@@ -194,7 +216,18 @@ export default class NotificationScreen extends React.Component<
     // Calling alert(message) immediately fails to show the alert on Android
     // if after backgrounding the app and then clicking on a notification
     // to foreground the app
-    setTimeout(() => Alert.alert('You clicked on the notification 🥇'), 1000);
+    setTimeout(
+      () =>
+        Alert.alert(
+          'You clicked on the notification 🥇',
+          JSON.stringify({
+            actionIdentifier: notificationResponse.actionIdentifier,
+            userText: notificationResponse.userText,
+          })
+        ),
+      1000
+    );
+    Notifications.dismissNotificationAsync(notificationResponse.notification.request.identifier);
   };
 
   private getPermissionsAsync = async () => {

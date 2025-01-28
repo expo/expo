@@ -1,14 +1,14 @@
-import { APIDataType } from '~/components/plugins/api/APIDataType';
-import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import {
-  CommentTextBlock,
-  getTagNamesList,
-  STYLES_APIBOX,
-  H3Code,
-} from '~/components/plugins/api/APISectionUtils';
-import { H2, DEMI, P, MONOSPACE } from '~/ui/components/Text';
+import { mergeClasses } from '@expo/styleguide';
+
+import { getTagData } from '~/components/plugins/api/APISectionUtils';
+import { CALLOUT, H2 } from '~/ui/components/Text';
+
+import { ConstantDefinitionData } from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APIBoxHeader } from './components/APIBoxHeader';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APIDataType } from './components/APIDataType';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -21,24 +21,19 @@ const renderConstant = (
   sdkVersion: string,
   apiName?: string
 ): JSX.Element => (
-  <div key={`constant-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
+  <div key={`constant-definition-${name}`} className={STYLES_APIBOX}>
     <APISectionDeprecationNote comment={comment} sticky />
-    <APISectionPlatformTags comment={comment} />
-    <H3Code tags={getTagNamesList(comment)}>
-      <MONOSPACE weight="medium" className="wrap-anywhere">
-        {apiName ? `${apiName}.` : ''}
-        {name}
-      </MONOSPACE>
-    </H3Code>
+    <APIBoxHeader
+      name={`${apiName ? `${apiName}.` : ''}${name}`}
+      comment={comment}
+      deprecated={Boolean(getTagData('deprecated', comment))}
+    />
     {type && (
-      <P>
-        <DEMI theme="secondary">Type:</DEMI>{' '}
-        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
-      </P>
+      <CALLOUT className={mergeClasses(STYLES_SECONDARY, ELEMENT_SPACING, VERTICAL_SPACING)}>
+        Type: <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+      </CALLOUT>
     )}
-    {comment && (
-      <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
-    )}
+    {comment && <APICommentTextBlock comment={comment} includePlatforms={false} inlineHeaders />}
   </div>
 );
 

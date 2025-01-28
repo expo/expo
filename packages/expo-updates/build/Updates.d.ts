@@ -1,4 +1,4 @@
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:
  * - enabled set to false in configuration
@@ -50,6 +50,10 @@ export declare const isEmergencyLaunch: boolean;
  * what failed during initialization.
  */
 export declare const emergencyLaunchReason: string | null;
+/**
+ * Number of milliseconds it took to launch.
+ */
+export declare const launchDuration: number | null;
 /**
  * This will be true if the currently running update is the one embedded in the build,
  * and not one downloaded from the updates server.
@@ -171,20 +175,14 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  */
 export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
 /**
+ * Overrides updates URL and reuqest headers in runtime from build time.
+ * This method allows you to load specific updates from a URL that you provide.
+ * Use this method at your own risk, as it may cause unexpected behavior.
+ * @experimental
  * @hidden
  */
-export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string): void;
-/**
- * @hidden
- */
-export declare function transformNativeStateMachineContext(originalNativeContext: UpdatesNativeStateMachineContext & {
-    latestManifestString?: string;
-    downloadedManifestString?: string;
-    lastCheckForUpdateTimeString?: string;
-    rollbackString?: string;
-}): UpdatesNativeStateMachineContext;
-/**
- * @hidden
- */
-export declare function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext>;
+export declare function setUpdateURLAndRequestHeadersOverride(configOverride: {
+    updateUrl: string;
+    requestHeaders: Record<string, string>;
+} | null): void;
 //# sourceMappingURL=Updates.d.ts.map

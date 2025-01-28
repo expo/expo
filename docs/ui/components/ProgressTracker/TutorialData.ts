@@ -62,3 +62,52 @@ export const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
     slug: '/tutorial/eas/using-github',
   },
 ];
+
+// The following data is for the Get started Tutorial (/tutorial/).
+export const GET_STARTED_TUTORIAL_CHAPTERS: Chapter[] = [
+  {
+    title: 'Chapter 1: Create your first app',
+    completed: false,
+    slug: '/tutorial/create-your-first-app',
+  },
+  {
+    title: 'Chapter 2: Add navigation',
+    completed: false,
+    slug: '/tutorial/add-navigation',
+  },
+  {
+    title: 'Chapter 3: Build a screen',
+    completed: false,
+    slug: '/tutorial/build-a-screen',
+  },
+  {
+    title: 'Chapter 4: Use an image picker',
+    completed: false,
+    slug: '/tutorial/image-picker',
+  },
+  {
+    title: 'Chapter 5: Create a modal',
+    completed: false,
+    slug: '/tutorial/create-a-modal',
+  },
+  {
+    title: 'Chapter 6: Add gestures',
+    completed: false,
+    slug: '/tutorial/gestures',
+  },
+  {
+    title: 'Chapter 7: Take a screenshot',
+    completed: false,
+    slug: '/tutorial/screenshot',
+  },
+  {
+    title: 'Chapter 8: Handle platform differences',
+    completed: false,
+    slug: '/tutorial/platform-differences',
+  },
+  {
+    title: 'Chapter 9: Configure status bar, splash screen and app icon',
+    completed: false,
+    slug: '/tutorial/configuration',
+  },
+];

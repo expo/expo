@@ -1,10 +1,3 @@
-// `@expo/metro-runtime` MUST be the first import to ensure Fast Refresh works
-// on web.
-import '@expo/metro-runtime';
-
-import { App } from 'expo-router/build/qualified-entry';
-import { renderRootComponent } from 'expo-router/build/renderRootComponent';
-
-// This file should only import and register the root. No components or exports
-// should be added here.
-renderRootComponent(App);
+// This is aliased to another location when server components are enabled.
+// We use this intermediate file to avoid issues with aliases not applying to package.json main field resolution.
+import 'expo-router/entry-classic';

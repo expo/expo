@@ -45,6 +45,10 @@ export type CurrentlyRunningInfo = {
      */
     emergencyLaunchReason: string | null;
     /**
+     * Number of milliseconds it took to launch.
+     */
+    launchDuration?: number;
+    /**
      * If `expo-updates` is enabled, this is the
      * [manifest](https://docs.expo.dev/versions/latest/sdk/updates/#updatesmanifest) object for the update that's currently
      * running.
@@ -128,13 +132,18 @@ export type UpdateInfoRollback = {
  */
 export type UpdateInfo = UpdateInfoNew | UpdateInfoRollback;
 /**
- * The structures and methods returned by [`useUpdates()`](#useupdates).
+ * The type returned by [`useUpdates()`](#useupdates).
  */
 export type UseUpdatesReturnType = {
     /**
      * Information on the currently running app.
      */
     currentlyRunning: CurrentlyRunningInfo;
+    /**
+     * Whether the startup procedure is still running. This may happen if the fallbackToCacheTimeout is shorter than the time taken to
+     * fetch a new update during app launch.
+     */
+    isStartupProcedureRunning: boolean;
     /**
      * If a new available update has been found, either by using [`checkForUpdateAsync()`](#updatescheckforupdateasync),
      * or by the `UpdateEvent` listener in `useUpdates()`, this will contain the information for that update.
@@ -162,6 +171,14 @@ export type UseUpdatesReturnType = {
      */
     isDownloading: boolean;
     /**
+     * True if the app is currently in the process of restarting.
+     */
+    isRestarting: boolean;
+    /**
+     * Number of times the JS has been restarted (for example, by calling reloadAsync) since app cold start.
+     */
+    restartCount: number;
+    /**
      * If an error is returned from either the startup check for updates, or a call to [`checkForUpdateAsync()`](#updatescheckforupdateasync),
      * the error description will appear here.
      */
@@ -171,10 +188,6 @@ export type UseUpdatesReturnType = {
      * the error description will appear here.
      */
     downloadError?: Error;
-    /**
-     * If an error occurs during initialization of [`useUpdates()`](#useupdates), the error description will appear here.
-     */
-    initializationError?: Error;
     /**
      * A `Date` object representing the last time this client checked for an available update,
      * or `undefined` if no check has yet occurred since the app started. Does not persist across

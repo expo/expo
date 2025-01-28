@@ -1,14 +1,8 @@
-import { Global } from '@emotion/react';
 import { BlockingSetInitialColorMode } from '@expo/styleguide';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 
-import { globalDiff } from '~/global-styles/diff';
-import { globalExtras } from '~/global-styles/extras';
-import { globalNProgress } from '~/global-styles/nprogress';
-import { globalPrism } from '~/global-styles/prism';
-import { globalTippy } from '~/global-styles/tippy';
-
 export default class DocsDocument extends Document {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx);
     return {
@@ -20,9 +14,7 @@ export default class DocsDocument extends Document {
   render() {
     return (
       <Html lang="en">
-        <Head>
-          <Global styles={[globalNProgress, globalPrism, globalTippy, globalDiff, globalExtras]} />
-        </Head>
+        <Head />
         <body className="text-pretty">
           <BlockingSetInitialColorMode />
           <Main />

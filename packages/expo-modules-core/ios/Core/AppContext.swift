@@ -86,6 +86,23 @@ public final class AppContext: NSObject {
   }
 
   /**
+   The application identifier that is used to distinguish between different `RCTHost`.
+   It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
+   It shouldn't be used on the old architecture.
+   */
+  @objc
+  public var appIdentifier: String? {
+    #if RCT_NEW_ARCH_ENABLED
+    guard let moduleRegistry = reactBridge?.moduleRegistry else {
+      return nil
+    }
+    return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
+    #else
+    return nil
+    #endif
+  }
+
+  /**
    Code signing entitlements for code signing
    */
   public let appCodeSignEntitlements = AppContext.modulesProvider().getAppCodeSignEntitlements()
@@ -283,11 +300,9 @@ public final class AppContext: NSObject {
    */
   @objc
   public func getViewManagers() -> [ViewModuleWrapper] {
-    return moduleRegistry.compactMap { holder in
-      if holder.definition.view != nil {
-        return ViewModuleWrapper(holder)
-      } else {
-        return nil
+    return moduleRegistry.flatMap { holder in
+      holder.definition.views.map { key, viewDefinition in
+        ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
       }
     }
   }
@@ -392,9 +407,10 @@ public final class AppContext: NSObject {
 
   private func viewManagersMetadata() -> [String: Any] {
     return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
-      if let viewDefinition = holder.definition.view {
-        acc[holder.name] = [
-          "propsNames": viewDefinition.props.map { $0.name }
+      holder.definition.views.forEach { key, definition in
+        let name = key == DEFAULT_MODULE_VIEW ? holder.name : "\(holder.name)_\(definition.name)"
+        acc[name] = [
+          "propsNames": definition.props.map { $0.name }
         ]
       }
     }
@@ -405,6 +421,8 @@ public final class AppContext: NSObject {
   internal func prepareRuntime() throws {
     let runtime = try runtime
     let coreObject = runtime.createObject()
+
+    coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier, options: [])
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 

@@ -4,6 +4,40 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- [Android] Add missing ProGuard rule to fix task consumer failed ([#34098](https://github.com/expo/expo/pull/34098) by [@cornejobarraza](https://github.com/cornejobarraza))
+- [iOS] `startLocationUpdatesAsync` should not require background permissions ([#33617](https://github.com/expo/expo/pull/33617) by [@andrejpavlovic](https://github.com/andrejpavlovic)
+
+### 💡 Others
+
+- On Android, remove dependency on `smart-location-lib`. ([#33609](https://github.com/expo/expo/pull/33609) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 18.0.4 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.3 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.2 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- Fixed NoClassDefFoundError for `Landroid/support/v4/app/ActivityCompat;`. ([#33088](https://github.com/expo/expo/pull/33088) by [@kudo](https://github.com/kudo))
+
+## 18.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Remove deprecated code: geocoding using Google Maps API, old permission methods and related types. ([#29961](https://github.com/expo/expo/pull/29961) by [@Simek](https://github.com/Simek))
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30867](https://github.com/expo/expo/pull/30867) by [@tsapeta](https://github.com/tsapeta))
 

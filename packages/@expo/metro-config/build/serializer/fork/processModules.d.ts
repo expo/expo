@@ -14,7 +14,7 @@ export declare function processModules(modules: readonly Module[], { filter, cre
     includeAsyncPaths: boolean;
     projectRoot: string;
     serverRoot: string;
-    sourceUrl: string | undefined;
+    sourceUrl?: string | null;
     skipWrapping: boolean;
     computedAsyncModulePaths: Record<string, string> | null;
 }): readonly [Module, {

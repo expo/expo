@@ -6,6 +6,11 @@ import fs from 'fs/promises';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
+/*
+ * Change this to your own Expo account name
+ */
+export const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
+
 const dirName = __dirname; /* eslint-disable-line */
 
 // Package dependencies in chunks based on peer dependencies.
@@ -24,6 +29,7 @@ function getExpoDependencyChunks({
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
+    ['@expo/image-utils'],
     [
       'babel-preset-expo',
       'expo-application',
@@ -45,10 +51,12 @@ function getExpoDependencyChunks({
     ...(includeTV
       ? [
           [
+            'expo-audio',
             'expo-av',
             'expo-blur',
             'expo-image',
             'expo-linear-gradient',
+            'expo-linking',
             'expo-localization',
             'expo-crypto',
             'expo-network',
@@ -357,8 +365,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.75.2-0',
-        '@react-native-tvos/config-tv': '^0.0.10',
+        'react-native': 'npm:react-native-tvos@~0.76.1-0',
+        '@react-native-tvos/config-tv': '^0.0.13',
       },
       expo: {
         install: {
@@ -469,6 +477,7 @@ function transformAppJsonForE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
+      newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
@@ -506,6 +515,30 @@ export function transformAppJsonForE2EWithFingerprint(
       ...transformedForE2E.expo,
       runtimeVersion: {
         policy: 'fingerprint',
+      },
+    },
+  };
+}
+
+export function transformAppJsonForE2EWithBrickingMeasuresDisabled(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2EWithFallbackToCacheTimeout(
+    appJson,
+    projectName,
+    runtimeVersion,
+    isTV
+  );
+  return {
+    ...transformedForE2E,
+    expo: {
+      ...transformedForE2E.expo,
+      updates: {
+        ...transformedForE2E.expo.updates,
+        disableAntiBrickingMeasures: true,
       },
     },
   };
@@ -550,6 +583,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
+      newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       extra: {
@@ -734,7 +768,7 @@ export async function initAsync(
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    '\nandroid.enableProguardInReleaseBuilds=true\nandroid.kotlinVersion=1.8.20\nEXPO_UPDATES_NATIVE_DEBUG=true',
+    '\nandroid.enableProguardInReleaseBuilds=true\nandroid.kotlinVersion=1.9.24\nEXPO_UPDATES_NATIVE_DEBUG=true',
     'utf-8'
   );
 
@@ -806,6 +840,8 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     { appJsFileName: 'App-apitest.tsx', repoRoot, isTV: false }
   );
 
+  const projectName = path.basename(projectRoot);
+
   // disable JS debugging on Android
   const mainApplicationPath = path.join(
     projectRoot,
@@ -815,8 +851,8 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     'main',
     'java',
     'com',
-    'douglowderexpo',
-    'MyUpdateableApp',
+    EXPO_ACCOUNT_NAME,
+    projectName,
     'MainApplication.kt'
   );
   const mainApplicationText = await fs.readFile(mainApplicationPath, { encoding: 'utf-8' });
@@ -925,6 +961,29 @@ export async function setupUpdatesStartupE2EAppAsync(
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-startup.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-bricking-measures-disabled.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }

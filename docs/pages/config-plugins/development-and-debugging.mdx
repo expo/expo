@@ -81,7 +81,7 @@ You can develop plugins easily using JS, but if you want to setup Jest tests and
 A monorepo will enable you to work on a node module and import it in your app config like you would if it were published to npm.
 Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
 
-In your monorepo's `packages/` folder, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
+In your monorepo's `packages/` directory, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
 
 ### Manually run a plugin
 
@@ -217,7 +217,7 @@ export default createRunOncePlugin(
 - **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `npx expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem,
   use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
-  - Notice the root [\*\*/\_\_mocks\_\_/\*\*/\*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
+  - Notice the root [\*\*/\_\_mocks\_\_/\*\*/\*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) directory and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
 - A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
 - Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.
 
@@ -381,7 +381,7 @@ As you can see from the example, we rely heavily on application code (expo-modul
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors. By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (that is, legacy package doesn't have a config plugin yet).
 
-Running `npx expo prebuild --clean` with remove the generated native folders before compiling.
+Running `npx expo prebuild --clean` with remove the generated native directories before compiling.
 
 You can also run `npx expo config --type prebuild` to print the results of the plugins with the mods unevaluated (no code is generated).
 
@@ -629,20 +629,20 @@ This makes setup a bit easier and helps prevent users from forgetting to add a p
 
 This does come with a couple of caveats:
 
-1. Packages must export a plugin via **app.plugin.js**, this rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
+1. Packages can use both use a root **app.plugin.js** file or use the `main` entry point to ship a config plugin. `expo install` only adds config plugins using the root **app.config.js** file automatically to the app manifest. This rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
 2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props then `expo-camera` would throw an error.
 3. Plugins can only be automatically added when the user's project uses a static app config (**app.json** and **app.config.json**). If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
 
-   ```sh
-   Cannot automatically write to dynamic config at: app.config.js
-   Please add the following to your app config
+```sh
+Cannot automatically write to dynamic config at: app.config.js
+Please add the following to your app config
 
-     {
-       "plugins": [
-       "expo-camera"
-       ]
-     }
-   ```
+{
+  "plugins": [
+    "expo-camera"
+  ]
+}
+```
 
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme

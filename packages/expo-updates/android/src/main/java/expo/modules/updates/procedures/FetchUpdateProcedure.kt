@@ -12,6 +12,7 @@ import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import java.io.File
@@ -19,6 +20,7 @@ import java.io.File
 class FetchUpdateProcedure(
   private val context: Context,
   private val updatesConfiguration: UpdatesConfiguration,
+  private val logger: UpdatesLogger,
   private val databaseHolder: DatabaseHolder,
   private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
@@ -36,6 +38,7 @@ class FetchUpdateProcedure(
       RemoteLoader(
         context,
         updatesConfiguration,
+        logger,
         database,
         fileDownloader,
         updatesDirectory,
@@ -87,6 +90,7 @@ class FetchUpdateProcedure(
               RemoteLoader.processSuccessLoaderResult(
                 context,
                 updatesConfiguration,
+                logger,
                 database,
                 selectionPolicy,
                 updatesDirectory,

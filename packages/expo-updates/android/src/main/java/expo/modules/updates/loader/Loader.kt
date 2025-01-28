@@ -1,7 +1,6 @@
 package expo.modules.updates.loader
 
 import android.content.Context
-import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.UpdatesDatabase
@@ -10,9 +9,12 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 /**
@@ -23,8 +25,9 @@ import java.util.*
  * application package. These correspond to the two loader subclasses.
  */
 abstract class Loader protected constructor(
-  private val context: Context,
+  protected val context: Context,
   private val configuration: UpdatesConfiguration,
+  protected val logger: UpdatesLogger,
   private val database: UpdatesDatabase,
   private val updatesDirectory: File,
   private val loaderFiles: LoaderFiles
@@ -74,14 +77,12 @@ abstract class Loader protected constructor(
   }
 
   protected abstract fun loadRemoteUpdate(
-    context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
   )
 
   protected abstract fun loadAsset(
-    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
@@ -97,12 +98,11 @@ abstract class Loader protected constructor(
     this.callback = callback
 
     loadRemoteUpdate(
-      context,
       database,
       configuration,
       object : RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
-          finishWithError(message, e)
+        override fun onFailure(e: Exception) {
+          finishWithException(e)
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
@@ -134,10 +134,8 @@ abstract class Loader protected constructor(
 
   private fun finishWithSuccess() {
     if (callback == null) {
-      Log.e(
-        TAG,
-        this.javaClass.simpleName + " tried to finish but it already finished or was never initialized."
-      )
+      val cause = Exception("Null callback in finishWithSuccess")
+      logger.error("${this.javaClass.simpleName} tried to finish but it already finished or was never initialized.", cause, UpdatesErrorCode.UpdateFailedToLoad)
       return
     }
 
@@ -157,13 +155,10 @@ abstract class Loader protected constructor(
     reset()
   }
 
-  private fun finishWithError(message: String, e: Exception) {
-    Log.e(TAG, message, e)
+  private fun finishWithException(e: Exception) {
+    logger.error("Load error", e, UpdatesErrorCode.UpdateFailedToLoad)
     if (callback == null) {
-      Log.e(
-        TAG,
-        this.javaClass.simpleName + " tried to finish but it already finished or was never initialized."
-      )
+      logger.error("${this.javaClass.simpleName} tried to finish but it already finished or was never initialized.", e, UpdatesErrorCode.UpdateFailedToLoad)
       return
     }
     callback!!.onFailure(e)
@@ -191,11 +186,8 @@ abstract class Loader protected constructor(
     // but different scope keys, we should try to launch something rather than show a cryptic
     // error to the user.
     if (existingUpdateEntity != null && existingUpdateEntity.scopeKey != newUpdateEntity.scopeKey) {
+      logger.warn("Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.")
       database.updateDao().setUpdateScopeKey(existingUpdateEntity, newUpdateEntity.scopeKey)
-      Log.e(
-        TAG,
-        "Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update."
-      )
     }
 
     if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {
@@ -248,7 +240,6 @@ abstract class Loader protected constructor(
       }
 
       loadAsset(
-        context,
         assetEntity,
         updatesDirectory,
         configuration,
@@ -261,7 +252,7 @@ abstract class Loader protected constructor(
             } else {
               "key " + assetEntity.key
             }
-            Log.e(TAG, "Failed to download asset with $identifier", e)
+            logger.error("Failed to download asset with $identifier", e)
             handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED)
           }
 
@@ -317,12 +308,12 @@ abstract class Loader protected constructor(
           database.updateDao().markUpdateFinished(updateEntity!!)
         }
       } catch (e: Exception) {
-        finishWithError("Error while adding new update to database", e)
+        finishWithException(IOException("Error while adding new update to database", e))
         return
       }
 
       if (erroredAssetList.size > 0) {
-        finishWithError("Failed to load all assets", Exception("Failed to load all assets"))
+        finishWithException(Exception("Failed to load all assets"))
       } else {
         finishWithSuccess()
       }

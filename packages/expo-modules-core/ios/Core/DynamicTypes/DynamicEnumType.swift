@@ -18,7 +18,18 @@ internal struct DynamicEnumType: AnyDynamicType {
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
+    // TODO: Remove if. The result should not be an enumerable, but it's converted in `MainValueConverter:21` to an enum.
+    if let value = value as? any Enumerable {
+      return value
+    }
     return try innerType.create(fromRawValue: value)
+  }
+
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    if let result = result as? any Enumerable {
+      return result.anyRawValue
+    }
+    return result
   }
 
   var description: String {

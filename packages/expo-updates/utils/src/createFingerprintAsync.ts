@@ -1,4 +1,4 @@
-import * as Fingerprint from '@expo/fingerprint';
+import * as Fingerprint from 'expo/fingerprint';
 
 import { Workflow } from './workflow';
 

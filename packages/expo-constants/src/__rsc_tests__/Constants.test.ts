@@ -8,8 +8,8 @@ it(`reads server constants without throwing`, () => {
     expect.objectContaining({
       name: 'expo-constants',
       platforms: ['ios', 'android', 'web'],
-      sdkVersion: '51.0.0',
       slug: 'expo-constants',
     })
   );
+  expect(Constants.expoConfig?.sdkVersion).toMatch(/^\d+\.\d+\.\d+$/);
 });

@@ -4,87 +4,90 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div>
     <div
-      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
     >
       <p
-        class="group emotion-1"
+        class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
         data-text="true"
       >
+        <code
+          class="font-medium"
+        >
+          name
+        </code>
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
           href="#name"
           id="name"
         >
           <span
-            class="inline"
+            class="flex self-center text-inherit leading-none select-none"
           >
-            <code
-              class="!px-1.5 !text-sm emotion-2"
-              data-text="true"
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              name
-            </code>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
           </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
         </a>
       </p>
-      <p
-        class="my-3 emotion-3"
+      <div
+        class="my-3"
         data-text="true"
       >
-        Type: 
-        <code
-          class="emotion-2"
+        <span
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
           data-text="true"
         >
-          string
-        </code>
-      </p>
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            string
+          </code>
+        </span>
+      </div>
       <p
-        class="mb-3.5 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
         Name of your app.
       </p>
       <details
-        class="emotion-6"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="bare-workflow"
       >
         <summary
-          class="group emotion-7"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="emotion-8"
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default emotion-9"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -98,21 +101,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
           >
-            <span
-              class="emotion-10"
-              data-text="true"
-            >
-              Bare Workflow
-            </span>
+            Bare Workflow
           </span>
           <a
+            aria-label="Permalink"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#bare-workflow"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -135,12 +136,13 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               />
             </svg>
           </a>
+          <div />
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-11"
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="mb-3.5 emotion-1"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             Edit the 'Display Name' field in Xcode
@@ -149,87 +151,90 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </details>
     </div>
     <div
-      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
     >
       <p
-        class="group emotion-1"
+        class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
         data-text="true"
       >
+        <code
+          class="font-medium"
+        >
+          androidNavigationBar
+        </code>
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
           href="#androidnavigationbar"
           id="androidnavigationbar"
         >
           <span
-            class="inline"
+            class="flex self-center text-inherit leading-none select-none"
           >
-            <code
-              class="!px-1.5 !text-sm emotion-2"
-              data-text="true"
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              androidNavigationBar
-            </code>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
           </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
         </a>
       </p>
-      <p
-        class="my-3 emotion-3"
+      <div
+        class="my-3"
         data-text="true"
       >
-        Type: 
-        <code
-          class="emotion-2"
+        <span
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
           data-text="true"
         >
-          object
-        </code>
-      </p>
+          Type: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-text="true"
+          >
+            object
+          </code>
+        </span>
+      </div>
       <p
-        class="mb-3.5 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
         Configuration for the bottom navigation bar on Android.
       </p>
       <details
-        class="emotion-6"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="expokit"
       >
         <summary
-          class="group emotion-7"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="emotion-8"
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default emotion-9"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -243,21 +248,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
           >
-            <span
-              class="emotion-10"
-              data-text="true"
-            >
-              ExpoKit
-            </span>
+            ExpoKit
           </span>
           <a
+            aria-label="Permalink"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#expokit"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -280,12 +283,13 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               />
             </svg>
           </a>
+          <div />
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-11"
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="mb-3.5 emotion-1"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             Set this property using AppConstants.java.
@@ -293,21 +297,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <details
-        class="emotion-6"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="bare-workflow-1"
       >
         <summary
-          class="group emotion-7"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="emotion-8"
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default emotion-9"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -321,21 +324,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
           >
-            <span
-              class="emotion-10"
-              data-text="true"
-            >
-              Bare Workflow
-            </span>
+            Bare Workflow
           </span>
           <a
+            aria-label="Permalink"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#bare-workflow-1"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -358,12 +359,13 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               />
             </svg>
           </a>
+          <div />
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-11"
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="mb-3.5 emotion-1"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             Set this property using just Xcode
@@ -371,96 +373,104 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
         <p
-          class="group emotion-1"
+          class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
           data-text="true"
         >
+          <code
+            class="font-medium"
+          >
+            visible
+          </code>
           <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
             href="#visible"
             id="visible"
           >
             <span
-              class="inline"
+              class="flex self-center text-inherit leading-none select-none"
             >
-              <code
-                class="!px-1.5 !text-sm emotion-2"
-                data-text="true"
+              <svg
+                aria-label="permalink"
+                class="shrink-0 icon-xs"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                visible
-              </code>
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
             </span>
-            <svg
-              aria-label="permalink"
-              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
           </a>
         </p>
-        <p
-          class="my-3 emotion-3"
+        <div
+          class="my-3"
           data-text="true"
         >
-          Type: 
-          <code
-            class="emotion-2"
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
-            enum
-          </code>
-           • Path:
-           
-          <code
-            class="text-secondary px-1 break-words"
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              enum
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
           >
-            androidNavigationBar
-            .
-            visible
-          </code>
-        </p>
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              androidNavigationBar
+              .
+              visible
+            </code>
+          </span>
+        </div>
         <p
-          class="mb-3.5 emotion-1"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="emotion-6"
+          class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
           id="expokit-1"
         >
           <summary
-            class="group emotion-7"
+            class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
           >
             <div
-              class="emotion-8"
+              class="ml-1.5 mr-2 mt-[5px] self-baseline"
             >
               <svg
-                class="icon-sm text-icon-default emotion-9"
+                class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
                 fill="none"
                 role="img"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <g
                   id="triangle-down-custom-icon"
@@ -474,21 +484,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </div>
             <span
-              class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+              class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+              data-text="true"
             >
-              <span
-                class="emotion-10"
-                data-text="true"
-              >
-                ExpoKit
-              </span>
+              ExpoKit
             </span>
             <a
+              aria-label="Permalink"
+              class="ml-auto inline rounded-md p-1 hocus:bg-element"
               href="#expokit-1"
             >
               <svg
                 aria-label="permalink"
-                class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
+                class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -511,12 +519,13 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 />
               </svg>
             </a>
+            <div />
           </summary>
           <div
-            class="last:[&>*]:!mb-1 emotion-11"
+            class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
           >
             <p
-              class="mb-3.5 emotion-1"
+              class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
               data-text="true"
             >
               Set this property using Xcode.
@@ -524,30 +533,114 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </details>
         <div
-          class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
         >
           <p
-            class="group emotion-1"
+            class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
             data-text="true"
           >
+            <code
+              class="font-medium"
+            >
+              always
+            </code>
             <a
-              class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
               href="#always"
               id="always"
             >
               <span
-                class="inline"
+                class="flex self-center text-inherit leading-none select-none"
               >
-                <code
-                  class="!px-1.5 !text-sm emotion-2"
-                  data-text="true"
+                <svg
+                  aria-label="permalink"
+                  class="shrink-0 icon-xs"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  always
-                </code>
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
               </span>
+            </a>
+          </p>
+          <div
+            class="my-3"
+            data-text="true"
+          >
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+              data-text="true"
+            >
+              Type: 
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+                data-text="true"
+              >
+                boolean
+              </code>
+            </span>
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+              data-text="true"
+            >
+               • Path:
+               
+              <code
+                class="break-words px-1 text-secondary"
+              >
+                androidNavigationBar.visible
+                .
+                always
+              </code>
+            </span>
+          </div>
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            Test sub-sub-property
+          </p>
+        </div>
+      </div>
+      <div
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
+      >
+        <p
+          class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
+          data-text="true"
+        >
+          <code
+            class="font-medium"
+          >
+            backgroundColor
+          </code>
+          <a
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+            href="#backgroundcolor"
+            id="backgroundcolor"
+          >
+            <span
+              class="flex self-center text-inherit leading-none select-none"
+            >
               <svg
                 aria-label="permalink"
-                class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+                class="shrink-0 icon-xs"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -569,62 +662,85 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   stroke-width="2"
                 />
               </svg>
-            </a>
-          </p>
-          <p
-            class="my-3 emotion-3"
+            </span>
+          </a>
+        </p>
+        <div
+          class="my-3"
+          data-text="true"
+        >
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
             Type: 
             <code
-              class="emotion-2"
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
               data-text="true"
             >
-              boolean
+              string
             </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
+          >
              • Path:
              
             <code
-              class="text-secondary px-1 break-words"
+              class="break-words px-1 text-secondary"
             >
-              androidNavigationBar.visible
+              androidNavigationBar
               .
-              always
+              backgroundColor
             </code>
-          </p>
-          <p
-            class="mb-3.5 emotion-1"
-            data-text="true"
-          >
-            Test sub-sub-property
-          </p>
+          </span>
         </div>
-      </div>
-      <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
-      >
         <p
-          class="group emotion-1"
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
-          <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
-            href="#backgroundcolor"
-            id="backgroundcolor"
+          Specifies the background color of the navigation bar.
+        </p>
+        
+
+        <p
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+          data-text="true"
+        >
+          6 character long hex color string, eg: 
+          <code
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
+            data-text="true"
           >
-            <span
-              class="inline"
-            >
-              <code
-                class="!px-1.5 !text-sm emotion-2"
-                data-text="true"
-              >
-                backgroundColor
-              </code>
-            </span>
+            '#000000'
+          </code>
+        </p>
+      </div>
+    </div>
+    <div
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
+    >
+      <p
+        class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
+        data-text="true"
+      >
+        <code
+          class="font-medium"
+        >
+          intentFilters
+        </code>
+        <a
+          class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+          href="#intentfilters"
+          id="intentfilters"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
+          >
             <svg
               aria-label="permalink"
-              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+              class="shrink-0 icon-xs"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -646,133 +762,47 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 stroke-width="2"
               />
             </svg>
-          </a>
-        </p>
-        <p
-          class="my-3 emotion-3"
+          </span>
+        </a>
+      </p>
+      <div
+        class="my-3"
+        data-text="true"
+      >
+        <span
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
           data-text="true"
         >
           Type: 
           <code
-            class="emotion-2"
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
             data-text="true"
           >
-            string
+            array
           </code>
-           • Path:
-           
-          <code
-            class="text-secondary px-1 break-words"
-          >
-            androidNavigationBar
-            .
-            backgroundColor
-          </code>
-        </p>
-        <p
-          class="mb-3.5 emotion-1"
-          data-text="true"
-        >
-          Specifies the background color of the navigation bar.
-        </p>
-        
-
-        <p
-          class="mb-3.5 emotion-1"
-          data-text="true"
-        >
-          6 character long hex color string, eg: 
-          <code
-            class="emotion-59"
-            data-text="true"
-          >
-            '#000000'
-          </code>
-        </p>
+        </span>
       </div>
-    </div>
-    <div
-      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
-    >
       <p
-        class="group emotion-1"
-        data-text="true"
-      >
-        <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
-          href="#intentfilters"
-          id="intentfilters"
-        >
-          <span
-            class="inline"
-          >
-            <code
-              class="!px-1.5 !text-sm emotion-2"
-              data-text="true"
-            >
-              intentFilters
-            </code>
-          </span>
-          <svg
-            aria-label="permalink"
-            class="icon-md inline-flex invisible group-hover:visible group-focus-visible:visible"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </a>
-      </p>
-      <p
-        class="my-3 emotion-3"
-        data-text="true"
-      >
-        Type: 
-        <code
-          class="emotion-2"
-          data-text="true"
-        >
-          array
-        </code>
-      </p>
-      <p
-        class="mb-3.5 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
         Configuration for setting an array of custom intent filters in Android manifest.
       </p>
       <details
-        class="emotion-6"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         id="bare-workflow-2"
       >
         <summary
-          class="group emotion-7"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="emotion-8"
+            class="ml-1.5 mr-2 mt-[5px] self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default emotion-9"
+              class="translate-z icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <g
                 id="triangle-down-custom-icon"
@@ -786,21 +816,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
           >
-            <span
-              class="emotion-10"
-              data-text="true"
-            >
-              Bare Workflow
-            </span>
+            Bare Workflow
           </span>
           <a
+            aria-label="Permalink"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#bare-workflow-2"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible"
+              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -823,12 +851,13 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               />
             </svg>
           </a>
+          <div />
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-11"
+          class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
         >
           <p
-            class="mb-3.5 emotion-1"
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             This is set in AndroidManifest.xml directly.
@@ -836,20 +865,20 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <span
-        class="grid grid-cols-1 gap-2 mb-6"
+        class="mb-6 grid grid-cols-1 gap-2"
       >
         <p
-          class="font-bold emotion-3"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary font-bold"
           data-text="true"
         >
           Example
         </p>
         <span
-          class="m-0 px-1 py-1.5 inline-flex !p-0 emotion-74"
+          class="m-0 whitespace-pre px-1 py-1.5 inline-flex !p-0"
           data-text="true"
         >
           <code
-            class="!text-[85%] inline-flex w-full !p-1.5 emotion-75"
+            class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] rounded-md border border-secondary bg-subtle px-1 py-0.5 !text-3xs text-default block w-full !p-1.5"
             data-text="true"
           >
             [
@@ -864,175 +893,28 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </span>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
         <p
-          class="group emotion-1"
+          class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
           data-text="true"
         >
+          <code
+            class="font-medium"
+          >
+            autoVerify
+          </code>
           <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
             href="#autoverify"
             id="autoverify"
           >
             <span
-              class="inline"
+              class="flex self-center text-inherit leading-none select-none"
             >
-              <code
-                class="!px-1.5 !text-sm emotion-2"
-                data-text="true"
-              >
-                autoVerify
-              </code>
-            </span>
-            <svg
-              aria-label="permalink"
-              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </a>
-        </p>
-        <p
-          class="my-3 emotion-3"
-          data-text="true"
-        >
-          Type: 
-          <code
-            class="emotion-2"
-            data-text="true"
-          >
-            boolean
-          </code>
-           • Path:
-           
-          <code
-            class="text-secondary px-1 break-words"
-          >
-            intentFilters
-            .
-            autoVerify
-          </code>
-        </p>
-        <p
-          class="mb-3.5 emotion-1"
-          data-text="true"
-        >
-          You may also use an intent filter to set your app as the default handler for links
-        </p>
-      </div>
-      <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
-      >
-        <p
-          class="group emotion-1"
-          data-text="true"
-        >
-          <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
-            href="#data"
-            id="data"
-          >
-            <span
-              class="inline"
-            >
-              <code
-                class="!px-1.5 !text-sm emotion-2"
-                data-text="true"
-              >
-                data
-              </code>
-            </span>
-            <svg
-              aria-label="permalink"
-              class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </a>
-        </p>
-        <p
-          class="my-3 emotion-3"
-          data-text="true"
-        >
-          Type: 
-          <code
-            class="emotion-2"
-            data-text="true"
-          >
-            array || object
-          </code>
-           • Path:
-           
-          <code
-            class="text-secondary px-1 break-words"
-          >
-            intentFilters
-            .
-            data
-          </code>
-        </p>
-        <div
-          class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
-        >
-          <p
-            class="group emotion-1"
-            data-text="true"
-          >
-            <a
-              class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
-              href="#host"
-              id="host"
-            >
-              <span
-                class="inline"
-              >
-                <code
-                  class="!px-1.5 !text-sm emotion-2"
-                  data-text="true"
-                >
-                  host
-                </code>
-              </span>
               <svg
                 aria-label="permalink"
-                class="inline-flex invisible group-hover:visible group-focus-visible:visible icon-sm"
+                class="shrink-0 icon-xs"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -1054,29 +936,203 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   stroke-width="2"
                 />
               </svg>
-            </a>
-          </p>
-          <p
-            class="my-3 emotion-3"
+            </span>
+          </a>
+        </p>
+        <div
+          class="my-3"
+          data-text="true"
+        >
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
             data-text="true"
           >
             Type: 
             <code
-              class="emotion-2"
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
               data-text="true"
             >
-              string
+              boolean
             </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
+          >
              • Path:
              
             <code
-              class="text-secondary px-1 break-words"
+              class="break-words px-1 text-secondary"
             >
-              intentFilters.data
+              intentFilters
               .
+              autoVerify
+            </code>
+          </span>
+        </div>
+        <p
+          class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+          data-text="true"
+        >
+          You may also use an intent filter to set your app as the default handler for links
+        </p>
+      </div>
+      <div
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
+      >
+        <p
+          class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
+          data-text="true"
+        >
+          <code
+            class="font-medium"
+          >
+            data
+          </code>
+          <a
+            class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+            href="#data"
+            id="data"
+          >
+            <span
+              class="flex self-center text-inherit leading-none select-none"
+            >
+              <svg
+                aria-label="permalink"
+                class="shrink-0 icon-xs"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </p>
+        <div
+          class="my-3"
+          data-text="true"
+        >
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
+          >
+            Type: 
+            <code
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+              data-text="true"
+            >
+              array || object
+            </code>
+          </span>
+          <span
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+            data-text="true"
+          >
+             • Path:
+             
+            <code
+              class="break-words px-1 text-secondary"
+            >
+              intentFilters
+              .
+              data
+            </code>
+          </span>
+        </div>
+        <div
+          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
+        >
+          <p
+            class="text-default font-normal text-base [&_strong]:break-words group flex gap-1"
+            data-text="true"
+          >
+            <code
+              class="font-medium"
+            >
               host
             </code>
+            <a
+              class="border border-solid rounded-md font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] scroll-m-8"
+              href="#host"
+              id="host"
+            >
+              <span
+                class="flex self-center text-inherit leading-none select-none"
+              >
+                <svg
+                  aria-label="permalink"
+                  class="shrink-0 icon-xs"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </a>
           </p>
+          <div
+            class="my-3"
+            data-text="true"
+          >
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+              data-text="true"
+            >
+              Type: 
+              <code
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+                data-text="true"
+              >
+                string
+              </code>
+            </span>
+            <span
+              class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
+              data-text="true"
+            >
+               • Path:
+               
+              <code
+                class="break-words px-1 text-secondary"
+              >
+                intentFilters.data
+                .
+                host
+              </code>
+            </span>
+          </div>
         </div>
       </div>
     </div>

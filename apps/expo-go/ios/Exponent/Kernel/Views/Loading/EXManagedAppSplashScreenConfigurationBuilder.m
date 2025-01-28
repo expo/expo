@@ -41,7 +41,8 @@ static const NSString *kImageResizeModeCover = @"cover";
 
 + (NSString * _Nullable)parseImageUrl:(EXManifestsManifest *)manifest
 {
-  return manifest.iosSplashImageUrl;
+  // Because of the changes to splashscreen, we now default to the app icon in expo go
+  return manifest.iosAppIconUrl;
 }
 
 + (EXSplashScreenImageResizeMode)parseImageResizeMode:(EXManifestsManifest *)manifest

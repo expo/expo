@@ -14,20 +14,20 @@ typedef struct AVAudioTapProcessorContext {
 
 @implementation AudioTapProcessor
 
-- (instancetype)initWithPlayerItem:(AVPlayerItem *)playerItem {
+- (instancetype)initWithPlayer:(AVPlayer *)player {
   self = [super init];
   if (self) {
-    _playerItem = playerItem;
+    _player = player;
   }
   return self;
 }
 
 - (bool)installTap {
-  if (!_playerItem) {
+  if (![_player currentItem]) {
     return false;
   }
   
-  AVAssetTrack *track = _playerItem.tracks.firstObject.assetTrack;
+  AVAssetTrack *track = _player.currentItem.tracks.firstObject.assetTrack;
   if (!track) {
     return false;
   }
@@ -50,7 +50,7 @@ typedef struct AVAudioTapProcessorContext {
       if (status == noErr) {
         audioMixInputParameters.audioTapProcessor = audioProcessingTap;
         audioMix.inputParameters = @[audioMixInputParameters];
-        [_playerItem setAudioMix:audioMix];
+        [_player.currentItem setAudioMix:audioMix];
         CFRelease(audioProcessingTap);
       } else {
         return false;
@@ -61,7 +61,7 @@ typedef struct AVAudioTapProcessorContext {
 }
 
 - (void)uninstallTap {
-  [_playerItem setAudioMix:nil];
+  [_player.currentItem setAudioMix:nil];
 }
 
 #pragma mark - Audio Sample Buffer Callbacks (MTAudioProcessingTapCallbacks)
@@ -103,8 +103,8 @@ void tapUnprepare(MTAudioProcessingTapRef tap) {
 
 void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut) {
   AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-  if (!context->self) {
-    NSLog(@"Audio Processing Tap has been destroyed!");
+  if (!context || !context->self) {
+    NSLog(@"Audio Processing Tap storage or context is invalid!");
     return;
   }
   
@@ -114,12 +114,12 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
   }
   
   OSStatus status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
-  if (noErr != status) {
+  if (status != noErr) {
     NSLog(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
     return;
   }
   
-  double seconds = CMTimeGetSeconds([_self->_playerItem currentTime]);
+  double seconds = CMTimeGetSeconds([_self->_player.currentItem currentTime]);
   _self.sampleBufferCallback(&bufferListInOut->mBuffers[0], numberFrames, seconds);
 }
 

@@ -1,4 +1,7 @@
+import { ExpoConfig, PackageJSONConfig } from '@expo/config';
+
 import { env } from './env';
+import { gteSdkVersion } from './versions';
 
 /**
  * Get the doctor config from the package.json.
@@ -14,13 +17,25 @@ import { env } from './env';
  *        "enabled": true,
  *        "exclude": ["/foo/", "bar"]
  *        "listUnknownPackages": true,
- *      }
+ *      },
+ *      "appConfigFieldsNotSyncedCheck": {
+ *        "enabled": false
+ *      },
  *    }
  *  }
  * ```
  **/
 
-export function getDoctorConfig(pkg: any) {
+interface DoctorPackageJsonConfig {
+  reactNativeDirectoryCheck?: {
+    enabled?: boolean;
+    exclude?: string[];
+    listUnknownPackages?: boolean;
+  };
+  appConfigFieldsNotSyncedCheck?: { enabled?: boolean };
+}
+
+export function getDoctorConfig(pkg: any): DoctorPackageJsonConfig {
   return pkg?.expo?.doctor ?? {};
 }
 
@@ -39,7 +54,8 @@ export function getReactNativeDirectoryCheckExcludes(pkg: any) {
   });
 }
 
-export function getReactNativeDirectoryCheckEnabled(pkg: any) {
+export function getReactNativeDirectoryCheckEnabled(exp: ExpoConfig, pkg: PackageJSONConfig) {
+  const isEnabledByDefault = gteSdkVersion(exp, '52.0.0');
   const pkgJsonConfigSetting = getDoctorConfig(pkg).reactNativeDirectoryCheck?.enabled;
 
   if (env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK !== null) {
@@ -52,7 +68,7 @@ export function getReactNativeDirectoryCheckEnabled(pkg: any) {
     return env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK;
   }
 
-  return pkgJsonConfigSetting ?? false;
+  return pkgJsonConfigSetting ?? isEnabledByDefault;
 }
 
 export function getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg: any) {
@@ -65,4 +81,14 @@ export function getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg: any)
   }
 
   return listUnknownPackages;
+}
+
+/**
+ * Get status of appConfigFieldsNotSyncedCheck check
+ * @param pkg package.json
+ * @returns true if the check is enabled, false otherwise
+ */
+export function getAppConfigFieldsNotSyncedCheckStatus(pkg: any): boolean {
+  const config = getDoctorConfig(pkg);
+  return config.appConfigFieldsNotSyncedCheck?.enabled ?? true;
 }

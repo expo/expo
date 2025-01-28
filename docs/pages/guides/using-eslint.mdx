@@ -1,5 +1,5 @@
 ---
-title: Use ESLint and Prettier
+title: Using ESLint and Prettier
 description: A guide on configuring ESLint and Prettier to format Expo apps.
 ---
 
@@ -29,17 +29,35 @@ To set up ESLint in your Expo project, you can use the Expo CLI to install the n
 
 Install ESLint, and [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo) in your project.
 
+<Tabs>
+
+<Tab label="macOS/Linux">
+
 <Terminal
   cmd={[
-    '# Install required ESLint configuration manually',
+    '$ npx expo install eslint@8 eslint-config-expo -- --save-dev',
     '',
-    '# For other package managers',
-    '$ npx expo install -- --save-dev eslint@8 eslint-config-expo',
-    '',
-    '# For yarn only',
-    '$ yarn add -D eslint eslint-config-expo',
+    '# For Bun and Yarn',
+    '$ npx expo install eslint@8 eslint-config-expo -- --dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal
+  cmd={[
+    '$ npx expo install eslint@8 eslint-config-expo "--" --save-dev',
+    '',
+    '# For Bun and Yarn',
+    '$ npx expo install eslint@8 eslint-config-expo "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -129,7 +147,7 @@ const { getDefaultConfig } = require('expo/metro-config');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(
-  /* @info This will no longer assert linting errors */ __dirname /* @end */
+  /* @info This will no longer assert linting errors. */ __dirname /* @end */
 );
 
 module.exports = config;
@@ -141,15 +159,35 @@ module.exports = config;
 
 To install Prettier in your project:
 
+<Tabs>
+
+<Tab label="macOS/Linux">
+
 <Terminal
   cmd={[
-    '# For other package managers',
-    '$ npx expo install -- --save-dev prettier eslint-config-prettier eslint-plugin-prettier',
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier -- --save-dev',
     '',
-    '# For yarn only',
-    '$ yarn add -D prettier eslint-config-prettier eslint-plugin-prettier',
+    '# For Bun and Yarn',
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier -- --dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal
+  cmd={[
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --save-dev',
+    '',
+    '# For Bun and Yarn',
+    '$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 ### Setup
 
@@ -202,15 +240,35 @@ If you're migrating from an older version of Expo SDK that has `eslint-config-un
 
 Remove the `eslint-config-universe` library and install the `eslint-config-expo` manually:
 
+<Tabs>
+
+<Tab label="macOS/Linux">
+
 <Terminal
   cmd={[
-    '# For other package managers',
-    '$ npx expo install -- --save-dev eslint-config-expo',
+    '$ npx expo install eslint-config-expo -- --save-dev',
     '',
-    '# For yarn only',
-    '$ yarn add -D eslint-config-expo',
+    '# For Bun and Yarn',
+    '$ npx expo install eslint-config-expo -- --dev',
   ]}
 />
+
+</Tab>
+
+<Tab label="Windows">
+
+<Terminal
+  cmd={[
+    '$ npx expo install eslint-config-expo "--" --save-dev',
+    '',
+    '# For Bun and Yarn',
+    '$ npx expo install eslint-config-expo "--" --dev',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 </Step>
 

@@ -4,13 +4,82 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- docs(fingerprint): correct typo in fingerprint cli ([#33887](https://github.com/expo/expo/pull/33887) by [@leopic](https://github.com/leopic))
+- Finish adding args to fingerprint CLI. ([#34045](https://github.com/expo/expo/pull/34045) by [@wschurman](https://github.com/wschurman))
+
+## 0.11.6 - 2024-12-24
+
+### 🐛 Bug fixes
+
+- Fixed CLI `console.log` regression. ([#33828](https://github.com/expo/expo/pull/33828) by [@kudo](https://github.com/kudo))
+
+## 0.11.5 - 2024-12-24
+
+### 🐛 Bug fixes
+
+- Fixed `expo-modules-autolinking` resolving issue on PNPM isolated mode. ([#33818](https://github.com/expo/expo/pull/33818) by [@kudo](https://github.com/kudo))
+- Fixed `ExpoConfigLoader` error when people has `console.log` in their `app.config.js` or `app.config.ts`. ([#33821](https://github.com/expo/expo/pull/33821) by [@kudo](https://github.com/kudo))
+- Fixed absolute paths inside `aarProjects` autolinking data. ([#33826](https://github.com/expo/expo/pull/33826) by [@kudo](https://github.com/kudo))
+
+## 0.11.4 - 2024-12-16
+
+### 🎉 New features
+
+- Introduced `fileHookTransform` to support contents or file chunk customization before hashing. ([#33610](https://github.com/expo/expo/pull/33610) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed ignorePaths does not ignore files inside local modules. ([#33597](https://github.com/expo/expo/pull/33597) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint on Windows. ([#33627](https://github.com/expo/expo/pull/33627) by [@kudo](https://github.com/kudo))
+- Fixed negate `!` pattern ignore all paths in `.fingerprintignore`. ([#33671](https://github.com/expo/expo/pull/33671) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Remove extraneous arg from command help doc ([#33512](https://github.com/expo/expo/pull/33512) by [@wschurman](https://github.com/wschurman))
+- Added `ExpoConfigAll` and `PackageJsonScriptsAll` in `SourceSkips`. ([#33598](https://github.com/expo/expo/pull/33598) by [@kudo](https://github.com/kudo))
+- Added image sources from `expo-splash-screen` config-plugin properties. ([#33607](https://github.com/expo/expo/pull/33607) by [@kudo](https://github.com/kudo))
+
+## 0.11.3 - 2024-12-02
+
+### 🐛 Bug fixes
+
+- Fixed `USE_RNCORE_AUTOLINKING_FROM_EXPO does not exist and no fallback value provided.` error. ([#33323](https://github.com/expo/expo/pull/33323) by [@kudo](https://github.com/kudo))
+- Fixed a directory be entirely ignored even if there is negated pattern like `!**/dir/file`. ([#33324](https://github.com/expo/expo/pull/33324) by [@kudo](https://github.com/kudo))
+
+## 0.11.2 — 2024-11-04
+
+### 🎉 New features
+
+- Show more information in fingerprint diff ([#32486](https://github.com/expo/expo/pull/32486) by [@wschurman](https://github.com/wschurman))
+- Add ability to diff two fingeprint files to CLI ([#32488](https://github.com/expo/expo/pull/32488) by [@wschurman](https://github.com/wschurman))
+- Create more formalized CLI ([#32541](https://github.com/expo/expo/pull/32541) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Add function signature stability test ([#32493](https://github.com/expo/expo/pull/32493) by [@quinlanj](https://github.com/quinlanj))
+- Convert cli to typescript ([#32487](https://github.com/expo/expo/pull/32487) by [@wschurman](https://github.com/wschurman))
+
+## 0.11.1 — 2024-10-22
+
+### 💡 Others
+
+- Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
+
+## 0.11.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - This version includes fingerprint result breaking changes. ([#31638](https://github.com/expo/expo/pull/31638) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
 - Added `useRNCoreAutolinkingFromExpo` option to support react-native core autolinking from `expo-modules-autolinking. ([#31638](https://github.com/expo/expo/pull/31638) by [@kudo](https://github.com/kudo))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 
@@ -59,7 +128,7 @@
 
 ### 🛠 Breaking changes
 
-- Include `runtimeVersion` back to fingerprint. Use `SourceSkips.ExpoConfigRuntimeVersionIfString` to keep original behavior.  ([#28712](https://github.com/expo/expo/pull/28712) by [@kudo](https://github.com/kudo))
+- Include `runtimeVersion` back to fingerprint. Use `SourceSkips.ExpoConfigRuntimeVersionIfString` to keep original behavior. ([#28712](https://github.com/expo/expo/pull/28712) by [@kudo](https://github.com/kudo))
 
 ## 0.8.0 — 2024-05-15
 

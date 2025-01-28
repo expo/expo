@@ -1,3 +1,4 @@
+'use client';
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -137,15 +138,28 @@ function getQualifiedRouteComponent(value) {
     return QualifiedRoute;
 }
 exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
-/** @returns a function which provides a screen id that matches the dynamic route name in params. */
-function createGetIdForRoute(route) {
+/**
+ * @param getId Override that will be wrapped to remove __EXPO_ROUTER_key which is added by PUSH
+ * @returns a function which provides a screen id that matches the dynamic route name in params. */
+function createGetIdForRoute(route, getId) {
     const include = new Map();
     if (route.dynamic) {
         for (const segment of route.dynamic) {
             include.set(segment.name, segment);
         }
     }
-    return ({ params = {} } = {}) => {
+    return (options = {}) => {
+        const { params = {} } = options;
+        if (params.__EXPO_ROUTER_key) {
+            const key = params.__EXPO_ROUTER_key;
+            delete params.__EXPO_ROUTER_key;
+            if (getId == null) {
+                return key;
+            }
+        }
+        if (getId != null) {
+            return getId(options);
+        }
         const segments = [];
         for (const dynamic of include.values()) {
             const value = params?.[dynamic.name];
@@ -180,6 +194,7 @@ function screenOptionsFactory(route, options) {
         };
         // Prevent generated screens from showing up in the tab bar.
         if (route.generated) {
+            output.tabBarItemStyle = { display: 'none' };
             output.tabBarButton = () => null;
             // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
             output.drawerItemStyle = { height: 0, display: 'none' };
@@ -188,10 +203,8 @@ function screenOptionsFactory(route, options) {
     };
 }
 exports.screenOptionsFactory = screenOptionsFactory;
-function routeToScreen(route, { options, ...props } = {}) {
-    return (<primitives_1.Screen 
-    // Users can override the screen getId function.
-    getId={createGetIdForRoute(route)} {...props} name={route.route} key={route.route} options={screenOptionsFactory(route, options)} getComponent={() => getQualifiedRouteComponent(route)}/>);
+function routeToScreen(route, { options, getId, ...props } = {}) {
+    return (<primitives_1.Screen {...props} getId={createGetIdForRoute(route, getId)} name={route.route} key={route.route} options={screenOptionsFactory(route, options)} getComponent={() => getQualifiedRouteComponent(route)}/>);
 }
 exports.routeToScreen = routeToScreen;
 //# sourceMappingURL=useScreens.js.map

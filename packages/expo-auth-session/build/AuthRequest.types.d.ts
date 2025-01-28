@@ -136,7 +136,7 @@ export type AuthRequestConfig = {
      *
      * [Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest)
      */
-    prompt?: Prompt;
+    prompt?: Prompt | Prompt[];
     /**
      * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
      */

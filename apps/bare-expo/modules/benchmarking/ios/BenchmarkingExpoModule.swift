@@ -13,5 +13,9 @@ public final class BenchmarkingExpoModule: Module {
     Function("addStrings") { (a: String, b: String) in
       return a + b
     }
+
+    Function("foldArray") { (array: [Double]) in
+      return array.reduce(0.0, +)
+    }
   }
 }

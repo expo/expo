@@ -1,11 +1,8 @@
 package expo.modules.kotlin.defaultmodules
 
 import com.facebook.react.ReactActivity
-import com.facebook.react.ReactDelegate
-import com.facebook.react.bridge.UiThreadUtil
-import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.devsupport.ReleaseDevSupportManager
 import expo.modules.kotlin.events.normalizeEventName
+import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.uuidv5.InvalidNamespaceException
@@ -28,11 +25,11 @@ class CoreModule : Module() {
       return@Function uuidv5(namespaceUUID, name).toString()
     }
 
-    Function("getViewConfig") { viewName: String ->
-      val holder = runtimeContext.registry.getModuleHolder(viewName)
+    Function("getViewConfig") { moduleName: String, viewName: String? ->
+      val holder = runtimeContext.registry.getModuleHolder(moduleName)
         ?: return@Function null
 
-      val viewManagerDefinition = holder.definition.viewManagerDefinition
+      val viewManagerDefinition = holder.definition.viewManagerDefinitions[viewName ?: DEFAULT_MODULE_VIEW]
         ?: return@Function null
 
       val validAttributes = viewManagerDefinition
@@ -58,26 +55,7 @@ class CoreModule : Module() {
 
     AsyncFunction("reloadAppAsync") { _: String ->
       val reactActivity = appContext.throwingActivity as? ReactActivity ?: return@AsyncFunction
-
-      // TODO(kudo): Use ReactActivity.getReactDelegate() after react-native 0.74.1
-      // reactActivity.getReactDelegate()
-      val reactActivityDelegateField = ReactActivity::class.java.getDeclaredField("mDelegate")
-        .apply { isAccessible = true }
-      val reactActivityDelegate = reactActivityDelegateField[reactActivity]
-      val getReactDelegateMethod = reactActivityDelegate.javaClass.getDeclaredMethod("getReactDelegate")
-        .apply { isAccessible = true }
-      val reactDelegate = getReactDelegateMethod.invoke(reactActivityDelegate) as? ReactDelegate
-        ?: return@AsyncFunction
-      if (!ReactFeatureFlags.enableBridgelessArchitecture) {
-        val reactInstanceManager = reactDelegate.reactInstanceManager
-        if (reactInstanceManager.devSupportManager is ReleaseDevSupportManager) {
-          UiThreadUtil.runOnUiThread {
-            reactInstanceManager.recreateReactContextInBackground()
-          }
-          return@AsyncFunction
-        }
-      }
-
+      val reactDelegate = reactActivity.reactDelegate ?: return@AsyncFunction
       reactDelegate.reload()
     }
   }

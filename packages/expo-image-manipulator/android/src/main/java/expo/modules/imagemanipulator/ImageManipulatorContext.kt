@@ -85,7 +85,7 @@ class ImageManipulatorContext(
 
   suspend fun render() = task.render()
 
-  override fun deallocate() {
+  override fun sharedObjectDidRelease() {
     task.cancel()
   }
 }

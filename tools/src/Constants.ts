@@ -11,6 +11,7 @@ export const EXPOTOOLS_DIR = Directories.getExpotoolsDir();
 export const EXPO_GO_DIR = Directories.getExpoGoDir();
 export const EXPO_GO_IOS_DIR = Directories.getExpoGoIosDir();
 export const EXPO_GO_ANDROID_DIR = Directories.getExpoGoAndroidDir();
+export const EXPO_GO_LOCAL_MODULES_DIR = path.join(EXPO_GO_DIR, 'modules');
 export const TEMPLATES_DIR = Directories.getTemplatesDir();
 export const PACKAGES_DIR = Directories.getPackagesDir();
 export const VERSIONED_RN_IOS_DIR = Directories.getVersionedReactNativeIosDir();

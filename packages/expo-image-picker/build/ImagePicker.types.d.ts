@@ -298,6 +298,12 @@ export type ImagePickerAsset = {
      * @platform ios
      */
     pairedVideoAsset?: ImagePickerAsset | null;
+    /**
+     * The web `File` object containing the selected media. This property is web-only and can be used to upload to a server with `FormData`.
+     *
+     * @platform web
+     */
+    file?: File;
 };
 export type ImagePickerErrorResult = {
     /**

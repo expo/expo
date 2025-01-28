@@ -6,35 +6,27 @@
 #import <ExpoModulesCore/Swift.h>
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
-#import <ReactCommon/ReactCommon-umbrella.h>
+#import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
+#import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
 
-@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate>
-@end
+// TODO(vonovak,20250122) - Remove the if when 76 is not supported, or rather remove the EXAppDelegateWrapper because it's deprecated
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
+#endif
 
-@interface RCTRootViewFactoryConfiguration ()
-
-- (void)setCustomizeRootView:(void (^)(UIView *rootView))customizeRootView;
-
-@end
-
-@interface EXAppDelegateWrapper()
-
-@property (nonatomic, strong) EXReactDelegateWrapper *reactDelegate;
-
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
 @end
 
 @implementation EXAppDelegateWrapper {
   EXExpoAppDelegate *_expoAppDelegate;
 }
 
-// Synthesize window, so the AppDelegate can synthesize it too.
-@synthesize window = _window;
-
 - (instancetype)init
 {
   if (self = [super init]) {
-    _expoAppDelegate = [[EXExpoAppDelegate alloc] init];
-    _reactDelegate = [[EXReactDelegateWrapper alloc] initWithExpoReactDelegate:_expoAppDelegate.reactDelegate];
+    // TODO(kudo) to remove the `initWithAppDelegate` initializer when `EXAppDelegateWrapper` is removed
+    _expoAppDelegate = [[EXExpoAppDelegate alloc] initWithAppDelegate:self];
+    _expoAppDelegate.shouldCallReactNativeSetup = NO;
   }
   return self;
 }
@@ -44,8 +36,7 @@
 // which `UIApplicationDelegate` selectors are implemented.
 - (BOOL)respondsToSelector:(SEL)selector
 {
-  return [super respondsToSelector:selector]
-    || [_expoAppDelegate respondsToSelector:selector];
+  return [super respondsToSelector:selector] || [_expoAppDelegate respondsToSelector:selector];
 }
 
 // Forwards all invocations to `ExpoAppDelegate` object.
@@ -54,61 +45,69 @@
   return _expoAppDelegate;
 }
 
-#if !TARGET_OS_OSX
+#pragma mark - RCTAppDelegate
+
+// Make sure to override all necessary methods from `RCTAppDelegate` here, explicitly forwarding everything to `_expoAppDelegate`.
+// `forwardingTargetForSelector` works only for methods that are not specified in this and `RCTAppDelegate` classes.
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+	self.dependencyProvider = [RCTAppDependencyProvider new];
+#endif
   [super application:application didFinishLaunchingWithOptions:launchOptions];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-result"
-  [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
-#pragma clang diagnostic pop
-  return YES;
+  return [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
 }
-#endif // !TARGET_OS_OSX
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+  return [_expoAppDelegate applicationDidBecomeActive:application];
+}
 
 - (UIViewController *)createRootViewController
 {
-  return [self.reactDelegate createRootViewController];
+  return [_expoAppDelegate createRootViewController];
 }
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
-  __weak __typeof(self) weakSelf = self;
-  RCTBundleURLBlock bundleUrlBlock = ^{
-    RCTAppDelegate *strongSelf = weakSelf;
-    return strongSelf.bundleURL;
-  };
-
-  RCTRootViewFactoryConfiguration *configuration =
-      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
-                                                       newArchEnabled:self.fabricEnabled
-                                                   turboModuleEnabled:self.turboModuleEnabled
-                                                    bridgelessEnabled:self.bridgelessEnabled];
-
-  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
-  {
-    return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
-  };
-
-  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions)
-  {
-    return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
-  };
-
-  // TODO(kudo,20240706): Remove respondsToSelector and set the property directly when we upgrade to react-native 0.75
-  if ([configuration respondsToSelector:@selector(setCustomizeRootView:)]) {
-    [configuration setCustomizeRootView:^(UIView *_Nonnull rootView) {
-      [weakSelf customizeRootView:(RCTRootView *)rootView];
-    }];
-  }
-
-  return [[EXReactRootViewFactory alloc] initWithReactDelegate:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
+  return [_expoAppDelegate createRCTRootViewFactory];
 }
 
-#if !TARGET_OS_OSX
-- (void)customizeRootView:(UIView *)rootView {
+- (void)customizeRootView:(UIView *)rootView
+{
   [_expoAppDelegate customizeRootView:rootView];
 }
-#endif // !TARGET_OS_OSX
+
+#pragma mark - RCTComponentViewFactoryComponentProvider
+
+- (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
+{
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+	return self.dependencyProvider.thirdPartyFabricComponents;
+#endif
+	return @{};
+}
+
+#pragma mark - RCTHostDelegate
+
+- (void)hostDidStart:(RCTHost *)host
+{
+}
+
+- (void)host:(RCTHost *)host
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
+{
+}
+
+#pragma mark - Helpers
+
++ (void)customizeRootView:(nonnull UIView *)rootView byAppDelegate:(nonnull RCTAppDelegate *)appDelegate
+{
+  [appDelegate customizeRootView:(RCTRootView *)rootView];
+}
 
 @end

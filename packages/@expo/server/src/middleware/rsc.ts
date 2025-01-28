@@ -22,6 +22,7 @@ export type RenderRscArgs = {
   decodedBody?: unknown;
   moduleIdCallback?: ((id: string) => void) | undefined;
   onError?: (err: unknown) => void;
+  headers: Record<string, string>;
 };
 
 export const decodeInput = (encodedInput: string) => {
@@ -112,8 +113,9 @@ export function getRscMiddleware(options: {
         method,
         body: req.body,
         contentType: req.headers.get('Content-Type') ?? '',
-        decodedBody: req.headers.get('x-expo-params'),
+        decodedBody: req.headers.get('X-Expo-Params'),
         onError: options.onError,
+        headers: headersToRecord(req.headers),
       };
       const readable = await options.renderRsc(args);
 
@@ -127,6 +129,10 @@ export function getRscMiddleware(options: {
       if (err instanceof Response) {
         return err;
       }
+      if (process.env.NODE_ENV !== 'development') {
+        throw err;
+      }
+      console.error(err);
 
       return new Response(`Unexpected server error rendering RSC: ` + err.message, {
         status: 'statusCode' in err ? err.statusCode : 500,
@@ -141,4 +147,12 @@ export function getRscMiddleware(options: {
     GET: getOrPostAsync,
     POST: getOrPostAsync,
   };
+}
+
+function headersToRecord(headers: Headers) {
+  const record: Record<string, string> = {};
+  for (const [key, value] of headers.entries()) {
+    record[key] = value;
+  }
+  return record;
 }

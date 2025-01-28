@@ -44,14 +44,16 @@ export default function App() {
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
   const [extraParamsString, setExtraParamsString] = React.useState('');
-  const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
   const [isRollback, setIsRollback] = React.useState(false);
   const [isReloading, setIsReloading] = React.useState(false);
   const [startTime, setStartTime] = React.useState<number | null>(null);
   const [didCheckAndDownloadHappenInParallel, setDidCheckAndDownloadHappenInParallel] =
     React.useState(false);
+  const [wasIsStartupProcedureRunningEverTrue, setWasIsStartupProcedureRunningEverTrue] =
+    React.useState(false);
 
   const {
+    isStartupProcedureRunning,
     currentlyRunning,
     availableUpdate,
     downloadedUpdate,
@@ -60,11 +62,19 @@ export default function App() {
     checkError,
     isChecking,
     isDownloading,
+    isRestarting,
+    restartCount,
   } = Updates.useUpdates();
 
   React.useEffect(() => {
     setStartTime(Date.now());
   }, []);
+
+  React.useEffect(() => {
+    if (isStartupProcedureRunning) {
+      setWasIsStartupProcedureRunningEverTrue(true);
+    }
+  }, [isStartupProcedureRunning]);
 
   // Get rollback state with this, until useUpdates() supports rollbacks
   React.useEffect(() => {
@@ -94,17 +104,19 @@ export default function App() {
     }
   };
 
-  const handleReadNativeStateContext = runBlockAsync(async () => {
-    const state = await Updates.getNativeStateMachineContextAsync();
-    setNativeStateContextString(JSON.stringify(state));
-  });
-
   const handleSetExtraParams = runBlockAsync(async () => {
     await Updates.setExtraParamAsync('testsetnull', 'testvalue');
     await Updates.setExtraParamAsync('testsetnull', null);
     await Updates.setExtraParamAsync('testparam', 'testvalue');
     const params = await Updates.getExtraParamsAsync();
     setExtraParamsString(JSON.stringify(params, null, 2));
+  });
+
+  const handleSetUpdateURLAndRequestHeadersOverride = runBlockAsync(async () => {
+    Updates.setUpdateURLAndRequestHeadersOverride({
+      updateUrl: `${Constants.expoConfig?.updates?.url}-override`,
+      requestHeaders: {},
+    });
   });
 
   const handleReadAssetFiles = runBlockAsync(async () => {
@@ -184,11 +196,17 @@ export default function App() {
       <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
+      <TestValue testID="launchDuration" value={`${currentlyRunning.launchDuration}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
       <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
       <TestValue testID="isReloading" value={`${isReloading}`} />
       <TestValue testID="startTime" value={`${startTime}`} />
 
+      <TestValue
+        testID="wasIsStartupProcedureRunningEverTrue"
+        value={`${wasIsStartupProcedureRunningEverTrue}`}
+      />
+      <TestValue testID="state.isStartupProcedureRunning" value={`${isStartupProcedureRunning}`} />
       <TestValue testID="state.isUpdateAvailable" value={`${isUpdateAvailable}`} />
       <TestValue testID="state.isUpdatePending" value={`${isUpdatePending}`} />
       <TestValue testID="state.isRollback" value={`${isRollback}`} />
@@ -205,6 +223,8 @@ export default function App() {
         testID="state.downloadedManifest.id"
         value={`${downloadedUpdate?.manifest?.id || ''}`}
       />
+      <TestValue testID="state.isRestarting" value={`${isRestarting}`} />
+      <TestValue testID="state.restartCount" value={`${restartCount}`} />
 
       <Text>Log messages</Text>
       <ScrollView contentContainerStyle={styles.logEntriesContainer}>
@@ -227,13 +247,6 @@ export default function App() {
         </Text>
       </ScrollView>
 
-      <Text>Native state context</Text>
-      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
-        <Text testID="nativeStateContextString" style={styles.logEntriesText}>
-          {nativeStateContextString}
-        </Text>
-      </ScrollView>
-
       {numActive > 0 ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
       <View style={{ flexDirection: 'row' }}>
         <View>
@@ -246,12 +259,15 @@ export default function App() {
           <TestButton testID="checkForUpdate" onPress={handleCheckForUpdate} />
           <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
           <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
-          <TestButton testID="readNativeStateContext" onPress={handleReadNativeStateContext} />
           <TestButton
             testID="triggerParallelFetchAndDownload"
             onPress={handleCheckAndDownloadAtSameTime}
           />
           <TestButton testID="reload" onPress={handleReload} />
+          <TestButton
+            testID="setUpdateURLAndRequestHeadersOverride"
+            onPress={handleSetUpdateURLAndRequestHeadersOverride}
+          />
         </View>
       </View>
 

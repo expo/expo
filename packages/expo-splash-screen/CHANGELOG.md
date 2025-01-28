@@ -4,13 +4,135 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- On `iOS`, show the splashscreen again when the app is reloaded. ([#33793](https://github.com/expo/expo/pull/33793) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.29.18 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.17 - 2024-12-10
+
+### 🎉 New features
+
+- On Android, add support for providing vector drawables as the splashscreen icon. ([#33507](https://github.com/expo/expo/pull/33507) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.16 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.15 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.14 - 2024-12-05
+
+### 💡 Others
+
+- Use `light` and `dark` colors on `iOS` instead of `any`. ([#33472](https://github.com/expo/expo/pull/33472) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.13 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Correctly handle `resizeMode` in config plugin. ([#33143](https://github.com/expo/expo/pull/33143) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.12 — 2024-11-20
+
+### 🐛 Bug fixes
+
+- Prevent `setOptions` from being called in Expo Go. ([#33104](https://github.com/expo/expo/pull/33104) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.11 — 2024-11-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.10 — 2024-11-14
+
+### 💡 Others
+
+- Bump minimum @expo/prebuild-config version.
+
+## 0.29.9 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.8 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.7 — 2024-11-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.6 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.5 — 2024-11-10
+
+### 🐛 Bug fixes
+
+- [Android] Added guard to prevent null pointer exception when the splashScreen property is referenced without an activity (headless JS) ([#32707](https://github.com/expo/expo/pull/32707) by [@chrfalch](https://github.com/chrfalch))
+
+## 0.29.4 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.3 — 2024-11-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.2 — 2024-11-05
+
+### 💡 Others
+
+- Migrate internal logic used by router from JS to native ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.29.1 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.0 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.5 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.3 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed `preventAutoHideAsync()` broken on iOS bridgeless mode. ([#28234](https://github.com/expo/expo/pull/28234) by [@kudo](https://github.com/kudo))
 
 ## 0.27.6 - 2024-09-23
 

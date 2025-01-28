@@ -182,10 +182,14 @@ internal class ArgumentCastException(
   }
 }
 
-internal class InvalidSharedObjectException(
+internal class InvalidSharedObjectIdException : CodedException(
+  message = "Cannot convert provided JavaScriptObject to the SharedObject, because it doesn't contain valid id"
+)
+
+internal class InvalidSharedObjectTypeException(
   sharedType: KType
 ) : CodedException(
-  message = "Cannot convert provided JavaScriptObject to the '$sharedType', because it doesn't contain valid id"
+  message = "Cannot convert provided JavaScriptObject to the '$sharedType', because the native type doesn't match"
 )
 
 internal class IncorrectRefTypeException(
@@ -255,4 +259,8 @@ internal class UnsupportedClass(
 
 internal class PromiseAlreadySettledException(functionName: String) : CodedException(
   message = "Promise passed to '$functionName' was already settled. It will lead to a crash in the production environment!"
+)
+
+internal class UsingReleasedSharedObjectException : CodedException(
+  message = "Cannot use shared object that was already released"
 )

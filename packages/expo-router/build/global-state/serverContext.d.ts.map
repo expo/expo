@@ -1,1 +1,0 @@
-{"version":3,"file":"serverContext.d.ts","sourceRoot":"","sources":["../../src/global-state/serverContext.ts"],"names":[],"mappings":";AAGA,MAAM,MAAM,iBAAiB,GAAG;IAC9B,QAAQ,CAAC,EAAE;QACT,QAAQ,EAAE,MAAM,CAAC;QACjB,MAAM,EAAE,MAAM,CAAC;KAChB,CAAC;CACH,CAAC;AAEF,QAAA,MAAM,aAAa,wDAA0D,CAAC;AAE9E,eAAe,aAAa,CAAC"}

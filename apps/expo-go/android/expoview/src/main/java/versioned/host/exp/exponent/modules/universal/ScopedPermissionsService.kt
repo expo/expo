@@ -24,7 +24,7 @@ class ScopedPermissionsService(context: Context, val experienceKey: ExperienceKe
 
   // We override this to inject scoped permissions even if the device doesn't support the runtime permissions.
   override fun askForManifestPermissions(permissions: Array<out String>, listener: PermissionsResponseListener) {
-    delegateRequestToActivity(permissions, listener)
+    delegateRequestToActivity(permissions as Array<String>, listener)
   }
 
   // We override this to scoped permissions in the headless mode.

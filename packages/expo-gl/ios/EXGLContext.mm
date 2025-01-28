@@ -26,8 +26,8 @@
 
 @implementation EXGLContext
 
-- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate
-               andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
+- (nonnull instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate
+                       andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     self.delegate = delegate;
@@ -39,6 +39,8 @@
     _isContextReady = NO;
     _wasPrepareCalled = NO;
     _appIsBackgrounded = NO;
+
+    [self initialize];
   }
   return self;
 }
@@ -48,7 +50,7 @@
   return _isContextReady;
 }
 
-- (EAGLContext *)createSharedEAGLContext
+- (nonnull EAGLContext *)createSharedEAGLContext
 {
   return [[EAGLContext alloc] initWithAPI:[_eaglCtx API] sharegroup:[_eaglCtx sharegroup]];
 }

@@ -6,7 +6,7 @@ exports.shouldLinkExternally = exports.isWellKnownUri = exports.hasUrlProtocolPr
  * NOTE: Additional strictness added to ensure URLs sent in query parameters for in-app navigation are not matched.
  */
 function hasUrlProtocolPrefix(href) {
-    return /^[\w\d_+.-]+:\/\//.test(href);
+    return /^([\w\d_+.-]+:)?\/\//.test(href);
 }
 exports.hasUrlProtocolPrefix = hasUrlProtocolPrefix;
 function isWellKnownUri(href) {
@@ -18,7 +18,7 @@ function isWellKnownUri(href) {
 exports.isWellKnownUri = isWellKnownUri;
 function shouldLinkExternally(href) {
     // Cheap check first to avoid regex if the href is not a path fragment.
-    return !/^[./]/.test(href) && (hasUrlProtocolPrefix(href) || isWellKnownUri(href));
+    return !href.startsWith('.') && (hasUrlProtocolPrefix(href) || isWellKnownUri(href));
 }
 exports.shouldLinkExternally = shouldLinkExternally;
 //# sourceMappingURL=url.js.map

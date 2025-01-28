@@ -1,4 +1,4 @@
-import type { EventEmitter as EventEmitterType, EventSubscription, EventsMap } from '../ts-declarations/EventEmitter';
+import { type EventEmitter as EventEmitterType, type EventSubscription, EventsMap } from '../ts-declarations/EventEmitter';
 import type { NativeModule as NativeModuleType } from '../ts-declarations/NativeModule';
 import type { SharedObject as SharedObjectType } from '../ts-declarations/SharedObject';
 import type { SharedRef as SharedRefType } from '../ts-declarations/SharedRef';
@@ -14,12 +14,15 @@ export declare class EventEmitter<TEventsMap extends EventsMap> implements Event
 }
 export declare class NativeModule<TEventsMap extends Record<never, never>> extends EventEmitter<TEventsMap> implements NativeModuleType {
     [key: string]: any;
-    ViewPrototype?: object | undefined;
+    ViewPrototypes?: {
+        [viewName: string]: object;
+    };
     __expo_module_name__?: string;
 }
 export declare class SharedObject<TEventsMap extends Record<never, never>> extends EventEmitter<TEventsMap> implements SharedObjectType {
     release(): void;
 }
-export declare class SharedRef<TEventsMap extends Record<never, never>> extends SharedObject<TEventsMap> implements SharedRefType {
+export declare class SharedRef<TNativeRefType extends string = 'unknown', TEventsMap extends EventsMap = Record<never, never>> extends SharedObject<TEventsMap> implements SharedRefType<TNativeRefType> {
+    nativeRefType: string;
 }
 //# sourceMappingURL=CoreModule.d.ts.map

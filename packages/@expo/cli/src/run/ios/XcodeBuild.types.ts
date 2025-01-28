@@ -20,6 +20,9 @@ export type Options = {
   buildCache?: boolean;
   /** Path to an existing binary to install on the device. */
   binary?: string;
+
+  /** Re-bundle JS and assets, then embed in existing app, and install again. */
+  rebundle?: boolean;
 };
 
 export type ProjectInfo = {

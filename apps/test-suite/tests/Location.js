@@ -249,11 +249,15 @@ export async function test(t) {
         timeout
       );
 
-      t.it('resolves when watchPositionAsync is running', async () => {
-        const subscriber = await Location.watchPositionAsync({}, () => {});
-        await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low });
-        subscriber.remove();
-      });
+      t.it(
+        'resolves when watchPositionAsync is running',
+        async () => {
+          const subscriber = await Location.watchPositionAsync({}, () => {});
+          await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low });
+          subscriber.remove();
+        },
+        timeout
+      );
     });
 
     describeWithPermissions('Location.getLastKnownPositionAsync()', () => {
@@ -277,7 +281,8 @@ export async function test(t) {
           t.expect(current).not.toBeNull();
           t.expect(lastKnown).not.toBeNull();
           t.expect(lastKnown.timestamp).toBeGreaterThanOrEqual(current.timestamp);
-        }
+        },
+        timeout
       );
 
       t.it('returns null if maxAge is zero', async () => {
@@ -337,13 +342,15 @@ export async function test(t) {
 
     describeWithPermissions('Location.watchPositionAsync()', () => {
       t.it('gets a result of the correct shape', async () => {
-        await new Promise(async (resolve, reject) => {
-          const subscriber = await Location.watchPositionAsync({}, (location) => {
-            testLocationShape(location);
-            subscriber.remove();
-            resolve();
+        let subscriber;
+        const location = await new Promise(async (resolve) => {
+          subscriber = await Location.watchPositionAsync({}, (location) => {
+            setTimeout(() => resolve(location));
           });
         });
+
+        subscriber.remove();
+        testLocationShape(location);
       });
 
       t.it('can be called simultaneously', async () => {

@@ -1,9 +1,16 @@
 package expo.modules.audio
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.audiofx.Visualizer
+import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
@@ -18,18 +25,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
+private const val PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate"
+private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
+
 @UnstableApi
 class AudioPlayer(
   context: Context,
   appContext: AppContext,
-  source: MediaSource,
+  source: MediaSource?,
   updateInterval: Double
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .build()
     .apply {
-      setMediaSource(source)
+      source?.let {
+        setMediaSource(it)
+      }
       setAudioAttributes(AudioAttributes.DEFAULT, true)
       prepare()
     },
@@ -42,65 +54,56 @@ class AudioPlayer(
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
+  private var visualizer: Visualizer? = null
+  private var playing = false
 
-  private val visualizer = Visualizer(player.audioSessionId).apply {
-    captureSize = Visualizer.getCaptureSizeRange()[1]
-    setDataCaptureListener(
-      object : Visualizer.OnDataCaptureListener {
-        override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
-          waveform?.let {
-            if (samplingEnabled) {
-              val data = extractAmplitudes(it)
-              sendAudioSampleUpdate(data)
-            }
-          }
-        }
-
-        override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
-        }
-      },
-      Visualizer.getMaxCaptureRate() / 2,
-      true,
-      false
-    )
-    enabled = true
-  }
+  val currentTime get() = player.currentPosition / 1000
+  val duration get() = if (player.duration != C.TIME_UNSET) player.duration / 1000 else 0
 
   init {
     addPlayerListeners()
     player.setAudioAttributes(AudioAttributes.DEFAULT, true)
     playerScope.launch {
       while (isActive) {
-        sendPlayerUpdate()
+        if (playing) {
+          sendPlayerUpdate()
+        }
         delay(updateInterval.toLong())
       }
     }
   }
 
-  private fun addPlayerListeners() {
-    player.addListener(object : Player.Listener {
-      override fun onIsPlayingChanged(isPlaying: Boolean) {
-        playerScope.launch {
-          sendPlayerUpdate(mapOf("playing" to isPlaying))
-        }
+  private fun addPlayerListeners() = player.addListener(object : Player.Listener {
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+      playing = isPlaying
+      playerScope.launch {
+        sendPlayerUpdate(mapOf("playing" to isPlaying))
       }
+    }
 
-      override fun onIsLoadingChanged(isLoading: Boolean) {
-        playerScope.launch {
-          sendPlayerUpdate(mapOf("isLoaded" to isLoading))
-        }
+    override fun onPlaybackStateChanged(playbackState: Int) {
+      playerScope.launch {
+        sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
       }
+    }
 
-      override fun onPlaybackStateChanged(playbackState: Int) {
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      if (reason == MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
         playerScope.launch {
-          sendPlayerUpdate(mapOf("status" to playbackStateToString(playbackState)))
+          sendPlayerUpdate()
         }
       }
-    })
-  }
+    }
+  })
 
   fun setSamplingEnabled(enabled: Boolean) {
     samplingEnabled = enabled
+    if (enabled) {
+      createVisualizer()
+    } else {
+      visualizer?.release()
+      visualizer = null
+    }
   }
 
   private fun extractAmplitudes(chunk: ByteArray): List<Float> = chunk.map { byte ->
@@ -116,14 +119,15 @@ class AudioPlayer(
 
     return mapOf(
       "id" to id,
-      "currentTime" to player.currentPosition,
+      "currentTime" to currentTime,
       "playbackState" to playbackStateToString(player.playbackState),
       "timeControlStatus" to if (player.isPlaying) "playing" else "paused",
       "reasonForWaitingToPlay" to null,
       "mute" to isMuted,
-      "duration" to player.duration,
+      "duration" to duration,
       "playing" to player.isPlaying,
       "loop" to isLooping,
+      "didJustFinish" to (player.playbackState == Player.STATE_ENDED),
       "isLoaded" to if (player.playbackState == Player.STATE_ENDED) true else isLoaded,
       "playbackRate" to player.playbackParameters.speed,
       "shouldCorrectPitch" to preservesPitch,
@@ -135,7 +139,7 @@ class AudioPlayer(
     withContext(Dispatchers.Main) {
       val data = currentStatus()
       val body = map?.let { data + it } ?: data
-      emit("onPlaybackStatusUpdate", body)
+      emit(PLAYBACK_STATUS_UPDATE, body)
     }
 
   private fun sendAudioSampleUpdate(sample: List<Float>) {
@@ -145,7 +149,7 @@ class AudioPlayer(
       ),
       "timestamp" to player.currentPosition
     )
-    emit("onAudioSampleUpdate", body)
+    emit(AUDIO_SAMPLE_UPDATE, body)
   }
 
   private fun playbackStateToString(state: Int): String {
@@ -158,11 +162,49 @@ class AudioPlayer(
     }
   }
 
-  override fun deallocate() {
+  private fun createVisualizer() {
+    appContext?.reactContext?.let {
+      if (ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "\'android.permission.RECORD_AUDIO\' is required to use audio sampling. Please request this permission and try again.")
+        return
+      }
+    }
+
+    // It must only be created once, otherwise the app will crash
+    if (visualizer == null) {
+      visualizer = Visualizer(player.audioSessionId).apply {
+        captureSize = Visualizer.getCaptureSizeRange()[1]
+        setDataCaptureListener(
+          object : Visualizer.OnDataCaptureListener {
+            override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
+              waveform?.let {
+                if (samplingEnabled) {
+                  val data = extractAmplitudes(it)
+                  sendAudioSampleUpdate(data)
+                }
+              }
+            }
+
+            override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) = Unit
+          },
+          Visualizer.getMaxCaptureRate() / 2,
+          true,
+          false
+        )
+        enabled = true
+      }
+    }
+  }
+
+  override fun sharedObjectDidRelease() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()
-      visualizer.release()
+      visualizer?.release()
       player.release()
     }
+  }
+
+  companion object {
+    val TAG = AudioPlayer::class.simpleName
   }
 }

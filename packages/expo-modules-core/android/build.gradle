@@ -1,11 +1,35 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '1.12.11'
+version = '2.0.6'
+
+// List of features that are required by linked modules
+def coreFeatures = project.findProperty("coreFeatures") ?: []
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
 applyKotlinExpoModulesCorePlugin()
+
+buildscript {
+  ext.KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
+
+  if (KOTLIN_MAJOR_VERSION >= 2) {
+    repositories {
+      mavenCentral()
+    }
+
+    dependencies {
+      classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+    }
+  }
+}
+
+if (KOTLIN_MAJOR_VERSION >= 2) {
+  apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+}
+
 useDefaultAndroidSdkVersions()
 useExpoPublishing()
 
@@ -51,6 +75,8 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
+def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
+
 android {
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
@@ -63,14 +89,14 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.12.11"
+    versionName "2.0.6"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
 
     externalNativeBuild {
       cmake {
-        abiFilters (*reactNativeArchitectures())
+        abiFilters(*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
           "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
@@ -90,6 +116,13 @@ android {
   buildFeatures {
     buildConfig true
     prefab true
+    compose true
+  }
+
+  if (KOTLIN_MAJOR_VERSION < 2) {
+    composeOptions {
+      kotlinCompilerExtensionVersion = "1.5.14"
+    }
   }
 
   packagingOptions {
@@ -137,6 +170,18 @@ android {
     }
   }
 
+  sourceSets {
+    main {
+      java {
+        if (REACT_NATIVE_TARGET_VERSION >= 77) {
+          srcDirs += 'src/rn77'
+        } else {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += 'src/rn74'
+        }
+      }
+    }
+  }
 
   testOptions {
     unitTests.includeAndroidResources = true
@@ -161,6 +206,8 @@ dependencies {
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
   api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
   api "androidx.core:core-ktx:1.13.1"
+
+  implementation 'androidx.compose.foundation:foundation-android:1.7.6'
 
   implementation("androidx.tracing:tracing-ktx:1.2.0")
 
@@ -189,5 +236,14 @@ dependencies {
     } else {
       compileOnly "org.webkit:android-jsc:+"
     }
+  }
+}
+
+if (shouldTurnWarningsIntoErrors) {
+  tasks.withType(JavaCompile) configureEach {
+    options.compilerArgs << "-Werror" << "-Xlint:all" << '-Xlint:-serial' << '-Xlint:-rawtypes'
+  }
+  tasks.withType(KotlinCompile) configureEach {
+    compilerOptions.allWarningsAsErrors = true
   }
 }

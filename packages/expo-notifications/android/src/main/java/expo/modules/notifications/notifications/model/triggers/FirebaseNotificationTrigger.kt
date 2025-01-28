@@ -1,28 +1,36 @@
 package expo.modules.notifications.notifications.model.triggers
 
 import android.os.Build
+import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RequiresApi
+import androidx.core.os.bundleOf
 import com.google.firebase.messaging.RemoteMessage
+import expo.modules.notifications.notifications.RemoteMessageSerializer
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 
 /**
  * A trigger representing an incoming remote Firebase notification.
  */
-class FirebaseNotificationTrigger(private val remoteMessage: RemoteMessage) : NotificationTrigger {
+class FirebaseNotificationTrigger(val remoteMessage: RemoteMessage) : NotificationTrigger {
 
   private constructor(parcel: Parcel) : this(
     parcel.readParcelable(FirebaseNotificationTrigger::class.java.classLoader)
       ?: throw IllegalArgumentException("RemoteMessage from readParcelable must not be null")
   )
 
-  fun getRemoteMessage(): RemoteMessage = remoteMessage
-
   @RequiresApi(api = Build.VERSION_CODES.O)
   override fun getNotificationChannel(): String? {
     val channelId = remoteMessage.notification?.channelId ?: remoteMessage.data["channelId"]
     return channelId ?: super.getNotificationChannel()
+  }
+
+  override fun toBundle(): Bundle {
+    return bundleOf(
+      "type" to "push",
+      "remoteMessage" to RemoteMessageSerializer.toBundle(remoteMessage)
+    )
   }
 
   override fun describeContents(): Int {

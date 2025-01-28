@@ -1,6 +1,6 @@
 {
   "name": "expo-media-library",
-  "version": "16.0.3",
+  "version": "17.0.3",
   "description": "Provides access to user's media library.",
   "main": "build/MediaLibrary.js",
   "types": "build/MediaLibrary.d.ts",
@@ -38,10 +38,20 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "codegenConfig": {
+    "name": "expo-media-library",
+    "type": "modules",
+    "jsSrcsDir": "./src",
+    "ios": {
+      "modulesConformingToProtocol": {
+        "RCTImageURLLoader": "MediaLibraryImageLoader"
+      }
+    }
   }
 }

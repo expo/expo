@@ -7,6 +7,10 @@ export async function generateImageAsync(input: any, { src }) {
   return { source: fs.readFileSync(src) };
 }
 
+export async function generateImageBackgroundAsync({ width, backgroundColor }) {
+  return null;
+}
+
 export async function compositeImagesAsync({ foreground }) {
   return foreground;
 }

@@ -72,6 +72,14 @@ export interface NativeYearlyTriggerInput {
   minute: number;
 }
 
+export interface NativeMonthlyTriggerInput {
+  type: 'monthly';
+  channelId?: string;
+  day: number;
+  hour: number;
+  minute: number;
+}
+
 export interface NativeDateTriggerInput {
   type: 'date';
   channelId?: string;
@@ -86,4 +94,5 @@ export type NativeNotificationTriggerInput =
   | NativeTimeIntervalTriggerInput
   | NativeDailyTriggerInput
   | NativeWeeklyTriggerInput
+  | NativeMonthlyTriggerInput
   | NativeYearlyTriggerInput;

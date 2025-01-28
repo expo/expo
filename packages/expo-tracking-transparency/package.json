@@ -1,6 +1,6 @@
 {
   "name": "expo-tracking-transparency",
-  "version": "4.0.2",
+  "version": "5.0.0",
   "description": "An Expo library for requesting permission to track the users on devices using iOS 14.5 and higher.",
   "main": "build/TrackingTransparency.js",
   "types": "build/TrackingTransparency.d.ts",
@@ -30,7 +30,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/tracking-transparency",
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*",

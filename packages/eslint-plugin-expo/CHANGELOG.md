@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Update `@typescript-eslint` dependencies to new major version. ([#31571](https://github.com/expo/expo/pull/31571) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.1.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Update `@typescript-eslint` dependencies to new major version. ([#31571](https://github.com/expo/expo/pull/31571) by [@Simek](https://github.com/Simek))
 
 ## 0.0.1 — 2024-03-26
 

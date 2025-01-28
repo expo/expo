@@ -43,7 +43,7 @@ Configure expo-updates code signing for this project and verify setup
   const keyInput = requireArg(args, '--key-input-directory');
   const keyid = args['--keyid'];
 
-  return await configureCodeSigningAsync(getProjectRoot(args), {
+  await configureCodeSigningAsync(getProjectRoot(args), {
     certificateInput,
     keyInput,
     keyid,

@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import { CLI_NAME } from './cmd';
 import { ExitError } from './error';
 import { Log } from './log';
+import { formatSelfCommand } from './resolvePackageManager';
 import { assertWithOptionsArgs, printHelp, resolveStringOrBooleanArgsAsync } from './utils/args';
 
 const debug = require('debug')('expo:init:cli') as typeof console.log;
@@ -47,12 +48,12 @@ async function run() {
       chalk`
     {gray To choose a template pass in the {bold --template} arg:}
 
-    {gray $} npx ${CLI_NAME} {cyan --template}
+    {gray $} ${formatSelfCommand()} {cyan --template}
 
     {gray To choose an Expo example pass in the {bold --example} arg:}
 
-    {gray $} npx ${CLI_NAME} {cyan --example}
-    {gray $} npx ${CLI_NAME} {cyan --example with-router}
+    {gray $} ${formatSelfCommand()} {cyan --example}
+    {gray $} ${formatSelfCommand()} {cyan --example with-router}
 
     {gray The package manager used for installing}
     {gray node modules is based on how you invoke the CLI:}

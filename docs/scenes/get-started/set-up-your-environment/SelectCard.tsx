@@ -28,7 +28,7 @@ export function SelectCard({
     <ButtonBase onClick={onClick}>
       <div
         className={mergeClasses(
-          'w-[250px] shadow-xs overflow-hidden rounded-lg flex flex-col border border-default transition-all',
+          'flex w-[250px] flex-col overflow-hidden rounded-lg border border-default shadow-xs transition-all',
           'hocus:scale-[102%] hocus:shadow-sm'
         )}>
         <div
@@ -36,17 +36,17 @@ export function SelectCard({
             'border-b border-default',
             isSelected ? 'bg-gradient-to-b from-palette-blue3 to-palette-blue4' : 'bg-subtle'
           )}>
-          <picture className="relative w-auto h-full flex items-end">
+          <picture className="relative flex h-full w-auto items-end">
             {isDarkMode && <source srcSet={darkImgSrc} type="image/png" />}
             <img
               src={imgSrc}
               alt={alt}
-              className={mergeClasses(isSelected ? 'grayscale-0' : 'grayscale opacity-80')}
+              className={mergeClasses(isSelected ? 'grayscale-0' : 'opacity-80 grayscale')}
             />
           </picture>
         </div>
-        <div className="p-4 flex flex-col gap-2">
-          <div className="flex gap-2 items-center">
+        <div className="flex flex-col gap-2 p-4">
+          <div className="flex items-center gap-2">
             <div className="relative">
               <div
                 className={mergeClasses(
@@ -56,7 +56,7 @@ export function SelectCard({
               />
               <div
                 className={mergeClasses(
-                  'size-3 rounded-full absolute top-1 right-1',
+                  'absolute right-1 top-1 size-3 rounded-full',
                   isSelected ? 'border-palette-blue9 bg-palette-blue9' : 'bg-transparent'
                 )}
               />

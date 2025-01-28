@@ -109,6 +109,8 @@ func decodeDates(_ input: [ContactDate]?) -> [CNLabeledValue<NSDateComponents>]?
       val.year = year
     }
 
+    val.calendar = Calendar.current
+
     let labeledValue = CNLabeledValue(label: label, value: val)
     output.append(labeledValue)
   }

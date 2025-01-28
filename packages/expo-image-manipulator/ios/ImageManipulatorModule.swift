@@ -10,12 +10,18 @@ public class ImageManipulatorModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoImageManipulator")
 
-    Function("manipulate") { (url: URL) -> ImageManipulatorContext in
+    Function("manipulate") { (source: Either<URL, SharedRef<UIImage>>) -> ImageManipulatorContext in
       let context = ImageManipulatorContext { [weak appContext] in
         guard let appContext else {
           throw Exceptions.AppContextLost()
         }
-        return try await loadImage(atUrl: url, appContext: appContext)
+        if let url: URL = source.get() {
+          return try await loadImage(atUrl: url, appContext: appContext)
+        }
+        if let image: SharedRef<UIImage> = source.get() {
+          return image.ref
+        }
+        throw Exceptions.RuntimeLost()
       }
 
       // Immediately try to fix the orientation once the image is loaded

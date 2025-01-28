@@ -9,7 +9,9 @@ class Env {
     }
     /** Disable all Sharp related functionality. */
     get EXPO_IMAGE_UTILS_NO_SHARP() {
-        return (0, getenv_1.boolish)('EXPO_IMAGE_UTILS_NO_SHARP', false);
+        // note(brentvatne): Default to disabled until we can invest further in
+        // fixing it: https://github.com/expo/expo/issues/32625.
+        return (0, getenv_1.boolish)('EXPO_IMAGE_UTILS_NO_SHARP', true);
     }
 }
 exports.env = new Env();

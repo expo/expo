@@ -1,5 +1,6 @@
 import { CodedError } from 'expo-modules-core';
 import ExpoUpdates from './ExpoUpdates';
+import { UpdatesCheckAutomaticallyValue, } from './Updates.types';
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:
  * - enabled set to false in configuration
@@ -31,10 +32,10 @@ export const channel = ExpoUpdates.channel ?? null;
  */
 export const runtimeVersion = ExpoUpdates.runtimeVersion ?? null;
 const _checkAutomaticallyMapNativeToJS = {
-    ALWAYS: 'ON_LOAD',
-    ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
-    NEVER: 'NEVER',
-    WIFI_ONLY: 'WIFI_ONLY',
+    ALWAYS: UpdatesCheckAutomaticallyValue.ON_LOAD,
+    ERROR_RECOVERY_ONLY: UpdatesCheckAutomaticallyValue.ON_ERROR_RECOVERY,
+    NEVER: UpdatesCheckAutomaticallyValue.NEVER,
+    WIFI_ONLY: UpdatesCheckAutomaticallyValue.WIFI_ONLY,
 };
 /**
  * Determines if and when `expo-updates` checks for and downloads updates automatically on startup.
@@ -60,6 +61,10 @@ export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch;
  * what failed during initialization.
  */
 export const emergencyLaunchReason = ExpoUpdates.emergencyLaunchReason;
+/**
+ * Number of milliseconds it took to launch.
+ */
+export const launchDuration = ExpoUpdates.launchDuration;
 /**
  * This will be true if the currently running update is the one embedded in the build,
  * and not one downloaded from the updates server.
@@ -239,39 +244,13 @@ export async function fetchUpdateAsync() {
     return result;
 }
 /**
+ * Overrides updates URL and reuqest headers in runtime from build time.
+ * This method allows you to load specific updates from a URL that you provide.
+ * Use this method at your own risk, as it may cause unexpected behavior.
+ * @experimental
  * @hidden
  */
-export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
-    console.warn("This method is no longer necessary. `expo-updates` now automatically deletes your app's old bundle files!");
-}
-/**
- * @hidden
- */
-export function transformNativeStateMachineContext(originalNativeContext) {
-    const nativeContext = { ...originalNativeContext };
-    if (nativeContext.latestManifestString) {
-        nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
-        delete nativeContext.latestManifestString;
-    }
-    if (nativeContext.downloadedManifestString) {
-        nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
-        delete nativeContext.downloadedManifestString;
-    }
-    if (nativeContext.lastCheckForUpdateTimeString) {
-        nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
-        delete nativeContext.lastCheckForUpdateTimeString;
-    }
-    if (nativeContext.rollbackString) {
-        nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
-        delete nativeContext.rollbackString;
-    }
-    return nativeContext;
-}
-/**
- * @hidden
- */
-export async function getNativeStateMachineContextAsync() {
-    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
-    return transformNativeStateMachineContext(nativeContext);
+export function setUpdateURLAndRequestHeadersOverride(configOverride) {
+    ExpoUpdates.setUpdateURLAndRequestHeadersOverride(configOverride);
 }
 //# sourceMappingURL=Updates.js.map

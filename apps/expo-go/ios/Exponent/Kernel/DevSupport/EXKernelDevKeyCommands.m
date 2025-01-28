@@ -224,7 +224,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                [weakSelf _handleMenuCommand];
                              }];
   [self registerKeyCommandWithInput:@"r"
-                      modifierFlags:UIKeyModifierCommand
+                      modifierFlags:0
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleRefreshCommand];
                              }];

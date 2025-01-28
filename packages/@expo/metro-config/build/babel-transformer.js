@@ -117,6 +117,7 @@ plugins, }) => {
         if (!result) {
             // BabelTransformer specifies that the `ast` can never be null but
             // the function returns here. Discovered when typing `BabelNode`.
+            // @ts-expect-error: see https://github.com/facebook/react-native/blob/401991c3f073bf734ee04f9220751c227d2abd31/packages/react-native-babel-transformer/src/index.js#L220-L224
             return { ast: null };
         }
         (0, node_assert_1.default)(result.ast);

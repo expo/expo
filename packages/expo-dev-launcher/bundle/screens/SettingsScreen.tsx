@@ -12,7 +12,7 @@ import {
   CheckIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ScrollView, Switch } from 'react-native';
+import { ScrollView, Switch, StyleSheet } from 'react-native';
 import { useQueryClient } from 'react-query';
 
 import { SafeAreaTop } from '../components/SafeAreaTop';
@@ -170,10 +170,12 @@ export function SettingsScreen() {
             {Boolean(buildInfo.runtimeVersion) && (
               <>
                 <Divider />
-                <Row px="medium" py="small" align="center" bg="default">
+                <Row px="medium" py="small" bg="default">
                   <Text>Runtime Version</Text>
-                  <Spacer.Horizontal />
-                  <Text>{buildInfo.runtimeVersion}</Text>
+                  <Spacer.Horizontal size="small" />
+                  <Text style={styles.runtimeVersionText} ellipsizeMode="middle" numberOfLines={1}>
+                    {buildInfo.runtimeVersion}
+                  </Text>
                 </Row>
               </>
             )}
@@ -321,3 +323,10 @@ function UpdatesDebugSettings() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  runtimeVersionText: {
+    flex: 1,
+    textAlign: 'right',
+  },
+});

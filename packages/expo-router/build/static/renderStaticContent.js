@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBuildTimeServerManifestAsync = exports.getManifest = exports.getStaticContent = void 0;
+exports.getManifest = exports.getBuildTimeServerManifestAsync = exports.getStaticContent = void 0;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -42,27 +42,9 @@ const react_native_web_1 = require("react-native-web");
 const getRootComponent_1 = require("./getRootComponent");
 const _ctx_1 = require("../../_ctx");
 const ExpoRoot_1 = require("../ExpoRoot");
-const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
-const getRoutes_1 = require("../getRoutes");
 const head_1 = require("../head");
-const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
 const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
-/** Get the linking manifest from a Node.js process. */
-async function getManifest(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
-        preserveApiRoutes: true,
-        platform: 'web',
-        ...options,
-    });
-    if (!routeTree) {
-        throw new Error('No routes found');
-    }
-    // Evaluate all static params
-    await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
-    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routeTree, false);
-}
-exports.getManifest = getManifest;
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -121,6 +103,8 @@ function mixHeadComponentsWithStaticResults(helmet, html) {
     html = html.replace('<body ', `<body ${helmet?.bodyAttributes.toString()} `);
     return html;
 }
+// Re-export for use in server
 var getServerManifest_1 = require("./getServerManifest");
 Object.defineProperty(exports, "getBuildTimeServerManifestAsync", { enumerable: true, get: function () { return getServerManifest_1.getBuildTimeServerManifestAsync; } });
+Object.defineProperty(exports, "getManifest", { enumerable: true, get: function () { return getServerManifest_1.getManifest; } });
 //# sourceMappingURL=renderStaticContent.js.map

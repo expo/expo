@@ -10,14 +10,12 @@ import expo.modules.core.interfaces.DoNotStrip
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class FabricComponentsRegistry(viewManagerList: List<ViewManager<*, *>>) {
-  private val componentNames: List<String>
+  private val componentNames: List<String> = viewManagerList.map { it.name }
 
   @DoNotStrip
-  private val mHybridData: HybridData
+  private val mHybridData = initHybrid()
 
   init {
-    componentNames = viewManagerList.map { it.name }
-    mHybridData = initHybrid()
     registerComponentsRegistry(componentNames.toTypedArray())
   }
 

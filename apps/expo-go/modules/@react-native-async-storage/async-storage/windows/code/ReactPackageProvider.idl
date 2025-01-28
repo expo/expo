@@ -1,0 +1,7 @@
+namespace ReactNativeAsyncStorage{
+[webhosthidden]
+[default_interface]
+runtimeclass ReactPackageProvider : Microsoft.ReactNative.IReactPackageProvider {
+  ReactPackageProvider();
+};
+} // namespace ReactNativeAsyncStorage

@@ -5,12 +5,19 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import ExpoImage from './ExpoImage';
-import { ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
+import {
+  ImageLoadOptions,
+  ImagePrefetchOptions,
+  ImageProps,
+  ImageRef,
+  ImageSource,
+} from './Image.types';
 import ImageModule from './ImageModule';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
 import { resolveSource, resolveSources } from './utils/resolveSources';
 
 let loggedDefaultSourceDeprecationWarning = false;
+let loggedRenderingChildrenWarning = false;
 
 export class Image extends React.PureComponent<ImageProps> {
   nativeViewRef;
@@ -159,9 +166,12 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform ios
    * @platform web
    */
-  static async loadAsync(source: ImageSource | string): Promise<ImageRef> {
+  static async loadAsync(
+    source: ImageSource | string,
+    options?: ImageLoadOptions
+  ): Promise<ImageRef> {
     const resolvedSource = resolveSource(source) as ImageSource;
-    return await ImageModule.loadAsync(resolvedSource);
+    return await ImageModule.loadAsync(resolvedSource, options);
   }
 
   render() {
@@ -188,7 +198,13 @@ export class Image extends React.PureComponent<ImageProps> {
       );
       loggedDefaultSourceDeprecationWarning = true;
     }
-
+    // @ts-expect-error
+    if (restProps.children && !loggedRenderingChildrenWarning) {
+      console.warn(
+        'The <Image> component does not support children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.'
+      );
+      loggedRenderingChildrenWarning = true;
+    }
     return (
       <ExpoImage
         {...restProps}

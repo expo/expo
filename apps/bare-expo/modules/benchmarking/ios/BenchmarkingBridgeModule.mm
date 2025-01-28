@@ -19,4 +19,13 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(addStrings:(NSString *)a b:(NSString *)b)
   return result;
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(foldArray:(NSArray *)array)
+{
+  double sum = 0.0;
+  for (NSNumber *num in array) {
+    sum += [num doubleValue];
+  }
+  return @(sum);
+}
+
 @end

@@ -93,5 +93,5 @@ export async function autoAddConfigPluginsAsync(
     return !!plugin;
   });
 
-  await attemptAddingPluginsAsync(projectRoot, exp, plugins);
+  await attemptAddingPluginsAsync(projectRoot, plugins);
 }

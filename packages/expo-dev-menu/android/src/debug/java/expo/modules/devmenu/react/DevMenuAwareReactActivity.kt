@@ -19,7 +19,7 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
       DevMenuManager.initializeWithReactHost(
         ReactHostWrapper(
           reactNativeHost = reactNativeHost,
-          reactHost = (applicationContext as ReactApplication).reactHost
+          reactHostProvider = { (applicationContext as ReactApplication).reactHost }
         )
       )
     } else {

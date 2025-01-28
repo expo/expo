@@ -9,8 +9,8 @@ export function githubUrl(path: string) {
 
   if (path.includes('/versions/latest/')) {
     path = path.replace('/versions/latest/', '/versions/unversioned/');
-  } else if (path.match(/v\d+\.\d+\.\d+\/?$/) || path === '/') {
-    if (path[path.length - 1] === '/') {
+  } else if (/v\d+\.\d+\.\d+\/?$/.test(path) || path === '/') {
+    if (path.at(-1) === '/') {
       path = `${path}index`;
     } else {
       path = `${path}/index`;

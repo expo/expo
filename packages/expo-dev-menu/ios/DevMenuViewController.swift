@@ -53,7 +53,6 @@ class DevMenuViewController: UIViewController {
     }
   }
 
-  @available(iOS 12.0, *)
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {
       return manager.userInterfaceStyle

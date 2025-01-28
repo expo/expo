@@ -31,7 +31,7 @@ export function processModules(
     includeAsyncPaths: boolean;
     projectRoot: string;
     serverRoot: string;
-    sourceUrl: string | undefined;
+    sourceUrl?: string | null;
     skipWrapping: boolean;
     computedAsyncModulePaths: Record<string, string> | null;
   }

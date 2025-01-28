@@ -5,10 +5,10 @@ index cb23b47..13beb08 100644
 @@ -1,4 +1,5 @@
  package com.myapp
 +import expo.modules.ReactActivityDelegateWrapper
-
  import com.facebook.react.ReactActivity
  import com.facebook.react.ReactActivityDelegate
-@@ -18,5 +19,5 @@ class MainActivity : ReactActivity() {
+ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
+@@ -18,5 +18,5 @@ class MainActivity : ReactActivity() {
     * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
     */
    override fun createReactActivityDelegate(): ReactActivityDelegate =
@@ -19,24 +19,35 @@ diff --git a/android/app/src/main/java/com/myapp/MainApplication.kt b/android/ap
 index 9fdd6df..2a521ff 100644
 --- a/android/app/src/main/java/com/myapp/MainApplication.kt
 +++ b/android/app/src/main/java/com/myapp/MainApplication.kt
-@@ -1,4 +1,7 @@
+@@ -1,5 +1,8 @@
  package com.myapp
 +import android.content.res.Configuration
 +import expo.modules.ApplicationLifecycleDispatcher
 +import expo.modules.ReactNativeHostWrapper
-
  import android.app.Application
  import com.facebook.react.PackageList
-@@ -14,7 +17,7 @@ import com.facebook.soloader.SoLoader
+ import com.facebook.react.ReactApplication
+@@ -15,12 +18,13 @@ import com.facebook.soloader.SoLoader
  class MainApplication : Application(), ReactApplication {
 
    override val reactNativeHost: ReactNativeHost =
 -      object : DefaultReactNativeHost(this) {
+-        override fun getPackages(): List<ReactPackage> =
+-            PackageList(this).packages.apply {
+-              // Packages that cannot be autolinked yet can be added manually here, for example:
+-              // add(MyReactNativePackage())
+-            }
 +      ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
-         override fun getPackages(): List<ReactPackage> =
-             PackageList(this).packages.apply {
-               // Packages that cannot be autolinked yet can be added manually here, for example:
-@@ -27,10 +30,10 @@ class MainApplication : Application(), ReactApplication {
++        override fun getPackages(): List<ReactPackage> {
++            val packages = PackageList(this).packages
++            // Packages that cannot be autolinked yet can be added manually here, for example:
++            // packages.add(new MyReactNativePackage());
++            return packages
++        }
+
+         override fun getJSMainModuleName(): String = "index"
+
+@@ -28,10 +32,10 @@ class MainApplication : Application(), ReactApplication {
 
          override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
          override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
@@ -49,7 +60,7 @@ index 9fdd6df..2a521ff 100644
 
    override fun onCreate() {
      super.onCreate()
-@@ -39,5 +42,11 @@ class MainApplication : Application(), ReactApplication {
+@@ -40,5 +44,10 @@ class MainApplication : Application(), ReactApplication {
        // If you opted-in for the New Architecture, we load the native entry point for this app.
        load()
      }
@@ -65,8 +76,8 @@ diff --git a/android/settings.gradle b/android/settings.gradle
 index dd91c04..6b7789d 100644
 --- a/android/settings.gradle
 +++ b/android/settings.gradle
-@@ -2,3 +2,6 @@ rootProject.name = 'myapp'
- apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+@@ -4,3 +4,6 @@ extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autoli
+ rootProject.name = 'myapp'
  include ':app'
  includeBuild('../node_modules/@react-native/gradle-plugin')
 +

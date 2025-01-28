@@ -3,15 +3,10 @@
 import nullthrows from 'nullthrows';
 import path from 'path';
 
-import { initAsync, setupManualTestAppAsync } from './project';
+import { initAsync, setupManualTestAppAsync, EXPO_ACCOUNT_NAME } from './project';
 
 const repoRoot = nullthrows(process.env.EXPO_REPO_ROOT, 'EXPO_REPO_ROOT is not defined');
 const workingDir = path.resolve(repoRoot, '..');
-
-/*
- * Change this to your own Expo account name
- */
-const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
 
 /**
  * This generates a project at the location TEST_PROJECT_ROOT,

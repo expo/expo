@@ -1,5 +1,6 @@
 #import <React/RCTImageSource.h>
 #import <React/RCTImageView.h>
+#import <React/RCTBridge+Private.h>
 #import <ExpoModulesCore/EXDefines.h>
 
 #import "EXKernel.h"
@@ -53,7 +54,7 @@
     if (self.configuration.imageUrl) {
       EXKernelAppRecord *homeAppRecord = [EXKernel sharedInstance].appRegistry.homeAppRecord;
 
-      if (homeAppRecord.appManager.reactBridge) {
+      if (homeAppRecord.appManager.reactHost) {
         // Only re-create the splashImageView when the imageUrl or imageResizeMode changes
         if (![previousConfiguration.imageUrl isEqualToString:self.configuration.imageUrl] ||
             previousConfiguration.imageResizeMode != self.configuration.imageResizeMode) {
@@ -64,8 +65,12 @@
 
           // splash image loading is taking some time that, what can result in no image visually presented during loading phase
           // despite the fact the RCTImageView is mounted in the view hierarchy
-          self.splashImageView = [[RCTImageView alloc] initWithBridge:homeAppRecord.appManager.reactBridge];
-          self.splashImageView.frame = splashScreenView.bounds;
+          RCTBridge *bridge = [RCTBridge currentBridge];
+          self.splashImageView = [[RCTImageView alloc] initWithBridge:bridge];
+          // 200 is the default width we use in the expo-splash-screen plugin when using the legacy config.
+          self.splashImageView.frame = CGRectMake(0, 0, 200, 200);
+          self.splashImageView.center = CGPointMake(self.splashScreenView.bounds.size.width / 2, self.splashScreenView.bounds.size.height / 2);
+          self.splashImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
           self.splashImageView.imageSources = @[imageSource];
           self.splashImageView.resizeMode = self.configuration.imageResizeMode == EXSplashScreenImageResizeModeCover ? RCTResizeModeCover : RCTResizeModeContain;
           [splashScreenView addSubview:self.splashImageView];

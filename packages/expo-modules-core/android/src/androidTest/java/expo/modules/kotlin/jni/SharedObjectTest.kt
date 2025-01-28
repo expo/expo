@@ -98,7 +98,7 @@ class SharedObjectTest {
       .runtimeContextHolder
       .get()
       ?.sharedObjectRegistry
-      ?.toNativeObject(jsObject)
+      ?.toNativeObjectOrNull(jsObject)
 
     // Send an event from the native object to JS
     nativeObject?.emit("test event", 1, 2, 3)

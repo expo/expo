@@ -1,13 +1,11 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
-import { FlashMode } from 'expo-camera/legacy';
 import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Camera } from '../components/Camera';
+import CameraView from '../components/Camera';
 import QRFooterButton from '../components/QRFooterButton';
 import QRIndicator from '../components/QRIndicator';
 import { ModalStackRoutes } from '../navigation/Navigation.types';
@@ -84,13 +82,13 @@ export default function BarCodeScreen(props: StackScreenProps<ModalStackRoutes, 
   return (
     <View style={styles.container}>
       {state.isVisible ? (
-        <Camera
-          barCodeScannerSettings={{
-            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        <CameraView
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr'],
           }}
-          onBarCodeScanned={_handleBarCodeScanned}
+          onBarcodeScanned={_handleBarCodeScanned}
           style={StyleSheet.absoluteFill}
-          flashMode={isLit ? FlashMode.torch : FlashMode.off}
+          enableTorch={isLit}
         />
       ) : null}
 

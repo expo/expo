@@ -36,9 +36,10 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     isFinished: false,
     url: null,
   });
-  const [recorderOptions, setRecorderOptions] = React.useState<RecordingOptions>(
-    RecordingPresets.HIGH_QUALITY
-  );
+  const [recorderOptions, setRecorderOptions] = React.useState<RecordingOptions>({
+    ...RecordingPresets.HIGH_QUALITY,
+    isMeteringEnabled: true,
+  });
 
   useEffect(() => {
     (async () => {
@@ -139,14 +140,23 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   return (
     <View style={style}>
       <View style={styles.container}>
-        {renderOptionsButton('High Quality', RecordingPresets.HIGH_QUALITY)}
+        {renderOptionsButton('High Quality', {
+          ...RecordingPresets.HIGH_QUALITY,
+          isMeteringEnabled: true,
+        })}
+
+        {renderOptionsButton('Low Quality', RecordingPresets.LOW_QUALITY)}
+      </View>
+      <View style={styles.centerer}>
         <Button
-          onPress={() => audioRecorder.prepareToRecordAsync(recorderOptions)}
+          onPress={async () => {
+            onDone?.('');
+            await audioRecorder.prepareToRecordAsync(recorderOptions);
+          }}
           disabled={recorderState.canRecord}
           title="Prepare Recording"
           style={[!recorderState.canRecord && { backgroundColor: 'gray' }]}
         />
-        {renderOptionsButton('Low Quality', RecordingPresets.LOW_QUALITY)}
       </View>
       <View style={styles.centerer}>
         {renderRecorderButtons()}
@@ -179,13 +189,15 @@ const _leftPad = (s: string, padWith: string, expectedMinimumSize: number): stri
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
     marginVertical: 10,
+    alignItems: 'center',
+    gap: 10,
+    justifyContent: 'center',
   },
   centerer: {
     alignItems: 'center',
     justifyContent: 'center',
+    marginVertical: 5,
   },
   icon: {
     padding: 8,

@@ -1,8 +1,19 @@
+import { createRuntimeUrl } from 'snack-content';
 import url from 'url';
 
+import Environment from './Environment';
 import Config from '../api/Config';
 
 const HTTPS_HOSTS = [Config.api.host, 'exp.host', 'exponentjs.com', 'getexponent.com'];
+
+export function normalizeSnackUrl(fullName: string, channelName?: string): string {
+  return createRuntimeUrl({
+    // Only ever try to open Snack using the current SDK version
+    sdkVersion: `${Environment.supportedSdksString}.0.0`,
+    snack: fullName,
+    channel: channelName,
+  });
+}
 
 export function normalizeUrl(rawUrl: string): string {
   let components = url.parse(rawUrl, false, true);

@@ -4,6 +4,9 @@ sidebar_title: Local-first
 description: An introduction to the emerging local-first software movement, including links to relevant learning resources and tools.
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
 > **info** This guide is a work in progress. If you have any feedback, [open an issue](https://github.com/expo/expo/issues/new/choose) in our GitHub repository.
 
 The term "local-first" was first coined in the paper ["Local-first software"](https://www.inkandswitch.com/local-first/), written by the research lab [Ink & Switch](https://www.inkandswitch.com/), but the ideas behind it have been around for a long time. It's the architecture that powers some of our favorite apps, like [Linear](https://linear.app/), [Superhuman](https://superhuman.com/), [Excalidraw](https://excalidraw.com/), and even [Apple Notes](<https://en.wikipedia.org/wiki/Notes_(Apple)>).
@@ -40,17 +43,28 @@ One way to think of local-first tools is to group them by the following categori
 
 ### Legend-State
 
-[Legend-State](https://legendapp.com/open-source/state/v3/) is a super fast all-in-one state and sync library that lets you write less code to make faster apps. Legend-State has four primary goals:
+[Legend-State](https://legendapp.com/open-source/state/v3/) is a super fast all-in-one state and sync library that lets you write less code to make faster apps. It has the following primary goals:
 
-- The fastest React state library
+- Faster state management for React apps
 - Fine-grained reactivity for minimal renders
 - Powerful sync and persistence (with Supabase support built-in)
 
-It works with Expo and React Native (via [React Native Async Storage](https://github.com/react-native-async-storage/async-storage?tab=readme-ov-file#react-native-async-storage)). This makes it a perfect match for building local-first mobile and web apps. Get started by using the [Legend-State Supabase example](https://github.com/expo/examples/tree/master/with-legend-state-supabase): `npx create-expo-app --example with-legend-state-supabase`.
+It works with Expo and React Native (via [`react-native-async-storage`](https://github.com/react-native-async-storage/async-storage?tab=readme-ov-file#react-native-async-storage)). This makes it a perfect match for building local-first mobile and web apps. Get started by using the [Legend-State Supabase example](https://github.com/expo/examples/tree/master/with-legend-state-supabase):
+
+<Terminal cmd={['$ npx create-expo-app --example with-legend-state-supabase']} />
 
 ### TinyBase
 
-[TinyBase](https://tinybase.org/) calls itself "the reactive data store for local-first apps". It is a state management library that plugs in to many of the most popular syncing and persistence layers, such as [Yjs](#yjs) and [SQLite](#sqlite). It's a great choice for building local-first apps that need to persist and sync data. Get started by using the [TinyBase example](https://github.com/expo/examples/tree/master/with-tinybase): `npx create-expo-app --example with-tinybase`.
+[TinyBase](https://tinybase.org/) calls itself "the reactive data store for local-first apps". It is a state management library that plugs in to many of the most popular syncing and persistence layers, such as [Yjs](#yjs) and [SQLite](#sqlite). It's a great choice for building local-first apps that need to persist and sync data. Get started by using the [TinyBase example](https://github.com/expo/examples/tree/master/with-tinybase):
+
+<Terminal cmd={['$ npx create-expo-app --example with-tinybase']} />
+
+TinyBase works seamlessly with Expo Go, allowing you to develop quickly. On Android and iOS, it uses the [`expo-sqlite`](/versions/latest/sdk/sqlite/) library to persist data. On the web, it relies on the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) API. [Beto Moedano](https://github.com/betomoedano) demonstrates how to build a [Universal Local-first Shopping List App](https://github.com/betomoedano/groceries-shopping-list-app) in the following video:
+
+<VideoBoxLink
+  videoId="HqOiB2tDM8Q"
+  title="Watch: Build a Local-First Real-Time Shopping List App with Expo and TinyBase"
+/>
 
 ### SQLite
 
@@ -62,7 +76,25 @@ It works with Expo and React Native (via [React Native Async Storage](https://gi
 
 ### Prisma
 
-[Prisma](https://prisma.io) is well known as the most popular ORM for Node.js and TypeScript backends, and it's now available for [Expo and React Native in early access](https://www.prisma.io/blog/bringing-prisma-orm-to-react-native-and-expo). Prisma aims to provide a complete local-first solution, with state management, syncing, and persistence all covered for you. While it's still early, [Beto Moedano](https://github.com/betomoedano) has put together full walkthrough of using Prisma with Expo to build a local-first Notion clone, [watch it on YouTube](https://www.youtube.com/watch?v=uTrPte0sCiw) and [check out the code on GitHub](https://github.com/betomoedano/React-Native-Notion-Clone).
+[Prisma](https://prisma.io) is well known as the most popular ORM for Node.js and TypeScript backends, and it's now available for [Expo and React Native in early access](https://www.prisma.io/blog/bringing-prisma-orm-to-react-native-and-expo). Prisma aims to provide a complete local-first solution, with state management, syncing, and persistence all covered for you. While it's still early, [Beto Moedano](https://github.com/betomoedano) has put together a full walkthrough of using Prisma with Expo to build a local-first Notion clone, [check out the code on GitHub](https://github.com/betomoedano/React-Native-Notion-Clone).
+
+<VideoBoxLink
+  videoId="uTrPte0sCiw"
+  title="Watch: Building a Local-first Notion Clone with React Native Expo and Prisma"
+/>
+
+### Jazz
+
+[Jazz.tools](https://jazz.tools/docs/react-native) is a framework for building local-first apps. It is open source, provides first-class support for Expo and you can self-host it or use [Jazz Cloud](https://jazz.tools/cloud) to start quickly. [Jazz](https://jazz.tools). To learn more, check out the [examples](https://jazz.tools/examples#react-native) or see the [Getting Started Guide](https://jazz.tools/docs/react-native) for detailed instructions.
+
+### LiveStore
+
+[LiveStore](https://livestore.dev/getting-started/expo/) is a client-centric local-first data layer for high-performance applications. It provides first-class support for Expo, and it's a great choice for building local-first apps. See the blog post on [LiveStore: SQLite-based data layer for local-first apps](https://expo.dev/blog/local-first-application-development-with-livestore).
+
+<VideoBoxLink
+  videoId="zQIhJqYU1Qw"
+  title="Watch: How to build local-first native apps with LiveStore and Expo"
+/>
 
 ### Other tools
 
@@ -71,7 +103,6 @@ The following list, far from being comprehensive, provides other tools that have
 - [Automerge](https://automerge.org/)
 - [ElectricSQL](https://electric-sql.com/)
 - [Instant](https://www.instantdb.com/)
-- [LiveStore](https://github.com/livestorejs)
 - [PowerSync](https://www.powersync.com/)
 
 ## Additional resources

@@ -157,7 +157,7 @@ export async function setSystemBrightnessModeAsync(brightnessMode) {
 // @needsAudit
 /**
  * Checks user's permissions for accessing system brightness.
- * @return A promise that fulfils with an object of type [PermissionResponse](#permissionrespons).
+ * @return A promise that fulfils with an object of type [PermissionResponse](#permissionresponse).
  */
 export async function getPermissionsAsync() {
     return ExpoBrightness.getPermissionsAsync();
@@ -165,7 +165,7 @@ export async function getPermissionsAsync() {
 // @needsAudit
 /**
  * Asks the user to grant permissions for accessing system brightness.
- * @return A promise that fulfils with an object of type [PermissionResponse](#permissionrespons).
+ * @return A promise that fulfils with an object of type [PermissionResponse](#permissionresponse).
  */
 export async function requestPermissionsAsync() {
     return ExpoBrightness.requestPermissionsAsync();

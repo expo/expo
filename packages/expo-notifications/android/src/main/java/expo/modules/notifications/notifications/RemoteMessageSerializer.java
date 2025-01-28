@@ -6,6 +6,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -19,7 +20,7 @@ public class RemoteMessageSerializer {
    * @param message {@link RemoteMessage} to serialize
    * @return Serialized message
    */
-  public static Bundle toBundle(RemoteMessage message) {
+  public static @NonNull Bundle toBundle(RemoteMessage message) {
     Bundle serializedMessage = new Bundle();
     serializedMessage.putString("collapseKey", message.getCollapseKey());
     serializedMessage.putBundle("data", toBundle(message.getData()));

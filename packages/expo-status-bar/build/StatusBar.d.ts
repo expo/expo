@@ -1,4 +1,5 @@
 import React from 'react';
+import { type ColorValue } from 'react-native';
 export type StatusBarStyle = 'auto' | 'inverted' | 'light' | 'dark';
 export type StatusBarAnimation = 'none' | 'fade' | 'slide';
 export type StatusBarProps = {
@@ -65,25 +66,25 @@ export declare function setStatusBarStyle(style: StatusBarStyle, animated?: bool
  * @param hidden If the status bar should be hidden.
  * @param animation Animation to use when toggling hidden, defaults to `'none'`.
  */
-export declare const setStatusBarHidden: (hidden: boolean, animation?: import("react-native").StatusBarAnimation | undefined) => void;
+export declare function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimation): void;
 /**
  * Set the background color of the status bar.
  * @param backgroundColor The background color of the status bar.
  * @param animated `true` to animate the background color change, `false` to change immediately.
  * @platform android
  */
-export declare const setStatusBarBackgroundColor: (color: import("react-native").ColorValue, animated?: boolean | undefined) => void;
+export declare function setStatusBarBackgroundColor(backgroundColor: ColorValue, animated?: boolean): void;
 /**
  * Toggle visibility of the network activity indicator.
  * @param visible If the network activity indicator should be visible.
  * @platform ios
  */
-export declare const setStatusBarNetworkActivityIndicatorVisible: (visible: boolean) => void;
+export declare function setStatusBarNetworkActivityIndicatorVisible(visible: boolean): void;
 /**
  * Set the translucency of the status bar.
  * @param translucent Whether the app can draw under the status bar. When `true`, content will be
  * rendered under the status bar. This is always `true` on iOS and cannot be changed.
  * @platform android
  */
-export declare const setStatusBarTranslucent: (translucent: boolean) => void;
+export declare function setStatusBarTranslucent(translucent: boolean): void;
 //# sourceMappingURL=StatusBar.d.ts.map

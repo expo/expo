@@ -1,13 +1,14 @@
-import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionHookOptions,
-  createPermissionHook,
-  UnavailabilityError,
-} from 'expo-modules-core';
+import { PermissionResponse, createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
 import ExpoCalendar from './ExpoCalendar';
+
+export {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+  PermissionExpiration,
+} from 'expo-modules-core';
 
 // @needsAudit
 /**
@@ -27,6 +28,15 @@ export type RecurringEventOptions = {
    * instance of that event will be returned by default.
    */
   instanceStartDate?: string | Date;
+};
+
+type Organizer = {
+  isCurrentUser: boolean;
+  name?: string;
+  role: string;
+  status: string;
+  type: string;
+  url?: string;
 };
 
 // @needsAudit
@@ -137,7 +147,7 @@ export type Source = {
    * Type of the account that owns this calendar and was used to sync it to the device.
    * If `isLocalAccount` is falsy then this must be defined, and must match an account on the device
    * along with `name`, or the OS will delete the calendar.
-   * On iOS, one of [`SourceType`](#calendarsourcetype)s.
+   * On iOS, one of [`SourceType`](#sourcetype)s.
    */
   type: string | SourceType;
   /**
@@ -171,7 +181,7 @@ export type Event = {
   /**
    * Location field of the event.
    */
-  location: string;
+  location: string | null;
   /**
    * Date when the event record was created.
    * @platform ios
@@ -240,9 +250,12 @@ export type Event = {
   status: EventStatus;
   /**
    * Organizer of the event.
+   * This property is only available on events associated with calendars that are managed by a service ie. Google Calendar or iCloud.
+   * The organizer is read-only and cannot be set.
+   *
    * @platform ios
    */
-  organizer?: string;
+  organizer?: Organizer;
   /**
    * Email address of the organizer of the event.
    * @platform android
@@ -549,8 +562,6 @@ export type DaysOfTheWeek = {
    */
   weekNumber?: number;
 };
-
-export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
 /**
  * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
@@ -920,7 +931,7 @@ export async function getEventAsync(
  */
 export async function createEventAsync(
   calendarId: string,
-  eventData: Omit<Partial<Event>, 'id'> = {}
+  eventData: Omit<Partial<Event>, 'id' | 'organizer'> = {}
 ): Promise<string> {
   if (!ExpoCalendar.saveEventAsync) {
     throw new UnavailabilityError('Calendar', 'createEventAsync');
@@ -1141,8 +1152,8 @@ export async function deleteAttendeeAsync(id: string): Promise<void> {
 export async function getRemindersAsync(
   calendarIds: (string | null)[],
   status: ReminderStatus | null,
-  startDate: Date,
-  endDate: Date
+  startDate: Date | null,
+  endDate: Date | null
 ): Promise<Reminder[]> {
   if (!ExpoCalendar.getRemindersAsync) {
     throw new UnavailabilityError('Calendar', 'getRemindersAsync');
@@ -1162,9 +1173,13 @@ export async function getRemindersAsync(
       'getRemindersAsync must be called with a non-empty array of calendarIds to search'
     );
   }
+
+  const formattedStartDate = startDate ? stringifyIfDate(startDate) : null;
+  const formattedEndDate = endDate ? stringifyIfDate(endDate) : null;
+
   return ExpoCalendar.getRemindersAsync(
-    stringifyIfDate(startDate) || null,
-    stringifyIfDate(endDate) || null,
+    formattedStartDate,
+    formattedEndDate,
     calendarIds,
     status || null
   );

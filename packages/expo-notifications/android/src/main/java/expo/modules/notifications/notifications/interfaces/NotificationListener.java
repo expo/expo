@@ -13,7 +13,7 @@ import expo.modules.notifications.notifications.model.NotificationResponse;
  */
 public interface NotificationListener {
   /**
-   * Callback called when new notification is received.
+   * Callback called when new notification is received while the app is in foreground.
    *
    * @param notification Notification received
    */

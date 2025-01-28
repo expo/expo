@@ -41,14 +41,17 @@ export async function createExampleApp(
     const templateVersion = EXPO_BETA ? 'next' : 'latest';
     const template = `expo-template-blank-typescript@${templateVersion}`;
     debug(`Using example template: ${template}`);
-    await spawnAsync(
-      packageManager,
-      ['create', 'expo-app', '--', exampleProjectSlug, '--template', template, '--yes'],
-      {
+    const command = createCommand(packageManager, exampleProjectSlug, template);
+    try {
+      await spawnAsync(packageManager, command, {
         cwd: targetDir,
-        stdio: 'ignore',
-      }
-    );
+      });
+    } catch (error: any) {
+      throw new Error(
+        `${command.join(' ')} failed with exit code: ${error?.status}.\n\nError stack:\n${error?.stderr}`
+      );
+    }
+
     step.succeed('Initialized the example app');
   });
 
@@ -85,6 +88,18 @@ export async function createExampleApp(
       step.succeed('Installed dependencies in the example app (skipped installing CocoaPods)');
     }
   });
+}
+
+function createCommand(
+  packageManager: PackageManagerName,
+  exampleProjectSlug: string,
+  template: string
+): string[] {
+  const command = ['create', 'expo-app'];
+  if (packageManager === 'npm') {
+    command.push('--');
+  }
+  return command.concat([exampleProjectSlug, '--template', template, '--yes']);
 }
 
 /**

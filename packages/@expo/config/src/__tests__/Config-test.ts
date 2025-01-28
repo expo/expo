@@ -3,6 +3,9 @@ import { vol } from 'memfs';
 import { getConfig, getProjectConfigDescriptionWithPaths, modifyConfigAsync } from '../Config';
 
 jest.mock('fs');
+jest.mock('@expo/config-plugins', () => ({
+  withPlugins: jest.fn((config, plugins) => config),
+}));
 
 describe(getProjectConfigDescriptionWithPaths, () => {
   it(`describes a project using both a static and dynamic config`, () => {
@@ -556,5 +559,132 @@ describe(modifyConfigAsync, () => {
         }) as string
       )
     );
+  });
+
+  describe('plugins modifications', () => {
+    it('warns when modifying static config to add a plugin when dynamic config is present', async () => {
+      createProject('/static-config-modify-plugin.dynamic-config', {
+        'app.json': JSON.stringify(appFile),
+        'app.config.js': `module.exports = ({ config }) => ({
+          ...config,
+        });`,
+      });
+
+      await expect(
+        modifyConfigAsync('/static-config-modify-plugin.dynamic-config', {
+          plugins: ['expo-router'],
+        })
+      ).resolves.toMatchObject({
+        type: 'warn',
+        config: null,
+        message: expect.stringMatching(/dynamic config/),
+      });
+
+      // Ensure the config was not changed
+      expect(appFile).toMatchObject(
+        JSON.parse(
+          vol.readFileSync('/static-config-modify-plugin.dynamic-config/app.json', {
+            encoding: 'utf-8',
+          }) as string
+        )
+      );
+    });
+
+    it('adds plugin entry without props', async () => {
+      createProject('/plugins-modification-add-simple', {
+        'app.json': JSON.stringify(appFile),
+      });
+
+      await expect(
+        modifyConfigAsync('/plugins-modification-add-simple', {
+          plugins: ['expo-router'],
+        })
+      ).resolves.toMatchObject({
+        type: 'success',
+        config: {
+          ...appFile,
+          plugins: ['expo-router'],
+        },
+      });
+    });
+
+    it('does not add existing plugin entry without props', async () => {
+      createProject('/plugins-modification-existing-simple', {
+        'app.json': JSON.stringify({ ...appFile, plugins: ['expo-font', 'expo-router'] }),
+      });
+
+      await expect(
+        modifyConfigAsync('/plugins-modification-existing-simple', {
+          plugins: ['expo-font'],
+        })
+      ).resolves.toMatchObject({
+        type: 'success',
+        config: {
+          ...appFile,
+          plugins: ['expo-font', 'expo-router'],
+        },
+      });
+    });
+
+    it('adds plugin properties to plugin entry without props', async () => {
+      createProject('/plugins-modification-add-complex', {
+        'app.json': JSON.stringify({ ...appFile, plugins: ['expo-font', 'expo-router'] }),
+      });
+
+      await expect(
+        modifyConfigAsync('/plugins-modification-add-complex', {
+          plugins: [['expo-font', { test: 'prop' }]],
+        })
+      ).resolves.toMatchObject({
+        type: 'success',
+        config: {
+          ...appFile,
+          plugins: [['expo-font', { test: 'prop' }], 'expo-router'],
+        },
+      });
+    });
+
+    it('merges plugin properties to plugin entry with props', async () => {
+      createProject('/plugins-modification-existing-complex', {
+        'app.json': JSON.stringify({
+          ...appFile,
+          plugins: [['expo-font', { existing: 'prop' }], 'expo-router'],
+        }),
+      });
+
+      await expect(
+        modifyConfigAsync('/plugins-modification-existing-complex', {
+          plugins: [['expo-font', { test: 'prop' }]],
+        })
+      ).resolves.toMatchObject({
+        type: 'success',
+        config: {
+          ...appFile,
+          plugins: [['expo-font', { existing: 'prop', test: 'prop' }], 'expo-router'],
+        },
+      });
+    });
+
+    // This shouldn't be used, but might be if users unnecessarily defines plugins as single array entries
+    it('merges plugin properties to plugin entry with empty props', async () => {
+      createProject('/plugins-modification-existing-unnecessary-complex', {
+        'app.json': JSON.stringify({
+          ...appFile,
+          plugins: [['expo-font'], ['expo-router']],
+        }),
+      });
+
+      await expect(
+        modifyConfigAsync('/plugins-modification-existing-unnecessary-complex', {
+          plugins: [['expo-font', { test: 'prop' }]],
+        })
+      ).resolves.toMatchObject({
+        type: 'success',
+        config: {
+          ...appFile,
+          plugins: [['expo-font', { test: 'prop' }], ['expo-router']],
+        },
+      });
+    });
   });
 });

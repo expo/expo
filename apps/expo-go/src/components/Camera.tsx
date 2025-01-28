@@ -1,1 +1,1 @@
-export { Camera } from 'expo-camera/legacy';
+export { CameraView as default } from 'expo-camera';

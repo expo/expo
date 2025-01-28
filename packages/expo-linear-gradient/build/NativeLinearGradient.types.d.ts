@@ -8,5 +8,5 @@ export type NativeLinearGradientProps = ViewProps & PropsWithChildren<{
     dither?: boolean;
 }>;
 export type getLinearGradientBackgroundImage = (colors: readonly number[], width?: number, height?: number, locations?: readonly number[] | null, startPoint?: NativeLinearGradientPoint | null, endPoint?: NativeLinearGradientPoint | null) => string;
-export type NativeLinearGradientPoint = [number, number];
+export type NativeLinearGradientPoint = [x: number, y: number];
 //# sourceMappingURL=NativeLinearGradient.types.d.ts.map

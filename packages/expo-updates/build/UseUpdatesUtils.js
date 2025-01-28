@@ -1,10 +1,11 @@
 import * as Updates from './Updates';
-import { UpdateInfoType } from './UseUpdates.types';
+import { UpdateInfoType, } from './UseUpdates.types';
 // The currently running info, constructed from Updates constants
 export const currentlyRunning = {
     updateId: Updates.updateId ?? undefined,
     channel: Updates.channel ?? undefined,
     createdAt: Updates.createdAt ?? undefined,
+    launchDuration: Updates.launchDuration ?? undefined,
     isEmbeddedLaunch: Updates.isEmbeddedLaunch,
     isEmergencyLaunch: Updates.isEmergencyLaunch,
     emergencyLaunchReason: Updates.emergencyLaunchReason,
@@ -30,15 +31,8 @@ export const updateFromRollback = (rollback) => ({
     manifest: undefined,
     updateId: undefined,
 });
-// Default useUpdates() state
-export const defaultUseUpdatesState = {
-    isChecking: false,
-    isDownloading: false,
-    isUpdateAvailable: false,
-    isUpdatePending: false,
-};
 // Transform the useUpdates() state based on native state machine context
-export const reduceUpdatesStateFromContext = (updatesState, context) => {
+export const updatesStateFromContext = (context) => {
     const availableUpdate = context?.latestManifest
         ? updateFromManifest(context?.latestManifest)
         : context.rollback
@@ -50,11 +44,13 @@ export const reduceUpdatesStateFromContext = (updatesState, context) => {
             ? updateFromRollback(context.rollback)
             : undefined;
     return {
-        ...updatesState,
+        isStartupProcedureRunning: context.isStartupProcedureRunning,
         isUpdateAvailable: context.isUpdateAvailable,
         isUpdatePending: context.isUpdatePending,
         isChecking: context.isChecking,
         isDownloading: context.isDownloading,
+        isRestarting: context.isRestarting,
+        restartCount: context.restartCount,
         availableUpdate,
         downloadedUpdate,
         checkError: context.checkError,

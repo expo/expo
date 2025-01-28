@@ -11,7 +11,7 @@ export type GradleProps = {
   apkVariantDirectory: string;
   /** Name of the app, used in the `apkVariantDirectory`. */
   appName: string;
-  /** First section of the provided `variant`, indicates the last part of the file name for the output APK. */
+  /** Last section of the provided `variant`, indicates the starting directory of the file name for the output APK. E.g. "debug" or "release" */
   buildType: string;
   /** Used to assemble the APK, also included in the output APK filename. */
   flavors?: string[];
@@ -37,9 +37,13 @@ export async function resolveGradlePropsAsync(
 
   const apkDirectory = path.join(projectRoot, 'android', appName, 'build', 'outputs', 'apk');
 
-  // buildDeveloperTrust -> build, developer, trust (where developer, and trust are flavors).
+  // buildDeveloperTrust -> buildtype: trust, flavors: build, developer
+  // developmentDebug -> buildType: debug, flavors: development
+  // productionRelease -> buildType: release, flavors: production
   // This won't work for non-standard flavor names like "myFlavor" would be treated as "my", "flavor".
-  const [buildType, ...flavors] = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
+  const flavors = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
+  const buildType = flavors.pop() ?? 'debug';
+
   const apkVariantDirectory = path.join(apkDirectory, ...flavors, buildType);
   const architectures = await getConnectedDeviceABIS(buildType, device, options.allArch);
 

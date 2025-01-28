@@ -68,6 +68,8 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
     }
   }
 
+  external fun setExternalMemoryPressure(size: Int)
+
   fun setProperty(name: String, value: Boolean) = setBoolProperty(name, value)
   operator fun set(name: String, value: Boolean) = setBoolProperty(name, value)
 

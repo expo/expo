@@ -1,9 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent
 
+import android.app.Application
 import android.os.Debug
-import androidx.multidex.MultiDexApplication
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.branch.BranchManager
@@ -18,7 +19,7 @@ import host.exp.expoview.Exponent
 import me.leolin.shortcutbadger.ShortcutBadger
 import javax.inject.Inject
 
-abstract class ExpoApplication : MultiDexApplication() {
+abstract class ExpoApplication : Application() {
   // Override me!
   abstract val isDebug: Boolean
 
@@ -71,7 +72,11 @@ abstract class ExpoApplication : MultiDexApplication() {
       Debug.startMethodTracing("coldStart")
     }
 
-    SoLoader.init(applicationContext, false)
+    SoLoader.init(applicationContext, OpenSourceMergedSoMapping)
+    ExpoGoReactNativeFeatureFlags.setup()
+    // For the New Architecture, we load the native entry point for this app.
+    // We should keep the code in sync with `DefaultNewArchitectureEntryPoint.load()`
+    SoLoader.loadLibrary("react_newarchdefaults")
 
     // Add exception handler. This is used by the entire process, so only need to add it here.
     Thread.setDefaultUncaughtExceptionHandler(
@@ -83,7 +88,7 @@ abstract class ExpoApplication : MultiDexApplication() {
 
   // we're leaving this stub in here so that if people don't modify their MainApplication to
   // remove the override of shouldUseInternetKernel() their project will still build without errors
-  fun shouldUseEmbeddedKernel(): Boolean {
+  private fun shouldUseEmbeddedKernel(): Boolean {
     return !isDebug
   }
 

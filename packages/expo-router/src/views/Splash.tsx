@@ -1,1 +1,2 @@
-export * as SplashScreen from 'expo-splash-screen';
+'use client';
+export * from '../utils/splash';

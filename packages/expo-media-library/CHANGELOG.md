@@ -4,6 +4,43 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- [iOS] Adding `pairedVideoAsset` for Live Photo support. ([#33274](https://github.com/expo/expo/pull/33274) by [@entiendoNull](https://github.com/entiendoNull))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 17.0.4 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `unknown` file type being returned for video files. ([#33589](https://github.com/expo/expo/pull/33589) by [@behenate](https://github.com/behenate))
+
+## 17.0.3 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Add back image loader to handle `ph://` and `assets-library://` scheme for New Architecture. ([#30116](https://github.com/expo/expo/issues/30116)) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler) ([#33097](https://github.com/expo/expo/pull/33097) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+
+## 17.0.2 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- [iOS] Fixes asset types not returned correctly. ([#32621](https://github.com/expo/expo/pull/32621) by [@aleqsio](https://github.com/aleqsio))
+
+## 17.0.1 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30863](https://github.com/expo/expo/pull/30863) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features

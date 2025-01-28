@@ -12,9 +12,9 @@ export const PageVote = () => {
   return (
     <div
       className={mergeClasses(
-        'mb-4 flex items-center min-h-[32px]',
+        'mb-4 flex min-h-[32px] items-center',
         userVoted ? 'content-start' : 'content-center',
-        'max-md-gutters:mb-8 max-md-gutters:mx-auto max-md-gutters:justify-center'
+        'max-md-gutters:mx-auto max-md-gutters:mb-8 max-md-gutters:justify-center'
       )}>
       {userVoted ? (
         <CALLOUT theme="secondary">Thank you for your vote! 💙</CALLOUT>

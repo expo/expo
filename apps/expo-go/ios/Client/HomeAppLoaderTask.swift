@@ -21,6 +21,7 @@ public final class HomeAppLoaderTask: NSObject {
 
   private let manifestAndAssetRequestHeaders: ManifestAndAssetRequestHeaders
   private let config: UpdatesConfig
+  private let logger = UpdatesLogger()
   private let database: UpdatesDatabase
   private let directory: URL
   private let selectionPolicy: SelectionPolicy
@@ -86,7 +87,8 @@ public final class HomeAppLoaderTask: NSObject {
         database: database,
         directory: directory,
         selectionPolicy: selectionPolicy,
-        launchedUpdate: launchedUpdate
+        launchedUpdate: launchedUpdate,
+        logger: self.logger
       )
     }
   }
@@ -95,6 +97,7 @@ public final class HomeAppLoaderTask: NSObject {
     HomeAppLoader(
       manifestAndAssetRequestHeaders: self.manifestAndAssetRequestHeaders,
       config: config,
+      logger: logger,
       database: database,
       directory: directory,
       launchedUpdate: nil,
@@ -111,12 +114,13 @@ public final class HomeAppLoaderTask: NSObject {
   }
 
   private func launchUpdate(_ updateBeingLaunched: Update?, error: Error?) {
-    if let updateBeingLaunched = updateBeingLaunched {
+    if updateBeingLaunched != nil {
       let launcher = AppLauncherWithDatabase(
         config: self.config,
         database: self.database,
         directory: self.directory,
-        completionQueue: self.loaderTaskQueue
+        completionQueue: self.loaderTaskQueue,
+        logger: self.logger
       )
       launcher.launchUpdate(withSelectionPolicy: self.selectionPolicy) { error, success in
         if success {

@@ -1,32 +1,62 @@
-import { ComponentProps, ReactElement, useState, useContext } from 'react';
+import { ComponentProps, ReactElement, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 
-import { TabContext, TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './TabContext';
+import { TabContext, TabsDescriptor } from './TabContext';
 import { TabListProps } from './TabList';
-import { useNavigation } from '../useNavigation';
+import { useNavigatorContext } from '../views/Navigator';
 
-export type UseTabSlotOptions = ComponentProps<typeof ScreenContainer> & {
+export type TabSlotProps = ComponentProps<typeof ScreenContainer> & {
+  /**
+   * Remove inactive screens.
+   */
   detachInactiveScreens?: boolean;
+  /**
+   * Override how the `Screen` component is rendered.
+   */
   renderFn?: typeof defaultTabsSlotRender;
 };
 
+/**
+ * Options provided to the `UseTabSlotOptions`.
+ */
 export type TabsSlotRenderOptions = {
+  /**
+   * Index of screen.
+   */
   index: number;
+  /**
+   * Whether the screen is focused.
+   */
   isFocused: boolean;
+  /**
+   * Whether the screen has been loaded.
+   */
   loaded: boolean;
+  /**
+   * Should the screen be unloaded when inactive.
+   */
   detachInactiveScreens: boolean;
 };
 
+/**
+ * Returns a `ReactElement` of the current tab.
+ *
+ * @example
+ * ```tsx
+ * function MyTabSlot() {
+ *   const slot = useTabSlot();
+ *
+ *   return slot;
+ * }
+ * ```
+ */
 export function useTabSlot({
-  detachInactiveScreens = Platform.OS === 'web' ||
-    Platform.OS === 'android' ||
-    Platform.OS === 'ios',
+  detachInactiveScreens = ['android', 'ios', 'web'].includes(Platform.OS),
   style,
   renderFn = defaultTabsSlotRender,
-}: UseTabSlotOptions = {}) {
-  const state = useContext(TabsStateContext);
-  const descriptors = useContext(TabsDescriptorsContext);
+}: TabSlotProps = {}) {
+  const { state, descriptors } = useNavigatorContext();
   const focusedRouteKey = state.routes[state.index].key;
   const [loaded, setLoaded] = useState({ [focusedRouteKey]: true });
 
@@ -40,7 +70,7 @@ export function useTabSlot({
       hasTwoStates
       style={[styles.screenContainer, style]}>
       {state.routes.map((route, index) => {
-        const descriptor = descriptors[route.key];
+        const descriptor = descriptors[route.key] as unknown as TabsDescriptor;
 
         return (
           <TabContext.Provider key={descriptor.route.key} value={descriptor.options}>
@@ -57,22 +87,28 @@ export function useTabSlot({
   );
 }
 
-export type TabSlotProps = UseTabSlotOptions;
-
+/**
+ * Renders the current tab.
+ *
+ * @see [`useTabSlot`](#usetabslot) for a hook version of this component.
+ *
+ * @example
+ * ```tsx
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
 export function TabSlot(props: TabSlotProps) {
   return useTabSlot(props);
 }
 
-export function useTab() {
-  const navigation = useNavigation();
-  const options = useContext(TabContext);
-
-  return {
-    options,
-    setOptions: navigation.setOptions,
-  };
-}
-
+/**
+ * @hidden
+ */
 export function defaultTabsSlotRender(
   descriptor: TabsDescriptor,
   { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions
@@ -100,6 +136,9 @@ export function defaultTabsSlotRender(
   );
 }
 
+/**
+ * @hidden
+ */
 export function isTabSlot(child: ReactElement<any>): child is ReactElement<TabListProps> {
   return child.type === TabSlot;
 }
@@ -108,6 +147,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     position: 'relative',
+    height: '100%',
   },
   screenContainer: {
     flexShrink: 0,

@@ -106,6 +106,13 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/BackgroundTaskScreen'));
+    },
+    name: 'BackgroundTask',
+    options: { title: 'Background Task' },
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/BatteryScreen'));
     },
     name: 'Battery',
@@ -133,12 +140,6 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/LocalizationScreen'));
     },
     name: 'Localization',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/FaceDetectorScreen'));
-    },
-    name: 'FaceDetector',
   },
   {
     getComponent() {

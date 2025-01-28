@@ -86,13 +86,15 @@ export interface RegisteredTask extends TaskManagerTask {}
 /**
  * Type of task executor – a function that handles the task.
  */
-export type TaskManagerTaskExecutor<T = unknown> = (body: TaskManagerTaskBody<T>) => void;
+export type TaskManagerTaskExecutor<T = any> = (body: TaskManagerTaskBody<T>) => Promise<any>;
 
 const tasks: Map<string, TaskManagerTaskExecutor<any>> = new Map<
   string,
   TaskManagerTaskExecutor<any>
 >();
+
 let warnedAboutExpoGo = false;
+
 function _validate(taskName: unknown) {
   if (isRunningInExpoGo()) {
     if (!warnedAboutExpoGo) {

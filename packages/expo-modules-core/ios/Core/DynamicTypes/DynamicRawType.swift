@@ -31,6 +31,15 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
     throw Conversions.CastingException<InnerType>(value)
   }
 
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    // TODO: Definitions and JS object builders should have its own dynamic type.
+    // We use `DynamicRawType` for this only temporarily.
+    if let objectBuilder = result as? JavaScriptObjectBuilder {
+      return try objectBuilder.build(appContext: appContext) as Any
+    }
+    return result
+  }
+
   var description: String {
     String(describing: innerType.self)
   }

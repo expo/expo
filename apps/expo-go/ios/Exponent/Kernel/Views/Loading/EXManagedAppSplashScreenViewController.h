@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <EXSplashScreen/EXSplashScreenViewController.h>
+#import "EXSplashScreenViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

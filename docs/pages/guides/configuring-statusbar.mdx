@@ -3,7 +3,7 @@ title: Configuring the status bar
 description: Learn how to configure the status bar using expo-status-bar library.
 ---
 
-import { APIBox } from '~/components/plugins/APIBox';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { CODE } from '~/ui/components/Text';
@@ -27,7 +27,7 @@ Configuring the status bar while the splash screen is visible on Android is avai
 
 <Collapsible summary="See the full list of options available to configure the status bar statically on Android">
 
-<APIBox header="androidStatusBar.barStyle" platforms={["android"]}>
+<PaddedAPIBox header="androidStatusBar.barStyle" platforms={["android"]}>
 
 This option can be used to configure whether the status bar content (icons and text in the status bar) is light, or dark. Usually, a status bar with a light background has dark content, and a status bar with a dark background has light content.
 
@@ -39,17 +39,17 @@ The valid values are:
 > If you choose `light-content` and have either a very light image set as the `SplashScreen` or `backgroundColor` set to a light color, the status bar icons may blend in and not be visible.
 > Similarly, for the `dark content` when you have a very dark image set as the `SplashScreen` or `backgroundColor` set to a dark color.
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="androidStatusBar.backgroundColor" platforms={["android"]}>
+<PaddedAPIBox header="androidStatusBar.backgroundColor" platforms={["android"]}>
 
 This option can be used to specify the background color of the status bar. Defaults to `#00000000` (transparent) for the `dark-content` bar style and `#00000088` (semi-transparent black) for the `light-content` bar style.
 
 The valid value is a 6-character long hexadecimal solid color string with the format `#RRGGBB` (for example, `#C2185B`) or an 8-character long hexadecimal color string with transparency with the format `#RRGGBBAA` (for example, `#23C1B255`).
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="androidStatusBar.translucent" platforms={["android"]}>
+<PaddedAPIBox header="androidStatusBar.translucent" platforms={["android"]}>
 
 Value type - `boolean`.
 
@@ -60,9 +60,9 @@ Defaults to `true` to match the iOS status bar behavior (which can only float ab
 > A translucent status bar makes sense when the `backgroundColor` is using a transparent color (`#RRGGBBAA`).
 > When you use a translucent status bar and a solid `backgroundColor` (`#RRGGBB`) then the upper part of your app will be partially covered by the non-transparent status bar and thus some of your app's content might not be visible to the user.
 
-</APIBox>
+</PaddedAPIBox>
 
-<APIBox header="androidStatusBar.hidden" platforms={["android"]}>
+<PaddedAPIBox header="androidStatusBar.hidden" platforms={["android"]}>
 
 Value type - `boolean`.
 
@@ -70,7 +70,7 @@ This option instructs the system whether the status bar should be visible or not
 
 When the status bar is not visible it can be presented via the `swipe down` gesture. When set to `true`, the status bar will not respect the `backgroundColor` or `barStyle` settings.
 
-</APIBox>
+</PaddedAPIBox>
 
 </Collapsible>
 
@@ -95,7 +95,7 @@ export default function Playlists() {
 }
 ```
 
-<Collapsible summary={<span>How is <CODE>expo-status-bar</CODE> different from the StatusBar component included in React Native?</span>}>
+<Collapsible summary={<>How is <CODE>expo-status-bar</CODE> different from the StatusBar component included in React Native?</>}>
 
 `expo-status-bar` builds on top of the `StatusBar` component that React Native provides to give you better defaults when you're building an app with Expo tools. For example, the `translucent` property of `expo-status-bar` defaults to `true` or, if you have changed that property in `androidStatusBar`, it will use that value instead. The default in React Native for `translucent` is always `false`, which can be confusing because when a project is created using Expo tools, the default is `true` for consistency with iOS.
 

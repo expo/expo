@@ -4,17 +4,32 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- [Android] Added new method `performAndroidHapticsAsync()`. The `Vibrator` api is no longer recommended. This method avoids it. ([#34077](https://github.com/expo/expo/pull/34077) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add web support using Web Vibration API. ([#34131](https://github.com/expo/expo/pull/34131) by [@reichhartd](https://github.com/reichhartd))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - Jump directly to source. ([#29244](https://github.com/expo/expo/pull/29244) by [@EvanBacon](https://github.com/EvanBacon))
 
-### 🐛 Bug fixes
-
 ### 💡 Others
 
 - Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
+- Fixed bundling error on Web. ([#32183](https://github.com/expo/expo/pull/32183) by [@kudo](https://github.com/kudo))
 
 ## 13.0.1 — 2024-04-23
 

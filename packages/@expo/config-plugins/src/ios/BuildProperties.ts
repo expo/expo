@@ -56,6 +56,20 @@ export const withJsEnginePodfileProps = createBuildPodfilePropsConfigPlugin<Expo
   'withJsEnginePodfileProps'
 );
 
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `newArchEnabled` in expo config
+ */
+export const withNewArchEnabledPodfileProps = createBuildPodfilePropsConfigPlugin<ExpoConfig>(
+  [
+    {
+      propName: 'newArchEnabled',
+      propValueGetter: (config) =>
+        (config.ios?.newArchEnabled ?? config.newArchEnabled ?? false).toString(),
+    },
+  ],
+  'withNewArchEnabledPodfileProps'
+);
+
 export function updateIosBuildPropertiesFromConfig<SourceConfigType extends BuildPropertiesConfig>(
   config: SourceConfigType,
   podfileProperties: Record<string, string>,

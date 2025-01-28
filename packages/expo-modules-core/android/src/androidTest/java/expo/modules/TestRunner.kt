@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
 import com.facebook.soloader.SoLoader
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import expo.modules.kotlin.jni.JSIContext
 
 /**
@@ -12,7 +13,7 @@ import expo.modules.kotlin.jni.JSIContext
 class TestRunner : AndroidJUnitRunner() {
   override fun newApplication(cl: ClassLoader?, className: String?, context: Context?): Application {
     // Loads libs like hermes
-    SoLoader.init(context, /* native exopackage */false)
+    SoLoader.init(context, OpenSourceMergedSoMapping)
     // Using `JSIContext.Companion` ensures that static libs will be loaded.
     JSIContext.Companion
 

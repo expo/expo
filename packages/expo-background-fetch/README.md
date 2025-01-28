@@ -37,7 +37,7 @@ This module might listen when the device is starting up. It's necessary to conti
 
 Run `npx pod-install` after installing the npm package.
 
-In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](https://docs.expo.dev/versions/latest/sdk/task-manager/#configuration-for-standalone-apps) for more details.
+In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background fetch configuration](https://docs.expo.dev/versions/latest/sdk/background-fetch/#configuration) for more details.
 
 # Contributing
 

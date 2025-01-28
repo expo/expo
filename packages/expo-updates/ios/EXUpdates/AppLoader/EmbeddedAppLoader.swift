@@ -27,8 +27,6 @@ public final class EmbeddedAppLoader: AppLoader {
   public static let EXUpdatesBareEmbeddedBundleFilename = "main"
   public static let EXUpdatesBareEmbeddedBundleFileType = "jsbundle"
 
-  private static let ErrorDomain = "EXUpdatesEmbeddedAppLoader"
-
   private static var embeddedManifestInternal: EmbeddedUpdate?
   public static func embeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate? {
     guard config.hasEmbeddedUpdate else {
@@ -106,13 +104,7 @@ public final class EmbeddedAppLoader: AppLoader {
     error errorBlock: @escaping AppLoaderErrorBlock
   ) {
     guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database) else {
-      errorBlock(NSError(
-        domain: EmbeddedAppLoader.ErrorDomain,
-        code: 1008,
-        userInfo: [
-          NSLocalizedDescriptionKey: "Failed to load embedded manifest. Make sure you have configured expo-updates correctly."
-        ]
-      ))
+      errorBlock(UpdatesError.embeddedAppLoaderEmbeddedManifestLoadFailed)
       return
     }
 

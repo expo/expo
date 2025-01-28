@@ -4,10 +4,64 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- [expo-file-system][next] Add options to the create function. ([#32909](https://github.com/expo/expo/pull/32909) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- Fix expo-updates breaking filesystem on Android API 24 and 25. ([#33694](https://github.com/expo/expo/pull/33694) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 18.0.6 - 2024-12-16
+
+### 🎉 New features
+
+- [next] Add blob support and `.blob()` function. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.5 - 2024-12-10
+
+### 🐛 Bug fixes
+
+- [macOS][next]: Add availability checks ([#33504](https://github.com/expo/expo/pull/33504) by [@hassankhan](https://github.com/hassankhan))
+
+## 18.0.4 — 2024-11-19
+
+### 🎉 New features
+
+- [next] Added `.bytes()` and writing a `Uint8Array`. ([#33020](https://github.com/expo/expo/pull/33020) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.3 — 2024-11-13
+
+### 🎉 New features
+
+- [next] Add file handles. ([#31738](https://github.com/expo/expo/pull/31738) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.2 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.1 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [expo-file-system][next] Fix download function throwing an unexpected error if destination already exists. ([#32626](https://github.com/expo/expo/pull/32626) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- [next] Disable module in Expo Go. ([#31938](https://github.com/expo/expo/pull/31938) by [@aleqsio](https://github.com/aleqsio))
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
+- [expo-file-system][next] Add file permissions for expo go ([#31594](https://github.com/expo/expo/pull/31594) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Add better error handling to delete ([#31683](https://github.com/expo/expo/pull/31683) by [@aleqsio](https://github.com/aleqsio))
 - [expo-file-system][next] Adjust copy/move functions to allow renaming folders. ([#31636](https://github.com/expo/expo/pull/31636) by [@aleqsio](https://github.com/aleqsio))
 - [expo-file-system][next] Add name property to files and directories. ([#31545](https://github.com/expo/expo/pull/31545) by [@aleqsio](https://github.com/aleqsio))
 - Add path joining in `File` and `Directory` constructors. ([#31467](https://github.com/expo/expo/pull/31467) by [@aleqsio](https://github.com/aleqsio))

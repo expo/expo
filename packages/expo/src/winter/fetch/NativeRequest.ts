@@ -21,6 +21,7 @@ export type NativeResponseEvents = {
   didReceiveResponseData(data: Uint8Array): void;
   didComplete(): void;
   didFailWithError(error: string): void;
+  readyForJSFinalization(): void;
 };
 
 export declare class NativeResponse extends SharedObject<NativeResponseEvents> {
@@ -30,7 +31,7 @@ export declare class NativeResponse extends SharedObject<NativeResponseEvents> {
   readonly statusText: string;
   readonly url: string;
   readonly redirected: boolean;
-  startStreaming(): void;
+  startStreaming(): Promise<Uint8Array | null>;
   cancelStreaming(reason: string): void;
   arrayBuffer(): Promise<ArrayBuffer>;
   text(): Promise<string>;

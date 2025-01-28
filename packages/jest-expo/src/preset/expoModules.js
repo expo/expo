@@ -637,7 +637,10 @@ module.exports = {
         ],
         ExpoSplashScreen: [
           { name: 'hideAsync', argumentsCount: 0, key: 0 },
+          { name: 'hide', argumentsCount: 0, key: 0 },
           { name: 'preventAutoHideAsync', argumentsCount: 0, key: 1 },
+          { name: 'internalPreventAutoHideAsync', argumentsCount: 0, key: 1 },
+          { name: 'internalMaybeHideAsync', argumentsCount: 0, key: 1 },
         ],
         ExpoSQLite: [
           { name: 'close', argumentsCount: 1, key: 'close' },
@@ -677,11 +680,6 @@ module.exports = {
           { name: 'clearLogEntriesAsync', argumentsCount: 0, key: 'clearLogEntriesAsync' },
           { name: 'fetchUpdateAsync', argumentsCount: 0, key: 'fetchUpdateAsync' },
           { name: 'getExtraParamsAsync', argumentsCount: 0, key: 'getExtraParamsAsync' },
-          {
-            name: 'getNativeStateMachineContextAsync',
-            argumentsCount: 0,
-            key: 'getNativeStateMachineContextAsync',
-          },
           { name: 'readLogEntriesAsync', argumentsCount: 1, key: 'readLogEntriesAsync' },
           { name: 'reload', argumentsCount: 0, key: 'reload' },
           { name: 'setExtraParamAsync', argumentsCount: 2, key: 'setExtraParamAsync' },
@@ -1287,7 +1285,6 @@ module.exports = {
           emergencyLaunchReason: { type: 'object', mock: null },
           fetchUpdateAsync: { type: 'function' },
           getExtraParamsAsync: { type: 'function' },
-          getNativeStateMachineContextAsync: { type: 'function' },
           isEmbeddedLaunch: { type: 'boolean', mock: false },
           isEmergencyLaunch: { type: 'boolean', mock: false },
           isEnabled: { type: 'boolean', mock: false },

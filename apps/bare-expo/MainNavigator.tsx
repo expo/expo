@@ -92,6 +92,7 @@ function TabNavigator() {
   const { theme } = useTheme();
   return (
     <Tab.Navigator
+      id={undefined}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.text.info,
@@ -207,7 +208,10 @@ export default () => {
       onStateChange={(state) => {
         AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
       }}>
-      <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
+      <Switch.Navigator
+        screenOptions={{ headerShown: false }}
+        initialRouteName="main"
+        id={undefined}>
         {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
         {Search && <Switch.Screen name="searchNavigator" component={Search} />}
         <Switch.Screen name="main" component={TabNavigator} />

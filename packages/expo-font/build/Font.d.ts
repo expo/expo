@@ -1,15 +1,5 @@
 import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
 /**
- * Used to transform font family names to the scoped name. This does not need to
- * be called in standalone or bare apps, but it will return unscoped font family
- * names if it is called in those contexts.
- *
- * @param fontFamily Name of font to process.
- * @returns Returns a name processed for use with the [current workflow](https://docs.expo.dev/archive/managed-vs-bare/).
- * @deprecated This method is not needed anymore and will be removed in the future.
- */
-export declare function processFontFamily(fontFamily: string | null): string | null;
-/**
  * Synchronously detect if the font for `fontFamily` has finished loading.
  *
  * @param fontFamily The name used to load the `FontResource`.

@@ -8,13 +8,13 @@ const chalk_1 = __importDefault(require("chalk"));
 const semver_1 = __importDefault(require("semver"));
 const Bare_1 = require("./Bare");
 const Expo_1 = require("./Expo");
-const ExpoVersions_1 = require("../ExpoVersions");
+const ExpoResolver_1 = require("../ExpoResolver");
 const Packages_1 = require("./Packages");
 const PatchPackage_1 = require("./PatchPackage");
 const Profile_1 = require("../utils/Profile");
 const debug = require('debug')('expo:fingerprint:sourcer:Sourcer');
 async function getHashSourcesAsync(projectRoot, options) {
-    const expoAutolinkingVersion = (0, ExpoVersions_1.resolveExpoAutolinkingVersion)(projectRoot) ?? '0.0.0';
+    const expoAutolinkingVersion = (0, ExpoResolver_1.resolveExpoAutolinkingVersion)(projectRoot) ?? '0.0.0';
     const useRNCoreAutolinkingFromExpo = 
     // expo-modules-autolinking supports the `react-native-config` core autolinking from 1.11.2.
     // To makes the `useRNCoreAutolinkingFromExpo` default to `true` for Expo SDK 52 and higher.

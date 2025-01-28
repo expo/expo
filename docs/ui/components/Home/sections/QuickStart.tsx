@@ -10,7 +10,7 @@ import { H1, RawH2, CALLOUT, A } from '~/ui/components/Text';
 export function QuickStart() {
   return (
     <>
-      <H1 className="mt-2 pb-0 border-0 !font-extrabold">
+      <H1 className="mt-2 border-0 pb-0 !font-extrabold">
         Create amazing apps that run everywhere
       </H1>
       <HeaderDescription>
@@ -19,16 +19,16 @@ export function QuickStart() {
       <GridContainer>
         <GridCell
           className={mergeClasses(
-            'bg-element min-h-[250px] !bg-cell-quickstart-pattern bg-blend-multiply',
+            'min-h-[250px] bg-element !bg-cell-quickstart-pattern bg-blend-multiply',
             'max-md-gutters:min-h-[200px]'
           )}>
           <div
             className={mergeClasses(
-              'inset-0 size-full absolute rounded-lg bg-gradient-to-b from-15% from-subtle to-[#21262d00]',
+              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-subtle from-15% to-[#21262d00]',
               'dark:from-[#181a1b]'
             )}
           />
-          <div className="flex flex-col gap-4 relative z-10">
+          <div className="relative z-10 flex flex-col gap-4">
             <RawH2 className="!font-bold">
               <QuickStartIcon /> Quick Start
             </RawH2>
@@ -43,18 +43,18 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'bg-palette-blue4 border-palette-blue6 relative z-0 min-h-[250px] !bg-cell-tutorial-pattern bg-blend-multiply',
+            'relative z-0 min-h-[250px] border-palette-blue6 bg-palette-blue4 !bg-cell-tutorial-pattern bg-blend-multiply',
             'dark:bg-palette-blue3',
             'max-md-gutters:min-h-[200px]'
           )}>
           <div
             className={mergeClasses(
-              'inset-0 size-full absolute rounded-lg bg-gradient-to-b from-15% from-palette-blue3 to-[#201d5200]',
+              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-palette-blue3 from-15% to-[#201d5200]',
               'dark:from-palette-blue3 dark:to-transparent'
             )}
           />
           <DevicesImage />
-          <RawH2 className="!font-bold !text-palette-blue12 relative z-10">
+          <RawH2 className="relative z-10 !font-bold !text-palette-blue12">
             Create a universal Android, iOS, and web app
           </RawH2>
           <HomeButton
@@ -66,27 +66,27 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'bg-palette-pink3 border-palette-pink6 relative z-0 min-h-[164px] dark:bg-palette-pink3',
+            'relative z-0 min-h-[164px] border-palette-pink6 bg-palette-pink3 dark:bg-palette-pink3',
             'selection:bg-palette-pink5',
             'max-md-gutters:min-h-[200px]'
           )}>
           <RouterLogo
             className={mergeClasses(
-              'size-[340px] absolute rotate-[20deg] -left-24 -bottom-20 opacity-[0.12]',
-              'text-palette-pink7 stroke-[0.01rem] stroke-palette-pink7'
+              'absolute -bottom-20 -left-24 size-[340px] rotate-[20deg] opacity-[0.12]',
+              'stroke-palette-pink7 stroke-[0.01rem] text-palette-pink7'
             )}
           />
           <RouterLogo
             className={mergeClasses(
-              'size-[72px] absolute right-6 bottom-6 border-[6px] rounded-xl p-3',
-              'stroke-[0.01rem] stroke-palette-pink8 text-palette-pink8 bg-palette-pink4 border-palette-pink5'
+              'absolute bottom-6 right-6 size-[72px] rounded-xl border-[6px] p-3',
+              'border-palette-pink5 bg-palette-pink4 stroke-palette-pink8 stroke-[0.01rem] text-palette-pink8'
             )}
           />
-          <RawH2 className="!text-palette-pink11 relative z-10 !text-lg">
+          <RawH2 className="relative z-10 !text-lg !text-palette-pink11">
             Discover the benefits of file-based routing with Expo Router
           </RawH2>
           <HomeButton
-            className="bg-palette-pink10 border-palette-pink10 dark:text-palette-pink2 hocus:bg-palette-pink9"
+            className="border-palette-pink10 bg-palette-pink10 hocus:bg-palette-pink9 dark:text-palette-pink2"
             href="/router/introduction/"
             size="sm"
             rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-pink2" />}>
@@ -95,27 +95,27 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'bg-palette-purple3 border-palette-purple6 relative z-0 min-h-[172px]',
+            'relative z-0 min-h-[172px] border-palette-purple6 bg-palette-purple3',
             'selection:bg-palette-purple5',
             'max-md-gutters:min-h-[200px]'
           )}>
           <PlanEnterpriseIcon
             className={mergeClasses(
-              'size-[350px] absolute rotate-[40deg] -left-20 -bottom-12 opacity-[0.12]',
+              'absolute -bottom-12 -left-20 size-[350px] rotate-[40deg] opacity-[0.12]',
               'text-palette-purple7'
             )}
           />
           <PlanEnterpriseIcon
             className={mergeClasses(
-              'size-[72px] absolute right-6 bottom-6 border-[6px] rounded-xl p-2',
-              'text-palette-purple8 bg-palette-purple4 border-palette-purple5'
+              'absolute bottom-6 right-6 size-[72px] rounded-xl border-[6px] p-2',
+              'border-palette-purple5 bg-palette-purple4 text-palette-purple8'
             )}
           />
-          <RawH2 className="!text-palette-purple11 relative z-10 !text-lg">
+          <RawH2 className="relative z-10 !text-lg !text-palette-purple11">
             Speed up your development with Expo Application Services
           </RawH2>
           <HomeButton
-            className="bg-palette-purple10 border-palette-purple10 dark:text-palette-purple2 hocus:bg-palette-purple9"
+            className="border-palette-purple10 bg-palette-purple10 hocus:bg-palette-purple9 dark:text-palette-purple2"
             href="/tutorial/eas/introduction/"
             size="sm"
             rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-purple2" />}>

@@ -4,17 +4,21 @@ import { mergeContents, removeContents } from '@expo/config-plugins/build/utils/
 import { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 
-import { getAndroidSplashConfig } from './getAndroidSplashConfig';
+import { AndroidSplashConfig, getAndroidSplashConfig } from './getAndroidSplashConfig';
 
 const debug = Debug('expo:prebuild-config:expo-splash-screen:android:mainActivity');
 
 // DO NOT CHANGE
 const SHOW_SPLASH_ID = 'expo-splash-screen-mainActivity-onCreate-show-splash';
 
-export const withAndroidSplashLegacyMainActivity: ConfigPlugin = (config) => {
+export const withAndroidSplashLegacyMainActivity: ConfigPlugin<AndroidSplashConfig> = (
+  config,
+  props
+) => {
   return withMainActivity(config, (config) => {
     config.modResults.contents = setSplashScreenLegacyMainActivity(
       config,
+      props,
       config.modResults.contents,
       config.modResults.language
     );
@@ -24,11 +28,12 @@ export const withAndroidSplashLegacyMainActivity: ConfigPlugin = (config) => {
 
 export function setSplashScreenLegacyMainActivity(
   config: Pick<ExpoConfig, 'android' | 'androidStatusBar' | 'userInterfaceStyle'>,
+  props: AndroidSplashConfig,
   mainActivity: string,
   language: 'java' | 'kt'
 ): string {
   debug(`Modify with language: "${language}"`);
-  const splashConfig = getAndroidSplashConfig(config);
+  const splashConfig = getAndroidSplashConfig(config, props);
 
   if (!splashConfig) {
     // Remove our generated code safely...
@@ -53,8 +58,8 @@ export function setSplashScreenLegacyMainActivity(
   mainActivity = addImports(
     mainActivity,
     [
-      'expo.modules.splashscreen.singletons.SplashScreen',
-      'expo.modules.splashscreen.SplashScreenImageResizeMode',
+      'host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen',
+      'host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode',
       'com.facebook.react.ReactRootView',
       'android.os.Bundle',
     ],

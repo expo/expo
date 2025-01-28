@@ -3,6 +3,9 @@ title: Configure with app config
 description: Learn about what app.json/app.config.js/app.config.ts files are and how you can customize and use them dynamically.
 ---
 
+import { DocsLogo } from '@expo/styleguide';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import PossibleRedirectNotification from '~/ui/components/PossibleRedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
@@ -21,6 +24,13 @@ It must be located at the root of your project, next to the **package.json**. He
 ```
 
 If your Expo config has a top-level `expo: {}` object, then this will be used in place of the root object and all other keys will be ignored.
+
+<BoxLink
+  title="App config schema reference"
+  description="Explore the full schema of the app config (app.json/app.config.js)."
+  href="/versions/latest/config/app/"
+  Icon={DocsLogo}
+/>
 
 ## Properties
 

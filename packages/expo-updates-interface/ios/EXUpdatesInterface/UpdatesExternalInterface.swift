@@ -20,7 +20,6 @@ public typealias UpdatesManifestBlock = (_ manifest: [String: Any]) -> Bool
  */
 @objc(EXUpdatesExternalInterface)
 public protocol UpdatesExternalInterface {
-  @objc weak var appContext: AppContext? { get set }
   @objc weak var updatesExternalInterfaceDelegate: (any UpdatesExternalInterfaceDelegate)? { get set }
   @objc var launchAssetURL: URL? { get }
 

@@ -3,7 +3,6 @@ package expo.modules.kotlin.views
 import android.content.Context
 import android.view.View
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.common.MapBuilder
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
@@ -11,15 +10,12 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.logger
 
-class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>) {
-  private val definition: ViewManagerDefinition
-    get() = requireNotNull(moduleHolder.definition.viewManagerDefinition)
-
+class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, internal val definition: ViewManagerDefinition, internal val delegateName: String? = null) {
   internal val viewGroupDefinition: ViewGroupDefinition?
     get() = definition.viewGroupDefinition
 
   val name: String
-    get() = moduleHolder.name
+    get() = delegateName ?: "${moduleHolder.name}_${definition.name}"
 
   val props: Map<String, AnyViewProp>
     get() = definition.props
@@ -108,16 +104,16 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>) {
   }
 
   fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    val builder = MapBuilder.builder<String, Any>()
-    definition
-      .callbacksDefinition
-      ?.names
-      ?.forEach {
-        builder.put(
-          normalizeEventName(it),
-          MapBuilder.of<String, Any>("registrationName", it)
-        )
-      }
-    return builder.build()
+    return buildMap<String, Any> {
+      definition
+        .callbacksDefinition
+        ?.names
+        ?.forEach {
+          put(
+            normalizeEventName(it),
+            mapOf("registrationName" to it)
+          )
+        }
+    }
   }
 }

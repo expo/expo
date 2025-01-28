@@ -1,8 +1,9 @@
 import { UrlObject } from '../LocationProvider';
-import { Href, RouteParamInput } from '../types';
+import { LinkToOptions } from '../global-state/routing';
+import { Href } from '../types';
 
 /** Resolve an href object into a fully qualified, relative href. */
-export const resolveHref = (href: Href<any>): string => {
+export const resolveHref = (href: Href): string => {
   if (typeof href === 'string') {
     return resolveHref({ pathname: href });
   }
@@ -20,7 +21,7 @@ export const resolveHref = (href: Href<any>): string => {
 export function resolveHrefStringWithSegments(
   href: string,
   { segments = [], params = {} }: Partial<UrlObject> = {},
-  relativeToDirectory: boolean = false
+  { relativeToDirectory }: LinkToOptions = {}
 ) {
   if (href.startsWith('.')) {
     // Resolve base path by merging the current segments with the params
@@ -49,7 +50,9 @@ export function resolveHrefStringWithSegments(
       base = `${base}/`;
     }
 
-    href = new URL(href, `http://hostname/${base}`).pathname;
+    const url = new URL(href, `http://hostname/${base}`);
+
+    href = `${url.pathname}${url.search}`;
   }
 
   return href;
@@ -58,7 +61,7 @@ export function resolveHrefStringWithSegments(
 function createQualifiedPathname(
   pathname: string,
   params: Record<string, any>
-): { pathname: string; params: RouteParamInput<string> } {
+): { pathname: string; params: any } {
   for (const [key, value = ''] of Object.entries(params)) {
     const dynamicKey = `[${key}]`;
     const deepDynamicKey = `[...${key}]`;

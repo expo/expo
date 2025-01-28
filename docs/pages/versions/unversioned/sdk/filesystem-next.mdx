@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-file-system
 packageName: 'expo-file-system'
 iconUrl: '/static/images/packages/expo-file-system.png'
 platforms: ['android', 'ios', 'tvos']
+isNew: true
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -13,6 +14,8 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 > **info** The `next` version of the FileSystem API is included in the `expo-file-system` library. It can be used alongside the previous API, and offers a simplified, object oriented way of performing filesystem operations.
 
 `expo-file-system/next` provides access to the file system stored locally on the device. It can also download files from the network.
+
+> **info** To provide quicker updates, `expo-file-system/next` is currently unsupported in Expo Go and Snack. To use it, create a [development build](/develop/development-builds/create-a-build/).
 
 ## Installation
 
@@ -107,6 +110,42 @@ try {
 } catch (error) {
   console.error(error);
 }
+```
+
+### Uploading files using `expo/fetch`
+
+You can upload files as blobs directly with fetch built into the Expo package:
+
+```ts example.ts
+import { fetch } from 'expo/fetch';
+import { File } from 'expo-file-system/next';
+
+const src = new File(testDirectory, 'file.txt');
+file.write('Hello, world!');
+const blob = src.blob();
+
+const response = await fetch('https://example.com', {
+  method: 'POST',
+  body: blob,
+});
+```
+
+Or using the `FormData` constructor:
+
+```ts example.ts
+import { fetch } from 'expo/fetch';
+
+const src = new File(testDirectory, 'file.txt');
+file.write('Hello, world!');
+const blob = src.blob();
+
+const formData = new FormData();
+formData.append('data', blob);
+
+const response = await fetch('https://example.com', {
+  method: 'POST',
+  body: formData,
+});
 ```
 
 ## API

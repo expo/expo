@@ -24,6 +24,10 @@ function mapStyles(style: VideoViewProps['style']): React.CSSProperties {
   return flattenedStyles as React.CSSProperties;
 }
 
+export function isPictureInPictureSupported(): boolean {
+  return typeof document === 'object' && typeof document.exitPictureInPicture === 'function';
+}
+
 export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoViewProps, ref) => {
   const videoRef = useRef<null | HTMLVideoElement>(null);
   const mediaNodeRef = useRef<null | MediaElementAudioSourceNode>(null);
@@ -40,16 +44,46 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   const zeroGainNodeRef = useRef<null | GainNode>(null);
 
   useImperativeHandle(ref, () => ({
-    enterFullscreen: () => {
+    enterFullscreen: async () => {
       if (!props.allowsFullscreen) {
         return;
       }
-      videoRef.current?.requestFullscreen();
+      await videoRef.current?.requestFullscreen();
     },
-    exitFullscreen: () => {
-      document.exitFullscreen();
+    exitFullscreen: async () => {
+      await document.exitFullscreen();
+    },
+    startPictureInPicture: async () => {
+      await videoRef.current?.requestPictureInPicture();
+    },
+    stopPictureInPicture: async () => {
+      try {
+        await document.exitPictureInPicture();
+      } catch (e) {
+        if (e instanceof DOMException && e.name === 'InvalidStateError') {
+          console.warn('The VideoView is not in Picture-in-Picture mode.');
+        } else {
+          throw e;
+        }
+      }
     },
   }));
+
+  useEffect(() => {
+    const onEnter = () => {
+      props.onPictureInPictureStart?.();
+    };
+    const onLeave = () => {
+      props.onPictureInPictureStop?.();
+    };
+    videoRef.current?.addEventListener('enterpictureinpicture', onEnter);
+    videoRef.current?.addEventListener('leavepictureinpicture', onLeave);
+
+    return () => {
+      videoRef.current?.removeEventListener('enterpictureinpicture', onEnter);
+      videoRef.current?.removeEventListener('leavepictureinpicture', onLeave);
+    };
+  }, [videoRef, props.onPictureInPictureStop, props.onPictureInPictureStart]);
 
   // Adds the video view as a candidate for being the audio source for the player (when multiple views play from one
   // player only one will emit audio).
@@ -156,6 +190,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
           maybeSetupAudioContext();
         }
       }}
+      disablePictureInPicture={!props.allowsPictureInPicture}
       src={getSourceUri(props.player?.src) ?? ''}
     />
   );

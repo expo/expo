@@ -58,8 +58,7 @@ class AudioModule : Module() {
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
       staysActiveInBackground = mode.shouldPlayInBackground
-      shouldRouteThroughEarpiece = mode.shouldRouteThroughEarpiece ?: false
-      updatePlaySoundThroughEarpiece(shouldRouteThroughEarpiece)
+      updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
@@ -128,31 +127,20 @@ class AudioModule : Module() {
     }
 
     OnDestroy {
-      for (player in players.values) {
-        player.player.stop()
-      }
+      appContext.mainQueue.launch {
+        for (player in players.values) {
+          player.player.stop()
+        }
 
-      for (recorder in recorders.values) {
-        recorder.stopRecording()
+        for (recorder in recorders.values) {
+          recorder.stopRecording()
+        }
       }
     }
 
     Class(AudioPlayer::class) {
       Constructor { source: AudioSource?, updateInterval: Double ->
-        val isLocal = Util.isLocalFileUri(Uri.parse(source?.uri))
-        val factory = if (isLocal) {
-          DefaultDataSource.Factory(context)
-        } else {
-          OkHttpDataSource.Factory(httpClient).apply {
-            source?.headers?.let {
-              setDefaultRequestProperties(it)
-            }
-            DefaultDataSource.Factory(context, this)
-          }
-        }
-
-        val item = MediaItem.fromUri(source?.uri ?: "")
-        val mediaSource = buildMediaSourceFactory(factory, item)
+        val mediaSource = createMediaItem(source)
         runOnMain {
           val player = AudioPlayer(
             context,
@@ -229,13 +217,13 @@ class AudioModule : Module() {
 
       Property("currentTime") { ref ->
         runOnMain {
-          ref.player.currentPosition
+          ref.currentTime
         }
       }
 
       Property("duration") { ref ->
         runOnMain {
-          ref.player.duration
+          ref.duration
         }
       }
 
@@ -250,7 +238,7 @@ class AudioModule : Module() {
           ref.player.volume
         }
       }.set { ref, volume: Float ->
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.volume = volume
         }
       }
@@ -260,23 +248,40 @@ class AudioModule : Module() {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
           return@Function
         }
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.play()
         }
       }
 
       Function("pause") { ref: AudioPlayer ->
-        appContext.mainQueue.launch {
+        runOnMain {
           ref.player.pause()
         }
       }
 
+      Function("replace") { ref: AudioPlayer, source: AudioSource ->
+        runOnMain {
+          if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            val mediaSource = createMediaItem(source)
+            val wasPlaying = ref.player.isPlaying
+            mediaSource?.let {
+              ref.player.replaceMediaItem(0, it.mediaItem)
+              if (wasPlaying) {
+                ref.player.play()
+              }
+            }
+          }
+        }
+      }
+
       Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
-        ref.setSamplingEnabled(enabled)
+        runOnMain {
+          ref.setSamplingEnabled(enabled)
+        }
       }
 
       AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->
-        ref.player.seekTo(seekTime.toLong())
+        ref.player.seekTo((seekTime * 1000L).toLong())
       }.runOnQueue(Queues.MAIN)
 
       Function("setPlaybackRate") { ref: AudioPlayer, rate: Float ->
@@ -320,6 +325,7 @@ class AudioModule : Module() {
       }
 
       AsyncFunction("prepareToRecordAsync") { ref: AudioRecorder, options: RecordingOptions? ->
+        checkRecordingPermission()
         ref.prepareRecording(options)
       }
 
@@ -339,7 +345,6 @@ class AudioModule : Module() {
       }
 
       Function("getStatus") { ref: AudioRecorder ->
-        checkRecordingPermission()
         ref.getAudioRecorderStatus()
       }
 
@@ -357,8 +362,30 @@ class AudioModule : Module() {
     }
   }
 
+  private fun createMediaItem(source: AudioSource?): MediaSource? = source?.let {
+    val factory = createDataSourceFactory(it)
+    it.uri?.let { uri ->
+      val item = MediaItem.fromUri(uri)
+      buildMediaSourceFactory(factory, item)
+    }
+  }
+
+  private fun createDataSourceFactory(audioSource: AudioSource): DataSource.Factory {
+    val isLocal = Util.isLocalFileUri(Uri.parse(audioSource.uri))
+    return if (isLocal) {
+      DefaultDataSource.Factory(context)
+    } else {
+      OkHttpDataSource.Factory(httpClient).apply {
+        audioSource.headers?.let { headers ->
+          setDefaultRequestProperties(headers)
+        }
+        DefaultDataSource.Factory(context, this)
+      }
+    }
+  }
+
   private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {
-    audioManager.setMode(if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL)
+    audioManager.mode = if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL
     audioManager.setSpeakerphoneOn(!playThroughEarpiece)
   }
 
@@ -369,7 +396,7 @@ class AudioModule : Module() {
     mediaItem: MediaItem
   ): MediaSource {
     val uri = mediaItem.localConfiguration?.uri
-    val newFactory = when (val type = retrieveStreamType(uri!!)) {
+    val newFactory = when (val type = uri?.let { retrieveStreamType(it) }) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)

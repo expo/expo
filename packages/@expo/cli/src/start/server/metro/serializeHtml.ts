@@ -73,7 +73,6 @@ function htmlFromSerialAssets(
   const styleString = assets
     .filter((asset) => asset.type.startsWith('css'))
     .map(({ type, metadata, filename, source }) => {
-      console.log('asset', type, metadata, filename, source);
       if (type === 'css') {
         if (isExporting) {
           return [

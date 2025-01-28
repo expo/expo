@@ -1,5 +1,6 @@
 /**
  Property wrapper for `Record`'s data members that takes part in the process of serialization to and deserialization from the dictionary.
+ For supported field types, see https://docs.expo.dev/modules/module-api/#argument-types
  */
 @propertyWrapper
 public final class Field<Type: AnyArgument>: AnyFieldInternal {

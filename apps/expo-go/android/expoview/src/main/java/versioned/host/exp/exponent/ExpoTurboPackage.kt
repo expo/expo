@@ -25,7 +25,6 @@ class ExpoTurboPackage(
   private val manifest: Manifest
 ) : TurboReactPackage() {
   override fun getModule(name: String, context: ReactApplicationContext): NativeModule? {
-    val isVerified = manifest.isVerified()
     return when (name) {
       IntentModule.NAME -> ExponentIntentModule(
         context,
@@ -55,7 +54,6 @@ class ExpoTurboPackage(
           moduleClass.name,
           reactModule.canOverrideExistingModule,
           reactModule.needsEagerInit,
-          reactModule.hasConstants,
           reactModule.isCxxModule,
           isTurbo
         )

@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from '@urql/core';
 
 import { CurrentUserQuery } from '../../../graphql/generated';
 import { graphqlClient, withErrorHandlingAsync } from '../client';

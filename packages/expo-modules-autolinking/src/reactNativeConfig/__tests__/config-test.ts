@@ -16,14 +16,8 @@ describe(loadConfigAsync, () => {
 
   it('should load react-native.config.js', async () => {
     await jest.isolateModulesAsync(async () => {
-      const config = {
-        version: '1.0.0',
-      };
       vol.fromJSON({
-        '/app/react-native.config.js': JSON.stringify(config),
-      });
-      jest.doMock('/app/react-native.config.js', () => config, {
-        virtual: true,
+        '/app/react-native.config.js': 'module.exports = { version: "1.0.0" };',
       });
       const result = await loadConfigAsync('/app');
       expect(result).toEqual({ version: '1.0.0' });

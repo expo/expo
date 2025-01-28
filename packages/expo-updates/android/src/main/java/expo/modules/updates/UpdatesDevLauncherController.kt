@@ -3,18 +3,16 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import android.net.Uri
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.events.NoOpUpdatesEventManager
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
@@ -22,6 +20,8 @@ import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -49,12 +49,12 @@ class UpdatesDevLauncherController(
   override val updatesDirectory: File?,
   private val updatesDirectoryException: Exception?
 ) : IUpdatesController, UpdatesInterface {
-  override var appContext: WeakReference<AppContext>? = null
-  override var eventEmitter: EventEmitter? = null
-  override var shouldEmitJsEvents = false
+  override val eventManager = NoOpUpdatesEventManager()
   override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
 
   private var launcher: Launcher? = null
+
+  private val logger = UpdatesLogger(context)
 
   private var previousUpdatesConfiguration: UpdatesConfiguration? = null
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
@@ -78,11 +78,18 @@ class UpdatesDevLauncherController(
   }
 
   @get:Synchronized
-  override val launchAssetFile: String
-    get() = throw Exception("IUpdatesController.launchAssetFile should not be called in dev client")
+  override val launchAssetFile: String?
+    get() {
+      logger.warn("launchAssetFile should not be called from expo-dev-client build, except for Detox testing")
+      return null
+    }
 
   override val bundleAssetName: String
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
+
+  override fun onEventListenerStartObserving() {
+    // no-op for UpdatesDevLauncherController
+  }
 
   override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {}
 
@@ -109,13 +116,11 @@ class UpdatesDevLauncherController(
     launcher = null
   }
 
-  override fun getRuntimeVersion(context: Context): String? {
-    return updatesConfiguration?.getRuntimeVersion()
-  }
+  override val runtimeVersion: String?
+    get() = updatesConfiguration?.getRuntimeVersion()
 
-  override fun getUpdateUrl(context: Context): Uri? {
-    return updatesConfiguration?.updateUrl
-  }
+  override val updateUrl: Uri?
+    get() = updatesConfiguration?.updateUrl
 
   /**
    * Fetch an update using a dynamically generated configuration object (including a potentially
@@ -123,12 +128,11 @@ class UpdatesDevLauncherController(
    */
   override fun fetchUpdateWithConfiguration(
     configuration: HashMap<String, Any>,
-    context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {
     val newUpdatesConfiguration: UpdatesConfiguration
     try {
-      newUpdatesConfiguration = createUpdatesConfiguration(configuration, context)
+      newUpdatesConfiguration = createUpdatesConfiguration(configuration)
     } catch (e: Exception) {
       callback.onFailure(e)
       return
@@ -141,10 +145,11 @@ class UpdatesDevLauncherController(
 
     setDevelopmentSelectionPolicy()
 
-    val fileDownloader = FileDownloader(context, updatesConfiguration!!)
+    val fileDownloader = FileDownloader(context, updatesConfiguration!!, logger)
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,
+      logger,
       databaseHolder.database,
       fileDownloader,
       updatesDirectory,
@@ -165,7 +170,7 @@ class UpdatesDevLauncherController(
           callback.onSuccess(null)
           return
         }
-        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, context, callback)
+        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, callback)
       }
 
       override fun onAssetLoaded(
@@ -194,18 +199,18 @@ class UpdatesDevLauncherController(
     })
   }
 
-  override fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean {
+  override fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>): Boolean {
     return try {
-      createUpdatesConfiguration(configuration, context)
+      createUpdatesConfiguration(configuration)
       true
     } catch (e: Exception) {
-      Log.e(TAG, "Invalid updates configuration: ${e.localizedMessage}")
+      logger.error("Invalid updates configuration", e, UpdatesErrorCode.InitializationError)
       false
     }
   }
 
   @Throws(Exception::class)
-  private fun createUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): UpdatesConfiguration {
+  private fun createUpdatesConfiguration(configuration: HashMap<String, Any>): UpdatesConfiguration {
     if (updatesDirectory == null) {
       throw updatesDirectoryException!!
     }
@@ -241,7 +246,6 @@ class UpdatesDevLauncherController(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
     fileDownloader: FileDownloader,
-    context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {
     // ensure that we launch the update we want, even if it isn't the latest one
@@ -259,14 +263,15 @@ class UpdatesDevLauncherController(
     )
 
     val launcher = DatabaseLauncher(
+      context,
       configuration,
       updatesDirectory!!,
       fileDownloader,
-      selectionPolicy
+      selectionPolicy,
+      logger
     )
     launcher.launch(
       databaseHolder.database,
-      context,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           databaseHolder.releaseDatabase()
@@ -316,6 +321,7 @@ class UpdatesDevLauncherController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
+      launchDuration = null,
       embeddedUpdate = null, // no embedded update in debug builds
       emergencyLaunchException = updatesDirectoryException,
       isEnabled = true,
@@ -324,7 +330,8 @@ class UpdatesDevLauncherController(
       checkOnLaunch = updatesConfiguration?.checkOnLaunch ?: UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
       requestHeaders = updatesConfiguration?.requestHeaders ?: mapOf(),
       localAssetFiles = localAssetFiles,
-      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true,
+      initialContext = UpdatesStateContext()
     )
   }
 
@@ -333,10 +340,6 @@ class UpdatesDevLauncherController(
   ) {
     this.updatesInterfaceCallbacks?.get()?.onRequestRelaunch()
     callback.onSuccess(Unit)
-  }
-
-  override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
-    callback.onSuccess(UpdatesStateContext())
   }
 
   override fun checkForUpdate(
@@ -361,6 +364,10 @@ class UpdatesDevLauncherController(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
     callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
+  }
+
+  override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
+    throw NotAvailableInDevClientException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported in development builds.")
   }
 
   companion object {

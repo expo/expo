@@ -382,5 +382,23 @@ final class DynamicTypeSpec: ExpoSpec {
         }
       }
     }
+
+    // MARK: - DynamicEitherType
+
+    describe("DynamicEitherType") {
+      it("is created") {
+        expect(~Either<Int, String>.self).to(beAKindOf(DynamicEitherType<Either<Int, String>>.self))
+      }
+
+      describe("casts") {
+        it("succeeds") {
+          let either1 = try (~Either<Int, String>.self).cast(123, appContext: appContext) as! Either<Int, String>
+          expect(try either1.as(Int.self)) == 123
+
+          let either2 = try (~Either<Int, String>.self).cast("expo", appContext: appContext) as! Either<Int, String>
+          expect(try either2.as(String.self)) == "expo"
+        }
+      }
+    }
   }
 }

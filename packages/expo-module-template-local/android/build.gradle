@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = '<%- project.package %>'
-version = '0.6.0'
+version = '0.6.4'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -35,7 +35,7 @@ android {
   namespace "<%- project.package %>"
   defaultConfig {
     versionCode 1
-    versionName "0.6.0"
+    versionName "0.6.4"
   }
   lintOptions {
     abortOnError false

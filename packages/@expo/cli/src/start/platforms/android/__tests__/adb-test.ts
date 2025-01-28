@@ -55,7 +55,7 @@ describe(launchActivityAsync, () => {
       })
     ).rejects.toThrow(CommandError);
   });
-  it(`runs`, async () => {
+  it(`launches activity`, async () => {
     jest.mocked(getServer().runAsync).mockResolvedValueOnce('...');
     await launchActivityAsync(device, {
       launchActivity: 'dev.bacon.app/.MainActivity',
@@ -70,6 +70,26 @@ describe(launchActivityAsync, () => {
       '0x20000000',
       '-n',
       'dev.bacon.app/.MainActivity',
+    ]);
+  });
+  it(`launches activity with url`, async () => {
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce('...');
+    await launchActivityAsync(device, {
+      launchActivity: 'dev.expo.custom.appid/dev.bacon.app.MainActivity',
+      url: 'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081',
+    });
+    expect(getServer().runAsync).toBeCalledWith([
+      '-s',
+      '123',
+      'shell',
+      'am',
+      'start',
+      '-f',
+      '0x20000000',
+      '-n',
+      'dev.expo.custom.appid/dev.bacon.app.MainActivity',
+      '-d',
+      'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081',
     ]);
   });
 });

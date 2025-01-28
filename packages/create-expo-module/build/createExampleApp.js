@@ -33,10 +33,15 @@ async function createExampleApp(data, targetDir, packageManager) {
         const templateVersion = EXPO_BETA ? 'next' : 'latest';
         const template = `expo-template-blank-typescript@${templateVersion}`;
         debug(`Using example template: ${template}`);
-        await (0, spawn_async_1.default)(packageManager, ['create', 'expo-app', '--', exampleProjectSlug, '--template', template, '--yes'], {
-            cwd: targetDir,
-            stdio: 'ignore',
-        });
+        const command = createCommand(packageManager, exampleProjectSlug, template);
+        try {
+            await (0, spawn_async_1.default)(packageManager, command, {
+                cwd: targetDir,
+            });
+        }
+        catch (error) {
+            throw new Error(`${command.join(' ')} failed with exit code: ${error?.status}.\n\nError stack:\n${error?.stderr}`);
+        }
         step.succeed('Initialized the example app');
     });
     await (0, ora_1.newStep)('Configuring the example app', async (step) => {
@@ -67,6 +72,13 @@ async function createExampleApp(data, targetDir, packageManager) {
     });
 }
 exports.createExampleApp = createExampleApp;
+function createCommand(packageManager, exampleProjectSlug, template) {
+    const command = ['create', 'expo-app'];
+    if (packageManager === 'npm') {
+        command.push('--');
+    }
+    return command.concat([exampleProjectSlug, '--template', template, '--yes']);
+}
 /**
  * Copies files from one directory to another.
  */

@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.stateToAction = exports.triggersToScreens = exports.SafeAreaViewSlot = exports.ViewSlot = void 0;
-const react_slot_1 = require("@radix-ui/react-slot");
 const href_1 = require("../link/href");
 const sortRoutes_1 = require("../sortRoutes");
 const useScreens_1 = require("../useScreens");
+const Slot_1 = require("./Slot");
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
-exports.ViewSlot = react_slot_1.Slot;
-exports.SafeAreaViewSlot = react_slot_1.Slot;
+exports.ViewSlot = Slot_1.Slot;
+exports.SafeAreaViewSlot = Slot_1.Slot;
 function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName, parentTriggerMap, routeInfo, contextKey) {
     const configs = [];
     for (const trigger of triggers) {
@@ -35,7 +35,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
         resolvedHref = (0, href_1.resolveHrefStringWithSegments)(resolvedHref, {
             ...routeInfo,
             segments: segmentsWithoutGroups,
-        }, true);
+        }, { relativeToDirectory: true });
         let state = linking.getStateFromPath?.(resolvedHref, linking.config)?.routes[0];
         if (!state) {
             // This shouldn't occur, as you should get the global +not-found

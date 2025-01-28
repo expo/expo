@@ -1,13 +1,15 @@
+import { SharedRef } from 'expo';
+import type { SharedRef as SharedRefType } from 'expo/types';
+import { type ImageResizeMode } from 'react-native';
+
 import {
   ImageContentFit,
   ImageContentPosition,
   ImageContentPositionObject,
   ImageContentPositionString,
   ImageProps,
-  ImageRef,
   ImageTransition,
 } from './Image.types';
-import ImageModule from './ImageModule';
 
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
@@ -19,7 +21,7 @@ let loggedFadeDurationDeprecationWarning = false;
  */
 export function resolveContentFit(
   contentFit?: ImageContentFit,
-  resizeMode?: ImageProps['resizeMode']
+  resizeMode?: ImageResizeMode
 ): ImageContentFit {
   if (contentFit) {
     return contentFit;
@@ -33,6 +35,7 @@ export function resolveContentFit(
     switch (resizeMode) {
       case 'contain':
       case 'cover':
+      case 'none':
         return resizeMode;
       case 'stretch':
         return 'fill';
@@ -43,6 +46,11 @@ export function resolveContentFit(
           console.log('[expo-image]: Resize mode "repeat" is no longer supported');
           loggedRepeatDeprecationWarning = true;
         }
+        return 'cover';
+      default: {
+        const exhaustiveCheck: never = resizeMode;
+        throw new Error(`Unhandled resizeMode case: ${exhaustiveCheck}`);
+      }
     }
   }
   return 'cover';
@@ -111,8 +119,8 @@ export function resolveTransition(
 }
 
 /**
- * Checks whether the given value is an instance of the ImageRef class.
+ * Checks whether the given value is an instance of the `SharedRef<'image'>` class.
  */
-export function isImageRef(value: any): value is ImageRef {
-  return !!ImageModule.Image && value instanceof ImageModule.Image;
+export function isImageRef(value: any): value is SharedRefType<'image'> {
+  return value instanceof SharedRef && value.nativeRefType === 'image';
 }

@@ -17,7 +17,7 @@ import org.json.JSONObject
 interface INotificationContent : Parcelable {
   val title: String?
   val text: String?
-  val subtitle: String?
+  val subText: String?
   val badgeCount: Number?
   val shouldPlayDefaultSound: Boolean
 
@@ -27,7 +27,7 @@ interface INotificationContent : Parcelable {
   val shouldUseDefaultVibrationPattern: Boolean
   val vibrationPattern: LongArray?
   val body: JSONObject?
-  val priority: NotificationPriority
+  val priority: NotificationPriority?
   val color: Number?
   val isAutoDismiss: Boolean
   val categoryId: String?

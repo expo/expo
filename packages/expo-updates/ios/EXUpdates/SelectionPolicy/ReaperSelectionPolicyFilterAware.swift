@@ -1,6 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-import Foundation
+// swiftlint:disable identifier_name
 
 /**
  * A ReaperSelectionPolicy which chooses which updates to delete taking into account manifest filters
@@ -47,7 +47,7 @@ public final class ReaperSelectionPolicyFilterAware: NSObject, ReaperSelectionPo
 
         if SelectionPolicies.doesUpdate(update, matchFilters: filters) {
           if let nextNewestUpdateMatchingFiltersInner = nextNewestUpdateMatchingFilters,
-             update.commitTime.compare(nextNewestUpdateMatchingFiltersInner.commitTime) == .orderedDescending {
+            update.commitTime.compare(nextNewestUpdateMatchingFiltersInner.commitTime) == .orderedDescending {
             nextNewestUpdateMatchingFilters = update
           } else {
             nextNewestUpdateMatchingFilters = update
@@ -64,3 +64,5 @@ public final class ReaperSelectionPolicyFilterAware: NSObject, ReaperSelectionPo
     return updatesToDelete
   }
 }
+
+// swiftlint:enable identifier_name

@@ -18,10 +18,7 @@ it('can render a custom navigator', () => {
         initialRouteName: 'two',
       },
       default: () => (
-        <Navigator
-          router={customRouter}
-          routerOptions={{ backBehavior: 'history' }}
-          screenOptions={{ custom: true }}>
+        <Navigator router={customRouter} routerOptions={{ backBehavior: 'history' }}>
           <Slot />
         </Navigator>
       ),
@@ -35,6 +32,5 @@ it('can render a custom navigator', () => {
     id: '/(app)',
     backBehavior: 'history',
     initialRouteName: undefined,
-    screenOptions: { custom: true },
   });
 });

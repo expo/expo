@@ -42,7 +42,9 @@ export type NavigationRoute = {
   expanded?: boolean;
   sidebarTitle?: string;
   weight?: number;
-  children?: NavigationRoute[];
+  isNew?: boolean;
+  isDeprecated?: boolean;
+  children?: NavigationRouteWithSection[];
 };
 
 export type NavigationRouteWithSection = NavigationRoute & { section?: string };

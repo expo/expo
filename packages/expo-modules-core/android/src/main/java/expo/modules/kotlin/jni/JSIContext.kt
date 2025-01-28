@@ -137,7 +137,7 @@ class JSIContext : Destructible, AutoCloseable {
   @DoNotStrip
   fun getSharedObject(id: Int): JavaScriptObject? {
     val runtimeContext = runtimeContextHolder.get() ?: return null
-    return SharedObjectId(id).toJavaScriptObject(runtimeContext)
+    return SharedObjectId(id).toJavaScriptObjectNull(runtimeContext)
   }
 
   @Suppress("unused")

@@ -20,6 +20,7 @@ export type RenderRscArgs = {
     decodedBody?: unknown;
     moduleIdCallback?: ((id: string) => void) | undefined;
     onError?: (err: unknown) => void;
+    headers: Record<string, string>;
 };
 export declare const decodeInput: (encodedInput: string) => string;
 export declare function getRscMiddleware(options: {

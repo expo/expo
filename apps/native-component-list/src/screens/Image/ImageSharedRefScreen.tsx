@@ -1,6 +1,6 @@
 import { Image, useImage } from 'expo-image';
 import { useCallback, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
@@ -11,9 +11,15 @@ function getRandomImageUri(): string {
   return `https://picsum.photos/seed/${seed}/3000/2000`;
 }
 
+const SCREEN_PIXEL_WIDTH = Dimensions.get('screen').width * Dimensions.get('screen').scale;
+
 export default function ImageSharedRefScreen() {
   const [sourceUri, setSourceUri] = useState<string>(getRandomImageUri());
   const image = useImage(sourceUri, {
+    // The original image is of 3000x2000 size.
+    // Here we're downscaling it so it's never wider than the screen's width in pixels.
+    maxWidth: SCREEN_PIXEL_WIDTH,
+
     onError(error, retry) {
       console.error(error);
     },

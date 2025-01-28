@@ -1,3 +1,5 @@
+import resolveFrom from 'resolve-from';
+
 export type SearchResults = {
   [moduleName: string]: object;
 };
@@ -20,26 +22,17 @@ export function importExpoModulesAutolinking(projectRoot: string): AutolinkingMo
 }
 
 function tryRequireExpoModulesAutolinking(projectRoot: string): AutolinkingModule {
-  let resolvedAutolinkingPath;
-  const resolveOptions = { paths: [projectRoot] };
-
-  try {
-    resolvedAutolinkingPath = require.resolve('expo-modules-autolinking/exports', resolveOptions);
-  } catch {}
-  // Fallback to the older version of expo-modules-autolinking
-  try {
-    resolvedAutolinkingPath = require.resolve(
-      'expo-modules-autolinking/build/autolinking',
-      resolveOptions
-    );
-  } catch {}
-
-  if (!resolvedAutolinkingPath) {
+  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
+  const autolinkingExportsPath = resolveFrom.silent(
+    expoPackageRoot ?? projectRoot,
+    'expo-modules-autolinking/exports'
+  );
+  if (!autolinkingExportsPath) {
     throw new Error(
       "Cannot find 'expo-modules-autolinking' package in your project, make sure that you have 'expo' package installed"
     );
   }
-  return require(resolvedAutolinkingPath);
+  return require(autolinkingExportsPath);
 }
 
 function assertAutolinkingCompatibility(autolinking: AutolinkingModule): void {

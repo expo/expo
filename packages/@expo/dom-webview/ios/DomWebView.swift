@@ -68,7 +68,7 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     }
 
     if let source,
-      let request = RCTConvert.nsurlRequest(source.toDictionary()),
+      let request = RCTConvert.nsurlRequest(source.toDictionary(appContext: appContext)),
       webView.url?.absoluteURL != request.url {
       webView.load(request)
     }

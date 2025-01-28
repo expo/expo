@@ -5,4 +5,5 @@ fragment CommonSnackData on Snack {
   fullName
   slug
   isDraft
+  sdkVersion
 }

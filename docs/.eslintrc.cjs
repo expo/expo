@@ -3,29 +3,175 @@ const TAILWIND_DEFAULTS = {
   classRegex: '^(confirmation|container|icon)?(c|C)lass(Name)?$',
 };
 
+const CORE_RULES = {
+  'prettier/prettier': 'error',
+  'no-void': ['warn', { allowAsStatement: true }],
+  'no-return-await': 'off',
+  'import/order': [
+    'warn',
+    {
+      groups: [['external', 'builtin'], 'internal', ['parent', 'sibling']],
+      'newlines-between': 'always',
+      alphabetize: {
+        order: 'asc',
+      },
+      pathGroups: [
+        {
+          pattern: '~/**',
+          group: 'internal',
+        },
+      ],
+    },
+  ],
+  curly: 'warn',
+  eqeqeq: ['error', 'always', { null: 'ignore' }],
+  'import/no-cycle': ['error', { maxDepth: '∞' }],
+  'lodash/import-scope': [2, 'method'],
+  'unicorn/new-for-builtins': 'warn',
+  'unicorn/no-useless-spread': 'warn',
+  'unicorn/prefer-array-some': 'warn',
+  'unicorn/prefer-at': 'warn',
+  'unicorn/prefer-includes': 'warn',
+  'unicorn/prefer-regexp-test': 'warn',
+  'unicorn/throw-new-error': 'warn',
+  'unicorn/prefer-node-protocol': 'warn',
+  'unicorn/prefer-date-now': 'warn',
+  'unicorn/better-regex': 'warn',
+  'unicorn/prevent-abbreviations': [
+    'warn',
+    {
+      extendDefaultReplacements: false,
+      replacements: {
+        e: {
+          error: true,
+          event: true,
+        },
+      },
+    },
+  ],
+};
+
 module.exports = {
   root: true,
-  extends: ['universe/web', 'plugin:prettier/recommended', 'plugin:@next/next/recommended'],
-  plugins: ['lodash'],
+  extends: [
+    'universe/web',
+    'universe/node',
+    'universe/shared/typescript-analysis',
+    'plugin:prettier/recommended',
+    'plugin:@next/next/recommended',
+    'plugin:tailwindcss/recommended',
+  ],
+  plugins: ['lodash', 'unicorn'],
   rules: {
     'lodash/import-scope': [2, 'method'],
   },
+  ignorePatterns: ['.next/', '.swc/', '.yarn/', 'types/global.d.ts'],
   overrides: [
     {
-      files: ['*.jsx', '*.tsx'],
+      files: ['*.jsx', '*.ts', '*.tsx'],
+      parserOptions: {
+        project: './tsconfig.json',
+      },
       extends: ['plugin:@next/next/recommended', 'plugin:tailwindcss/recommended'],
       rules: {
-        '@next/next/no-img-element': 'off',
-        'react/jsx-curly-brace-presence': [1, { propElementValues: 'ignore' }],
-        // https://github.com/emotion-js/emotion/issues/2878
-        'react/no-unknown-property': ['error', { ignore: ['css'] }],
-        'tailwindcss/classnames-order': 'off',
-        'tailwindcss/enforces-negative-arbitrary-values': 'warn',
-        'tailwindcss/enforces-shorthand': 'warn',
-        'tailwindcss/no-arbitrary-value': 'off',
-        'tailwindcss/no-custom-classname': [
+        ...CORE_RULES,
+        'no-console': ['warn', { allow: ['warn', 'error'] }],
+        '@typescript-eslint/explicit-function-return-type': [
+          'off',
+          {
+            allowExpressions: true,
+          },
+        ],
+        '@typescript-eslint/naming-convention': [
+          'warn',
+          { selector: 'typeLike', format: ['PascalCase'] },
+          { selector: 'enumMember', format: ['UPPER_CASE'] },
+          {
+            selector: ['variable', 'parameter'],
+            modifiers: ['destructured'],
+            format: null,
+          },
+          {
+            selector: ['objectLiteralProperty', 'objectLiteralMethod'],
+            format: null,
+          },
+          {
+            selector: 'typeProperty',
+            format: ['camelCase', 'snake_case', 'PascalCase', 'UPPER_CASE'],
+            leadingUnderscore: 'allowSingleOrDouble',
+          },
+          {
+            selector: 'default',
+            format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+            leadingUnderscore: 'allow',
+            trailingUnderscore: 'allow',
+          },
+          {
+            selector: ['function', 'variable', 'method'],
+            format: ['camelCase'],
+            modifiers: ['async'],
+            leadingUnderscore: 'allow',
+            suffix: ['Async'],
+            filter: {
+              regex: 'getServerSideProps',
+              match: false,
+            },
+          },
+        ],
+        '@typescript-eslint/await-thenable': 'error',
+        '@typescript-eslint/no-misused-promises': [
+          'error',
+          {
+            checksVoidReturn: false,
+          },
+        ],
+        '@typescript-eslint/no-floating-promises': 'error',
+        '@typescript-eslint/return-await': ['error', 'always'],
+        '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
+        '@typescript-eslint/no-extra-non-null-assertion': 'warn',
+        '@typescript-eslint/prefer-as-const': 'warn',
+        '@typescript-eslint/prefer-includes': 'warn',
+        '@typescript-eslint/prefer-readonly': 'warn',
+        '@typescript-eslint/prefer-string-starts-ends-with': 'warn',
+        '@typescript-eslint/prefer-ts-expect-error': 'warn',
+        '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
+        '@typescript-eslint/prefer-nullish-coalescing': [
           'warn',
           {
+            ignoreConditionalTests: true,
+            ignoreMixedLogicalExpressions: true,
+          },
+        ],
+        '@typescript-eslint/no-restricted-types': [
+          'warn',
+          {
+            types: {
+              CurrentUserDataFragment: {
+                suggest: ["LoggedInProps['currentUser']", "PageProps['currentUser']"],
+              },
+            },
+          },
+        ],
+        'react/no-this-in-sfc': 'off',
+        'react/no-unknown-property': ['error', { ignore: ['css', 'mask-type'] }],
+        'react/no-unescaped-entities': 'off',
+        'react/jsx-key': [
+          'error',
+          {
+            checkFragmentShorthand: true,
+            checkKeyMustBeforeSpread: true,
+            warnOnDuplicates: true,
+          },
+        ],
+        '@next/next/no-img-element': 'off',
+        'tailwindcss/classnames-order': 'off',
+        'tailwindcss/enforces-negative-arbitrary-values': 'error',
+        'tailwindcss/enforces-shorthand': 'error',
+        'tailwindcss/no-arbitrary-value': 'off',
+        'tailwindcss/no-custom-classname': [
+          'error',
+          {
+            cssFiles: ['node_modules/@expo/styleguide/dist/global.css'],
             whitelist: [
               'diff-.+',
               'react-player',
@@ -33,17 +179,36 @@ module.exports = {
               'dialog-.+',
               'terminal-snippet',
               'table-wrapper',
+              'tutorial-code-annotation',
             ],
-            cssFiles: ['node_modules/@expo/styleguide/dist/global.css'],
             ...TAILWIND_DEFAULTS,
           },
         ],
-        'tailwindcss/no-unnecessary-arbitrary-value': ['warn', TAILWIND_DEFAULTS],
+        'tailwindcss/no-unnecessary-arbitrary-value': ['error', TAILWIND_DEFAULTS],
+        'no-restricted-properties': [
+          'warn',
+          {
+            object: 'it',
+            property: 'only',
+            message: 'it.only should not be committed to main.',
+          },
+          {
+            object: 'test',
+            property: 'only',
+            message: 'test.only should not be committed to main.',
+          },
+          {
+            object: 'describe',
+            property: 'only',
+            message: 'describe.only should not be committed to main.',
+          },
+        ],
       },
     },
     {
       files: ['*.js', '*.cjs', '*.ts'],
       extends: ['universe/node'],
+      rules: CORE_RULES,
     },
     {
       files: ['*.md', '*.mdx'],

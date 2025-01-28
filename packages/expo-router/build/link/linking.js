@@ -22,43 +22,39 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPathFromState = exports.getStateFromPath = exports.addEventListener = exports.getRootURL = exports.getInitialURL = void 0;
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("../fork/extractPathFromURL");
-const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
-exports.getPathFromState = getPathFromState_1.default;
-const getStateFromPath_1 = __importDefault(require("../fork/getStateFromPath"));
-exports.getStateFromPath = getStateFromPath_1.default;
+const getPathFromState_1 = require("../fork/getPathFromState");
+Object.defineProperty(exports, "getPathFromState", { enumerable: true, get: function () { return getPathFromState_1.getPathFromState; } });
+const getStateFromPath_1 = require("../fork/getStateFromPath");
+Object.defineProperty(exports, "getStateFromPath", { enumerable: true, get: function () { return getStateFromPath_1.getStateFromPath; } });
+const useLinking_1 = require("../fork/useLinking");
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
-function getInitialURLWithTimeout() {
-    return Promise.race([
-        Linking.getInitialURL(),
-        new Promise((resolve) => 
-        // Timeout in 150ms if `getInitialState` doesn't resolve
-        // Workaround for https://github.com/facebook/react-native/issues/25675
-        setTimeout(() => resolve(null), 150)),
-    ]);
-}
 // A custom getInitialURL is used on native to ensure the app always starts at
 // the root path if it's launched from something other than a deep link.
 // This helps keep the native functionality working like the web functionality.
 // For example, if you had a root navigator where the first screen was `/settings` and the second was `/index`
 // then `/index` would be used on web and `/settings` would be used on native.
 function getInitialURL() {
-    if (react_native_1.Platform.OS === 'web') {
-        if (typeof window === 'undefined') {
-            return '';
-        }
-        else if (window.location?.href) {
-            return window.location.href;
-        }
+    if (typeof window === 'undefined') {
+        return '';
     }
-    return getInitialURLWithTimeout().then((url) => parseExpoGoUrlFromListener(url) ??
+    if (react_native_1.Platform.OS === 'web' && window.location?.href) {
+        return window.location.href;
+    }
+    if (react_native_1.Platform.OS === 'ios') {
+        // Use the new Expo API for iOS. This has better support for App Clips and handoff.
+        const url = Linking.getLinkingURL();
+        return (parseExpoGoUrlFromListener(url) ??
+            // The path will be nullish in bare apps when the app is launched from the home screen.
+            // TODO(EvanBacon): define some policy around notifications.
+            getRootURL());
+    }
+    // TODO: Figure out if expo-linking on Android has full interop with the React Native implementation.
+    return Promise.resolve((0, useLinking_1.getInitialURLWithTimeout)()).then((url) => parseExpoGoUrlFromListener(url) ??
         // The path will be nullish in bare apps when the app is launched from the home screen.
         // TODO(EvanBacon): define some policy around notifications.
         getRootURL());
@@ -88,6 +84,7 @@ function parseExpoGoUrlFromListener(url) {
 function addEventListener(nativeLinking) {
     return (listener) => {
         let callback;
+        const legacySubscription = nativeLinking?.legacy_subscribe?.(listener);
         if (isExpoGo) {
             // This extra work is only done in the Expo Go app.
             callback = async ({ url }) => {
@@ -110,6 +107,7 @@ function addEventListener(nativeLinking) {
         return () => {
             // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
             subscription?.remove?.();
+            legacySubscription?.();
         };
     };
 }

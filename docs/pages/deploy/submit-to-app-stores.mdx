@@ -3,16 +3,22 @@ title: Submit to app stores
 description: Learn how to submit your app to Google Play Store and Apple App Store from the command line with EAS Submit.
 ---
 
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStoreIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 **EAS Submit** is a hosted service that allows uploading and submitting app binaries to the app stores using EAS CLI. This guide describes how to submit your app to the Google Play Store and Apple App Store using EAS Submit.
 
-<ContentSpotlight url="https://www.youtube.com/embed/-KZjr576tuE" />
+<VideoBoxLink
+  videoId="-KZjr576tuE"
+  title="How to quickly publish to the App Store & Play Store with EAS Submit"
+  description="EAS Submit makes it easy to publish your apps to the App Store and Play Store with a simple command."
+/>
 
 ## Google Play Store
 
@@ -97,6 +103,24 @@ The command will lead you through the process of submitting the app. It will per
 
 - A summary of the provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
 - Your build should now be visible on [App Store Connect](https://appstoreconnect.apple.com). If something goes wrong, an appropriate message is displayed on the screen.
+
+## Manual submission to app stores
+
+To learn more about manual app submission process to Google Play Store and Apple App Store, see the following:
+
+<BoxLink
+  title="Manual first submission of an Android app"
+  description="Follow the steps from the FYI guide on manually submitting your app to Google Play Store for the first time."
+  href="https://expo.fyi/first-android-submission"
+  Icon={GoogleAppStoreIcon}
+/>
+
+<BoxLink
+  title="App submission using App Store Connect"
+  description="Learn how to submit your app manually to Apple App Store or TestFlight using App Store Connect."
+  href="/guides/local-app-production/#app-submission-using-app-store-connect"
+  Icon={AppleAppStoreIcon}
+/>
 
 ## Next step
 

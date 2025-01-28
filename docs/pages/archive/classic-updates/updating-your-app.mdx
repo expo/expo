@@ -3,7 +3,7 @@ title: Updating your App
 sidebar_title: Updating your App
 ---
 
-> This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
+> This doc was archived in August 2022 and will not receive any further updates. Use EAS Update instead. [Learn more](/eas-update/introduction)
 
 The `expo-updates` module provides a client-side implementation for loading updates in React Native apps. Updates allow you to deploy new JavaScript and assets to existing builds of your app without building a new binary.
 
@@ -87,7 +87,7 @@ Assets that you import in your JavaScript source can also be atomically download
 
 If you use `expo-asset` in your project (included by default if you have the `expo` package installed), you can control which imported assets will be included as part of this atomic update by using the `assetBundlePatterns` key in **app.json** to provide a list of paths in your project directory:
 
-```
+```text
 "assetBundlePatterns": [
   "**/*" // or "assets/images/*", etc.
 ],

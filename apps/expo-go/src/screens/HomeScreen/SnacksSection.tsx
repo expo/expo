@@ -32,10 +32,12 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
         return (
           <Fragment key={snack.id}>
             <SnacksListItem
+              id={snack.id}
               name={snack.name}
+              sdkVersion={snack.sdkVersion}
               description={snack.description}
               isDraft={snack.isDraft}
-              url={snack.fullName}
+              fullName={snack.fullName}
               first={i === 0}
               last={i === snacks.length - 1 && !showMore}
             />

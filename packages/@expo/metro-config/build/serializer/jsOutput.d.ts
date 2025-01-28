@@ -23,6 +23,7 @@ export type JsOutput = {
         ast?: import('@babel/types').File;
         hasCjsExports?: boolean;
         readonly reconcile?: ReconcileTransformSettings;
+        readonly reactServerReference?: string;
         readonly reactClientReference?: string;
         readonly expoDomComponentReference?: string;
     };
@@ -62,7 +63,7 @@ export type ReconcileTransformSettings = {
         minifierConfig: JsTransformerConfig['minifierConfig'];
     };
     collectDependenciesOptions: CollectDependenciesOptions;
-    unstable_dependencyMapReservedName?: string;
+    unstable_dependencyMapReservedName?: string | null;
     optimizationSizeLimit?: number;
     unstable_disableNormalizePseudoGlobals?: boolean;
     normalizePseudoGlobals: boolean;

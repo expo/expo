@@ -41,7 +41,7 @@ Once the Developer menu is open, it will appear as below:
 
 The Developer menu provides the following options:
 
-- **Copy link**: To copy the dev server address in dev client or [`exp://`](/guides/linking/#linking-to-expo-go) link in Expo of your app.
+- **Copy link**: To copy the dev server address in dev client or [`exp://`](/linking/into-your-app/#test-a-link-using-expo-go) link in Expo of your app.
 - **Reload**: To reload you app. Usually, not necessary since Fast Refresh is enabled by default.
 - **Go Home**: To leave your app and navigate back to the dev client's or Expo Go app's Home screen.
 - **Toggle performance monitor**: To view the performance information about your app.
@@ -205,11 +205,17 @@ Pressing the <kbd>shift</kbd> + <kbd>m</kbd> shortcut will also show installed [
 
 ## React Native Debugger
 
-> **warning** The React Native Debugger does not support apps using Hermes, see the [Chrome DevTools](#debugging-with-chrome-devtools) section.
+> **warning** The React Native Debugger requires Remote JS debugging, which has been deprecated since [React Native 0.73](https://reactnative.dev/docs/other-debugging-methods#remote-javascript-debugging-deprecated).
 
-The React Native Debugger includes many tools listed later on this page, all bundled into one, including [React DevTools](#debugging-with-react-devtools) and network request inspection. For this reason, if you use one tool from this page, it should probably be this one.
+The React Native Debugger is a standalone app that wraps the React DevTools, Redux DevTools, and the Chrome DevTools. Unfortunately, it requires the [deprecated Remote JS debugging workflow](https://github.com/jhen0409/react-native-debugger/discussions/774) and is incompatible with Hermes.
 
-We'll give a quick look at it here, but check out their [documentation](https://github.com/jhen0409/react-native-debugger#documentation) for a more in-depth look.
+If you are using Expo **SDK 50** or **above**, you can use the [Expo dev tools plugins](/debugging/devtools-plugins) equivalents to the React Native Debugger:
+
+- [React DevTools](#debugging-with-react-devtools)
+- [Redux DevTools](/debugging/devtools-plugins/#redux)
+- [Chrome DevTools](#debugging-with-chrome-devtools)
+
+If you are using Expo SDK 49 or below, you can use the React Native Debugger. This section provides quick get started instructions. For in-depth information, check its [documentation](https://github.com/jhen0409/react-native-debugger#documentation).
 
 You can install it via the [release page](https://github.com/jhen0409/react-native-debugger/releases), or if you're on macOS you can run:
 

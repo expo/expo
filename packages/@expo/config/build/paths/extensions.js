@@ -13,7 +13,7 @@ function _assert() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function getExtensions(platforms, extensions, workflows) {
   // In the past we used spread operators to collect the values so now we enforce type safety on them.
   (0, _assert().default)(Array.isArray(platforms), 'Expected: `platforms: string[]`');

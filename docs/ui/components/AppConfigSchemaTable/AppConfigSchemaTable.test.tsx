@@ -1,10 +1,11 @@
 import { screen } from '@testing-library/react';
 
-import AppConfigSchemaTable from './';
+import { renderWithHeadings } from '~/common/test-utilities';
+
 import { formatSchema, createDescription } from './helpers';
 import { Property } from './types';
 
-import { attachEmotionSerializer, renderWithHeadings } from '~/common/test-utilities';
+import AppConfigSchemaTable from './';
 
 const TEST_SCHEMA: Record<string, Property> = {
   name: {
@@ -92,8 +93,6 @@ const TEST_SCHEMA: Record<string, Property> = {
 };
 
 describe('AppConfigSchemaPropertiesTable', () => {
-  attachEmotionSerializer(expect);
-
   test('correctly matches snapshot', () => {
     const { container } = renderWithHeadings(<AppConfigSchemaTable schema={TEST_SCHEMA} />);
     expect(container).toMatchSnapshot();

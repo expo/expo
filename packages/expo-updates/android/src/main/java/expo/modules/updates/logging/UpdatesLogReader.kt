@@ -3,7 +3,6 @@ package expo.modules.updates.logging
 import android.content.Context
 import expo.modules.core.logging.PersistentFileLog
 import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
-import java.lang.Error
 import java.lang.Long.max
 import java.util.*
 
@@ -19,7 +18,7 @@ class UpdatesLogReader(
    */
   fun purgeLogEntries(
     olderThan: Date = Date(Date().time - ONE_DAY_MILLISECONDS),
-    completionHandler: (_: Error?) -> Unit
+    completionHandler: (_: Exception?) -> Unit
   ) {
     val epochTimestamp = epochFromDateOrOneDayAgo(olderThan)
     persistentLog.purgeEntriesNotMatchingFilter(

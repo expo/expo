@@ -67,3 +67,15 @@ internal final class NotAvailableInDevClientException: Exception {
     "\(jsMethodName) is not supported in development builds."
   }
 }
+
+internal final class NotAllowedAntiBrickingMeasuresException: Exception {
+  override var code: String {
+    "ERR_UPDATES_CONFIG_OVERRIDE"
+  }
+
+  override var reason: String {
+    "Must set disableAntiBrickingMeasures configuration to use updates overriding"
+  }
+}
+
+// swiftlint:enable line_length

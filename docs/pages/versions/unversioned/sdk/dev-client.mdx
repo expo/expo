@@ -21,9 +21,11 @@ Expo documentation refers to debug builds that include `expo-dev-client` as [dev
 
 ## Installation
 
-<APIInstallSection />
+<APIInstallSection hideBareInstructions />
 
-## Configuration in app.json/app.config.js
+If you are installing this in an [existing React Native app](/bare/overview/), start by installing [`expo`](/bare/installing-expo-modules/) in your project. Then, follow the instructions from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
+
+## Configuration in app config
 
 You can configure development client launcher using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -34,7 +36,7 @@ You can configure development client launcher using its built-in [config plugin]
   "expo": {
     "plugins": [
       [
-        "expo-dev-launcher",
+        "expo-dev-client",
         {
           "launchMode": "most-recent"
         }
@@ -73,4 +75,4 @@ You can configure development client launcher using its built-in [config plugin]
 import * as DevClient from 'expo-dev-client';
 ```
 
-<APISection packageName={['expo-dev-menu', 'expo-dev-launcher']} apiName="DevClient" />
+<APISection packageName={['expo-dev-client']} apiName="DevClient" />

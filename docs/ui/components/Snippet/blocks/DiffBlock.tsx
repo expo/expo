@@ -3,13 +3,13 @@ import { Copy07Icon } from '@expo/styleguide-icons/outline/Copy07Icon';
 import { useEffect, useState, PropsWithChildren } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
+import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
+
 import { PermalinkedSnippetHeader } from '../PermalinkedSnippetHeader';
 import { Snippet } from '../Snippet';
 import { SnippetAction } from '../SnippetAction';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
-
-import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 
 const randomCommitHash = () => Math.random().toString(36).slice(2, 9);
 
@@ -51,7 +51,7 @@ export const DiffBlock = ({
         setDiff(parseDiff(result));
       };
 
-      fetchDiffAsync();
+      void fetchDiffAsync();
     }
   }, [source]);
 
@@ -82,7 +82,7 @@ export const DiffBlock = ({
           float={collapseDeletedFiles && type === 'delete'}>
           {newPath && filenameToLinkUrl && type !== 'delete' ? (
             <SnippetAction
-              rightSlot={<ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />}
+              rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
               onClick={() => {
                 window.open(filenameToLinkUrl(newPath), '_blank');
               }}>

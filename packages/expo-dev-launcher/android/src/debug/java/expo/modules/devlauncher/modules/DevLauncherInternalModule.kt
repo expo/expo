@@ -59,8 +59,8 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   private fun getUpdatesConfig(): WritableMap {
     val map = Arguments.createMap()
 
-    val runtimeVersion = controller.updatesInterface?.getRuntimeVersion(reactApplicationContext)
-    val projectUri = controller.updatesInterface?.getUpdateUrl(reactApplicationContext)
+    val runtimeVersion = controller.updatesInterface?.runtimeVersion
+    val projectUri = controller.updatesInterface?.updateUrl
     val appId = projectUri?.lastPathSegment ?: ""
 
     val isModernManifestProtocol = projectUri?.host.equals("u.expo.dev") || projectUri?.host.equals("staging-u.expo.dev")
@@ -223,10 +223,10 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
-    val runtimeVersion = controller.updatesInterface?.getRuntimeVersion(reactApplicationContext)
+    val runtimeVersion = controller.updatesInterface?.runtimeVersion
     val appIcon = getApplicationIconUri()
 
-    val updatesUrl = controller.updatesInterface?.getUpdateUrl(reactApplicationContext)
+    val updatesUrl = controller.updatesInterface?.updateUrl
     val appId = if (updatesUrl !== null) {
       updatesUrl.lastPathSegment ?: ""
     } else {

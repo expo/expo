@@ -59,9 +59,13 @@ static NSString *kEXDevMenuTouchGestureEnabled = @"EXDevMenuTouchGestureEnabled"
   [[NSUserDefaults standardUserDefaults] setBool:interceptTouchGesture forKey:kEXDevMenuTouchGestureEnabled];
 }
 
-- (RCTBridge *)mainBridge
+- (id)mainReactHost {
+  return [_delegate mainHostForDevMenuManager:self];
+}
+
+- (RCTAppDelegate *)mainAppDelegate
 {
-  return [_delegate mainBridgeForDevMenuManager:self];
+  return [_delegate appDelegateForDevMenuManager:self];
 }
 
 - (BOOL)isVisible
@@ -83,7 +87,7 @@ static NSString *kEXDevMenuTouchGestureEnabled = @"EXDevMenuTouchGestureEnabled"
   if (![self canChangeVisibility:NO]) {
     return NO;
   }
-  EXHomeModule *homeModule = [[self mainBridge] moduleForName:@"ExponentKernel"];
+  EXHomeModule *homeModule = [[[self mainReactHost] moduleRegistry] moduleForName:"ExponentKernel"];
 
   if (homeModule) {
     // This will trigger `closeWithoutAnimation` once the animation is finished.

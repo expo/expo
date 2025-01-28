@@ -4,7 +4,7 @@ import { RouterStore } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath } from './link/linking';
 import { RequireContext } from './types';
 export declare function getNavigationConfig(routes: RouteNode, metaOnly?: boolean): {
-    initialRouteName: string | undefined;
+    initialRouteName: undefined;
     screens: Record<string, import("./getReactNavigationConfig").Screen>;
 };
 export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {

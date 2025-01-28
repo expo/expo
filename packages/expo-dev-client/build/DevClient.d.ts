@@ -1,6 +1,3 @@
-import * as DevLauncher from 'expo-dev-launcher';
-import * as DevMenu from 'expo-dev-menu';
-export { DevMenu, DevLauncher };
-export declare const registerErrorHandlers: typeof DevLauncher.registerErrorHandlers;
-export declare const isDevelopmentBuild: typeof DevLauncher.isDevelopmentBuild;
+export * from 'expo-dev-launcher';
+export * from 'expo-dev-menu';
 //# sourceMappingURL=DevClient.d.ts.map

@@ -1,3 +1,5 @@
+'use client';
+
 import type {
   EventMapBase,
   NavigationState,
@@ -24,14 +26,14 @@ import { Try } from './views/Try';
 
 export type ScreenProps<
   TOptions extends Record<string, any> = Record<string, any>,
-  State extends NavigationState = NavigationState,
-  EventMap extends EventMapBase = EventMapBase,
+  TState extends NavigationState = NavigationState,
+  TEventMap extends EventMapBase = EventMapBase,
 > = {
   /** Name is required when used inside a Layout component. */
   name?: string;
   /**
    * Redirect to the nearest sibling route.
-   * If all children are redirect={true}, the layout will render `null` as there are no children to render.
+   * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
    */
   redirect?: boolean;
   initialParams?: Record<string, any>;
@@ -40,11 +42,11 @@ export type ScreenProps<
     | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
 
   listeners?:
-    | ScreenListeners<State, EventMap>
+    | ScreenListeners<TState, TEventMap>
     | ((prop: {
         route: RouteProp<ParamListBase, string>;
         navigation: any;
-      }) => ScreenListeners<State, EventMap>);
+      }) => ScreenListeners<TState, TEventMap>);
 
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 };
@@ -225,10 +227,13 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   return QualifiedRoute;
 }
 
-/** @returns a function which provides a screen id that matches the dynamic route name in params. */
+/**
+ * @param getId Override that will be wrapped to remove __EXPO_ROUTER_key which is added by PUSH
+ * @returns a function which provides a screen id that matches the dynamic route name in params. */
 export function createGetIdForRoute(
-  route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>
-) {
+  route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>,
+  getId: ScreenProps['getId']
+): ScreenProps['getId'] {
   const include = new Map<string, DynamicConvention>();
 
   if (route.dynamic) {
@@ -237,7 +242,20 @@ export function createGetIdForRoute(
     }
   }
 
-  return ({ params = {} } = {} as { params?: Record<string, any> }) => {
+  return (options = {}) => {
+    const { params = {} } = options;
+    if (params.__EXPO_ROUTER_key) {
+      const key = params.__EXPO_ROUTER_key;
+      delete params.__EXPO_ROUTER_key;
+      if (getId == null) {
+        return key;
+      }
+    }
+
+    if (getId != null) {
+      return getId(options);
+    }
+
     const segments: string[] = [];
 
     for (const dynamic of include.values()) {
@@ -262,7 +280,7 @@ export function createGetIdForRoute(
 export function screenOptionsFactory(
   route: RouteNode,
   options?: ScreenProps['options']
-): RouteConfig<any, any, any, any, any>['options'] {
+): RouteConfig<any, any, any, any, any, any>['options'] {
   return (args) => {
     // Only eager load generated components
     const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
@@ -275,6 +293,7 @@ export function screenOptionsFactory(
 
     // Prevent generated screens from showing up in the tab bar.
     if (route.generated) {
+      output.tabBarItemStyle = { display: 'none' };
       output.tabBarButton = () => null;
       // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
       output.drawerItemStyle = { height: 0, display: 'none' };
@@ -284,12 +303,14 @@ export function screenOptionsFactory(
   };
 }
 
-export function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenProps> = {}) {
+export function routeToScreen(
+  route: RouteNode,
+  { options, getId, ...props }: Partial<ScreenProps> = {}
+) {
   return (
     <Screen
-      // Users can override the screen getId function.
-      getId={createGetIdForRoute(route)}
       {...props}
+      getId={createGetIdForRoute(route, getId)}
       name={route.route}
       key={route.route}
       options={screenOptionsFactory(route, options)}

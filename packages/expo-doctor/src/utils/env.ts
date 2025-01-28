@@ -29,6 +29,11 @@ class Env {
 
     return boolish('EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK', false);
   }
+
+  /** If a test makes an online check and failures due to a network error, don't count it as failing the overall doctor check */
+  get EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS() {
+    return boolish('EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS', false);
+  }
 }
 
 export const env = new Env();

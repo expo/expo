@@ -1,7 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 
-import ExpoSQLite from './ExpoSQLiteNext';
-import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import ExpoSQLite from './ExpoSQLite';
+import { flattenOpenOptions, NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
 import {
   SQLiteBindParams,
   SQLiteExecuteAsyncResult,
@@ -10,15 +10,18 @@ import {
   SQLiteStatement,
   SQLiteVariadicBindParams,
 } from './SQLiteStatement';
+import { createDatabasePath } from './pathUtils';
 
 export { SQLiteOpenOptions };
+
+let memoWarnCRSQLiteDeprecation = false;
 
 /**
  * A SQLite database.
  */
 export class SQLiteDatabase {
   constructor(
-    public readonly databaseName: string,
+    public readonly databasePath: string,
     public readonly options: SQLiteOpenOptions,
     private readonly nativeDatabase: NativeDatabase
   ) {}
@@ -408,19 +411,32 @@ export class SQLiteDatabase {
 }
 
 /**
+ * The default directory for SQLite databases.
+ */
+export const defaultDatabaseDirectory = ExpoSQLite.defaultDatabaseDirectory;
+
+/**
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
 export async function openDatabaseAsync(
   databaseName: string,
-  options?: SQLiteOpenOptions
+  options?: SQLiteOpenOptions,
+  directory?: string
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, openOptions);
+  const databasePath = createDatabasePath(databaseName, directory);
+  await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
+  maybeWarnCRSQLiteDeprecation(options);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    databasePath,
+    flattenOpenOptions(openOptions)
+  );
   await nativeDatabase.initAsync();
-  return new SQLiteDatabase(databaseName, openOptions, nativeDatabase);
+  return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
 }
 
 /**
@@ -430,15 +446,23 @@ export async function openDatabaseAsync(
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
 export function openDatabaseSync(
   databaseName: string,
-  options?: SQLiteOpenOptions
+  options?: SQLiteOpenOptions,
+  directory?: string
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, openOptions);
+  const databasePath = createDatabasePath(databaseName, directory);
+  ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
+  maybeWarnCRSQLiteDeprecation(options);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    databasePath,
+    flattenOpenOptions(openOptions)
+  );
   nativeDatabase.initSync();
-  return new SQLiteDatabase(databaseName, openOptions, nativeDatabase);
+  return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
 }
 
 /**
@@ -452,7 +476,12 @@ export async function deserializeDatabaseAsync(
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+  maybeWarnCRSQLiteDeprecation(options);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    ':memory:',
+    flattenOpenOptions(openOptions),
+    serializedData
+  );
   await nativeDatabase.initAsync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -470,7 +499,12 @@ export function deserializeDatabaseSync(
   options?: SQLiteOpenOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+  maybeWarnCRSQLiteDeprecation(options);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    ':memory:',
+    flattenOpenOptions(openOptions),
+    serializedData
+  );
   nativeDatabase.initSync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -479,9 +513,11 @@ export function deserializeDatabaseSync(
  * Delete a database file.
  *
  * @param databaseName The name of the database file to delete.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export async function deleteDatabaseAsync(databaseName: string): Promise<void> {
-  return await ExpoSQLite.deleteDatabaseAsync(databaseName);
+export async function deleteDatabaseAsync(databaseName: string, directory?: string): Promise<void> {
+  const databasePath = createDatabasePath(databaseName, directory);
+  return await ExpoSQLite.deleteDatabaseAsync(databasePath);
 }
 
 /**
@@ -490,9 +526,11 @@ export async function deleteDatabaseAsync(databaseName: string): Promise<void> {
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to delete.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export function deleteDatabaseSync(databaseName: string): void {
-  return ExpoSQLite.deleteDatabaseSync(databaseName);
+export function deleteDatabaseSync(databaseName: string, directory?: string): void {
+  const databasePath = createDatabasePath(databaseName, directory);
+  return ExpoSQLite.deleteDatabaseSync(databasePath);
 }
 
 /**
@@ -532,8 +570,24 @@ export function addDatabaseChangeListener(
 class Transaction extends SQLiteDatabase {
   public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, options);
+    maybeWarnCRSQLiteDeprecation(options);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(
+      db.databasePath,
+      flattenOpenOptions(options)
+    );
     await nativeDatabase.initAsync();
-    return new Transaction(db.databaseName, options, nativeDatabase);
+    return new Transaction(db.databasePath, options, nativeDatabase);
   }
+}
+
+// TODO(kudo,20241017) - Remove `enableCRSQLite` in SDK 53.
+function maybeWarnCRSQLiteDeprecation(openOptions: SQLiteOpenOptions | undefined | null) {
+  const enableCRSQLite = openOptions?.enableCRSQLite === true;
+  if (!enableCRSQLite || __DEV__ !== true || memoWarnCRSQLiteDeprecation) {
+    return;
+  }
+  console.warn(
+    'CR-SQLite is no longer actively maintained. The experimental `enableCRSQLite` option is deprecated and will be removed in SDK 53.'
+  );
+  memoWarnCRSQLiteDeprecation = true;
 }

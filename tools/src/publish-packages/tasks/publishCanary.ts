@@ -80,7 +80,7 @@ const publishCanaryProjectTemplates = new Task<TaskArgs>(
         const expoVersion = await sdkVersionAsync();
         const dependenciesToUpdate = {
           ...bundledNativeModules,
-          expo: `~${expoVersion}`,
+          expo: options.canary ? expoVersion : `~${expoVersion}`,
         };
 
         for (const template of templates) {

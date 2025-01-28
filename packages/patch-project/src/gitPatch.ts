@@ -34,9 +34,22 @@ export async function diffAsync(
   outputPatchFilePath: string,
   options: string[]
 ): Promise<void> {
-  await runGitAsync(['diff', ...options, '--output', outputPatchFilePath], {
-    cwd: repoRoot,
-  });
+  await runGitAsync(
+    [
+      'diff',
+      '--no-color',
+      '--ignore-space-at-eol',
+      '--no-ext-diff',
+      '--src-prefix=a/',
+      '--dst-prefix=b/',
+      ...options,
+      '--output',
+      outputPatchFilePath,
+    ],
+    {
+      cwd: repoRoot,
+    }
+  );
 }
 
 export async function applyPatchAsync(projectRoot: string, patchFilePath: string) {

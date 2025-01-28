@@ -32,6 +32,13 @@ function _withIosSplashAssets() {
   };
   return data;
 }
+function _withIosSplashColors() {
+  const data = require("./withIosSplashColors");
+  _withIosSplashColors = function () {
+    return data;
+  };
+  return data;
+}
 function _withIosSplashInfoPlist() {
   const data = require("./withIosSplashInfoPlist");
   _withIosSplashInfoPlist = function () {
@@ -46,6 +53,13 @@ function _withIosSplashScreenStoryboard() {
   };
   return data;
 }
+function _withIosSplashScreenStoryboardImage() {
+  const data = require("./withIosSplashScreenStoryboardImage");
+  _withIosSplashScreenStoryboardImage = function () {
+    return data;
+  };
+  return data;
+}
 function _withIosSplashXcodeProject() {
   const data = require("./withIosSplashXcodeProject");
   _withIosSplashXcodeProject = function () {
@@ -53,26 +67,15 @@ function _withIosSplashXcodeProject() {
   };
   return data;
 }
-function _wtihIosSplashScreenStoryboardImage() {
-  const data = require("./wtihIosSplashScreenStoryboardImage");
-  _wtihIosSplashScreenStoryboardImage = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios');
-const withIosSplashScreen = (config, splash) => {
+const withIosSplashScreen = (config, props) => {
   // If the user didn't specify a splash object, infer the splash object from the Expo config.
-  if (!splash) {
-    splash = (0, _getIosSplashConfig().getIosSplashConfig)(config);
-  } else {
-    debug(`custom splash config provided`);
-  }
-  debug(`config:`, splash);
-  return (0, _configPlugins().withPlugins)(config, [[_withIosSplashInfoPlist().withIosSplashInfoPlist, splash], [_withIosSplashAssets().withIosSplashAssets, splash],
+  const splashConfig = (0, _getIosSplashConfig().getIosSplashConfig)(config, props ?? null);
+  debug(`config:`, props);
+  return (0, _configPlugins().withPlugins)(config, [[_withIosSplashInfoPlist().withIosSplashInfoPlist, splashConfig], [_withIosSplashAssets().withIosSplashAssets, splashConfig], [_withIosSplashColors().withIosSplashColors, splashConfig],
   // Add the image settings to the storyboard.
-  [_wtihIosSplashScreenStoryboardImage().withIosSplashScreenImage, splash],
+  [_withIosSplashScreenStoryboardImage().withIosSplashScreenImage, splashConfig],
   // Link storyboard to xcode project.
   // TODO: Maybe fold this into the base mod.
   _withIosSplashXcodeProject().withIosSplashXcodeProject,

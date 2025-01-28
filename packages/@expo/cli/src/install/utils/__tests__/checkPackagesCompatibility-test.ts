@@ -17,7 +17,7 @@ describe(checkPackagesCompatibility, () => {
 
     expect(Log.warn).toHaveBeenCalledTimes(1);
     expect(Log.warn).toHaveBeenCalledWith(
-      expect.stringContaining('react-native-code-push do not support the New Architecture')
+      expect.stringContaining('react-native-code-push does not support the New Architecture')
     );
   });
 
@@ -52,16 +52,24 @@ describe(checkPackagesCompatibility, () => {
         'expo-image-picker': { newArchitecture: undefined },
       });
 
-    await checkPackagesCompatibility(['expo-image']);
+    await checkPackagesCompatibility(['expo-image', '@expo-google-fonts/inter']);
 
     expect(Log.warn).toHaveBeenCalledTimes(0);
   });
 
-  it(`does not fail for non-listed package`, async () => {
-    nock('https://reactnative.directory').post('/api/libraries/check').reply(200, {});
+  it(`does not fetch or warn when installing @expo-google-fonts/* packages`, async () => {
+    let wasCalled = false;
 
-    await checkPackagesCompatibility(['package-which-do-not-exist']);
+    nock('https://reactnative.directory')
+      .post('/api/libraries/check')
+      .reply(200, () => {
+        wasCalled = true;
+        return {};
+      });
 
+    await checkPackagesCompatibility(['@expo-google-fonts/inter']);
+
+    expect(wasCalled).toBe(false);
     expect(Log.warn).toHaveBeenCalledTimes(0);
   });
 });

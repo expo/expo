@@ -1,13 +1,54 @@
 apply plugin: 'com.android.library'
 
-group = 'host.exp.exponent'
-version = '5.0.14'
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useCoreDependencies()
+  useDefaultAndroidSdkVersions()
+}
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
+def usesModernPlugin = true
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  usesModernPlugin = false
+  useLegacyExpoModulesCorePlugin()
+}
+
+def versionToNumber(major, minor, patch) {
+  return major * 10000 + minor * 100 + patch
+}
+
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+  def nodeModulesVersion = providers.exec {
+    workingDir(projectDir)
+    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
+  }.standardOutput.asText.get().trim()
+  def version = safeExtGet(overridePropName, nodeModulesVersion)
+
+  def coreVersion = version.split("-")[0]
+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+  return versionToNumber(
+      major,
+      minor,
+      patch
+  )
+}
+
+def getRNVersion = {
+  if (usesModernPlugin) {
+    return project.extensions.getByType(expo.modules.plugin.gradle.ExpoModuleExtension).reactNativeVersion.toNumber()
+  } else {
+    // TODO(@lukmccall): Remove when we drop support for the legacy core plugin
+    return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
+  }
+}
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -16,11 +57,14 @@ buildscript {
   }
 }
 
+group = 'host.exp.exponent'
+version = '6.0.12'
+
 android {
   namespace "expo.modules.devmenu"
   defaultConfig {
     versionCode 10
-    versionName '5.0.14'
+    versionName '6.0.12'
   }
 
   buildTypes {
@@ -123,29 +167,4 @@ dependencies {
   testImplementation "org.robolectric:robolectric:4.10"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
   testImplementation 'androidx.test:core:1.4.0'
-}
-
-def versionToNumber(major, minor, patch) {
-  return patch * 100 + minor * 10000 + major * 1000000
-}
-
-def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = providers.exec {
-    workingDir(projectDir)
-    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
-  }.standardOutput.asText.get().trim()
-  def version = safeExtGet(overridePropName, nodeModulesVersion)
-
-  def coreVersion = version.split("-")[0]
-  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
-
-  return versionToNumber(
-      major,
-      minor,
-      patch
-  )
-}
-
-def getRNVersion() {
-  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }

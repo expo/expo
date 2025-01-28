@@ -19,7 +19,7 @@ function _path() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /** A basic function that copies a single file to another file location. */
 async function copyFilePathToPathAsync(src, dest) {
   const srcFile = await _fs().default.promises.readFile(src);

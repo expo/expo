@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
 
 ### Layouts and views
 
-You don't need to manually adjust `<View>` styling properties based on locale. You can use properties like `justifyContext`, `alignItems`, and others. Their property values change behavior as required.
+You don't need to manually adjust `<View>` styling properties based on locale. You can use properties like `justifyContent`, `alignItems`, and others. Their property values change behavior as required.
 
 - On LTR locales, `start` and `end` are the same as `left` and `right`.
 - On RTL locales, `start` and `end` are the same as `right` and `left`.
@@ -324,13 +324,11 @@ If you need to use different icons for LTR/RTL or change styles based on this se
 
 ## Locale settings and units
 
-Expo provides the `expo-localization` library to allow you to read the user's locale and other preferences.
+Expo provides the `expo-localization` library to allow you to read the user's locale and other preferences. You can use synchronous `getLocales()` and `getCalendars()` methods to get the current locale settings of the user device:
 
-You can use synchronous `getLocales()` and `getCalendars()` methods to get the current locale settings of the user device.
+- `getLocales()` returns a list of locales based on the order in which the user prefers them. There will always be at least one locale in the list.
 
-`getLocales()` returns a list of locales based on the order in which the user prefers them. There will always be at least one locale in the list.
-
-`getCalendars()` returns a list of calendars based on the order in which the user prefers them. There will always be at least one calendar on the list.
+- `getCalendars()` returns a list of calendars based on the order in which the user prefers them. There will always be at least one calendar on the list.
 
 ```ts
 import { getLocales, getCalendars } from 'expo-localization';

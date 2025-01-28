@@ -21,7 +21,11 @@ function createCacheKey(fileSource, properties) {
 }
 exports.createCacheKey = createCacheKey;
 async function createCacheKeyWithDirectoryAsync(projectRoot, type, icon) {
-    const cacheKey = `${type}-${createCacheKey(icon.src, [icon.resizeMode, icon.backgroundColor])}`;
+    const iconProperties = [icon.resizeMode];
+    if (icon.backgroundColor) {
+        iconProperties.push(icon.backgroundColor);
+    }
+    const cacheKey = `${type}-${createCacheKey(icon.src, iconProperties)}`;
     if (!(cacheKey in cacheKeys)) {
         cacheKeys[cacheKey] = await ensureCacheDirectory(projectRoot, type, cacheKey);
     }

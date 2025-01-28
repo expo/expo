@@ -1,19 +1,8 @@
-import { ParamListBase, StackNavigationState } from '@react-navigation/native';
-import {
-  createNativeStackNavigator,
-  NativeStackNavigationEventMap,
-  NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
+import Stack from './StackClient';
+import { Screen } from '../views/Screen';
 
-import { withLayoutContext } from './withLayoutContext';
+Stack.Screen = Screen;
 
-const NativeStackNavigator = createNativeStackNavigator().Navigator;
-
-export const Stack = withLayoutContext<
-  NativeStackNavigationOptions,
-  typeof NativeStackNavigator,
-  StackNavigationState<ParamListBase>,
-  NativeStackNavigationEventMap
->(NativeStackNavigator);
+export { Stack };
 
 export default Stack;

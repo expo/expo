@@ -7,6 +7,9 @@ const commander_1 = __importDefault(require("commander"));
 const path_1 = __importDefault(require("path"));
 const autolinking_1 = require("./autolinking");
 const reactNativeConfig_1 = require("./reactNativeConfig");
+function hasCoreFeatures(module) {
+    return module.coreFeatures !== undefined;
+}
 /**
  * Registers a command that only searches for available expo modules.
  */
@@ -46,19 +49,28 @@ function registerReactNativeConfigCommand() {
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "android", "ios"', 'ios')
         .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
         .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
-        .action(async (paths, options) => {
-        if (!['android', 'ios'].includes(options.platform)) {
-            throw new Error(`Unsupported platform: ${options.platform}`);
+        .action(async (searchPaths, providedOptions) => {
+        if (!['android', 'ios'].includes(providedOptions.platform)) {
+            throw new Error(`Unsupported platform: ${providedOptions.platform}`);
         }
-        const projectRoot = path_1.default.dirname(await (0, autolinking_1.getProjectPackageJsonPathAsync)(options.projectRoot));
-        const searchPaths = await (0, autolinking_1.resolveSearchPathsAsync)(paths, projectRoot);
-        const providedOptions = {
-            platform: options.platform,
+        const projectRoot = path_1.default.dirname(await (0, autolinking_1.getProjectPackageJsonPathAsync)(providedOptions.projectRoot));
+        const linkingOptions = await (0, autolinking_1.mergeLinkingOptionsAsync)(searchPaths.length > 0
+            ? {
+                ...providedOptions,
+                projectRoot,
+                searchPaths,
+            }
+            : {
+                ...providedOptions,
+                projectRoot,
+            });
+        const options = {
+            platform: linkingOptions.platform,
             projectRoot,
-            searchPaths,
+            searchPaths: linkingOptions.searchPaths,
         };
-        const results = await (0, reactNativeConfig_1.createReactNativeConfigAsync)(providedOptions);
-        if (options.json) {
+        const results = await (0, reactNativeConfig_1.createReactNativeConfigAsync)(options);
+        if (providedOptions.json) {
             console.log(JSON.stringify(results));
         }
         else {
@@ -87,11 +99,23 @@ module.exports = async function (args) {
     registerResolveCommand('resolve', async (results, options) => {
         const modules = await (0, autolinking_1.resolveModulesAsync)(results, options);
         const extraDependencies = await (0, autolinking_1.resolveExtraBuildDependenciesAsync)(options);
+        const coreFeatures = [
+            ...modules.reduce((acc, module) => {
+                if (hasCoreFeatures(module)) {
+                    const features = module.coreFeatures ?? [];
+                    for (const feature of features) {
+                        acc.add(feature);
+                    }
+                    return acc;
+                }
+                return acc;
+            }, new Set()),
+        ];
         if (options.json) {
-            console.log(JSON.stringify({ extraDependencies, modules }));
+            console.log(JSON.stringify({ extraDependencies, coreFeatures, modules }));
         }
         else {
-            console.log(require('util').inspect({ extraDependencies, modules }, false, null, true));
+            console.log(require('util').inspect({ extraDependencies, coreFeatures, modules }, false, null, true));
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Generates a source file listing all packages to link.

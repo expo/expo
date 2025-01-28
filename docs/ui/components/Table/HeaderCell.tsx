@@ -7,16 +7,23 @@ import { convertAlignToClass } from './utils';
 type HeaderCellProps = PropsWithChildren<{
   align?: TextAlign | 'char';
   size?: 'md' | 'sm';
+  className?: string;
 }>;
 
-export const HeaderCell = ({ children, align = 'left', size = 'md' }: HeaderCellProps) => (
+export const HeaderCell = ({
+  children,
+  className,
+  align = 'left',
+  size = 'md',
+}: HeaderCellProps) => (
   <th
     className={mergeClasses(
-      'px-4 py-3.5 font-medium text-secondary border-r border-secondary',
+      'border-r border-secondary px-4 py-3.5 text-2xs font-medium text-secondary',
       convertAlignToClass(align),
-      size === 'sm' ? 'text-3xs' : 'text-2xs',
-      '[&_code]:text-3xs',
-      'last:border-r-0'
+      size === 'sm' && 'py-2 text-3xs',
+      '[&_code]:text-3xs [&_code]:text-secondary',
+      'last:border-r-0',
+      className
     )}>
     {children}
   </th>

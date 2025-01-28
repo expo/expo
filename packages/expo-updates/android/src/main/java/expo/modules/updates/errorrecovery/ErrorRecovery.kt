@@ -1,16 +1,14 @@
 package expo.modules.updates.errorrecovery
 
-import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import com.facebook.react.bridge.DefaultJSExceptionHandler
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.rncompatibility.IReactNativeFeatureFlagsProvider
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import java.lang.ref.WeakReference
@@ -29,11 +27,11 @@ import java.lang.ref.WeakReference
  * and so there is no more need to trigger the error recovery pipeline.
  */
 class ErrorRecovery(
-  private val context: Context
+  private val logger: UpdatesLogger,
+  private val reactNativeFeatureFlagsProvider: IReactNativeFeatureFlagsProvider
 ) {
   internal val handlerThread = HandlerThread("expo-updates-error-recovery")
   internal lateinit var handler: Handler
-  internal val logger = UpdatesLogger(context)
 
   private var weakDevSupportManager: WeakReference<DevSupportManager>? = null
   private var previousExceptionHandler: DefaultJSExceptionHandler? = null
@@ -67,7 +65,7 @@ class ErrorRecovery(
   }
 
   internal fun handleException(exception: Exception) {
-    logger.error("ErrorRecovery: exception encountered: ${exception.localizedMessage}", UpdatesErrorCode.Unknown, exception)
+    logger.error("ErrorRecovery: exception encountered: ${exception.localizedMessage}", exception, UpdatesErrorCode.Unknown)
     handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.EXCEPTION_ENCOUNTERED, exception))
   }
 
@@ -100,7 +98,7 @@ class ErrorRecovery(
   }
 
   private fun registerErrorHandler(devSupportManager: DevSupportManager) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (reactNativeFeatureFlagsProvider.enableBridgelessArchitecture) {
       registerErrorHandlerImplBridgeless()
     } else {
       registerErrorHandlerImplBridge(devSupportManager)
@@ -113,7 +111,7 @@ class ErrorRecovery(
 
   private fun registerErrorHandlerImplBridge(devSupportManager: DevSupportManager) {
     if (devSupportManager !is ReleaseDevSupportManager) {
-      Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
+      logger.debug("Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
       return
     }
 
@@ -123,7 +121,7 @@ class ErrorRecovery(
       }
     }
     val devSupportManagerClass = devSupportManager.javaClass
-    previousExceptionHandler = devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
+    previousExceptionHandler = devSupportManagerClass.getDeclaredField("defaultJSExceptionHandler").let { field ->
       field.isAccessible = true
       val previousValue = field[devSupportManager]
       field[devSupportManager] = defaultJSExceptionHandler
@@ -133,7 +131,7 @@ class ErrorRecovery(
   }
 
   private fun unregisterErrorHandler() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (reactNativeFeatureFlagsProvider.enableBridgelessArchitecture) {
       unregisterErrorHandlerImplBridgeless()
     } else {
       unregisterErrorHandlerImplBridge()
@@ -147,7 +145,7 @@ class ErrorRecovery(
   private fun unregisterErrorHandlerImplBridge() {
     weakDevSupportManager?.get()?.let { devSupportManager ->
       if (devSupportManager !is ReleaseDevSupportManager) {
-        Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
+        logger.debug("Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
         return
       }
       if (previousExceptionHandler == null) {
@@ -155,7 +153,7 @@ class ErrorRecovery(
       }
 
       val devSupportManagerClass = devSupportManager.javaClass
-      devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
+      devSupportManagerClass.getDeclaredField("defaultJSExceptionHandler").let { field ->
         field.isAccessible = true
         field[devSupportManager] = previousExceptionHandler
       }

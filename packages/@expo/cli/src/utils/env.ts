@@ -170,11 +170,6 @@ class Env {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
   }
 
-  /** Enable the React Native JS Inspector, instead of the "classic" Chrome DevTools (SDK <=49) */
-  get EXPO_USE_UNSTABLE_DEBUGGER(): boolean {
-    return boolish('EXPO_USE_UNSTABLE_DEBUGGER', false);
-  }
-
   /** Set the default `user` that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`. */
   get EXPO_ADB_USER(): string {
     return string('EXPO_ADB_USER', '0');
@@ -213,6 +208,48 @@ class Env {
   /** Internal key used to pass eager bundle data from the CLI to the native run scripts during `npx expo run` commands. */
   get __EXPO_EAGER_BUNDLE_OPTIONS() {
     return string('__EXPO_EAGER_BUNDLE_OPTIONS', '');
+  }
+
+  /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */
+  get EXPO_NO_DEPLOY(): boolean {
+    return boolish('EXPO_NO_DEPLOY', false);
+  }
+
+  /** Enable hydration during development when rendering Expo Web */
+  get EXPO_WEB_DEV_HYDRATE(): boolean {
+    return boolish('EXPO_WEB_DEV_HYDRATE', false);
+  }
+
+  /** Enable experimental React Server Functions support. */
+  get EXPO_UNSTABLE_SERVER_FUNCTIONS(): boolean {
+    return boolish('EXPO_UNSTABLE_SERVER_FUNCTIONS', false);
+  }
+
+  /** Enable unstable/experimental mode where React Native Web isn't required to run Expo apps on web. */
+  get EXPO_NO_REACT_NATIVE_WEB(): boolean {
+    return boolish('EXPO_NO_REACT_NATIVE_WEB', false);
+  }
+
+  /** Enable unstable/experimental support for deploying the native server in `npx expo run` commands. */
+  get EXPO_UNSTABLE_DEPLOY_SERVER(): boolean {
+    return boolish('EXPO_UNSTABLE_DEPLOY_SERVER', false);
+  }
+
+  /** Is running in EAS Build. This is set by EAS: https://docs.expo.dev/eas/environment-variables/ */
+  get EAS_BUILD(): boolean {
+    return boolish('EAS_BUILD', false);
+  }
+
+  /** Disable the React Native Directory compatibility check for new architecture when installing packages */
+  get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
+    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', false);
+  }
+
+  /** Disable the dependency validation when installing other dependencies and starting the project */
+  get EXPO_NO_DEPENDENCY_VALIDATION(): boolean {
+    // Default to disabling when running in a web container (stackblitz, bolt, etc).
+    const isWebContainer = process.versions.webcontainer != null;
+    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', isWebContainer);
   }
 }
 

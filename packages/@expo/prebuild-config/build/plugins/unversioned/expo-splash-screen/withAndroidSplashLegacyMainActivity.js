@@ -40,21 +40,21 @@ function _getAndroidSplashConfig() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:android:mainActivity');
 
 // DO NOT CHANGE
 const SHOW_SPLASH_ID = 'expo-splash-screen-mainActivity-onCreate-show-splash';
-const withAndroidSplashLegacyMainActivity = config => {
+const withAndroidSplashLegacyMainActivity = (config, props) => {
   return (0, _configPlugins().withMainActivity)(config, config => {
-    config.modResults.contents = setSplashScreenLegacyMainActivity(config, config.modResults.contents, config.modResults.language);
+    config.modResults.contents = setSplashScreenLegacyMainActivity(config, props, config.modResults.contents, config.modResults.language);
     return config;
   });
 };
 exports.withAndroidSplashLegacyMainActivity = withAndroidSplashLegacyMainActivity;
-function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
+function setSplashScreenLegacyMainActivity(config, props, mainActivity, language) {
   debug(`Modify with language: "${language}"`);
-  const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
+  const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config, props);
   if (!splashConfig) {
     // Remove our generated code safely...
     const mod = (0, _generateCode().removeContents)({
@@ -74,7 +74,7 @@ function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
   } = splashConfig;
   const isJava = language === 'java';
   const LE = isJava ? ';' : '';
-  mainActivity = (0, _codeMod().addImports)(mainActivity, ['expo.modules.splashscreen.singletons.SplashScreen', 'expo.modules.splashscreen.SplashScreenImageResizeMode', 'com.facebook.react.ReactRootView', 'android.os.Bundle'], isJava);
+  mainActivity = (0, _codeMod().addImports)(mainActivity, ['host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen', 'host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode', 'com.facebook.react.ReactRootView', 'android.os.Bundle'], isJava);
   if (!mainActivity.match(/(?<=^.*super\.onCreate.*$)/m)) {
     const onCreateBlock = isJava ? ['    @Override', '    protected void onCreate(Bundle savedInstanceState) {', '      super.onCreate(savedInstanceState);', '    }'] : ['    override fun onCreate(savedInstanceState: Bundle?) {', '      super.onCreate(savedInstanceState)', '    }'];
     mainActivity = (0, _generateCode().mergeContents)({

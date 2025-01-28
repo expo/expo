@@ -2,7 +2,9 @@ import {
   AndroidConfig,
   ConfigPlugin,
   History,
+  WarningAggregator,
   withAndroidManifest,
+  withAndroidStyles,
   withDangerousMod,
 } from 'expo/config-plugins';
 import fs from 'fs';
@@ -18,7 +20,17 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
   [
     {
       propName: 'newArchEnabled',
-      propValueGetter: (config) => config.android?.newArchEnabled?.toString(),
+      propValueGetter: (config) => {
+        if (config.android?.newArchEnabled !== undefined) {
+          WarningAggregator.addWarningAndroid(
+            'withAndroidBuildProperties',
+            'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.',
+            'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
+          );
+        }
+
+        return config.android?.newArchEnabled?.toString();
+      },
     },
     {
       propName: 'android.minSdkVersion',
@@ -87,6 +99,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
         });
         return JSON.stringify(extraMavenRepos);
       },
+    },
+    {
+      propName: 'android.useDayNightTheme',
+      propValueGetter: (config) => (config.android?.useDayNightTheme ?? false).toString(),
     },
   ],
   'withAndroidBuildProperties'
@@ -247,6 +263,37 @@ export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props
     };
 
     config.modResults.manifest.queries = [newQueries];
+    return config;
+  });
+};
+
+export const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidStyles(config, (config) => {
+    if (!props.android?.useDayNightTheme) {
+      return config;
+    }
+
+    const { style = [] } = config.modResults.resources;
+    if (!style.length) {
+      return config;
+    }
+
+    // Replace `AppTheme` and remove `ResetEditText`
+    const excludedStyles = ['AppTheme', 'ResetEditText'];
+    // Remove the hardcoded colors.
+    const excludedAttributes = ['android:textColor', 'android:editTextStyle'];
+
+    config.modResults.resources.style = [
+      {
+        $: {
+          name: 'AppTheme',
+          parent: 'Theme.AppCompat.DayNight.NoActionBar',
+        },
+        item: [...style[0].item.filter(({ $ }) => !excludedAttributes.includes($.name))],
+      },
+      ...style.filter(({ $ }) => !excludedStyles.includes($.name)),
+    ];
+
     return config;
   });
 };

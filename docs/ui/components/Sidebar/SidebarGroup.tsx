@@ -5,84 +5,142 @@ import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterprise
 import { StoplightIcon } from '@expo/styleguide-icons/custom/StoplightIcon';
 import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
 import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
+import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { PaletteIcon } from '@expo/styleguide-icons/outline/PaletteIcon';
 import { Phone01Icon } from '@expo/styleguide-icons/outline/Phone01Icon';
 import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
 import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 
-import { SidebarNodeProps } from './Sidebar';
-import { SidebarTitle, SidebarLink, SidebarSection } from './index';
-
 import { reportEasTutorialCompleted } from '~/providers/Analytics';
 import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
 import { NavigationRoute } from '~/types/common';
 import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 import { CircularProgressBar } from '~/ui/components/ProgressTracker/CircularProgressBar';
-import { Chapter } from '~/ui/components/ProgressTracker/TutorialData';
+
+import { SidebarLink } from './SidebarLink';
+import { SidebarSection } from './SidebarSection';
+import { SidebarTitle } from './SidebarTitle';
+import { SidebarNodeProps } from './types';
 
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
+  const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
+    useTutorialChapterCompletion();
+
   const title = route.sidebarTitle ?? route.name;
   const Icon = getIconElement(title);
-  const { chapters, setChapters } = useTutorialChapterCompletion();
 
-  const allChaptersCompleted = chapters.every((chapter: Chapter) => chapter.completed);
-  const completedChaptersCount = chapters.filter((chapter: Chapter) => chapter.completed).length;
-  const isChapterCompleted = (childSlug: string) => {
-    const isCompleted = chapters.some(
-      (chapter: Chapter) => chapter.slug === childSlug && chapter.completed
-    );
-    return isCompleted;
-  };
-  const totalChapters = chapters.length;
-  const progressPercentage = (completedChaptersCount / totalChapters) * 100;
-
-  if (allChaptersCompleted) {
-    reportEasTutorialCompleted();
-  }
-
-  const resetTutorial = () => {
-    if (allChaptersCompleted) {
-      const resetChapters = chapters.map((chapter: Chapter) => ({ ...chapter, completed: false }));
-      setChapters(resetChapters);
-    }
-  };
-
-  // @ts-ignore
   if (route.children?.[0]?.section === 'EAS tutorial') {
+    const allChaptersCompleted = chapters.every(chapter => chapter.completed);
+    const completedChaptersCount = chapters.filter(chapter => chapter.completed).length;
+    const totalChapters = chapters.length;
+    const progressPercentage = (completedChaptersCount / totalChapters) * 100;
+
+    if (allChaptersCompleted) {
+      reportEasTutorialCompleted();
+    }
+
+    const isChapterCompleted = (childSlug: string) => {
+      return chapters.some(chapter => chapter.slug === childSlug && chapter.completed);
+    };
+
+    const resetTutorial = () => {
+      if (allChaptersCompleted) {
+        const resetChapters = chapters.map(chapter => ({ ...chapter, completed: false }));
+        setChapters(resetChapters);
+      }
+    };
+
     return (
       <div className="mb-5">
         {!shouldSkipTitle(route, parentRoute) && title && (
-          <div className="flex flex-row justify-between items-center py-0">
+          <div className="flex flex-row items-center justify-between py-0">
             <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="ml-2 text-secondary text-sm">{`${completedChaptersCount} of ${totalChapters}`}</p>
+              <p className="ml-2 text-sm text-secondary">{`${completedChaptersCount} of ${totalChapters}`}</p>
             </div>
           </div>
         )}
-        {(route.children || []).map(child => {
+        {route.children.map(child => {
           const childSlug = child.href;
           const completed = isChapterCompleted(childSlug);
 
           return (
-            <div className="flex justify-between items-center" key={`${route.name}-${child.name}`}>
-              <div className="flex-1">
-                <SidebarLink info={child}>{child.sidebarTitle || child.name}</SidebarLink>
-              </div>
-              {completed && <CheckIcon className="size-4" />}
-            </div>
+            <SidebarLink info={child} className="flex flex-1" key={`${route.name}-${child.name}`}>
+              {child.sidebarTitle ?? child.name}
+              {completed && <CheckIcon className="icon-sm ml-auto mt-0.5 self-start" />}
+            </SidebarLink>
           );
         })}
         {allChaptersCompleted && (
           <Button
             onClick={resetTutorial}
             theme="secondary"
-            className="w-full flex items-center justify-center"
+            className="flex w-full items-center justify-center"
+            href="/tutorial/eas/introduction/">
+            Reset tutorial
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  if (route.children?.[0]?.section === 'Expo tutorial') {
+    const allGetStartedChaptersCompleted = getStartedChapters.every(chapter => chapter.completed);
+    const completedGetStartedChaptersCount = getStartedChapters.filter(
+      chapter => chapter.completed
+    ).length;
+    const totalGetStartedChapters = getStartedChapters.length;
+    const progressPercentageForGetStarted =
+      (completedGetStartedChaptersCount / totalGetStartedChapters) * 100;
+
+    const isGetStartedChapterCompleted = (childSlug: string) => {
+      return getStartedChapters.some(chapter => chapter.slug === childSlug && chapter.completed);
+    };
+
+    const resetGetStartedTutorial = () => {
+      if (allGetStartedChaptersCompleted) {
+        const resetChapters = getStartedChapters.map(chapter => ({
+          ...chapter,
+          completed: false,
+        }));
+        setGetStartedChapters(resetChapters);
+      }
+    };
+
+    return (
+      <div className="mb-5">
+        {!shouldSkipTitle(route, parentRoute) && title && (
+          <div className="flex flex-row items-center justify-between py-0">
+            <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
+            <div className="flex flex-row items-center pb-1">
+              <CircularProgressBar progress={progressPercentageForGetStarted} />{' '}
+              <p className="ml-2 text-sm text-secondary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
+            </div>
+          </div>
+        )}
+        {route.children.map(child => {
+          const childSlug = child.href;
+          const completed = isGetStartedChapterCompleted(childSlug);
+
+          return (
+            <SidebarLink info={child} className="flex flex-1" key={`${route.name}-${child.name}`}>
+              {child.sidebarTitle ?? child.name}
+              {completed && <CheckIcon className="icon-sm ml-auto mt-0.5 self-start" />}
+            </SidebarLink>
+          );
+        })}
+        {allGetStartedChaptersCompleted && (
+          <Button
+            onClick={resetGetStartedTutorial}
+            theme="secondary"
+            className="flex w-full items-center justify-center"
             href="/tutorial/eas/introduction/">
             Reset tutorial
           </Button>
@@ -96,10 +154,10 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
       {!shouldSkipTitle(route, parentRoute) && title && (
         <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
       )}
-      {(route.children || []).map(child =>
+      {(route.children ?? []).map(child =>
         child.type === 'page' ? (
           <SidebarLink key={`${route.name}-${child.name}`} info={child}>
-            {child.sidebarTitle || child.name}
+            {child.sidebarTitle ?? child.name}
           </SidebarLink>
         ) : (
           <SidebarSection
@@ -121,7 +179,7 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
     return true;
   } else if (
     info.children &&
-    ((info.children[0] || {}).sidebarTitle || (info.children[0] || {}).name) === info.name
+    (info.children[0]?.sidebarTitle ?? info.children[0]?.name) === info.name
   ) {
     // If the first child post in the group has the same name as the group, then hide the
     // group title, lest we be very repetitive
@@ -139,6 +197,8 @@ function getIconElement(iconName?: string) {
       return StoplightIcon;
     case 'Deploy':
       return Rocket01Icon;
+    case 'Monitor':
+      return DataIcon;
     case 'Development process':
       return CodeSquare01Icon;
     case 'EAS Build':
@@ -151,6 +211,10 @@ function getIconElement(iconName?: string) {
       return EasMetadataIcon;
     case 'EAS Insights':
       return DataIcon;
+    case 'EAS Workflows':
+      return Dataflow01Icon;
+    case 'EAS Hosting':
+      return Cloud01Icon;
     case 'Expo Modules API':
       return CpuChip01Icon;
     case 'Expo Router':
@@ -164,6 +228,8 @@ function getIconElement(iconName?: string) {
     case 'EAS':
       return PlanEnterpriseIcon;
     case 'Get started':
+      return HandWaveIcon;
+    case 'Expo tutorial':
       return HandWaveIcon;
     case 'EAS tutorial':
       return PlanEnterpriseIcon;

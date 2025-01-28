@@ -5,8 +5,9 @@
 #import <functional>
 
 #import <jsi/jsi.h>
+#import <React/RCTBridgeModule.h>
 #import <React/React-Core-umbrella.h>
-#import <ReactCommon/ReactCommon-umbrella.h>
+#import <ReactCommon/TurboModuleUtils.h>
 #import <ExpoModulesCore/ObjectDeallocator.h>
 
 namespace jsi = facebook::jsi;

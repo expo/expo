@@ -46,6 +46,7 @@ import java.time.LocalDate
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
+import kotlin.time.Duration
 
 interface TypeConverterProvider {
   fun obtainTypeConverter(type: KType): TypeConverter<*>
@@ -281,6 +282,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       File::class to FileTypeConverter(isOptional),
 
+      Duration::class to DurationTypeConverter(isOptional),
+
       Any::class to AnyTypeConverter(isOptional),
 
       // Unit converter doesn't care about nullability.
@@ -300,4 +303,28 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
     return converters
   }
+}
+
+class MergedTypeConverterProvider(
+  private val providers: List<TypeConverterProvider>
+) : TypeConverterProvider {
+  override fun obtainTypeConverter(type: KType): TypeConverter<*> {
+    for (provider in providers) {
+      try {
+        return provider.obtainTypeConverter(type)
+      } catch (_: MissingTypeConverter) {
+        // Ignore and try next provider
+      }
+    }
+
+    throw MissingTypeConverter(type)
+  }
+}
+
+fun TypeConverterProvider.mergeWith(otherProvider: TypeConverterProvider): TypeConverterProvider {
+  return MergedTypeConverterProvider(listOf(this, otherProvider))
+}
+
+fun TypeConverterProvider?.mergeWithDefault(): TypeConverterProvider {
+  return this?.mergeWith(TypeConverterProviderImpl) ?: TypeConverterProviderImpl
 }

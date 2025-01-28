@@ -1,74 +1,29 @@
 /* eslint-env jest */
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
-import mockedSpawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
-import assert from 'assert';
-import execa from 'execa';
-import findProcess from 'find-process';
-import fs from 'fs';
+import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
-import os from 'os';
-import path from 'path';
-import treeKill from 'tree-kill';
-import { promisify } from 'util';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { copySync } from '../../src/utils/dir';
+import { toPosixPath } from '../../src/utils/filePath';
+import { executeBunAsync } from '../utils/expo';
+import { createVerboseLogger } from '../utils/log';
+import { createPackageTarball } from '../utils/package';
+import { TEMP_DIR, getTemporaryPath } from '../utils/path';
+import { executeAsync } from '../utils/process';
+
+export { getTemporaryPath } from '../utils/path';
 
 export const bin = require.resolve('../../build/bin/cli');
 
 export const projectRoot = getTemporaryPath();
 
-export function getTemporaryPath() {
-  return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
-}
-
-export function execute(...args: string[]) {
-  return execa('node', [bin, ...args], { cwd: projectRoot });
-}
-
+/** Get the directory relative to the default project root */
 export function getRoot(...args: string[]) {
   return path.join(projectRoot, ...args);
-}
-
-export async function abortingSpawnAsync(
-  cmd: string,
-  args: string[],
-  options?: SpawnOptions
-): Promise<SpawnResult> {
-  const spawnAsync = jest.requireActual('@expo/spawn-async') as typeof mockedSpawnAsync;
-
-  const promise = spawnAsync(cmd, args, options);
-  promise.child.stdout?.pipe(process.stdout);
-  promise.child.stderr?.pipe(process.stderr);
-
-  // TODO: Not sure how to do this yet...
-  // const unsub = addJestInterruptedListener(() => {
-  //   promise.child.kill('SIGINT');
-  // });
-  try {
-    return await promise;
-  } catch (e) {
-    const error = e as Error;
-    if (isSpawnResult(error)) {
-      const spawnError = error as SpawnResult;
-      if (spawnError.stdout) error.message += `\n------\nSTDOUT:\n${spawnError.stdout}`;
-      if (spawnError.stderr) error.message += `\n------\nSTDERR:\n${spawnError.stderr}`;
-    }
-    throw error;
-  } finally {
-    // unsub();
-  }
-}
-
-function isSpawnResult(errorOrResult: Error): errorOrResult is Error & SpawnResult {
-  return 'pid' in errorOrResult && 'stdout' in errorOrResult && 'stderr' in errorOrResult;
-}
-
-export async function installAsync(projectRoot: string, pkgs: string[] = []) {
-  return abortingSpawnAsync('bun', ['install', ...pkgs], {
-    cwd: projectRoot,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
 }
 
 /**
@@ -83,28 +38,56 @@ export async function installAsync(projectRoot: string, pkgs: string[] = []) {
 export async function createFromFixtureAsync(
   parentDir: string,
   {
+    verbose,
     dirName,
     reuseExisting,
     fixtureName,
     config,
     pkg,
+    linkExpoPackages,
+    linkExpoPackagesDev,
   }: {
+    verbose?: boolean;
     dirName: string;
     reuseExisting?: boolean;
     fixtureName: string;
     config?: Partial<ExpoConfig>;
     pkg?: Partial<PackageJSONConfig>;
+    /**
+     * Note, this is linked by installing the workspace folder as dependency directly.
+     * This may cause other side-effects, like resolving monorepo dependencies instead of the test project.
+     */
+    linkExpoPackages?: string[];
+    /**
+     * Note, this is linked by installing the workspace folder as dependency directly.
+     * This may cause other side-effects, like resolving monorepo dependencies instead of the test project.
+     */
+    linkExpoPackagesDev?: string[];
   }
 ): Promise<string> {
   const projectRoot = path.join(parentDir, dirName);
+  const log = createVerboseLogger({ verbose, prefix: 'project' });
+
+  log('Creating fixture:', {
+    parentDir,
+    dirName,
+    reuseExisting,
+    fixtureName,
+    config,
+    pkg,
+    linkExpoPackages,
+    linkExpoPackagesDev,
+  });
 
   if (fs.existsSync(projectRoot)) {
     if (reuseExisting) {
-      console.log('[setup] Reusing existing fixture project:', projectRoot);
+      log('Reusing existing fixture project:', projectRoot);
+      log.exit();
+
       // bail out early, this is good for local testing.
       return projectRoot;
     } else {
-      console.log('[setup] Clearing existing fixture project:', projectRoot);
+      log('Clearing existing fixture project:', projectRoot);
       await fs.promises.rm(projectRoot, { recursive: true, force: true });
     }
   }
@@ -118,31 +101,42 @@ export async function createFromFixtureAsync(
 
     // Create the project root
     fs.mkdirSync(projectRoot, { recursive: true });
-    console.log('[setup] Created fixture project:', projectRoot);
+    log('Created fixture project:', projectRoot);
 
     // Copy all files recursively into the temporary directory
     await copySync(fixturePath, projectRoot);
 
     // Add additional modifications to the package.json
-    if (pkg) {
+    if (pkg || linkExpoPackages || linkExpoPackagesDev) {
+      pkg ??= {};
       const pkgPath = path.join(projectRoot, 'package.json');
       const fixturePkg = (await JsonFile.readAsync(pkgPath)) as PackageJSONConfig;
+
+      const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
+      const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
+
+      if (linkExpoPackages) {
+        for (const pkg of linkExpoPackages) {
+          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
+          log('Created and linked tarball for dependencies', tarball);
+          dependencies[pkg] = tarball.packageReference;
+        }
+      }
+
+      if (linkExpoPackagesDev) {
+        for (const pkg of linkExpoPackagesDev) {
+          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
+          log('Created and linked tarball for devDependencies', tarball);
+          devDependencies[pkg] = tarball.packageReference;
+        }
+      }
 
       await JsonFile.writeAsync(pkgPath, {
         ...pkg,
         ...fixturePkg,
-        dependencies: {
-          ...(fixturePkg.dependencies || {}),
-          ...(pkg.dependencies || {}),
-        },
-        devDependencies: {
-          ...(fixturePkg.devDependencies || {}),
-          ...(pkg.devDependencies || {}),
-        },
-        scripts: {
-          ...(fixturePkg.scripts || {}),
-          ...(pkg.scripts || {}),
-        },
+        dependencies,
+        devDependencies,
+        scripts: Object.assign({}, fixturePkg.scripts, pkg.scripts),
       });
     }
 
@@ -166,11 +160,14 @@ export async function createFromFixtureAsync(
     }
 
     // Install the packages for e2e experience.
-    await installAsync(projectRoot);
+    await executeBunAsync(projectRoot, ['install']);
   } catch (error) {
+    log.error(error);
     // clean up if something failed.
     // await fs.remove(projectRoot).catch(() => null);
     throw error;
+  } finally {
+    log.exit();
   }
 
   return projectRoot;
@@ -184,54 +181,44 @@ export async function setupTestProjectWithOptionsAsync(
   fixtureName: string,
   {
     reuseExisting = testingLocally,
-    sdkVersion = '51.0.0',
+    sdkVersion = '52.0.0',
+    linkExpoPackages,
+    linkExpoPackagesDev,
   }: {
     sdkVersion?: string;
     reuseExisting?: boolean;
+    linkExpoPackages?: string[];
+    linkExpoPackagesDev?: string[];
   } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
-  const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
+  const projectRoot = await createFromFixtureAsync(TEMP_DIR, {
     dirName: name,
     reuseExisting,
     fixtureName,
+    linkExpoPackages,
+    linkExpoPackagesDev,
   });
 
   // Many of the factors in this test are based on the expected SDK version that we're testing against.
   const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  expect(exp.sdkVersion).toBe(sdkVersion);
+  assert(exp.sdkVersion === sdkVersion, `Expected exp.sdkVersion to be ${sdkVersion}`);
   return projectRoot;
 }
 
 /** Returns a list of loaded modules relative to the repo root. Useful for preventing lazy loading from breaking unexpectedly.   */
 export async function getLoadedModulesAsync(statement: string): Promise<string[]> {
   const repoRoot = path.join(__dirname, '../../../../');
-  const results = await execa(
+  const results = await executeAsync(__dirname, [
     'node',
-    [
-      '-e',
-      [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join('\n'),
-    ],
-    { cwd: __dirname }
-  );
-  const loadedModules = JSON.parse(results.stdout.trim());
-  return loadedModules.map((value: string) => path.relative(repoRoot, value)).sort();
-}
-
-const pTreeKill = promisify(treeKill);
-
-export async function ensurePortFreeAsync(port: number) {
-  const [portProcess] = await findProcess('port', port);
-  if (!portProcess) {
-    return;
-  }
-  console.log(`Killing process ${portProcess.name} on port ${port}...`);
-  try {
-    await pTreeKill(portProcess.pid);
-    console.log(`Killed process ${portProcess.name} on port ${port}`);
-  } catch (error: any) {
-    console.log(`Failed to kill process ${portProcess.name} on port ${port}: ${error.message}`);
-  }
+    '-e',
+    [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join(';'),
+  ]);
+  const loadedModules = JSON.parse(results.stdout.trim()) as string[];
+  return loadedModules
+    .map((value) => toPosixPath(path.relative(repoRoot, value)))
+    .filter((value) => !value.includes('/ms-vscode.js-debug/')) // Ignore injected vscode debugger scripts
+    .sort();
 }
 
 export async function getPage(output: string, route: string): Promise<string> {
@@ -281,4 +268,19 @@ export function expectChunkPathMatching(name: string) {
       `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
     )
   );
+}
+
+/**
+ * Find all project files in the given project root.
+ * This returns all paths in POSIX format, sorted alphabetically, and relative to the project root without any prefix.
+ */
+export function findProjectFiles(projectRoot: string) {
+  return klawSync(projectRoot, { nodir: true })
+    .map((entry) =>
+      entry.path.includes('node_modules')
+        ? null
+        : toPosixPath(path.relative(projectRoot, entry.path))
+    )
+    .filter(Boolean)
+    .sort() as string[];
 }

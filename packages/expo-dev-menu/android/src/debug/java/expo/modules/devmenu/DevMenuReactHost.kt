@@ -42,7 +42,7 @@ object DevMenuReactHost {
     } else {
       HermesInstance()
     }
-    val jsMainModuleName = "index"
+    val jsMainModuleName = "packages/expo-dev-menu/app/index"
     val defaultReactHostDelegate =
       DefaultReactHostDelegate(
         jsMainModulePath = jsMainModuleName,
@@ -60,9 +60,6 @@ object DevMenuReactHost {
       useDeveloperSupport,
       useDeveloperSupport
     )
-      .apply {
-        jsEngineResolutionAlgorithm = jsResolutionAlgorithm
-      }
     if (useDeveloperSupport) {
       injectDevServerSettings(application.applicationContext, reactHost)
     }

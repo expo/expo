@@ -1,4 +1,4 @@
-import getPathFromState from '../getPathFromState';
+import { getPathFromState } from '../getPathFromState';
 
 describe('hash support', () => {
   it('appends hash to the path', () => {

@@ -16,7 +16,7 @@ internal class PersistentFileLogHandler(
   override fun log(type: LogType, message: String, cause: Throwable?) {
     persistentFileLog.appendEntry(message)
     cause?.let {
-      persistentFileLog.appendEntry("${cause.localizedMessage}\n${cause.stackTraceToString()}")
+      persistentFileLog.appendEntry("${cause.localizedMessageWithCauseLocalizedMessage()}\n${cause.stackTraceToString()}")
     }
   }
 }

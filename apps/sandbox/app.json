@@ -2,10 +2,8 @@
   "expo": {
     "name": "sandbox",
     "slug": "sandbox",
-    "privacy": "public",
     "sdkVersion": "UNVERSIONED",
     "scheme": "sandbox",
-
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +26,15 @@
         {
           "origin": "https://naviloop.netlify.app/",
           "asyncRoutes": true
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
         }
       ]
     ],

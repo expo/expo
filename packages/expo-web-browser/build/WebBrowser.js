@@ -266,7 +266,7 @@ function _processOptions(options) {
         secondaryToolbarColor: processColor(options.secondaryToolbarColor),
     };
 }
-/* Android polyfill for SFAuthenticationSession flow */
+/* Android polyfill for ASWebAuthenticationSession flow */
 function _authSessionIsNativelySupported() {
     return Platform.OS !== 'android';
 }

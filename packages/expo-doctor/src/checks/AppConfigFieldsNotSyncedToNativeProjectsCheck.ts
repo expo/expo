@@ -13,14 +13,12 @@ const appConfigFieldsToSyncWithNative = [
   'scheme',
   'userInterfaceStyle',
   'splash',
-  'updates',
   'orientation',
   'backgroundColor',
   'primaryColor',
   'notification',
   'androidStatusBar',
   'androidNavigationBar',
-  'jsEngine',
   'locales',
 ];
 
@@ -55,8 +53,10 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
     if (
       unsyncedFields.length &&
       // git check-ignore needs a specific file to check gitignore, we choose Podfile or build.gradle
-      ((await existsAndIsNotIgnoredAsync(path.join(projectRoot, 'ios', 'Podfile')),
-      isBuildingOnEAS) ||
+      ((await existsAndIsNotIgnoredAsync(
+        path.join(projectRoot, 'ios', 'Podfile'),
+        isBuildingOnEAS
+      )) ||
         (await existsAndIsNotIgnoredAsync(
           path.join(projectRoot, 'android', 'build.gradle'),
           isBuildingOnEAS
@@ -70,7 +70,9 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
         `This project contains native project folders but also has native configuration properties in ${configFileName}, indicating it is configured to use Prebuild. When the android/ios folders are present, ${prebuildMessage} ${unsyncedFields.join(', ')}. \n`
       );
 
-      advice = `Add '/android' and '/ios' to your ${ignoreFile} file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`;
+      if (isBuildingOnEAS) {
+        advice = `Add '/android' and '/ios' to your ${ignoreFile} file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`;
+      }
     }
 
     return {

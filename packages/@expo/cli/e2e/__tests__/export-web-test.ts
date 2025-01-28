@@ -1,24 +1,22 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import assert from 'assert';
-import execa from 'execa';
-import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
+import fs from 'fs';
 import path from 'path';
 
 import {
-  execute,
   projectRoot,
   getLoadedModulesAsync,
-  bin,
   setupTestProjectWithOptionsAsync,
+  findProjectFiles,
 } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
 beforeAll(async () => {
-  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.promises.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
 });
@@ -41,7 +39,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo export:web --help`', async () => {
-  const results = await execute('export:web', '--help');
+  const results = await executeExpoAsync(projectRoot, ['export:web', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -59,100 +57,83 @@ it('runs `npx expo export:web --help`', async () => {
   `);
 });
 
-it(
-  'runs `npx expo export:web`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-export-web', 'with-web');
-    // `npx expo export:web`
-    await execa('node', [bin, 'export:web'], {
-      cwd: projectRoot,
-    });
+it('runs `npx expo export:web`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-export-web', 'with-web');
 
-    const outputDir = path.join(projectRoot, 'web-build');
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+  // `npx expo export:web`
+  await executeExpoAsync(projectRoot, ['export:web']);
 
-    const assetsManifest = await JsonFile.readAsync(path.resolve(outputDir, 'asset-manifest.json'));
-    expect(assetsManifest.entrypoints).toEqual([
-      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
-    ]);
+  const outputDir = path.join(projectRoot, 'web-build');
 
-    const knownFiles = [
-      ['main.js', expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/)],
-      ['index.html', '/index.html'],
-      ['manifest.json', '/manifest.json'],
-      ['serve.json', '/serve.json'],
-    ];
+  const assetsManifest = await JsonFile.readAsync(path.resolve(outputDir, 'asset-manifest.json'));
+  expect(assetsManifest.entrypoints).toEqual([
+    expect.pathMatching(/static\/js\/\d+\.[a-z\d]+\.js$/),
+    expect.pathMatching(/static\/js\/main\.[a-z\d]+\.js$/),
+  ]);
 
-    assert(assetsManifest.files);
-    console.log(assetsManifest.files);
-    for (const [key, value] of knownFiles) {
-      const files = assetsManifest.files as Record<string, string>;
-      expect(files[key]).toEqual(value);
-      delete files[key];
-    }
+  const knownFiles = [
+    ['main.js', expect.pathMatching(/static\/js\/main\.[a-z\d]+\.js$/)],
+    ['index.html', '/index.html'],
+    ['manifest.json', '/manifest.json'],
+    ['serve.json', '/serve.json'],
+  ];
 
-    for (const [key, value] of Object.entries(assetsManifest?.files ?? {})) {
-      expect(key).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
-      expect(value).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
-    }
+  assert(assetsManifest.files);
+  console.log(assetsManifest.files);
+  for (const [key, value] of knownFiles) {
+    const files = assetsManifest.files as Record<string, string>;
+    expect(files[key]).toEqual(value);
+    delete files[key];
+  }
 
-    expect(await JsonFile.readAsync(path.resolve(outputDir, 'manifest.json'))).toEqual({
-      display: 'standalone',
-      lang: 'en',
-      name: 'basic-export-web',
-      prefer_related_applications: true,
-      related_applications: [
-        {
-          id: 'com.example.minimal',
-          platform: 'itunes',
-        },
-        {
-          id: 'com.example.minimal',
-          platform: 'play',
-          url: 'http://play.google.com/store/apps/details?id=com.example.minimal',
-        },
-      ],
-      short_name: 'basic-export-web',
-      start_url: '/?utm_source=web_app_manifest',
-    });
-    expect(await JsonFile.readAsync(path.resolve(outputDir, 'serve.json'))).toEqual({
-      headers: [
-        {
-          headers: [
-            {
-              key: 'Cache-Control',
-              value: 'public, max-age=31536000, immutable',
-            },
-          ],
-          source: 'static/**/*.js',
-        },
-      ],
-    });
+  for (const [key, value] of Object.entries(assetsManifest?.files ?? {})) {
+    expect(key).toMatchPath(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?$/);
+    expect(value).toMatchPath(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?$/);
+  }
 
-    // If this changes then everything else probably changed as well.
-    expect(files).toEqual([
-      'asset-manifest.json',
-      'index.html',
-      'manifest.json',
-      'serve.json',
-      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.LICENSE\.txt/),
-      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.map/),
-      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js\.map/),
-    ]);
-  },
-  // Could take 45s depending on how fast npm installs
-  120 * 1000
-);
+  expect(await JsonFile.readAsync(path.resolve(outputDir, 'manifest.json'))).toEqual({
+    display: 'standalone',
+    lang: 'en',
+    name: 'basic-export-web',
+    prefer_related_applications: true,
+    related_applications: [
+      {
+        id: 'com.example.minimal',
+        platform: 'itunes',
+      },
+      {
+        id: 'com.example.minimal',
+        platform: 'play',
+        url: 'http://play.google.com/store/apps/details?id=com.example.minimal',
+      },
+    ],
+    short_name: 'basic-export-web',
+    start_url: '/?utm_source=web_app_manifest',
+  });
+  expect(await JsonFile.readAsync(path.resolve(outputDir, 'serve.json'))).toEqual({
+    headers: [
+      {
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+        source: 'static/**/*.js',
+      },
+    ],
+  });
+
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(outputDir)).toEqual([
+    'asset-manifest.json',
+    'index.html',
+    'manifest.json',
+    'serve.json',
+    expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
+    expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.LICENSE\.txt/),
+    expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.map/),
+    expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
+    expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js\.map/),
+  ]);
+});

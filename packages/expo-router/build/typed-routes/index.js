@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.regenerateDeclarations = exports.getWatchHandler = void 0;
+exports.regenerateDeclarations = exports.getWatchHandler = exports.version = void 0;
 const _ctx_shared_1 = require("expo-router/_ctx-shared");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -11,6 +11,11 @@ const generate_1 = require("./generate");
 const matchers_1 = require("../matchers");
 const require_context_ponyfill_1 = __importDefault(require("../testing-library/require-context-ponyfill"));
 const defaultCtx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_ROOT, true, _ctx_shared_1.EXPO_ROUTER_CTX_IGNORE);
+/**
+ * This file is imported via `@expo/cli`. While users should be using the same SDK version of `expo-router` as `@expo/cli`,
+ * this export allows us to ensure that the version of the `expo-router` package is compatible with the version of `@expo/cli`.
+ */
+exports.version = 52;
 /**
  * Generate a Metro watch handler that regenerates the typed routes declaration file
  */
@@ -64,10 +69,10 @@ exports.getWatchHandler = getWatchHandler;
  *
  * If you process the types after the ADD, then they will crash as you will have conflicting routes
  */
-exports.regenerateDeclarations = debounce((outputDir, ctx = defaultCtx) => {
+exports.regenerateDeclarations = debounce((outputDir, options = {}, ctx = defaultCtx) => {
     // Don't crash the process, just log the error. The user will most likely fix it and continue
     try {
-        const file = (0, generate_1.getTypedRoutesDeclarationFile)(ctx);
+        const file = (0, generate_1.getTypedRoutesDeclarationFile)(ctx, options);
         if (!file)
             return;
         node_fs_1.default.writeFileSync(node_path_1.default.resolve(outputDir, './router.d.ts'), file);

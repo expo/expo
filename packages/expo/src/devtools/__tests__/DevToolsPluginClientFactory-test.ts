@@ -1,3 +1,5 @@
+import { TextDecoder, TextEncoder } from 'util';
+
 import MockWebSocket from './MockWebSocket';
 import {
   cleanupDevToolsPluginInstances,
@@ -11,6 +13,10 @@ jest.mock('../getConnectionInfo');
 
 // @ts-expect-error - We don't mock all properties from WebSocket
 globalThis.WebSocket = MockWebSocket;
+
+// @ts-ignore - TextDecoder and TextEncoder are not defined in native jest environments.
+globalThis.TextDecoder ??= TextDecoder;
+globalThis.TextEncoder ??= TextEncoder;
 
 describe(getDevToolsPluginClientAsync, () => {
   const mockGetConnectionInfo = getConnectionInfo as jest.MockedFunction<typeof getConnectionInfo>;

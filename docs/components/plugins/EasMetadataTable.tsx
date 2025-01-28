@@ -1,5 +1,5 @@
+import { mergeClasses } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import assert from 'assert';
 import { ComponentType, Fragment, ReactNode, useId } from 'react';
 
 import { Table, Row as TableRow, Cell as TableCell } from '~/ui/components/Table';
@@ -15,7 +15,7 @@ type MetadataHeader = 'Description' | 'Language Code' | 'Language' | 'Name' | 'P
 interface MetadataProperty {
   name: string;
   nested?: number;
-  type?: string | ReactNode;
+  type?: ReactNode;
   description?: string | ReactNode[];
   rules?: string[];
 }
@@ -24,9 +24,11 @@ interface MetadataPropertyProps {
   property: MetadataProperty;
 }
 
-export function MetadataTable(props: MetadataTableProps) {
+export function MetadataTable({
+  headers = ['Property', 'Type', 'Description'],
+  children = [],
+}: MetadataTableProps) {
   const id = useId();
-  const { headers = ['Property', 'Type', 'Description'], children = [] } = props;
 
   return (
     <div className="mb-2 mt-1">
@@ -35,7 +37,10 @@ export function MetadataTable(props: MetadataTableProps) {
           <TableRow key={`${id}-${property.name}`}>
             {headers.map(column => {
               const Property = metadataProperties[column];
-              assert(Property, `No metadata property renderer found for ${column}`);
+              if (!Property) {
+                console.error(`No metadata property renderer found for ${column}`);
+                return null;
+              }
               return <Property key={`${id}-${property.name}-${column}`} property={property} />;
             })}
           </TableRow>
@@ -56,14 +61,18 @@ const metadataProperties: Record<MetadataHeader, ComponentType<MetadataPropertyP
 
 function MetadataNameCell({ property }: MetadataPropertyProps) {
   const style = {
-    display: property.nested ? 'list-item' : 'block',
     marginLeft: property.nested ? spacing[6] * property.nested : 0,
-    listStyleType: (property.nested ?? 0) % 2 ? 'default' : 'circle',
   };
 
   return (
     <TableCell fitContent>
-      <P css={style}>
+      <P
+        className={mergeClasses(
+          'block',
+          property.nested && 'list-item',
+          (property.nested ?? 0) % 2 ? 'list-disc' : 'list-[circle]'
+        )}
+        style={style}>
         <CODE>{property.name}</CODE>
       </P>
     </TableCell>
@@ -85,13 +94,13 @@ function MetadataPropertyTypeRules({ property }: MetadataPropertyProps) {
   const id = useId();
 
   return (
-    <P css={{ marginTop: spacing[1] }}>
+    <P className="mt-1">
       {property.rules?.map(rule => (
         <FOOTNOTE
           key={`${id}-${property.name}-${rule}`}
           tag="span"
           theme="secondary"
-          css={{ display: 'block', whiteSpace: 'nowrap' }}>
+          className="block whitespace-nowrap">
           {rule}
         </FOOTNOTE>
       ))}

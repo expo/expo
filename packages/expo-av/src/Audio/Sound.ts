@@ -56,7 +56,9 @@ export type SoundObject = {
 };
 
 type AudioInstance = number | HTMLMediaElement | null;
-type AudioSampleCallback = ((sample: AudioSample) => void) | null;
+
+// @docsMissing
+export type AudioSampleCallback = ((sample: AudioSample) => void) | null;
 
 declare global {
   interface Global {

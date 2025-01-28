@@ -25,7 +25,7 @@ import Foundation
  *   EXUpdatesRequestHeaders
  */
 internal final class UpdatesBuildData {
-  static func ensureBuildDataIsConsistentAsync(database: UpdatesDatabase, config: UpdatesConfig) {
+  static func ensureBuildDataIsConsistentAsync(database: UpdatesDatabase, config: UpdatesConfig, logger: UpdatesLogger) {
     database.databaseQueue.async {
       let scopeKey = config.scopeKey
 
@@ -33,56 +33,85 @@ internal final class UpdatesBuildData {
       do {
         staticBuildData = try database.staticBuildData(withScopeKey: scopeKey)
       } catch {
-        NSLog("Error getting static build data: %@", [error.localizedDescription])
+        logger.warn(message: "Error getting static build data: \(error.localizedDescription)")
         return
       }
+      let buildDataFromConfig = self.getBuildDataFromConfig(config)
 
-      if let staticBuildData = staticBuildData {
-        let impliedStaticBuildData = self.getBuildDataFromConfig(config)
-        // safest dictionary comparison conversion is still in objective-c
-        // swiftlint:disable:next legacy_objc_type
-        if !NSDictionary(dictionary: staticBuildData).isEqual(to: impliedStaticBuildData) {
-          clearAllUpdatesAndSetStaticBuildData(database: database, config: config, scopeKey: scopeKey)
-        }
+      if let staticBuildData,
+        !isBuildDataConsistent(staticBuildData, buildDataFromConfig) {
+        clearAllUpdatesAndSetStaticBuildData(database: database, config: config, logger: logger, scopeKey: scopeKey)
+        clearManifestMetadataFromDatabase(database: database, logger: logger)
       } else {
         do {
           try database.setStaticBuildData(getBuildDataFromConfig(config), withScopeKey: scopeKey)
         } catch {
-          NSLog("Error setting static build data: %@", [error.localizedDescription])
+          logger.warn(message: "Error setting static build data: \(error.localizedDescription)")
           return
         }
       }
     }
   }
 
+  /**
+   Fallback data specifically for migration while database data doesn't have these keys
+   */
+  private static let defaultBuildData: [String: Any] = [
+    "EXUpdatesHasEmbeddedUpdate": true
+  ]
+
   static func getBuildDataFromConfig(_ config: UpdatesConfig) -> [String: Any] {
     return [
       "EXUpdatesURL": config.updateUrl.absoluteString,
-      "EXUpdatesRequestHeaders": config.requestHeaders
+      "EXUpdatesRequestHeaders": config.requestHeaders,
+      "EXUpdatesHasEmbeddedUpdate": config.hasEmbeddedUpdate
     ]
   }
 
-  static func clearAllUpdatesAndSetStaticBuildData(database: UpdatesDatabase, config: UpdatesConfig, scopeKey: String) {
+  static func clearAllUpdatesAndSetStaticBuildData(database: UpdatesDatabase, config: UpdatesConfig, logger: UpdatesLogger, scopeKey: String) {
     let allUpdates: [Update]
     do {
       allUpdates = try database.allUpdates(withConfig: config)
     } catch {
-      NSLog("Error loading updates from database: %@", [error.localizedDescription])
+      logger.warn(message: "Error loading updates from database: \(error.localizedDescription)")
       return
     }
 
     do {
       try database.deleteUpdates(allUpdates)
     } catch {
-      NSLog("Error clearing all updates from database: %@", [error.localizedDescription])
+      logger.warn(message: "Error clearing all updates from database: \(error.localizedDescription)")
       return
     }
 
     do {
       try database.setStaticBuildData(getBuildDataFromConfig(config), withScopeKey: scopeKey)
     } catch {
-      NSLog("Error setting static build data: %@", [error.localizedDescription])
+      logger.warn(message: "Error setting static build data: \(error.localizedDescription)")
       return
     }
+  }
+
+  private static func clearManifestMetadataFromDatabase(database: UpdatesDatabase, logger: UpdatesLogger) {
+    do {
+      try database.deleteJsonDataForAllScopeKeys(withKeys: [
+        UpdatesDatabase.JSONDataKey.ExtraParmasKey,
+        UpdatesDatabase.JSONDataKey.ServerDefinedHeadersKey,
+        UpdatesDatabase.JSONDataKey.ManifestFiltersKey
+      ])
+    } catch {
+      logger.warn(message: "Error deleting JSON data from database: \(error.localizedDescription)")
+      return
+    }
+  }
+
+  internal static func isBuildDataConsistent(_ lhs: [AnyHashable: Any], _ rhs: [AnyHashable: Any]) -> Bool {
+    let lhsWithDefault = lhs
+      .merging(defaultBuildData) { current, _ in current }
+    let rhsWithDefault = rhs
+      .merging(defaultBuildData) { current, _ in current }
+    // safest dictionary comparison conversion is still in objective-c
+    // swiftlint:disable:next legacy_objc_type
+    return NSDictionary(dictionary: lhsWithDefault).isEqual(to: rhsWithDefault)
   }
 }

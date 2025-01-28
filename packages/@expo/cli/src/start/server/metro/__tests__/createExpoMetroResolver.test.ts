@@ -22,7 +22,7 @@ const createContext = ({
   nodeModulesPaths?: string[];
   packageExports?: boolean;
   override?: Partial<SupportedContext>;
-}): SupportedContext => {
+}): SupportedContext & { unstable_fileSystemLookup?: (filepath: string) => any } => {
   const preferNativePlatform = platform === 'ios' || platform === 'android';
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
@@ -36,6 +36,18 @@ const createContext = ({
     }),
     getPackage(packageJsonPath) {
       return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    },
+    unstable_fileSystemLookup(filePath) {
+      if (!fs.existsSync(filePath)) {
+        return { exists: false };
+      }
+      const fp = fs.realpathSync(filePath);
+      const type = fs.statSync(fp).isDirectory() ? 'd' : 'f';
+      return {
+        exists: true,
+        type,
+        realPath: fp,
+      };
     },
     mainFields: preferNativePlatform
       ? ['react-native', 'browser', 'main']

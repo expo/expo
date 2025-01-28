@@ -2,6 +2,7 @@ import { LegacyEventEmitter, type EventSubscription, Platform } from 'expo-modul
 
 import PushTokenManager from './PushTokenManager';
 import { DevicePushToken } from './Tokens.types';
+import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';
 
 /**
  * A function accepting a device push token ([`DevicePushToken`](#devicepushtoken)) as an argument.
@@ -19,7 +20,7 @@ const newTokenEventName = 'onDevicePushToken';
  * When a token is rolled, the old one becomes invalid and sending notifications to it will fail.
  * A push token listener will let you handle this situation gracefully by registering the new token with your backend right away.
  * @param listener A function accepting a push token as an argument, it will be called whenever the push token changes.
- * @return A [`Subscription`](#subscription) object represents the subscription of the provided listener.
+ * @return An [`EventSubscription`](#eventsubscription) object represents the subscription of the provided listener.
  * @header fetch
  * @example Registering a push token listener using a React hook.
  * ```jsx
@@ -41,6 +42,7 @@ const newTokenEventName = 'onDevicePushToken';
  * ```
  */
 export function addPushTokenListener(listener: PushTokenListener): EventSubscription {
+  warnOfExpoGoPushUsage();
   const wrappingListener = ({ devicePushToken }) =>
     listener({ data: devicePushToken, type: Platform.OS });
   return tokenEmitter.addListener(newTokenEventName, wrappingListener);

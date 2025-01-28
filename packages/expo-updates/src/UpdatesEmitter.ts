@@ -1,27 +1,30 @@
 import { EventEmitter as JsEventEmitter } from 'fbemitter';
 
 import ExpoUpdatesModule from './ExpoUpdates';
-import { transformNativeStateMachineContext } from './Updates';
-import type { UpdatesNativeStateChangeEvent } from './Updates.types';
+import type {
+  UpdatesNativeStateChangeEvent,
+  UpdatesNativeStateMachineContext,
+} from './Updates.types';
 
-ExpoUpdatesModule.addListener('Expo.nativeUpdatesStateChangeEvent', _emitNativeStateChangeEvent);
+export let latestContext = transformNativeStateMachineContext(ExpoUpdatesModule.initialContext);
 
-let _jsEventEmitter: JsEventEmitter | null = null;
-function _getJsEventEmitter(): JsEventEmitter {
-  if (!_jsEventEmitter) {
-    _jsEventEmitter = new JsEventEmitter();
-  }
-  return _jsEventEmitter;
-}
+ExpoUpdatesModule.addListener('Expo.nativeUpdatesStateChangeEvent', _handleNativeStateChangeEvent);
+
+const _jsEventEmitter = new JsEventEmitter();
 
 // Reemits native state change events
-function _emitNativeStateChangeEvent(params: any) {
-  let newParams = { ...params };
-  if (typeof params === 'string') {
-    newParams = JSON.parse(params);
+function _handleNativeStateChangeEvent(params: any) {
+  const newParams = typeof params === 'string' ? JSON.parse(params) : { ...params };
+  const transformedContext = transformNativeStateMachineContext(newParams.context);
+
+  // only process state change events if they are in order
+  if (transformedContext.sequenceNumber <= latestContext.sequenceNumber) {
+    return;
   }
-  newParams.context = transformNativeStateMachineContext(newParams.context);
-  _getJsEventEmitter().emit('Expo.updatesStateChangeEvent', newParams);
+
+  newParams.context = transformedContext;
+  latestContext = transformedContext;
+  _jsEventEmitter.emit('Expo.updatesStateChangeEvent', newParams);
 }
 
 /**
@@ -31,13 +34,49 @@ function _emitNativeStateChangeEvent(params: any) {
 export const addUpdatesStateChangeListener = (
   listener: (event: UpdatesNativeStateChangeEvent) => void
 ) => {
-  return _getJsEventEmitter().addListener('Expo.updatesStateChangeEvent', listener);
+  return _jsEventEmitter.addListener('Expo.updatesStateChangeEvent', listener);
 };
 
 /**
- * Allows JS to emit a simulated native state change event (used in unit testing)
+ * Allows JS test to emit a simulated native state change event (used in unit testing)
  * @hidden
  */
 export const emitTestStateChangeEvent = (event: UpdatesNativeStateChangeEvent) => {
-  _emitNativeStateChangeEvent(event);
+  _handleNativeStateChangeEvent(event);
 };
+
+/**
+ * Allows JS test to reset latest context (and sequence number)
+ * @hidden
+ */
+export const resetLatestContext = () => {
+  latestContext = transformNativeStateMachineContext(ExpoUpdatesModule.initialContext);
+};
+
+function transformNativeStateMachineContext(
+  originalNativeContext: UpdatesNativeStateMachineContext & {
+    latestManifestString?: string;
+    downloadedManifestString?: string;
+    lastCheckForUpdateTimeString?: string;
+    rollbackString?: string;
+  }
+): UpdatesNativeStateMachineContext {
+  const nativeContext = { ...originalNativeContext };
+  if (nativeContext.latestManifestString) {
+    nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
+    delete nativeContext.latestManifestString;
+  }
+  if (nativeContext.downloadedManifestString) {
+    nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
+    delete nativeContext.downloadedManifestString;
+  }
+  if (nativeContext.lastCheckForUpdateTimeString) {
+    nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
+    delete nativeContext.lastCheckForUpdateTimeString;
+  }
+  if (nativeContext.rollbackString) {
+    nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
+    delete nativeContext.rollbackString;
+  }
+  return nativeContext;
+}

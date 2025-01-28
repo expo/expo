@@ -6,7 +6,7 @@ import { A, CALLOUT, FOOTNOTE } from '../Text';
 
 type Props = Omit<DropdownMenu.DropdownMenuItemProps, 'onClick'> & {
   label: string;
-  description?: React.ReactNode;
+  description?: ReactNode;
   href?: string;
   Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
   rightSlot?: ReactNode;
@@ -34,7 +34,7 @@ export function Item({
       aria-disabled={disabled}
       className={mergeClasses(
         'relative z-40 flex cursor-pointer select-none items-center justify-between rounded-sm px-2 py-1',
-        'hocus:bg-hover hover:outline-0',
+        'hover:outline-0 hocus:bg-hover',
         disabled && 'cursor-default opacity-60 hocus:bg-default'
       )}
       onSelect={event => {

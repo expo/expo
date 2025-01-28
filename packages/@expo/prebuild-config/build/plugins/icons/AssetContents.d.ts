@@ -1,19 +1,34 @@
 export type ContentsJsonImageIdiom = 'iphone' | 'ipad' | 'watchos' | 'ios' | 'ios-marketing' | 'universal';
-export type ContentsJsonImageAppearance = {
+export type ContentsJsonImageAppearanceLuminosityType = 'light' | 'dark' | 'tinted';
+export type ContentsJsonAppearance = {
     appearance: 'luminosity';
-    value: 'dark';
+    value: ContentsJsonImageAppearanceLuminosityType;
 };
 export type ContentsJsonImageScale = '1x' | '2x' | '3x';
 export interface ContentsJsonImage {
-    appearances?: ContentsJsonImageAppearance[];
+    appearances?: ContentsJsonAppearance[];
     idiom: ContentsJsonImageIdiom;
     size?: string;
     scale?: ContentsJsonImageScale;
     filename?: string;
     platform?: ContentsJsonImageIdiom;
 }
+export interface ContentsJsonColor {
+    appearances?: ContentsJsonAppearance[];
+    idiom: ContentsJsonImageIdiom;
+    color: {
+        'color-space': 'srgb';
+        components: {
+            alpha: string;
+            blue: string;
+            green: string;
+            red: string;
+        };
+    };
+}
 export interface ContentsJson {
     images: ContentsJsonImage[];
+    colors: ContentsJsonColor[];
     info: {
         version: number;
         author: string;

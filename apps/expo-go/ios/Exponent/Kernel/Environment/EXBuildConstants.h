@@ -17,7 +17,7 @@ typedef enum EXKernelDevManifestSource {
 @property (nonatomic, readonly) EXKernelDevManifestSource kernelDevManifestSource;
 @property (nonatomic, readonly) NSString *kernelManifestAndAssetRequestHeadersJsonString;
 @property (nonatomic, readonly) NSURL *apiServerEndpoint;
-@property (nonatomic, strong) NSString *temporarySdkVersion;
+@property (nonatomic, strong) NSString *sdkVersion;
 @property (nonatomic, strong) NSString *expoRuntimeVersion;
 
 @end

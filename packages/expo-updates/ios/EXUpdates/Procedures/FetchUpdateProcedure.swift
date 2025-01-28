@@ -40,6 +40,7 @@ final class FetchUpdateProcedure: StateMachineProcedure {
 
     self.remoteAppLoader = RemoteAppLoader(
       config: self.config,
+      logger: self.logger,
       database: self.database,
       directory: self.updatesDirectory,
       launchedUpdate: self.getLaunchedUpdate(),
@@ -52,7 +53,7 @@ final class FetchUpdateProcedure: StateMachineProcedure {
   }
 
   func run(procedureContext: ProcedureContext) {
-    procedureContext.processStateEvent(UpdatesStateEventDownload())
+    procedureContext.processStateEvent(.download)
     remoteAppLoader.loadUpdate(
       fromURL: self.config.updateUrl
     ) { updateResponse in
@@ -95,6 +96,7 @@ final class FetchUpdateProcedure: StateMachineProcedure {
     } success: { updateResponse in
       RemoteAppLoader.processSuccessLoaderResult(
         config: self.config,
+        logger: self.logger,
         database: self.database,
         selectionPolicy: self.selectionPolicy,
         launchedUpdate: self.getLaunchedUpdate(),
@@ -104,7 +106,7 @@ final class FetchUpdateProcedure: StateMachineProcedure {
         priorError: nil
       ) { updateToLaunch, error, didRollBackToEmbedded in
         if let error = error {
-          procedureContext.processStateEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
+          procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
           self.successBlock(FetchUpdateResult.error(error: error))
           procedureContext.onComplete()
           return
@@ -112,25 +114,25 @@ final class FetchUpdateProcedure: StateMachineProcedure {
 
         if didRollBackToEmbedded {
           self.successBlock(FetchUpdateResult.rollBackToEmbedded)
-          procedureContext.processStateEvent(UpdatesStateEventDownloadCompleteWithRollback())
+          procedureContext.processStateEvent(.downloadComplete)
           procedureContext.onComplete()
           return
         }
 
         if let update = updateToLaunch {
           self.successBlock(FetchUpdateResult.success(manifest: update.manifest.rawManifestJSON()))
-          procedureContext.processStateEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
+          procedureContext.processStateEvent(.downloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
           procedureContext.onComplete()
           return
         }
 
         self.successBlock(FetchUpdateResult.failure)
-        procedureContext.processStateEvent(UpdatesStateEventDownloadComplete())
+        procedureContext.processStateEvent(.downloadComplete)
         procedureContext.onComplete()
         return
       }
     } error: { error in
-      procedureContext.processStateEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
+      procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
       self.successBlock(FetchUpdateResult.error(error: error))
       procedureContext.onComplete()
       return

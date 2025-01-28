@@ -325,7 +325,7 @@ function _processOptions(options: WebBrowserOpenOptions) {
   };
 }
 
-/* Android polyfill for SFAuthenticationSession flow */
+/* Android polyfill for ASWebAuthenticationSession flow */
 
 function _authSessionIsNativelySupported(): boolean {
   return Platform.OS !== 'android';

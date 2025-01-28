@@ -7,6 +7,7 @@ import { serializeDictionary, Dictionary } from 'structured-headers';
 
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
+import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
 import { ServerHeaders, ServerRequest } from './server.types';
 import { getAnonymousIdAsync } from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
@@ -102,11 +103,19 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     const { exp, hostUri, expoGoConfig, bundleUrl } =
       await this._resolveProjectSettingsAsync(requestOptions);
 
-    const runtimeVersion = await Updates.getRuntimeVersionAsync(
-      this.projectRoot,
-      { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
-      requestOptions.platform
-    );
+    const runtimeVersion =
+      (await resolveRuntimeVersionWithExpoUpdatesAsync({
+        projectRoot: this.projectRoot,
+        platform: requestOptions.platform,
+      })) ??
+      // if expo-updates can't determine runtime version, fall back to calculation from config-plugin.
+      // this happens when expo-updates is installed but runtimeVersion hasn't yet been configured or when
+      // expo-updates is not installed.
+      (await Updates.getRuntimeVersionAsync(
+        this.projectRoot,
+        { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
+        requestOptions.platform
+      ));
     if (!runtimeVersion) {
       throw new CommandError(
         'MANIFEST_MIDDLEWARE',

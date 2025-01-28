@@ -4,18 +4,91 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30859](https://github.com/expo/expo/pull/30859) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
-- [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
-- [iOS] Fixed `player.currentTime` being `NaN` when source is not provided and `player.duration` being `NaN` inside the hook callback when the source is updated. ([#31011](https://github.com/expo/expo/pull/31011) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
+- [iOS] Added an option to `generateThumbnailsAsync` to set the maximum size of generated thumbnails. ([#33599](https://github.com/expo/expo/pull/33599) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- [Web] Fix `playbackRate` not being applied in the setup function.([#34182](https://github.com/expo/expo/pull/34182) by [@behenate](https://github.com/behenate))
+- [iOS] Fix `AVPlayer` not deallocating when the player is unmounted. ([#33922](https://github.com/expo/expo/pull/33922) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Fixed `generateThumbnailsAsync` not being available on Android in the types. ([#33491](https://github.com/expo/expo/pull/33491) by [@hirbod](https://github.com/hirbod))
+- Run VideoManager.setAppropriateAudioSessionOrWarn on a different queue for a lower load on the main thread. ([#33127](https://github.com/expo/expo/pull/33127) by [@behenate](https://github.com/behenate))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 2.0.3 - 2024-12-19
+
+### 🐛 Bug fixes
+
+- [iOS] Fix empty notification showing on iOS when `showNowPlayingNotification` is set to false. ([#33698](https://github.com/expo/expo/pull/33698) by [@behenate](https://github.com/behenate))
+- [iOS] Dispatch current player item changes on main queue to fix KVO-related crashes. ([#33123](https://github.com/expo/expo/pull/33123) by [@behenate](https://github.com/behenate))
+
+## 2.0.2 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.1 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `border` related props weren't applied correctly. ([#33075](https://github.com/expo/expo/pull/33075) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix controls sometimes flashing on initial display of the view, when `useNativeControls` is `false` ([#33238](https://github.com/expo/expo/pull/33238) by [@behenate](https://github.com/behenate))
+
+## 2.0.0 — 2024-11-11
+
+### 💡 Others
+
+- [Android] Modify aspect ratio coverage of Android PiP to be more specific ([#32551](https://github.com/expo/expo/pull/32551) by [@YangJonghun](https://github.com/YangJonghun))
+
+## 2.0.0-preview.2 — 2024-11-07
+
+### 🎉 New features
+
+- [Android][iOS] Add support for listing and selecting closed captions. ([#32582](https://github.com/expo/expo/pull/32582) by [@behenate](https://github.com/behenate))
+
+## 2.0.0-preview.1 — 2024-11-05
+
+### 🎉 New features
+
+- [Android][iOS] Add `audioMixingMode` property to control how the player interacts with other audio in the system. ([#32428](https://github.com/expo/expo/pull/32428) by [@behenate](https://github.com/behenate))
+- Add support for creating a direct instance of `VideoPlayer`. ([#32228](https://github.com/expo/expo/pull/32228) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [Android] Fix errors when passing a source with an `undefined` `uri` field. ([#32585](https://github.com/expo/expo/pull/32585) by [@behenate](https://github.com/behenate))
+
+## 2.0.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30859](https://github.com/expo/expo/pull/30859) by [@tsapeta](https://github.com/tsapeta))
+- Changed the return type of all player events to a single object for a better support of the `useEvent` hook. ([#32104](https://github.com/expo/expo/pull/32104) by [@behenate](https://github.com/behenate))
+- Separated the `volumeChange` event into `volumeChange` and `mutedChange` events. ([#32104](https://github.com/expo/expo/pull/32104) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- [Android][iOS] Add support for controlling the buffering behavior. ([#30602](https://github.com/expo/expo/pull/30602) by [@behenate](https://github.com/behenate))
+- [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
+- [iOS] Fixed `player.currentTime` being `NaN` when source is not provided and `player.duration` being `NaN` inside the hook callback when the source is updated. ([#31011](https://github.com/expo/expo/pull/31011) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
+- [Android] Fix not being able to select subtitles in the player. ([#31829](https://github.com/expo/expo/pull/31829) by [@fobos531](https://github.com/fobos531))
+- Added generating video thumbnails. ([#31807](https://github.com/expo/expo/pull/31807) by [@tsapeta](https://github.com/tsapeta) & [#32037](https://github.com/expo/expo/pull/32037) by [@lukmccall](https://github.com/lukmccall))
+- [Android][iOS] Add support for video artwork. ([#32129](https://github.com/expo/expo/pull/32129) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
+
+### 🐛 Bug fixes
+
+- [Android] Fix `FullscreenPlayerActivity` not closing when the system returned to the `MainActivity` after backgrounding and reopening the app via icon. ([#32044](https://github.com/expo/expo/pull/32044) by [@behenate](https://github.com/behenate))
+- [Android] Fix `Activity` auto-entering Picture in Picture after leaving the screen with video. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
+- [Android] Fix `startsPictureInPictureAutomatically` not working in fullscreen mode. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
+- [Android] Fix video pausing after auto-entering Picture in Picture. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
+- [Android] Fix `MainActivity` sometimes entering Picture in Picture when entering fullscreen. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
 - [Android] Fix support for local file playback. ([#30472](https://github.com/expo/expo/pull/30472) by [@behenate](https://github.com/behenate))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 - [Android] Fix an issue where using non-ASCII characters in the application name would cause the media to not play. ([#31659](https://github.com/expo/expo/pull/31659) by [@fobos531](https://github.com/fobos531))
+- [Android] Fix an issue where the entire app would go into picture-in-picture after unmounting the video if the `startsPictureInPictureAutomatically` prop was enabled. ([#31901](https://github.com/expo/expo/pull/31901) by [@fobos531](https://github.com/fobos531))
 
 ### 💡 Others
 
@@ -24,6 +97,7 @@
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 1.2.7 - 2024-09-26
 
@@ -43,6 +117,8 @@
 - [iOS] Add live indicator in the now playing info. ([#30629](https://github.com/expo/expo/pull/30629) by [@justjoostnl](https://github.com/justjoostnl))
 - Add fullscreen enter and exit events. ([#30922](https://github.com/expo/expo/pull/30922) by [@fobos531](https://github.com/fobos531))
 - Add support for playback of local assets imported with the `require` function. ([#30837](https://github.com/expo/expo/pull/30837) by [@behenate](https://github.com/behenate))
+- [Web] Add support for Picture in Picture. ([#30524](https://github.com/expo/expo/pull/30524) by [@behenate](https://github.com/behenate))
+- Add `timeUpdate` event configured with `timeUpdateEventInterval` property.([#31327](https://github.com/expo/expo/pull/31327) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

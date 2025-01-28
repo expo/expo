@@ -45,7 +45,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       }
 
       sListenersReferences[listener] = WeakReference(listener)
-      if (!sPendingNotificationResponses.isEmpty()) {
+      if (sPendingNotificationResponses.isNotEmpty()) {
         val responseIterator = sPendingNotificationResponses.iterator()
         while (responseIterator.hasNext()) {
           listener.onNotificationResponseReceived(responseIterator.next())
@@ -106,11 +106,22 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   fun getListeners() = sListenersReferences.values.mapNotNull { it.get() }
 
   override fun handleNotification(notification: Notification) {
+    /**
+     * The app is in background, only data-only notifications reach this point.
+     * We do not inform JS about those. If JS wants to respond to data-only notifications,
+     * it needs to happen via expo-task-manager: https://docs.expo.dev/versions/latest/sdk/notifications/#background-notifications
+     * */
     if (isAppInForeground()) {
+      /**
+       * this calls [NotificationsHandler] which calls `handleNotification` in JS to determine the behavior.
+       * Then `SingleNotificationHandlerTask.processNotificationWithBehavior` may present it.
+       */
       getListeners().forEach {
         it.onNotificationReceived(notification)
       }
     } else if (notification.shouldPresent()) {
+      // TODO vonovak remove this - this branch doesn't seem to execute at all
+      // because only data-only notifications reach this point and they are not presented
       NotificationsService.present(context, notification)
     }
   }
@@ -128,11 +139,11 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
     if (notificationResponse.action.opensAppToForeground()) {
       openAppToForeground(context, notificationResponse)
     }
-
-    if (getListeners().isEmpty()) {
+    val listeners = getListeners()
+    if (listeners.isEmpty()) {
       sPendingNotificationResponses.add(notificationResponse)
     } else {
-      getListeners().forEach {
+      listeners.forEach {
         it.onNotificationResponseReceived(notificationResponse)
       }
     }

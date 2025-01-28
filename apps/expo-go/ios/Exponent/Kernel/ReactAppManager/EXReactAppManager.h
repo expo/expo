@@ -1,13 +1,11 @@
 
 #import <UIKit/UIKit.h>
 #import <React/RCTBridgeDelegate.h>
+#import <React-RCTAppDelegate/RCTAppDelegate.h>
+#import <React/RCTReloadCommand.h>
 
 #import "EXAppFetcher.h"
 #import "EXKernelAppRecord.h"
-
-#ifdef __cplusplus
-#import <React/RCTCxxBridgeDelegate.h>
-#endif // __cplusplus
 
 typedef enum EXReactAppManagerStatus {
   kEXReactAppManagerStatusNew,
@@ -27,11 +25,11 @@ typedef enum EXReactAppManagerStatus {
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager;
 
 @end
-
-@interface EXReactAppManager : NSObject <RCTBridgeDelegate, EXAppFetcherDataSource>
+ 
+@interface EXReactAppManager : NSObject <EXAppFetcherDataSource>
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record initialProps:(NSDictionary *)initialProps;
-- (void)rebuildBridge;
+- (void)rebuildHost;
 - (void)invalidate;
 
 // these are piped in from the view controller when the app manager is waiting for a bundle.
@@ -39,12 +37,13 @@ typedef enum EXReactAppManagerStatus {
 - (void)appLoaderFailedWithError:(NSError *)error;
 
 @property (nonatomic, assign) BOOL isHeadless;
-@property (nonatomic, readonly) BOOL isBridgeRunning;
+@property (nonatomic, readonly) BOOL isReactHostRunning;
 @property (nonatomic, readonly) EXReactAppManagerStatus status;
 @property (nonatomic, readonly) UIView *rootView;
 @property (nonatomic, readonly) NSString *scopedDocumentDirectory;
 @property (nonatomic, readonly) NSString *scopedCachesDirectory;
-@property (nonatomic, strong) id reactBridge;
+@property (nonatomic, strong) id reactHost;
+@property (nonatomic, strong) RCTAppDelegate *reactAppInstance;
 @property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 
@@ -56,7 +55,7 @@ typedef enum EXReactAppManagerStatus {
 /**
  * Call reload on existing bridge (developer-facing devtools reload)
  */
-- (void)reloadBridge;
+- (void)reloadApp;
 
 /**
  * Clear any executor class on the bridge and reload. Used by Cmd+N devtool key command.
@@ -75,7 +74,5 @@ typedef enum EXReactAppManagerStatus {
 
 @end
 
-#ifdef __cplusplus
-@interface EXReactAppManager (RCTCxxBridgeDelegate) <RCTCxxBridgeDelegate>
+@interface EXReactAppManager () <RCTReloadListener>
 @end
-#endif // __cplusplus

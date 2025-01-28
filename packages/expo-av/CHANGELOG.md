@@ -4,6 +4,25 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 15.0.1 — 2024-10-24
+
+### 💡 Others
+
+- [android][docs] Add `AndroidOutputFormat` and `AndroidAudioEncoder` docs. ([#34022](https://github.com/expo/expo/pull/34022) by [@mateoguzmana](https://github.com/mateoguzmana))
+- Added deprecation warning to the `Video` component. ([#32267](https://github.com/expo/expo/pull/32267) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features

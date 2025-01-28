@@ -1,28 +1,26 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
-import { APIDataType } from '~/components/plugins/api/APIDataType';
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { H2 } from '~/ui/components/Text';
+
 import {
   AccessorDefinitionData,
+  CommentTagData,
   MethodDefinitionData,
   PropData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
-  CommentTextBlock,
   getMethodName,
   renderParams,
   resolveTypeName,
-  STYLES_APIBOX,
-  STYLES_APIBOX_NESTED,
-  STYLES_NOT_EXPOSED_HEADER,
-  getH3CodeWithBaseNestingLevel,
   getTagData,
   getAllTagData,
-} from '~/components/plugins/api/APISectionUtils';
-import { ELEMENT_SPACING } from '~/components/plugins/api/styles';
-import { CALLOUT, H2, MONOSPACE } from '~/ui/components/Text';
+} from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APIDataType } from './components/APIDataType';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -36,8 +34,10 @@ export type RenderMethodOptions = {
   apiName?: string;
   sdkVersion: string;
   header?: string;
+  nested?: boolean;
   exposeInSidebar?: boolean;
   baseNestingLevel?: number;
+  parentPlatforms?: CommentTagData[];
 };
 
 function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefinitionData | PropData) {
@@ -63,63 +63,70 @@ function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefiniti
 
 export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
-  { apiName, exposeInSidebar = true, sdkVersion, ...options }: RenderMethodOptions
+  {
+    apiName,
+    exposeInSidebar = true,
+    nested = false,
+    sdkVersion,
+    parentPlatforms,
+    ...options
+  }: RenderMethodOptions
 ) => {
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
-  const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
+
   return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
     const returnComment = getTagData('returns', comment);
+    const platforms = getAllTagData('platform', comment);
     return (
       <div
-        key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
-        css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
-        <APISectionDeprecationNote comment={comment} sticky />
-        <APISectionPlatformTags comment={comment} />
-        <HeaderComponent>
-          <MONOSPACE
-            weight="medium"
-            css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
-            className="wrap-anywhere">
-            {getMethodName(
-              method as MethodDefinitionData,
-              apiName,
-              name,
-              parameters,
-              typeParameter
-            )}
-          </MONOSPACE>
-        </HeaderComponent>
+        key={`method-signature-${method.name || name}-${parameters?.length ?? 0}`}
+        className={mergeClasses(
+          !nested && STYLES_APIBOX,
+          !nested && STYLES_APIBOX_NESTED,
+          nested && 'border-b border-palette-gray4 last:border-b-0'
+        )}>
+        <APISectionDeprecationNote comment={comment} sticky className="!rounded-t-none" />
+        <APIBoxHeader
+          name={getMethodName(
+            method as MethodDefinitionData,
+            apiName,
+            name,
+            parameters,
+            typeParameter
+          )}
+          platforms={platforms.length > 0 ? platforms : parentPlatforms}
+          baseNestingLevel={baseNestingLevel}
+        />
         {parameters && parameters.length > 0 && (
           <>
             {renderParams(parameters, sdkVersion)}
             <br />
           </>
         )}
-        <CommentTextBlock
-          comment={comment}
+        <APICommentTextBlock
+          comment={method?.comment ?? comment}
           includePlatforms={false}
           afterContent={
             type && resolveTypeName(type, sdkVersion) !== 'undefined' ? (
               <>
                 <div
                   className={mergeClasses(
-                    'flex flex-row gap-2 items-start',
+                    'flex flex-row items-start gap-2',
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
                   )}>
-                  <div className="flex flex-row gap-2 items-center">
-                    <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
-                    <CALLOUT tag="span" theme="secondary" weight="medium">
-                      Returns:
-                    </CALLOUT>
+                  <div className="flex flex-row items-center gap-2">
+                    <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+                    <span className={STYLES_SECONDARY}>Returns:</span>
                   </div>
-                  <CALLOUT>
-                    <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
-                  </CALLOUT>
+                  <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
                 </div>
                 {returnComment ? (
-                  <div className="flex flex-col mt-1.5 mb-1 pl-6">
-                    <CommentTextBlock comment={{ summary: returnComment.content }} />
+                  <div className="mb-1 mt-1.5 flex flex-col pl-6">
+                    <APICommentTextBlock
+                      comment={{ summary: returnComment.content }}
+                      includeSpacing={false}
+                    />
                   </div>
                 ) : undefined}
               </>

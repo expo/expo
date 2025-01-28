@@ -1,16 +1,11 @@
-import type {
-  PermissionExpiration,
-  PermissionResponse,
-  PermissionStatus,
-  EventSubscription,
-} from 'expo-modules-core';
-
 /**
- * An object represents a notification delivered by a push notification system.
+ * An object which represents a notification delivered by a push notification system.
  *
  * On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed.
  * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), for example [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html).
  */
+import type { EventSubscription } from 'expo-modules-core';
+
 export type PushNotificationTrigger = {
   type: 'push';
   /**
@@ -62,11 +57,11 @@ export interface Region {
    */
   identifier: string;
   /**
-   * A Boolean indicating that notifications are generated upon entry into the region.
+   * Indicates whether notifications are generated upon entry into the region.
    */
   notifyOnEntry: boolean;
   /**
-   * A Boolean indicating that notifications are generated upon exit from the region.
+   * Indicates whether notifications are generated upon exit from the region.
    */
   notifyOnExit: boolean;
 }
@@ -165,6 +160,18 @@ export interface WeeklyNotificationTrigger {
 }
 
 /**
+ * A trigger related to a monthly notification.
+ * > The same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+ * @platform android
+ */
+export interface MonthlyNotificationTrigger {
+  type: 'monthly';
+  day: number;
+  hour: number;
+  minute: number;
+}
+
+/**
  * A trigger related to a yearly notification.
  * > The same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
  * @platform android
@@ -237,12 +244,8 @@ export interface UnknownNotificationTrigger {
  */
 export type NotificationTrigger =
   | PushNotificationTrigger
-  | CalendarNotificationTrigger
   | LocationNotificationTrigger
-  | TimeIntervalNotificationTrigger
-  | DailyNotificationTrigger
-  | WeeklyNotificationTrigger
-  | YearlyNotificationTrigger
+  | NotificationTriggerInput
   | UnknownNotificationTrigger;
 
 /**
@@ -260,6 +263,7 @@ export enum SchedulableTriggerInputTypes {
   CALENDAR = 'calendar',
   DAILY = 'daily',
   WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
   YEARLY = 'yearly',
   DATE = 'date',
   TIME_INTERVAL = 'timeInterval',
@@ -316,9 +320,22 @@ export type WeeklyTriggerInput = {
 };
 
 /**
+ * This trigger input will cause the notification to be delivered once per month
+ * when the `day`, `hour`, and `minute` date components match the specified values.
+ * > **Note:** All properties are specified in JavaScript `Date` object's ranges (i.e. January is represented as 0).
+ */
+export type MonthlyTriggerInput = {
+  type: SchedulableTriggerInputTypes.MONTHLY;
+  channelId?: string;
+  day: number;
+  hour: number;
+  minute: number;
+};
+
+/**
  * This trigger input will cause the notification to be delivered once every year
  * when the `day`, `month`, `hour`, and `minute` date components match the specified values.
- * > **Note:** All properties are specified in JavaScript `Date` object's ranges.
+ * > **Note:** All properties are specified in JavaScript `Date` object's ranges (i.e. January is represented as 0).
  */
 export type YearlyTriggerInput = {
   type: SchedulableTriggerInputTypes.YEARLY;
@@ -334,10 +351,11 @@ export type YearlyTriggerInput = {
  * on the specified value of the `date` property. The value of `repeats` will be ignored
  * for this trigger type.
  */
-export type DateTriggerInput =
-  | Date
-  | number
-  | { type: SchedulableTriggerInputTypes.DATE; channelId?: string; date: Date | number };
+export type DateTriggerInput = {
+  type: SchedulableTriggerInputTypes.DATE;
+  date: Date | number;
+  channelId?: string;
+};
 
 /**
  * This trigger input will cause the notification to be delivered once or many times
@@ -354,12 +372,10 @@ export type TimeIntervalTriggerInput = {
 
 /**
  * Input for time-based, schedulable triggers.
- * For these triggers you can check the next trigger date
- * with [`getNextTriggerDateAsync`](#notificationsgetnexttriggerdateasynctrigger).
+ * For these triggers you can check the next trigger date with [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger).
  * If you pass in a `number` (Unix timestamp) or `Date`, it will be processed as a
- * trigger input of type [`CalendarTriggerTypes.DATE`](#date). Otherwise, the input must be
- * an object, with a `type` value set to one of the allowed values in
- * [`CalendarTriggerTypes`](#calendartriggertypes).
+ * trigger input of type [`SchedulableTriggerInputTypes.DATE`](#date). Otherwise, the input must be
+ * an object, with a `type` value set to one of the allowed values in [`SchedulableTriggerInputTypes`](#schedulabletriggerinputtypes).
  * If the input is an object, date components passed in will be validated, and
  * an error is thrown if they are outside their allowed range (for example, the `minute` and
  * `second` components must be between 0 and 59 inclusive).
@@ -369,11 +385,12 @@ export type SchedulableNotificationTriggerInput =
   | TimeIntervalTriggerInput
   | DailyTriggerInput
   | WeeklyTriggerInput
+  | MonthlyTriggerInput
   | YearlyTriggerInput
   | DateTriggerInput;
 
 /**
- * A type represents possible triggers with which you can schedule notifications.
+ * A type which represents possible triggers with which you can schedule notifications.
  * A `null` trigger means that the notification should be scheduled for delivery immediately.
  */
 export type NotificationTriggerInput =
@@ -383,6 +400,7 @@ export type NotificationTriggerInput =
 
 /**
  * An enum corresponding to values appropriate for Android's [`Notification#priority`](https://developer.android.com/reference/android/app/Notification#priority) field.
+ * @platform android
  */
 export enum AndroidNotificationPriority {
   MIN = 'min',
@@ -454,9 +472,9 @@ export type NotificationContentIos = {
    * The value your app uses to determine which scene to display to handle the notification.
    */
   targetContentIdentifier?: string;
-  /*
+  /**
    * The notification’s importance and required delivery timing.
-   * Posible values:
+   * Possible values:
    * - 'passive' - the system adds the notification to the notification list without lighting up the screen or playing a sound
    * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
    * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
@@ -516,7 +534,7 @@ export interface NotificationRequest {
 
 // TODO(simek): asses if we can base this type on `NotificationContent`, since most of the fields looks like repetition
 /**
- * An object represents notification content that you pass in to `presentNotificationAsync` or as a part of `NotificationRequestInput`.
+ * An object which represents notification content that you pass in to `presentNotificationAsync` or as a part of `NotificationRequestInput`.
  */
 export type NotificationContentInput = {
   /**
@@ -607,7 +625,7 @@ export type NotificationContentInput = {
 };
 
 /**
- * An object represents a notification request you can pass into `scheduleNotificationAsync`.
+ * An object which represents a notification request you can pass into `scheduleNotificationAsync`.
  */
 export interface NotificationRequestInput {
   identifier?: string;
@@ -616,7 +634,7 @@ export interface NotificationRequestInput {
 }
 
 /**
- * An object represents a single notification that has been triggered by some request ([`NotificationRequest`](#notificationrequest)) at some point in time.
+ * An object which represents a single notification that has been triggered by some request ([`NotificationRequest`](#notificationrequest)) at some point in time.
  */
 export interface Notification {
   date: number;
@@ -624,7 +642,7 @@ export interface Notification {
 }
 
 /**
- * An object represents user's interaction with the notification.
+ * An object which represents user's interaction with the notification.
  * > **Note:** If the user taps on a notification `actionIdentifier` will be equal to [`Notifications.DEFAULT_ACTION_IDENTIFIER`](#notificationsdefault_action_identifier).
  */
 export interface NotificationResponse {
@@ -634,7 +652,7 @@ export interface NotificationResponse {
 }
 
 /**
- * An object represents behavior that should be applied to the incoming notification.
+ * An object which represents behavior that should be applied to the incoming notification.
  * > On Android, setting `shouldPlaySound: false` will result in the drop-down notification alert **not** showing, no matter what the priority is.
  * > This setting will also override any channel-specific sounds you may have configured.
  */
@@ -721,36 +739,43 @@ export type NotificationCategoryOptions = {
    */
   categorySummaryFormat?: string;
   /**
-   * A boolean indicating whether to send actions for handling when the notification is dismissed (the user must explicitly dismiss
+   * Indicates whether to send actions for handling when the notification is dismissed (the user must explicitly dismiss
    * the notification interface - ignoring a notification or flicking away a notification banner does not trigger this action).
    * @default false
    */
   customDismissAction?: boolean;
   /**
-   * A boolean indicating whether to allow CarPlay to display notifications of this type. **Apps must be approved for CarPlay to make use of this feature.**
+   * Indicates whether to allow CarPlay to display notifications of this type. **Apps must be approved for CarPlay to make use of this feature.**
    * @default false
    */
   allowInCarPlay?: boolean;
   /**
-   * A boolean indicating whether to show the notification's title, even if the user has disabled notification previews for the app.
+   * Indicates whether to show the notification's title, even if the user has disabled notification previews for the app.
    * @default false
    */
   showTitle?: boolean;
   /**
-   * A boolean indicating whether to show the notification's subtitle, even if the user has disabled notification previews for the app.
+   * Indicates whether to show the notification's subtitle, even if the user has disabled notification previews for the app.
    * @default false
    */
   showSubtitle?: boolean;
   /**
-   * A boolean indicating whether to allow notifications to be automatically read by Siri when the user is using AirPods.
+   * Indicates whether to allow notifications to be automatically read by Siri when the user is using AirPods.
    * @default false
    */
   allowAnnouncement?: boolean;
 };
 
-export type {
-  EventSubscription as Subscription,
-  PermissionResponse,
-  PermissionStatus,
+export type MaybeNotificationResponse = NotificationResponse | null | undefined;
+
+/**
+ * @deprecated use the [`EventSubscription`](#eventsubscription) type instead
+ * */
+export type Subscription = EventSubscription;
+
+export {
   PermissionExpiration,
-};
+  PermissionResponse,
+  EventSubscription,
+  PermissionStatus,
+} from 'expo-modules-core';

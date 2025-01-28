@@ -1,39 +1,26 @@
 apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
 
-// Import autolinking script
-apply from: "../scripts/autolinking.gradle"
+import expo.modules.plugin.gradle.ExpoModuleExtension
+import expo.modules.plugin.Version
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
-
-static def versionToNumber(major, minor, patch) {
-  return patch * 100 + minor * 10000 + major * 1000000
+// TODO(@lukmccall): Remove when we drop support for SDK 52
+def useLegacyAutolinking = false
+try {
+  apply plugin: "expo-autolinking"
+} catch (e) {
+  useLegacyAutolinking = true
 }
 
-def getRNVersion() {
-  def nodeModulesVersion = providers.exec {
-    workingDir(projectDir)
-    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
-  }.standardOutput.asText.get().trim()
-
-  def version = safeExtGet("reactNativeVersion", nodeModulesVersion)
-  def coreVersion = version.split("-")[0]
-  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
-
-  return versionToNumber(
-      major,
-      minor,
-      patch
-  )
+if (useLegacyAutolinking) {
+  // Import autolinking script
+  apply from: "../scripts/autolinking.gradle"
 }
 
-ensureDependeciesWereEvaluated(project)
+if (useLegacyAutolinking) {
+  ensureDependeciesWereEvaluated(project)
+}
 
-group = 'host.exp.exponent'
-version = '51.0.8'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -42,27 +29,38 @@ buildscript {
   }
 }
 
+def reactNativeVersion = project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
+
+group = 'host.exp.exponent'
+version = '52.0.11'
+
 android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "51.0.8"
+    versionName "52.0.11"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {
     unitTests.includeAndroidResources = true
   }
 
-  sourceSets {
-    main {
-      java {
-        srcDirs += new File(project.buildDir, generatedFilesSrcDir)
-
-        def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
-          srcDirs += "src/reactWrappers"
+  if (useLegacyAutolinking) {
+    sourceSets {
+      main {
+        java {
+          srcDirs += new File(project.buildDir, generatedFilesSrcDir)
         }
       }
+    }
+  }
+
+  sourceSets.main.java {
+    if (reactNativeVersion.isAtLeast(new Version(0, 78, 0))) {
+      srcDirs += 'src/rn78/main'
+    } else if (reactNativeVersion.isAtLeast(new Version(0, 74, 0))) {
+      // TODO(kudo,20241217): Remove this when we drop react-native 0.77 support
+      srcDirs += 'src/rn74/main'
     }
   }
 }
@@ -75,25 +73,29 @@ dependencies { dependencyHandler ->
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation 'io.mockk:mockk:1.13.5'
 
-  // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
-  // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
-  addExpoModulesDependencies(dependencyHandler, project)
-}
-
-// A task generating a package list of expo modules.
-task generateExpoModulesPackageListTask {
-  def modulesConfig = getModulesConfig()
-  def outputPath = getGenerateExpoModulesPackagesListPath()
-  if (modulesConfig) {
-    outputs.file(file(outputPath))
-    inputs.property("modulesConfig", modulesConfig)
-  }
-
-  // TOOD(@lukmccall): fix not working with configuration cache enabled
-  doLast {
-    generateExpoModulesPackageList()
+  if (useLegacyAutolinking) {
+    // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
+    // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
+    addExpoModulesDependencies(dependencyHandler, project)
   }
 }
+
+if (useLegacyAutolinking) {
+  // A task generating a package list of expo modules.
+  task generateExpoModulesPackageListTask {
+    def modulesConfig = getModulesConfig()
+    def outputPath = getGenerateExpoModulesPackagesListPath()
+    if (modulesConfig) {
+      outputs.file(file(outputPath))
+      inputs.property("modulesConfig", modulesConfig)
+    }
+
+    // TOOD(@lukmccall): fix not working with configuration cache enabled
+    doLast {
+      generateExpoModulesPackageList()
+    }
+  }
 
 // Run that task during prebuilding phase.
-preBuild.dependsOn "generateExpoModulesPackageListTask"
+  preBuild.dependsOn "generateExpoModulesPackageListTask"
+}

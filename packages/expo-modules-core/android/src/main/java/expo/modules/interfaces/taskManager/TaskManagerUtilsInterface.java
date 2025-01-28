@@ -3,9 +3,12 @@ package expo.modules.interfaces.taskManager;
 import android.app.PendingIntent;
 import android.app.job.JobParameters;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.PersistableBundle;
 
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public interface TaskManagerUtilsInterface {
   /**
@@ -22,6 +25,11 @@ public interface TaskManagerUtilsInterface {
    * Schedules a job for given task and with given list of extra data.
    */
   void scheduleJob(Context context, TaskInterface task, List<PersistableBundle> data);
+
+  /**
+   * Executes a task directly
+   */
+  void executeTask(TaskInterface task, Bundle data, @Nullable TaskExecutionCallback callback);
 
   /**
    * Cancels scheduled job with given identifier.

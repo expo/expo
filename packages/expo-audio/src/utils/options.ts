@@ -3,23 +3,24 @@ import { Platform } from 'expo-modules-core';
 import { RecordingOptions } from '../Audio.types';
 
 export function createRecordingOptions(options: RecordingOptions) {
-  let newOptions = {
+  let commonOptions = {
     extension: options.extension,
     sampleRate: options.sampleRate,
     numberOfChannels: options.numberOfChannels,
     bitRate: options.bitRate,
+    isMeteringEnabled: options.isMeteringEnabled ?? false,
   };
 
   if (Platform.OS === 'ios') {
-    newOptions = {
-      ...newOptions,
+    commonOptions = {
+      ...commonOptions,
       ...options.ios,
     };
   } else if (Platform.OS === 'android') {
-    newOptions = {
-      ...newOptions,
+    commonOptions = {
+      ...commonOptions,
       ...options.android,
     };
   }
-  return newOptions;
+  return commonOptions;
 }

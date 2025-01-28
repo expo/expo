@@ -22,8 +22,10 @@ import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.collection.ArraySet;
 
+import expo.modules.interfaces.taskManager.TaskExecutionCallback;
 import expo.modules.interfaces.taskManager.TaskInterface;
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
 
@@ -62,6 +64,15 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
       Log.e(TAG, "Trying to schedule job for null task!");
     } else {
       updateOrScheduleJob(context, task, data);
+    }
+  }
+
+  @Override
+  public void executeTask(TaskInterface task, Bundle data, @Nullable TaskExecutionCallback callback) {
+    if (task == null) {
+      Log.e(TAG, "Trying to execute a null task!");
+    } else {
+      task.execute(data, null, callback);
     }
   }
 

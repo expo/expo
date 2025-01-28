@@ -102,6 +102,7 @@ export function createFastResolver({
       | 'resolveAsset'
       | 'unstable_conditionNames'
       | 'unstable_conditionsByPlatform'
+      | 'fileSystemLookup'
     >,
     moduleName: string,
     platform: string | null
@@ -126,6 +127,18 @@ export function createFastResolver({
           ]),
         ]
       : [];
+
+    // NOTE(cedric): metro@0.81.0 ships with `fileSystemLookup`, while `metro@0.80.12` ships as unstable
+    const fileSystemLookup = (
+      'unstable_fileSystemLookup' in context
+        ? context.unstable_fileSystemLookup
+        : context.fileSystemLookup
+    ) as ResolutionContext['fileSystemLookup'] | undefined;
+
+    if (!fileSystemLookup) {
+      throw new Error('Metro API fileSystemLookup is required for fast resolver');
+    }
+
     try {
       fp = jestResolver(moduleName, {
         blockList,
@@ -139,20 +152,26 @@ export function createFastResolver({
         realpathSync(file: string): string {
           let metroRealPath: string | null = null;
 
-          try {
-            // @ts-expect-error: Missing on type.
-            metroRealPath = context.unstable_getRealPath?.(file);
-          } catch (error: any) {
-            // If invariant
-            if (error.message !== 'Unexpectedly escaped traversal') {
-              throw error;
-            }
+          const res = fileSystemLookup(file);
+          if (res?.exists) {
+            metroRealPath = res.realPath;
           }
 
           if (metroRealPath == null && preserveSymlinks) {
             return realpathSync(file);
           }
           return metroRealPath ?? file;
+        },
+        isDirectory(file: string): boolean {
+          const res = fileSystemLookup(file);
+          return res.exists && res.type === 'd';
+        },
+        isFile(file: string): boolean {
+          const res = fileSystemLookup(file);
+          return res.exists && res.type === 'f';
+        },
+        pathExists(file: string): boolean {
+          return fileSystemLookup(file).exists;
         },
         packageFilter(pkg) {
           // set the pkg.main to the first available field in context.mainFields

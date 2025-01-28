@@ -4,7 +4,7 @@ export type MockContextConfig = string | string[] | MemoryContext | {
     overrides: MemoryContext;
 };
 export declare function getMockConfig(context: MockContextConfig, metaOnly?: boolean): {
-    initialRouteName: string | undefined;
+    initialRouteName: undefined;
     screens: Record<string, import("../getReactNavigationConfig").Screen>;
 };
 export declare function getMockContext(context: MockContextConfig): ((id: string) => any) & {

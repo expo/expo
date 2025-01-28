@@ -22,7 +22,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let contentType = "application/json"
         let response = HTTPURLResponse(
           url: URL(string: "https://exp.host/@test/test")!,
@@ -51,8 +51,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
         let response = HTTPURLResponse(
@@ -93,8 +93,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
         let response = HTTPURLResponse(
@@ -136,8 +136,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
           UpdatesConfig.EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey: true
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
         let response = HTTPURLResponse(
@@ -164,7 +164,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           errorOccurred = error
         }
         
-        expect(errorOccurred?.localizedDescription) == "Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive."
+        expect(errorOccurred?.localizedDescription) == "Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the response being for a different protocol version."
         expect(resultUpdateResponse).to(beNil())
       }
       
@@ -173,8 +173,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
         let response = HTTPURLResponse(
@@ -214,7 +214,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
 
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
@@ -247,7 +247,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
 
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
@@ -280,7 +280,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
 
         let response = HTTPURLResponse(
           url: URL(string: "https://exp.host/@test/test")!,
@@ -311,7 +311,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
 
         let response = HTTPURLResponse(
           url: URL(string: "https://exp.host/@test/test")!,
@@ -341,7 +341,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let contentType = "application/json"
         let response = HTTPURLResponse(
           url: URL(string: "https://exp.host/@test/test")!,
@@ -377,8 +377,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
         let response = HTTPURLResponse(
@@ -426,7 +426,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let contentType = "application/json"
         let response = HTTPURLResponse(
           url: URL(string: "https://exp.host/@test/test")!,
@@ -449,7 +449,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           errorOccurred = error
         }
         
-        expect(errorOccurred?.localizedDescription) == "No expo-signature header specified"
+        expect(errorOccurred?.localizedDescription) == "Code signature validation failed: No expo-signature header specified"
         expect(resultUpdateResponse).to(beNil())
       }
       
@@ -463,8 +463,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           ],
           UpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey: true
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
         let response = HTTPURLResponse(
@@ -513,8 +513,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           ],
           UpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey: true
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
         let response = HTTPURLResponse(
@@ -545,7 +545,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           errorOccurred = error
         }
         
-        expect(errorOccurred?.localizedDescription) == "Invalid certificate for manifest project ID or scope key"
+        expect(errorOccurred?.localizedDescription) == "Code signing certificate project ID or scope key does not match project ID or scope key in response part"
         expect(resultUpdateResponse).to(beNil())
       }
       
@@ -559,8 +559,8 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           ],
           UpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey: true
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         let boundary = "blah"
         let contentType = "multipart/mixed; boundary=\(boundary)"
         let response = HTTPURLResponse(
@@ -591,7 +591,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           errorOccurred = error
         }
         
-        expect(errorOccurred?.localizedDescription) == "Invalid certificate for directive project ID or scope key"
+        expect(errorOccurred?.localizedDescription) == "Code signing certificate project ID or scope key does not match project ID or scope key in response part"
         expect(resultUpdateResponse).to(beNil())
       }
       
@@ -603,7 +603,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
           UpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey: true
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let contentType = "application/json"
         let response = HTTPURLResponse(
           url: URL(string: "https://exp.host/@test/test")!,

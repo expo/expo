@@ -9,6 +9,7 @@ import androidx.core.app.AlarmManagerCompat
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationRequest
+import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.SchedulingDelegate
 import java.io.IOException
@@ -50,6 +51,10 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
     }
 
     if (request.trigger !is SchedulableNotificationTrigger) {
+      if (request.trigger is ChannelAwareTrigger) {
+        NotificationsService.receive(context, Notification(request))
+        return
+      }
       throw IllegalArgumentException("Notification request \"${request.identifier}\" does not have a schedulable trigger (it's ${request.trigger}). Refusing to schedule.")
     }
 

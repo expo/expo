@@ -1,6 +1,6 @@
 {
-  "platforms": ["ios", "tvos", "android", "web"],
-  "ios": {
+  "platforms": ["apple", "android", "web"],
+  "apple": {
     "modules": ["<%- project.moduleName %>"]
   },
   "android": {

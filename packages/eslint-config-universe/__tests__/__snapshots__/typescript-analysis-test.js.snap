@@ -141,6 +141,9 @@ exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
       "severity": 1,
       "suggestions": [
         {
+          "data": {
+            "equals": "",
+          },
           "desc": "Fix to nullish coalescing operator (\`??\`).",
           "fix": {
             "range": [

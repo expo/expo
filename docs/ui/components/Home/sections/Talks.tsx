@@ -40,7 +40,7 @@ export function TalkGridWrapper({ children }: PropsWithChildren) {
   return (
     <div
       className={mergeClasses(
-        'inline-grid w-full grid-cols-4 gap-8 my-4',
+        'my-4 inline-grid w-full grid-cols-4 gap-8',
         'max-2xl-gutters:grid-cols-3',
         'max-xl-gutters:grid-cols-2',
         'max-sm-gutters:grid-cols-1'
@@ -68,7 +68,7 @@ export function TalkGridCell({
       openInNewTab
       href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
       className={mergeClasses(
-        'flex flex-col h-full min-h-[266px] overflow-hidden relative border border-default rounded-lg bg-default justify-between transition shadow-xs',
+        'relative flex h-full min-h-[266px] flex-col justify-between overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
         '[&_h2]:!my-0 [&_h3]:!mt-0',
         'hocus:shadow-sm',
         className
@@ -83,22 +83,22 @@ export function TalkGridCell({
                 : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
             })`,
           }}
-          className="border-b border-b-default bg-cover bg-center h-[138px] max-sm-gutters:h-[168px]"
+          className="h-[138px] border-b border-b-default bg-cover bg-center max-sm-gutters:h-[168px]"
         />
-        <div className="flex justify-between items-start bg-default min-h-[30px] px-4 py-3 gap-1">
+        <div className="flex min-h-[30px] items-start justify-between gap-1 bg-default px-4 py-3">
           <LABEL className="block leading-normal">{title}</LABEL>
-          <ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm mt-1" />
+          <ArrowUpRightIcon className="icon-sm mt-1 shrink-0 text-icon-secondary" />
         </div>
       </div>
-      <div className="px-4 pb-2 bg-default flex flex-col gap-0.5">
+      <div className="flex flex-col gap-0.5 bg-default px-4 pb-2">
         {description && (
-          <CALLOUT theme="secondary" className="flex gap-2 items-center">
-            <Users02Icon className="icon-xs text-icon-tertiary shrink-0" />
+          <CALLOUT theme="secondary" className="flex items-center gap-2">
+            <Users02Icon className="icon-xs shrink-0 text-icon-tertiary" />
             {description}
           </CALLOUT>
         )}
-        <CALLOUT theme="secondary" className="flex gap-2 items-center">
-          <AtSignIcon className="icon-xs text-icon-tertiary shrink-0" />
+        <CALLOUT theme="secondary" className="flex items-center gap-2">
+          <AtSignIcon className="icon-xs shrink-0 text-icon-tertiary" />
           {event}
         </CALLOUT>
       </div>

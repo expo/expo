@@ -9,8 +9,16 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll create our example app's production version and submit it for testing using TestFlight. After that, we'll submit them for App Store review to get it on the App Store.
+
+<VideoBoxLink
+  videoId="VZL_e0cEwo8"
+  title="Watch: Creating and releasing a production build for iOS"
+/>
+
+---
 
 ## Prerequisites
 
@@ -35,7 +43,7 @@ Run the `eas credentials` command in the terminal and then answer the following 
 - **What do you want to do?** Select **Build credentials** and choose **All: Set up all the required credentials to build your project**.
 - Now, it will prompt whether we want to re-use the previous Distribution Certificate. Press <kbd>Y</kbd>.
 - **Generate a new Apple Provisioning Profile?** Press <kbd>Y</kbd>. This will be the provisioning profile for the production app.
-- Press any key to exit the EAS CLI.
+- Once the profiles are created, press any <kbd>ctrl</kbd> + <kbd>c</kbd> to exit the EAS CLI.
 
 </Step>
 

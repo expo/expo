@@ -8,9 +8,27 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 2.0.2 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.1 — 2024-10-22
+
+### 💡 Others
+
+- Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
+
+## 2.0.0 — 2024-10-22
+
+### 🐛 Bug fixes
+
 - Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
 
 ## 1.8.1 — 2024-04-29
 

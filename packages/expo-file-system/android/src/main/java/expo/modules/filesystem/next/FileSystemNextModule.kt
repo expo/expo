@@ -3,6 +3,7 @@ package expo.modules.filesystem.next
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
+import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
@@ -14,7 +15,6 @@ import expo.modules.kotlin.types.Either
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.net.URI
 
@@ -33,6 +33,7 @@ class FileSystemNextModule : Module() {
     )
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath ->
+      to.validatePermission(Permission.WRITE)
       val request = Request.Builder().url(url.toURL()).build()
       val client = OkHttpClient()
       val response = request.await(client)
@@ -49,6 +50,10 @@ class FileSystemNextModule : Module() {
         File(to.file, fileName)
       } else {
         to.file
+      }
+
+      if (destination.exists()) {
+        throw DestinationAlreadyExistsException()
       }
 
       val body = response.body ?: throw UnableToDownloadException("response body is null")
@@ -72,8 +77,8 @@ class FileSystemNextModule : Module() {
         file.validatePath()
       }
 
-      Function("create") { file: FileSystemFile ->
-        file.create()
+      Function("create") { file: FileSystemFile, options: CreateOptions? ->
+        file.create(options ?: CreateOptions())
       }
 
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray> ->
@@ -97,6 +102,10 @@ class FileSystemNextModule : Module() {
         file.base64()
       }
 
+      Function("bytes") { file: FileSystemFile ->
+        file.bytes()
+      }
+
       Property("exists") { file: FileSystemFile ->
         file.exists
       }
@@ -116,13 +125,48 @@ class FileSystemNextModule : Module() {
       Property("md5") { file ->
         try {
           file.md5
-        } catch (e: FileNotFoundException) {
+        } catch (e: Exception) {
           null
         }
       }
 
       Property("size") { file ->
-        file.size
+        try {
+          file.size
+        } catch (e: Exception) {
+          null
+        }
+      }
+
+      Property("type") { file ->
+        file.type
+      }
+
+      Function("open") { file: FileSystemFile ->
+        FileSystemFileHandle(file)
+      }
+    }
+
+    Class(FileSystemFileHandle::class) {
+      Constructor { file: FileSystemFile ->
+        FileSystemFileHandle(file)
+      }
+      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
+        fileHandle.read(bytes)
+      }
+      Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+        fileHandle.write(data)
+      }
+      Function("close") { fileHandle: FileSystemFileHandle ->
+        fileHandle.close()
+      }
+      Property("offset") { fileHandle: FileSystemFileHandle ->
+        fileHandle.offset
+      }.set { fileHandle: FileSystemFileHandle, offset: Long ->
+        fileHandle.offset = offset
+      }
+      Property("size") { fileHandle: FileSystemFileHandle ->
+        fileHandle.size
       }
     }
 
@@ -135,8 +179,8 @@ class FileSystemNextModule : Module() {
         directory.delete()
       }
 
-      Function("create") { directory: FileSystemDirectory ->
-        directory.create()
+      Function("create") { directory: FileSystemDirectory, options: CreateOptions? ->
+        directory.create(options ?: CreateOptions())
       }
 
       Property("exists") { directory: FileSystemDirectory ->

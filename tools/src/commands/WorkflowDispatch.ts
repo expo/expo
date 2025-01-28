@@ -25,9 +25,7 @@ const CUSTOM_WORKFLOWS = {
   'client-android-eas-release': {
     name: 'Android Expo Go Release',
     baseWorkflowSlug: 'client-android-eas',
-    inputs: {
-      buildType: 'versioned-client',
-    },
+    inputs: {},
   },
   'sdk-all': {
     name: 'SDK All',

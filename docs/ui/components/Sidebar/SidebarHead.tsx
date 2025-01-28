@@ -1,15 +1,16 @@
 import { DocsLogo, LinkBase } from '@expo/styleguide';
+import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { BookOpen02DuotoneIcon } from '@expo/styleguide-icons/duotone/BookOpen02DuotoneIcon';
 import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
 import { Home02DuotoneIcon } from '@expo/styleguide-icons/duotone/Home02DuotoneIcon';
 import { Stars02DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars02DuotoneIcon';
 import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 
-import { ApiVersionSelect } from './ApiVersionSelect';
-
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
 import { Search } from '~/ui/components/Search';
 import { SidebarSingleEntry } from '~/ui/components/Sidebar/SidebarSingleEntry';
+
+import { ApiVersionSelect } from './ApiVersionSelect';
 
 type SidebarHeadProps = {
   sidebarActiveGroup: string;
@@ -18,10 +19,10 @@ type SidebarHeadProps = {
 export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
   if (sidebarActiveGroup === 'archive') {
     return (
-      <div className="flex flex-col p-1.5 border-b border-default bg-default gap-0.5">
+      <div className="flex flex-col gap-0.5 border-b border-default bg-default p-1.5">
         <LinkBase
           href="/"
-          className="flex gap-3 items-center p-2.5 rounded-md text-secondary hocus:bg-element">
+          className="flex items-center gap-3 rounded-md p-2.5 text-secondary hocus:bg-element">
           <ArrowLeftIcon className="text-icon-secondary" />
           Back
         </LinkBase>
@@ -31,7 +32,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
 
   return (
     <>
-      <div className="flex flex-col p-4 border-b border-default bg-default gap-0.5">
+      <div className="flex flex-col gap-0.5 border-b border-default bg-default p-4">
         <Search />
         <SidebarSingleEntry
           href="/"
@@ -44,6 +45,12 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
           title="Guides"
           Icon={BookOpen02DuotoneIcon}
           isActive={sidebarActiveGroup === 'general'}
+        />
+        <SidebarSingleEntry
+          href="/eas/"
+          title="EAS"
+          Icon={PlanEnterpriseIcon}
+          isActive={sidebarActiveGroup === 'eas'}
         />
         <SidebarSingleEntry
           href="/versions/latest/"

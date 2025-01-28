@@ -9,6 +9,8 @@ import com.android.build.api.instrumentation.FramesComputationMode
 import com.android.build.api.instrumentation.InstrumentationParameters
 import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.Variant
+import com.facebook.react.ReactExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -32,12 +34,24 @@ abstract class DevLauncherPlugin : Plugin<Project> {
       }
 
       val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
-      androidComponents.onVariants(androidComponents.selector().withBuildType("debug")) { variant ->
+      val reactExtension = project.extensions.findByType(ReactExtension::class.java)
+      androidComponents.onVariants(androidComponents.selector().all()) { variant ->
+        if (!isDebugVariant(variant, reactExtension)) {
+          return@onVariants
+        }
         variant.instrumentation.transformClassesWith(DevLauncherClassVisitorFactory::class.java, InstrumentationScope.ALL) {
           it.enabled.set(true)
         }
         variant.instrumentation.setAsmFramesComputationMode(FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS)
       }
+    }
+  }
+
+  private fun isDebugVariant(variant: Variant, reactExtension: ReactExtension?): Boolean {
+    return if (System.getenv("EX_UPDATES_NATIVE_DEBUG") != "1" && reactExtension != null) {
+      reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
+    } else {
+      variant.buildType == "debug"
     }
   }
 

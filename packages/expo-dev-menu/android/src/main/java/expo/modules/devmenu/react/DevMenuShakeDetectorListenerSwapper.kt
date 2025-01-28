@@ -5,6 +5,7 @@ import com.facebook.react.common.ShakeDetector
 import com.facebook.react.devsupport.DevSupportManagerBase
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
+import expo.modules.devmenu.helpers.hasDeclaredField
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 
 class DevMenuShakeDetectorListenerSwapper {
@@ -26,11 +27,19 @@ class DevMenuShakeDetectorListenerSwapper {
           devSupportManager
         )
 
-      ShakeDetector::class.java.setPrivateDeclaredFieldValue(
-        "mShakeListener",
-        shakeDetector,
-        newListener
-      )
+      if (ShakeDetector::class.java.hasDeclaredField("shakeListener")) {
+        ShakeDetector::class.java.setPrivateDeclaredFieldValue(
+          "shakeListener",
+          shakeDetector,
+          newListener
+        )
+      } else {
+        ShakeDetector::class.java.setPrivateDeclaredFieldValue(
+          "mShakeListener",
+          shakeDetector,
+          newListener
+        )
+      }
     } catch (e: Exception) {
       Log.w("DevMenu", "Couldn't swap shake detector listener: ${e.message}", e)
     }

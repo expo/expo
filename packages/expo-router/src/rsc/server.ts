@@ -6,13 +6,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { type AsyncLocalStorage } from 'node:async_hooks';
+import { AsyncLocalStorage } from 'async_hooks';
 import type { ReactNode } from 'react';
 
 import type { PathSpec } from './path';
 
+export const REQUEST_HEADERS = '__expo_requestHeaders';
+
 declare let globalThis: {
   __EXPO_RSC_CACHE__?: Map<string, any>;
+  __expo_platform_header?: string;
+  __webpack_chunk_load__: (id: string) => Promise<any>;
+  __webpack_require__: (id: string) => any;
 };
 
 type Config = any;
@@ -82,50 +87,34 @@ type RenderStore<> = {
 
 // TODO(EvanBacon): This can leak between platforms and runs.
 // We need to share this module between the server action module and the renderer module, per platform, and invalidate on refreshes.
-function getGlobalCacheForPlatform(): Pick<AsyncLocalStorage<RenderStore>, 'getStore' | 'run'> {
+function getGlobalCacheForPlatform() {
+  // HACK: This is a workaround for the shared middleware being shared between web and native.
+  // In production the shared middleware is web-only and that causes the first version of this module
+  // to be bound to web.
+  const platform = globalThis.__expo_platform_header ?? process.env.EXPO_OS;
   if (!globalThis.__EXPO_RSC_CACHE__) {
     globalThis.__EXPO_RSC_CACHE__ = new Map();
   }
 
-  if (globalThis.__EXPO_RSC_CACHE__.has(process.env.EXPO_OS!)) {
-    return globalThis.__EXPO_RSC_CACHE__.get(process.env.EXPO_OS!)!;
+  if (globalThis.__EXPO_RSC_CACHE__.has(platform!)) {
+    return globalThis.__EXPO_RSC_CACHE__.get(platform!)!;
   }
-  try {
-    const { AsyncLocalStorage } = require('node:async_hooks');
-    // @ts-expect-error: This is a Node.js feature.
-    const serverCache = new AsyncLocalStorage<RenderStore>();
-    globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS!, serverCache);
-    return serverCache;
-  } catch (error) {
-    console.log('[RSC]: Failed to create cache:', error);
 
-    // Fallback to a simple in-memory cache.
-    const cache = new Map();
-    const serverCache = {
-      getStore: () => cache.get('store'),
-      run: <T>(store: RenderStore, fn: () => T) => {
-        cache.set('store', store);
-        try {
-          return fn();
-        } finally {
-          cache.delete('store');
-        }
-      },
-    };
-    globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS!, serverCache);
-    return serverCache;
-  }
+  const serverCache = new AsyncLocalStorage<RenderStore>();
+
+  globalThis.__EXPO_RSC_CACHE__.set(platform!, serverCache);
+
+  return serverCache;
 }
 
 let previousRenderStore: RenderStore | undefined;
 let currentRenderStore: RenderStore | undefined;
 
-const renderStorage = getGlobalCacheForPlatform();
-
 /**
  * This is an internal function and not for public use.
  */
 export const runWithRenderStore = <T>(renderStore: RenderStore, fn: () => T): T => {
+  const renderStorage = getGlobalCacheForPlatform();
   if (renderStorage) {
     return renderStorage.run(renderStore, fn);
   }
@@ -138,10 +127,11 @@ export const runWithRenderStore = <T>(renderStore: RenderStore, fn: () => T): T 
   }
 };
 
-export function rerender(input: string, params?: unknown) {
-  const renderStore = renderStorage?.getStore() ?? currentRenderStore;
+export async function rerender(input: string, params?: unknown) {
+  const renderStorage = getGlobalCacheForPlatform();
+  const renderStore = renderStorage.getStore() ?? currentRenderStore;
   if (!renderStore) {
-    throw new Error('Render store is not available');
+    throw new Error('Render store is not available for rerender');
   }
   renderStore.rerender(input, params);
 }
@@ -149,9 +139,28 @@ export function rerender(input: string, params?: unknown) {
 export function getContext<
   RscContext extends Record<string, unknown> = Record<string, unknown>,
 >(): RscContext {
-  const renderStore = renderStorage?.getStore() ?? currentRenderStore;
+  const renderStorage = getGlobalCacheForPlatform();
+  const renderStore = renderStorage.getStore() ?? currentRenderStore;
   if (!renderStore) {
-    throw new Error('Render store is not available');
+    throw new Error('Render store is not available for accessing context');
   }
   return renderStore.context as RscContext;
+}
+
+/** Get the request headers used to make the server component or action request. */
+export async function unstable_headers(): Promise<Headers> {
+  const headers = (getContext()[REQUEST_HEADERS] || {}) as Record<string, string>;
+  return new ReadonlyHeaders(headers);
+}
+
+class ReadonlyHeaders extends Headers {
+  set() {
+    throw new Error('Server component Headers are read-only');
+  }
+  append() {
+    throw new Error('Server component Headers are read-only');
+  }
+  delete() {
+    throw new Error('Server component Headers are read-only');
+  }
 }

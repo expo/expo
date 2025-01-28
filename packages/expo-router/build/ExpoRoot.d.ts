@@ -13,5 +13,8 @@ export type NativeIntent = {
         initial: boolean;
     }) => Promise<string | null | undefined> | string | null | undefined;
 };
+/**
+ * @hidden
+ */
 export declare function ExpoRoot({ wrapper: ParentWrapper, ...props }: ExpoRootProps): React.JSX.Element;
 //# sourceMappingURL=ExpoRoot.d.ts.map

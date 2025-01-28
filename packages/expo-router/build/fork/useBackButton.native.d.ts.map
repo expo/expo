@@ -1,0 +1,1 @@
+{"version":3,"file":"useBackButton.native.d.ts","sourceRoot":"","sources":["../../src/fork/useBackButton.native.ts"],"names":[],"mappings":"AAAA;;GAEG;AACH,OAAO,KAAK,EAAE,sBAAsB,EAAE,aAAa,EAAE,MAAM,0BAA0B,CAAC;AACtF,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAG/B,wBAAgB,aAAa,CAAC,GAAG,EAAE,KAAK,CAAC,SAAS,CAAC,sBAAsB,CAAC,aAAa,CAAC,CAAC,QAoBxF"}

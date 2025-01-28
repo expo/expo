@@ -229,16 +229,12 @@ NS_ASSUME_NONNULL_BEGIN
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
 
-  NSMutableArray *sdkVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion] mutableCopy];
-  [sdkVersions addObject:@"UNVERSIONED"];
-
-  NSMutableArray *sdkVersionRuntimeVersions = [[NSMutableArray alloc] initWithCapacity:sdkVersions.count];
-  for (NSString *sdkVersion in sdkVersions) {
-    [sdkVersionRuntimeVersions addObject:[NSString stringWithFormat:@"exposdk:%@", sdkVersion]];
-  }
-  [sdkVersionRuntimeVersions addObject:@"exposdk:UNVERSIONED"];
-  [sdkVersions addObjectsFromArray:sdkVersionRuntimeVersions];
-
+  NSArray *sdkVersions = @[
+    [EXVersions sharedInstance].sdkVersion,
+    [NSString stringWithFormat:@"exposdk:%@", [EXVersions sharedInstance].sdkVersion],
+    @"UNVERSIONED",
+    @"exposdk:UNVERSIONED"
+  ];
   EXUpdatesSelectionPolicy *selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
                                                initWithLauncherSelectionPolicy:[[EXExpoGoLauncherSelectionPolicyFilterAware alloc] initWithSdkVersions:sdkVersions]
                                                loaderSelectionPolicy:[EXUpdatesLoaderSelectionPolicyFilterAware new]
@@ -291,7 +287,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDictionary *)_requestHeaders
 {
   NSDictionary *requestHeaders = @{
-      @"Exponent-SDK-Version": [self _sdkVersions],
+      @"Exponent-SDK-Version": [EXVersions sharedInstance].sdkVersion,
       @"Exponent-Accept-Signature": @"true",
       @"Exponent-Platform": @"ios",
       @"Exponent-Version": [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
@@ -335,22 +331,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)_runtimeVersion
 {
-  NSArray *versionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
-  if (versionsAvailable) {
-    return [NSString stringWithFormat:@"exposdk:%@", versionsAvailable.firstObject];
-  } else {
-    return @"1"; // runtime version shouldn't be used for home loader, but is still required
-  }
-}
-
-- (NSString *)_sdkVersions
-{
-  NSArray *versionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
-  if (versionsAvailable) {
-    return [versionsAvailable componentsJoinedByString:@","];
-  } else {
-    return [EXVersions sharedInstance].temporarySdkVersion;
-  }
+  return [NSString stringWithFormat:@"exposdk:%@", [EXVersions sharedInstance].sdkVersion];
 }
 
 + (EXManifestAndAssetRequestHeaders * _Nullable)bundledDevelopmentHomeManifestAndAssetRequestHeaders

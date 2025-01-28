@@ -16,11 +16,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.google.devtools.ksp'
 
 group = 'host.exp.exponent'
-version = '0.25.14'
+version = '0.26.9'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
 applyKotlinExpoModulesCorePlugin()
+applyKspJvmToolchain()
 useCoreDependencies()
 useDefaultAndroidSdkVersions()
 useExpoPublishing()
@@ -62,7 +63,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '0.25.14'
+    versionName '0.26.9'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -118,6 +119,7 @@ dependencies {
   testImplementation 'androidx.test:core:1.5.0'
   testImplementation "io.mockk:mockk:$mockk_version"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion()}"
+  testImplementation 'org.robolectric:robolectric:4.14.1'
 
   androidTestImplementation 'com.squareup.okio:okio:2.9.0'
   androidTestImplementation 'androidx.test:runner:1.5.2'

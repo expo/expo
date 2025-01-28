@@ -22,6 +22,8 @@ import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import java.io.ByteArrayOutputStream
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -29,7 +31,7 @@ import java.util.Calendar
 import java.util.Locale
 
 // TODO: MaidenName Nickname
-class Contact(var contactId: String) {
+class Contact(var contactId: String, var appContext: AppContext) {
   private var rawContactId: String? = null
   var lookupKey: String? = null
   private var displayName: String? = null
@@ -58,11 +60,13 @@ class Contact(var contactId: String) {
   var relationships: MutableList<RelationshipModel> = ArrayList()
   var urlAddresses: MutableList<UrlAddressModel> = ArrayList()
   var extraNames: MutableList<ExtraNameModel> = ArrayList()
+  var isFavorite: Boolean = false
 
   fun fromCursor(cursor: Cursor) {
     rawContactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.RAW_CONTACT_ID))
     val mimeType = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE))
     val name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
+    isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(ContactsContract.Data.STARRED)) == 1
     if (!TextUtils.isEmpty(name) && TextUtils.isEmpty(displayName)) {
       displayName = name
     }
@@ -196,6 +200,7 @@ class Contact(var contactId: String) {
     var op = ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
       .withValue(RawContacts.ACCOUNT_TYPE, null)
       .withValue(RawContacts.ACCOUNT_NAME, null)
+      .withValue(RawContacts.STARRED, isFavorite)
     ops.add(op.build())
     op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
       .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
@@ -282,17 +287,42 @@ class Contact(var contactId: String) {
           .build()
       )
     }
+
+    // Flush all data from linked db
+    rawContactId?.let { id ->
+      baseModelsContentType.forEach {
+        ops.add(getFlushOperation(it, id))
+      }
+    }
+
+    // add updated data
     for (map in baseModels) {
       for (item in map) {
-        ops.add(item.getDeleteOperation(rawContactId!!))
         ops.add(item.getInsertOperation(rawContactId))
       }
     }
     return ops
   }
 
+  private fun getFlushOperation(contentType: String, rawId: String): ContentProviderOperation {
+    return ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+      .withSelection("${ContactsContract.Data.MIMETYPE}=? AND ${ContactsContract.Data.RAW_CONTACT_ID}=?", arrayOf(contentType, rawId))
+      .build()
+  }
+
   private val baseModels: Array<List<BaseModel>>
     get() = arrayOf(dates, emails, imAddresses, phones, addresses, relationships, urlAddresses, extraNames)
+  private val baseModelsContentType: Array<String>
+    get() = arrayOf(
+      CommonDataKinds.Event.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Email.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Im.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+      CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Relation.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Website.CONTENT_ITEM_TYPE,
+      CommonDataKinds.Nickname.CONTENT_ITEM_TYPE
+    )
 
   // convert to react native object
   @Throws(ParseException::class)
@@ -349,6 +379,8 @@ class Contact(var contactId: String) {
         ?.let { putString("department", it) }
 
       putBoolean("imageAvailable", hasPhoto)
+
+      putBoolean("isFavorite", isFavorite)
     }
 
     if (fieldSet.contains("image") && photoUri != null) {
@@ -411,8 +443,6 @@ class Contact(var contactId: String) {
       val datesArray = ArrayList<Bundle?>()
       for (item in dates) {
         val calendar = Calendar.getInstance()
-        val datePattern = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val noYearPattern = SimpleDateFormat("--MM-dd", Locale.getDefault())
         val details = Bundle()
         val dateString = item.data
         val label = item.label
@@ -424,8 +454,10 @@ class Contact(var contactId: String) {
         try {
           hasYear = !dateString!!.startsWith("--")
           if (hasYear) {
+            val datePattern = SimpleDateFormat("yyyy-MM-dd", Locale.US)
             calendar.time = datePattern.parse(dateString)!!
           } else {
+            val noYearPattern = SimpleDateFormat("--MM-dd", Locale.US)
             calendar.time = noYearPattern.parse(dateString)!!
           }
           if (hasYear) {
@@ -503,6 +535,10 @@ class Contact(var contactId: String) {
         }
         contactData.add(image)
       }
+      val isFavoriteValue = ContentValues().apply {
+        put("isFavorite", if (isFavorite) 1 else 0)
+      }
+      contactData.add(isFavoriteValue)
       for (map in baseModels) {
         for (item in map) {
           contactData.add(item.contentValues)
@@ -512,7 +548,10 @@ class Contact(var contactId: String) {
     }
 
   private fun getThumbnailBitmap(photoUri: String?): Bitmap {
-    val path = Uri.parse(photoUri).path
-    return BitmapFactory.decodeFile(path)
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+    val uri = Uri.parse(photoUri)
+    context.contentResolver.openInputStream(uri).use { inputStream ->
+      return BitmapFactory.decodeStream(inputStream)
+    }
   }
 }

@@ -1,16 +1,9 @@
 {
-  "platforms": [
-    "apple",
-    "android"
-  ],
+  "platforms": ["apple", "android"],
   "apple": {
-    "modules": [
-      "LocationModule"
-    ]
+    "modules": ["LocationModule"]
   },
   "android": {
-    "modules": [
-      "expo.modules.location.LocationModule"
-    ]
+    "modules": ["expo.modules.location.LocationModule"]
   }
 }

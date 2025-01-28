@@ -16,6 +16,8 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 const common_js_1 = require("./common.js");
 const host_js_1 = require("./host.js");
+const href_1 = require("../../link/href");
+const useLinkHooks_1 = require("../../link/useLinkHooks");
 const normalizeRoutePath = (path) => {
     for (const suffix of ['/', '/index.html']) {
         if (path.endsWith(suffix)) {
@@ -178,7 +180,7 @@ const InnerRouter = ({ routerData }) => {
         }
         else {
             // TODO: Native
-            console.log('window.scrollTo is not available');
+            // console.log('window.scrollTo is not available');
         }
     });
     const children = componentIds.reduceRight((acc, id) => (0, react_1.createElement)(RouterSlot, { route, routerData, cachedRef, id, fallback: acc }, acc), null);
@@ -203,16 +205,24 @@ function useRouter_UNSTABLE() {
         throw new Error('Missing Router');
     }
     const { route, changeRoute, prefetchRoute } = router;
-    const push = (0, react_1.useCallback)((to) => {
-        const url = new URL(to, getHref());
+    const push = (0, react_1.useCallback)((href, options) => {
+        if (options) {
+            // TODO(Bacon): Implement options
+            console.warn('options prop of router.push() is not supported in React Server Components yet');
+        }
+        const url = new URL((0, href_1.resolveHref)(href), getHref());
         getHistory().pushState({
             ...getHistory().state,
             expo_new_path: url.pathname !== window.location.pathname,
         }, '', url);
         changeRoute(parseRoute(url));
     }, [changeRoute]);
-    const replace = (0, react_1.useCallback)((to) => {
-        const url = new URL(to, getHref());
+    const replace = (0, react_1.useCallback)((href, options) => {
+        if (options) {
+            // TODO(Bacon): Implement options
+            console.warn('options prop of router.replace() is not supported in React Server Components yet');
+        }
+        const url = new URL((0, href_1.resolveHref)(href), getHref());
         getHistory().replaceState(getHistory().state, '', url);
         changeRoute(parseRoute(url));
     }, [changeRoute]);
@@ -228,12 +238,32 @@ function useRouter_UNSTABLE() {
         // FIXME is this correct?
         getHistory().forward();
     }, []);
-    const prefetch = (0, react_1.useCallback)((to) => {
-        const url = new URL(to, getHref());
+    const prefetch = (0, react_1.useCallback)((href) => {
+        const url = new URL((0, href_1.resolveHref)(href), getHref());
         prefetchRoute(parseRoute(url));
     }, [prefetchRoute]);
     return {
         ...route,
+        canDismiss() {
+            throw new Error('router.canDismiss() is not supported in React Server Components yet');
+        },
+        canGoBack() {
+            throw new Error('router.canGoBack() is not supported in React Server Components yet');
+        },
+        dismiss() {
+            throw new Error('router.dismiss() is not supported in React Server Components yet');
+        },
+        dismissTo() {
+            throw new Error('router.dismissTo() is not supported in React Server Components yet');
+        },
+        dismissAll() {
+            throw new Error('router.dismissAll() is not supported in React Server Components yet');
+        },
+        setParams() {
+            throw new Error('router.setParams() is not supported in React Server Components yet');
+        },
+        // TODO: The behavior here is not the same as before.
+        navigate: push,
         push,
         replace,
         reload,
@@ -297,7 +327,26 @@ function ServerRouter({ children, route }) {
     }, children));
 }
 exports.ServerRouter = ServerRouter;
-function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnter, unstable_prefetchOnView, asChild, ...props }) {
+exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
+exports.Link.resolveHref = href_1.resolveHref;
+function ExpoRouterLink({ href, replace, push, 
+// TODO: This does not prevent default on the anchor tag.
+relativeToDirectory, asChild, rel, target, download, 
+//   pending,
+// notPending,
+// unstable_prefetchOnEnter,
+// unstable_prefetchOnView,
+children, ...props }, ref) {
+    // Mutate the style prop to add the className on web.
+    const style = (0, useLinkHooks_1.useInteropClassName)(props);
+    // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
+    const hrefAttrs = (0, useLinkHooks_1.useHrefAttrs)({ asChild, rel, target, download });
+    const resolvedHref = (0, react_1.useMemo)(() => {
+        if (href == null) {
+            throw new Error('Link: href is required');
+        }
+        return (0, href_1.resolveHref)(href);
+    }, [href]);
     const router = (0, react_1.useContext)(RouterContext);
     const changeRoute = router
         ? router.changeRoute
@@ -309,31 +358,35 @@ function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnte
         : () => {
             throw new Error('Missing Router');
         };
-    const [isPending, startTransition] = (0, react_1.useTransition)();
-    const ref = (0, react_1.useRef)();
-    (0, react_1.useEffect)(() => {
-        if (unstable_prefetchOnView && ref.current) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const url = new URL(to, getHref());
-                        if (router && url.href !== getHref()) {
-                            const route = parseRoute(url);
-                            router.prefetchRoute(route);
-                        }
-                    }
-                });
-            }, { threshold: 0.1 });
-            observer.observe(ref.current);
-            return () => {
-                observer.disconnect();
-            };
-        }
-        return () => { };
-    }, [unstable_prefetchOnView, router, to]);
+    // TODO: Implement support for pending states in the future.
+    const [, startTransition] = (0, react_1.useTransition)();
+    // const elementRef = useRef<HTMLAnchorElement>();
+    // useEffect(() => {
+    //   if (unstable_prefetchOnView && process.env.EXPO_OS === 'web' && ref.current) {
+    //     const observer = new IntersectionObserver(
+    //       (entries) => {
+    //         entries.forEach((entry) => {
+    //           if (entry.isIntersecting) {
+    //             const url = new URL(resolvedHref, getHref());
+    //             if (router && url.href !== getHref()) {
+    //               const route = parseRoute(url);
+    //               router.prefetchRoute(route);
+    //             }
+    //           }
+    //         });
+    //       },
+    //       { threshold: 0.1 }
+    //     );
+    //     observer.observe(ref.current);
+    //     return () => {
+    //       observer.disconnect();
+    //     };
+    //   }
+    //   return () => {};
+    // }, [unstable_prefetchOnView, router, resolvedHref]);
     const onClick = (event) => {
         event.preventDefault();
-        const url = new URL(to, getHref());
+        const url = new URL(resolvedHref, getHref());
         // TODO: Use in-memory route for native platforms.
         // if (url.href !== getHref()) {
         const route = parseRoute(url);
@@ -358,22 +411,24 @@ function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnte
     //       props.onMouseEnter?.(event);
     //     }
     //   : props.onMouseEnter;
+    const Element = asChild ? react_slot_1.Slot : react_native_1.Text;
     const ele = (0, react_1.createElement)(
     // @ts-expect-error
-    asChild ? react_slot_1.Slot : react_native_1.Text, {
+    Element, {
+        ...hrefAttrs,
         ...props,
-        href: to,
+        style,
+        href: resolvedHref,
         onPress: onClick,
         // onMouseEnter,
         ref,
     }, children);
-    if (isPending && pending !== undefined) {
-        return (0, react_1.createElement)(react_1.Fragment, null, ele, pending);
-    }
-    if (!isPending && notPending !== undefined) {
-        return (0, react_1.createElement)(react_1.Fragment, null, ele, notPending);
-    }
+    // if (isPending && pending !== undefined) {
+    //   return createElement(Fragment, null, ele, pending);
+    // }
+    // if (!isPending && notPending !== undefined) {
+    //   return createElement(Fragment, null, ele, notPending);
+    // }
     return ele;
 }
-exports.Link = Link;
 //# sourceMappingURL=client.js.map

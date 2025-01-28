@@ -4,10 +4,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Base64
 import android.util.Log
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.WritableMap
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -16,7 +12,6 @@ import org.apache.commons.io.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
-import java.lang.ref.WeakReference
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -32,9 +27,6 @@ import kotlin.experimental.and
  */
 object UpdatesUtils {
   private val TAG = UpdatesUtils::class.java.simpleName
-
-  @get:Synchronized @set:Synchronized
-  private var eventsToSendToJS = mutableListOf<Pair<String, WritableMap>>()
 
   private const val UPDATES_DIRECTORY_NAME = ".expo-internal"
 
@@ -162,66 +154,9 @@ object UpdatesUtils {
     }
   }
 
-  fun sendEvent(
-    eventEmitter: EventEmitter?,
-    shouldEmitJsEvents: Boolean,
-    logger: UpdatesLogger,
-    eventName: String,
-    eventType: String,
-    params: WritableMap?
-  ) {
-    val eventParams = params ?: Arguments.createMap()
-    eventParams.putString("type", eventType)
-
-    if (!shouldEmitJsEvents) {
-      eventsToSendToJS.add(Pair(eventName, eventParams))
-      logger.error("Could not emit $eventName $eventType event; no subscribers registered.", UpdatesErrorCode.JSRuntimeError)
-      return
-    }
-    if (eventEmitter == null) {
-      eventsToSendToJS.add(Pair(eventName, eventParams))
-      logger.error("Could not emit $eventName $eventType event; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
-      return
-    }
-
-    logger.info("Emitted event: name = $eventName, type = $eventType")
-    try {
-      eventEmitter.emit(eventName, eventParams)
-    } catch (e: Exception) {
-      logger.error("Could not emit $eventName $eventType event; ${e.message}", UpdatesErrorCode.JSRuntimeError)
-      eventsToSendToJS.add(Pair(eventName, eventParams))
-    }
-  }
-
-  fun sendQueuedEventsToAppContext(
-    shouldEmitJsEvents: Boolean,
-    weakAppContext: WeakReference<AppContext>?,
-    logger: UpdatesLogger
-  ) {
-    if (!shouldEmitJsEvents) {
-      return
-    }
-    val appContext = weakAppContext?.get() ?: run {
-      return
-    }
-    val updatesModule = appContext.registry.getModule("ExpoUpdates") ?: run {
-      return
-    }
-    val eventEmitter = appContext.eventEmitter(updatesModule) ?: run {
-      return
-    }
-
-    eventsToSendToJS.forEach { event ->
-      val eventName = event.first
-      val eventParams = event.second
-      logger.info("Emitted event: name = $eventName, type = ${eventParams.getString("type")}")
-      eventEmitter.emit(eventName, eventParams)
-    }
-    eventsToSendToJS.clear()
-  }
-
   fun shouldCheckForUpdateOnLaunch(
     updatesConfiguration: UpdatesConfiguration,
+    logger: UpdatesLogger,
     context: Context
   ): Boolean {
     return when (updatesConfiguration.checkOnLaunch) {
@@ -231,10 +166,8 @@ object UpdatesUtils {
       CheckAutomaticallyConfiguration.WIFI_ONLY -> {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
         if (cm == null) {
-          Log.e(
-            TAG,
-            "Could not determine active network connection is metered; not checking for updates"
-          )
+          val cause = Exception("Null ConnectivityManager system service")
+          logger.error("Could not determine active network connection is metered; not checking for updates", cause, UpdatesErrorCode.Unknown)
           return false
         }
         !cm.isActiveNetworkMetered

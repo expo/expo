@@ -1,5 +1,5 @@
 import { DependencyList } from 'react';
-import type { ImageRef, ImageSource, UseImageHookOptions } from './Image.types';
+import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';
 /**
  * A hook that loads an image from the given source and returns a reference
  * to the native image instance, or `null` until the first image is successfully loaded.
@@ -16,7 +16,8 @@ import type { ImageRef, ImageSource, UseImageHookOptions } from './Image.types';
  * import { Text } from 'react-native';
  *
  * export default function MyImage() {
- *   const image = useImage('https://picsum.photos/800/600', {
+ *   const image = useImage('https://picsum.photos/1000/800', {
+ *     maxWidth: 800,
  *     onError(error, retry) {
  *       console.error('Loading failed:', error.message);
  *     }
@@ -30,5 +31,5 @@ import type { ImageRef, ImageSource, UseImageHookOptions } from './Image.types';
  * }
  * ```
  */
-export declare function useImage(source: ImageSource | string, options?: UseImageHookOptions, dependencies?: DependencyList): ImageRef | null;
+export declare function useImage(source: ImageSource | string, options?: ImageLoadOptions, dependencies?: DependencyList): ImageRef | null;
 //# sourceMappingURL=useImage.d.ts.map

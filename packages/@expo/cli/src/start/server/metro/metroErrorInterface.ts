@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getMetroServerRoot } from '@expo/config/paths';
 import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -112,9 +113,6 @@ export async function logMetroErrorWithStack(
   }
 
   if (stack?.length) {
-    Log.log();
-    Log.log(chalk.bold`Call Stack`);
-
     const stackProps = stack.map((frame) => {
       return {
         title: frame.methodName,
@@ -122,6 +120,8 @@ export async function logMetroErrorWithStack(
         collapse: frame.collapse,
       };
     });
+
+    const stackLines: string[] = [];
 
     stackProps.forEach((frame) => {
       const position = terminalLink.isSupported
@@ -131,19 +131,43 @@ export async function logMetroErrorWithStack(
       if (frame.collapse) {
         lineItem = chalk.dim(lineItem);
       }
-      Log.log(lineItem);
+      // Never show the internal module system.
+      if (!frame.subtitle.match(/\/metro-require\/require\.js/)) {
+        stackLines.push(lineItem);
+      }
     });
+
+    Log.log();
+    Log.log(chalk.bold`Call Stack`);
+    if (!stackLines.length) {
+      Log.log(chalk.gray('  No stack trace available.'));
+    } else {
+      Log.log(stackLines.join('\n'));
+    }
   } else {
     Log.log(chalk.gray(`  ${error.stack}`));
   }
 }
 
-export async function logMetroError(projectRoot: string, { error }: { error: Error }) {
-  if (error instanceof SilentError) {
+export const IS_METRO_BUNDLE_ERROR_SYMBOL = Symbol('_isMetroBundleError');
+const HAS_LOGGED_SYMBOL = Symbol('_hasLoggedInCLI');
+
+export async function logMetroError(
+  projectRoot: string,
+  {
+    error,
+  }: {
+    error: Error & {
+      [HAS_LOGGED_SYMBOL]?: boolean;
+    };
+  }
+) {
+  if (error instanceof SilentError || error[HAS_LOGGED_SYMBOL]) {
     return;
   }
+  error[HAS_LOGGED_SYMBOL] = true;
 
-  const stack = parseErrorStack(error.stack);
+  const stack = parseErrorStack(projectRoot, error.stack);
 
   const log = new LogBoxLog({
     level: 'static',
@@ -176,7 +200,7 @@ function isTransformError(
 function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }) {
   // Remap direct Metro Node.js errors to a format that will appear more client-friendly in the logbox UI.
   let stack: MetroStackFrame[] | undefined;
-  if (isTransformError(error)) {
+  if (isTransformError(error) && error.filename) {
     // Syntax errors in static rendering.
     stack = [
       {
@@ -201,7 +225,7 @@ function logFromError({ error, projectRoot }: { error: Error; projectRoot: strin
       },
     ];
   } else {
-    stack = parseErrorStack(error.stack);
+    stack = parseErrorStack(projectRoot, error.stack);
   }
 
   return new LogBoxLog({
@@ -291,7 +315,10 @@ export async function getErrorOverlayHtmlAsync({
   return htmlWithJs;
 }
 
-function parseErrorStack(stack?: string): (StackFrame & { collapse?: boolean })[] {
+function parseErrorStack(
+  projectRoot: string,
+  stack?: string
+): (StackFrame & { collapse?: boolean })[] {
   if (stack == null) {
     return [];
   }
@@ -299,11 +326,34 @@ function parseErrorStack(stack?: string): (StackFrame & { collapse?: boolean })[
     return stack;
   }
 
-  return parse(stack).map((frame) => {
-    // frame.file will mostly look like `http://localhost:8081/index.bundle?platform=web&dev=true&hot=false`
-    return {
-      ...frame,
-      column: frame.column != null ? frame.column - 1 : null,
-    };
-  });
+  const serverRoot = getMetroServerRoot(projectRoot);
+
+  return parse(stack)
+    .map((frame) => {
+      // frame.file will mostly look like `http://localhost:8081/index.bundle?platform=web&dev=true&hot=false`
+
+      if (frame.file) {
+        // SSR will sometimes have absolute paths followed by `.bundle?...`, we need to try and make them relative paths and append a dev server URL.
+        if (frame.file.startsWith('/') && frame.file.includes('bundle?') && !canParse(frame.file)) {
+          // Malformed stack file from SSR. Attempt to repair.
+          frame.file = 'https://localhost:8081/' + path.relative(serverRoot, frame.file);
+        }
+      }
+
+      return {
+        ...frame,
+        column: frame.column != null ? frame.column - 1 : null,
+      };
+    })
+    .filter((frame) => frame.file && !frame.file.includes('node_modules'));
+}
+
+function canParse(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }

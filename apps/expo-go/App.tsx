@@ -3,6 +3,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useTheme } from 'react-native-paper';
 import { enableScreens } from 'react-native-screens';
 import { Provider as ReduxProvider } from 'react-redux';
 
@@ -19,6 +20,11 @@ if (Platform.OS === 'android') {
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  const theme = useTheme();
+  // Removing the background color of the active tab
+  // See https://github.com/callstack/react-native-paper/issues/3554
+  theme.colors.secondaryContainer = 'transperent';
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ReduxProvider store={Store}>

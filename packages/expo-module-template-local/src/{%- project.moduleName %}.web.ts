@@ -1,13 +1,19 @@
-import { EventEmitter } from 'expo-modules-core';
+import { registerWebModule, NativeModule } from 'expo';
 
-const emitter = new EventEmitter<any>();
+import { ChangeEventPayload } from './<%- project.name %>.types';
 
-export default {
-  PI: Math.PI,
+type <%- project.moduleName %>Events = {
+  onChange: (params: ChangeEventPayload) => void;
+}
+
+class <%- project.moduleName %> extends NativeModule<<%- project.moduleName %>Events> {
+  PI = Math.PI;
   async setValueAsync(value: string): Promise<void> {
-    emitter.emit('onChange', { value });
-  },
+    this.emit('onChange', { value });
+  }
   hello() {
     return 'Hello world! 👋';
-  },
+  }
 };
+
+export default registerWebModule(<%- project.moduleName %>);

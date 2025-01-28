@@ -37,6 +37,7 @@ interface Props {
   pause: () => void;
   replay: () => void;
   next?: () => void;
+  replace?: () => void;
   setRate: (rate: number, shouldCorrectPitch: boolean) => void;
   setIsMuted: (isMuted: boolean) => void;
   setPosition: (position: number) => Promise<any>;
@@ -76,9 +77,9 @@ export default function Player(props: Props) {
   const _toggleShouldCorrectPitch = () =>
     props.setRate(props.playbackRate, !props.shouldCorrectPitch);
 
-  const _seekForward = () => props.setPosition(props.currentTime + 5000);
+  const _seekForward = () => props.setPosition(props.currentTime + 5);
 
-  const _seekBackward = () => props.setPosition(Math.max(0, props.currentTime - 5000));
+  const _seekBackward = () => props.setPosition(Math.max(0, props.currentTime - 5));
 
   const _renderReplayButton = () => {
     return (
@@ -117,6 +118,26 @@ export default function Player(props: Props) {
       );
     }
     return null;
+  };
+
+  const _renderReplaceButton = () => {
+    return (
+      <View>
+        <TouchableOpacity style={styles.button} onPress={props.replace}>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontWeight: 'bold',
+              marginLeft: 8,
+              fontSize: 12,
+              height: 36,
+              color: Colors.tintColor,
+            }}>
+            Replace Source
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   const _renderAuxiliaryButton = ({
@@ -172,7 +193,7 @@ export default function Player(props: Props) {
           }}
         />
         <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
-          {_formatTime(props.currentTime / 1000)} / {_formatTime(props.duration / 1000)}
+          {_formatTime(props.currentTime)} / {_formatTime(props.duration)}
         </Text>
         {_renderReplayButton()}
       </View>
@@ -253,6 +274,7 @@ export default function Player(props: Props) {
             active: false,
           })}
       </View>
+      {_renderReplaceButton()}
       {_maybeRenderErrorOverlay()}
     </View>
   );

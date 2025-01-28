@@ -1,11 +1,23 @@
 apply plugin: 'com.android.library'
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useCoreDependencies()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
+
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  useLegacyExpoModulesCorePlugin()
+}
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -15,13 +27,13 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '4.7.0'
+version = '5.0.0'
 
 android {
   namespace "expo.modules.imageloader"
   defaultConfig {
     versionCode 8
-    versionName "4.7.0"
+    versionName "5.0.0"
   }
 }
 

@@ -1,8 +1,6 @@
 package expo.modules.updates.statemachine
 
 import android.os.Bundle
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.WritableMap
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -11,28 +9,100 @@ import java.util.Locale
 /**
 The state machine context, with information intended to be consumed by application JS code.
  */
-data class UpdatesStateContext(
+class UpdatesStateContext private constructor(
+  val isStartupProcedureRunning: Boolean = false,
   val isUpdateAvailable: Boolean = false,
   val isUpdatePending: Boolean = false,
   val isChecking: Boolean = false,
   val isDownloading: Boolean = false,
   val isRestarting: Boolean = false,
+  val restartCount: Int = 0,
   val latestManifest: JSONObject? = null,
   val downloadedManifest: JSONObject? = null,
   val rollback: UpdatesStateContextRollback? = null,
   val checkError: UpdatesStateError? = null,
   val downloadError: UpdatesStateError? = null,
-  val lastCheckForUpdateTime: Date? = null
+  val lastCheckForUpdateTime: Date? = null,
+  val sequenceNumber: Int
 ) {
+  constructor(
+    isStartupProcedureRunning: Boolean = false,
+    isUpdateAvailable: Boolean = false,
+    isUpdatePending: Boolean = false,
+    isChecking: Boolean = false,
+    isDownloading: Boolean = false,
+    isRestarting: Boolean = false,
+    restartCount: Int = 0,
+    latestManifest: JSONObject? = null,
+    downloadedManifest: JSONObject? = null,
+    rollback: UpdatesStateContextRollback? = null,
+    checkError: UpdatesStateError? = null,
+    downloadError: UpdatesStateError? = null,
+    lastCheckForUpdateTime: Date? = null
+  ) : this(
+    isStartupProcedureRunning = isStartupProcedureRunning,
+    isUpdateAvailable = isUpdateAvailable,
+    isUpdatePending = isUpdatePending,
+    isChecking = isChecking,
+    isDownloading = isDownloading,
+    isRestarting = isRestarting,
+    restartCount = restartCount,
+    latestManifest = latestManifest,
+    downloadedManifest = downloadedManifest,
+    rollback = rollback,
+    checkError = checkError,
+    downloadError = downloadError,
+    lastCheckForUpdateTime = lastCheckForUpdateTime,
+    sequenceNumber = 0
+  )
+
+  fun copyAndIncrementSequenceNumber(
+    isStartupProcedureRunning: Boolean = this.isStartupProcedureRunning,
+    isUpdateAvailable: Boolean = this.isUpdateAvailable,
+    isUpdatePending: Boolean = this.isUpdatePending,
+    isChecking: Boolean = this.isChecking,
+    isDownloading: Boolean = this.isDownloading,
+    isRestarting: Boolean = this.isRestarting,
+    restartCount: Int = this.restartCount,
+    latestManifest: JSONObject? = this.latestManifest,
+    downloadedManifest: JSONObject? = this.downloadedManifest,
+    rollback: UpdatesStateContextRollback? = this.rollback,
+    checkError: UpdatesStateError? = this.checkError,
+    downloadError: UpdatesStateError? = this.downloadError,
+    lastCheckForUpdateTime: Date? = this.lastCheckForUpdateTime
+  ): UpdatesStateContext = UpdatesStateContext(
+    isStartupProcedureRunning = isStartupProcedureRunning,
+    isUpdateAvailable = isUpdateAvailable,
+    isUpdatePending = isUpdatePending,
+    isChecking = isChecking,
+    isDownloading = isDownloading,
+    isRestarting = isRestarting,
+    restartCount = restartCount,
+    latestManifest = latestManifest,
+    downloadedManifest = downloadedManifest,
+    rollback = rollback,
+    checkError = checkError,
+    downloadError = downloadError,
+    lastCheckForUpdateTime = lastCheckForUpdateTime,
+    sequenceNumber = this.sequenceNumber + 1
+  )
+
+  fun resetCopyWithIncrementedRestartCountAndSequenceNumber(): UpdatesStateContext = UpdatesStateContext(
+    restartCount = this.restartCount + 1,
+    sequenceNumber = this.sequenceNumber + 1
+  )
 
   val json: Map<String, Any>
     get() {
       val map: MutableMap<String, Any> = mutableMapOf(
+        "isStartupProcedureRunning" to isStartupProcedureRunning,
         "isUpdateAvailable" to isUpdateAvailable,
         "isUpdatePending" to isUpdatePending,
         "isChecking" to isChecking,
         "isDownloading" to isDownloading,
-        "isRestarting" to isRestarting
+        "isRestarting" to isRestarting,
+        "restartCount" to restartCount,
+        "sequenceNumber" to sequenceNumber
       )
       if (latestManifest != null) {
         map["latestManifest"] = latestManifest
@@ -56,26 +126,19 @@ data class UpdatesStateContext(
     }
 
   /**
-   * Creates a WritableMap to be sent to JS on a state change.
-   */
-  val writableMap: WritableMap
-    get() {
-      val result = Arguments.createMap()
-      result.putMap("context", Arguments.fromBundle(bundle))
-      return result
-    }
-
-  /**
-   * Creates a Bundle to be returned to JS on a call to nativeStateMachineContext()
+   * Creates a Bundle to be synchronized with JS state
    */
   val bundle: Bundle
     get() {
       return Bundle().apply {
+        putBoolean("isStartupProcedureRunning", isStartupProcedureRunning)
         putBoolean("isUpdateAvailable", isUpdateAvailable)
         putBoolean("isUpdatePending", isUpdatePending)
         putBoolean("isChecking", isChecking)
         putBoolean("isDownloading", isDownloading)
         putBoolean("isRestarting", isRestarting)
+        putInt("restartCount", restartCount)
+        putInt("sequenceNumber", sequenceNumber)
         if (latestManifest != null) {
           putString("latestManifestString", latestManifest.toString())
         }

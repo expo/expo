@@ -47,7 +47,7 @@
 @interface EXDevLauncherController ()
 
 @property (nonatomic, weak) UIWindow *window;
-@property (nonatomic, weak) id<EXDevLauncherControllerDelegate> delegate;
+@property (nonatomic, weak) ExpoDevLauncherReactDelegateHandler * delegate;
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
@@ -56,7 +56,7 @@
 @property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
-@property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
+@property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, strong) EXDevLauncherAppDelegate *appDelegate;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
@@ -84,7 +84,6 @@
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
-    self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     __weak __typeof(self) weakSelf = self;
@@ -209,7 +208,7 @@
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
-  NSMutableDictionary *launchOptions = [self.launchOptions mutableCopy];
+  NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
   NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
 
   if (deepLink) {
@@ -275,20 +274,31 @@
     return;
   }
 
+  void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      typeof(self) self = weakSelf;
+      if (!self) {
+        return;
+      }
+      
+      [self navigateToLauncher];
+    });
+  };
+  
+  NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
+  if (initialUrl) {
+    [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
+    return;
+  }
+
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
-    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
-       __weak typeof(self) weakSelf = self;
-       dispatch_async(dispatch_get_main_queue(), ^{
-         typeof(self) self = weakSelf;
-         if (!self) {
-           return;
-         }
-
-         [self navigateToLauncher];
-       });
-    }];
+    // When launch to the last opend url, the previous url could be unreachable because of LAN IP changed.
+    // We use a shorter timeout to prevent black screen when loading for an unreachable server.
+    NSTimeInterval requestTimeout = 10.0;
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:requestTimeout onSuccess:nil onError:navigateToLauncher];
     return;
   }
   [self navigateToLauncher];
@@ -323,10 +333,13 @@
 
   self.manifest = nil;
   self.manifestURL = nil;
+  self.networkInterceptor = nil;
 
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
 
   [self _removeInitModuleObserver];
+  // Reset app react host
+  [self.delegate destroyReactInstance];
 
   _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
 
@@ -401,7 +414,7 @@
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
 
   // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (![_appDelegate.rootViewFactory.bridge isValid]) {
+  if (_appDelegate.rootViewFactory.reactHost == nil) {
     [self navigateToLauncher];
   }
 
@@ -426,6 +439,18 @@
   [self loadApp:url withProjectUrl:nil onSuccess:onSuccess onError:onError];
 }
 
+- (void)loadApp:(NSURL *)url
+ withProjectUrl:(NSURL * _Nullable)projectUrl
+      onSuccess:(void (^ _Nullable)(void))onSuccess
+        onError:(void (^ _Nullable)(NSError *error))onError
+{
+  [self loadApp:url
+ withProjectUrl:projectUrl
+    withTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest
+      onSuccess:onSuccess
+        onError:onError];
+}
+
 /**
  * This method is the external entry point into loading an app with the dev launcher (e.g. via the
  * dev launcher UI or a deep link). It takes a URL, determines what type of server it points to
@@ -433,7 +458,11 @@
  * downloads all the project's assets (via expo-updates) in the case of a published project, and
  * then calls `_initAppWithUrl:bundleUrl:manifest:` if successful.
  */
-- (void)loadApp:(NSURL *)url withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+- (void)loadApp:(NSURL *)url
+ withProjectUrl:(NSURL * _Nullable)projectUrl
+    withTimeout:(NSTimeInterval)requestTimeout
+      onSuccess:(void (^ _Nullable)(void))onSuccess
+        onError:(void (^ _Nullable)(NSError *error))onError
 {
   EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
   NSURL *expoUrl = devLauncherUrl.url;
@@ -495,7 +524,12 @@
     [_updatesInterface reset];
   }
 
-  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl installationID:installationID session:[NSURLSession sharedSession]];
+  NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc]
+                                                 initWithURL:expoUrl
+                                                 installationID:installationID
+                                                 session:[NSURLSession sharedSession]
+                                                 requestTimeout:requestTimeout];
 
   void (^onIsManifestURL)(BOOL) = ^(BOOL isManifestURL) {
     if (!isManifestURL) {
@@ -576,6 +610,7 @@
     if (![bundleUrl.scheme isEqualToString:@"file"]) {
       [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
     }
+    self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
     UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
@@ -599,16 +634,15 @@
       self.window.rootViewController.view.backgroundColor = backgroundColor;
       self.window.backgroundColor = backgroundColor;
     }
-
-    if (self.updatesInterface) {
-      ExpoBridgeModule *expoBridgeModule = [self.appBridge moduleForClass:ExpoBridgeModule.class];
-      ((id<EXUpdatesExternalInterface>)self.updatesInterface).appContext = expoBridgeModule.appContext;
-    }
   });
 }
 
 - (BOOL)isAppRunning
 {
+  if([_appBridge isProxy]){
+    return [self.delegate isReactInstanceValid];
+  }
+
   return [_appBridge isValid];
 }
 
@@ -741,7 +775,7 @@
   manager.currentManifestURL = nil;
 }
 
--(NSDictionary *)getUpdatesConfig
+-(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants
 {
   NSMutableDictionary *updatesConfig = [NSMutableDictionary new];
 
@@ -750,19 +784,19 @@
     runtimeVersion = _updatesInterface.runtimeVersion ?: @"";
   }
 
-  // url structure for EASUpdates: `http://u.expo.dev/{appId}`
-  // this url field is added to app.json.updates when running `eas update:configure`
+  // the project url field is added to app.json.updates when running `eas update:configure`
   // the `u.expo.dev` determines that it is the modern manifest protocol
   NSString *projectUrl = @"";
   if (_updatesInterface) {
-    projectUrl = [_updatesInterface.updateURL absoluteString] ?: @"";
+    projectUrl = [constants valueForKeyPath:@"manifest.updates.url"];
   }
 
   NSURL *url = [NSURL URLWithString:projectUrl];
-  NSString *appId = [[url pathComponents] lastObject];
 
   BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
+
+  NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: @"";
   BOOL hasAppId = appId.length > 0;
 
   BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;
@@ -804,6 +838,26 @@
     return;
   }
   [self loadApp:appUrl onSuccess:nil onError:nil];
+}
+
++ (NSURL *)initialUrlFromProcessInfo
+{
+  NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+  NSArray *arguments = [processInfo arguments];
+  BOOL nextIsUrl = NO;
+  
+  for (NSString *arg in arguments) {
+    if (nextIsUrl) {
+      NSURL *url = [NSURL URLWithString:arg];
+      if (url) {
+        return url;
+      }
+    }
+    if ([arg isEqualToString:@"--initialUrl"]) {
+      nextIsUrl = YES;
+    }
+  }
+  return nil;
 }
 
 @end

@@ -9,7 +9,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    The app context is injected into the class after the context is initialized.
    see the `makeClass` static function.
    */
-  public weak var appContext: AppContext? { ExpoFabricView.appContextFromClass() }
+  public weak var appContext: AppContext?
 
   /**
    The view definition that setup from `ExpoFabricView.create()`.
@@ -36,7 +36,12 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     super.init(frame: frame)
   }
 
+  public func setViewSize(_ size: CGSize) {
+    super.setShadowNodeSize(Float(size.width), height: Float(size.height))
+  }
+
   required public init(appContext: AppContext? = nil) {
+    self.appContext = appContext
     super.init(frame: .zero)
   }
 
@@ -118,6 +123,16 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
 
   // MARK: - Statics
 
+  /**
+   Called by React Native to check if the view supports recycling.
+   */
+  @objc
+  public static func shouldBeRecycled() -> Bool {
+    // Turn off recycling for Expo views. We don't think there is any benefit of recycling – it may lead to more bugs than gains.
+    // TODO: Make it possible to override this behavior for particular views
+    return false
+  }
+
   internal static var viewClassesRegistry = [String: AnyClass]()
 
   /**
@@ -127,18 +142,17 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    but we can't do that as there might be more than one class with the same name (Expo Go) and allocating another one would return `nil`.
    */
   @objc
-  public static func makeViewClass(forAppContext appContext: AppContext, className: String) -> AnyClass? {
-    let moduleName = String(className.dropFirst(ViewModuleWrapper.viewManagerAdapterPrefix.count))
+  public static func makeViewClass(forAppContext appContext: AppContext, moduleName: String, viewName: String, className: String) -> AnyClass? {
     if let viewClass = viewClassesRegistry[className] {
       inject(appContext: appContext)
-      injectInitializer(appContext: appContext, moduleName: moduleName, toViewClass: viewClass)
+      injectInitializer(appContext: appContext, moduleName: moduleName, viewName: viewName, toViewClass: viewClass)
       return viewClass
     }
     guard let viewClass = objc_allocateClassPair(ExpoFabricView.self, className, 0) else {
       fatalError("Cannot allocate a Fabric view class for '\(className)'")
     }
     inject(appContext: appContext)
-    injectInitializer(appContext: appContext, moduleName: moduleName, toViewClass: viewClass)
+    injectInitializer(appContext: appContext, moduleName: moduleName, viewName: viewName, toViewClass: viewClass)
 
     // Save the allocated view class in the registry for the later use (e.g. when the app is reloaded).
     viewClassesRegistry[className] = viewClass
@@ -154,14 +168,14 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     class_replaceMethod(object_getClass(ExpoFabricView.self), #selector(appContextFromClass), appContextBlockImp, "@@:")
   }
 
-  internal static func injectInitializer(appContext: AppContext, moduleName: String, toViewClass viewClass: AnyClass) {
+  internal static func injectInitializer(appContext: AppContext, moduleName: String, viewName: String, toViewClass viewClass: AnyClass) {
     // The default initializer for native views. It will be called by Fabric.
     let newBlock: @convention(block) () -> Any = {[weak appContext] in
       guard let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
         fatalError(Exceptions.AppContextLost().reason)
       }
-      guard let view = moduleHolder.definition.view?.createView(appContext: appContext) else {
-        fatalError("Cannot create a view from module '\(moduleName)'")
+      guard let view = moduleHolder.definition.views[viewName]?.createView(appContext: appContext) else {
+        fatalError("Cannot create a view '\(viewName)' from module '\(moduleName)'")
       }
       _ = Unmanaged.passRetained(view) // retain the view given this is an initializer
       return view

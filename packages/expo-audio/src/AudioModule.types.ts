@@ -1,4 +1,4 @@
-import { PermissionResponse, SharedObject } from 'expo-modules-core';
+import { NativeModule, PermissionResponse, SharedObject } from 'expo-modules-core';
 
 import {
   AudioMode,
@@ -11,17 +11,18 @@ import {
   RecordingStatus,
 } from './Audio.types';
 
-export interface AudioModule {
+/**
+ * @hidden
+ */
+export declare class NativeAudioModule extends NativeModule {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
   setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
-  requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
-  getRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
+  requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
+  getRecordingPermissionsAsync(): Promise<PermissionResponse>;
 
   readonly AudioPlayer: typeof AudioPlayer;
   readonly AudioRecorder: typeof AudioRecorder;
 }
-
-export type RecordingPermissionResponse = PermissionResponse;
 
 export declare class AudioPlayer extends SharedObject<AudioEvents> {
   /**
@@ -71,12 +72,12 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   isBuffering: boolean;
 
   /**
-   * The current position through the audio item, in seconds.
+   * The current position through the audio item in seconds.
    */
   currentTime: number;
 
   /**
-   * The total duration of the audio, in seconds.
+   * The total duration of the audio in seconds.
    */
   duration: number;
 
@@ -102,7 +103,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   currentStatus: AudioStatus;
 
   /**
-   * Resumes the player.
+   * Start playing audio.
    */
   play(): void;
 
@@ -110,6 +111,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * Pauses the player.
    */
   pause(): void;
+
+  /**
+   * Replaces the current audio source with a new one.
+   */
+  replace(source: AudioSource): void;
 
   /**
    * Seeks the playback by the given number of seconds.
@@ -122,7 +128,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * @param rate The playback rate of the audio.
    * @param pitchCorrectionQuality The quality of the pitch correction.
    */
-  setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
+  setPlaybackRate(rate: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
 
   /**
    *
@@ -136,14 +142,19 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   remove(): void;
 }
 
-type AudioSample = {
-  channels: { frames: number[] }[];
+// @docsMissing
+export type AudioSample = {
+  channels: AudioSampleChannel[];
   timestamp: number;
 };
 
+// @docsMissing
+export type AudioSampleChannel = { frames: number[] };
+
+// @docsMissing
 export type AudioEvents = {
-  onPlaybackStatusUpdate(status: AudioStatus): void;
-  onAudioSampleUpdate(data: AudioSample): void;
+  playbackStatusUpdate(status: AudioStatus): void;
+  audioSampleUpdate(data: AudioSample): void;
 };
 
 export declare class AudioRecorder extends SharedObject<RecordingEvents> {
@@ -205,7 +216,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
    * @param inputUid The uid of a `RecordingInput`.
    * @return A `Promise` that is resolved if successful or rejected if not.
    */
-  setInput(input: string): void;
+  setInput(inputUid: string): void;
 
   /**
    * Status of the current recording.
@@ -221,7 +232,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   /**
    * Prepares the recording for recording.
    */
-  prepareToRecordAsync(options?: RecordingOptions): Promise<void>;
+  prepareToRecordAsync(options?: Partial<RecordingOptions>): Promise<void>;
 
   /**
    * Stops the recording once the specified time has elapsed.
@@ -230,6 +241,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   recordForDuration(seconds: number): void;
 }
 
+// @docsMissing
 export type RecordingEvents = {
-  onRecordingStatusUpdate: (status: RecordingStatus) => void;
+  recordingStatusUpdate: (status: RecordingStatus) => void;
 };

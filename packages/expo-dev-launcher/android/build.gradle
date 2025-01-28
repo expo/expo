@@ -1,10 +1,54 @@
 apply plugin: 'com.android.library'
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useCoreDependencies()
+  useDefaultAndroidSdkVersions()
+}
+
+def usesModernPlugin = true
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  usesModernPlugin = false
+  useLegacyExpoModulesCorePlugin()
+}
+
+def versionToNumber(major, minor, patch) {
+  return major * 10000 + minor * 100 + patch
+}
+
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+  def nodeModulesVersion = providers.exec {
+    workingDir(projectDir)
+    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
+  }.standardOutput.asText.get().trim()
+  def version = safeExtGet(overridePropName, nodeModulesVersion)
+
+  def coreVersion = version.split("-")[0]
+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+  return versionToNumber(
+      major,
+      minor,
+      patch
+  )
+}
+
+def getRNVersion = {
+  if (usesModernPlugin) {
+    return project.extensions.getByType(expo.modules.plugin.gradle.ExpoModuleExtension).reactNativeVersion.toNumber()
+  } else {
+    // TODO(@lukmccall): Remove when we drop support for the legacy core plugin
+    return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
+  }
+}
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -17,7 +61,7 @@ android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "4.0.15"
+    versionName "5.0.17"
   }
 
   buildTypes {
@@ -35,15 +79,21 @@ android {
     def rnVersion = getRNVersion()
     main {
       java {
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
-          srcDirs += "src/react-native-74/main"
+        if (rnVersion >= versionToNumber(0, 77, 0)) {
+          srcDirs += "src/rn77/main"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += "src/rn74/main"
         }
       }
     }
     debug {
       java {
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
-          srcDirs += "src/react-native-74/debug"
+        if (rnVersion >= versionToNumber(0, 77, 0)) {
+          srcDirs += "src/rn77/debug"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += "src/rn74/debug"
         }
       }
     }
@@ -94,43 +144,17 @@ dependencies {
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
 
-  def koinVersion = "3.4.0"
-
-  api "io.insert-koin:koin-core:${koinVersion}"
+  api project.dependencies.platform("io.insert-koin:koin-bom:3.5.6")
+  api "io.insert-koin:koin-core"
 
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'androidx.test:core-ktx:1.4.0'
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
-  testImplementation "io.insert-koin:koin-test:${koinVersion}"
-  testImplementation "io.insert-koin:koin-test-junit4:${koinVersion}"
+  testImplementation "io.insert-koin:koin-test"
+  testImplementation "io.insert-koin:koin-test-junit4"
   testImplementation 'io.mockk:mockk:1.12.3'
   testImplementation "org.robolectric:robolectric:4.10"
-}
-
-def versionToNumber(major, minor, patch) {
-  return patch * 100 + minor * 10000 + major * 1000000
-}
-
-def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = providers.exec {
-    workingDir(projectDir)
-    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
-  }.standardOutput.asText.get().trim()
-  def version = safeExtGet(overridePropName, nodeModulesVersion)
-
-  def coreVersion = version.split("-")[0]
-  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
-
-  return versionToNumber(
-      major,
-      minor,
-      patch
-  )
-}
-
-def getRNVersion() {
-  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }

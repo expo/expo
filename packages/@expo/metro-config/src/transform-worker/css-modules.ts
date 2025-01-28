@@ -41,11 +41,11 @@ export async function transformCssModuleWeb(props: {
     // cssModules: true,
     projectRoot: props.options.projectRoot,
     minify: props.options.minify,
+    // @ts-expect-error: Added for testing against virtual file system.
+    resolver: props.options._test_resolveCss,
   });
 
   printCssWarnings(props.filename, props.src, cssResults.warnings);
-
-  const codeAsString = cssResults.code.toString();
 
   const { styles, reactNativeWeb, variables } = convertLightningCssToReactNativeWebStyleSheet(
     cssResults.exports!
@@ -55,22 +55,22 @@ export async function transformCssModuleWeb(props: {
     styles
   )},{unstable_styles:${JSON.stringify(reactNativeWeb)}},${JSON.stringify(variables)});`;
 
-  if (props.options.dev) {
-    const runtimeCss = wrapDevelopmentCSS({
-      reactServer: props.options.reactServer,
-      filename: props.filename,
-      src: codeAsString,
-    });
-
-    outputModule += '\n' + runtimeCss;
-  }
-
   const cssImports = collectCssImports(
     props.filename,
     props.src,
     cssResults.code.toString(),
     cssResults
   );
+
+  if (props.options.dev) {
+    const runtimeCss = wrapDevelopmentCSS({
+      reactServer: props.options.reactServer,
+      filename: props.filename,
+      src: cssImports.code,
+    });
+
+    outputModule += '\n' + runtimeCss;
+  }
 
   return {
     output: outputModule,
@@ -181,12 +181,16 @@ export function collectCssImports(
           });
         }
       } else if (dep.type === 'url') {
-        if (isExternalUrl(dep.url)) {
-          // Put the external URL back.
-          code = code.replaceAll(dep.placeholder, dep.url);
-        } else {
+        // Put the URL back into the code.
+        code = code.replaceAll(dep.placeholder, dep.url);
+
+        const isSupported = // External URL
+          isExternalUrl(dep.url) ||
+          // Data URL, DOM id, or public file.
+          dep.url.match(/^(data:|[#/])/);
+        if (!isSupported) {
           // Assert that syntax like `background: url('./img.png');` is not supported yet.
-          throw new Error(
+          console.warn(
             `Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${codeFrame(originalCode, dep.loc.start.line, dep.loc.start.column)}`
           );
         }

@@ -30,7 +30,6 @@ const withRouter = (config, _props) => {
         extra: {
             ...config.extra,
             router: {
-                origin: false,
                 ...config.extra?.router,
                 ...props,
             },

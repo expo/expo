@@ -152,9 +152,7 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
         value.dependencies =
             //
             sortDependencies(dependencies, value.dependencies);
-        const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, reconcile.importDefault, reconcile.importAll, dependencyMapName, reconcile.globalPrefix, 
-        // @ts-expect-error: not on type yet...
-        reconcile.unstable_renameRequire === false);
+        const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, reconcile.importDefault, reconcile.importAll, dependencyMapName, reconcile.globalPrefix, reconcile.unstable_renameRequire === false);
         const reserved = [];
         if (reconcile.unstable_dependencyMapReservedName != null) {
             reserved.push(reconcile.unstable_dependencyMapReservedName);

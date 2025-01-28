@@ -37,11 +37,12 @@ public final class FileSystemModule: Module {
     Events(EVENT_DOWNLOAD_PROGRESS, EVENT_UPLOAD_PROGRESS)
 
     AsyncFunction("getInfoAsync") { (url: URL, options: InfoOptions, promise: Promise) in
+      let optionsDict = options.toDictionary(appContext: appContext)
       switch url.scheme {
       case "file":
-        EXFileSystemLocalFileHandler.getInfoForFile(url, withOptions: options.toDictionary(), resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        EXFileSystemLocalFileHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
       case "assets-library", "ph":
-        EXFileSystemAssetLibraryHandler.getInfoForFile(url, withOptions: options.toDictionary(), resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        EXFileSystemAssetLibraryHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
       default:
         throw UnsupportedSchemeException(url.scheme)
       }

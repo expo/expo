@@ -43,7 +43,30 @@ export default class ImageManipulatorContext extends SharedObject {
 
   async renderAsync(): Promise<ImageManipulatorImageRef> {
     const canvas = await this.currentTask;
-    return new ImageManipulatorImageRef(canvas);
+
+    // We're copying the canvas so ref's `saveAsync` can safely use `toBlob` again with the desired format and quality.
+    // The original canvas cannot be reused as the manipulator context may still draw on it.
+    const clonedCanvas = document.createElement('canvas');
+    const clonedCanvasCtx = clonedCanvas.getContext('2d');
+
+    clonedCanvas.width = canvas.width;
+    clonedCanvas.height = canvas.height;
+    clonedCanvasCtx?.drawImage(canvas, 0, 0);
+
+    return new Promise((resolve) => {
+      // Create a full-sized, full-quality blob from the original canvas.
+      canvas.toBlob(
+        (blob) => {
+          const url = blob ? URL.createObjectURL(blob) : canvas.toDataURL();
+          const image = new ImageManipulatorImageRef(url, clonedCanvas);
+
+          resolve(image);
+        },
+        // Use PNG format so the result is of the best quality.
+        // If you need another format, see `saveAsync` function on the image ref.
+        'image/png'
+      );
+    });
   }
 
   private addTask(

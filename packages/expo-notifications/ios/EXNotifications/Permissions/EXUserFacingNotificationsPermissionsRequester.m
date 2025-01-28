@@ -111,7 +111,7 @@ static NSDictionary *_requestedPermissions;
 {
   EX_WEAKIFY(self);
   [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
-    EX_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     // getPermissions blocks method queue on which this callback is being executed
     // so we have to dispatch to another queue.
     dispatch_async(self.methodQueue, ^{

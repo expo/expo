@@ -5,7 +5,7 @@
 
 import { NativeModules } from 'react-native';
 
-import { ProxyNativeModule } from './NativeModulesProxy.types';
+import type { ProxyNativeModule } from './NativeModulesProxy.types';
 
 const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
 // Fixes `cannot find name 'global'.` in tests
@@ -19,7 +19,7 @@ const exportedMethodsKey = 'exportedMethods';
  * @deprecated `NativeModulesProxy` is deprecated and might be removed in the future releases.
  * Use `requireNativeModule` or `requireOptionalNativeModule` instead.
  */
-const NativeModulesProxy: { [moduleName: string]: ProxyNativeModule } = {};
+const NativeModulesProxy: Record<string, ProxyNativeModule> = {};
 
 if (LegacyNativeProxy) {
   // use JSI proxy if available, fallback to legacy RN proxy
@@ -54,7 +54,7 @@ if (LegacyNativeProxy) {
     });
 
     // These are called by EventEmitter (which is a wrapper for NativeEventEmitter)
-    // only on iOS and they use iOS-specific native module, EXReactNativeEventEmitter.
+    // only on iOS, and they use iOS-specific native module, EXReactNativeEventEmitter.
     //
     // On Android only {start,stop}Observing are called on the native module
     // and these should be exported as Expo methods.

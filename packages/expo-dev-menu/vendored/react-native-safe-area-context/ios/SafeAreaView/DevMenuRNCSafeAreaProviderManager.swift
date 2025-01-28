@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-public class RNCSafeAreaProviderManager: Module {
+public final class RNCSafeAreaProviderManager: Module {
   public func definition() -> ModuleDefinition {
     Name("RNCSafeAreaProvider")
     Constants([
@@ -13,11 +13,11 @@ public class RNCSafeAreaProviderManager: Module {
   }
 
   private var initialWindowMetrics: [String: Any]? {
-    guard let window = UIApplication.shared.keyWindow else {
-      return [:]
-    }
+    syncOnMain {
+      guard let window = UIApplication.shared.keyWindow else {
+        return [:]
+      }
 
-    if #available(iOS 11.0, *) {
       let safeAreaInsets = window.safeAreaInsets
 
       return [
@@ -35,20 +35,14 @@ public class RNCSafeAreaProviderManager: Module {
         ]
       ]
     }
-
-    return [
-      "insets": [
-        "top": 20,
-        "right": 0,
-        "bottom": 0,
-        "left": 0
-      ],
-      "frame": [
-        "x": window.frame.origin.x,
-        "y": window.frame.origin.y,
-        "width": window.frame.size.width,
-        "height": window.frame.size.height
-      ]
-    ]
   }
+}
+
+private func syncOnMain<T>(_ closure: () -> T) -> T {
+  if !Thread.isMainThread {
+    return DispatchQueue.main.sync {
+      closure()
+    }
+  }
+  return closure()
 }

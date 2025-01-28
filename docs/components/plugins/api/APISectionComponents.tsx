@@ -1,23 +1,23 @@
-import { ELEMENT_SPACING } from './styles';
+import { mergeClasses } from '@expo/styleguide';
+
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { H2, DEMI, CODE, CALLOUT } from '~/ui/components/Text';
 
 import {
   CommentData,
   GeneratedData,
   MethodSignatureData,
   PropsDefinitionData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import APISectionProps from '~/components/plugins/api/APISectionProps';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import APISectionProps from './APISectionProps';
 import {
-  CommentTextBlock,
   resolveTypeName,
   getComponentName,
-  STYLES_APIBOX,
-  getTagNamesList,
-  H3Code,
   getPossibleComponentPropsNames,
-} from '~/components/plugins/api/APISectionUtils';
-import { H2, DEMI, P, CODE, MONOSPACE } from '~/ui/components/Text';
+} from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];
@@ -42,7 +42,7 @@ const getComponentTypeParameters = ({
 }: Partial<GeneratedData>) => {
   if (extendedTypes?.length) {
     return extendedTypes[0];
-  } else if (signatures?.length && signatures[0].parameters.length) {
+  } else if (signatures?.length && signatures[0]?.parameters?.length) {
     return signatures?.[0].parameters[0].type;
   }
   return type;
@@ -58,16 +58,14 @@ const renderComponent = (
   const resolvedName = getComponentName(name, children);
   const extractedComment = getComponentComment(comment, signatures);
   return (
-    <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX} className="!shadow-none">
+    <div
+      key={`component-definition-${resolvedName}`}
+      className={mergeClasses(STYLES_APIBOX, '!shadow-none')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
-      <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium" className="wrap-anywhere">
-          {resolvedName}
-        </MONOSPACE>
-      </H3Code>
+      <APIBoxHeader name={resolvedName} comment={extractedComment} />
       {resolvedType && resolvedTypeParameters && (
-        <P className={ELEMENT_SPACING}>
-          <DEMI theme="secondary">Type:</DEMI>{' '}
+        <CALLOUT className={mergeClasses(ELEMENT_SPACING, VERTICAL_SPACING)}>
+          <DEMI className={STYLES_SECONDARY}>Type:</DEMI>{' '}
           <CODE>
             {extendedTypes ? (
               <>React.{resolveTypeName(resolvedTypeParameters, sdkVersion)}</>
@@ -77,10 +75,10 @@ const renderComponent = (
               </>
             )}
           </CODE>
-        </P>
+        </CALLOUT>
       )}
-      <CommentTextBlock comment={extractedComment} />
-      {componentsProps && componentsProps.length ? (
+      <APICommentTextBlock comment={extractedComment} />
+      {componentsProps?.length ? (
         <APISectionProps
           sdkVersion={sdkVersion}
           data={componentsProps}

@@ -3,26 +3,27 @@
 package expo.modules.video
 
 import android.net.Uri
-import androidx.media3.common.C
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
-import androidx.media3.common.Timeline
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.Spacing
-import com.facebook.react.uimanager.ViewProps
-import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
+import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
+import expo.modules.video.player.VideoPlayer
+import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
-import expo.modules.video.utils.ifYogaDefinedUse
-import expo.modules.video.utils.makeYogaUndefinedIfNegative
+import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlin.time.Duration
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableReactNativeAPI
@@ -73,57 +74,6 @@ class VideoModule : Module() {
         view.videoPlayer?.requiresLinearPlayback = linearPlayback
       }
 
-      PropGroup(
-        ViewProps.BORDER_RADIUS to 0,
-        ViewProps.BORDER_TOP_LEFT_RADIUS to 1,
-        ViewProps.BORDER_TOP_RIGHT_RADIUS to 2,
-        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS to 3,
-        ViewProps.BORDER_BOTTOM_LEFT_RADIUS to 4,
-        ViewProps.BORDER_TOP_START_RADIUS to 5,
-        ViewProps.BORDER_TOP_END_RADIUS to 6,
-        ViewProps.BORDER_BOTTOM_START_RADIUS to 7,
-        ViewProps.BORDER_BOTTOM_END_RADIUS to 8
-      ) { view: VideoView, index: Int, borderRadius: Float? ->
-        val radius = makeYogaUndefinedIfNegative(borderRadius ?: YogaConstants.UNDEFINED)
-        view.setBorderRadius(index, radius)
-      }
-
-      PropGroup(
-        ViewProps.BORDER_WIDTH to Spacing.ALL,
-        ViewProps.BORDER_LEFT_WIDTH to Spacing.LEFT,
-        ViewProps.BORDER_RIGHT_WIDTH to Spacing.RIGHT,
-        ViewProps.BORDER_TOP_WIDTH to Spacing.TOP,
-        ViewProps.BORDER_BOTTOM_WIDTH to Spacing.BOTTOM,
-        ViewProps.BORDER_START_WIDTH to Spacing.START,
-        ViewProps.BORDER_END_WIDTH to Spacing.END
-      ) { view: VideoView, index: Int, width: Float? ->
-        val pixelWidth = makeYogaUndefinedIfNegative(width ?: YogaConstants.UNDEFINED)
-          .ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-        view.setBorderWidth(index, pixelWidth)
-      }
-
-      PropGroup(
-        ViewProps.BORDER_COLOR to Spacing.ALL,
-        ViewProps.BORDER_LEFT_COLOR to Spacing.LEFT,
-        ViewProps.BORDER_RIGHT_COLOR to Spacing.RIGHT,
-        ViewProps.BORDER_TOP_COLOR to Spacing.TOP,
-        ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
-        ViewProps.BORDER_START_COLOR to Spacing.START,
-        ViewProps.BORDER_END_COLOR to Spacing.END
-      ) { view: VideoView, index: Int, color: Int? ->
-        val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
-        val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.setBorderColor(index, rgbComponent, alphaComponent)
-      }
-
-      Prop("borderStyle") { view: VideoView, borderStyle: String? ->
-        view.setBorderStyle(borderStyle)
-      }
-
-      OnViewDidUpdateProps { view: VideoView ->
-        view.didUpdateProps()
-      }
-
       AsyncFunction("enterFullscreen") { view: VideoView ->
         view.enterFullscreen()
       }
@@ -133,7 +83,7 @@ class VideoModule : Module() {
       }
 
       AsyncFunction("startPictureInPicture") { view: VideoView ->
-        view.runWithPiPMisconfigurationSoftHandling(true) {
+        runWithPiPMisconfigurationSoftHandling(true) {
           view.enterPictureInPicture()
         }
       }
@@ -144,6 +94,12 @@ class VideoModule : Module() {
 
       OnViewDestroys {
         VideoManager.unregisterVideoView(it)
+      }
+
+      OnViewDidUpdateProps { view ->
+        if (view.playerView.useController != view.useNativeControls) {
+          view.playerView.useController = view.useNativeControls
+        }
       }
     }
 
@@ -199,29 +155,30 @@ class VideoModule : Module() {
 
       Property("currentLiveTimestamp")
         .get { ref: VideoPlayer ->
-          // TODO: same as `currentTime`
           runBlocking(appContext.mainQueue.coroutineContext) {
-            val window = Timeline.Window()
-            if (!ref.player.currentTimeline.isEmpty) {
-              ref.player.currentTimeline.getWindow(ref.player.currentMediaItemIndex, window)
-            }
-            if (window.windowStartTimeMs == C.TIME_UNSET) {
-              null
-            } else {
-              window.windowStartTimeMs + ref.player.currentPosition
-            }
+            ref.currentLiveTimestamp
+          }
+        }
+
+      Property("availableSubtitleTracks")
+        .get { ref: VideoPlayer ->
+          ref.subtitles.availableSubtitleTracks
+        }
+
+      Property("subtitleTrack")
+        .get { ref: VideoPlayer ->
+          ref.subtitles.currentSubtitleTrack
+        }
+        .set { ref: VideoPlayer, subtitleTrack: SubtitleTrack? ->
+          appContext.mainQueue.launch {
+            ref.subtitles.currentSubtitleTrack = subtitleTrack
           }
         }
 
       Property("currentOffsetFromLive")
         .get { ref: VideoPlayer ->
-          // TODO: same as `currentTime`
           runBlocking(appContext.mainQueue.coroutineContext) {
-            if (ref.player.currentLiveOffset == C.TIME_UNSET) {
-              null
-            } else {
-              ref.player.currentLiveOffset / 1000f
-            }
+            ref.currentOffsetFromLive
           }
         }
 
@@ -293,6 +250,22 @@ class VideoModule : Module() {
           }
         }
 
+      Property("bufferedPosition")
+        .get { ref: VideoPlayer ->
+          // Same as currentTime
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.bufferedPosition
+          }
+        }
+
+      Property("bufferOptions")
+        .get { ref: VideoPlayer ->
+          ref.bufferOptions
+        }
+        .set { ref: VideoPlayer, bufferOptions: BufferOptions ->
+          ref.bufferOptions = bufferOptions
+        }
+
       Function("play") { ref: VideoPlayer ->
         appContext.mainQueue.launch {
           ref.player.play()
@@ -304,6 +277,24 @@ class VideoModule : Module() {
           ref.player.pause()
         }
       }
+
+      Property("timeUpdateEventInterval")
+        .get { ref: VideoPlayer ->
+          ref.intervalUpdateClock.interval / 1000.0
+        }
+        .set { ref: VideoPlayer, intervalSeconds: Float ->
+          ref.intervalUpdateClock.interval = (intervalSeconds * 1000).toLong()
+        }
+
+      Property("audioMixingMode")
+        .get { ref: VideoPlayer ->
+          ref.audioMixingMode
+        }
+        .set { ref: VideoPlayer, audioMixingMode: AudioMixingMode ->
+          appContext.mainQueue.launch {
+            ref.audioMixingMode = audioMixingMode
+          }
+        }
 
       Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->
         val videoSource = source?.let {
@@ -332,6 +323,25 @@ class VideoModule : Module() {
           ref.player.seekTo(0)
           ref.player.play()
         }
+      }
+
+      AsyncFunction("generateThumbnailsAsync") Coroutine { ref: VideoPlayer, times: List<Duration> ->
+        return@Coroutine ref.toMetadataRetriever().safeUse {
+          val bitmaps = times.map { time ->
+            appContext.backgroundCoroutineScope.async {
+              generateThumbnailAtTime(time)
+            }
+          }
+
+          bitmaps.awaitAll()
+        }
+      }
+
+      Class<VideoThumbnail> {
+        Property("width") { ref -> ref.width }
+        Property("height") { ref -> ref.height }
+        Property("requestedTime") { ref -> ref.requestedTime }
+        Property("actualTime") { ref -> ref.actualTime }
       }
     }
 

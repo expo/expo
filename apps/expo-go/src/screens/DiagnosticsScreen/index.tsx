@@ -27,6 +27,7 @@ const DiagnosticsStack = createStackNavigator<DiagnosticsStackRoutes>();
 
 export function DiagnosticsStackScreen() {
   const theme = useThemeName();
+
   return (
     <DiagnosticsStack.Navigator
       initialRouteName="Diagnostics"
@@ -36,6 +37,8 @@ export function DiagnosticsStackScreen() {
         component={DiagnosticsScreen}
         options={{
           title: 'Diagnostics',
+          headerBackButtonDisplayMode: 'minimal',
+          headerBackImage: () => <></>,
         }}
       />
       <DiagnosticsStack.Screen

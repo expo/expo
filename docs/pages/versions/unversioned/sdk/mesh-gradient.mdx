@@ -1,0 +1,46 @@
+---
+title: MeshGradient
+description: A module that exposes MeshGradient view from SwiftUI to React Native.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-mesh-gradient'
+packageName: 'expo-mesh-gradient'
+iconUrl: '/static/images/packages/expo-mesh-gradient.png'
+platforms: ['ios', 'tvos']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+## Installation
+
+<APIInstallSection />
+
+## API
+
+```tsx
+import { MeshGradientView } from 'expo-mesh-gradient';
+
+function App() {
+  return (
+    <MeshGradientView
+      style={{ flex: 1 }}
+      columns={3}
+      rows={3}
+      colors={['red', 'purple', 'indigo', 'orange', 'white', 'blue', 'yellow', 'green', 'cyan']}
+      points={[
+        [0.0, 0.0],
+        [0.5, 0.0],
+        [1.0, 0.0],
+        [0.0, 0.5],
+        [0.5, 0.5],
+        [1.0, 0.5],
+        [0.0, 1.0],
+        [0.5, 1.0],
+        [1.0, 1.0],
+      ]}
+    />
+  );
+}
+```
+
+<APISection packageName="expo-mesh-gradient" apiName="MeshGradient" />

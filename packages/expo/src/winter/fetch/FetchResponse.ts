@@ -5,32 +5,60 @@ import type { NativeResponse } from './NativeRequest';
 
 const ConcreteNativeResponse = ExpoFetchModule.NativeResponse as typeof NativeResponse;
 
+export type AbortSubscriptionCleanupFunction = () => void;
+
 /**
  * A response implementation for the `fetch.Response` API.
  */
 export class FetchResponse extends ConcreteNativeResponse implements Response {
+  private streamingState: 'none' | 'started' | 'completed' = 'none';
+  private bodyStream: ReadableStream<Uint8Array> | null = null;
+
+  constructor(private readonly abortCleanupFunction: AbortSubscriptionCleanupFunction) {
+    super();
+    this.addListener('readyForJSFinalization', this.finalize);
+  }
+
   get body(): ReadableStream<Uint8Array> | null {
-    const response = this;
-    return new ReadableStream({
-      start(controller) {
-        response.addListener('didReceiveResponseData', (data: Uint8Array) => {
-          controller.enqueue(data);
-        });
+    if (this.bodyStream == null) {
+      const response = this;
+      this.bodyStream = new ReadableStream({
+        start(controller) {
+          if (response.streamingState === 'completed') {
+            return;
+          }
+          response.addListener('didReceiveResponseData', (data: Uint8Array) => {
+            controller.enqueue(data);
+          });
 
-        response.addListener('didComplete', () => {
-          controller.close();
-        });
+          response.addListener('didComplete', () => {
+            controller.close();
+          });
 
-        response.addListener('didFailWithError', (error: string) => {
-          controller.error(new Error(error));
-        });
-
-        response.startStreaming();
-      },
-      cancel(reason) {
-        response.cancelStreaming(String(reason));
-      },
-    });
+          response.addListener('didFailWithError', (error: string) => {
+            controller.error(new Error(error));
+          });
+        },
+        async pull(controller) {
+          if (response.streamingState === 'none') {
+            const completedData = await response.startStreaming();
+            if (completedData != null) {
+              controller.enqueue(completedData);
+              controller.close();
+              response.streamingState = 'completed';
+            } else {
+              response.streamingState = 'started';
+            }
+          } else if (response.streamingState === 'completed') {
+            controller.close();
+          }
+        },
+        cancel(reason) {
+          response.cancelStreaming(String(reason));
+        },
+      });
+    }
+    return this.bodyStream;
   }
 
   get headers(): Headers {
@@ -81,4 +109,14 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
   clone(): FetchResponse {
     throw new Error('Not implemented');
   }
+
+  private finalize = (): void => {
+    this.removeListener('readyForJSFinalization', this.finalize);
+
+    this.abortCleanupFunction();
+
+    this.removeAllListeners('didReceiveResponseData');
+    this.removeAllListeners('didComplete');
+    this.removeAllListeners('didFailWithError');
+  };
 }

@@ -4,15 +4,30 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30459](https://github.com/expo/expo/pull/30459) by [@byCedric](https://github.com/byCedric))
+- [Android] Bump the Dimezis/BlurView dependency to the latest patch version. ([#34012](https://github.com/expo/expo/pull/34012) by [@jakobsen](https://github.com/jakobsen))
 
 ### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34138](https://github.com/expo/expo/pull/34138) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 14.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30459](https://github.com/expo/expo/pull/30459) by [@byCedric](https://github.com/byCedric))
 
 ## 13.0.2 — 2024-05-01
 

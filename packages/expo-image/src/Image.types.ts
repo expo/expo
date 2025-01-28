@@ -1,4 +1,5 @@
 import type { NativeModule, SharedRef } from 'expo';
+import type { SharedRef as SharedRefType } from 'expo/types';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
@@ -88,7 +89,7 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export interface ImageProps extends Omit<ViewProps, 'style'> {
+export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   /** @hidden */
   style?: StyleProp<RNImageStyle>;
 
@@ -97,12 +98,23 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
    * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
    * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
    */
-  source?: ImageSource | string | number | ImageSource[] | string[] | ImageRef | null;
+  source?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
 
   /**
    * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
+   *
+   * > **Note**: The default value for placeholder's content fit is 'scale-down', which differs from the source image's default value.
+   * > Using a lower-resolution placeholder may cause flickering due to scaling differences between it and the final image.
+   * > To prevent this, you can set the [`placeholderContentFit`](#placeholdercontentfit) to match the [`contentFit`](#contentfit) value.
    */
-  placeholder?: ImageSource | string | number | ImageSource[] | string[] | ImageRef | null;
+  placeholder?:
+    | ImageSource
+    | string
+    | number
+    | ImageSource[]
+    | string[]
+    | SharedRefType<'image'>
+    | null;
 
   /**
    * Determines how the image should be resized to fit its container. This property tells the image to fill the container
@@ -347,8 +359,8 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
  */
 export interface ImageNativeProps extends ImageProps {
   style?: RNImageStyle;
-  source?: ImageSource[] | ImageRef;
-  placeholder?: ImageSource[] | ImageRef;
+  source?: ImageSource[] | SharedRefType<'image'>;
+  placeholder?: ImageSource[] | SharedRefType<'image'>;
   contentPosition?: ImageContentPositionObject;
   transition?: ImageTransition | null;
   autoplay?: boolean;
@@ -517,7 +529,7 @@ export type ImagePrefetchOptions = {
  * Instances of this class can be passed as a source to the [Image](#image) component in which case the image is rendered immediately
  * since its native representation is already available in the memory.
  */
-export declare class ImageRef extends SharedRef {
+export declare class ImageRef extends SharedRef<'image'> {
   /**
    * Logical width of the image. Multiply it by the value in the `scale` property to get the width in pixels.
    */
@@ -552,13 +564,25 @@ export declare class ImageNativeModule extends NativeModule {
   // TODO: Add missing function declarations
   Image: typeof ImageRef;
 
-  loadAsync(source: ImageSource): Promise<ImageRef>;
+  loadAsync(source: ImageSource, options?: ImageLoadOptions): Promise<ImageRef>;
 }
 
 /**
  * An object with options for the [`useImage`](#useimage) hook.
  */
-export type UseImageHookOptions = {
+export type ImageLoadOptions = {
+  /**
+   * If provided, the image will be automatically resized to not exceed this width in pixels, preserving its aspect ratio.
+   * @platform ios
+   */
+  maxWidth?: number;
+
+  /**
+   * If provided, the image will be automatically resized to not exceed this height in pixels, preserving its aspect ratio.
+   * @platform ios
+   */
+  maxHeight?: number;
+
   /**
    * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
    */

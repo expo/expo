@@ -32,6 +32,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const args_1 = require("./utils/args");
 const errors_1 = require("./utils/errors");
 const Log = __importStar(require("./utils/log"));
+const withConsoleDisabledAsync_1 = require("./utils/withConsoleDisabledAsync");
 const generateFingerprint = async (argv) => {
     const args = (0, args_1.assertArgs)({
         // Types
@@ -71,14 +72,18 @@ Generate fingerprint for use in expo-updates runtime version
     }
     const debug = args['--debug'];
     const projectRoot = (0, args_1.getProjectRoot)(args);
-    let result;
-    try {
-        const workflow = workflowArg ?? (await resolveWorkflowAsync(projectRoot, platform));
-        result = await createFingerprintAsync(projectRoot, platform, workflow, { silent: true, debug });
-    }
-    catch (e) {
-        throw new errors_1.CommandError(e.message);
-    }
+    const result = await (0, withConsoleDisabledAsync_1.withConsoleDisabledAsync)(async () => {
+        try {
+            const workflow = workflowArg ?? (await resolveWorkflowAsync(projectRoot, platform));
+            return await createFingerprintAsync(projectRoot, platform, workflow, {
+                silent: true,
+                debug,
+            });
+        }
+        catch (e) {
+            throw new errors_1.CommandError(e.message);
+        }
+    });
     console.log(JSON.stringify(result));
 };
 exports.generateFingerprint = generateFingerprint;

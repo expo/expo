@@ -64,7 +64,7 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
 
   func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
     let promise = Promise { value in
-      callback(.success(Conversions.convertFunctionResult(value)))
+      callback(.success(Conversions.convertFunctionResult(value, appContext: appContext)))
     } rejecter: { exception in
       callback(.failure(exception))
     }

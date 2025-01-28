@@ -40,7 +40,27 @@ it('can use async redirectSystemPath', async () => {
 
   expect(screen.toJSON()).toBeNull();
 
-  await act(() => resolve('/page'));
+  await act(async () => resolve('/page'));
 
   expect(screen.getByTestId('page')).toBeVisible();
+});
+
+it('legacy_subscribe', () => {
+  let listener: (url: string) => void = () => {};
+
+  renderRouter({
+    index: () => <View testID="index" />,
+    apple: () => <View testID="apple" />,
+    '+native-intent': {
+      legacy_subscribe(listenerFn) {
+        listener = listenerFn;
+        return () => {};
+      },
+    },
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+
+  act(() => listener('/apple'));
+  expect(screen.getByTestId('apple')).toBeVisible();
 });

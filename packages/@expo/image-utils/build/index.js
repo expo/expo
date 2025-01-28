@@ -23,13 +23,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPngInfo = exports.compositeImagesAsync = exports.Cache = exports.generateFaviconAsync = exports.generateImageAsync = exports.sharpAsync = exports.isAvailableAsync = exports.findSharpInstanceAsync = exports.createSquareAsync = exports.jimpAsync = exports.imageAsync = void 0;
+exports.getPngInfo = exports.compositeImagesAsync = exports.Cache = exports.generateFaviconAsync = exports.generateImageBackgroundAsync = exports.generateImageAsync = exports.sharpAsync = exports.isAvailableAsync = exports.findSharpInstanceAsync = exports.createSquareAsync = exports.jimpAsync = exports.imageAsync = void 0;
 const Cache = __importStar(require("./Cache"));
 exports.Cache = Cache;
 const Image_1 = require("./Image");
 Object.defineProperty(exports, "compositeImagesAsync", { enumerable: true, get: function () { return Image_1.compositeImagesAsync; } });
 Object.defineProperty(exports, "generateFaviconAsync", { enumerable: true, get: function () { return Image_1.generateFaviconAsync; } });
 Object.defineProperty(exports, "generateImageAsync", { enumerable: true, get: function () { return Image_1.generateImageAsync; } });
+Object.defineProperty(exports, "generateImageBackgroundAsync", { enumerable: true, get: function () { return Image_1.generateImageBackgroundAsync; } });
 Object.defineProperty(exports, "getPngInfo", { enumerable: true, get: function () { return Image_1.getPngInfo; } });
 const jimp_1 = require("./jimp");
 Object.defineProperty(exports, "jimpAsync", { enumerable: true, get: function () { return jimp_1.jimpAsync; } });

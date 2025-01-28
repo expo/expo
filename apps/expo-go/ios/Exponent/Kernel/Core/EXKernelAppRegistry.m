@@ -32,11 +32,7 @@
   EXKernelAppRecord *newRecord = [[EXKernelAppRecord alloc] initWithManifestUrl:manifestUrl initialProps:initialProps];
   NSString *recordId = [[NSUUID UUID] UUIDString];
   [_appRegistry setObject:newRecord forKey:recordId];
-  
-  if (_delegate) {
-    [_delegate appRegistry:self didRegisterAppRecord:newRecord];
-  }
-  
+
   return recordId;
 }
 
@@ -44,9 +40,6 @@
 {
   EXKernelAppRecord *record = [_appRegistry objectForKey:recordId];
   if (record) {
-    if (_delegate) {
-      [_delegate appRegistry:self willUnregisterAppRecord:record];
-    }
     [record.appManager invalidate];
     [_appRegistry removeObjectForKey:recordId];
   }

@@ -58,7 +58,17 @@ async function commitAsync(repoRoot, message) {
 }
 exports.commitAsync = commitAsync;
 async function diffAsync(repoRoot, outputPatchFilePath, options) {
-    await runGitAsync(['diff', ...options, '--output', outputPatchFilePath], {
+    await runGitAsync([
+        'diff',
+        '--no-color',
+        '--ignore-space-at-eol',
+        '--no-ext-diff',
+        '--src-prefix=a/',
+        '--dst-prefix=b/',
+        ...options,
+        '--output',
+        outputPatchFilePath,
+    ], {
         cwd: repoRoot,
     });
 }

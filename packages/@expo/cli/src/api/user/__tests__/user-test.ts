@@ -1,4 +1,3 @@
-import { getUserStatePath } from '@expo/config/build/getUserState';
 import { fs, vol } from 'memfs';
 import nock from 'nock';
 
@@ -7,7 +6,7 @@ import {
   getDevelopmentCodeSigningDirectory,
 } from '../../../utils/codesigning';
 import { getExpoApiBaseUrl } from '../../endpoint';
-import { getSession } from '../UserSettings';
+import { getSession, getSettingsFilePath } from '../UserSettings';
 import { getSessionUsingBrowserAuthFlowAsync } from '../expoSsoLauncher';
 import {
   Actor,
@@ -121,7 +120,7 @@ describe(loginAsync, () => {
     mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
 
-    expect(await fs.promises.readFile(getUserStatePath(), 'utf8')).toMatchInlineSnapshot(`
+    expect(await fs.promises.readFile(getSettingsFilePath(), 'utf8')).toMatchInlineSnapshot(`
       "{
         "auth": {
           "sessionSecret": "SESSION_SECRET",
@@ -141,7 +140,7 @@ describe(ssoLoginAsync, () => {
 
     await ssoLoginAsync();
 
-    expect(await fs.promises.readFile(getUserStatePath(), 'utf8')).toMatchInlineSnapshot(`
+    expect(await fs.promises.readFile(getSettingsFilePath(), 'utf8')).toMatchInlineSnapshot(`
       "{
         "auth": {
           "sessionSecret": "SESSION_SECRET",

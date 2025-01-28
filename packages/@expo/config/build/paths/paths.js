@@ -7,6 +7,7 @@ exports.convertEntryPointToRelative = convertEntryPointToRelative;
 exports.ensureSlash = ensureSlash;
 exports.getFileWithExtensions = getFileWithExtensions;
 exports.getMetroServerRoot = getMetroServerRoot;
+exports.getMetroWorkspaceGlobs = getMetroWorkspaceGlobs;
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.resolveEntryPoint = resolveEntryPoint;
 exports.resolveRelativeEntryPoint = void 0;
@@ -66,7 +67,7 @@ function _Errors() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 // https://github.com/facebook/create-react-app/blob/9750738cce89a967cc71f28390daf5d4311b193c/packages/react-scripts/config/paths.js#L22
 function ensureSlash(inputPath, needsSlash) {
   const hasSlash = inputPath.endsWith('/');
@@ -156,6 +157,14 @@ function getMetroServerRoot(projectRoot) {
     return projectRoot;
   }
   return (0, _resolveWorkspaceRoot().resolveWorkspaceRoot)(projectRoot) ?? projectRoot;
+}
+
+/**
+ * Get the workspace globs for Metro's watchFolders.
+ * @note This does not traverse the monorepo, and should be used with `getMetroServerRoot`
+ */
+function getMetroWorkspaceGlobs(monorepoRoot) {
+  return (0, _resolveWorkspaceRoot().getWorkspaceGlobs)(monorepoRoot);
 }
 
 /**

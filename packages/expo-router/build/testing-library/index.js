@@ -26,7 +26,7 @@ const mock_config_1 = require("./mock-config");
 Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
 Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
 const ExpoRoot_1 = require("../ExpoRoot");
-const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
+const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 // re-export everything
@@ -57,7 +57,7 @@ function renderRouter(context = './app', { initialUrl = '/', linking, ...options
             return router_store_1.store.routeInfoSnapshot().params;
         },
         getPathnameWithParams() {
-            return (0, getPathFromState_1.default)(router_store_1.store.rootState, router_store_1.store.linking.config);
+            return (0, getPathFromState_1.getPathFromState)(router_store_1.store.rootState, router_store_1.store.linking.config);
         },
         getRouterState() {
             return router_store_1.store.rootStateSnapshot();

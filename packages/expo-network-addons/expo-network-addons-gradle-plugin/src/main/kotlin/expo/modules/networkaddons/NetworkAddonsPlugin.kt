@@ -9,6 +9,8 @@ import com.android.build.api.instrumentation.FramesComputationMode
 import com.android.build.api.instrumentation.InstrumentationParameters
 import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.Variant
+import com.facebook.react.ReactExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -23,15 +25,24 @@ abstract class NetworkAddonsPlugin : Plugin<Project> {
 
   override fun apply(project: Project) {
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
+    val reactExtension = project.extensions.findByType(ReactExtension::class.java)
     val devLauncherInstalled = project.findProject(":expo-dev-launcher") != null
 
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
       variant.instrumentation.transformClassesWith(NetworkAddonsClassVisitorFactory::class.java, InstrumentationScope.ALL) {
         it.enabled.set(true)
-        it.debugVariant.set(variant.buildType == "debug")
+        it.debugVariant.set(isDebugVariant(variant, reactExtension))
         it.devLauncherInstalled.set(devLauncherInstalled)
       }
       variant.instrumentation.setAsmFramesComputationMode(FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS)
+    }
+  }
+
+  private fun isDebugVariant(variant: Variant, reactExtension: ReactExtension?): Boolean {
+    return if (System.getenv("EX_UPDATES_NATIVE_DEBUG") != "1" && reactExtension != null) {
+      reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
+    } else {
+      variant.buildType == "debug"
     }
   }
 

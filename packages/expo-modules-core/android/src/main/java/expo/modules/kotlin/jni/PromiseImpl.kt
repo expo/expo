@@ -6,7 +6,6 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.PromiseAlreadySettledException
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.types.JSTypeConverter
 import java.lang.ref.WeakReference
 
 @DoNotStrip
@@ -19,9 +18,7 @@ class PromiseImpl @DoNotStrip internal constructor(
   private var fullFunctionName: String? = null
 
   override fun resolve(value: Any?) = checkIfWasSettled {
-    callback.invoke(
-      JSTypeConverter.convertToJSValue(value)
-    )
+    callback.invoke(value)
   }
 
   override fun resolve() = checkIfWasSettled {
@@ -45,6 +42,14 @@ class PromiseImpl @DoNotStrip internal constructor(
   }
 
   override fun resolve(result: String) = checkIfWasSettled {
+    callback.invoke(result)
+  }
+
+  override fun resolve(result: Collection<Any?>) {
+    callback.invoke(result)
+  }
+
+  override fun resolve(result: Map<String, Any?>) {
     callback.invoke(result)
   }
 

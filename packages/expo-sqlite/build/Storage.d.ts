@@ -1,3 +1,4 @@
+export declare function checkValidInput(...input: unknown[]): void;
 /**
  * Update function for the [`setItemAsync()`](#setitemasynckey-value) or [`setItemSync()`](#setitemsynckey-value) method. It computes the new value based on the previous value. The function returns the new value to set for the key.
  * @param prevValue The previous value associated with the key, or `null` if the key was not set.
@@ -107,9 +108,7 @@ export declare class SQLiteStorage {
      * Alias for [`closeAsync()`](#closeasync-1) method.
      */
     close(): Promise<void>;
-    private getDbAsync;
     private getDbSync;
-    private maybeMigrateDbAsync;
     private maybeMigrateDbSync;
     /**
      * Recursively merge two JSON objects.

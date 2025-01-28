@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { BarCodeScanningResult, CameraPictureOptions, MountErrorListener } from '../legacy/Camera.types';
+import { BarcodeScanningResult, CameraPictureOptions, MountErrorListener } from '../Camera.types';
 export declare function useWebQRScanner(video: React.MutableRefObject<HTMLVideoElement | null>, { isEnabled, captureOptions, interval, onScanned, onError, }: {
     isEnabled: boolean;
     captureOptions: Pick<CameraPictureOptions, 'scale' | 'isImageMirror'>;
     interval?: number;
     onScanned?: (scanningResult: {
-        nativeEvent: BarCodeScanningResult;
+        nativeEvent: BarcodeScanningResult;
     }) => void;
     onError?: MountErrorListener;
 }): void;

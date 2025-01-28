@@ -3,7 +3,7 @@ import { learnMore } from '../utils/TerminalLink';
 import { configExistsAsync, loadConfigAsync } from '../utils/metroConfigLoader';
 
 export class MetroConfigCheck implements DoctorCheck {
-  description = 'Check for issues with metro config';
+  description = 'Check for issues with Metro config';
 
   sdkVersionRange = '>=46.0.0';
 
@@ -14,10 +14,11 @@ export class MetroConfigCheck implements DoctorCheck {
     // https://github.com/expo/eas-cli/blob/main/packages/eas-cli/src/project/metroConfig.ts
     if (await configExistsAsync(projectRoot)) {
       const metroConfig = await loadConfigAsync(projectRoot);
-      const hasHashAssetFilesPlugin = metroConfig.transformer?.assetPlugins?.find(
-        (plugin: string) => plugin.match(/expo-asset[/|\\]tools[/|\\]hashAssetFiles/)
-      );
-      if (!hasHashAssetFilesPlugin) {
+
+      if (
+        // @ts-expect-error: This is a custom property that we inject to ensure cache invalidation between projects.
+        !metroConfig.transformer._expoRelativeProjectRoot
+      ) {
         issues.push(
           'It looks like that you are using a custom metro.config.js that does not extend @expo/metro-config. This can lead to unexpected and hard to debug issues. ' +
             learnMore('https://docs.expo.dev/guides/customizing-metro/')
@@ -29,7 +30,7 @@ export class MetroConfigCheck implements DoctorCheck {
       isSuccessful: !issues.length,
       issues,
       advice: issues.length
-        ? `Update your custom metro.config.js to extend @expo/metro-config.`
+        ? `Update your metro.config.js to extend @expo/metro-config.`
         : undefined,
     };
   }

@@ -765,8 +765,8 @@ We try to keep changes backward compatible, the code for `expo-splash-screen` wi
  import com.facebook.react.ReactRootView;
  import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
--import expo.modules.splashscreen.singletons.SplashScreen;
--import expo.modules.splashscreen.SplashScreenImageResizeMode;
+-import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen;
+-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode;
 -
  public class MainActivity extends ReactActivity {
    @Override

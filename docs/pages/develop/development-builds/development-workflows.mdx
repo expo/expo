@@ -80,7 +80,7 @@ In the example above, the `scheme` is `exp+app-slug`, and the `url` is a project
 
 ## Example workflows
 
-These are a few examples of workflows to help your team get the most out of your development build. If you come up with others that would be useful for other teams, please [submit a PR](https://github.com/expo/expo/tree/main/CONTRIBUTING.md#-updating-documentation) to share your knowledge!
+These are a few examples of workflows to help your team get the most out of your development build. If you come up with others that would be useful for other teams, [submit a PR](https://github.com/expo/expo/tree/main/CONTRIBUTING.md#-updating-documentation) to share your knowledge!
 
 ### PR previews
 
@@ -143,4 +143,4 @@ You can now view and load EAS Updates in your development build via the `Extensi
 
 When you create a development build of your project, you'll get a stable environment to load any changes to your app that are defined in JavaScript or other asset-related changes. Other changes to your app, whether defined directly in **android** and **ios** directories or by packages or SDKs you choose to install, will require you to create a new build of your development build.
 
-To enforce an API contract between the JavaScript and native layers of your app, you should set the [`runtimeVersion`](/distribution/runtime-versions) value in the app config. Each build you make will have this value embedded and will only load bundles with the same `runtimeVersion`, in both development and production.
+To enforce an API contract between the JavaScript and native layers of your app, you should set the [`runtimeVersion`](/eas-update/runtime-versions) value in the app config. Each build you make will have this value embedded and will only load bundles with the same `runtimeVersion`, in both development and production.

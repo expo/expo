@@ -7,6 +7,7 @@ sidebar_title: Runtime issues
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors into two categories:
 
@@ -114,7 +115,11 @@ It can be a frustrating scenario when a production app crashes. There is very li
 
 Start by reproducing the crash using your production app and then **find an associated crash report**. For Android, you can use `adb logcat` and for iOS you can use the Console app in Xcode.
 
-<ContentSpotlight url="https://www.youtube.com/watch?v=LvCci4Bwmpc" />
+<VideoBoxLink
+  videoId="LvCci4Bwmpc"
+  title="How to use Logcat & macOS Console to debug"
+  description="In this tutorial, you'll learn how to use native device logging features like ADB Logcat and macOS Console to find bugs in your code and quickly fix them."
+/>
 
 #### Crash reports using adb logcat
 

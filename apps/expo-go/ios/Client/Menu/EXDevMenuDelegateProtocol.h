@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <React/RCTBridge.h>
+#import <React-RCTAppDelegate/RCTAppDelegate.h>
 
 @class EXDevMenuManager;
 
@@ -9,15 +10,14 @@
 @required
 
 /**
- * Returns the bridge to which the dev menu is hooked.
- * TODO: (@tsapeta) It's gonna be removed once the dev menu moves to have its own bridge.
+ * Returns the host to which the dev menu is hooked.
  */
-- (nonnull RCTBridge *)mainBridgeForDevMenuManager:(nonnull EXDevMenuManager *)manager;
+- (nonnull RCTHost *)mainHostForDevMenuManager:(nonnull EXDevMenuManager *)manager;
 
 /**
- * Returns the bridge of the currently shown app. It is a context of what the dev menu displays.
+ * Returns the app delegate of the currently shown app. It is a context of what the dev menu displays.
  */
-- (nullable RCTBridge *)appBridgeForDevMenuManager:(nonnull EXDevMenuManager *)manager;
+- (nullable RCTAppDelegate *)appDelegateForDevMenuManager:(nonnull EXDevMenuManager *)manager;
 
 @optional
 

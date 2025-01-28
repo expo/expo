@@ -12,4 +12,7 @@ class CameraExceptions {
 
   class UnsupportedAspectRatioException(aspectRatio: String) :
     CodedException("Unsupported aspect ratio: '$aspectRatio'")
+
+  class BarcodeScanningFailedException :
+    CodedException("Barcode scanning failed")
 }

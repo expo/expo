@@ -6,9 +6,23 @@
 
 ### 🎉 New features
 
+- Added a synchronous function `openApplication` to open an application by its package name. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
+- Added an asynchronous function `getApplicationIconAsync` to retrieve the icon of an application by its package name. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 12.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
 
 ## 11.0.1 — 2024-04-23
 

@@ -22,11 +22,16 @@ abstract class BaseModel : CommonProvider {
 
   protected fun mapValue(readableMap: Map<String, Any?>, key: String?, alias: String? = null) {
     if (readableMap.containsKey(key)) {
-      val value = readableMap[key]
-      if (value is Boolean) {
-        map.putBoolean(alias ?: key, value)
-      } else if (value is String) {
-        map.putString(alias ?: key, value)
+      when (val value = readableMap[key]) {
+        is Boolean -> {
+          map.putBoolean(alias ?: key, value)
+        }
+        is String -> {
+          map.putString(alias ?: key, value)
+        }
+        is Double -> {
+          map.putDouble(alias ?: key, value)
+        }
       }
     }
   }

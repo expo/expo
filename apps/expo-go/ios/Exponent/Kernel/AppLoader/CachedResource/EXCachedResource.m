@@ -214,7 +214,7 @@ static dispatch_queue_t _reapingQueue;
 
   // this is versioned because it can persist between updates of native code
   if (_shouldVersionCache) {
-    NSString *prefix = _abiVersion && _abiVersion.length > 0 ? _abiVersion : [EXVersions sharedInstance].temporarySdkVersion;
+    NSString *prefix = _abiVersion && _abiVersion.length > 0 ? _abiVersion : [EXVersions sharedInstance].sdkVersion;
     base = [NSString stringWithFormat:@"%@-%@", prefix ?: @"", _resourceName];
   } else {
     base = _resourceName;

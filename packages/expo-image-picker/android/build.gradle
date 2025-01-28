@@ -1,20 +1,36 @@
 apply plugin: 'com.android.library'
 
-group = 'host.exp.exponent'
-version = '15.0.5'
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useCoreDependencies()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  useLegacyExpoModulesCorePlugin()
+}
+
+group = 'host.exp.exponent'
+version = '16.0.3'
 
 android {
   namespace "expo.modules.imagepicker"
   defaultConfig {
     versionCode 22
-    versionName "15.0.5"
+    versionName "16.0.3"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+  testOptions {
+    unitTests.includeAndroidResources = true
   }
 }
 
@@ -25,4 +41,8 @@ dependencies {
   implementation "com.github.CanHub:Android-Image-Cropper:4.3.1"
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3"
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3"
+
+  if (project.findProject(':expo-modules-test-core')) {
+    androidTestImplementation project(':expo-modules-test-core')
+  }
 }

@@ -3,9 +3,9 @@ package host.exp.exponent.storage
 import android.content.Context
 import android.content.SharedPreferences
 import host.exp.exponent.analytics.EXL
-import java.io.*
-import java.lang.IllegalArgumentException
-import java.util.*
+import java.io.File
+import java.io.IOException
+import java.util.UUID
 
 /**
  * An installation ID provider - it solves two purposes:
@@ -15,7 +15,7 @@ import java.util.*
  *
  * Similar class exists in expo-constants and expo-notifications.
  */
-class ExponentInstallationId internal constructor(
+internal class ExponentInstallationId(
   private val context: Context, // We only remove the value from old storage once it's set and saved in the new storage.
   private val sharedPreferences: SharedPreferences
 ) {
@@ -34,9 +34,7 @@ class ExponentInstallationId internal constructor(
         // Cache for future calls
         uuid = UUID.fromString(bufferedReader.readLine()).toString()
       }
-    } catch (e: IOException) {
-      // do nothing, try other sources
-    } catch (e: IllegalArgumentException) {
+    } catch (e: Throwable) {
       // do nothing, try other sources
     }
 

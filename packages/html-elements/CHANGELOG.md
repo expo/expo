@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- change type of `outlineColor` to `ColorValue` to support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+## 0.11.0 — 2024-10-22
+
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.10.1 — 2024-04-23
 

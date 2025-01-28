@@ -80,8 +80,9 @@ function getRscMiddleware(options) {
                 method,
                 body: req.body,
                 contentType: req.headers.get('Content-Type') ?? '',
-                decodedBody: req.headers.get('x-expo-params'),
+                decodedBody: req.headers.get('X-Expo-Params'),
                 onError: options.onError,
+                headers: headersToRecord(req.headers),
             };
             const readable = await options.renderRsc(args);
             return new Response(readable, {
@@ -95,6 +96,10 @@ function getRscMiddleware(options) {
             if (err instanceof Response) {
                 return err;
             }
+            if (process.env.NODE_ENV !== 'development') {
+                throw err;
+            }
+            console.error(err);
             return new Response(`Unexpected server error rendering RSC: ` + err.message, {
                 status: 'statusCode' in err ? err.statusCode : 500,
                 headers: {
@@ -109,4 +114,11 @@ function getRscMiddleware(options) {
     };
 }
 exports.getRscMiddleware = getRscMiddleware;
+function headersToRecord(headers) {
+    const record = {};
+    for (const [key, value] of headers.entries()) {
+        record[key] = value;
+    }
+    return record;
+}
 //# sourceMappingURL=rsc.js.map

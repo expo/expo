@@ -2,7 +2,7 @@
 
 import Foundation
 
-typealias LoggerTimerStopBlock = () -> Void
+typealias LoggerTimerStopBlock = () -> Double
 
 /**
  An instance of a timer.
@@ -14,9 +14,9 @@ public class LoggerTimer {
     self.stopBlock = stopBlock
   }
   /**
-   End the timer and log a timer entry.
+   End the timer and log a timer entry. Returns the duration in milliseconds.
    */
-  public func stop() {
-    self.stopBlock()
+  public func stop() -> Double {
+    return self.stopBlock()
   }
 }

@@ -394,12 +394,16 @@ export async function exportApiRoutesStandaloneAsync(
   {
     files = new Map(),
     platform,
+    apiRoutesOnly,
+    templateHtml,
   }: {
     files?: ExportAssetMap;
     platform: string;
+    apiRoutesOnly: boolean;
+    templateHtml?: string;
   }
 ) {
-  const { serverManifest } = await devServer.getServerManifestAsync();
+  const { serverManifest, htmlManifest } = await devServer.getServerManifestAsync();
 
   const apiRoutes = await exportApiRoutesAsync({
     server: devServer,
@@ -407,12 +411,29 @@ export async function exportApiRoutesStandaloneAsync(
     // NOTE(kitten): For now, we always output source maps for API route exports
     includeSourceMaps: true,
     platform,
-    apiRoutesOnly: true,
+    apiRoutesOnly,
   });
 
   // Add the api routes to the files to export.
   for (const [route, contents] of apiRoutes) {
     files.set(route, contents);
+  }
+
+  if (templateHtml && devServer.isReactServerComponentsEnabled) {
+    // TODO: Export an HTML entry for each file. This is a temporary solution until we have SSR/SSG for RSC.
+    await getFilesToExportFromServerAsync(devServer.projectRoot, {
+      manifest: htmlManifest,
+      exportServer: true,
+      files,
+      renderAsync: async ({ pathname, filePath }) => {
+        files.set(filePath, {
+          contents: templateHtml!,
+          routeId: pathname,
+          targetDomain: 'server',
+        });
+        return templateHtml!;
+      },
+    });
   }
 
   return files;

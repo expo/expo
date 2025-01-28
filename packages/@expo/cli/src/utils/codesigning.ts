@@ -1,3 +1,4 @@
+import { GraphQLError } from '@0no-co/graphql.web';
 import {
   convertCertificatePEMToCertificate,
   convertKeyPairToPEM,
@@ -9,11 +10,9 @@ import {
   signBufferRSASHA256AndVerify,
 } from '@expo/code-signing-certificates';
 import { ExpoConfig } from '@expo/config';
-import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import JsonFile, { JSONObject } from '@expo/json-file';
 import { CombinedError } from '@urql/core';
 import { promises as fs } from 'fs';
-import { GraphQLError } from 'graphql';
 import { pki as PKI } from 'node-forge';
 import path from 'path';
 import { Dictionary, parseDictionary } from 'structured-headers';
@@ -23,6 +22,7 @@ import { CommandError } from './errors';
 import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermediateCertificate';
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
+import { getExpoHomeDirectory } from '../api/user/UserSettings';
 import { ensureLoggedInAsync } from '../api/user/actions';
 import { Actor } from '../api/user/user';
 import { AppByIdQuery, Permission } from '../graphql/generated';

@@ -98,13 +98,17 @@ async function isFolderAsync(path) {
 }
 exports.isFolderAsync = isFolderAsync;
 function circleAsync(jimp) {
-    const radius = Math.min(jimp.bitmap.width, jimp.bitmap.height) / 2;
+    const diameter = Math.min(jimp.bitmap.width, jimp.bitmap.height);
     const center = {
         x: jimp.bitmap.width / 2,
         y: jimp.bitmap.height / 2,
     };
     return new Promise((resolve) => {
-        jimp.scanQuiet(0, 0, jimp.bitmap.width, jimp.bitmap.height, (x, y, idx) => {
+        jimp
+            .resize(diameter, diameter)
+            .crop((jimp.bitmap.width - diameter) / 2, (jimp.bitmap.height - diameter) / 2, diameter, diameter)
+            .scanQuiet(0, 0, diameter, diameter, (x, y, idx) => {
+            const radius = diameter / 2;
             const curR = Math.sqrt(Math.pow(x - center.x, 2) + Math.pow(y - center.y, 2));
             if (radius - curR <= 0.0) {
                 jimp.bitmap.data[idx + 3] = 0;
@@ -112,8 +116,8 @@ function circleAsync(jimp) {
             else if (radius - curR < 1.0) {
                 jimp.bitmap.data[idx + 3] = 255 * (radius - curR);
             }
-            resolve(jimp);
         });
+        resolve(jimp);
     });
 }
 exports.circleAsync = circleAsync;

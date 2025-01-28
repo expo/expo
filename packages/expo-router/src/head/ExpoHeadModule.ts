@@ -42,7 +42,7 @@ let ExpoHead: {
 } | null = null;
 
 // If running in Expo Go.
-if (typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo) {
+if (typeof expo !== 'undefined' && !globalThis.expo?.modules?.ExpoGo) {
   ExpoHead = globalThis.expo?.modules?.ExpoHead;
 }
 

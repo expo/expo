@@ -1,14 +1,14 @@
 import { resolveEntryPoint } from '@expo/config/paths';
 import arg from 'arg';
+import type { OutputOptions } from 'metro/src/shared/types';
+import canonicalize from 'metro-core/src/canonicalize';
 import os from 'os';
 import path from 'path';
 
-import { isAndroidUsingHermes, isIosUsingHermes } from './guessHermes';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
-
-const canonicalize = require('metro-core/src/canonicalize');
+import { isAndroidUsingHermes, isIosUsingHermes } from '../exportHermes';
 
 export interface Options {
   assetsDest?: string;
@@ -21,19 +21,27 @@ export interface Options {
   platform: string;
   dev: boolean;
   bundleOutput: string;
-  bundleEncoding?: string;
+  bundleEncoding?: OutputOptions['bundleEncoding'];
   maxWorkers?: number;
   sourcemapOutput?: string;
   sourcemapSourcesRoot?: string;
   sourcemapUseAbsolutePath: boolean;
   verbose: boolean;
   unstableTransformProfile?: string;
+  eager?: boolean;
+  bytecode?: boolean;
 }
 
 function assertIsBoolean(val: any): asserts val is boolean {
   if (typeof val !== 'boolean') {
     throw new CommandError(`Expected boolean, got ${typeof val}`);
   }
+}
+
+function getBundleEncoding(encoding: string | undefined): OutputOptions['bundleEncoding'] {
+  return encoding === 'utf8' || encoding === 'utf16le' || encoding === 'ascii'
+    ? encoding
+    : undefined;
 }
 
 export function resolveOptions(
@@ -59,7 +67,7 @@ export function resolveOptions(
     // TODO: Support `--dev false`
     //   dev: false,
     bundleOutput,
-    bundleEncoding: args['--bundle-encoding'] ?? 'utf8',
+    bundleEncoding: getBundleEncoding(args['--bundle-encoding']) ?? 'utf8',
     maxWorkers: args['--max-workers'],
     sourcemapOutput: args['--sourcemap-output'],
     sourcemapSourcesRoot: args['--sourcemap-sources-root'],
@@ -71,9 +79,11 @@ export function resolveOptions(
     config: args['--config'] ? path.resolve(args['--config']) : undefined,
     dev,
     minify: parsed.args['--minify'] as boolean | undefined,
+    eager: !!parsed.args['--eager'],
+    bytecode: parsed.args['--bytecode'] as boolean | undefined,
   };
 
-  if (parsed.args['--eager']) {
+  if (commonOptions.eager) {
     return resolveEagerOptionsAsync(projectRoot, commonOptions);
   }
 
@@ -130,6 +140,7 @@ export function resolveEagerOptionsAsync(
 
   return {
     ...options,
+    eager: options.eager ?? true,
     bundleOutput,
     assetsDest,
     entryFile: options.entryFile ?? resolveEntryPoint(projectRoot, { platform }),
@@ -150,6 +161,7 @@ export function getExportEmbedOptionsKey({
   bundleOutput,
   verbose,
   maxWorkers,
+  eager,
   ...options
 }: Options) {
   // Create a sorted key for the options, removing values that won't change the Metro results.

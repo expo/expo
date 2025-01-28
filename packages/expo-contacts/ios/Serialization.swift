@@ -99,11 +99,12 @@ func decodeBirthday(_ input: ContactDate?, contact: CNContact) -> DateComponents
   }
   if let year = input.year {
     components.year = year
+    // To be able to display a birthday with year component the contact requires
+    // us to set the calendar as well.
+    components.calendar = Calendar.current
   }
   if let day = input.day {
     components.day = day
-  }
-  if let format = input.format {
   }
 
   return components

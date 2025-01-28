@@ -164,4 +164,23 @@ describe('_getProjectHostnameAsync', () => {
     // randomness is persisted
     expect(JSON.parse(vol.toJSON()['/.expo/settings.json']).urlRandomness).toBeDefined();
   });
+
+  it(`ignore invalid urlRandomness values`, async () => {
+    const { projectRoot, ngrok } = createNgrokInstance();
+    const invalidRandomness = '_abcdef';
+    vol.fromJSON(
+      { '/.expo/settings.json': `{"urlRandomness": "${invalidRandomness}"}` },
+      projectRoot
+    );
+
+    const hostname = await ngrok._getProjectHostnameAsync();
+
+    // The invalid randomness should be ignored
+    expect(hostname).not.toEqual('_abcd-anonymous-3000.exp.direct');
+
+    // New randomness should be generated
+    expect(JSON.parse(vol.toJSON()['/.expo/settings.json']).urlRandomness).not.toEqual(
+      invalidRandomness
+    );
+  });
 });

@@ -4,11 +4,54 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177), [#34205](https://github.com/expo/expo/pull/34205) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed exceptions when converting empty blob data on iOS. ([#33564](https://github.com/expo/expo/pull/33564) by [@kudo](https://github.com/kudo))
+- Fixed `expo-sqlite/kv-store` async API not being well handled when using AsyncStorage compatible api ([#33847](https://github.com/expo/expo/pull/33847) by [@rtorrente](https://github.com/rtorrente))
+- Fixed `database is locked` error from parallel `kv-store` operations. ([#33834](https://github.com/expo/expo/pull/33834) by [@kudo](https://github.com/kudo))
+- Fixed `database is locked` error while using `kv-store multiGet` function. ([#33873](https://github.com/expo/expo/pull/33873) by [@rtorrente](https://github.com/rtorrente))
+
+### 💡 Others
+
+- Removed unused `SQLite3Wrapper` code for legacy implementation on Android. ([#33565](https://github.com/expo/expo/pull/33565) by [@kudo](https://github.com/kudo))
+- Enforce input validations in `kv-store` operations. ([#33874](https://github.com/expo/expo/pull/33874) by [@rtorrente](https://github.com/rtorrente))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 15.0.3 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- Include the plugin under the `exports` in the package.json. ([#32780](https://github.com/expo/expo/pull/32780) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.2 — 2024-11-07
+
+### 💡 Others
+
+- Renamed `expo-sqlite/async-storage` to `expo-sqlite/kv-store`. ([#32699](https://github.com/expo/expo/pull/32699) by [@kudo](https://github.com/kudo))
+
+## 15.0.1 — 2024-10-25
+
+### 🎉 New features
+
+- Added macOS support in expo-sqlite. ([#32181](https://github.com/expo/expo/pull/32181) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+
+## 15.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- Removed deprecated legacy expo-sqlite. ([#31766](https://github.com/expo/expo/pull/31766) by [@kudo](https://github.com/kudo))
+- Removed `next` export. ([#32184](https://github.com/expo/expo/pull/32184) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🎉 New features
 
 - Added SQLCipher support. ([#30824](https://github.com/expo/expo/pull/30824), [#30825](https://github.com/expo/expo/pull/30825) by [@kudo](https://github.com/kudo))
+- Added a way to specify custom directory for the database. ([#31278](https://github.com/expo/expo/pull/31278)) by [@IgorKhramtsov](https://github.com/IgorKhramtsov)
 - Added key-value storage and compatible API with `@react-native-async-storage/async-storage`. ([#31596](https://github.com/expo/expo/pull/31596), [#31676](https://github.com/expo/expo/pull/31676) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
@@ -17,12 +60,14 @@
 - Fixed build errors on iOS if other third-party libraries building with iOS system SQLite. ([#30824](https://github.com/expo/expo/pull/30824) by [@kudo](https://github.com/kudo))
 - Fixed build error when using `incremental_installation` mode in CocoaPods. ([#30918](https://github.com/expo/expo/pull/30918) by [@kudo](https://github.com/kudo))
 - Fixed prebuild error when `app.json` doesn't specify any plugin properties for `expo-sqlite`. ([#31672](https://github.com/expo/expo/pull/31672) by [@kudo](https://github.com/kudo))
+- Fixed `SQLiteDatabase -> pathUtils -> SQLiteDatabase` require cycle warning from metro. ([#31956](https://github.com/expo/expo/pull/31956) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
 - Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
+- Deprecated `enableCRSQLite` and show a warning if using this option. ([#32117](https://github.com/expo/expo/pull/32117) by [@kudo](https://github.com/kudo))
 
 ## 14.0.6 - 2024-07-31
 

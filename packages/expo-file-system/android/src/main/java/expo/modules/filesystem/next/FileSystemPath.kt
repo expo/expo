@@ -1,16 +1,21 @@
 package expo.modules.filesystem.next
 
 import android.os.Build
+import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
+import java.util.EnumSet
 import kotlin.io.path.moveTo
 
 // We use the `File` class to represent a file or a directory in the file system.
 // The Path class might be better, but `java.nio.file.Path` class is not available in API 23.
 // The URL, URI classes seem like a less suitable choice.
 // https://stackoverflow.com/questions/27845223/whats-the-difference-between-a-resource-uri-url-path-and-file-in-java
-abstract class FileSystemPath(var file: File) : SharedObject() {
+abstract class FileSystemPath(public var file: File) : SharedObject() {
   fun delete() {
+    if (!file.exists()) {
+      throw UnableToDeleteException("path does not exist")
+    }
     file.delete()
   }
 
@@ -44,9 +49,25 @@ abstract class FileSystemPath(var file: File) : SharedObject() {
     return destination.file
   }
 
+  fun validatePermission(permission: Permission): Boolean {
+    val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, file.path) ?: EnumSet.noneOf(Permission::class.java)
+    if (permissions.contains(permission)) {
+      return true
+    }
+    throw InvalidPermissionException(permission)
+  }
+
+  fun validateCanCreate(options: CreateOptions) {
+    if (!options.overwrite && file.exists()) {
+      throw UnableToCreateException("it already exists")
+    }
+  }
+
   fun copy(to: FileSystemPath) {
     validateType()
     to.validateType()
+    validatePermission(Permission.READ)
+    to.validatePermission(Permission.WRITE)
 
     file.copyRecursively(getMoveOrCopyPath(to))
   }
@@ -54,6 +75,8 @@ abstract class FileSystemPath(var file: File) : SharedObject() {
   fun move(to: FileSystemPath) {
     validateType()
     to.validateType()
+    validatePermission(Permission.WRITE)
+    to.validatePermission(Permission.WRITE)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val destination = getMoveOrCopyPath(to)

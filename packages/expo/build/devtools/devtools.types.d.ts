@@ -32,9 +32,5 @@ export interface DevToolsPluginClientOptions {
      * The underlying WebSocket [`binaryType`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/binaryType).
      */
     websocketBinaryType?: 'arraybuffer' | 'blob';
-    /**
-     * Whether to use the new transportation protocol.
-     */
-    useTransportationNext?: boolean;
 }
 //# sourceMappingURL=devtools.types.d.ts.map

@@ -2,13 +2,11 @@ import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import { createRequire } from 'node:module';
 
+import { renderWithHeadings } from '~/common/test-utilities';
+
 import APISection from './APISection';
 
-import { attachEmotionSerializer, renderWithHeadings } from '~/common/test-utilities';
-
 const require = createRequire(import.meta.url);
-
-attachEmotionSerializer(expect);
 
 describe('APISection', () => {
   test('no data', () => {
@@ -33,8 +31,8 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(24);
-    expect(screen.getAllByRole('table')).toHaveLength(11);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(26);
+    expect(screen.getAllByRole('table')).toHaveLength(12);
 
     expect(screen.queryByText('Event Subscriptions'));
     expect(screen.queryByText('Components'));
@@ -50,39 +48,12 @@ describe('APISection', () => {
     expect(container).toMatchSnapshot();
   });
 
-  test('expo-barcode-scanner', () => {
-    const { container } = renderWithHeadings(
-      <APISection
-        packageName="expo-barcode-scanner"
-        apiName="BarCodeScanner"
-        forceVersion="unversioned"
-        testRequire={require}
-      />
-    );
-
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
-
-    expect(screen.queryByText('Components'));
-    expect(screen.queryByText('Hooks'));
-
-    expect(screen.queryByDisplayValue('BarCodeEvent'));
-    expect(screen.queryByDisplayValue('BarCodeScannerProps'));
-    expect(screen.queryByDisplayValue('Subscription'));
-    expect(screen.queryByDisplayValue('usePermissions'));
-    expect(screen.queryByDisplayValue('Inherited Props'));
-
-    expect(screen.queryAllByText('Constants')).toHaveLength(0);
-
-    expect(container).toMatchSnapshot();
-  });
-
   test('expo-pedometer', () => {
     const { container } = renderWithHeadings(
       <APISection packageName="expo-pedometer" forceVersion="unversioned" testRequire={require} />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(11);
     expect(screen.getAllByRole('table')).toHaveLength(6);
 

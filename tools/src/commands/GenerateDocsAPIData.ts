@@ -5,7 +5,6 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
-import { Application, Configuration, TSConfigReader, TypeDocReader } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -26,32 +25,30 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
-  'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
+  'expo-audio': ['index.ts'],
+  'expo-audio-av': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
   'expo-auth-session': ['index.ts'],
   'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
+  'expo-background-task': ['BackgroundTask.ts'],
   'expo-battery': ['Battery.ts'],
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
-  'expo-barcode-scanner': ['BarCodeScanner.tsx'],
   'expo-blur': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
-  'expo-camera-legacy': ['legacy/index.ts', 'expo-camera'],
   'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
   'expo-clipboard': [['Clipboard.ts', 'Clipboard.types.ts']],
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
-  'expo-contacts': ['Contacts.ts'],
+  'expo-contacts': ['index.ts'],
   'expo-crypto': ['Crypto.ts'],
-  'expo-dev-menu': [['DevMenu.ts', 'ExpoDevMenu.types.ts']],
-  'expo-dev-launcher': ['DevLauncher.ts'],
+  'expo-dev-client': ['DevClient.ts'],
   'expo-device': ['Device.ts'],
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-document-picker': ['index.ts'],
-  'expo-face-detector': ['FaceDetector.ts'],
   'expo-file-system': ['index.ts'],
   'expo-file-system-next': ['next/index.ts', 'expo-file-system'],
   'expo-font': ['index.ts'],
@@ -66,6 +63,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-light-sensor': [['LightSensor.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-linking': ['Linking.ts'],
   'expo-linear-gradient': ['LinearGradient.tsx'],
+  'expo-live-photo': ['index.ts'],
   'expo-local-authentication': ['LocalAuthentication.ts'],
   'expo-localization': ['Localization.ts'],
   'expo-location': ['index.ts'],
@@ -73,11 +71,14 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
   'expo-media-library': ['MediaLibrary.ts'],
+  'expo-mesh-gradient': ['index.ts'],
   'expo-navigation-bar': ['NavigationBar.ts'],
   'expo-network': ['Network.ts'],
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
+  'expo-router': ['exports.ts'],
+  'expo-router-ui': ['ui/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
@@ -85,7 +86,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-sms': ['SMS.ts'],
   'expo-speech': ['Speech/Speech.ts'],
   'expo-splash-screen': ['index.ts'],
-  'expo-sqlite-legacy': ['legacy/index.ts', 'expo-sqlite'],
   'expo-sqlite': [['index.ts', 'Storage.ts'], 'expo-sqlite'],
   'expo-status-bar': ['StatusBar.tsx'],
   'expo-store-review': ['StoreReview.ts'],
@@ -106,6 +106,8 @@ const executeCommand = async (
   entryPoint: EntryPoint = 'index.ts',
   packageName: string = jsonFileName
 ) => {
+  const { Application, Configuration, TSConfigReader, TypeDocReader } = await import('typedoc');
+
   const dataPath = path.join(
     EXPO_DIR,
     'docs',
@@ -142,7 +144,7 @@ const executeCommand = async (
       excludeProtected: true,
       excludeExternals: true,
       pretty: !MINIFY_JSON,
-      commentStyle: 'All',
+      commentStyle: 'block',
       jsDocCompatibility: false,
       preserveLinkText: true,
       sourceLinkExternal: false,
@@ -179,20 +181,7 @@ const executeCommand = async (
     const { readme, symbolIdMap, ...trimmedOutput } = output;
 
     if (MINIFY_JSON) {
-      const minifiedJson = recursiveOmitBy(trimmedOutput, ({ key, node }) => {
-        return (
-          [
-            'id',
-            'groups',
-            'kindString',
-            'originalName',
-            'files',
-            'sourceFileName',
-            'target',
-          ].includes(key) ||
-          (key === 'flags' && !Object.keys(node).length)
-        );
-      });
+      const minifiedJson = filterOutKeys(filterOutKeys(trimmedOutput));
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
       await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));
@@ -201,6 +190,18 @@ const executeCommand = async (
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
   }
 };
+
+const KEYS_TO_OMIT = ['id', 'groups', 'kindString', 'originalName', 'files', 'sourceFileName'];
+
+function filterOutKeys(data: Record<string, any>) {
+  return recursiveOmitBy(data, ({ key, node }) => {
+    return (
+      KEYS_TO_OMIT.includes(key) ||
+      (key === 'flags' && !Object.keys(node).length) ||
+      (key === 'target' && typeof node !== 'object')
+    );
+  });
+}
 
 async function action({ packageName, sdk }: ActionOptions) {
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);

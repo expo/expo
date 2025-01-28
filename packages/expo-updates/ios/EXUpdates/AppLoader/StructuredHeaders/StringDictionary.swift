@@ -2,10 +2,21 @@
 
 import Foundation
 
-public enum SerializerError: Error {
+public enum SerializerError: Error, Sendable, LocalizedError {
   case emptyKey
   case invalidCharacterInKey(key: String, character: Character)
   case invalidCharacterInString(string: String, character: Character)
+
+  public var errorDescription: String? {
+    switch self {
+    case .emptyKey:
+      return "Empty key found during expo-structured-headers serialization"
+    case let .invalidCharacterInKey(key, character):
+      return "Unable to serialize character in expo-structured-headers key (key: \(key), character: \(character))"
+    case let .invalidCharacterInString(string, character):
+      return "Unable to serialize character in expo-structured-headers string (string: \(string), character: \(character))"
+    }
+  }
 }
 
 /**

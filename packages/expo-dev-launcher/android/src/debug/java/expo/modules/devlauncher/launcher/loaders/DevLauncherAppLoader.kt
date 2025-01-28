@@ -9,6 +9,8 @@ import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -68,8 +70,8 @@ abstract class DevLauncherAppLoader(
     }
   }
 
-  open suspend fun launch(intent: Intent): Boolean {
-    return suspendCoroutine { callback ->
+  open suspend fun launch(intent: Intent): Boolean = withContext(Dispatchers.Main) {
+    suspendCoroutine { callback ->
       if (injectBundleLoader()) {
         continuation = callback
         launchIntent(intent)

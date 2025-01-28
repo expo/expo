@@ -76,12 +76,7 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
   if (_abiVersion && _abiVersion.length) {
     requestAbiVersion = _abiVersion;
   } else {
-    NSArray *versionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
-    if (versionsAvailable) {
-      requestAbiVersion = [versionsAvailable componentsJoinedByString:@","];
-    } else {
-      requestAbiVersion = [EXVersions sharedInstance].temporarySdkVersion;
-    }
+    requestAbiVersion = [EXVersions sharedInstance].sdkVersion;
   }
   NSString *releaseChannel;
   if (_releaseChannel) {

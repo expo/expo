@@ -6,6 +6,7 @@ import { resolveInstallApkNameAsync } from './resolveInstallApkName';
 import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
+import type { AndroidOpenInCustomProps } from '../../start/platforms/android/AndroidPlatformManager';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -19,7 +20,7 @@ const debug = require('debug')('expo:run:android');
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
   // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.
-  const isProduction = options.variant?.toLowerCase() === 'release';
+  const isProduction = options.variant?.toLowerCase().endsWith('release');
   setNodeEnv(isProduction ? 'production' : 'development');
   require('@expo/env').load(projectRoot);
 
@@ -79,10 +80,12 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     await installAppAsync(androidProjectRoot, props);
   }
 
-  await manager.getDefaultDevServer().openCustomRuntimeAsync(
+  await manager.getDefaultDevServer().openCustomRuntimeAsync<AndroidOpenInCustomProps>(
     'emulator',
     {
       applicationId: props.packageName,
+      customAppId: props.customAppId,
+      launchActivity: props.launchActivity,
     },
     { device: props.device.device }
   );

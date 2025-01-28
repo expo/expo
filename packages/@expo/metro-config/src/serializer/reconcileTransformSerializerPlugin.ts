@@ -176,7 +176,6 @@ export async function reconcileTransformSerializerPlugin(
       reconcile.importAll,
       dependencyMapName,
       reconcile.globalPrefix,
-      // @ts-expect-error: not on type yet...
       reconcile.unstable_renameRequire === false
     );
 

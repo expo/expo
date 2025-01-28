@@ -4,24 +4,21 @@ import {
   closeDevelopmentSessionAsync,
   updateDevelopmentSessionAsync,
 } from '../../api/updateDevelopmentSession';
-import { getUserAsync } from '../../api/user/user';
+import { hasCredentials } from '../../api/user/UserSettings';
 import { env } from '../../utils/env';
 import * as ProjectDevices from '../project/devices';
 
 const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
 
-async function isAuthenticatedAsync(): Promise<boolean> {
-  return !!(await getUserAsync().catch(() => null));
-}
-
 export class DevelopmentSession {
+  /** If the `startAsync` was successfully called */
+  private hasActiveSession = false;
+
   constructor(
     /** Project root directory. */
     private projectRoot: string,
     /** Development Server URL. */
-    public url: string | null,
-    /** Catch any errors that may occur during the `startAsync` method. */
-    private onError: (error: Error) => void
+    public url: string | null
   ) {}
 
   /**
@@ -51,7 +48,7 @@ export class DevelopmentSession {
 
       const deviceIds = await this.getDeviceInstallationIdsAsync();
 
-      if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+      if (!hasCredentials() && !deviceIds?.length) {
         debug(
           'Development session will not ping because the user is not authenticated and there are no devices.'
         );
@@ -66,10 +63,10 @@ export class DevelopmentSession {
           exp,
           deviceIds,
         });
+        this.hasActiveSession = true;
       }
     } catch (error: any) {
       debug(`Error updating development session API: ${error}`);
-      this.onError(error);
     }
   }
 
@@ -81,14 +78,18 @@ export class DevelopmentSession {
 
   /** Try to close any pending development sessions, but always resolve */
   public async closeAsync(): Promise<boolean> {
-    if (env.CI || env.EXPO_OFFLINE) {
+    if (env.CI || env.EXPO_OFFLINE || !this.hasActiveSession) {
       return false;
     }
+
+    // Clear out the development session, even if the call fails.
+    // This blocks subsequent calls to `stopAsync`
+    this.hasActiveSession = false;
 
     try {
       const deviceIds = await this.getDeviceInstallationIdsAsync();
 
-      if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+      if (!hasCredentials() && !deviceIds?.length) {
         return false;
       }
 
@@ -102,7 +103,6 @@ export class DevelopmentSession {
       return true;
     } catch (error: any) {
       debug(`Error closing development session API: ${error}`);
-      this.onError(error);
       return false;
     }
   }

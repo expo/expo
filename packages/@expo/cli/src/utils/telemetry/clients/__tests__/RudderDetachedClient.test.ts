@@ -75,6 +75,21 @@ it('flushes in detached process', async () => {
   );
 });
 
+it("doesn't throw when the spawn fails with an exception", async () => {
+  // Mock the `spawn` method
+  jest.mocked(spawn).mockImplementation(() => {
+    throw new Error('Failed to spawn');
+  });
+  vol.fromJSON({});
+
+  // Create a client, record an event, and flush it
+  const client = new RudderDetachedClient();
+  await client.record([createRecord({ event: 'Start Project' })]);
+
+  await expect(client.flush()).resolves.not.toThrow();
+  expect(spawn).toThrow();
+});
+
 it('skips flushing when no events are recorded', async () => {
   // Create a client, and flush it without recording any events
   const client = new RudderDetachedClient();

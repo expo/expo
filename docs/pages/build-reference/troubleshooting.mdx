@@ -18,7 +18,7 @@ All standard advice around [narrowing down the source of an error](https://expo.
 
 Before you go further, you need to be sure that you have located the error message and read it. How you do this will be different depending on whether you're investigating a build failure or runtime error.
 
-{/* <!-- vale off --> */}
+{/* vale off */}
 
 ### Runtime errors
 
@@ -28,7 +28,7 @@ Refer to the ["Production errors" section of the debugging guide](/debugging/run
 
 If you can't find any useful information through this approach, try [narrowing down the source of the crash step by step](https://expo.fyi/manual-debugging).
 
-{/* <!-- vale on --> */}
+{/* vale on */}
 
 ### Build errors
 
@@ -78,13 +78,13 @@ For more information, see [Working with monorepos](/guides/monorepos).
 
 <Collapsible summary="Out-of-memory (OOM) errors">
 
-If your build fails with "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)" in your Gradle logs, this may be because the Node process responsible for bundling your app JavaScript was killed.
+If your build fails with "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)" in your Gradle logs, this is because the Node process responsible for bundling your app JavaScript was killed.
 
 This can often be a sign that your app bundle is extremely large, which will make your overall app binary larger and lead to slow boot up times, especially on low-end Android devices. Sometimes the error can occur when large text files are treated as source code, for example, if you have a JavaScript file that contains a string of 1MB+ of HTML to load into a webview, or a similarly sized JSON file.
 
-To determine how large your bundle is and to see a breakdown of where the size comes from, use [react-native-bundle-visualizer](https://github.com/IjzerenHein/react-native-bundle-visualizer).
+To determine how large your bundle is and to see a breakdown of where the size comes from, use [Expo Atlas](/guides/analyzing-bundles/).
 
-To increase memory limits on your EAS Build builders, you can use [`large` resource class](/eas/json/#resourceclass) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
+To increase memory limits on your EAS Build builders, use [`large` resource class](/eas/json/#resourceclass) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
 
 </Collapsible>
 
@@ -178,8 +178,8 @@ Join us on <A href="https://chat.expo.dev/" shouldLeakReferrer>Discord and Forum
 
 When you ask for troubleshooting help, be sure to share the following information:
 
-- **A link to your build page**. This can only be accessed by your team or Expo employees. If you'd like to share it more publicly, take a screenshot. If you'd like to share it more privately, send an email to secure@expo.dev and mention that in your help request on chat or forums. If you are performing this build locally with `eas build --local`, you may omit this, but please indicate this fact.
-- **Error logs**. Anything that you suspect may be related to your build or runtime error. If you can't provide this, please explain why not.
+- **A link to your build page**. This can only be accessed by your team or Expo employees. If you'd like to share it more publicly, take a screenshot. If you'd like to share it more privately, send an email to secure@expo.dev and mention that in your help request on chat or forums. If you are performing this build locally with `eas build --local`, you can omit this, but do mention this fact.
+- **Error logs**. Anything that you suspect may be related to your build or runtime error. If you can't provide this, explain why not.
 - **Minimal reproducible example or a link to your repository**. The quickest way to get a solution to your problem is to ensure that other developers can reproduce it. If you have ever worked on a team, you know this from experience. In many cases, if you can't provide a reproducible example then it may not be possible to help you, and at best the back-and-forth process of asking and answering questions will be an inefficient use of time. Learn more about how to create a reproducible example in the [manual debugging guide](https://expo.fyi/manual-debugging) and Stack Overflow's [Minimal Viable Reproducible Example](https://stackoverflow.com/help/minimal-reproducible-example) guide.
 
 Try to be clear, precise, and helpful. General guidance provided by Stack Overflow's [How to ask a good question](https://stackoverflow.com/help/how-to-ask) guide applies.

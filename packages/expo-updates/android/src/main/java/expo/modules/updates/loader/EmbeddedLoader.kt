@@ -7,6 +7,7 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.UpdatesUtils
+import expo.modules.updates.logging.UpdatesLogger
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.AssertionError
@@ -24,14 +25,16 @@ import java.util.*
  * re-downloaded if included in future updates.
  */
 class EmbeddedLoader internal constructor(
-  private val context: Context,
+  context: Context,
   private val configuration: UpdatesConfiguration,
+  logger: UpdatesLogger,
   database: UpdatesDatabase,
   updatesDirectory: File,
   private val loaderFiles: LoaderFiles
 ) : Loader(
   context,
   configuration,
+  logger,
   database,
   updatesDirectory,
   loaderFiles
@@ -40,12 +43,12 @@ class EmbeddedLoader internal constructor(
   constructor(
     context: Context,
     configuration: UpdatesConfiguration,
+    logger: UpdatesLogger,
     database: UpdatesDatabase,
     updatesDirectory: File
-  ) : this(context, configuration, database, updatesDirectory, LoaderFiles())
+  ) : this(context, configuration, logger, database, updatesDirectory, LoaderFiles())
 
   override fun loadRemoteUpdate(
-    context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
@@ -60,13 +63,11 @@ class EmbeddedLoader internal constructor(
         )
       )
     } else {
-      val message = "Embedded manifest is null"
-      callback.onFailure(message, Exception(message))
+      callback.onFailure(Exception("Embedded manifest is null"))
     }
   }
 
   override fun loadAsset(
-    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,

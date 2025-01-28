@@ -58,9 +58,9 @@ abstract class UpdatesDatabase : RoomDatabase() {
     private const val DB_NAME = "updates.db"
 
     @JvmStatic @Synchronized
-    fun getInstance(context: Context?): UpdatesDatabase {
+    fun getInstance(context: Context): UpdatesDatabase {
       if (instance == null) {
-        instance = Room.databaseBuilder(context!!, UpdatesDatabase::class.java, DB_NAME)
+        instance = Room.databaseBuilder(context, UpdatesDatabase::class.java, DB_NAME)
           .addMigrations(MIGRATION_4_5)
           .addMigrations(MIGRATION_5_6)
           .addMigrations(MIGRATION_6_7)

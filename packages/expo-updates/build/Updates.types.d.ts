@@ -93,14 +93,6 @@ export type UpdateCheckResultNotAvailable = {
  */
 export type UpdateCheckResult = UpdateCheckResultRollBack | UpdateCheckResultAvailable | UpdateCheckResultNotAvailable;
 /**
- * @deprecated
- */
-export type UpdateCheckResultSuccess = UpdateCheckResultAvailable;
-/**
- * @deprecated
- */
-export type UpdateCheckResultFailure = UpdateCheckResultNotAvailable;
-/**
  * The successful result of fetching a new update.
  */
 export type UpdateFetchResultSuccess = {
@@ -258,17 +250,20 @@ export type UpdatesNativeStateRollback = {
  * @hidden
  */
 export type UpdatesNativeStateMachineContext = {
+    isStartupProcedureRunning: boolean;
     isUpdateAvailable: boolean;
     isUpdatePending: boolean;
     isChecking: boolean;
     isDownloading: boolean;
     isRestarting: boolean;
+    restartCount: number;
     latestManifest?: Manifest;
     downloadedManifest?: Manifest;
     rollback?: UpdatesNativeStateRollback;
     checkError?: Error;
     downloadError?: Error;
     lastCheckForUpdateTime?: Date;
+    sequenceNumber: number;
 };
 /**
  * @hidden

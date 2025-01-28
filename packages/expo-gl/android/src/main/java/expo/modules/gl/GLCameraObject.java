@@ -61,6 +61,7 @@ import static android.opengl.GLES30.glUniformMatrix4fv;
 import static android.opengl.GLES30.glUseProgram;
 import static android.opengl.GLES30.glVertexAttribPointer;
 import static android.opengl.GLES30.glViewport;
+import static android.opengl.Matrix.orthoM;
 import static expo.modules.gl.cpp.EXGL.EXGLContextMapObject;
 
 public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAvailableListener {
@@ -77,24 +78,34 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
 
   private SurfaceTexture mCameraSurfaceTexture;
 
+  /* Coordinates that define how a texture is mapped onto a surface. Typically the values are
+    0.0f, 0.0f
+    1.0f, 0.0f
+    0.0f, 1.0f
+    1.0f, 0.0f
+    1.0f, 1.0f
+    0.0f, 1.0f
+   We invert them because [SurfaceTexture] has an inverted Y-Axis
+  */
   private float textureCoords[] = {
-      0.0f, 1.0f,
-      1.0f, 1.0f,
-      0.0f, 0.0f,
-      1.0f, 1.0f,
-      1.0f, 0.0f,
-      0.0f, 0.0f
+    0.0f, 1.0f, // Bottom-left
+    1.0f, 1.0f, // Bottom-right
+    0.0f, 0.0f, // Top-left
+    1.0f, 1.0f, // Bottom-right
+    1.0f, 0.0f, // Top-right
+    0.0f, 0.0f  // Top-left
   };
 
   private static String vertexShaderSource
       = "precision highp float;"
       + "attribute vec4 position;"
       + "uniform mat4 transformMatrix;"
+      + "uniform mat4 projectionMatrix;"
       + "varying vec2 coords;"
       + "void main() {"
       + "  vec2 clipSpace = (1.0 - 2.0 * position.xy);"
       + "  coords = (transformMatrix * position).xy;"
-      + "  gl_Position = vec4(clipSpace, 0.0, 1.0);"
+      + "  gl_Position = projectionMatrix * vec4(clipSpace, 0.0, 1.0);"
       + "}";
 
   private static String fragmentShaderSource
@@ -180,6 +191,9 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
         int[] prevVertexArray = new int[1];
         int[] viewport = new int[4];
         float[] transformMatrix = new float[16];
+        float[] projectionMatrix = new float[16];
+
+        orthoM(projectionMatrix, 0, -1f, 1f, -1f, 1f, -1f, 1f);
 
         // get previous state
         glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, prevFramebuffer, 0);
@@ -196,6 +210,7 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
         int positionLocation = glGetAttribLocation(mProgram, "position");
         int transformLocation = glGetUniformLocation(mProgram, "transformMatrix");
         int textureLocation = glGetUniformLocation(mProgram, "cameraTexture");
+        int projectionLocation = glGetUniformLocation(mProgram, "projectionMatrix");
 
         // setup objects on the first frame
         if (mTextureWidth == -1) {
@@ -240,6 +255,9 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
 
           // set uniforms
           glBindTexture(GL_TEXTURE_EXTERNAL_OES, mExtTexture);
+          glUniform1i(textureLocation, prevActiveTexture[0] - GL_TEXTURE0);
+          glUniformMatrix4fv(transformLocation, 1, false, transformMatrix, 0);
+          glUniformMatrix4fv(projectionLocation, 1, false, projectionMatrix, 0);
           glUniform1i(textureLocation, prevActiveTexture[0] - GL_TEXTURE0);
           glUniformMatrix4fv(transformLocation, 1, false, transformMatrix, 0);
 

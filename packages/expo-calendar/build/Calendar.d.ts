@@ -1,4 +1,5 @@
-import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionResponse } from 'expo-modules-core';
+export { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo-modules-core';
 /**
  * @platform ios
  */
@@ -16,6 +17,14 @@ export type RecurringEventOptions = {
      * instance of that event will be returned by default.
      */
     instanceStartDate?: string | Date;
+};
+type Organizer = {
+    isCurrentUser: boolean;
+    name?: string;
+    role: string;
+    status: string;
+    type: string;
+    url?: string;
 };
 /**
  * A calendar record upon which events (or, on iOS, reminders) can be stored. Settings here apply to
@@ -122,7 +131,7 @@ export type Source = {
      * Type of the account that owns this calendar and was used to sync it to the device.
      * If `isLocalAccount` is falsy then this must be defined, and must match an account on the device
      * along with `name`, or the OS will delete the calendar.
-     * On iOS, one of [`SourceType`](#calendarsourcetype)s.
+     * On iOS, one of [`SourceType`](#sourcetype)s.
      */
     type: string | SourceType;
     /**
@@ -154,7 +163,7 @@ export type Event = {
     /**
      * Location field of the event.
      */
-    location: string;
+    location: string | null;
     /**
      * Date when the event record was created.
      * @platform ios
@@ -223,9 +232,12 @@ export type Event = {
     status: EventStatus;
     /**
      * Organizer of the event.
+     * This property is only available on events associated with calendars that are managed by a service ie. Google Calendar or iCloud.
+     * The organizer is read-only and cannot be set.
+     *
      * @platform ios
      */
-    organizer?: string;
+    organizer?: Organizer;
     /**
      * Email address of the organizer of the event.
      * @platform android
@@ -515,7 +527,6 @@ export type DaysOfTheWeek = {
      */
     weekNumber?: number;
 };
-export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 /**
  * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
  * */
@@ -701,7 +712,7 @@ export declare function getEventAsync(id: string, recurringEventOptions?: Recurr
  * @param eventData A map of details for the event to be created.
  * @return A promise which fulfils with a string representing the ID of the newly created event.
  */
-export declare function createEventAsync(calendarId: string, eventData?: Omit<Partial<Event>, 'id'>): Promise<string>;
+export declare function createEventAsync(calendarId: string, eventData?: Omit<Partial<Event>, 'id' | 'organizer'>): Promise<string>;
 /**
  * Updates the provided details of an existing calendar stored on the device. To remove a property,
  * explicitly set it to `null` in `details`.
@@ -763,7 +774,7 @@ export declare function deleteAttendeeAsync(id: string): Promise<void>;
  * @return A promise which fulfils with an array of [`Reminder`](#reminder) objects matching the search criteria.
  * @platform ios
  */
-export declare function getRemindersAsync(calendarIds: (string | null)[], status: ReminderStatus | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
+export declare function getRemindersAsync(calendarIds: (string | null)[], status: ReminderStatus | null, startDate: Date | null, endDate: Date | null): Promise<Reminder[]>;
 /**
  * Returns a specific reminder selected by ID.
  * @param id ID of the reminder to return.
@@ -852,7 +863,7 @@ export declare function requestRemindersPermissionsAsync(): Promise<PermissionRe
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
  * ```
  */
-export declare const useCalendarPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare const useCalendarPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Check or request permissions to access reminders.
  * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact
@@ -863,7 +874,7 @@ export declare const useCalendarPermissions: (options?: PermissionHookOptions<ob
  * const [status, requestPermission] = Calendar.useRemindersPermissions();
  * ```
  */
-export declare const useRemindersPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare const useRemindersPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * platform ios
  */

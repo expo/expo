@@ -34,10 +34,12 @@ class VideoSource(
       "DRMHeadersKeys:${this.drm?.headers?.keys?.joinToString { it }}}" +
       "DRMHeadersValues:${this.drm?.headers?.values?.joinToString { it }}}" +
       "NotificationDataTitle:${this.metadata?.title}" +
-      "NotificationDataSecondaryText:${this.metadata?.artist}"
+      "NotificationDataSecondaryText:${this.metadata?.artist}" +
+      "NotificationDataArtwork:${this.metadata?.artwork?.path}"
   }
 
-  fun toMediaSource(context: Context): MediaSource {
+  fun toMediaSource(context: Context): MediaSource? {
+    this.uri ?: return null
     return buildMediaSourceWithHeaders(context, this)
   }
 
@@ -58,6 +60,9 @@ class VideoSource(
           metadata?.let { data ->
             setTitle(data.title)
             setArtist(data.artist)
+            data.artwork?.let {
+              setArtworkUri(it)
+            }
           }
         }.build()
       )

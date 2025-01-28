@@ -51,8 +51,12 @@ describe('runAsync', () => {
     });
 
     const mockGlob = glob as jest.MockedFunction<typeof glob>;
-    mockGlob.mockImplementation((pattern: string | string[]) => {
-      if (typeof pattern === 'string' && pattern === `${projectRoot}/modules/**/ios/*.podspec`) {
+    mockGlob.mockImplementation((pattern: string | string[], options: glob.Options = {}) => {
+      if (
+        typeof pattern === 'string' &&
+        pattern === 'modules/**/ios/*.podspec' &&
+        options.cwd === projectRoot
+      ) {
         return Promise.resolve([iosPath]);
       }
       return Promise.resolve([]);
@@ -67,7 +71,10 @@ describe('runAsync', () => {
     });
 
     expect(result.isSuccessful).toBeTruthy();
-    expect(glob).toHaveBeenCalledWith(`${projectRoot}/modules/**/ios/*.podspec`);
+    expect(glob).toHaveBeenCalledWith(
+      `modules/**/ios/*.podspec`,
+      expect.objectContaining({ cwd: projectRoot, absolute: true })
+    );
     expect(isFileIgnoredAsync).toHaveBeenCalledWith(iosPath, expect.anything());
   });
 
@@ -78,10 +85,11 @@ describe('runAsync', () => {
     });
 
     const mockGlob = glob as jest.MockedFunction<typeof glob>;
-    mockGlob.mockImplementation((pattern: string | string[]) => {
+    mockGlob.mockImplementation((pattern: string | string[], options: glob.Options = {}) => {
       if (
         typeof pattern === 'string' &&
-        pattern === `${projectRoot}/modules/**/android/build.gradle`
+        pattern === 'modules/**/android/build.gradle' &&
+        options.cwd === projectRoot
       ) {
         return Promise.resolve([androidPath]);
       }
@@ -97,7 +105,10 @@ describe('runAsync', () => {
     });
 
     expect(result.isSuccessful).toBeTruthy();
-    expect(mockGlob).toHaveBeenCalledWith(`${projectRoot}/modules/**/android/build.gradle`);
+    expect(mockGlob).toHaveBeenCalledWith(
+      'modules/**/android/build.gradle',
+      expect.objectContaining({ cwd: projectRoot, absolute: true })
+    );
     expect(isFileIgnoredAsync).toHaveBeenCalledWith(androidPath, expect.anything());
   });
 
@@ -108,8 +119,12 @@ describe('runAsync', () => {
     });
 
     const mockGlob = glob as jest.MockedFunction<typeof glob>;
-    mockGlob.mockImplementation((pattern: string | string[]) => {
-      if (typeof pattern === 'string' && pattern === `${projectRoot}/modules/**/ios/*.podspec`) {
+    mockGlob.mockImplementation((pattern: string | string[], options: glob.Options = {}) => {
+      if (
+        typeof pattern === 'string' &&
+        pattern === 'modules/**/ios/*.podspec' &&
+        options.cwd === projectRoot
+      ) {
         return Promise.resolve([iosPath]);
       }
       return Promise.resolve([]);
@@ -124,7 +139,10 @@ describe('runAsync', () => {
     });
 
     expect(result.isSuccessful).toBeFalsy();
-    expect(mockGlob).toHaveBeenCalledWith(`${projectRoot}/modules/**/ios/*.podspec`);
+    expect(mockGlob).toHaveBeenCalledWith(
+      'modules/**/ios/*.podspec',
+      expect.objectContaining({ cwd: projectRoot, absolute: true })
+    );
     expect(isFileIgnoredAsync).toHaveBeenCalledWith(iosPath, expect.anything());
   });
 
@@ -135,10 +153,11 @@ describe('runAsync', () => {
     });
 
     const mockGlob = glob as jest.MockedFunction<typeof glob>;
-    mockGlob.mockImplementation((pattern: string | string[]) => {
+    mockGlob.mockImplementation((pattern: string | string[], options: glob.Options = {}) => {
       if (
         typeof pattern === 'string' &&
-        pattern === `${projectRoot}/modules/**/android/build.gradle`
+        pattern === 'modules/**/android/build.gradle' &&
+        options.cwd === projectRoot
       ) {
         return Promise.resolve([androidPath]);
       }
@@ -154,7 +173,10 @@ describe('runAsync', () => {
     });
 
     expect(result.isSuccessful).toBeFalsy();
-    expect(mockGlob).toHaveBeenCalledWith(`${projectRoot}/modules/**/android/build.gradle`);
+    expect(mockGlob).toHaveBeenCalledWith(
+      'modules/**/android/build.gradle',
+      expect.objectContaining({ cwd: projectRoot, absolute: true })
+    );
     expect(isFileIgnoredAsync).toHaveBeenCalledWith(androidPath, expect.anything());
   });
 

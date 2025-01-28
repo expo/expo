@@ -6,6 +6,94 @@
 
 ### 🎉 New features
 
+- Remove need for `expo-asset/tools/hashAssetFiles` and add legacy support for projects that still have it. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for `/* webpackIgnore: true */` magic comment in code splitting. ([#33366](https://github.com/expo/expo/pull/33366) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.19.8 - 2024-12-16
+
+### 🐛 Bug fixes
+
+- Make exported sourcemap paths relative on Windows. ([#33503](https://github.com/expo/expo/pull/33503) by [@byCedric](https://github.com/byCedric))
+
+## 0.19.7 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.6 - 2024-12-05
+
+### 🐛 Bug fixes
+
+- Exclude `beforeAssetSerializationPlugins.preModules` from `stableChunkSource` ([#33344](https://github.com/expo/expo/pull/33344) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Use POSIX-formatted relative module paths to stabelize module IDs across platforms. ([#33393](https://github.com/expo/expo/pull/33393) by [@byCedric](https://github.com/byCedric))
+- Use POSIX-formatted filenames when transforming CSS modules for consistent class names. ([#33394](https://github.com/expo/expo/pull/33394) by [@byCedric](https://github.com/byCedric))
+- Use POSIX-formatted relative CSS asset paths for URL consistency across platforms. ([#33395](https://github.com/expo/expo/pull/33395) by [@byCedric](https://github.com/byCedric))
+- Use POSIX-formatted check to handle virtual RSC module with correctly escaped client boundary paths across platforms. ([#33396](https://github.com/expo/expo/pull/33396) by [@byCedric](https://github.com/byCedric))
+
+## 0.19.5 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- Fixed DOM Components support on Windows. ([#33114](https://github.com/expo/expo/pull/33114) by [@kudo](https://github.com/kudo))
+
+## 0.19.4 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.3 — 2024-11-13
+
+### 🐛 Bug fixes
+
+- Fix Expo Router root path on Windows. ([#32792](https://github.com/expo/expo/pull/32792) by [@marklawlor](https://github.com/marklawlor))
+
+## 0.19.2 — 2024-11-13
+
+### 🎉 New features
+
+- Add scoped module IDs for Metro SSR. ([#32737](https://github.com/expo/expo/pull/32737) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.1 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- Fixed `npx expo export` to support Hermes bytecode bundling. ([#32770](https://github.com/expo/expo/pull/32770) by [@kudo](https://github.com/kudo))
+
+## 0.19.0 — 2024-11-10
+
+### 💡 Others
+
+- Remove clientBoundaries warning. ([#32735](https://github.com/expo/expo/pull/32735) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.0-preview.3 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.0-preview.2 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fix CSS `url()` support for DOM IDs, public files, and data URIs. ([#32332](https://github.com/expo/expo/pull/32332) by [@EvanBacon](https://github.com/EvanBacon))
+- Disable `hermesParser` and conditionally enable for files with `@flow` pragma. ([#32325](https://github.com/expo/expo/pull/32325) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.0-preview.1 — 2024-10-22
+
+### 💡 Others
+
+- Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
+
+## 0.19.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Emit assets as strings instead of numeric lookups when bundling for web and server environments. ([#31955](https://github.com/expo/expo/pull/31955) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Add experimental support for React Server Actions in Expo Router. ([#31959](https://github.com/expo/expo/pull/31959) by [@EvanBacon](https://github.com/EvanBacon))
+- add support for magic import comments to opt dynamic imports out of the dependency graph. ([#31868](https://github.com/expo/expo/pull/31868) by [@EvanBacon](https://github.com/EvanBacon))
 - add support for css imports from other css files ([#31574](https://github.com/expo/expo/pull/31574) by [@EvanBacon](https://github.com/EvanBacon))
 - Add virtual entry generation for DOM components on web. ([#31259](https://github.com/expo/expo/pull/31259) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass `isDOM` to the Babel caller for changing behavior during DOM component bundling. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
@@ -40,6 +128,7 @@
 - Invalidate Metro cache for monorepos with identical Expo projects. ([#29733](https://github.com/expo/expo/pull/29733) by [@byCedric](https://github.com/byCedric))
 - Fix `TypeError: (0 , sourceMapString_1.default) is not a function` bug due to an incompatibiliy with `metro@0.80.10`'s `sourceMapString` module. ([#30905](https://github.com/expo/expo/pull/30905) by [@kitten](https://github.com/kitten))
 - Detect workspace root for monorepos using pnpm. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
+- Automatically configure `watchFolders` for monorepos using pnpm. ([#31973](https://github.com/expo/expo/pull/31973) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
@@ -49,6 +138,10 @@
 - Rework mini-metro tests to support full transformation. ([#29980](https://github.com/expo/expo/pull/29980) by [@EvanBacon](https://github.com/EvanBacon))
 - Downgrade routerRoot warning to a debug log. ([#29812](https://github.com/expo/expo/pull/29812) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade `glob@7` to `glob@10`. ([#29929](https://github.com/expo/expo/pull/29929) by [@byCedric](https://github.com/byCedric))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.18.4 — 2024-05-16
 

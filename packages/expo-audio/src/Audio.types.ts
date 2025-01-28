@@ -1,5 +1,8 @@
+// @docsMissing
 export type AudioSource =
   | string
+  | number
+  | null
   | {
       /**
        * A string representing the resource identifier for the audio,
@@ -7,12 +10,16 @@ export type AudioSource =
        */
       uri?: string;
       /**
+       * The asset ID of a local audio asset, acquired with the `require` function.
+       * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
+       */
+      assetId?: number;
+      /**
        * An object representing the HTTP headers to send along with the request for a remote audio source.
        * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
        */
       headers?: Record<string, string>;
-    }
-  | null;
+    };
 
 export type RecordingInput = {
   name: string;
@@ -20,8 +27,10 @@ export type RecordingInput = {
   uid: string;
 };
 
+// @docsMissing
 export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
 
+// @docsMissing
 export type AudioStatus = {
   id: number;
   currentTime: number;
@@ -32,12 +41,14 @@ export type AudioStatus = {
   duration: number;
   playing: boolean;
   loop: boolean;
+  didJustFinish: boolean;
   isBuffering: boolean;
   isLoaded: boolean;
   playbackRate: number;
   shouldCorrectPitch: boolean;
 };
 
+// @docsMissing
 export type RecordingStatus = {
   id: number;
   isFinished: boolean;
@@ -46,6 +57,7 @@ export type RecordingStatus = {
   url: string | null;
 };
 
+// @docsMissing
 export type RecorderState = {
   canRecord: boolean;
   isRecording: boolean;
@@ -55,6 +67,10 @@ export type RecorderState = {
   url: string | null;
 };
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export type AndroidOutputFormat =
   | 'default'
   | '3gp'
@@ -65,8 +81,16 @@ export type AndroidOutputFormat =
   | 'mpeg2ts'
   | 'webm';
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export type AndroidAudioEncoder = 'default' | 'amr_nb' | 'amr_wb' | 'aac' | 'he_aac' | 'aac_eld';
 
+// @docsMissing
+/**
+ * @platform ios
+ */
 export enum IOSOutputFormat {
   LINEARPCM = 'lpcm',
   AC3 = 'ac-3',
@@ -104,6 +128,7 @@ export enum IOSOutputFormat {
   ENHANCEDAC3 = 'ec-3',
 }
 
+// @docsMissing
 export enum AudioQuality {
   MIN = 0,
   LOW = 0x20,
@@ -112,63 +137,79 @@ export enum AudioQuality {
   MAX = 0x7f,
 }
 
+// @docsMissing
 export type BitRateStrategy = 'constant' | 'longTermAverage' | 'variableConstrained' | 'variable';
 
 export type RecordingOptions = {
   /**
+   * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
+   */
+  isMeteringEnabled?: boolean;
+  /**
    * The desired file extension.
    *
-   * @example `'.caf'`
+   * @example .caf
    */
   extension: string;
   /**
    * The desired sample rate.
    *
-   * @example `44100`
+   * @example 44100
    */
   sampleRate: number;
   /**
    * The desired number of channels.
    *
-   * @example `1`, `2`
+   * @example 2
    */
   numberOfChannels: number;
   /**
    * The desired bit rate.
    *
-   * @example `128000`
+   * @example 128000
    */
   bitRate: number;
   /**
    * Recording options for the Android platform.
+   * @platform android
    */
   android: RecordingOptionsAndroid;
   /**
    * Recording options for the iOS platform.
+   * @platform ios
    */
   ios: RecordingOptionsIos;
   /**
    * Recording options for the Web platform.
+   * @platform web
    */
   web?: RecordingOptionsWeb;
 };
 
+// @docsMissing
+/**
+ * @platform web
+ */
 export type RecordingOptionsWeb = {
   mimeType?: string;
   bitsPerSecond?: number;
 };
 
+// @docsMissing
+/**
+ * @platform ios
+ */
 export type RecordingOptionsIos = {
   /**
    * The desired file extension.
    *
-   * @example `'.caf'`
+   * @example .caf
    */
   extension?: string;
   /**
    * The desired sample rate.
    *
-   * @example `44100`
+   * @example 44100
    */
   sampleRate?: number;
   /**
@@ -176,7 +217,7 @@ export type RecordingOptionsIos = {
    */
   outputFormat?: string | IOSOutputFormat | number;
   /**
-   * The desired audio quality. See the [`IOSAudioQuality`](#iosaudioquality) enum for all valid values.
+   * The desired audio quality. See the [`AudioQuality`](#audioquality) enum for all valid values.
    */
   audioQuality: AudioQuality | number;
   /**
@@ -186,15 +227,13 @@ export type RecordingOptionsIos = {
   /**
    * The desired bit depth hint.
    *
-   * @example
-   * `16`
+   * @example 16
    */
   bitDepthHint?: number;
   /**
    * The desired PCM bit depth.
    *
-   * @example
-   * `16`
+   * @example 16
    */
   linearPCMBitDepth?: number;
   /**
@@ -207,17 +246,21 @@ export type RecordingOptionsIos = {
   linearPCMIsFloat?: boolean;
 };
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export type RecordingOptionsAndroid = {
   /**
    * The desired file extension.
    *
-   * @example `'.caf'`
+   * @example .caf
    */
   extension?: string;
   /**
    * The desired sample rate.
    *
-   * @example `44100`
+   * @example 44100
    */
   sampleRate?: number;
   /**
@@ -239,11 +282,32 @@ export type RecordingOptionsAndroid = {
 };
 
 export type AudioMode = {
+  /**
+   * Determines if audio playback is allowed when the device is in silent mode.
+   * @platform ios
+   */
   playsInSilentMode: boolean;
+  /**
+   * Determines how the audio session interacts with other sessions.
+   *
+   * @platform ios
+   */
   interruptionMode: InterruptionMode;
+  /**
+   * Whether the audio session allows recording.
+   * @platform ios
+   */
   allowsRecording: boolean;
+  /**
+   * Whether the audio session stays active when the app moves to the background.
+   */
   shouldPlayInBackground: boolean;
+  /**
+   * Whether the audio should route through the earpiece.
+   * @platform android
+   */
   shouldRouteThroughEarpiece: boolean;
 };
 
+// @docsMissing
 export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';

@@ -60,7 +60,7 @@
       android:name=".LauncherActivity"
       android:exported="true"
       android:launchMode="singleTask"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar">
+      android:theme="@style/Theme.Exponent.Translucent">
       <!-- START LAUNCHER INTENT FILTERS -->
       <intent-filter>
         <data android:scheme="exp"/>
@@ -135,7 +135,8 @@
       android:exported="true"
       android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:theme="@style/Theme.Exponent.Light"
-      android:windowSoftInputMode="adjustResize">
+      android:windowSoftInputMode="adjustResize"
+      android:supportsPictureInPicture="true">
     </activity>
 
     <activity

@@ -419,7 +419,11 @@ export function withSubscription(WrappedComponent: React.FC<object>): React.Comp
 
     componentDidMount(): void {
       this._subscription = observe((data) => {
-        this.setState(data);
+        // Ignore the initial empty log
+        if (data.selectedLogIndex === -1) return;
+        React.startTransition(() => {
+          this.setState(data);
+        });
       });
     }
 

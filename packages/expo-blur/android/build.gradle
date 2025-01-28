@@ -1,23 +1,34 @@
 apply plugin: 'com.android.library'
 
-group = 'host.exp.exponent'
-version = '13.0.2'
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  useLegacyExpoModulesCorePlugin()
+}
+
+group = 'host.exp.exponent'
+version = '14.0.1'
 
 android {
   namespace "expo.modules.blur"
   defaultConfig {
     versionCode 1
-    versionName "13.0.2"
+    versionName "14.0.1"
   }
 }
 
 dependencies {
-  implementation 'com.github.Dimezis:BlurView:version-2.0.3'
+  implementation 'com.github.Dimezis:BlurView:version-2.0.6'
 }

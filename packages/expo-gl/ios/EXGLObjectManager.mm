@@ -6,7 +6,6 @@
 
 #import <ExpoGL/EXGLObjectManager.h>
 #import <ExpoGL/EXGLObject.h>
-#import <ExpoGL/EXGLView.h>
 #import <ExpoGL/EXGLCameraObject.h>
 
 @interface EXGLObjectManager ()
@@ -99,7 +98,6 @@ EX_EXPORT_METHOD_AS(createContextAsync,
   EXGLContext *glContext = [[EXGLContext alloc] initWithDelegate:nil
                                                andModuleRegistry:_moduleRegistry];
 
-  [glContext initialize];
   [glContext prepare:^(BOOL success) {
     if (success) {
       resolve(@{ @"exglCtxId": @(glContext.contextId) });
@@ -150,7 +148,7 @@ EX_EXPORT_METHOD_AS(createCameraTextureAsync,
     id<EXCameraInterface> cameraView = (id<EXCameraInterface>)view;
 
     if (glContext == nil) {
-      reject(@"E_GL_BAD_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXGLView"));
+      reject(@"E_GL_BAD_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected a GLView"));
       return;
     }
     if (cameraView == nil) {

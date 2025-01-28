@@ -48,7 +48,7 @@ The default [Prebuild template](#prebuild-template) includes support for [Expo A
 
 Transpiler used for removing language features that aren't available in the runtime's [JavaScript engine](#javascript-engine). [Metro](#metro-bundler) uses Babel internally.
 
-Projects can configure how Babel is used by modifying the **babel.config.js** file in the project directory. This file is optional when using [Expo CLI](#expo-cli). Expo projects should extend the default Babel preset [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
+Projects can configure how Babel is used by modifying the [**babel.config.js**](/versions/latest/config/babel/) file in the project directory. This file is optional when using [Expo CLI](#expo-cli). Expo projects should extend the default Babel preset [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
 
 ### Bare workflow
 
@@ -165,7 +165,7 @@ The former name for the [Expo Go](#expo-go) app.
 
 ### Expo export
 
-Refers to the command `npx expo export` from [Expo CLI](#expo-cli). This command is used to bundle the app's JavaScript and assets, and then export them into a static folder that can be uploaded to a hosting service like [EAS Update](#eas-update), and embedded in a [native runtime](#native-runtime) for offline use.
+Refers to the command `npx expo export` from [Expo CLI](#expo-cli). This command is used to bundle the app's JavaScript and assets, and then export them into a static directory that can be uploaded to a hosting service like [EAS Update](#eas-update), and embedded in a [native runtime](#native-runtime) for offline use.
 
 ### Expo Go
 
@@ -233,7 +233,7 @@ A [JavaScript engine](#javascript-engine) developed by Apple and built-in to [iO
 
 ### Linking
 
-Linking can mean [deep linking into apps similar to how you link to websites on the web](/guides/linking) or [autolinking](#autolinking).
+Linking can mean [deep linking into apps similar to how you link to websites on the web](/linking/overview/) or [autolinking](#autolinking).
 
 ### Local Expo CLI
 
@@ -273,11 +273,11 @@ A native application containing a [JavaScript engine](#javascript-engine), and i
 
 ### npm
 
-[npm](https://www.npmjs.com/) is a package manager for JavaScript and the registry where the packages are stored. An alternative package manager, which we use internally at Expo, is [yarn](#yarn).
+[npm](https://www.npmjs.com/) is a package manager for JavaScript and the registry where the packages are stored. An alternative package manager, which we use internally at Expo, is [Yarn](#yarn).
 
 ### Package manager
 
-Automates the process of installing, upgrading, configuring, and removing libraries, also known as dependencies, from your project. See [npm](#npm) and [yarn](#yarn).
+Automates the process of installing, upgrading, configuring, and removing libraries, also known as dependencies, from your project. See [npm](#npm) and [Yarn](#yarn).
 
 ### Platform extensions
 
@@ -293,7 +293,7 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 
 ### Prebuild
 
-The process of generating the temporary native **android** and **ios** folders for a React Native project based on the [app config](#app-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
+The process of generating the temporary native **android** and **ios** directories for a React Native project based on the [app config](#app-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
 
 See [Prebuild template](#prebuild-template) and [Autolinking](#autolinking) for further information.
 
@@ -323,7 +323,7 @@ The preferred navigation library for React Native apps, developed and sponsored 
 
 ### Remote Debugging
 
-Remote Debugging is a deprecated way of debugging React Native apps. A better alternative today is to use [Hermes](#hermes-engine), as you can connect Chrome Dev Tools to it.
+Remote Debugging is a deprecated way of debugging React Native apps. A better alternative today is to use [Hermes](#hermes-engine), as you can connect Chrome DevTools to it.
 
 Also known as Async Chrome Debugging, it was an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over a websocket to the native device.
 

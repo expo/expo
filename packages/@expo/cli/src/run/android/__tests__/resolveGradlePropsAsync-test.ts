@@ -16,36 +16,73 @@ jest.mock('../../../start/platforms/android/adb', () => ({
 const testDevice: Device = { name: 'Test', type: 'emulator', isAuthorized: true, isBooted: true };
 
 describe(resolveGradlePropsAsync, () => {
-  it(`asserts variant`, async () => {
-    await expect(
-      resolveGradlePropsAsync(
-        '/',
-        {
-          // @ts-expect-error
-          variant: 123,
-        },
-        testDevice
-      )
-    ).rejects.toThrowError(CommandError);
-  });
-  it(`parses flavors`, async () => {
-    expect(
-      await resolveGradlePropsAsync('/', { variant: 'firstSecondThird', allArch: true }, testDevice)
-    ).toEqual({
-      apkVariantDirectory: '/android/app/build/outputs/apk/second/third/first',
-      appName: 'app',
-      buildType: 'first',
-      flavors: ['second', 'third'],
-      architectures: '',
-    });
+  it(`throws when variant is not a string`, async () => {
+    await expect(resolveGradlePropsAsync('/', { variant: 123 as any }, testDevice)).rejects.toThrow(
+      CommandError
+    );
   });
 
-  it(`parses with no variant`, async () => {
+  it('returns without variant', async () => {
     expect(await resolveGradlePropsAsync('/', { allArch: true }, testDevice)).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
       buildType: 'debug',
       flavors: [],
+      architectures: '',
+    });
+  });
+
+  it('returns with standard variant "debug" and "release"', async () => {
+    expect(
+      await resolveGradlePropsAsync('/', { variant: 'debug', allArch: true }, testDevice)
+    ).toEqual({
+      apkVariantDirectory: '/android/app/build/outputs/apk/debug',
+      appName: 'app',
+      buildType: 'debug',
+      flavors: [],
+      architectures: '',
+    });
+    expect(
+      await resolveGradlePropsAsync('/', { variant: 'Release', allArch: true }, testDevice)
+    ).toEqual({
+      apkVariantDirectory: '/android/app/build/outputs/apk/release',
+      appName: 'app',
+      buildType: 'release',
+      flavors: [],
+      architectures: '',
+    });
+  });
+
+  // See: https://developer.android.com/build/build-variants?utm_source=android-studio#resolve_matching_errors
+  it('returns with custom product flavored variant "free" and "paid"', async () => {
+    expect(
+      await resolveGradlePropsAsync('/', { variant: 'freeDebug', allArch: true }, testDevice)
+    ).toEqual({
+      apkVariantDirectory: '/android/app/build/outputs/apk/free/debug',
+      appName: 'app',
+      buildType: 'debug',
+      flavors: ['free'],
+      architectures: '',
+    });
+    expect(
+      await resolveGradlePropsAsync('/', { variant: 'paidRelease', allArch: true }, testDevice)
+    ).toEqual({
+      apkVariantDirectory: '/android/app/build/outputs/apk/paid/release',
+      appName: 'app',
+      buildType: 'release',
+      flavors: ['paid'],
+      architectures: '',
+    });
+  });
+
+  it('returns with highly custom variant "firstSecondThird"', async () => {
+    expect(
+      await resolveGradlePropsAsync('/', { variant: 'firstSecondThird', allArch: true }, testDevice)
+    ).toEqual({
+      apkVariantDirectory: '/android/app/build/outputs/apk/first/second/third',
+      appName: 'app',
+      buildType: 'third',
+      flavors: ['first', 'second'],
       architectures: '',
     });
   });
@@ -63,7 +100,7 @@ describe(resolveGradlePropsAsync, () => {
     });
   });
 
-  it(`should filter out duplicate abis`, async () => {
+  it(`returns unique device ABIs`, async () => {
     jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([testDevice]);
     jest
       .mocked(getDeviceABIsAsync)

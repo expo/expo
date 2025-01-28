@@ -1014,6 +1014,7 @@ it(`removes unused exports`, async () => {
           ],
           "paths": {},
           "reactClientReferences": [],
+          "reactServerReferences": [],
           "requires": [],
         },
         "originFilename": "index.js",

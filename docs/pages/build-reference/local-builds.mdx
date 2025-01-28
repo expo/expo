@@ -1,13 +1,15 @@
 ---
-title: Run builds locally or on your own infrastructure
+title: Run EAS Build locally with local flag
+sidebar_title: Run EAS Build locally
 description: Learn how to use EAS Build locally on your machine or a custom infrastructure using the --local flag.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
 You can run the same build process that is typically run on the EAS Build servers directly on your machine by using the `eas build --local` flag. This is a useful way to debug build failures that are happening on your cloud builds, which you may not be able to reproduce without running the same set of steps.
-
-> **Note:** To compile and run your app locally with Expo CLI, use [`npx expo run:android` or `npx expo run:ios` commands](/more/expo-cli/#compiling) instead. If you use [Continuous Native Generation](/workflow/continuous-native-generation), you can also run [prebuild](/workflow/prebuild) to generate your **android** and **ios** directories and then proceed to open the projects in the respective IDEs and build them like any native project. With both of these approaches, you will not be following the exact process that is run on the cloud with EAS Build — that is what the `eas build --local` flag is for.
 
 <Terminal
   cmd={['$ eas build --platform android --local', '# or', '$ eas build --platform ios --local']}
@@ -51,3 +53,25 @@ Some of the options available for cloud builds are not available locally. Limita
   - CocoaPods (iOS only)
   - Android SDK and NDK
 - On Windows, you can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) for local EAS Builds. However, we do not officially test against this platform and do not support Windows for local builds (macOS and Linux are supported).
+
+## App compilation for development and production builds locally
+
+To compile your app locally for development with Expo CLI, use `npx expo run:android` or `npx expo run:ios` commands instead. If you use [Continuous Native Generation](/workflow/continuous-native-generation), you can also run [prebuild](/workflow/prebuild) to generate your **android** and **ios** directories and then proceed to open the projects in the respective IDEs and build them like any native project. For more details, see:
+
+<BoxLink
+  title="Local app development"
+  Icon={BookOpen02Icon}
+  description="Learn how to compile and build your Expo app locally."
+  href="/guides/local-app-development/"
+/>
+
+To create a production build locally, you need Android Studio and Xcode installed on your computer. See the following guide for more information:
+
+<BoxLink
+  title="Create a production build locally"
+  Icon={BookOpen02Icon}
+  description="Learn how to create a production build for your Expo app locally on your computer."
+  href="/guides/local-app-production/"
+/>
+
+With any of the above approaches, you'll be following procedures which are different from creating a build on the cloud with EAS Build &mdash; that is what the `eas build --local` flag is for.

@@ -123,7 +123,7 @@ export class PlatformManager<
     return { url };
   }
 
-  private async openProjectInCustomRuntimeAsync(
+  protected async openProjectInCustomRuntimeAsync(
     resolveSettings: Partial<IResolveDeviceProps> = {},
     props: Partial<IOpenInCustomProps> = {}
   ): Promise<{ url: string }> {

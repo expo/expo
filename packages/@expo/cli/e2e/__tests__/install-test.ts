@@ -1,18 +1,15 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa, { ExecaError } from 'execa';
-import * as fs from 'fs/promises';
-import klawSync from 'klaw-sync';
-import * as path from 'path';
+import fs from 'fs/promises';
+import path from 'path';
 
 import {
-  execute,
   projectRoot,
   getLoadedModulesAsync,
-  bin,
   setupTestProjectWithOptionsAsync,
-  installAsync,
+  findProjectFiles,
 } from './utils';
+import { executeBunAsync, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -36,7 +33,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo install --help`', async () => {
-  const results = await execute('install', '--help');
+  const results = await executeExpoAsync(projectRoot, ['install', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -47,10 +44,11 @@ it('runs `npx expo install --help`', async () => {
 
       Options
         --check     Check which installed packages need to be updated
+        --dev       Save the dependencies as devDependencies
         --fix       Automatically update any invalid package versions
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
-        --bun       Use bun to install dependencies. Default when bun.lockb exists
+        --bun       Use bun to install dependencies. Default when bun.lock or bun.lockb exists
         --pnpm      Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         -h, --help  Usage info
 
@@ -61,158 +59,218 @@ it('runs `npx expo install --help`', async () => {
   `);
 });
 
-it(
-  'runs `npx expo install expo-sms`',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('basic-install', 'with-blank', {
+it('runs `npx expo install expo-sms`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-install', 'with-blank', {
+    reuseExisting: false,
+  });
+  // `npx expo install expo-sms`
+  await executeExpoAsync(projectRoot, ['install', 'expo-sms']);
+
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+
+  // Added expected package
+  const pkgDependencies = pkg.dependencies as Record<string, string>;
+  expect(pkgDependencies['expo-sms']).toBe('~13.0.1');
+  expect(pkg.devDependencies).toEqual({
+    '@babel/core': '^7.25.2',
+  });
+
+  // Added new packages
+  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+    'expo',
+    'expo-sms',
+    'react',
+    'react-native',
+  ]);
+
+  expect(findProjectFiles(projectRoot)).toStrictEqual([
+    'App.js',
+    'app.json',
+    'bun.lock',
+    'metro.config.js',
+    'package.json',
+  ]);
+});
+
+it('runs `npx expo install --check` fails', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('install-check-fail', 'with-blank', {
+    reuseExisting: false,
+  });
+
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+
+  // Install wrong package versions of `expo-sms` and `expo-auth-session`
+  await executeBunAsync(projectRoot, ['install', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+
+  // Ensure the wrong versions are installed
+  expect(pkg.read().dependencies).toMatchObject({
+    'expo-sms': '1.0.0',
+    'expo-auth-session': '1.0.0',
+  });
+
+  // Ensure `expo install --check` throws for all wrong packages
+  try {
+    await executeExpoAsync(projectRoot, ['install', '--check'], { verbose: false });
+    throw new Error('SHOULD NOT HAPPEN');
+  } catch (error: any) {
+    expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~\d\.\d\.\d/);
+    expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~\d+\.\d\.\d/);
+  }
+
+  // Ensure `expo install --check <package>` only throws for the selected package
+  await expect(
+    executeExpoAsync(projectRoot, ['install', 'expo-sms', '--check'], { verbose: false })
+  ).rejects.toThrow(/expo-sms@1\.0\.0 - expected version: ~\d+\.\d\.\d/);
+
+  // Ensure `--check` did not fix the version
+  expect(pkg.read().dependencies).toMatchObject({
+    'expo-sms': '1.0.0',
+    'expo-auth-session': '1.0.0',
+  });
+});
+
+it('runs `npx expo install --fix` fails', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('install-fix-fail', 'with-blank', {
+    reuseExisting: false,
+  });
+
+  // Install wrong package versions of `expo-sms` and `expo-auth-session`
+  await executeBunAsync(projectRoot, ['install', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+
+  // Load the installed and expected dependency versions
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+  const expectedVersion = await JsonFile.readAsync(
+    require.resolve('expo/bundledNativeModules.json', { paths: [projectRoot] })
+  );
+
+  // Only fix `expo-sms`
+  await executeExpoAsync(projectRoot, ['install', '--fix', 'expo-sms']);
+
+  // Ensure `expo-sms` is fixed to match the expected version
+  expect(pkg.read().dependencies).toMatchObject({
+    'expo-sms': expectedVersion['expo-sms'],
+  });
+
+  // Ensure `expo-auth-session` is still invalid
+  await expect(
+    executeExpoAsync(projectRoot, ['install', '--check'], { verbose: false })
+  ).rejects.toThrow();
+
+  // Ensure `--check` didn't fix the version
+  expect(pkg.read().dependencies).toMatchObject({
+    'expo-auth-session': '1.0.0',
+  });
+
+  // Fix all versions
+  await executeExpoAsync(projectRoot, ['install', '--fix']);
+
+  // Ensure both `expo-sms` and `expo-auth-session` are fixed
+  expect(pkg.read().dependencies).toMatchObject({
+    'expo-sms': expectedVersion['expo-sms'],
+    'expo-auth-session': expectedVersion['expo-auth-session'],
+  });
+});
+
+it('runs `npx expo install expo@<version> --fix`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'install-expo-canary-fix',
+    'with-blank',
+    {
       reuseExisting: false,
-    });
-    // `npx expo install expo-sms`
-    await execa('node', [bin, 'install', 'expo-sms'], { cwd: projectRoot });
-
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
-
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-
-    // Added expected package
-    const pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~12.0.1');
-    expect(pkg.devDependencies).toEqual({
-      '@babel/core': '^7.19.3',
-    });
-
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'expo-sms',
-      'react',
-      'react-native',
-    ]);
-
-    expect(files).toStrictEqual([
-      'App.js',
-      'app.json',
-      'bun.lockb',
-      'metro.config.js',
-      'package.json',
-    ]);
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
-
-it(
-  'runs `npx expo install --check` fails',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('install-check-fail', 'with-blank', {
-      reuseExisting: false,
-    });
-    await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
-
-    let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-    // Added expected package
-    let pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('1.0.0');
-
-    try {
-      await execa('node', [bin, 'install', '--check'], { cwd: projectRoot });
-      throw new Error('SHOULD NOT HAPPEN');
-    } catch (e) {
-      const error = e as ExecaError;
-      expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~5\.\d\.\d/);
-      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~12\.\d\.\d/);
     }
+  );
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
-    await expect(
-      execa('node', [bin, 'install', 'expo-sms', '--check'], { cwd: projectRoot })
-    ).rejects.toThrow(/expo-sms@1\.0\.0 - expected version: ~12\.\d\.\d/);
+  // Add a package that requires "fixing" when using canary
+  await executeExpoAsync(projectRoot, ['install', 'expo-dev-client']);
 
-    // Check doesn't fix packages
-    pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-    // Added expected package
-    pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('1.0.0');
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  // Ensure `expo-dev-client` is installed
+  expect(pkg.read().dependencies).toMatchObject({
+    'expo-dev-client': expect.any(String),
+  });
 
-it(
-  'runs `npx expo install --fix` fails',
-  async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('install-fix-fail', 'with-blank', {
+  // Add `expo@canary` to the project, and `--fix` project dependencies
+  await executeExpoAsync(projectRoot, ['install', 'expo@canary', '--fix']);
+
+  // Ensure `expo-dev-client` is using canary version
+  expect(pkg.read().dependencies).toMatchObject({
+    'expo-dev-client': expect.stringContaining('canary'),
+  });
+});
+
+it('does not validate for `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --check`', async () => {
+  const env = { EXPO_NO_DEPENDENCY_VALIDATION: '1' };
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'install-check-no-validation',
+    'with-blank',
+    {
       reuseExisting: false,
-    });
-    await installAsync(projectRoot, ['expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+    }
+  );
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
-    await execa('node', [bin, 'install', '--fix', 'expo-sms'], { cwd: projectRoot });
+  // Install wrong package version of `expo-image`
+  await expect(
+    executeExpoAsync(projectRoot, ['install', 'expo-image@1.0.0'], { env })
+  ).resolves.toMatchObject({
+    stdout: expect.stringContaining('Installing 1 other package using bun'),
+  });
 
-    // Ensure the versions are invalid
-    await expect(
-      execa('node', [bin, 'install', '--check'], { cwd: projectRoot })
-    ).rejects.toThrow();
+  // Ensure the wrong version is installed
+  expect(pkg.read().dependencies).toMatchObject({ 'expo-image': '1.0.0' });
 
-    // Check doesn't fix packages
-    let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-    // Added expected package
-    let pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~12.0.1');
+  // Ensure `expo install --check` does not throw when validation is disabled
+  await expect(
+    executeExpoAsync(projectRoot, ['install', '--check'], { env })
+  ).resolves.toMatchObject({
+    stdout: expect.stringContaining('Dependencies are up to date'),
+  });
 
-    // Didn't fix expo-auth-session since we didn't pass it in
-    expect(pkgDependencies['expo-auth-session']).toBe('1.0.0');
+  // Ensure `expo install --check <package>` does not throw when validation is disabled
+  await expect(
+    executeExpoAsync(projectRoot, ['install', 'expo-image', '--check'], {
+      env: { ...env, EXPO_DEBUG: '1' },
+    })
+  ).resolves.toMatchObject({
+    // Ensure no dependency issues are found
+    stdout: expect.stringContaining('Dependencies are up to date'),
+    // Ensure a debug warning is printed
+    stderr: expect.stringContaining(
+      'Dependency validation is disabled through EXPO_NO_DEPENDENCY_VALIDATION=1'
+    ),
+  });
 
-    // Fix all versions
-    await execa('node', [bin, 'install', '--fix'], { cwd: projectRoot });
+  // Ensure `--check` did not fix the version
+  expect(pkg.read().dependencies).toMatchObject({ 'expo-image': '1.0.0' });
+});
 
-    // Check that the versions are fixed
-    pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-
-    // Didn't fix expo-auth-session since we didn't pass it in
-    pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-auth-session']).toBe('~5.5.2');
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
-
-it(
-  'runs `npx expo install expo@<version> --fix`',
-  async () => {
+describe('expo-router integration', () => {
+  it('runs `npx expo install --fix`', async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync(
-      'install-expo-canary-fix',
-      'with-blank',
+      'install-expo-router-integration',
+      'with-router',
       {
         reuseExisting: false,
+        sdkVersion: '52.0.0',
+        linkExpoPackages: ['expo-router'],
       }
     );
     const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
     // Add a package that requires "fixing" when using canary
-    await execa('node', [bin, 'install', 'expo-dev-client'], { cwd: projectRoot });
+    await executeExpoAsync(projectRoot, ['install', '@react-navigation/native@6.1.18']);
 
-    // Ensure `expo-dev-client` is installed
+    // Ensure `@react-navigation/native` is installed
     expect(pkg.read().dependencies).toMatchObject({
-      'expo-dev-client': expect.any(String),
+      '@react-navigation/native': '6.1.18',
     });
 
-    // Add `expo@canary` to the project, and `--fix` project dependencies
-    await execa('node', [bin, 'install', 'expo@canary', '--fix'], { cwd: projectRoot });
+    // Run `--fix` project dependencies with expo@52 and expo-router from source
+    await executeExpoAsync(projectRoot, ['install', '--fix']);
 
-    // Ensure `expo-dev-client` is using canary version
+    // Ensure `@react-navigation/native` was updated
     expect(pkg.read().dependencies).toMatchObject({
-      'expo-dev-client': expect.stringContaining('canary'),
+      '@react-navigation/native': '^7.0.14',
     });
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  });
+});

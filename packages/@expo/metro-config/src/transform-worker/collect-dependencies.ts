@@ -15,6 +15,14 @@ import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 
+const debug = require('debug')('expo:metro:collect-dependencies') as typeof console.log;
+
+const MAGIC_IMPORT_COMMENTS = [
+  '@metro-ignore',
+  // Add support for Webpack ignore comment which is used in many different React libraries.
+  'webpackIgnore: true',
+];
+
 // asserts non-null
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
@@ -457,11 +465,37 @@ function collectImports(path: NodePath<any>, state: State): void {
   }
 }
 
+/**
+ * @returns `true` if the import contains the magic comment for opting-out of bundling.
+ */
+function hasMagicImportComment(path: NodePath<CallExpression>): boolean {
+  // Get first argument of import()
+  const [firstArg] = path.node.arguments;
+
+  // Check comments before the argument
+  return !!MAGIC_IMPORT_COMMENTS.some(
+    (magicComment) =>
+      firstArg?.leadingComments?.some((comment) => comment.value.includes(magicComment)) ||
+      path.node.leadingComments?.some((comment) => comment.value.includes(magicComment)) ||
+      // Get the inner comments between import and its argument
+      path.node.innerComments?.some((comment) => comment.value.includes(magicComment))
+  );
+}
+
 function processImportCall(
   path: NodePath<CallExpression>,
   state: State,
   options: ImportDependencyOptions
 ): void {
+  // Check both leading and inner comments
+  if (hasMagicImportComment(path)) {
+    const line = path.node.loc && path.node.loc.start && path.node.loc.start.line;
+    debug(
+      `Magic comment at line ${line || '<unknown>'}: Ignoring import: ${generate(path.node).code}`
+    );
+    return;
+  }
+
   const name = getModuleNameFromCallArgs(path);
 
   if (name == null) {

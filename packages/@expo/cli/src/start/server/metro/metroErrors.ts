@@ -36,5 +36,10 @@ export function isFailedToResolveNameError(error: any): error is FailedToResolve
 }
 
 export function isFailedToResolvePathError(error: any): error is FailedToResolvePathError {
-  return !!error && 'candidates' in error && error.constructor.name === 'FailedToResolvePathError';
+  return (
+    !!error &&
+    'candidates' in error &&
+    error.constructor.name === 'FailedToResolvePathError' &&
+    !error.message.includes('Importing native-only module')
+  );
 }

@@ -55,7 +55,7 @@ internal class DevLauncherBasicScenario(
 
     val reactHost = ReactHostWrapper(
       reactNativeHost = reactApplication.reactNativeHost,
-      reactHost = reactApplication.reactHost
+      reactHostProvider = { reactApplication.reactHost }
     )
     DevLauncherController.initialize(appContext, reactHost, launcherClass = launcherClass)
 

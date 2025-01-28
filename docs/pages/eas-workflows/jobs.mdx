@@ -1,0 +1,145 @@
+---
+title: Jobs
+description: Learn which pre-packaged and custom jobs you can run with EAS Workflows.
+---
+
+EAS Workflows sequence jobs together to automate your development and release processes. You can run two types of jobs: pre-packaged jobs and custom jobs. Pre-packaged jobs use a `type` property to specify the job type. Custom jobs run custom code that you define in the workflow configuration.
+
+## Job properties
+
+All jobs support the following properties:
+
+- `name` (optional): The name of the job, displayed on the Expo dashboard.
+- `if` (optional): Conditional expression that determines if the job should run. Limited to 250 characters.
+- `needs` (optional): List of job keys that must complete successfully before this job runs
+- `after` (optional): List of job keys that must complete (success or failure) before this job runs
+
+## Build your app
+
+Creates a build from your project:
+
+```yaml .eas/workflows/build.yml
+jobs:
+  build:
+    name: Build App
+    type: build
+    params:
+      platform: ios | android # required
+      profile: string # optional, default: production
+```
+
+## Submit a build to the app stores
+
+Submits a build to the appropriate app store:
+
+```yaml .eas/workflows/submit.yml
+jobs:
+  submit:
+    name: Submit to Store
+    type: submit
+    params:
+      build_id: string # required - usually from another job like ${{ needs.build.outputs.build_id }}
+      profile: string # optional, default: production
+```
+
+## Publish an update
+
+Publishes an update:
+
+```yaml .eas/workflows/update.yml
+jobs:
+  update:
+    name: Publish Update
+    type: update
+    params:
+      message: string # optional - commit message used if not provided
+      platform: android | ios | all # optional
+      branch: string # optional - defaults to workflow branch (`github.ref_name`). If triggering from EAS CLI, specify a branch, for example: ${{ github.ref_name || 'testing' }}
+      channel: string # optional - provide either branch or channel, not both
+```
+
+## End-to-end tests with Maestro
+
+Runs end-to-end tests using Maestro:
+
+```yaml .eas/workflows/e2e-test.yml
+jobs:
+  e2e-test:
+    name: Run E2E Tests
+    type: maestro
+    params:
+      build_id: string # required - usually ${{ needs.build.outputs.build_id }}
+      flow_path: string | string[] # required - path(s) to Maestro test file(s)
+```
+
+## Get a specific build
+
+Gets an existing build based supplied params:
+
+```yaml .eas/workflows/get-build.yaml
+jobs:
+  get-build:
+    name: Get Build
+    type: get-build
+    params:
+      platform: ios | android # optional
+      profile: string # optional
+      app_identifier: string # optional
+      app_version: string # optional
+      app_build_version: string # optional
+      channel: string # optional
+      distribution: store | internal | simulator # optional
+      fingerprint_hash: string # optional
+      git_commit_hash: string # optional
+      runtime_version: string # optional
+      sdk_version: string # optional
+      simulator: boolean # optional
+```
+
+## Deploy your app
+
+Deploy to EAS Hosting:
+
+```yaml .eas/workflows/deploy.yaml
+jobs:
+  deploy:
+    name: Deploy App
+    type: deploy
+    environment: production | preview | development # optional
+    params:
+      alias: string # optional - custom alias for the new deployment
+      prod: boolean # optional - create a production deployment
+```
+
+## Custom jobs
+
+Run custom code during a workflow:
+
+{/* vale off */}
+
+```yaml .eas/workflows/custom-job.yaml
+jobs:
+  custom-job:
+    name: Custom Task
+    runs_on: linux-medium | linux-large | macos-medium | macos-large | linux-medium-nested-virtualization | linux-large-nested-virtualization # optional, default: linux-medium
+    defaults:
+      run:
+        working_directory: string # optional - relative to app base directory or absolute from repo root
+    outputs:
+      key: value # optional - mapping from steps outputs to job outputs, usually ${{ steps.step_id.outputs.output_key }}
+    steps:
+      # Shell command step
+      - name: Run Command # optional
+        id: step_id # optional - useful for referencing outputs
+        run: echo "Hello World"
+        working_directory: string # optional
+
+      # Built-in function step
+      - name: Use Function # optional
+        id: step_id # optional
+        uses: function_name # required - see docs for available functions
+        with: # optional - function inputs
+          key: value
+```
+
+You can find a list of available functions in the [build in functions](/custom-builds/schema/#built-in-eas-functions) documentation.

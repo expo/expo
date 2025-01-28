@@ -3,7 +3,7 @@
 fastlane_require 'fileutils'
 fastlane_require 'shellwords'
 
-fastlane_version "2.221.0"
+fastlane_version "2.225.0"
 default_platform :ios
 
 STAGING_API_URL = 'https://staging.exp.host/'
@@ -177,7 +177,7 @@ platform :ios do
     run_tests(
       workspace: workspace,
       scheme: generated_scheme,
-      devices: ["iPhone 15 Pro (17.5)"],
+      devices: ["iPhone 16 Pro (18.0)"],
       configuration: 'Debug',
       clean: false,
       skip_build: true,

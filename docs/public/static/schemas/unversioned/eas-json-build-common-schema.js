@@ -169,4 +169,11 @@ export default [
       'Example: `"config": "production.yml"` will use workflow from `.eas/build/production.yml`.'
     ],
   },
+  {
+    name: 'environment',
+    enum: ['development', 'preview', 'production'],
+    description: [
+      'The environment used to apply environment variables for the build process. [Learn more](/eas/environment-variables).',
+    ],
+  }
 ];

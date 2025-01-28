@@ -37,6 +37,13 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       return false
     }
 
+    Property("toggleRecordingAsyncAvailable") { () -> Bool in
+      if #available(iOS 18.0, *) {
+        return true
+      }
+      return false
+    }
+
     AsyncFunction("scanFromURLAsync") { (url: URL, _: [BarcodeType], promise: Promise) in
       guard let imageLoader = appContext?.imageLoader else {
         throw ImageLoaderNotFound()
@@ -127,9 +134,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       Prop("videoQuality") { (view, quality: VideoQuality?) in
-        if let quality, view.videoQuality != quality {
-          view.videoQuality = quality
-        }
+        view.videoQuality = quality ?? .video1080p
       }
 
       Prop("autoFocus") { (view, focusMode: FocusMode?) in
@@ -155,11 +160,22 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           view.active = active
           return
         }
-        view.active = true
+      }
+
+      Prop("videoBitrate") { (view, bitrate: Int?) in
+        if let bitrate {
+          view.videoBitrate = bitrate
+          return
+        }
+        if view.videoBitrate != nil {
+          view.videoBitrate = nil
+        }
       }
 
       OnViewDidUpdateProps { view in
-        view.initCamera()
+        Task {
+          await view.initCamera()
+        }
       }
 
       AsyncFunction("resumePreview") { view in
@@ -180,17 +196,29 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         #if targetEnvironment(simulator) // simulator
         try takePictureForSimulator(self.appContext, view, options, promise)
         #else // not simulator
-        view.takePicture(options: options, promise: promise)
+        Task {
+          await view.takePicture(options: options, promise: promise)
+        }
         #endif
-      }.runOnQueue(.main)
+      }
 
       AsyncFunction("record") { (view, options: CameraRecordingOptions, promise: Promise) in
         #if targetEnvironment(simulator)
         throw Exceptions.SimulatorNotSupported()
         #else
-        view.record(options: options, promise: promise)
+        Task {
+          await view.record(options: options, promise: promise)
+        }
         #endif
-      }.runOnQueue(.main)
+      }
+
+      AsyncFunction("toggleRecording") { view in
+        if #available(iOS 18.0, *) {
+          view.toggleRecording()
+        } else {
+          throw CameraToggleRecordingException()
+        }
+      }
 
       AsyncFunction("stopRecording") { view in
         #if targetEnvironment(simulator)
@@ -198,7 +226,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         #else
         view.stopRecording()
         #endif
-      }.runOnQueue(.main)
+      }
     }
 
     AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in

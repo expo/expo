@@ -15,16 +15,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = exports.Root = exports.prefetchRSC = exports.fetchRSC = exports.callServerRSC = void 0;
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
 const errors_1 = require("./errors");
 const fetch_1 = require("./fetch");
 const utils_1 = require("./utils");
 const getDevServer_1 = require("../../getDevServer");
+const url_1 = require("../../head/url");
 const { createFromFetch, encodeReply } = client_1.default;
+// TODO: Maybe this could be a bundler global instead.
+const IS_DOM = 
+// @ts-expect-error: Added via react-native-webview
+typeof ReactNativeWebView !== 'undefined';
 // NOTE: Ensured to start with `/`.
 const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
-let BASE_PATH = `${process.env.EXPO_BASE_URL}${RSC_PATH}`;
+// Using base URL for remote hosts isn't currently supported in DOM components as we use it for offline assets.
+const BASE_URL = IS_DOM ? '' : process.env.EXPO_BASE_URL;
+let BASE_PATH = `${BASE_URL}${RSC_PATH}`;
 if (!BASE_PATH.startsWith('/')) {
     BASE_PATH = '/' + BASE_PATH;
 }
@@ -33,6 +41,24 @@ if (!BASE_PATH.endsWith('/')) {
 }
 if (BASE_PATH === '/') {
     throw new Error(`Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${(0, getDevServer_1.getDevServer)().fullBundleUrl}`);
+}
+if (process.env.EXPO_OS !== 'web' && !window.location?.href) {
+    // This will require a rebuild in bare-workflow to update.
+    const manifest = expo_constants_1.default.expoConfig;
+    const originFromConstants = manifest?.extra?.router?.origin ?? manifest?.extra?.router?.generatedOrigin;
+    // In legacy cases, this can be extraneously set to false since it was the default before we had a production hosting solution for native servers.
+    if (originFromConstants === false) {
+        const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
+        if (isExpoGo) {
+            // Updating is a bit easier in Expo Go as you don't need a native rebuild.
+            throw new Error('The "origin" property in the app config (app.json) cannot be false when React Server Components is enabled. https://docs.expo.dev/guides/server-components/');
+        }
+        // Add more context about updating the app.json in development builds.
+        throw new Error('The "origin" property in the app config (app.json) cannot be "false" when React Server Components is enabled. Remove the "origin" property from your Expo config and rebuild the native app to resolve. https://docs.expo.dev/guides/server-components/');
+    }
+    // This can happen if the user attempts to use React Server Components without
+    // enabling the flags in the app.json. This will set origin to false and prevent the expo/metro-runtime polyfill from running.
+    throw new Error('window.location.href is not defined. This is required for React Server Components to work correctly. Ensure React Server Components is correctly enabled in your project and config. https://docs.expo.dev/guides/server-components/');
 }
 const RSC_CONTENT_TYPE = 'text/x-component';
 const ENTRY = 'e';
@@ -58,16 +84,21 @@ const checkStatus = async (responsePromise) => {
     if (!response.ok) {
         // NOTE(EvanBacon): Transform the Metro development error into a JS error that can be used by LogBox.
         // This was tested against using a Class component in a server component.
-        if (response.status === 500) {
+        if (__DEV__ && (response.status === 500 || response.status === 404)) {
             const errorText = await response.text();
             let errorJson;
             try {
                 errorJson = JSON.parse(errorText);
             }
             catch {
-                throw new errors_1.ReactServerError(errorText, response.url, response.status);
+                // `Unable to resolve module` error should respond as JSON from the dev server and sent to the master red box, this can get corrupt when it's returned as the formatted string.
+                if (errorText.startsWith('Unable to resolve module')) {
+                    console.error('Unexpected Metro error format from dev server');
+                    // This is an unexpected state that occurs when the dev server renderer does not throw Metro errors in the expected JSON format.
+                    throw new Error(errorJson);
+                }
+                throw new errors_1.ReactServerError(errorText, response.url, response.status, response.headers);
             }
-            // TODO: This should be a dev-only error. Add handling for production equivalent.
             throw new errors_1.MetroServerError(errorJson, response.url);
         }
         let responseText;
@@ -75,9 +106,9 @@ const checkStatus = async (responsePromise) => {
             responseText = await response.text();
         }
         catch {
-            throw new errors_1.ReactServerError(response.statusText, response.url, response.status);
+            throw new errors_1.ReactServerError(response.statusText, response.url, response.status, response.headers);
         }
-        throw new errors_1.ReactServerError(responseText, response.url, response.status);
+        throw new errors_1.ReactServerError(responseText, response.url, response.status, response.headers);
     }
     return response;
 };
@@ -173,8 +204,8 @@ const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
     // TODO: Load from on-disk on native when indicated.
-    // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
-    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
+    // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedRemoteFilePath(url);
+    const url = getAdjustedRemoteFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     const hasValidPrefetchedResponse = !!prefetched[url] &&
         // HACK .has() is for the initial hydration
         // It's limited and may result in a wrong result. FIXME
@@ -191,25 +222,23 @@ const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
 };
 exports.fetchRSC = fetchRSC;
 function getAdjustedRemoteFilePath(path) {
-    if (process.env.EXPO_OS === 'web') {
+    if (IS_DOM && process.env.NODE_ENV === 'production') {
+        const origin = (0, url_1.getOriginFromConstants)();
+        if (!origin) {
+            throw new Error('Expo RSC: Origin not found in Constants. This is required for production DOM components using server actions.');
+        }
+        // DOM components in production need to use the same origin logic as native.
+        return new URL(path, origin).toString();
+    }
+    if (!IS_DOM && process.env.EXPO_OS === 'web') {
         return path;
     }
     return new URL(path, window.location.href).toString();
 }
-function getAdjustedFilePath(path) {
-    if (process.env.EXPO_OS === 'web') {
-        return path;
-    }
-    // Server actions should be fetched from the server every time.
-    if (path.match(/[0-9a-z]{40}#/i)) {
-        return getAdjustedRemoteFilePath(path);
-    }
-    return getAdjustedRemoteFilePath(path);
-}
 const prefetchRSC = (input, params) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
-    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
+    const url = getAdjustedRemoteFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     if (!(url in prefetched)) {
         prefetched[url] = fetchRSCInternal(url, params);
         prefetchedParams.set(prefetched[url], params);

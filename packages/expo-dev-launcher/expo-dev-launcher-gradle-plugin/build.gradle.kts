@@ -13,6 +13,7 @@ repositories {
 dependencies {
   implementation(gradleApi())
   compileOnly("com.android.tools.build:gradle:8.5.0")
+  implementation("com.facebook.react:react-native-gradle-plugin")
 }
 
 java {

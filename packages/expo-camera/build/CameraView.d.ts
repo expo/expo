@@ -1,7 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { type Ref, Component } from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
-export default class CameraView extends Component<CameraProps> {
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
+export default class CameraView extends Component<CameraViewProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
      */
@@ -26,6 +26,13 @@ export default class CameraView extends Component<CameraProps> {
      */
     getAvailablePictureSizesAsync(): Promise<string[]>;
     /**
+     * Returns an object with the supported features of the camera on the current device.
+     */
+    getSupportedFeatures(): {
+        isModernBarcodeScannerAvailable: boolean;
+        toggleRecordingAsyncAvailable: boolean;
+    };
+    /**
      * Resumes the camera preview.
      */
     resumePreview(): Promise<void>;
@@ -37,7 +44,7 @@ export default class CameraView extends Component<CameraProps> {
         type: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
         flash: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
     };
-    static defaultProps: CameraProps;
+    static defaultProps: CameraViewProps;
     _cameraHandle?: number | null;
     _cameraRef: import("react").RefObject<CameraViewRef>;
     _lastEvents: {
@@ -69,12 +76,15 @@ export default class CameraView extends Component<CameraProps> {
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture | undefined>;
     /**
-     * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+     * On Android, we will use the [Google code scanner](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
+     * On iOS, presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
+     * @platform android
      * @platform ios
      */
     static launchScanner(options?: ScanningOptions): Promise<void>;
     /**
      * Dismiss the scanner presented by `launchScanner`.
+     * > **info** On Android, the scanner is dismissed automatically when a barcode is scanned.
      * @platform ios
      */
     static dismissScanner(): Promise<void>;
@@ -85,6 +95,7 @@ export default class CameraView extends Component<CameraProps> {
      * @param listener Invoked with the [ScanningResult](#scanningresult) when a bar code has been successfully scanned.
      *
      * @platform ios
+     * @platform android
      */
     static onModernBarcodeScanned(listener: (event: ScanningResult) => void): EventSubscription;
     /**
@@ -99,6 +110,21 @@ export default class CameraView extends Component<CameraProps> {
     recordAsync(options?: CameraRecordingOptions): Promise<{
         uri: string;
     } | undefined>;
+    /**
+     * Pauses or resumes the video recording. Only has an effect if there is an active recording. On `iOS`, this method only supported on `iOS` 18.
+     *
+     * @example
+     * ```ts
+     * const { toggleRecordingAsyncAvailable } = getSupportedFeatures()
+     *
+     * return (
+     *  {toggleRecordingAsyncAvailable && (
+     *    <Button title="Toggle Recording" onPress={toggleRecordingAsync} />
+     *  )}
+     * )
+     * ```
+     */
+    toggleRecordingAsync(): Promise<void | undefined>;
     /**
      * Stops recording if any is in progress.
      */

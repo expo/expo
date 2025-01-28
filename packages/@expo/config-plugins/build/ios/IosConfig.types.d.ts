@@ -45,4 +45,5 @@ export type ExpoPlist = {
     EXUpdatesURL?: string;
     EXUpdatesCodeSigningCertificate?: string;
     EXUpdatesCodeSigningMetadata?: Record<string, string>;
+    EXUpdatesDisableAntiBrickingMeasures?: boolean;
 };

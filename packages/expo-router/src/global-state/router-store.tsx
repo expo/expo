@@ -1,10 +1,11 @@
+'use client';
+
 import {
   NavigationContainerRefWithCurrent,
-  getPathFromState,
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import * as SplashScreen from 'expo-splash-screen';
+import equal from 'fast-deep-equal';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 import { Platform } from 'react-native';
 
@@ -17,18 +18,25 @@ import {
   dismiss,
   dismissAll,
   push,
+  reload,
   replace,
   setParams,
+  dismissTo,
+  LinkToOptions,
 } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
 import { RouteNode } from '../Route';
-import { deepEqual, getPathDataFromState } from '../fork/getPathFromState';
-import { ResultState } from '../fork/getStateFromPath';
+import { getPathDataFromState, getPathFromState } from '../fork/getPathFromState';
+// import { ResultState } from '../fork/getStateFromPath';
 import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
-import { RequireContext } from '../types';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { Href, RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
+import * as SplashScreen from '../views/Splash';
+
+type ResultState = any;
 
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -59,11 +67,13 @@ export class RouterStore {
   canGoBack = canGoBack.bind(this);
   push = push.bind(this);
   dismiss = dismiss.bind(this);
+  dismissTo = dismissTo.bind(this);
   replace = replace.bind(this);
   dismissAll = dismissAll.bind(this);
   canDismiss = canDismiss.bind(this);
   setParams = setParams.bind(this);
   navigate = navigate.bind(this);
+  reload = reload.bind(this);
 
   initialize(
     context: RequireContext,
@@ -141,7 +151,6 @@ export class RouterStore {
         this.hasAttemptedToHideSplash = true;
         // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
         this.splashScreenAnimationFrame = requestAnimationFrame(() => {
-          // @ts-expect-error: This function is native-only and for internal-use only.
           SplashScreen._internal_maybeHideAsync?.();
         });
       }
@@ -175,7 +184,7 @@ export class RouterStore {
 
     const nextRouteInfo = store.getRouteInfo(state);
 
-    if (!deepEqual(this.routeInfo, nextRouteInfo)) {
+    if (!equal(this.routeInfo, nextRouteInfo)) {
       store.routeInfo = nextRouteInfo;
     }
   }
@@ -188,6 +197,7 @@ export class RouterStore {
           ...this.linking?.config,
           preserveDynamicRoutes: asPath,
           preserveGroups: asPath,
+          shouldEncodeURISegment: false,
         });
       },
       state
@@ -223,6 +233,12 @@ export class RouterStore {
     if (this.splashScreenAnimationFrame) {
       cancelAnimationFrame(this.splashScreenAnimationFrame);
     }
+  }
+
+  getStateFromPath(href: Href, options: LinkToOptions = {}) {
+    href = resolveHref(href);
+    href = resolveHrefStringWithSegments(href, this.routeInfo, options);
+    return this.linking?.getStateFromPath?.(href, this.linking.config);
   }
 }
 

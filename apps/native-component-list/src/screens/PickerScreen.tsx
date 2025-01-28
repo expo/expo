@@ -125,8 +125,8 @@ function FocusPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
     </>
   );
 }
-function GenericPickerIOS(props: any) {
-  const [value, setValue] = React.useState<any>('java');
+function GenericPickerIOS(props: PickerProps) {
+  const [value, setValue] = React.useState<PickerProps['selectedValue']>('java');
 
   return (
     <>
@@ -137,7 +137,7 @@ function GenericPickerIOS(props: any) {
         <Picker.Item label="Swift" value="swift" />
         {props.children}
       </PickerIOS>
-      <Text>Selected: {value}</Text>
+      <Text>Selected: {String(value)}</Text>
     </>
   );
 }

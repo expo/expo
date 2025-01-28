@@ -1,11 +1,7 @@
 import * as React from 'react';
 
 import { captureImageData } from './WebCameraUtils';
-import {
-  BarCodeScanningResult,
-  CameraPictureOptions,
-  MountErrorListener,
-} from '../legacy/Camera.types';
+import { BarcodeScanningResult, CameraPictureOptions, MountErrorListener } from '../Camera.types';
 
 const qrWorkerMethod = ({ data, width, height }: ImageData): any => {
   // eslint-disable-next-line no-undef
@@ -21,7 +17,7 @@ const qrWorkerMethod = ({ data, width, height }: ImageData): any => {
   }
 
   if (parsed?.data) {
-    const nativeEvent: BarCodeScanningResult = {
+    const nativeEvent: BarcodeScanningResult = {
       type: 'qr',
       data: parsed.data,
       cornerPoints: [],
@@ -94,7 +90,7 @@ export function useWebQRScanner(
     isEnabled: boolean;
     captureOptions: Pick<CameraPictureOptions, 'scale' | 'isImageMirror'>;
     interval?: number;
-    onScanned?: (scanningResult: { nativeEvent: BarCodeScanningResult }) => void;
+    onScanned?: (scanningResult: { nativeEvent: BarcodeScanningResult }) => void;
     onError?: MountErrorListener;
   }
 ) {
@@ -111,7 +107,7 @@ export function useWebQRScanner(
       const data = captureImageData(video.current, captureOptions);
 
       if (data) {
-        const nativeEvent: BarCodeScanningResult | any = await decode(data);
+        const nativeEvent: BarcodeScanningResult | any = await decode(data);
         if (nativeEvent?.data) {
           onScanned({
             nativeEvent,

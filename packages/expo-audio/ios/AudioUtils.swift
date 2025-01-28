@@ -69,19 +69,21 @@ struct RecordingUtils {
 }
 
 struct AudioUtils {
+  #if os(iOS)
   static func createRecorder(directory: URL?, with options: RecordingOptions) -> AVAudioRecorder {
     if let directory {
       let fileUrl = createRecordingUrl(from: directory, with: options)
       do {
-        return try AVAudioRecorder(url: fileUrl, settings: AudioUtils.setRecordingOptions(options))
+        return try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
       } catch {
         return AVAudioRecorder()
       }
     }
     return AVAudioRecorder()
   }
+  #endif
 
-  static func createAVPlayer(source: AudioSource?) -> AVPlayer {
+  static func createAVPlayer(from source: AudioSource?) -> AVPlayer {
     if let source, let url = source.uri {
       let asset = AVURLAsset(url: url, options: source.headers)
       let item = AVPlayerItem(asset: asset)
@@ -90,7 +92,15 @@ struct AudioUtils {
     return AVPlayer()
   }
 
-  static func setRecordingOptions(_ options: RecordingOptions) -> [String: Any] {
+  static func createAVPlayerItem(from source: AudioSource?) -> AVPlayerItem? {
+    guard let source, let url = source.uri else {
+      return nil
+    }
+    let asset = AVURLAsset(url: url, options: source.headers)
+    return AVPlayerItem(asset: asset)
+  }
+
+  static func createRecordingOptions(_ options: RecordingOptions) -> [String: Any] {
     let strategy = options.bitRateStrategy?.toAVBitRateStrategy() ?? AVAudioBitRateStrategy_Variable
 
     var settings = [String: Any]()
@@ -131,6 +141,7 @@ struct AudioUtils {
   }
 
   private static func getFormatIDFromString(typeString: String) -> UInt32? {
+    // swiftlint:disable:next legacy_objc_type
     if let s = (typeString as NSString).utf8String {
       return UInt32(s[3]) | (UInt32(s[2]) << 8) | (UInt32(s[1]) << 16) | (UInt32(s[0]) << 24)
     }
@@ -140,9 +151,11 @@ struct AudioUtils {
   static func validateAudioMode(mode: AudioMode) throws {
     if !mode.playsInSilentMode && mode.interruptionMode == .duckOthers {
       throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
-    } else if !mode.playsInSilentMode && mode.allowsRecording {
-      throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
-    } else if !mode.playsInSilentMode && mode.shouldPlayInBackground {
+    }
+    if !mode.playsInSilentMode && mode.allowsRecording {
+      throw InvalidAudioModeException("playsInSilentMode == false and allowsRecording == true cannot be set on iOS")
+    }
+    if !mode.playsInSilentMode && mode.shouldPlayInBackground {
       throw InvalidAudioModeException("playsInSilentMode == false and staysActiveInBackground == true cannot be set on iOS.")
     }
   }

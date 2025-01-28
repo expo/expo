@@ -80,6 +80,11 @@ public:
     jni::alias_ref<JNIFunctionBody::javaobject> deallocator
   );
 
+  /**
+   * Sets the memory pressure to inform the GC about how much external memory is associated with that specific JS object.
+  */
+  void setExternalMemoryPressure(int size);
+
 protected:
   WeakRuntimeHolder runtimeHolder;
   std::shared_ptr<jsi::Object> jsObject;

@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
 
 import { listMissingHashLinkTargets } from '~/common/utilities';
-import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
+import {
+  ClassDefinitionData,
+  GeneratedData,
+  TypeDocKind,
+} from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
 import APISectionConstants from '~/components/plugins/api/APISectionConstants';
@@ -14,7 +18,6 @@ import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import {
   getCommentContent,
   getPossibleComponentPropsNames,
-  TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
@@ -49,18 +52,24 @@ const isHook = ({ name }: { name: string }) =>
 const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
 
-const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
+const isProp = ({ name }: GeneratedData) =>
+  name.includes('Props') &&
+  name !== 'ErrorRecoveryProps' &&
+  name !== 'WebAnchorProps' &&
+  name !== 'ScreenProps';
+
+const componentTypeNames = ['React.FC', 'ForwardRefExoticComponent', 'ComponentType'];
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
-  if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {
+  if (type?.name && componentTypeNames.includes(type?.name)) {
     return true;
-  } else if (extendedTypes && extendedTypes.length) {
+  } else if (extendedTypes?.length) {
     return extendedTypes[0].name === 'Component' || extendedTypes[0].name === 'PureComponent';
-  } else if (signatures && signatures.length) {
+  } else if (signatures?.length) {
+    const mainSignature = signatures[0];
     if (
-      signatures[0].type.name === 'Element' ||
-      (signatures[0].type.types && signatures[0].type.types.map(t => t.name).includes('Element')) ||
-      (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
+      (mainSignature.parameters && mainSignature.parameters[0].name === 'props') ||
+      (mainSignature.parameters && mainSignature.parameters[0].name === '__namedParameters')
     ) {
       return true;
     }
@@ -70,13 +79,12 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 
 const isConstant = ({ name, type }: GeneratedData) =>
   !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
-  !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
+  !(type?.name && componentTypeNames.includes(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
-  (signatures &&
-    signatures[0].comment?.blockTags &&
+  (signatures?.[0].comment?.blockTags &&
     signatures[0].comment.blockTags.length > 0 &&
-    signatures[0].comment.blockTags.filter(tag => tag?.tag === '@header').length > 0) ??
+    signatures[0].comment.blockTags.some(tag => tag?.tag === '@header')) ??
   false;
 
 const groupByHeader = (entries: GeneratedData[]) => {
@@ -151,9 +159,9 @@ const renderAPI = (
         !isProp(entry) &&
         !(entry?.variant === 'reference') &&
         !!(
-          entry.type.declaration ||
-          entry.type.types ||
-          entry.type.type ||
+          entry.type.declaration ??
+          entry.type.types ??
+          entry.type.type ??
           entry.type.typeArguments
         )
     );
@@ -164,7 +172,7 @@ const renderAPI = (
       entry =>
         isProp(entry) &&
         ([TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)
-          ? !!(entry.type.types || entry.type.declaration?.children)
+          ? !!(entry.type.types ?? entry.type.declaration?.children)
           : true)
     );
     const defaultProps = filterDataByKind(
@@ -294,8 +302,8 @@ const renderAPI = (
         <APISectionEnums data={enums} />
       </>
     );
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     return <P>No API data file found, sorry!</P>;
   }
 };
@@ -305,7 +313,7 @@ const isDevMode = process.env.NODE_ENV === 'development';
 const APISection = ({ forceVersion, ...restProps }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
-    forceVersion ||
+    forceVersion ??
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
 
   useEffect(() => {

@@ -84,10 +84,10 @@ describe(setSplashStylesForTheme, () => {
       // Extract the style
       AndroidConfig.Styles.getStylesGroupAsObject(setSplashStylesForTheme(xml), {
         name: 'Theme.App.SplashScreen',
-        parent: 'AppTheme',
+        parent: 'Theme.SplashScreen',
       })
     ).toStrictEqual({
-      'android:windowBackground': '@drawable/splashscreen',
+      'android:windowSplashScreenBackground': '@drawable/splashscreen_logo',
     });
   });
 });

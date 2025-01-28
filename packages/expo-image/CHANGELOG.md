@@ -4,6 +4,56 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- type-compatibility with react-native 0.77 ([#34027](https://github.com/expo/expo/pull/34027) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Update `ImageProps` type so `children` are omitted. ([#33210](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.3 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `useImage` causing a native crash when uri is unresolvable. ([#33268](https://github.com/expo/expo/pull/33268) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixes adding a blurhash placeholder to `Image` or `ImageBackground` causing blurry version of the image. ([#33272](https://github.com/expo/expo/pull/33272) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.2 — 2024-11-22
+
+### 💡 Others
+
+- Add a warning when `children` are passed to `Image`. ([#33139](https://github.com/expo/expo/pull/33139) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.0.1 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- [Android] Fixes Gif animations never stopping even when loop count is set to 1. ([#32944](https://github.com/expo/expo/pull/32944) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `borderColor` is not applied. ([#33026](https://github.com/expo/expo/pull/33026) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `border` related props weren't applied correctly. ([#33078](https://github.com/expo/expo/pull/33078) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [Android] migrate ImageView to CSSBackgroundDrawable ([#33024](https://github.com/expo/expo/pull/33024) by [@vonovak](https://github.com/vonovak))
+
+## 2.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0-preview.1 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Fixed displaying a placeholder when `useImage` hook is used. ([#32430](https://github.com/expo/expo/pull/32430) by [@tsapeta](https://github.com/tsapeta))
+
+## 2.0.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30871](https://github.com/expo/expo/pull/30871) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -14,6 +64,7 @@
 - [Android] Added support for rendering shared image refs. ([#31098](https://github.com/expo/expo/pull/31098) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Added support for rendering shared refs of `Bitmap's`. ([#31440](https://github.com/expo/expo/pull/31440) by [@lukmccall](https://github.com/lukmccall))
 - Added `useImage` hook. ([#31171](https://github.com/expo/expo/pull/31171) by [@tsapeta](https://github.com/tsapeta))
+- Added downscaling options to `useImage` hook. ([#32113](https://github.com/expo/expo/pull/32113) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -21,15 +72,18 @@
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30469](https://github.com/expo/expo/pull/30469) by [@byCedric](https://github.com/byCedric))
 - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
 - [Web] Fix type incompatibility between style prop and `@types/react-native-web` ([#31150](https://github.com/expo/expo/pull/31150) by [@adamhari](https://github.com/adamhari))
+- [iOS] Fixed `isAnimated` property always returning `true`. ([#31834](https://github.com/expo/expo/pull/31834) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed `stopAnimating` broken on downscaled animated images. ([#32053](https://github.com/expo/expo/pull/32053) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Use the `src` folder as the Metro target. ([#30665](https://github.com/expo/expo/pull/30665) by [@tsapeta](https://github.com/tsapeta))
-- Provide image's memory footprint for better garbage collection. ([#31168](https://github.com/expo/expo/pull/31168) by [@tsapeta](https://github.com/tsapeta))
+- Provide image's memory footprint for better garbage collection. ([#31168](https://github.com/expo/expo/pull/31168) by [@tsapeta](https://github.com/tsapeta) & [#31784](https://github.com/expo/expo/pull/31784) by [@lukmccall](https://github.com/lukmccall))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 1.13.0 - 2024-09-23
 

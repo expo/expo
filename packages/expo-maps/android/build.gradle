@@ -1,29 +1,70 @@
 apply plugin: 'com.android.library'
 
-group = 'host.exp.exponent'
-version = '0.4.0'
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useCoreDependencies()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  useLegacyExpoModulesCorePlugin()
+}
+
+buildscript {
+  ext.KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
+
+  if (KOTLIN_MAJOR_VERSION >= 2) {
+    repositories {
+      mavenCentral()
+    }
+    dependencies {
+      classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+    }
+  }
+}
+
+if (KOTLIN_MAJOR_VERSION >= 2) {
+  apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+}
+
+group = 'host.exp.exponent'
+version = '0.6.1'
 
 android {
   namespace "expo.modules.maps"
   defaultConfig {
     versionCode 1
-    versionName '0.4.0'
+    versionName "0.6.1"
+  }
+  buildFeatures {
+    compose true
+  }
+  if (KOTLIN_MAJOR_VERSION < 2) {
+    composeOptions {
+      kotlinCompilerExtensionVersion = "1.5.14"
+    }
+  }
+  lintOptions {
+    abortOnError false
   }
 }
 
 dependencies {
-  implementation "com.google.android.gms:play-services-maps:18.0.2"
-  implementation "com.google.maps.android:android-maps-utils:2.2.3"
-  implementation "com.google.maps.android:maps-utils-ktx:3.3.0"
-  implementation "androidx.core:core-ktx:1.7.0"
-  implementation "com.google.android.libraries.places:places:2.6.0"
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"
-  implementation 'com.facebook.react:react-android'
+  implementation 'androidx.compose.foundation:foundation-android:1.7.6'
+  implementation 'androidx.compose.ui:ui-android:1.7.6'
+  implementation "androidx.compose.material3:material3:1.3.1"
+  implementation 'androidx.lifecycle:lifecycle-runtime:2.8.7'
+  implementation 'androidx.fragment:fragment-ktx:1.8.5'
+  implementation 'androidx.compose.material3:material3-android:1.3.1'
+
+  implementation 'com.google.maps.android:maps-compose:6.4.0'
 }

@@ -12,6 +12,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
 
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
+    var logger: UpdatesLogger!
     var manifest: ExpoUpdatesManifest!
     var configChannelTestDictionary: [String: Any]!
     var configChannelTest: UpdatesConfig!
@@ -30,9 +31,11 @@ class UpdatesBuildDataSpec : ExpoSpec {
       
       db = UpdatesDatabase()
       db.databaseQueue.sync {
-        try! db.openDatabase(inDirectory: testDatabaseDir)
+        try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
       }
-      
+
+      logger = UpdatesLogger()
+
       manifest = ExpoUpdatesManifest(rawManifestJSON: [
         "runtimeVersion": "1",
         "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -83,7 +86,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
         }
         
         db.databaseQueue.async {
-          UpdatesBuildData.clearAllUpdatesAndSetStaticBuildData(database: db, config: configChannelTest, scopeKey: scopeKey)
+          UpdatesBuildData.clearAllUpdatesAndSetStaticBuildData(database: db, config: configChannelTest, logger: logger, scopeKey: scopeKey)
         }
         
         db.databaseQueue.sync {
@@ -99,8 +102,8 @@ class UpdatesBuildDataSpec : ExpoSpec {
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
         }
         
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest)
-        
+        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest, logger: logger)
+
         db.databaseQueue.sync {
           expect(try! db.staticBuildData(withScopeKey: scopeKey)).toNot(beNil())
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
@@ -113,8 +116,8 @@ class UpdatesBuildDataSpec : ExpoSpec {
           try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
         }
         
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest)
-        
+        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest, logger: logger)
+
         db.databaseQueue.sync {
           let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
           expect(
@@ -130,7 +133,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
           try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
         }
         
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTestTwo)
+        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTestTwo, logger: logger)
         
         db.databaseQueue.sync {
           let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
@@ -139,6 +142,109 @@ class UpdatesBuildDataSpec : ExpoSpec {
           ) == true
           expect(try! db.allUpdates(withConfig: configChannelTestTwo).count) == 0
         }
+      }
+
+      it("updates are cleared and build data is set when override updateUrl") {
+        db.databaseQueue.sync {
+          expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
+          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
+        }
+
+        // Even the updateUrl and requestHeaders not changing here,
+        // using configOverride would disable embedded update and having inconsistent build data.
+        let configOverride = UpdatesConfigOverride(
+          updateUrl: configChannelTest.updateUrl,
+          requestHeaders: configChannelTest.requestHeaders
+        )
+        let configWithDisableAntiBrickingMeasures = configChannelTestDictionary.merging([UpdatesConfig.EXUpdatesConfigDisableAntiBrickingMeasures: true]) { current, _ in current }
+        let configWithOverride = try! UpdatesConfig.config(
+          fromDictionary: configWithDisableAntiBrickingMeasures,
+          configOverride: configOverride)
+        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configWithOverride, logger: logger)
+
+        db.databaseQueue.sync {
+          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
+          expect(
+            NSDictionary(dictionary: staticBuildData!).isEqual(to: UpdatesBuildData.getBuildDataFromConfig(configWithOverride))
+          ) == true
+          expect(try! db.allUpdates(withConfig: configWithOverride).count) == 0
+        }
+      }
+
+      it("updates are cleared and build data is set when override hasEmbeddedUpdate") {
+        db.databaseQueue.sync {
+          expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
+          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
+        }
+
+        let configOverride = UpdatesConfigOverride(
+          updateUrl: URL(string: "https://example.com"),
+          requestHeaders: ["expo-channel-name": "fromOverride"]
+        )
+        let configWithDisableAntiBrickingMeasures = configChannelTestDictionary.merging([UpdatesConfig.EXUpdatesConfigDisableAntiBrickingMeasures: true]) { current, _ in current }
+        let configWithOverride = try! UpdatesConfig.config(
+          fromDictionary: configWithDisableAntiBrickingMeasures,
+          configOverride: configOverride)
+        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configWithOverride, logger: logger)
+
+        db.databaseQueue.sync {
+          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
+          expect(
+            NSDictionary(dictionary: staticBuildData!).isEqual(to: UpdatesBuildData.getBuildDataFromConfig(configWithOverride))
+          ) == true
+          expect(try! db.allUpdates(withConfig: configWithOverride).count) == 0
+        }
+      }
+    }
+
+    describe("isBuildDataConsistent") {
+      it("should return true for same data") {
+        let sourceBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+        ]
+        let targetBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+        ]
+        expect(UpdatesBuildData.isBuildDataConsistent(sourceBuildData, targetBuildData)).to(beTrue())
+      }
+
+      it("should return false for EXUpdatesRequestHeaders change") {
+        let sourceBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+        ]
+        let targetBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "preview"],
+        ]
+        expect(UpdatesBuildData.isBuildDataConsistent(sourceBuildData, targetBuildData)).to(beFalse())
+      }
+
+      it("should support migration with new EXUpdatesHasEmbeddedUpdate key") {
+        let sourceBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+        ]
+        let targetBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesRequestHeaders": ["expo-channel-name": "default"],
+          "EXUpdatesHasEmbeddedUpdate": true
+        ]
+        expect(UpdatesBuildData.isBuildDataConsistent(sourceBuildData, targetBuildData)).to(beTrue())
+      }
+
+      it("should not overwrite existing data from the default build data") {
+        let sourceBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesHasEmbeddedUpdate": false
+        ]
+        let targetBuildData = [
+          "EXUpdatesURL": "https://example.com",
+          "EXUpdatesHasEmbeddedUpdate": false
+        ]
+        expect(UpdatesBuildData.isBuildDataConsistent(sourceBuildData, targetBuildData)).to(beTrue())
       }
     }
   }

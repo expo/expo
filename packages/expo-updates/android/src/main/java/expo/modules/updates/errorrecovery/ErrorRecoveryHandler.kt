@@ -107,7 +107,7 @@ internal class ErrorRecoveryHandler(
         tryRelaunchFromCache()
       }
       Task.CRASH -> {
-        logger.error("UpdatesErrorRecovery: could not recover from error, crashing", UpdatesErrorCode.Unknown)
+        logger.error("UpdatesErrorRecovery: could not recover from error, crashing", encounteredErrors[0], UpdatesErrorCode.Unknown)
         crash()
       }
     }
