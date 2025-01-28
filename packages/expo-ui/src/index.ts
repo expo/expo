@@ -1,8 +1,13 @@
-export type { Switch, SwitchProps } from '../components/Switch';
-export type { Picker, PickerProps } from '../components/Picker';
-export type { Button, ButtonProps } from '../components/Button';
-export type { Section, SectionProps } from '../components/Section';
-export type { Slider, SliderProps } from '../components/Slider';
+export type { SwitchProps } from './components/Switch';
+export type { PickerProps } from './components/Picker';
+export type { ButtonProps } from './components/Button';
+export type { SectionProps } from './components/Section';
+export type { SliderProps } from './components/Slider';
+export { Switch } from './components/Switch';
+export { Picker } from './components/Picker';
+export { Button } from './components/Button';
+export { Section } from './components/Section';
+export { Slider } from './components/Slider';
 
 /**
  * @hidden
