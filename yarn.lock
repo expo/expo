@@ -1549,6 +1549,11 @@
   resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-1.0.1.tgz#b9889266664f885dad15566b5b2956e086b1aa22"
   integrity sha512-VhmMYcOhzQKcng3QH0RBkwK9knhXXFEVzqwjftLK2S4457k6z3OumdyIHp/4P6h5HmfCydtXWvvsFmL7Ui6Pwg==
 
+"@expo/sudo-prompt@^9.3.2":
+  version "9.3.2"
+  resolved "https://registry.yarnpkg.com/@expo/sudo-prompt/-/sudo-prompt-9.3.2.tgz#0fd2813402a42988e49145cab220e25bea74b308"
+  integrity sha512-HHQigo3rQWKMDzYDLkubN5WQOYXJJE2eNqIQC2axC2iO3mHdwnIR7FgZVvHWtBwAdzBgAP0ECp8KqS8TiMKvgw==
+
 "@expo/vector-icons@^14.0.0":
   version "14.0.4"
   resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-14.0.4.tgz#fa9d4351877312badf91a806598b2f0bab16039a"
@@ -15535,11 +15540,6 @@ sucrase@3.35.0, sucrase@^3.32.0:
     mz "^2.7.0"
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
-
-sudo-prompt@9.1.1:
-  version "9.1.1"
-  resolved "https://registry.yarnpkg.com/sudo-prompt/-/sudo-prompt-9.1.1.tgz#73853d729770392caec029e2470db9c221754db0"
-  integrity sha512-es33J1g2HjMpyAhz8lOR+ICmXXAqTuKbuXuUWLhOLew20oN9oUCgCJx615U/v7aioZg7IX5lIh9x34vwneu4pA==
 
 sudo-prompt@^8.2.0:
   version "8.2.5"
