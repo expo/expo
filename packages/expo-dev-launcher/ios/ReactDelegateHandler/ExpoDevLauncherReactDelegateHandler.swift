@@ -39,12 +39,12 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
   @objc
   public func isReactInstanceValid() -> Bool {
-    return self.rctAppDelegate?.rootViewFactory.value(forKey: "reactHost") != nil
+		return self.rctAppDelegate?.rootViewFactory().value(forKey: "reactHost") != nil
   }
 
   @objc
   public func destroyReactInstance() {
-    self.rctAppDelegate?.rootViewFactory.setValue(nil, forKey: "reactHost")
+		self.rctAppDelegate?.rootViewFactory().setValue(nil, forKey: "reactHost")
   }
 
   // MARK: EXDevelopmentClientControllerDelegate implementations
@@ -57,9 +57,9 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
     // Reset rctAppDelegate so we can relaunch the app
     if rctAppDelegate.bridgelessEnabled() {
-      rctAppDelegate.rootViewFactory.setValue(nil, forKey: "_reactHost")
+			rctAppDelegate.rootViewFactory().setValue(nil, forKey: "_reactHost")
     } else {
-      rctAppDelegate.rootViewFactory.setValue(nil, forKey: "bridge")
+			rctAppDelegate.rootViewFactory().setValue(nil, forKey: "bridge")
     }
 
     let rootView = rctAppDelegate.recreateRootView(
