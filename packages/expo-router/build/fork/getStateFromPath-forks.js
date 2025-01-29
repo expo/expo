@@ -207,7 +207,7 @@ function appendIsInitial(initialRoutes) {
     return function (config) {
         // TODO(EvanBacon): Probably a safer way to do this
         // Mark initial routes to give them potential priority over other routes that match.
-        config.isInitial = resolvedInitialPatterns.includes(config.route.join('/'));
+        config.isInitial = resolvedInitialPatterns.includes(config.route.map(({ name }) => name).join('/'));
         return config;
     };
 }
