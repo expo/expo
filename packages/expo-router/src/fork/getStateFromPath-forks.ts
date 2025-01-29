@@ -283,7 +283,10 @@ export function getRouteConfigSorter(previousSegments: string[] = []) {
     // If 2 patterns are same, move the one with less route names up
     // This is an error state, so it's only useful for consistent error messages
     if (a.pattern === b.pattern) {
-      return b.route.join('>').localeCompare(a.route.join('>'));
+      return b.route
+        .map(({ name }) => name)
+        .join('>')
+        .localeCompare(a.route.map(({ name }) => name).join('>'));
     }
 
     /*
