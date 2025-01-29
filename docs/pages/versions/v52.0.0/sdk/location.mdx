@@ -139,7 +139,7 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 To use Background Location methods, the following requirements apply:
 
-- Location permissions must be granted. On iOS it must be granted with `Always` option.
+- Location permissions must be granted.
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 - <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
   specified in **Info.plist** file. See [Background location
@@ -152,7 +152,7 @@ To use Background Location methods, the following requirements apply:
 
 To use Geofencing methods, the following requirements apply:
 
-- Location permissions must be granted. On iOS it must be granted with `Always` option.
+- Location permissions must be granted.
 - The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 
 When using Geofencing, the following platform differences apply:
@@ -165,6 +165,13 @@ When using Geofencing, the following platform differences apply:
 - <PlatformTag platform="ios" /> There is a [limit of
   20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions)
   `regions` that can be simultaneously monitored.
+
+### Background Permissions
+
+To use location tracking or Geofencing in the background, you must request the appropriate permissions:
+
+- On iOS, it must be granted with the `Always` option using `requestBackgroundPermissionsAsync`.
+- On Android, you must request both foreground and background permissions.
 
 ## Usage
 
