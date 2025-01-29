@@ -46,6 +46,11 @@ export function getRedirectPath(redirectPath: string): string {
     redirectPath = removeVersionFromPath(redirectPath);
   }
 
+  // Handle the specific /sdk or /sdk/ root paths
+  if (redirectPath === '/sdk/' || redirectPath === '/sdk') {
+    redirectPath = '/versions/latest/';
+  }
+
   // Catch any redirects to sdk paths without versions and send to the latest version
   if (redirectPath.startsWith('/sdk/')) {
     redirectPath = `/versions/latest${redirectPath}`;
@@ -466,6 +471,4 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/config/app/name/': '/versions/latest/config/app/#name',
   '/bare/': '/bare/overview/',
   '/accounts/working-together/': '/accounts/account-types/',
-
-  '/sdk/': '/versions/latest/',
 };
