@@ -30,11 +30,11 @@ export const MapsScreens = Platform.select({
       },
     },
     {
-      name: 'Maps Location',
-      route: 'expo-maps/location',
+      name: 'Maps permissions',
+      route: 'expo-maps/permissions',
       options: {},
       getComponent() {
-        return optionalRequire(() => require('./google/MapsLocationScreen'));
+        return optionalRequire(() => require('./google/MapsPermissionsScreen'));
       },
     },
     {
