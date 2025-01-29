@@ -27,18 +27,18 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
 
     super.init()
     super.initRootViewFactory()
-    self.rootViewFactory.bridge = bridge
+    self.rootViewFactory().bridge = bridge
   }
 
   /**
    Sends an event to JS triggering the animation that collapses the dev menu.
    */
   func sendCloseEvent() {
-    self.rootViewFactory.bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
+    self.rootViewFactory().bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
   }
 
   func sendOpenEvent() {
-    self.rootViewFactory.bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
+    self.rootViewFactory().bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
 
   // MARK: RCTAppDelegate

@@ -24,7 +24,7 @@
 
 - (instancetype)initWithBundleURLGetter:(nonnull EXDevLauncherBundleURLGetter)bundleURLGetter
 {
-  if (self = [self init]) {
+  if (self = [super init]) {
     self.bundleURLGetter = bundleURLGetter;
   }
   return self;
@@ -45,6 +45,15 @@
     return [DevClientNoOpLoadingView class];
   }
   return [super getModuleClassFromName:name];
+}
+//createRCTRootViewFactory
+- (RCTRootViewFactory *)createRCTRootViewFactory {
+	return self.reactNativeFactory.rootViewFactory;
+}
+
+- (RCTRootViewFactory *)rootViewFactory
+{
+	return [self createRCTRootViewFactory];
 }
 
 @end

@@ -1,8 +1,8 @@
-import MaskedView from '@react-native-masked-view/masked-view';
+// import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useEffect } from 'react';
 import { Animated, Easing, Image, View } from 'react-native';
 
-const AnimatedMaskView = Animated.createAnimatedComponent(MaskedView);
+// const AnimatedMaskView = Animated.createAnimatedComponent(MaskedView);
 
 MaskedViewScreen.navigationOptions = {
   title: 'Basic Mask Example',
@@ -55,6 +55,7 @@ export default function MaskedViewScreen() {
 
   const width = 240;
   const height = 200;
+  return null;
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <AnimatedMaskView
