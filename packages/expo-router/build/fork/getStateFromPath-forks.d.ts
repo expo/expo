@@ -1,6 +1,6 @@
 import { InitialState } from '@react-navigation/native';
 import * as queryString from 'query-string';
-import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
+import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig, RouteSegment } from './getStateFromPath';
 export type ExpoOptions = {
     previousSegments?: string[];
 };
@@ -10,7 +10,7 @@ export type ExpoRouteConfig = {
     isIndex: boolean;
     isInitial?: boolean;
     hasChildren: boolean;
-    expandedRouteNames: string[];
+    expandedRoute: RouteSegment[];
     parts: string[];
 };
 /**
@@ -33,7 +33,7 @@ export declare function getUrlWithReactNavigationConcessions(path: string, baseU
     pathWithoutGroups: string;
     cleanUrl?: undefined;
 };
-export declare function createConfig(screen: string, pattern: string, routeNames: string[], config?: Record<string, any>): Omit<ExpoRouteConfig, 'isInitial'>;
+export declare function createConfig(screen: string, pattern: string, route: RouteSegment[], config?: Record<string, any>): Omit<ExpoRouteConfig, 'isInitial'>;
 export declare function assertScreens(options?: Options<object>): asserts options is Options<object>;
 export declare function configRegExp(config: RouteConfig): RegExp | undefined;
 export declare function isDynamicPart(p: string): boolean;
@@ -44,17 +44,17 @@ export declare function spreadParamsAcrossAllStates(state: InitialState, params?
 export declare function stripBaseUrl(path: string, baseUrl?: string | undefined): string;
 export declare function matchForEmptyPath(configs: RouteConfig[]): {
     path: string;
-    type: "layout" | "static" | "dynamic";
+    type: "static" | "dynamic" | "layout";
     userReadableName: string;
     isIndex: boolean;
     isInitial?: boolean | undefined;
     hasChildren: boolean;
-    expandedRouteNames: string[];
+    expandedRoute: RouteSegment[];
     parts: string[];
     screen: string;
     regex?: RegExp | undefined;
     pattern: string;
-    routeNames: string[];
+    route: RouteSegment[];
     parse?: {
         [x: string]: (value: string) => any;
     } | undefined;

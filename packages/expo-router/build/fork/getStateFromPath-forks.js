@@ -56,7 +56,7 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
     };
 }
 exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
-function createConfig(screen, pattern, routeNames, config = {}) {
+function createConfig(screen, pattern, route, config = {}) {
     const parts = [];
     let isDynamic = false;
     const isIndex = screen === 'index' || screen.endsWith('/index');
@@ -79,9 +79,14 @@ function createConfig(screen, pattern, routeNames, config = {}) {
         isIndex,
         hasChildren,
         parts,
-        userReadableName: [...routeNames.slice(0, -1), config.path || screen].join('/'),
-        expandedRouteNames: routeNames.flatMap((name) => {
-            return name.split('/');
+        userReadableName: [...route.slice(0, -1).map(({ name }) => name), config.path || screen].join('/'),
+        expandedRoute: route.flatMap(({ name, initialRouteName }) => {
+            const tokens = name.split('/');
+            return tokens.map((token, idx) => 
+            // The initialRouteName only applies to the last token in the expanded route.
+            initialRouteName && idx === tokens.length - 1
+                ? { name: token, initialRouteName }
+                : { name: token });
         }),
     };
 }
@@ -202,7 +207,7 @@ function appendIsInitial(initialRoutes) {
     return function (config) {
         // TODO(EvanBacon): Probably a safer way to do this
         // Mark initial routes to give them potential priority over other routes that match.
-        config.isInitial = resolvedInitialPatterns.includes(config.routeNames.join('/'));
+        config.isInitial = resolvedInitialPatterns.includes(config.route.join('/'));
         return config;
     };
 }
@@ -219,7 +224,7 @@ function getRouteConfigSorter(previousSegments = []) {
         // If 2 patterns are same, move the one with less route names up
         // This is an error state, so it's only useful for consistent error messages
         if (a.pattern === b.pattern) {
-            return b.routeNames.join('>').localeCompare(a.routeNames.join('>'));
+            return b.route.join('>').localeCompare(a.route.join('>'));
         }
         /*
          * If one of the patterns starts with the other, it is earlier in the config sorting.
@@ -253,10 +258,10 @@ function getRouteConfigSorter(previousSegments = []) {
          * If both are static/dynamic or a layout file, then we check group similarity
          */
         const similarToPreviousA = previousSegments.filter((value, index) => {
-            return value === a.expandedRouteNames[index] && value.startsWith('(') && value.endsWith(')');
+            return value === a.expandedRoute[index]?.name && value.startsWith('(') && value.endsWith(')');
         });
         const similarToPreviousB = previousSegments.filter((value, index) => {
-            return value === b.expandedRouteNames[index] && value.startsWith('(') && value.endsWith(')');
+            return value === b.expandedRoute[index]?.name && value.startsWith('(') && value.endsWith(')');
         });
         if ((similarToPreviousA.length > 0 || similarToPreviousB.length > 0) &&
             similarToPreviousA.length !== similarToPreviousB.length) {
@@ -326,8 +331,31 @@ function getRouteConfigSorter(previousSegments = []) {
                 return -1;
             }
         }
+        /**
+         * Both configs are identitical in specificity and segment count/type.
+         * Try and sort by the priority of `initialRouteName`.
+         *
+         * A route's `initialRouteName` priority is determined by the length of the list of segments
+         * created by either following `initialRouteName` if it exists or the next route segment.
+         *
+         * e.g. the route below has priority 3.
+         * [
+         *   { name: "(a)" },                        // no `initialRouteName`, continue.
+         *   { name: "(b)", initialRouteName: "(c)" }, // "(c)" matches the next, continue.
+         *   { name: "(c)", initialRouteName: "e" }, // "e" does not match, stop at length 3.
+         *   { name: "d" },
+         * ]
+         *
+         * This favors routes that follow `initialRouteName` such that the default route matched when
+         * multiple possible groups exist follows `initialRouteName` if possible.
+         */
+        const initialRoutePrioDiff = getInitialRouteNamePriority(b) - getInitialRouteNamePriority(a);
+        if (initialRoutePrioDiff !== 0) {
+            return initialRoutePrioDiff;
+        }
         /*
-         * Both configs are identical in specificity and segments count/type
+         * Both configs are identical in specificity, segments count/type, and priority for
+         * `initialRouteName`.
          * Try and sort by initial instead.
          *
          * TODO: We don't differentiate between the default initialRoute and group specific default routes
@@ -351,6 +379,17 @@ function getRouteConfigSorter(previousSegments = []) {
     };
 }
 exports.getRouteConfigSorter = getRouteConfigSorter;
+function getInitialRouteNamePriority({ expandedRoute }) {
+    for (let i = 1; i < expandedRoute.length; i++) {
+        if (expandedRoute[i - 1].initialRouteName == null) {
+            continue;
+        }
+        if (expandedRoute[i - 1].initialRouteName !== expandedRoute[i].name) {
+            return i;
+        }
+    }
+    return expandedRoute.length;
+}
 function parseQueryParams(path, route, parseConfig, hash) {
     const searchParams = new URL(path, 'https://phony.example').searchParams;
     const params = Object.create(null);

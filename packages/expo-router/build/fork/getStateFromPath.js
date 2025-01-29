@@ -109,7 +109,7 @@ path, options) {
         // );
         // END FORK
         if (match) {
-            return createNestedStateObject(expoPath, match.routeNames.map((name) => ({ name })), initialRoutes, configs, expoPath.url.hash);
+            return createNestedStateObject(expoPath, match.route.map(({ name }) => ({ name })), initialRoutes, configs, expoPath.url.hash);
         }
         return undefined;
     }
@@ -234,8 +234,8 @@ function checkForDuplicatedConfigs(configs) {
     // Check for duplicate patterns in the config
     configs.reduce((acc, config) => {
         if (acc[config.pattern]) {
-            const a = acc[config.pattern].routeNames;
-            const b = config.routeNames;
+            const a = acc[config.pattern].route;
+            const b = config.route;
             // It's not a problem if the path string omitted from a inner most screen
             // For example, it's ok if a path resolves to `A > B > C` or `A > B`
             const intersects = a.length > b.length ? b.every((it, i) => a[i] === it) : a.every((it, i) => b[i] === it);
@@ -297,7 +297,7 @@ const matchAgainstConfigs = (remaining, configs) => {
                 return acc;
             }, { pos: -1, matchedParams: {} });
             const matchedParams = matchResult.matchedParams || {};
-            routes = config.routeNames.map((name) => {
+            routes = config.route.map(({ name }) => {
                 const routeConfig = configs.find((c) => {
                     // Check matching name AND pattern in case same screen is used at different levels in config
                     return c.screen === name && config.pattern.startsWith(c.pattern);
@@ -346,21 +346,27 @@ const matchAgainstConfigs = (remaining, configs) => {
     // END FORK
     return { routes, remainingPath };
 };
-const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials, parentScreens, parentPattern) => {
+const createNormalizedConfigs = (screen, routeConfig, route = [], initials, parentScreens, parentPattern) => {
     const configs = [];
-    routeNames.push(screen);
     parentScreens.push(screen);
     const config = routeConfig[screen];
     if (typeof config === 'string') {
         // If a string is specified as the value of the key(e.g. Foo: '/path'), use it as the pattern
+        route.push({ name: screen });
         const pattern = parentPattern ? joinPaths(parentPattern, config) : config;
-        configs.push(createConfigItem(screen, routeNames, pattern, config));
+        configs.push(createConfigItem(screen, route, pattern, config));
     }
     else if (typeof config === 'object') {
-        let pattern;
         // if an object is specified as the value (e.g. Foo: { ... }),
-        // it can have `path` property and
+        // it can have `path` property, `initialRouteName`, and
         // it could have `screens` prop which has nested configs
+        if (config.initialRouteName != null) {
+            route.push({ name: screen, initialRouteName: config.initialRouteName });
+        }
+        else {
+            route.push({ name: screen });
+        }
+        let pattern;
         if (typeof config.path === 'string') {
             if (config.exact && config.path === undefined) {
                 throw new Error("A 'path' needs to be specified when specifying 'exact: true'. If you don't want this screen in the URL, specify it as empty string, e.g. `path: ''`.");
@@ -369,7 +375,7 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
                 config.exact !== true
                     ? joinPaths(parentPattern || '', config.path || '')
                     : config.path || '';
-            configs.push(createConfigItem(screen, routeNames, pattern, config.path, config.parse, config));
+            configs.push(createConfigItem(screen, route, pattern, config.path, config.parse, config));
         }
         if (config.screens) {
             // property `initialRouteName` without `screens` has no purpose
@@ -380,15 +386,15 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
                 });
             }
             Object.keys(config.screens).forEach((nestedConfig) => {
-                const result = createNormalizedConfigs(nestedConfig, config.screens, routeNames, initials, [...parentScreens], pattern ?? parentPattern);
+                const result = createNormalizedConfigs(nestedConfig, config.screens, route, initials, [...parentScreens], pattern ?? parentPattern);
                 configs.push(...result);
             });
         }
     }
-    routeNames.pop();
+    route.pop();
     return configs;
 };
-const createConfigItem = (screen, routeNames, pattern, path, parse = undefined, config = {}) => {
+const createConfigItem = (screen, route, pattern, path, parse = undefined, config = {}) => {
     // Normalize pattern to remove any leading, trailing slashes, duplicate slashes etc.
     pattern = pattern.split('/').filter(Boolean).join('/');
     const regex = pattern
@@ -408,16 +414,16 @@ const createConfigItem = (screen, routeNames, pattern, path, parse = undefined, 
         pattern,
         path,
         // The routeNames array is mutated, so copy it to keep the current state
-        routeNames: [...routeNames],
+        route: [...route],
         parse,
         // START FORK
-        ...expo.createConfig(screen, pattern, routeNames, config),
+        ...expo.createConfig(screen, pattern, route, config),
         // END FORK
     };
 };
 const findParseConfigForRoute = (routeName, flatConfig) => {
     for (const config of flatConfig) {
-        if (routeName === config.routeNames[config.routeNames.length - 1]) {
+        if (routeName === config.route[config.route.length - 1]?.name) {
             return config.parse;
         }
     }
