@@ -54,7 +54,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
         with:
-          channel: '#expo-sdk-bots'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Home app

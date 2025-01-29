@@ -95,7 +95,6 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
-          channel: '#expo-sdk-bots'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Updates E2E
