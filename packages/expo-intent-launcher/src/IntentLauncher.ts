@@ -97,7 +97,7 @@ export interface IntentLauncherParams {
    */
   type?: string;
   /**
-   * Category provides more details about the action the intent performs. See [Intent.addCategory](https://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String)).
+   * Category provides more details about the action the intent performs. See [`Intent.addCategory`](https://developer.android.com/reference/android/content/Intent#addCategory(java.lang.String)).
    */
   category?: string;
   /**
@@ -112,7 +112,7 @@ export interface IntentLauncherParams {
    */
   data?: string;
   /**
-   * Bitmask of flags to be used. See [Intent.setFlags](<https://developer.android.com/reference/android/content/Intent.html#setFlags(int)>) for more details.
+   * Bitmask of flags to be used. See [`Intent.setFlags`](https://developer.android.com/reference/android/content/Intent#setFlags(int)) for more details.
    */
   flags?: number;
   /**
@@ -162,9 +162,9 @@ export enum ResultCode {
 /**
  * Starts the specified activity. The method will return a promise which resolves when the user
  * returns to the app.
- * @param activityAction The action to be performed, e.g. `IntentLauncher.ActivityAction.WIRELESS_SETTINGS`.
+ * @param activityAction The action to be performed, for example, `IntentLauncher.ActivityAction.WIRELESS_SETTINGS`.
  * There are a few pre-defined constants you can use for this parameter.
- * You can find them at [expo-intent-launcher/src/IntentLauncher.ts](https://github.com/expo/expo/blob/main/packages/expo-intent-launcher/src/IntentLauncher.ts).
+ * You can find them at [`expo-intent-launcher/src/IntentLauncher.ts`](https://github.com/expo/expo/blob/main/packages/expo-intent-launcher/src/IntentLauncher.ts).
  * @param params An object of intent parameters.
  * @return A promise which fulfils with `IntentLauncherResult` object.
  */
