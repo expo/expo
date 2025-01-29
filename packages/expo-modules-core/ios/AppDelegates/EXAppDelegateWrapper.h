@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTAppDelegate ()
 
-- (RCTRootViewFactory *)createRCTRootViewFactory;
+//- (RCTRootViewFactory *)createRCTRootViewFactory;
 
 @end
 

@@ -19,7 +19,7 @@
 
 @implementation EXAppDelegateWrapper {
   EXExpoAppDelegate *_expoAppDelegate;
-	RCTRootViewFactory *_rootFac;
+//	RCTRootViewFactory *_rootFac;
 }
 
 - (instancetype)init
@@ -28,7 +28,7 @@
     // TODO(kudo) to remove the `initWithAppDelegate` initializer when `EXAppDelegateWrapper` is removed
     _expoAppDelegate = [[EXExpoAppDelegate alloc] initWithAppDelegate:self];
     _expoAppDelegate.shouldCallReactNativeSetup = NO;
-		_rootFac = [_expoAppDelegate createRCTRootViewFactory];
+//		_rootFac = [_expoAppDelegate createRCTRootViewFactory];
   }
   return self;
 }
@@ -76,14 +76,14 @@
 - (RCTRootViewFactory *)rootViewFactory
 {
 //	return _expoAppDelegate.rootViewFactory;
-	return _rootFac;
+	return _expoAppDelegate.rootViewFactory;
 //	return [_expoAppDelegate createRCTRootViewFactory];
 }
 
-- (RCTRootViewFactory *)createRCTRootViewFactory
-{
-  return [_expoAppDelegate createRCTRootViewFactory];
-}
+//- (RCTRootViewFactory *)createRCTRootViewFactory
+//{
+//  return [_expoAppDelegate createRCTRootViewFactory];
+//}
 
 - (void)customizeRootView:(UIView *)rootView
 {
