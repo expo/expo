@@ -24,9 +24,11 @@ struct Button: ExpoSwiftUI.View {
     .if(props.variant == .borderedProminent, {
       $0.buttonStyle(.borderedProminent)
     })
+    #if !os(tvOS)
     .if(props.variant == .borderless, {
       $0.buttonStyle(.borderless)
     })
+    #endif
 
 #if os(macOS)
     .if(props.variant == .accessoryBar, {
