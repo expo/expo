@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import type { ViewEvent } from '../..';
+import { ViewEvent } from '../../src';
 
 export type SliderProps = {
   /**
