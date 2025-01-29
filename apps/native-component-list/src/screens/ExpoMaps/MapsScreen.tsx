@@ -30,6 +30,14 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Maps Location',
+      route: 'expo-maps/location',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsLocationScreen'));
+      },
+    },
+    {
       name: 'Maps UI settings',
       route: 'expo-maps/ui-settings',
       options: {},
