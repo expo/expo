@@ -341,7 +341,12 @@
   // Reset app react host
   [self.delegate destroyReactInstance];
 
-  _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
+	// self? _appDelegate?
+	_appDelegate.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:_appDelegate];
+//	_appDelegate.reactNativeFactory = 
+  _appDelegate.reactNativeFactory.rootViewFactory = [_appDelegate createRCTRootViewFactory];
+//_appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory]; // original
+
 
 #if RCT_DEV
   NSURL *url = [self devLauncherURL];
