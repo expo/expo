@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Force NODE_ENV during npx expo export and do not allow overwriting outside of `--dev` flag.
+- Force NODE_ENV during npx expo export and do not allow overwriting outside of `--dev` flag. ([#34533](https://github.com/expo/expo/pull/34533) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
