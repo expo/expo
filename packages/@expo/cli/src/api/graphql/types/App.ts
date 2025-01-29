@@ -6,6 +6,7 @@ export const AppFragmentNode: TypedDocumentNode = gql`
     scopeKey
     ownerAccount {
       id
+      name
     }
   }
 `;
