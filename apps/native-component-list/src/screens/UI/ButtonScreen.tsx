@@ -1,6 +1,5 @@
 import { H4 } from '@expo/html-elements';
-import { Button } from '@expo/ui';
-import type { ButtonProps } from '@expo/ui';
+import { Button, ButtonProps } from '@expo/ui/components/Button';
 import * as React from 'react';
 import { Platform, FlatList, ScrollView, View, StyleSheet } from 'react-native';
 
