@@ -44,26 +44,20 @@ struct SwitchView: ExpoSwiftUI.View {
 
 struct IOSCheckboxToggleStyle: ToggleStyle {
   func makeBody(configuration: Configuration) -> some View {
-    if #available(iOS 15.1, tvOS 17.0, *) {
-      SwiftUI.Button(action: {
-        configuration.isOn.toggle()
-      }, label: {
-        HStack {
-          Image(systemName: configuration.isOn ? "checkmark.square" : "square")
-          configuration.label
-        }
-      })
-      .buttonStyle(BorderlessButtonStyle())
-    } else {
-      SwiftUI.Button(action: {
-        configuration.isOn.toggle()
-      }, label: {
-        HStack {
-          Image(systemName: configuration.isOn ? "checkmark.square" : "square")
-          configuration.label
-        }
-      })
-      .buttonStyle(BorderedButtonStyle())
+    SwiftUI.Button(action: {
+      configuration.isOn.toggle()
+    }, label: {
+      HStack {
+        Image(systemName: configuration.isOn ? "checkmark.square" : "square")
+        configuration.label
+      }
+    })
+    .if(props.variant == "button") {
+      if #available(iOS 15.1, tvOS 17.0, *) {
+        $0.buttonStyle(BorderlessButtonStyle())
+      } else {
+        $0.buttonStyle(BorderedButtonStyle())
+      }
     }
   }
 }
