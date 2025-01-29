@@ -138,7 +138,7 @@ export declare enum ResultCode {
      */
     Success = -1,
     /**
-     * Means that the activity was canceled, e.g. by tapping on the back button.
+     * Means that the activity was canceled, for example, by tapping on the back button.
      */
     Canceled = 0,
     /**
@@ -158,7 +158,7 @@ export declare enum ResultCode {
 export declare function startActivityAsync(activityAction: ActivityAction | string, params?: IntentLauncherParams): Promise<IntentLauncherResult>;
 /**
  * Opens an application by its package name.
- * @param packageName e.g., `com.google.android.gm` for Gmail.
+ * @param packageName For example: `com.google.android.gm` for Gmail.
  */
 export declare function openApplication(packageName: string): any;
 /**
@@ -166,7 +166,7 @@ export declare function openApplication(packageName: string): any;
  * The returned string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image` `<Image>`
  * component's `source` prop.
  *
- * @param packageName The package name of the target application, e.g. `com.google.android.gm` for Gmail.
+ * @param packageName The package name of the target application. For example, `com.google.android.gm` for Gmail.
  * @return A promise that resolves to the base64-encoded PNG icon of the specified application, or an empty string if the icon could not be retrieved.
  */
 export declare function getApplicationIconAsync(packageName: string): Promise<string>;
