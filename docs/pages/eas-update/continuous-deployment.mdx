@@ -4,13 +4,14 @@ description: Learn how to use the fingerprint runtime version and GitHub actions
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
 
 ## Prerequisites
 
 - You need to have a GitHub account and use it to host your git project.
 - You need to have an Expo token configured in your GitHub repository.
 
-<Collapsible summary="How to configure the EXPO_TOKEN environment variable on your GitHub repository">
+<Collapsible summary={<>How to configure the <CODE>EXPO_TOKEN</CODE> environment variable on your GitHub repository</>}>
 
 - Navigate to [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) and then:
 - Click **Create token** to create a new personal access token.
