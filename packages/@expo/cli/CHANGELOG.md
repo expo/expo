@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Force NODE_ENV during npx expo export and do not allow overwriting outside of `--dev` flag. ([#34533](https://github.com/expo/expo/pull/34533) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Add basic support for API routes with React Server Components enabled. ([#34211](https://github.com/expo/expo/pull/34211) by [@EvanBacon](https://github.com/EvanBacon))
