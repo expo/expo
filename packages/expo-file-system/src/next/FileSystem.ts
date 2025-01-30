@@ -50,7 +50,7 @@ export class FileBlob extends Blob {
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {
-    return this.file.bytes().buffer;
+    return this.file.bytes().buffer as ArrayBuffer;
   }
 
   async text(): Promise<string> {

@@ -3,13 +3,13 @@ export declare class FileSystemReadableStreamSource implements UnderlyingByteSou
     handle: FileHandle;
     size: number;
     type: "bytes";
-    constructor(handle: any);
+    constructor(handle: FileHandle);
     cancel(): void;
     pull(controller: ReadableByteStreamController): void;
 }
 export declare class FileSystemWritableSink implements UnderlyingSink {
     handle: FileHandle;
-    constructor(handle: any);
+    constructor(handle: FileHandle);
     abort(): void;
     close(): void;
     write(chunk: Uint8Array): void;
