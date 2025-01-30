@@ -11,8 +11,8 @@ All jobs support the following properties:
 
 - `name` (optional): The name of the job, displayed on the Expo dashboard.
 - `if` (optional): Conditional expression that determines if the job should run. Limited to 250 characters.
-- `needs` (optional): List of job keys that must complete successfully before this job runs
-- `after` (optional): List of job keys that must complete (success or failure) before this job runs
+- `needs` (optional): List of job keys that must complete successfully before this job runs.
+- `after` (optional): List of job keys that must complete (success or failure) before this job runs.
 
 You can also define an optional [`environment`](/eas/environment-variables/#environments) property in custom jobs of type:
 
@@ -86,7 +86,7 @@ jobs:
 
 Gets an existing build based supplied params:
 
-```yaml .eas/workflows/get-build.yaml
+```yaml .eas/workflows/get-build.yml
 jobs:
   get-build:
     name: Get Build
@@ -110,7 +110,7 @@ jobs:
 
 Deploy to EAS Hosting:
 
-```yaml .eas/workflows/deploy.yaml
+```yaml .eas/workflows/deploy.yml
 jobs:
   deploy:
     name: Deploy App
@@ -127,7 +127,7 @@ Run custom code during a workflow:
 
 {/* vale off */}
 
-```yaml .eas/workflows/custom-job.yaml
+```yaml .eas/workflows/custom-job.yml
 jobs:
   custom-job:
     name: Custom Task
