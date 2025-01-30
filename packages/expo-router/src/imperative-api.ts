@@ -73,6 +73,12 @@ export type Router = {
    * @hidden
    */
   reload: () => void;
+  /**
+   * Preloads the route when the component is rendered on a focused screen.
+   *
+   * @see [Preloading routes in React Navigation documentation](https://reactnavigation.org/docs/navigation-object/#preload).
+   */
+  preload?: boolean;
 };
 
 /**
@@ -90,4 +96,5 @@ export const router: Router = {
   canGoBack: () => store.canGoBack(),
   setParams: (params) => store.setParams(params),
   reload: () => store.reload(),
+  preload: (name) => store.preload(name),
 };

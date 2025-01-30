@@ -194,6 +194,23 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      * Replaces the initial screen with the current route.
      */
     withAnchor?: boolean;
+    /**
+     * Preloads the route when the component is rendered on a focused screen.
+     *
+     * @example
+     *```tsx
+     * import { Link } from 'expo-router';
+     *
+     * export default function Route() {
+     *  return (
+     *     <Link preload href="/feed">Login</Link>
+     *  );
+     *}
+     * ```
+     *
+     * @see [Preloading routes in React Navigation documentation](https://reactnavigation.org/docs/navigation-object/#preload).
+     */
+    preload?: boolean;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];
