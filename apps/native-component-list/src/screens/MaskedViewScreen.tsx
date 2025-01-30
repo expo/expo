@@ -56,48 +56,48 @@ export default function MaskedViewScreen() {
   const width = 240;
   const height = 200;
   return null;
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <AnimatedMaskView
-        style={{
-          width,
-          height,
-          transform: [{ scale: animatedScaleValue.current }],
-        }}
-        maskElement={
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'transparent',
-            }}>
-            <Image
-              style={{ width }}
-              resizeMode="contain"
-              source={require('../../assets/images/logo-wordmark.png')}
-            />
-            <Animated.Text
-              key={text}
-              style={{
-                backgroundColor: 'transparent',
-                fontWeight: 'bold',
-                fontSize: 40,
-                transform: [
-                  {
-                    rotate: animatedTextValue.current.interpolate({
-                      inputRange: [0, 360],
-                      outputRange: ['0deg', '360deg'],
-                    }),
-                  },
-                ],
-              }}>
-              {text}
-            </Animated.Text>
-          </View>
-        }>
-        <Image style={{ width, height }} source={require('../../assets/images/example1.jpg')} />
-      </AnimatedMaskView>
-    </View>
-  );
+  // return (
+  //   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //     <AnimatedMaskView
+  //       style={{
+  //         width,
+  //         height,
+  //         transform: [{ scale: animatedScaleValue.current }],
+  //       }}
+  //       maskElement={
+  //         <View
+  //           style={{
+  //             flex: 1,
+  //             alignItems: 'center',
+  //             justifyContent: 'center',
+  //             backgroundColor: 'transparent',
+  //           }}>
+  //           <Image
+  //             style={{ width }}
+  //             resizeMode="contain"
+  //             source={require('../../assets/images/logo-wordmark.png')}
+  //           />
+  //           <Animated.Text
+  //             key={text}
+  //             style={{
+  //               backgroundColor: 'transparent',
+  //               fontWeight: 'bold',
+  //               fontSize: 40,
+  //               transform: [
+  //                 {
+  //                   rotate: animatedTextValue.current.interpolate({
+  //                     inputRange: [0, 360],
+  //                     outputRange: ['0deg', '360deg'],
+  //                   }),
+  //                 },
+  //               ],
+  //             }}>
+  //             {text}
+  //           </Animated.Text>
+  //         </View>
+  //       }>
+  //       <Image style={{ width, height }} source={require('../../assets/images/example1.jpg')} />
+  //     </AnimatedMaskView>
+  //   </View>
+  // );
 }

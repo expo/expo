@@ -73,17 +73,17 @@
   return [_expoAppDelegate createRootViewController];
 }
 
-- (RCTRootViewFactory *)rootViewFactory
-{
-//	return _expoAppDelegate.rootViewFactory;
-	return _expoAppDelegate.rootViewFactory;
-//	return [_expoAppDelegate createRCTRootViewFactory];
-}
-
-//- (RCTRootViewFactory *)createRCTRootViewFactory
+//- (RCTRootViewFactory *)rootViewFactory
 //{
-//  return [_expoAppDelegate createRCTRootViewFactory];
+////	return _expoAppDelegate.rootViewFactory;
+//	return _expoAppDelegate.rootViewFactory;
+////	return [_expoAppDelegate createRCTRootViewFactory];
 //}
+
+- (RCTRootViewFactory *)createRCTRootViewFactory
+{
+  return [_expoAppDelegate createRCTRootViewFactory];
+}
 
 - (void)customizeRootView:(UIView *)rootView
 {

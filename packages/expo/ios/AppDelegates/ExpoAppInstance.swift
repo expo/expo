@@ -8,7 +8,6 @@ open class ExpoAppInstance: RCTAppDelegate {
    we pass an appDelegate to allow execute functions upon the true AppDelegate.
    */
   private weak var appDelegate: RCTAppDelegate?
-	private lazy var rootViewFactoryInstance: RCTRootViewFactory = createRCTRootViewFactoryPrivate()
 
   @objc
   public convenience init(appDelegate: RCTAppDelegate) {
@@ -34,12 +33,8 @@ open class ExpoAppInstance: RCTAppDelegate {
 #endif
   }
 
-	open override func rootViewFactory() -> RCTRootViewFactory {
-		return rootViewFactoryInstance
-	}
-
   @objc
-  open func createRCTRootViewFactoryPrivate() -> RCTRootViewFactory {
+  open override func createRCTRootViewFactory() -> RCTRootViewFactory {
     let appDelegate = self.appDelegate ?? self
 
     let bundleUrlBlock: RCTBundleURLBlock = { [weak self] in
