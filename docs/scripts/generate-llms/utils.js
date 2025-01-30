@@ -202,7 +202,9 @@ export function cleanContent(content) {
           return '```sh\n' + commands.join('\n') + '\n```';
         }
       )
-      .replace(/<br\s*\/?>/g, '');
+      .replace(/<br\s*\/?>/g, '')
+      .replace(/<PlatformAndDeviceForm\s*\/?>/g, '')
+      .replace(/<DevelopmentModeForm\s*\/?>/g, '');
 
     if (index % 2 === 0) {
       processed = processed.replace(/^import\s+.*?from\s+["'].*?["'];?\s*\n/gm, '');
