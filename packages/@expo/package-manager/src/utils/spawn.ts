@@ -1,5 +1,4 @@
-import spawnAsync, { SpawnOptions, SpawnPromise } from '@expo/spawn-async';
-import sudo from 'sudo-prompt';
+import { SpawnPromise } from '@expo/spawn-async';
 
 /**
  * The pending spawn promise is similar to the spawn promise from `@expo/spawn-async`.
