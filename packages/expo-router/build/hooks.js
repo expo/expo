@@ -67,17 +67,18 @@ exports.useNavigationContainerRef = useNavigationContainerRef;
  */
 function useRouter() {
     return react_1.default.useMemo(() => ({
-        push: router_store_1.store.push,
+        back: router_store_1.store.goBack,
+        canDismiss: router_store_1.store.canDismiss,
+        canGoBack: router_store_1.store.canGoBack,
         dismiss: router_store_1.store.dismiss,
         dismissAll: router_store_1.store.dismissAll,
         dismissTo: router_store_1.store.dismissTo,
-        canDismiss: router_store_1.store.canDismiss,
-        back: router_store_1.store.goBack,
+        navigate: router_store_1.store.navigate,
+        preload: router_store_1.store.preload,
+        push: router_store_1.store.push,
+        reload: router_store_1.store.reload,
         replace: router_store_1.store.replace,
         setParams: router_store_1.store.setParams,
-        canGoBack: router_store_1.store.canGoBack,
-        navigate: router_store_1.store.navigate,
-        reload: router_store_1.store.reload,
     }), []);
 }
 exports.useRouter = useRouter;

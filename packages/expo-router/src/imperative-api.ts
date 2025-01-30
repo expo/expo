@@ -73,6 +73,10 @@ export type Router = {
    * @hidden
    */
   reload: () => void;
+  /**
+   * The preload a screen in the background before navigating to it
+   */
+  preload: (name: Href) => void;
 };
 
 /**
@@ -90,4 +94,5 @@ export const router: Router = {
   canGoBack: () => store.canGoBack(),
   setParams: (params) => store.setParams(params),
   reload: () => store.reload(),
+  preload: (name) => store.preload(name),
 };
