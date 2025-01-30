@@ -75,7 +75,7 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
     return false;
   }
 
-  const packageManager = new PackageManager.CocoaPodsPackageManager({
+  const packageManager = PackageManager.CocoaPodsPackageManager.create(projectRoot, {
     cwd: path.join(projectRoot, 'ios'),
     silent: !(env.EXPO_DEBUG || env.CI),
   });
@@ -85,14 +85,16 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
       // prompt user -- do you want to install cocoapods right now?
       step.text = 'CocoaPods CLI not found in your PATH, installing it now.';
       step.stopAndPersist();
-      await PackageManager.CocoaPodsPackageManager.installCLIAsync({
+      const noisyPackageManager = await PackageManager.CocoaPodsPackageManager.create(projectRoot, {
+        cwd: path.join(projectRoot, 'ios'),
+        silent: !(env.EXPO_DEBUG || env.CI),
         nonInteractive: true,
         spawnOptions: {
-          ...packageManager.options,
           // Don't silence this part
           stdio: ['inherit', 'inherit', 'pipe'],
         },
       });
+      await noisyPackageManager.installCLIAsync();
       step.succeed('Installed CocoaPods CLI.');
       step = logNewSection('Running `pod install` in the `ios` directory.');
     } catch (error: any) {
