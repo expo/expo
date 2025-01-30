@@ -16,7 +16,7 @@ import { Step } from '~/ui/components/Step';
 
 The following files will be modified to set the Tailwind CSS configuration:
 
-<FileTree files={['app.json', 'package.json', 'global.css', 'tailwind.config.js', 'index.js']} />
+<FileTree files={['app.json', 'package.json', 'global.css', 'index.js']} />
 
 Ensure that your project is using Metro for web. You can verify this by checking the `web.bundler` field which is set to `metro` in the **app.json** file.
 
@@ -34,21 +34,18 @@ Ensure that your project is using Metro for web. You can verify this by checking
 
 ## Configuration
 
-Configure Tailwind CSS in your Expo project according to the [Tailwind PostCSS documentation](https://tailwindcss.com/docs/installation/using-postcss).]
+Configure Tailwind CSS in your Expo project according to the [Tailwind PostCSS documentation](https://tailwindcss.com/docs/installation/using-postcss).
 
 <Step label="1">
 
-Install `tailwindcss` and its required peer dependencies. Then, the run initialization command to create **tailwind.config.js** and **post.config.js** files in the root of your project.
+Install `tailwindcss` and its required peer dependencies.
 
 {/* vale off */}
 
 <Terminal
   cmd={[
     '# Install Tailwind and its peer dependencies',
-    '$ npx expo add tailwindcss postcss autoprefixer -- --dev',
-    '',
-    '# Create a Tailwind config file',
-    '$ npx tailwindcss init -p',
+    '$ npx expo add tailwindcss @tailwindcss/postcss postcss -- --dev',
   ]}
 />
 
@@ -58,53 +55,43 @@ Install `tailwindcss` and its required peer dependencies. Then, the run initiali
 
 <Step label="2">
 
-Add paths to all of your template files inside **tailwind.config.js**.
+Add Tailwind to your PostCSS configuration
 
-```js tailwind.config.js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    // Ensure this points to your source code
-    './app/**/*.{js,tsx,ts,jsx}',
-    // If you use a `src` directory, add: './src/**/*.{js,tsx,ts,jsx}'
-    // Do the same with `components`, `hooks`, `styles`, or any other top-level directories
-  ],
-  theme: {
-    extend: {},
+```js postcss.config.js
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
   },
-  plugins: [],
 };
 ```
-
-> If you are using Expo Router, consider using a root **src** directory to simplify this step. Learn more about [top-level src directory](/router/reference/src-directory/).
 
 </Step>
 
 <Step label="3">
 
-Create a **global.css** file in the root of your project and directives for each of Tailwind's layers:
+Create a CSS file that imports Tailwind CSS.
 
 ```css global.css
-/* This file adds the requisite utility classes for Tailwind to work. */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 ```
+
+> **info** You can choose any name for this file. Using `global.css` is common practice.
 
 </Step>
 
 <Step label="4">
 
-Import the **global.css** file in your **app/\_layout.tsx** (if using Expo Router) or **index.js** file:
+Import your CSS file in your **app/\_layout.tsx** (if using Expo Router) or **index.js** file:
 
 <CodeBlocksTable tabs={['app/_layout.tsx', 'index.js']}>
 
 ```tsx
+// If using Expo Router, import your CSS file in the app/_layout.tsx file
 import '../global.css';
 ```
 
 ```tsx
-// Import the global.css file in the index.js file:
+// Otherwise import your CSS file in the index.js file:
 import './global.css';
 ```
 
