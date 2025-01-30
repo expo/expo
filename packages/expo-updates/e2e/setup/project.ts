@@ -51,7 +51,6 @@ function getExpoDependencyChunks({
     ...(includeTV
       ? [
           [
-            'expo-ui',
             'expo-audio',
             'expo-av',
             'expo-blur',
@@ -62,6 +61,8 @@ function getExpoDependencyChunks({
             'expo-crypto',
             'expo-network',
             'expo-secure-store',
+            'expo-symbols',
+            'expo-ui',
             'expo-video',
           ],
         ]
