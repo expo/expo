@@ -71,6 +71,10 @@ export type Router = {
      * @hidden
      */
     reload: () => void;
+    /**
+     * The preload a screen in the background before navigating to it
+     */
+    preload: (name: Href) => void;
 };
 /**
  * @hidden

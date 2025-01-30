@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
+exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.preload = exports.reload = exports.navigate = void 0;
 const native_1 = require("@react-navigation/native");
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
@@ -47,6 +47,10 @@ function reload() {
     throw new Error('The reload method is not implemented in the client-side router yet.');
 }
 exports.reload = reload;
+function preload(href, options) {
+    return linkTo.bind(this)((0, href_1.resolveHref)(href), { ...options, event: 'PRELOAD' });
+}
+exports.preload = preload;
 function push(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
 }
