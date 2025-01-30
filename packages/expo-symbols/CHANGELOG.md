@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix tvOS compilation. ([#34556](https://github.com/expo/expo/pull/34556) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))

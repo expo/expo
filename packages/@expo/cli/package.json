@@ -77,7 +77,7 @@
     "fs-extra": "~8.1.0",
     "getenv": "^1.0.0",
     "glob": "^10.4.2",
-    "internal-ip": "^4.3.0",
+    "internal-ip": "6.1.0",
     "is-docker": "^2.0.0",
     "is-wsl": "^2.1.1",
     "lodash.debounce": "^4.0.8",

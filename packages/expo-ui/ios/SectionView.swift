@@ -18,7 +18,7 @@ struct SectionView: ExpoSwiftUI.View {
       }
     }
     
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       form.scrollDisabled(true)
     } else {
       form

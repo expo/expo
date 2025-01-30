@@ -12,6 +12,7 @@ import {
   getCoreAutolinkingSourcesFromExpoAndroid,
   getCoreAutolinkingSourcesFromExpoIos,
   getCoreAutolinkingSourcesFromRncCliAsync,
+  getGitIgnoreSourcesAsync,
 } from '../Bare';
 import { SourceSkips } from '../SourceSkips';
 
@@ -144,6 +145,16 @@ describe(getPackageJsonScriptSourcesAsync, () => {
         })
       );
     });
+  });
+});
+
+describe('getGitIgnoreSourcesAsync', () => {
+  it('should return empty sources when SourceSkips.GitIgnore is set', async () => {
+    const sources = await getGitIgnoreSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.GitIgnore })
+    );
+    expect(sources).toEqual([]);
   });
 });
 

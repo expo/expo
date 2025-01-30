@@ -4,6 +4,8 @@ import * as GoogleTypes from './google/GoogleMaps.types';
 import { MapView as GoogleMapsView } from './google/GoogleMapsView';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 export declare namespace GoogleMaps {
+    const requestPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
+    const getPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
     const View: typeof GoogleMapsView;
     const StreetView: typeof GoogleStreetView;
     const MapType: typeof GoogleTypes.MapType;

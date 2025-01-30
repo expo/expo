@@ -64,7 +64,11 @@ export async function exportAppAsync(
     | 'skipSSG'
   >
 ): Promise<void> {
-  setNodeEnv(dev ? 'development' : 'production');
+  // Force the environment during export and do not allow overriding it.
+  const environment = dev ? 'development' : 'production';
+  process.env.NODE_ENV = environment;
+  setNodeEnv(environment);
+
   require('@expo/env').load(projectRoot);
 
   const projectConfig = getConfig(projectRoot);

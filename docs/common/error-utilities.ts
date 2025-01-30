@@ -47,8 +47,13 @@ export function getRedirectPath(redirectPath: string): string {
   }
 
   // Catch any redirects to sdk paths without versions and send to the latest version
-  if (redirectPath.startsWith('/sdk/')) {
-    redirectPath = `/versions/latest${redirectPath}`;
+  if (redirectPath.startsWith('/sdk')) {
+    const hasDestination = !/^\/sdk\/?$/.test(redirectPath);
+    if (hasDestination) {
+      redirectPath = `/versions/latest${redirectPath}`;
+    } else {
+      redirectPath = `/versions/latest`;
+    }
   }
 
   // If a page is missing for react-native paths we redirect to react-native docs

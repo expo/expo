@@ -52,4 +52,9 @@ export enum SourceSkips {
    * Skip the whole `scripts` section in the project's package.json.
    */
   PackageJsonScriptsAll = 1 << 10,
+
+  /**
+   * Skip .gitignore files.
+   */
+  GitIgnore = 1 << 11,
 }
