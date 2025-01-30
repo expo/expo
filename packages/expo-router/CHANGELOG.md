@@ -6,11 +6,7 @@
 
 ### 🎉 New features
 
-- Add `router.preload(<href>)` and `<Link preload href={}>`
-
-### 🐛 Bug fixes
-
-- Fix initial URL when using Expo Go ([#34596](https://github.com/expo/expo/pull/34596) by [@marklawlor](https://github.com/marklawlor))
+- Add `router.preload(<href>)` and `<Link preload href={}>` to error boundary. ([#34558](https://github.com/expo/expo/pull/34558) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
