@@ -369,9 +369,6 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     setParams() {
       throw new Error('router.setParams() is not supported in React Server Components yet');
     },
-    preload() {
-      throw new Error('router.preload() is not supported in React Server Components yet');
-    },
 
     // TODO: The behavior here is not the same as before.
     navigate: push,
@@ -381,6 +378,7 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     back,
     forward,
     prefetch,
+    preload: prefetch,
   };
 }
 
