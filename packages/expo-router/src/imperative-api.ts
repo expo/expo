@@ -1,6 +1,6 @@
 import { store } from './global-state/router-store';
 import { NavigationOptions } from './global-state/routing';
-import { Href, Route, RouteInputParams, UnknownInputParams } from './types';
+import { Href, Route, RouteInputParams } from './types';
 
 /**
  * Returns `router` object for imperative navigation API.
