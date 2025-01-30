@@ -23,6 +23,7 @@ import {
   setParams,
   dismissTo,
   LinkToOptions,
+  preload,
 } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
@@ -74,6 +75,7 @@ export class RouterStore {
   setParams = setParams.bind(this);
   navigate = navigate.bind(this);
   reload = reload.bind(this);
+  preload = preload.bind(this);
 
   initialize(
     context: RequireContext,

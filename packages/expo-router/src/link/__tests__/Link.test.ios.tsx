@@ -1,7 +1,9 @@
+import { StackNavigationState, ParamListBase } from '@react-navigation/native';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Platform, Text, View } from 'react-native';
 
+import { screen, renderRouter } from '../../testing-library';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
 
@@ -136,4 +138,36 @@ it('strips web-only href attributes', () => {
       onPress: expect.any(Function),
     })
   );
+});
+
+it('can preload the href', () => {
+  renderRouter({
+    index: () => {
+      return <Link preload href="/test" />;
+    },
+    test: () => null,
+  });
+
+  expect(screen).toHaveRouterState({
+    index: 0,
+    key: expect.any(String),
+    preloadedRoutes: [
+      {
+        key: expect.any(String),
+        name: 'test',
+        params: {},
+      },
+    ],
+    routeNames: ['index', 'test', '_sitemap', '+not-found'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: 'index',
+        params: undefined,
+        path: '/',
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  } as StackNavigationState<ParamListBase>);
 });
