@@ -112,7 +112,7 @@ android {
   buildFeatures {
     buildConfig true
     prefab true
-    compose true
+    compose KOTLIN_MAJOR_VERSION >= 2
   }
 
   if (KOTLIN_MAJOR_VERSION < 2) {
