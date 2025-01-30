@@ -1,6 +1,8 @@
 package expo.modules.ui.menu
 
 import android.content.Context
+import android.view.GestureDetector
+import android.view.MotionEvent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
@@ -39,7 +42,7 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
-fun FlatMenu(elements: Array<MenuElement>, sectionTitle: String?, dispatchers: ContextMenuDispatchers) {
+fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatchers: ContextMenuDispatchers) {
   sectionTitle?.takeIf { !it.isEmpty() }?.let {
     SectionTitle(it)
   }
@@ -98,34 +101,54 @@ fun FlatMenu(elements: Array<MenuElement>, sectionTitle: String?, dispatchers: C
 
 data class ContextMenuDispatchers(
   val buttonPressed: ViewEventCallback<ContextMenuButtonPressedEvent>,
-  val switchCheckedChanged: ViewEventCallback<ContextMenuSwitchCheckedChangedEvent>,
-  val onExpandedChanged: ViewEventCallback<ContextMenuExpandedChangedEvent>
+  val switchCheckedChanged: ViewEventCallback<ContextMenuSwitchCheckedChangedEvent>
 )
 
-class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<MenuProps>(context, appContext) {
-  override val props = MenuProps()
-
+class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<ContextMenuProps>(context, appContext) {
+  override val props = ContextMenuProps()
+  val expanded = mutableStateOf(false)
   val onContextMenuButtonPressed by EventDispatcher<ContextMenuButtonPressedEvent>()
   val onContextMenuSwitchCheckedChanged by EventDispatcher<ContextMenuSwitchCheckedChangedEvent>()
-  val onExpandedChanged by EventDispatcher<ContextMenuExpandedChangedEvent>()
+
+  val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+    override fun onDown(e: MotionEvent): Boolean {
+      if (props.activationMethod.value == ActivationMethod.SINGLE_PRESS) {
+        expanded.value = !expanded.value
+      }
+      return super.onDown(e)
+    }
+
+    override fun onLongPress(e: MotionEvent) {
+      if (props.activationMethod.value == ActivationMethod.LONG_PRESS) {
+        expanded.value = !expanded.value
+      }
+      return super.onLongPress(e)
+    }
+  })
+
+
+  override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+    ev?.let {
+      gestureDetector.onTouchEvent(ev)
+    }
+    return super.dispatchTouchEvent(ev)
+  }
 
   init {
     setContent {
-      var expanded by remember { props.expanded }
       var elements by remember { props.elements }
 
-      return@setContent Box {
+      return@setContent Box{
         DropdownMenu(
-          expanded = expanded,
-          onDismissRequest = { onExpandedChanged(ContextMenuExpandedChangedEvent(false)) }
+          expanded = expanded.value,
+          onDismissRequest = { expanded.value = !expanded.value}
         ) {
           FlatMenu(
             elements,
             null,
             dispatchers = ContextMenuDispatchers(
               buttonPressed = onContextMenuButtonPressed,
-              switchCheckedChanged = onContextMenuSwitchCheckedChanged,
-              onExpandedChanged = onExpandedChanged
+              switchCheckedChanged = onContextMenuSwitchCheckedChanged
             )
           )
         }

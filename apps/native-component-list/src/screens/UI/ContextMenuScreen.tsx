@@ -9,16 +9,12 @@ import { View, Platform, StyleSheet } from 'react-native';
 import { Section } from '../../components/Page';
 
 const videoLink =
-  Platform.OS === 'ios'
-    ? 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_2MB.mp4'
-    : null;
+  'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_2MB.mp4';
 
 export default function ContextMenuScreen() {
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(1);
   const [switchChecked, setSwitchChecked] = React.useState<boolean>(true);
   const [switch2Checked, setSwitch2Checked] = React.useState<boolean>(true);
-
-  const [contextMenuExpanded, setContextMenuExpanded] = React.useState<boolean>(false);
 
   const player = useVideoPlayer(videoLink, (player) => {
     player.loop = true;
@@ -72,33 +68,17 @@ export default function ContextMenuScreen() {
   return (
     <View>
       <Section title="Single-Press Context Menu" row>
-        <ContextMenu
-          expanded={contextMenuExpanded}
-          onExpandedChanged={(e) => setContextMenuExpanded(e.nativeEvent.expanded)}
-          Items={MenuItems}
-          style={{ width: 150, height: 50 }}>
-          <Button
-            text="Show Menu"
-            onPress={() => setContextMenuExpanded(true)}
-            variant="bordered"
-            style={{ width: 150, height: 50 }}
-          />
+        <ContextMenu Items={MenuItems} style={{ width: 150, height: 50 }}>
+          <Button text="Show Menu" variant="bordered" style={{ width: 150, height: 50 }} />
         </ContextMenu>
       </Section>
-      {Platform.OS === 'ios' && (
-        <Section title="Long-Press Context Menu" row>
-          <ContextMenu
-            activationMethod="longPress"
-            expanded={contextMenuExpanded}
-            onExpandedChanged={(e) => setContextMenuExpanded(e.nativeEvent.expanded)}
-            style={styles.longPressMenu}
-            Items={MenuItems}>
-            <View style={styles.longPressMenu}>
-              <VideoView player={player} style={styles.longPressMenu} contentFit="cover" />
-            </View>
-          </ContextMenu>
-        </Section>
-      )}
+      <Section title="Long-Press Context Menu" row>
+        <ContextMenu activationMethod="longPress" style={styles.longPressMenu} Items={MenuItems}>
+          <View style={styles.longPressMenu}>
+            <VideoView player={player} style={styles.longPressMenu} contentFit="cover" />
+          </View>
+        </ContextMenu>
+      </Section>
     </View>
   );
 }

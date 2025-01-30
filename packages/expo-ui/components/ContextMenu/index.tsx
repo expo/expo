@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 import React, { ReactElement, ReactNode, useMemo } from 'react';
-import { NativeSyntheticEvent, StyleProp, ViewProps, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 
 import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
@@ -29,10 +29,8 @@ export type ContextMenuElementBase = { contextMenuElementID: string };
 
 /**
  * Activation method of the context menu.
- * - `singlePress`: The context menu is extended with a single tap. Does not isolate the content.
- * - `longPress`: The context menu is extended with a long press. Highlights the content by blurring the background.
- *
- * @platform ios
+ * - `singlePress`: The context menu is opened with a single tap. Does not isolate the content.
+ * - `longPress`: The context menu is opened with a long press. On iOS additionally Highlights the content by blurring the background.
  */
 export type ActivationMethod = 'singlePress' | 'longPress';
 
@@ -48,22 +46,6 @@ export type ContextMenuProps = {
   Items: React.ReactElement<ContextMenuContentProps>;
 
   /**
-   * Determines if the context menu is expanded.
-   *
-   * > On iOS this prop is not supported. iOS will automatically manage the expansion state based on the `activationMethod` prop.
-   *
-   * @platform android
-   */
-  expanded?: boolean;
-
-  /**
-   * Callback called when the context menu is about to be expanded or collapsed.
-   *
-   * @platform android
-   */
-  onExpandedChanged?: (event: { nativeEvent: { expanded: boolean } }) => void;
-
-  /**
    * Determines how the context menu will be activated.
    *
    * @platform ios
@@ -71,7 +53,8 @@ export type ContextMenuProps = {
   activationMethod?: ActivationMethod;
 
   /**
-   * Children of the submenu. Only `Button`, `Switch`, `Picker` and `Submenu` elements should be used.
+   * The contents of the submenu are used as an anchor for the context menu.
+   * The children will be wrapped in a pressable element, which triggers opening of the context menu.
    */
   children: ReactNode;
 
