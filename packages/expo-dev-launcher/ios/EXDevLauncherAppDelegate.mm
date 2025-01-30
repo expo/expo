@@ -12,6 +12,8 @@
 #import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 #endif
 
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
+
 @interface RCTAppDelegate ()
 
 - (RCTRootViewFactory *)createRCTRootViewFactory;
@@ -19,13 +21,18 @@
 
 @end
 
-@implementation EXDevLauncherAppDelegate
+@implementation EXDevLauncherAppDelegate {
+//	RCTRootViewFactory * _rootViewFactory;
+	
+}
 
 
 - (instancetype)initWithBundleURLGetter:(nonnull EXDevLauncherBundleURLGetter)bundleURLGetter
 {
   if (self = [super init]) {
     self.bundleURLGetter = bundleURLGetter;
+		self.dependencyProvider = [RCTAppDependencyProvider new];
+//		_rootViewFactory = [self createRCTRootViewFactory];
   }
   return self;
 }
@@ -46,14 +53,16 @@
   }
   return [super getModuleClassFromName:name];
 }
-//createRCTRootViewFactory
+
 - (RCTRootViewFactory *)createRCTRootViewFactory {
 	return self.reactNativeFactory.rootViewFactory;
 }
 
 - (RCTRootViewFactory *)rootViewFactory
 {
-	return [self createRCTRootViewFactory];
+	return self.reactNativeFactory.rootViewFactory;
 }
+
+//dependencyProvider
 
 @end

@@ -294,7 +294,8 @@
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
-  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
+	// xxxvojta
+  if (NO && _lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
     // When launch to the last opend url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
     NSTimeInterval requestTimeout = 10.0;
@@ -341,11 +342,11 @@
   // Reset app react host
   [self.delegate destroyReactInstance];
 
-	// self? _appDelegate?
-	_appDelegate.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:_appDelegate];
+	// TODO this is wrong
+//	_appDelegate.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:_appDelegate];
 //	_appDelegate.reactNativeFactory = 
-  _appDelegate.reactNativeFactory.rootViewFactory = [_appDelegate createRCTRootViewFactory];
-//_appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory]; // original
+//  _appDelegate.reactNativeFactory.rootViewFactory = [_appDelegate createRCTRootViewFactory];
+//	_appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory]; // original
 
 
 #if RCT_DEV
