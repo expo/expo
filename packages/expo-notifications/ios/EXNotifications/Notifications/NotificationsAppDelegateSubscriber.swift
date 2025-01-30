@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import Foundation
 
-public class PushTokenAppDelegateSubscriber: ExpoAppDelegateSubscriber {
+public class NotificationsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   let notificationCenterManager = NotificationCenterManager.shared
 
   public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
