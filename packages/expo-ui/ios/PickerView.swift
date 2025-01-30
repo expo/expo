@@ -9,6 +9,7 @@ class PickerProps: ExpoSwiftUI.ViewProps {
   @Field var variant: String?
   @Field var label: String?
   var onOptionSelected = EventDispatcher()
+  var internalOnOptionSelected: (([String: Any]) -> Void)?
 }
 
 struct PickerView: ExpoSwiftUI.View {
@@ -32,10 +33,12 @@ struct PickerView: ExpoSwiftUI.View {
         if props.selectedIndex == newValue {
           return
         }
-        props.onOptionSelected([
+        let payload = [
           "index": newValue ?? 0,
           "label": props.options[newValue ?? 0]
-        ])
+        ]
+        props.onOptionSelected(payload)
+        props.internalOnOptionSelected?(payload)
       })
       .onReceive(props.selectedIndex.publisher, perform: { newValue in
         if prevSelectedIndex == newValue {
