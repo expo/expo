@@ -1,0 +1,36 @@
+diff --git a/node_modules/react-native-screens/cpp/RNSScreenRemovalListener.cpp b/node_modules/react-native-screens/cpp/RNSScreenRemovalListener.cpp
+index e634a46..47a69b9 100644
+--- a/node_modules/react-native-screens/cpp/RNSScreenRemovalListener.cpp
++++ b/node_modules/react-native-screens/cpp/RNSScreenRemovalListener.cpp
+@@ -8,12 +8,12 @@ std::optional<MountingTransaction> RNSScreenRemovalListener::pullTransaction(
+     const TransactionTelemetry &telemetry,
+     ShadowViewMutationList mutations) const {
+   for (const ShadowViewMutation &mutation : mutations) {
+-    if (mutation.type == ShadowViewMutation::Type::Remove &&
+-        mutation.oldChildShadowView.componentName != nullptr &&
+-        strcmp(mutation.parentShadowView.componentName, "RNSScreenStack") ==
+-            0) {
+-      listenerFunction_(mutation.oldChildShadowView.tag);
+-    }
++//    if (mutation.type == ShadowViewMutation::Type::Remove &&
++//        mutation.oldChildShadowView.componentName != nullptr &&
++//        strcmp(mutation.parentShadowView.componentName, "RNSScreenStack") ==
++//            0) {
++//      listenerFunction_(mutation.oldChildShadowView.tag);
++//    }
+   }
+ 
+   return MountingTransaction{
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.mm b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+index bfeeb00..e3b4234 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStack.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+@@ -1217,7 +1217,7 @@ RNS_IGNORE_SUPER_CALL_END
+                withSurfaceTelemetry:(const facebook::react::SurfaceTelemetry &)surfaceTelemetry
+ {
+   for (const auto &mutation : transaction.getMutations()) {
+-    if (mutation.parentShadowView.tag == self.tag &&
++    if (mutation.parentTag == self.tag &&
+         (mutation.type == react::ShadowViewMutation::Type::Insert ||
+          mutation.type == react::ShadowViewMutation::Type::Remove)) {
+       // we need to wait until children have their layout set. At this point they don't have the layout

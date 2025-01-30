@@ -26,11 +26,17 @@
 
 #endif
 
-@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTTurboModuleManagerDelegate>
+//@implementation EXAppDelegateWrapper {
+//	EXExpoAppDelegate *_expoAppDelegate;
+//	//	RCTRootViewFactory *_rootFac;
+//}
 
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTTurboModuleManagerDelegate>
 @end
 
-@implementation DevClientAppDelegate
+@implementation DevClientAppDelegate {
+  RCTRootViewFactory * _internalRootViewFactory;
+}
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
@@ -64,12 +70,17 @@
 //																															 initialProperties:self.initialProps
 //																																	 launchOptions:launchOptions];
 
-	self.reactNativeFactory.rootViewFactory = [self createRCTRootViewFactory];
+	_internalRootViewFactory = [self createRCTRootViewFactory];
 //  self.rootViewFactory = [self createRCTRootViewFactory];
 
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
+}
+
+- (RCTRootViewFactory *)rootViewFactory
+{
+	return _internalRootViewFactory;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

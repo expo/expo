@@ -9,7 +9,7 @@ open class ExpoAppInstance: RCTAppDelegate {
    we pass an appDelegate to allow execute functions upon the true AppDelegate.
    */
   private weak var appDelegate: RCTAppDelegate?
-	private lazy var rootViewFactoryInstance: RCTRootViewFactory = createRCTRootViewFactoryPrivate()
+//	private lazy var rootViewFactoryInstance: RCTRootViewFactory = createRCTRootViewFactory()
 
   @objc
   public convenience init(appDelegate: RCTAppDelegate) {
@@ -32,13 +32,13 @@ open class ExpoAppInstance: RCTAppDelegate {
     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
   }
+//
+//	open override func rootViewFactory() -> RCTRootViewFactory {
+//		return rootViewFactoryInstance
+//	}
 
-	open override func rootViewFactory() -> RCTRootViewFactory {
-		return rootViewFactoryInstance
-	}
-
-  @objc
-  open func createRCTRootViewFactoryPrivate() -> RCTRootViewFactory {
+	@objc
+  open override func createRCTRootViewFactory() -> RCTRootViewFactory {
     let appDelegate = self.appDelegate ?? self
 
     let bundleUrlBlock: RCTBundleURLBlock = { [weak self] in
@@ -111,4 +111,9 @@ open class ExpoAppInstance: RCTAppDelegate {
         reactDelegateHandlers.append(handlerTuple.handler.init())
       }
   }
+// TODO
+//	- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+//	{
+//		return RCTAppSetupDefaultModuleFromClass(moduleClass, self.dependencyProvider);
+//	}
 }

@@ -1,0 +1,187 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp
+index 8102462..e0c182a 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp
+@@ -153,7 +153,7 @@ void LayoutAnimationsProxy::parseRemoveMutations(
+     if (mutation.type == ShadowViewMutation::Remove) {
+       updateIndexForMutation(mutation);
+       auto tag = mutation.oldChildShadowView.tag;
+-      auto parentTag = mutation.parentShadowView.tag;
++			auto parentTag = mutation.parentTag;
+       auto unflattenedParentTag = parentTag; // temporary
+ 
+       std::shared_ptr<MutationNode> mutationNode;
+@@ -287,8 +287,8 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
+       }
+       case ShadowViewMutation::Type::Insert: {
+         updateIndexForMutation(mutation);
+-        if (nodeForTag_.contains(mutation.parentShadowView.tag)) {
+-          nodeForTag_[mutation.parentShadowView.tag]->applyMutationToIndices(
++        if (nodeForTag_.contains(mutation.parentTag)) {
++					nodeForTag_[mutation.parentTag]->applyMutationToIndices(
+               mutation);
+         }
+ 
+@@ -296,10 +296,10 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
+           auto layoutAnimationIt = layoutAnimations_.find(tag);
+           if (layoutAnimationIt == layoutAnimations_.end()) {
+             if (oldShadowViewsForReparentings.contains(tag)) {
+-              filteredMutations.push_back(ShadowViewMutation::InsertMutation(
+-                  mutation.parentShadowView,
+-                  oldShadowViewsForReparentings[tag],
+-                  mutation.index));
++//              filteredMutations.push_back(ShadowViewMutation::InsertMutation(
++//                  mutation.parentShadowView,
++//                  oldShadowViewsForReparentings[tag],
++//                  mutation.index));
+             } else {
+               filteredMutations.push_back(mutation);
+             }
+@@ -307,8 +307,8 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
+           }
+ 
+           auto oldView = *layoutAnimationIt->second.currentView;
+-          filteredMutations.push_back(ShadowViewMutation::InsertMutation(
+-              mutation.parentShadowView, oldView, mutation.index));
++//          filteredMutations.push_back(ShadowViewMutation::InsertMutation(
++//              mutation.parentShadowView, oldView, mutation.index));
+           continue;
+         }
+ 
+@@ -327,8 +327,8 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
+         std::shared_ptr<ShadowView> newView =
+             cloneViewWithoutOpacity(mutation, propsParserContext);
+ 
+-        filteredMutations.push_back(ShadowViewMutation::UpdateMutation(
+-            mutation.newChildShadowView, *newView, mutation.parentShadowView));
++//        filteredMutations.push_back(ShadowViewMutation::UpdateMutation(
++//            mutation.newChildShadowView, *newView, mutation.parentShadowView));
+         break;
+       }
+ 
+@@ -556,11 +556,11 @@ void LayoutAnimationsProxy::updateIndexForMutation(
+   if (mutation.index == -1) {
+     return;
+   }
+-  if (!nodeForTag_.contains(mutation.parentShadowView.tag)) {
++	if (!nodeForTag_.contains(mutation.parentTag)) {
+     return;
+   }
+ 
+-  auto parent = nodeForTag_[mutation.parentShadowView.tag];
++  auto parent = nodeForTag_[mutation.parentTag];
+ 
+   int size = 0, prevIndex = -1, offset = 0;
+ 
+@@ -606,9 +606,9 @@ void LayoutAnimationsProxy::createLayoutAnimation(
+           ? mutation.oldChildShadowView
+           : mutation.newChildShadowView);
+   auto currentView = std::make_shared<ShadowView>(oldView);
+-  auto parentView = std::make_shared<ShadowView>(mutation.parentShadowView);
+-  layoutAnimations_.insert_or_assign(
+-      tag, LayoutAnimation{finalView, currentView, parentView, {}, count});
++//  auto parentView = std::make_shared<ShadowView>(mutation.parentShadowView);
++//  layoutAnimations_.insert_or_assign(
++//      tag, LayoutAnimation{finalView, currentView, parentView, {}, count});
+ }
+ 
+ void LayoutAnimationsProxy::startEnteringAnimation(
+@@ -619,36 +619,36 @@ void LayoutAnimationsProxy::startEnteringAnimation(
+ #endif
+   auto finalView = std::make_shared<ShadowView>(mutation.newChildShadowView);
+   auto current = std::make_shared<ShadowView>(mutation.newChildShadowView);
+-  auto parent = std::make_shared<ShadowView>(mutation.parentShadowView);
+-
+-  auto &viewProps =
+-      static_cast<const ViewProps &>(*mutation.newChildShadowView.props);
+-  auto opacity = viewProps.opacity;
+-
+-  uiScheduler_->scheduleOnUI(
+-      [finalView, current, parent, mutation, opacity, this, tag]() {
+-        Rect window{};
+-        {
+-          auto lock = std::unique_lock<std::recursive_mutex>(mutex);
+-          layoutAnimations_.insert_or_assign(
+-              tag, LayoutAnimation{finalView, current, parent, opacity});
+-          window =
+-              surfaceManager.getWindow(mutation.newChildShadowView.surfaceId);
+-        }
+-
+-        Snapshot values(mutation.newChildShadowView, window);
+-        jsi::Object yogaValues(uiRuntime_);
+-        yogaValues.setProperty(uiRuntime_, "targetOriginX", values.x);
+-        yogaValues.setProperty(uiRuntime_, "targetGlobalOriginX", values.x);
+-        yogaValues.setProperty(uiRuntime_, "targetOriginY", values.y);
+-        yogaValues.setProperty(uiRuntime_, "targetGlobalOriginY", values.y);
+-        yogaValues.setProperty(uiRuntime_, "targetWidth", values.width);
+-        yogaValues.setProperty(uiRuntime_, "targetHeight", values.height);
+-        yogaValues.setProperty(uiRuntime_, "windowWidth", values.windowWidth);
+-        yogaValues.setProperty(uiRuntime_, "windowHeight", values.windowHeight);
+-        layoutAnimationsManager_->startLayoutAnimation(
+-            uiRuntime_, tag, LayoutAnimationType::ENTERING, yogaValues);
+-      });
++//  auto parent = std::make_shared<ShadowView>(mutation.parentShadowView);
++//
++//  auto &viewProps =
++//      static_cast<const ViewProps &>(*mutation.newChildShadowView.props);
++//  auto opacity = viewProps.opacity;
++//
++//  uiScheduler_->scheduleOnUI(
++//      [finalView, current, parent, mutation, opacity, this, tag]() {
++//        Rect window{};
++//        {
++//          auto lock = std::unique_lock<std::recursive_mutex>(mutex);
++//          layoutAnimations_.insert_or_assign(
++//              tag, LayoutAnimation{finalView, current, parent, opacity});
++//          window =
++//              surfaceManager.getWindow(mutation.newChildShadowView.surfaceId);
++//        }
++//
++//        Snapshot values(mutation.newChildShadowView, window);
++//        jsi::Object yogaValues(uiRuntime_);
++//        yogaValues.setProperty(uiRuntime_, "targetOriginX", values.x);
++//        yogaValues.setProperty(uiRuntime_, "targetGlobalOriginX", values.x);
++//        yogaValues.setProperty(uiRuntime_, "targetOriginY", values.y);
++//        yogaValues.setProperty(uiRuntime_, "targetGlobalOriginY", values.y);
++//        yogaValues.setProperty(uiRuntime_, "targetWidth", values.width);
++//        yogaValues.setProperty(uiRuntime_, "targetHeight", values.height);
++//        yogaValues.setProperty(uiRuntime_, "windowWidth", values.windowWidth);
++//        yogaValues.setProperty(uiRuntime_, "windowHeight", values.windowHeight);
++//        layoutAnimationsManager_->startLayoutAnimation(
++//            uiRuntime_, tag, LayoutAnimationType::ENTERING, yogaValues);
++//      });
+ }
+ 
+ void LayoutAnimationsProxy::startExitingAnimation(
+@@ -786,12 +786,12 @@ void LayoutAnimationsProxy::maybeUpdateWindowDimensions(
+     SurfaceId surfaceId) const {
+   // This is a hacky way to obtain the window dimensions.
+   // We can identify the root, by checking if its tag is equal to the surfaceId
+-  if (mutation.parentShadowView.tag == surfaceId) {
+-    surfaceManager.updateWindow(
+-        surfaceId,
+-        mutation.parentShadowView.layoutMetrics.frame.size.width,
+-        mutation.parentShadowView.layoutMetrics.frame.size.height);
+-  }
++//  if (mutation.pare == surfaceId) {
++//    surfaceManager.updateWindow(
++//        surfaceId,
++//        mutation.parentShadowView.layoutMetrics.frame.size.width,
++//        mutation.parentShadowView.layoutMetrics.frame.size.height);
++//  }
+ }
+ 
+ } // namespace reanimated
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.cpp
+index c8105bf..26d7d6d 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.cpp
+@@ -31,7 +31,7 @@ Rect SurfaceManager::getWindow(SurfaceId surfaceId) {
+ }
+ 
+ void Node::applyMutationToIndices(ShadowViewMutation mutation) {
+-  if (tag != mutation.parentShadowView.tag) {
++	if (tag != mutation.parentTag) {
+     return;
+   }
+ 
