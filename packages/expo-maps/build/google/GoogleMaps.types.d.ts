@@ -1,7 +1,7 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
+import type { PermissionResponse } from 'expo-modules-core';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Coordinates } from '../shared.types';
-import { PermissionResponse } from 'expo-modules-core';
 export type Marker = {
     /**
      * The coordinates of the marker.
