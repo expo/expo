@@ -139,7 +139,7 @@ internal struct AnimationEffect: Record {
   @Field var wholeSymbol: Bool?
   @Field var direction: AnimationDirection?
 
-  @available(iOS 17.0, *)
+  @available(iOS 17.0, tvOS 17.0, *)
   func toEffect() -> EffectAdding {
     switch type {
     case .bounce:
@@ -160,7 +160,7 @@ internal struct VariableColorSpec: Record {
   @Field var hideInactiveLayers: Bool?
   @Field var dimInactiveLayers: Bool?
 
-  @available(iOS 17.0, *)
+  @available(iOS 17.0, tvOS 17.0, *)
   func toVariableEffect() -> VariableColorSymbolEffect {
     var effect: VariableColorSymbolEffect = .variableColor
 
