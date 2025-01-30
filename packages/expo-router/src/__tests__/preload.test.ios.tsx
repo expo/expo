@@ -1,10 +1,10 @@
 import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import React from 'react';
 
+import { Preload } from '../Preload';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import { screen, renderRouter, act } from '../testing-library';
-import { Preload } from '../Preload';
 
 it('preload a sibling route', () => {
   renderRouter({
