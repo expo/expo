@@ -22,7 +22,7 @@ abstract class FileSystemPath(public var file: File) : SharedObject() {
           // Recursively delete subdirectories
           delete(child)
         } else {
-          if(!child.delete()) {
+          if (!child.delete()) {
             throw UnableToDeleteException("failed to delete '${child.path}'")
           }
         }
