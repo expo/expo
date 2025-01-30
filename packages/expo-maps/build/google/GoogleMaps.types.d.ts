@@ -28,6 +28,16 @@ export type Marker = {
      */
     icon?: SharedRefType<'image'>;
 };
+export type UserLocation = {
+    /**
+     * User location coordinates.
+     */
+    coordinates: Coordinates;
+    /**
+     * Camera should follow the user location.
+     */
+    followUserLocation: boolean;
+};
 export type CameraPosition = {
     /**
      * The middle point of the camera.
@@ -177,6 +187,10 @@ export type MapProps = {
      * Defines the color scheme for the map.
      */
     colorScheme?: MapColorScheme;
+    /**
+     * User location, overrides default behavior.
+     */
+    userLocation?: UserLocation;
     /**
      * Lambda invoked when the map is loaded.
      */
