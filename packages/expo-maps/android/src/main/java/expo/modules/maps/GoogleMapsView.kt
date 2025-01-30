@@ -22,6 +22,7 @@ import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
@@ -164,7 +165,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
       props.userLocation.value.coordinates?.let { coordinates ->
         locationSource.onLocationChanged(coordinates.toLocation())
         if (props.userLocation.value.followUserLocation) {
-          cameraState.value.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
+          cameraState.value.cameraMoveStartedReason.let { reason ->
+            if (reason != CameraMoveStartedReason.GESTURE) {
+              cameraState.value.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
+            }
+          }
         }
       }
     }
