@@ -37,11 +37,11 @@ export declare class Directory {
     /**
      * Copies a directory.
      */
-    copy(destination: Directory | File): any;
+    copy(destination: Directory | File): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File): any;
+    move(destination: Directory | File): void;
     /**
      * @hidden
      * Lists the contents of a directory. Should not be used directly, as it returns a list of paths.
@@ -115,11 +115,11 @@ export declare class File {
     /**
      * Copies a file.
      */
-    copy(destination: Directory | File): any;
+    copy(destination: Directory | File): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File): any;
+    move(destination: Directory | File): void;
     /**
      * Returns a FileHandle object that can be used to read and write data to the file.
      * @throws Error if the file does not exist or cannot be opened.

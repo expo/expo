@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix types that are erroring in default template. ([#34520](https://github.com/expo/expo/pull/34520) by [@aleqsio](https://github.com/aleqsio))
 - [Android] fixed issue with deleting a directory with children ([#34550](https://github.com/expo/expo/pull/34550) by [@chrfalch](https://github.com/chrfalch))
 
 ## 18.0.7 — 2025-01-10

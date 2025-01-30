@@ -43,12 +43,12 @@ export declare class Directory {
   /**
    * Copies a directory.
    */
-  copy(destination: Directory | File);
+  copy(destination: Directory | File): void;
 
   /**
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
-  move(destination: Directory | File);
+  move(destination: Directory | File): void;
 
   /**
    * @hidden
@@ -132,12 +132,12 @@ export declare class File {
   /**
    * Copies a file.
    */
-  copy(destination: Directory | File);
+  copy(destination: Directory | File): void;
 
   /**
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
-  move(destination: Directory | File);
+  move(destination: Directory | File): void;
 
   /**
    * Returns a FileHandle object that can be used to read and write data to the file.
