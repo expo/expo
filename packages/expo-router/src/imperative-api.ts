@@ -74,9 +74,11 @@ export type Router = {
    */
   reload: () => void;
   /**
-   * The preload a screen in the background before navigating to it
+   * Preloads the route when the component is rendered on a focused screen.
+   *
+   * @see [Preloading routes in React Navigation documentation](https://reactnavigation.org/docs/navigation-object/#preload).
    */
-  preload: (name: Href) => void;
+  preload?: boolean;
 };
 
 /**

@@ -250,6 +250,7 @@ export const general = [
       makePage('router/advanced/modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
+      makePage('router/advanced/preloading.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),

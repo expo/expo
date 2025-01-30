@@ -196,6 +196,19 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
     withAnchor?: boolean;
     /**
      * Preloads the route when the component is rendered on a focused screen.
+     *
+     * @example
+     *```tsx
+     * import { Link } from 'expo-router';
+     *
+     * export default function Route() {
+     *  return (
+     *     <Link preload href="/feed">Login</Link>
+     *  );
+     *}
+     * ```
+     *
+     * @see [Preloading routes in React Navigation documentation](https://reactnavigation.org/docs/navigation-object/#preload).
      */
     preload?: boolean;
 }

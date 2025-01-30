@@ -1,0 +1,53 @@
+---
+title: Preloading routes
+description: Learn how to use preload routes in Expo Router.
+sidebar_title: Preloading routes
+---
+
+> **info** Available in SDK 52 and above.
+
+Preloading a route means that the route will be rendered in the background. All the components in the screen will be mounted and the useEffect hooks will be called. This can be useful when you want to improve the perceived performance by hiding the delay in mounting heavy components or loading data.
+
+Depending on the navigator, preload may work slightly differently:
+
+In the stack navigator, the screen will be rendered off-screen and animated in when you navigate to it.
+In a tab or drawer navigator (bottom tabs, drawer, etc.), the existing screen will be rendered as if lazy was set to false. Calling preload on a screen that is already rendered will not have any effect.
+
+There are multiple ways to preload a route:
+
+## Using `<Link />`
+
+Using the `preload` prop on `<Link />` will preload href the `<Link />` is rendered on a focused screen.
+
+```tsx LinkWithPreload.tsx
+import { Link, LinkProps } from 'expo-router';
+
+export default function LinkWithPreload(props: LinkProps) {
+  return <Link preload {...props} />;
+}
+```
+
+## Using `router.preload()`
+
+The imperative command, `router.preload(<href>)`, give you control when routes are preloaded. It is available on both the exported `router` and via `useRouter()`
+
+```tsx app/home.tsx
+import { router } from 'expo-router';
+
+export default function LinkWithPreload(props: LinkProps) {
+  return (
+    <Pressable
+      onPress={() => {
+        // Start preloading the next router
+        router.preload('/next-route');
+
+        // Expensive logic
+        router.push('/next-route');
+      }}></Pressable>
+  );
+}
+```
+
+## Using `<Preload />`
+
+The component `<Preload href={<href>} />` works the same as `<Link />` and will preload the href when rendered on a focused screen. It does not render anything to the screen.
