@@ -17,13 +17,15 @@ struct PickerView: ExpoSwiftUI.View {
   @EnvironmentObject var props: PickerProps
 
   var body: some View {
-    if #available(iOS 17.0, *) {
+    if #available(iOS 17.0, tvOS 17.0, *) {
       Picker(props.label ?? "", selection: $selection) {
         ForEach(Array(props.options.enumerated()), id: \.element) { index, option in
           Text(option).tag(index)
         }
       }
+      #if !os(tvOS)
       .if(props.variant == "wheel", { $0.pickerStyle(.wheel) })
+      #endif
       .if(props.variant == "segmented", { $0.pickerStyle(.segmented) })
       .if(props.variant == "menu", { $0.pickerStyle(.menu) })
       .onChange(of: selection, perform: { newValue in

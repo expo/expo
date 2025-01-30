@@ -26,6 +26,7 @@ struct SliderView: ExpoSwiftUI.View {
   @State var value: Float = 0.0
 
   var body: some View {
+    #if !os(tvOS)
     Slider(value: $value, in: props.min...props.max, step: getStep(props.min, props.max, props.steps) )
     .onChange(of: value, perform: { newValue in
       if props.value == newValue {
@@ -42,5 +43,8 @@ struct SliderView: ExpoSwiftUI.View {
       sliderValue = min(sliderValue, props.max)
       value = sliderValue
     })
+    #else
+    Text("Slider not supported on this platform")
+    #endif
   }
 }

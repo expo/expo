@@ -53,7 +53,7 @@ You can configure `expo-video` using its built-in [config plugin](/config-plugin
     {
       name: 'supportsPictureInPicture',
       description:
-        'A boolean value to enable Picture-in-Picture on Android and iOS. Configures the `android:supportsPictureInPicture` property on Android and the `UIBackgroundModes` array in the **Info.plist** file on iOS. When `undefined`, the configuration is not modified.',
+        'A boolean value to enable Picture-in-Picture on Android and iOS. If `true`, enables the `android:supportsPictureInPicture` property on Android and adds the `audio` key to the `UIBackgroundModes` array in the **Info.plist** file on iOS. If `false`, the key is removed. When `undefined`, the configuration is not modified.',
       default: 'undefined',
     },
   ]}

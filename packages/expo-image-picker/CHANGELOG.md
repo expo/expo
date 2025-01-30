@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for ordered selection and default tab selection on Android. ([#34223](https://github.com/expo/expo/pull/34223) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
