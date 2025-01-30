@@ -1,13 +1,13 @@
 import * as AppleTypes from './apple/AppleMaps.types';
 import { MapView as AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
-import * as GoogleMapsModule from './google/GoogleMapsModule';
+import GoogleMapsModule from './google/GoogleMapsModule';
 import { MapView as GoogleMapsView } from './google/GoogleMapsView';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 export var GoogleMaps;
 (function (GoogleMaps) {
-    GoogleMaps.requestPermissionsAsync = GoogleMapsModule.requestPermissionsAsync;
-    GoogleMaps.getPermissionsAsync = GoogleMapsModule.getPermissionsAsync;
+    GoogleMaps.requestPermissionsAsync = async () => GoogleMapsModule?.requestPermissionsAsync();
+    GoogleMaps.getPermissionsAsync = async () => GoogleMapsModule?.getPermissionsAsync();
     GoogleMaps.View = GoogleMapsView;
     GoogleMaps.StreetView = GoogleStreetView;
     GoogleMaps.MapType = GoogleTypes.MapType;

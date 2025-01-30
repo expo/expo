@@ -1,12 +1,11 @@
 import * as AppleTypes from './apple/AppleMaps.types';
 import { MapView as AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
-import * as GoogleMapsModule from './google/GoogleMapsModule';
 import { MapView as GoogleMapsView } from './google/GoogleMapsView';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 export declare namespace GoogleMaps {
-    const requestPermissionsAsync: typeof GoogleMapsModule.requestPermissionsAsync;
-    const getPermissionsAsync: typeof GoogleMapsModule.getPermissionsAsync;
+    const requestPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
+    const getPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
     const View: typeof GoogleMapsView;
     const StreetView: typeof GoogleStreetView;
     const MapType: typeof GoogleTypes.MapType;

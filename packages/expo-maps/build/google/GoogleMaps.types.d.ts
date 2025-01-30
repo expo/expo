@@ -1,6 +1,7 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Coordinates } from '../shared.types';
+import { PermissionResponse } from 'expo-modules-core';
 export type Marker = {
     /**
      * The coordinates of the marker.
@@ -221,5 +222,17 @@ export type StreetViewProps = {
     isStreetNamesEnabled?: boolean;
     isUserNavigationEnabled?: boolean;
     isZoomGesturesEnabled?: boolean;
+};
+export type GoogleMapsModule = {
+    /**
+     * Asks the user to grant permissions for location.
+     * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+     */
+    requestPermissionsAsync(): Promise<PermissionResponse>;
+    /**
+     * Checks user's permissions for accessing location.
+     * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+     */
+    getPermissionsAsync(): Promise<PermissionResponse>;
 };
 //# sourceMappingURL=GoogleMaps.types.d.ts.map
