@@ -67,17 +67,18 @@ export function useNavigationContainerRef() {
 export function useRouter(): Router {
   return React.useMemo(
     () => ({
-      push: store.push,
+      back: store.goBack,
+      canDismiss: store.canDismiss,
+      canGoBack: store.canGoBack,
       dismiss: store.dismiss,
       dismissAll: store.dismissAll,
       dismissTo: store.dismissTo,
-      canDismiss: store.canDismiss,
-      back: store.goBack,
+      navigate: store.navigate,
+      preload: store.preload,
+      push: store.push,
+      reload: store.reload,
       replace: store.replace,
       setParams: store.setParams,
-      canGoBack: store.canGoBack,
-      navigate: store.navigate,
-      reload: store.reload,
     }),
     []
   );

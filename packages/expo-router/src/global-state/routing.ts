@@ -37,6 +37,10 @@ export function reload(this: RouterStore) {
   throw new Error('The reload method is not implemented in the client-side router yet.');
 }
 
+export function preload(this: RouterStore, href: Href, options?: NavigationOptions) {
+  return linkTo.bind(this)(resolveHref(href), { ...options, event: 'PRELOAD' });
+}
+
 export function push(this: RouterStore, url: Href, options?: NavigationOptions) {
   return this.linkTo(resolveHref(url), { ...options, event: 'PUSH' });
 }

@@ -202,6 +202,10 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      * If used with `push`, the history will be filtered even if no navigation occurs.
      */
     dangerouslySingular?: SingularOptions;
+    /**
+     * Preloads the route when the component is rendered on a focused screen.
+     */
+    preload?: boolean;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];
