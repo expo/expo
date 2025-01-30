@@ -70,7 +70,7 @@ function getPathFromURLPosix(url: { hostname: string; pathname: string }) {
   const pathname = url.pathname;
   for (let n = 0; n < pathname.length; n++) {
     if (pathname[n] === '%') {
-      const third = pathname.charAt(n + 2) as any | 0x20;
+      const third = +pathname.charAt(n + 2) | 0x20;
       if (pathname[n + 1] === '2' && third === 102) {
         throw new Error('pathname must not include encoded / characters');
       }
