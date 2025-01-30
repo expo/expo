@@ -4,6 +4,9 @@ import ExpoModulesCore
 struct MenuItems: View {
   let fromElements: [ContextMenuElement]?
   let props: ContextMenuProps?
+  // We have to create a non-functional shadow node proxy, so that the elements don't send sizing changes to the
+  // root proxy - we won't be leaving the SwiftUI hierarchy.
+  let shadowNodeProxy = ExpoSwiftUI.ShadowNodeProxy()
 
   init(fromElements: [ContextMenuElement]?, props: ContextMenuProps?) {
     self.fromElements = fromElements
@@ -40,7 +43,7 @@ struct MenuItems: View {
       }
 
       if let `switch` = elem.switch {
-        ExpoUI.SwitchView().environmentObject(`switch`)
+        ExpoUI.SwitchView().environmentObject(`switch`).environmentObject(shadowNodeProxy)
       }
 
       if let submenu = elem.submenu {
