@@ -23,10 +23,9 @@ struct SwitchView: ExpoSwiftUI.View {
         if props.checked == newValue {
           return
         }
-        let payload = [
+        props.onCheckedChange([
           "checked": newValue
-        ]
-        props.onCheckedChanged(payload)
+        ])
       })
       .tint(props.color)
       .onReceive(props.objectWillChange, perform: {

@@ -4,14 +4,14 @@ import * as React from 'react';
 import { Page, Section } from '../../components/Page';
 
 export default function SwitchScreen() {
-  const [checked, setChecked] = React.useState<boolean>(false);
+  const [checked, setChecked] = React.useState<boolean>(true);
   return (
     <Page>
       <Section title="Switch">
         <Switch
           checked={checked}
           style={{ width: 300, height: 50 }}
-          onCheckedChanged={({ nativeEvent: { checked } }) => {
+          onCheckedChange={({ nativeEvent: { checked } }) => {
             setChecked(checked);
           }}
           color="#ff0000"
@@ -23,7 +23,7 @@ export default function SwitchScreen() {
         <Switch
           checked={checked}
           style={{ width: 300, height: 50 }}
-          onCheckedChanged={({ nativeEvent: { checked } }) => {
+          onCheckedChange={({ nativeEvent: { checked } }) => {
             setChecked(checked);
           }}
           label="Never gonna let you down"
@@ -35,7 +35,7 @@ export default function SwitchScreen() {
         <Switch
           checked={checked}
           style={{ width: 300, height: 50 }}
-          onCheckedChanged={({ nativeEvent: { checked } }) => {
+          onCheckedChange={({ nativeEvent: { checked } }) => {
             setChecked(checked);
           }}
           label="Never gonna run around and desert you"

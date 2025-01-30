@@ -63,7 +63,7 @@ export type SwitchProps = {
     /**
      * Callback function that is called when the checked state changes.
      */
-    onCheckedChanged: (event: {
+    onCheckedChange: (event: {
         nativeEvent: {
             checked: boolean;
         };
