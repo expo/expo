@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] fixed concurrency freeze on low-end iOS devices when selecting multiple images. ([#34585](https://github.com/expo/expo/pull/34585) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
