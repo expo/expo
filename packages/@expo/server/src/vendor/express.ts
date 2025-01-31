@@ -1,5 +1,7 @@
+import { Readable } from 'node:stream';
+import { ReadableStream as NodeReadableStream } from 'node:stream/web';
+import { pipeline } from 'node:stream/promises';
 import {
-  writeReadableStreamToWritable,
   createReadableStreamFromReadable,
 } from '@remix-run/node/dist/stream';
 import type * as express from 'express';
@@ -73,7 +75,7 @@ export function convertRequest(req: express.Request, res: express.Response): Req
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    init.body = createReadableStreamFromReadable(req);
+    init.body = Readable.toWeb(req) as ReadableStream;
     init.duplex = 'half';
   }
 
@@ -89,7 +91,7 @@ export async function respond(res: express.Response, expoRes: Response): Promise
   }
 
   if (expoRes.body) {
-    await writeReadableStreamToWritable(expoRes.body, res);
+    await pipeline(Readable.fromWeb(expoRes.body as NodeReadableStream), res);
   } else {
     res.end();
   }
