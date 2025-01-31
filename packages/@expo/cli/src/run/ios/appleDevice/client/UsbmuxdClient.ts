@@ -190,7 +190,12 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
       const BPLIST_MAGIC = Buffer.from('bplist00');
       if (BPLIST_MAGIC.compare(resp.PairRecordData, 0, 8) === 0) {
         debug('Binary plist pair record detected.');
-        return parsePlistBuffer(resp.PairRecordData)[0];
+        const parsed = parsePlistBuffer(resp.PairRecordData);
+        if (Array.isArray(parsed)) {
+          return parsed[0] as UsbmuxdPairRecord;
+        } else {
+          return parsed as UsbmuxdPairRecord;
+        }
       } else {
         // TODO: use parsePlistBuffer
         return plist.parse(resp.PairRecordData.toString()) as any; // TODO: type guard
