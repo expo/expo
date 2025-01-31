@@ -139,7 +139,7 @@ An app's icon is what your app users see on their device's home screen and app s
 
 ### Create an app icon
 
-To create an app icon, you can use this [Figma template](https://www.figma.com/community/file/1155362909441341285). It provides a bare minimum design for an icon and splash images for Android and iOS.
+To create an app icon, you can use this [Figma template](https://www.figma.com/community/file/1466490409418563617). It provides a bare minimum design for an icon and splash images for Android and iOS.
 
 </Step>
 
@@ -147,7 +147,7 @@ To create an app icon, you can use this [Figma template](https://www.figma.com/c
 
 ### Export the icon image as a .png
 
-After creating an app icon, export it as **.png** and save it in the **assets/images** directory. By default, Expo uses **icon.png** as the file name. If you decide to use its file name, make sure to use that in the next step.
+After creating an app icon, export it as **.png** and save it in the **assets/images** directory. By default, Expo uses **icon.png** as the file name. If you decide to use a different file name, make sure to use that in the next step.
 
 </Step>
 
@@ -190,6 +190,21 @@ For iOS, your app's icon should follow the [Apple Human Interface Guidelines](ht
 - 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. In case of a bare React Native project, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
 - The icon must be exactly square. For example, a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
+- Use `ios.icon` to specify different icons for various system appearances (e.g., dark, tinted) can be provided. If specified, this overrides the top-level icon key. See the example below:
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "icon": {
+        "dark": "./assets/icons/ios-dark.png",
+        "light": "./assets/icons/ios-light.png",
+        "tinted": "./assets/icons/ios-tinted.png"
+      }
+    }
+  }
+}
+```
 
 </Collapsible>
 
