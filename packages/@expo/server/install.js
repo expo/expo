@@ -1,4 +1,4 @@
-const { installGlobals } = require('@expo/server/build/environment');
+const { installGlobals } = require('./build/environment');
 
 require('source-map-support/register');
 
