@@ -2,6 +2,7 @@
 
 package expo.modules.maps
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -15,9 +16,12 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
@@ -31,6 +35,7 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 
 data class GoogleMapsViewProps(
+  val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
   val cameraPosition: MutableState<CameraPositionRecord> = mutableStateOf(CameraPositionRecord()),
   val markers: MutableState<List<MarkerRecord>> = mutableStateOf(listOf()),
   val uiSettings: MutableState<MapUiSettingsRecord> = mutableStateOf(MapUiSettingsRecord()),
@@ -38,6 +43,7 @@ data class GoogleMapsViewProps(
   val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM)
 ) : ComposeProps
 
+@SuppressLint("ViewConstructor")
 class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView<GoogleMapsViewProps>(context, appContext) {
   override val props = GoogleMapsViewProps()
 
@@ -50,12 +56,13 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
 
   private val onCameraMove by EventDispatcher<CameraMoveEvent>()
 
-  private var wasLoaded = mutableStateOf<Boolean>(false)
+  private var wasLoaded = mutableStateOf(false)
 
   init {
     setContent {
       val cameraState = cameraStateFromProps()
       val markerState = markerStateFromProps()
+      val locationSource = locationSourceFromProps(cameraState)
 
       GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -84,7 +91,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
             )
           )
         },
-        mapColorScheme = props.colorScheme.value.toComposeMapColorScheme()
+        mapColorScheme = props.colorScheme.value.toComposeMapColorScheme(),
+        locationSource = locationSource
       ) {
         for ((marker, state) in markerState.value) {
           val icon = getIconDescriptor(marker)
@@ -144,6 +152,33 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
     }
 
     return cameraState
+  }
+
+  @Composable
+  private fun locationSourceFromProps(cameraState: State<CameraPositionState>): LocationSource? {
+    val coordinates = props.userLocation.value.coordinates
+    val followUserLocation = props.userLocation.value.followUserLocation
+
+    val locationSource = remember(coordinates) {
+      CustomLocationSource()
+    }
+    LaunchedEffect(coordinates) {
+      coordinates?.let { coordinates ->
+        locationSource.onLocationChanged(coordinates.toLocation())
+        if (followUserLocation) {
+          cameraState.value.cameraMoveStartedReason.let { reason ->
+            if (reason != CameraMoveStartedReason.GESTURE) {
+              cameraState.value.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
+            }
+          }
+        }
+      }
+    }
+    return props.userLocation.value.coordinates?.let { coordinates ->
+      locationSource.apply {
+        onLocationChanged(coordinates.toLocation())
+      }
+    }
   }
 
   @Composable
