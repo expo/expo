@@ -1,7 +1,9 @@
 // NOTE: VercelRequest/VercelResponse wrap http primitives in Node
 // plus some helper inputs and outputs, which we don't need to define
 // our interface types
-import { writeReadableStreamToWritable, createReadableStreamFromReadable } from '@remix-run/node';
+import { Readable } from 'node:stream';
+import { ReadableStream as NodeReadableStream } from 'node:stream/web';
+import { pipeline } from 'node:stream/promises';
 import * as http from 'http';
 
 import { createRequestHandler as createExpoHandler } from '..';
@@ -22,7 +24,6 @@ export function createRequestHandler({ build }: { build: string }): RequestHandl
 
 export function convertHeaders(requestHeaders: http.IncomingMessage['headers']): Headers {
   const headers = new Headers();
-
   for (const [key, values] of Object.entries(requestHeaders)) {
     if (values) {
       if (Array.isArray(values)) {
@@ -34,7 +35,14 @@ export function convertHeaders(requestHeaders: http.IncomingMessage['headers']):
       }
     }
   }
+  return headers;
+}
 
+function convertRawHeaders(requestHeaders: readonly string[]): Headers {
+  const headers = new Headers();
+  for (let index = 0; index < requestHeaders.length; index += 2) {
+    headers.append(requestHeaders[index], requestHeaders[index + 1]);
+  }
   return headers;
 }
 
@@ -50,14 +58,14 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 
   const init: RequestInit = {
     method: req.method,
-    headers: convertHeaders(req.headers),
+    headers: convertRawHeaders(req.rawHeaders),
     // Cast until reason/throwIfAborted added
     // https://github.com/mysticatea/abort-controller/issues/36
     signal: controller.signal as RequestInit['signal'],
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    init.body = createReadableStreamFromReadable(req);
+    init.body = Readable.toWeb(req) as ReadableStream;
     init.duplex = 'half';
   }
 
@@ -67,9 +75,8 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 export async function respond(res: http.ServerResponse, expoRes: Response): Promise<void> {
   res.statusMessage = expoRes.statusText;
   res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()].flat());
-
   if (expoRes.body) {
-    await writeReadableStreamToWritable(expoRes.body, res);
+    await pipeline(Readable.fromWeb(expoRes.body as NodeReadableStream), res);
   } else {
     res.end();
   }
