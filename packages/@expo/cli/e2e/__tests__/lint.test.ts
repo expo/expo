@@ -53,6 +53,7 @@ it('runs `npx expo lint --help`', async () => {
 it('runs `npx expo lint` to install lint in a project', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('basic-lint', 'with-blank', {
     reuseExisting: false,
+    linkExpoPackages: ['eslint-config-expo'],
   });
 
   // `npx expo install expo-sms`
@@ -72,7 +73,7 @@ it('runs `npx expo lint` to install lint in a project', async () => {
   expect(pkg.scripts).toHaveProperty('lint');
 
   expect(findProjectFiles(projectRoot)).toStrictEqual([
-    '.eslintrc.js',
+    'eslint.config.js',
     'App.js',
     'app.json',
     'bun.lock',
@@ -84,13 +85,14 @@ it('runs `npx expo lint` to install lint in a project', async () => {
   await executeAsync(projectRoot, ['bun', 'run', 'lint', '--max-warnings', '0']);
 });
 
-it('runs `npx expo customize .eslintrc.js` to install lint in a project', async () => {
+it('runs `npx expo customize eslint.config.js to install lint in a project', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('customize-lint', 'with-blank', {
     reuseExisting: false,
+    linkExpoPackages: ['eslint-config-expo'],
   });
 
-  // `npx expo customize .eslintrc.js`
-  await executeExpoAsync(projectRoot, ['customize', '.eslintrc.js']);
+  // `npx expo customize eslint.config.js`
+  await executeExpoAsync(projectRoot, ['customize', 'eslint.config.js']);
 
   const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
@@ -106,7 +108,7 @@ it('runs `npx expo customize .eslintrc.js` to install lint in a project', async 
   expect(pkg.scripts).toHaveProperty('lint');
 
   expect(findProjectFiles(projectRoot)).toStrictEqual([
-    '.eslintrc.js',
+    'eslint.config.js',
     'App.js',
     'app.json',
     'bun.lock',
