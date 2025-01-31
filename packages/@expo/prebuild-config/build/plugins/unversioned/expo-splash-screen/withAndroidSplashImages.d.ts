@@ -1,7 +1,7 @@
 import { ConfigPlugin } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import { AndroidSplashConfig, SplashScreenConfig } from './getAndroidSplashConfig';
-export declare const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig>;
+export declare const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig | null>;
 /**
  * Deletes all previous splash_screen_images and copies new one to desired drawable directory.
  * If path isn't provided then no new image is placed in drawable directories.
