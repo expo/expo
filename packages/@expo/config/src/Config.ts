@@ -13,10 +13,14 @@ import {
   ConfigFilePaths,
   ExpoConfig,
   GetConfigOptions,
+  GetConfigOptionsPublicFalse,
+  GetConfigOptionsPublicTrue,
   PackageJSONConfig,
   Platform,
   ProjectConfig,
   ProjectTarget,
+  PublicExpoConfig,
+  PublicProjectConfig,
   WriteConfigOptions,
 } from './Config.types';
 import { getDynamicConfig, getStaticConfig } from './getConfig';
@@ -109,7 +113,18 @@ function getSupportedPlatforms(projectRoot: string): Platform[] {
  * @param projectRoot the root folder containing all of your application code
  * @param options enforce criteria for a project config
  */
-export function getConfig(projectRoot: string, options: GetConfigOptions = {}): ProjectConfig {
+export function getConfig(
+  projectRoot: string,
+  options?: GetConfigOptionsPublicFalse
+): ProjectConfig;
+export function getConfig(
+  projectRoot: string,
+  options: GetConfigOptionsPublicTrue
+): PublicProjectConfig;
+export function getConfig(
+  projectRoot: string,
+  options?: GetConfigOptions
+): ProjectConfig | PublicProjectConfig {
   const paths = getConfigFilePaths(projectRoot);
 
   const rawStaticConfig = paths.staticConfigPath ? getStaticConfig(paths.staticConfigPath) : null;
@@ -130,7 +145,7 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
         projectRoot,
         exp: config.expo,
         pkg: packageJson,
-        skipSDKVersionRequirement: options.skipSDKVersionRequirement,
+        skipSDKVersionRequirement: options?.skipSDKVersionRequirement,
         paths,
         packageJsonPath,
       }),
@@ -143,7 +158,7 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
         !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig,
     };
 
-    if (options.isModdedConfig) {
+    if (options?.isModdedConfig) {
       // @ts-ignore: Add the mods back to the object.
       configWithDefaultValues.exp.mods = config.mods ?? null;
     }
@@ -151,16 +166,18 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
     // Apply static json plugins, should be done after _internal
     configWithDefaultValues.exp = withConfigPlugins(
       configWithDefaultValues.exp,
-      !!options.skipPlugins
+      !!options?.skipPlugins
     );
 
-    if (!options.isModdedConfig) {
+    if (!options?.isModdedConfig) {
       // @ts-ignore: Delete mods added by static plugins when they won't have a chance to be evaluated
       delete configWithDefaultValues.exp.mods;
     }
 
-    if (options.isPublicConfig) {
-      // TODD(EvanBacon): Drop plugins array after it's been resolved.
+    if (options?.isPublicConfig) {
+      // NOTE: When updating this, ensure PublicProjectConfig is kept up to date.
+
+      // TODO(EvanBacon): Drop plugins array after it's been resolved.
 
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
@@ -273,14 +290,37 @@ function getStaticConfigFilePath(projectRoot: string): string | null {
 export async function modifyConfigAsync(
   projectRoot: string,
   modifications: Partial<ExpoConfig>,
-  readOptions: GetConfigOptions = {},
+  readOptions?: GetConfigOptionsPublicTrue,
+  writeOptions?: WriteConfigOptions
+): Promise<{
+  type: 'success' | 'warn' | 'fail';
+  message?: string;
+  config: PublicExpoConfig | null;
+}>;
+export async function modifyConfigAsync(
+  projectRoot: string,
+  modifications: Partial<ExpoConfig>,
+  readOptions?: GetConfigOptionsPublicFalse,
+  writeOptions?: WriteConfigOptions
+): Promise<{
+  type: 'success' | 'warn' | 'fail';
+  message?: string;
+  config: ExpoConfig | null;
+}>;
+export async function modifyConfigAsync(
+  projectRoot: string,
+  modifications: Partial<ExpoConfig>,
+  readOptions?: GetConfigOptions,
   writeOptions: WriteConfigOptions = {}
 ): Promise<{
   type: 'success' | 'warn' | 'fail';
   message?: string;
   config: ExpoConfig | null;
 }> {
-  const config = getConfig(projectRoot, readOptions);
+  // to appease TypeScript
+  const config = readOptions?.isPublicConfig
+    ? getConfig(projectRoot, readOptions)
+    : getConfig(projectRoot, readOptions);
   const isDryRun = writeOptions.dryRun;
 
   // Create or modify the static config, when not using dynamic config
@@ -315,7 +355,10 @@ export async function modifyConfigAsync(
     await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
 
     // Verify that the dynamic config is using the static config
-    const newConfig = getConfig(projectRoot, readOptions);
+    // to appease TypeScript
+    const newConfig = readOptions?.isPublicConfig
+      ? getConfig(projectRoot, readOptions)
+      : getConfig(projectRoot, readOptions);
     const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
     if (newConfighasModifications) {
       return {

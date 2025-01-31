@@ -201,7 +201,8 @@ function getSupportedPlatforms(projectRoot) {
  * @param projectRoot the root folder containing all of your application code
  * @param options enforce criteria for a project config
  */
-function getConfig(projectRoot, options = {}) {
+
+function getConfig(projectRoot, options) {
   const paths = getConfigFilePaths(projectRoot);
   const rawStaticConfig = paths.staticConfigPath ? (0, _getConfig().getStaticConfig)(paths.staticConfigPath) : null;
   // For legacy reasons, always return an object.
@@ -216,7 +217,7 @@ function getConfig(projectRoot, options = {}) {
         projectRoot,
         exp: config.expo,
         pkg: packageJson,
-        skipSDKVersionRequirement: options.skipSDKVersionRequirement,
+        skipSDKVersionRequirement: options?.skipSDKVersionRequirement,
         paths,
         packageJsonPath
       }),
@@ -227,19 +228,21 @@ function getConfig(projectRoot, options = {}) {
       staticConfigPath: paths.staticConfigPath,
       hasUnusedStaticConfig: !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig
     };
-    if (options.isModdedConfig) {
+    if (options?.isModdedConfig) {
       // @ts-ignore: Add the mods back to the object.
       configWithDefaultValues.exp.mods = config.mods ?? null;
     }
 
     // Apply static json plugins, should be done after _internal
-    configWithDefaultValues.exp = (0, _withConfigPlugins().withConfigPlugins)(configWithDefaultValues.exp, !!options.skipPlugins);
-    if (!options.isModdedConfig) {
+    configWithDefaultValues.exp = (0, _withConfigPlugins().withConfigPlugins)(configWithDefaultValues.exp, !!options?.skipPlugins);
+    if (!options?.isModdedConfig) {
       // @ts-ignore: Delete mods added by static plugins when they won't have a chance to be evaluated
       delete configWithDefaultValues.exp.mods;
     }
-    if (options.isPublicConfig) {
-      // TODD(EvanBacon): Drop plugins array after it's been resolved.
+    if (options?.isPublicConfig) {
+      // NOTE: When updating this, ensure PublicProjectConfig is kept up to date.
+
+      // TODO(EvanBacon): Drop plugins array after it's been resolved.
 
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
@@ -342,8 +345,10 @@ function getStaticConfigFilePath(projectRoot) {
  * @param readOptions options for reading the current config file
  * @param writeOptions If true, the static config file will not be rewritten
  */
-async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, writeOptions = {}) {
-  const config = getConfig(projectRoot, readOptions);
+
+async function modifyConfigAsync(projectRoot, modifications, readOptions, writeOptions = {}) {
+  // to appease TypeScript
+  const config = readOptions?.isPublicConfig ? getConfig(projectRoot, readOptions) : getConfig(projectRoot, readOptions);
   const isDryRun = writeOptions.dryRun;
 
   // Create or modify the static config, when not using dynamic config
@@ -379,7 +384,8 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
     });
 
     // Verify that the dynamic config is using the static config
-    const newConfig = getConfig(projectRoot, readOptions);
+    // to appease TypeScript
+    const newConfig = readOptions?.isPublicConfig ? getConfig(projectRoot, readOptions) : getConfig(projectRoot, readOptions);
     const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
     if (newConfighasModifications) {
       return {

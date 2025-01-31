@@ -1,4 +1,4 @@
-import { ConfigFilePaths, ExpoConfig, GetConfigOptions, PackageJSONConfig, ProjectConfig, ProjectTarget, WriteConfigOptions } from './Config.types';
+import { ConfigFilePaths, ExpoConfig, GetConfigOptionsPublicFalse, GetConfigOptionsPublicTrue, PackageJSONConfig, ProjectConfig, ProjectTarget, PublicExpoConfig, PublicProjectConfig, WriteConfigOptions } from './Config.types';
 /**
  * Evaluate the config for an Expo project.
  * If a function is exported from the `app.config.js` then a partial config will be passed as an argument.
@@ -25,7 +25,8 @@ import { ConfigFilePaths, ExpoConfig, GetConfigOptions, PackageJSONConfig, Proje
  * @param projectRoot the root folder containing all of your application code
  * @param options enforce criteria for a project config
  */
-export declare function getConfig(projectRoot: string, options?: GetConfigOptions): ProjectConfig;
+export declare function getConfig(projectRoot: string, options?: GetConfigOptionsPublicFalse): ProjectConfig;
+export declare function getConfig(projectRoot: string, options: GetConfigOptionsPublicTrue): PublicProjectConfig;
 export declare function getPackageJson(projectRoot: string): PackageJSONConfig;
 /**
  * Get the static and dynamic config paths for a project. Also accounts for custom paths.
@@ -44,7 +45,12 @@ export declare function getConfigFilePaths(projectRoot: string): ConfigFilePaths
  * @param readOptions options for reading the current config file
  * @param writeOptions If true, the static config file will not be rewritten
  */
-export declare function modifyConfigAsync(projectRoot: string, modifications: Partial<ExpoConfig>, readOptions?: GetConfigOptions, writeOptions?: WriteConfigOptions): Promise<{
+export declare function modifyConfigAsync(projectRoot: string, modifications: Partial<ExpoConfig>, readOptions?: GetConfigOptionsPublicTrue, writeOptions?: WriteConfigOptions): Promise<{
+    type: 'success' | 'warn' | 'fail';
+    message?: string;
+    config: PublicExpoConfig | null;
+}>;
+export declare function modifyConfigAsync(projectRoot: string, modifications: Partial<ExpoConfig>, readOptions?: GetConfigOptionsPublicFalse, writeOptions?: WriteConfigOptions): Promise<{
     type: 'success' | 'warn' | 'fail';
     message?: string;
     config: ExpoConfig | null;

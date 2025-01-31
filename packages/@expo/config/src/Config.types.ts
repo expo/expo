@@ -55,6 +55,16 @@ export interface ProjectConfig {
    */
   hasUnusedStaticConfig: boolean;
 }
+
+export type PublicExpoConfig = Omit<ExpoConfig, '_internal' | 'hooks'> & {
+  ios?: Omit<ExpoConfig['ios'], 'config'>;
+  android?: Omit<ExpoConfig['android'], 'config'>;
+  updates?: Omit<ExpoConfig['updates'], 'codeSigningCertificate' | 'codeSigningMetadata'>;
+};
+export type PublicProjectConfig = ProjectConfig & {
+  exp: PublicExpoConfig;
+};
+
 export type AppJSONConfig = { expo: ExpoConfig; [key: string]: any };
 export type BareAppConfig = { name: string; [key: string]: any };
 export type HookArguments = {
@@ -160,8 +170,7 @@ export type ConfigContext = {
   config: Partial<ExpoConfig>;
 };
 
-export type GetConfigOptions = {
-  isPublicConfig?: boolean;
+type GetConfigOptionsBase = {
   /**
    * Should the config `mods` be preserved in the config? Used for compiling mods in the eject command.
    *
@@ -175,6 +184,9 @@ export type GetConfigOptions = {
   skipPlugins?: boolean;
   strict?: boolean;
 };
+export type GetConfigOptionsPublicTrue = GetConfigOptionsBase & { isPublicConfig: true };
+export type GetConfigOptionsPublicFalse = GetConfigOptionsBase & { isPublicConfig?: false };
+export type GetConfigOptions = GetConfigOptionsPublicTrue | GetConfigOptionsPublicFalse;
 
 export type WriteConfigOptions = { dryRun?: boolean };
 
