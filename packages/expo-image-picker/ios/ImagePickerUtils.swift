@@ -16,7 +16,9 @@ func asyncMap<ItemsType: Sequence, ResultType>(
 }
 
 /**
- Concurrently maps the given sequence.
+ Concurrently maps the given sequence. todo: Remove - This function is no longer in use since it caused
+ concurrency issues on low end devices when doing a lot of IO in parallell from the handleMultipleMedia
+ function in the MediaHandler struct
  */
 func concurrentMap<ItemsType: Sequence, ResultType>(
   _ items: ItemsType,
