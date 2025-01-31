@@ -30,8 +30,9 @@ public:
   };
 
 #ifdef ANDROID
-  ExpoViewState(ExpoViewState const &previousState, folly::dynamic data) {};
-
+  ExpoViewState(ExpoViewState const &previousState, folly::dynamic data)
+  : _width((float)data["width"].getDouble()),
+    _height((float)data["height"].getDouble()){};
   folly::dynamic getDynamic() const {
     return {};
   };
