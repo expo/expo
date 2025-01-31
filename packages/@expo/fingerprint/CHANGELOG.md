@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Added `.env` support for `ExpoConfigLoader`. ([#33967](https://github.com/expo/expo/pull/33967) by [@kudo](https://github.com/kudo))
+
 ## 0.11.7 — 2025-01-10
 
 _This version does not introduce any user-facing changes._
