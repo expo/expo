@@ -8,7 +8,7 @@ import { XcodeProject } from 'xcode';
 import { InfoPlist } from './IosConfig.types';
 import { getSourceRoot } from './Paths';
 import { appendScheme } from './Scheme';
-import { ConfigPlugin, ModProps } from '../Plugin.types';
+import { ConfigPlugin, ModPlatform, ModProps } from '../Plugin.types';
 import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 import { withInfoPlist, withXcodeProject } from '../plugins/ios-plugins';
 
@@ -23,6 +23,7 @@ export const withGoogleServicesFile: ConfigPlugin = (config) => {
   return withXcodeProject(config, (config) => {
     config.modResults = setGoogleServicesFile(config, {
       projectRoot: config.modRequest.projectRoot,
+      platform: config.modRequest.platform,
       project: config.modResults,
     });
     return config;
@@ -82,7 +83,11 @@ export function setGoogleConfig(
 
 export function setGoogleServicesFile(
   config: Pick<ExpoConfig, 'ios'>,
-  { projectRoot, project }: { project: XcodeProject; projectRoot: string }
+  {
+    projectRoot,
+    project,
+    platform,
+  }: { project: XcodeProject; projectRoot: string; platform: ModPlatform }
 ): XcodeProject {
   const googleServicesFileRelativePath = getGoogleServicesFile(config);
   if (googleServicesFileRelativePath === null) {
@@ -92,10 +97,10 @@ export function setGoogleServicesFile(
   const googleServiceFilePath = path.resolve(projectRoot, googleServicesFileRelativePath);
   fs.copyFileSync(
     googleServiceFilePath,
-    path.join(getSourceRoot(projectRoot), 'GoogleService-Info.plist')
+    path.join(getSourceRoot(projectRoot, platform), 'GoogleService-Info.plist')
   );
 
-  const projectName = getProjectName(projectRoot);
+  const projectName = getProjectName(projectRoot, platform);
   const plistFilePath = `${projectName}/GoogleService-Info.plist`;
   if (!project.hasFile(plistFilePath)) {
     project = addResourceFileToGroup({

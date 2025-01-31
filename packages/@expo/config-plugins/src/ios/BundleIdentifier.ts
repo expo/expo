@@ -7,7 +7,7 @@ import xcode, { XCBuildConfiguration } from 'xcode';
 import { InfoPlist } from './IosConfig.types';
 import { getAllInfoPlistPaths, getAllPBXProjectPaths, getPBXProjectPath } from './Paths';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
-import { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import { ConfigPlugin, ModPlatform, XcodeProject } from '../Plugin.types';
 import {
   ConfigurationSectionEntry,
   getBuildConfigurationsForListId,
@@ -66,12 +66,14 @@ function setBundleIdentifier(config: ExpoConfig, infoPlist: InfoPlist): InfoPlis
  * Defaults to 'Release'.
  *
  * @param {string} projectRoot Path to project root containing the ios directory
+ * @param {ModPlatform} platform Platform name, e.g. 'ios'
  * @param {string} targetName Target name
  * @param {string} buildConfiguration Build configuration. Defaults to 'Release'.
  * @returns {string | null} bundle identifier of the Xcode project or null if the project is not configured
  */
 function getBundleIdentifierFromPbxproj(
   projectRoot: string,
+  platform: ModPlatform,
   {
     targetName,
     buildConfiguration = 'Release',
@@ -79,7 +81,7 @@ function getBundleIdentifierFromPbxproj(
 ): string | null {
   let pbxprojPath: string;
   try {
-    pbxprojPath = getPBXProjectPath(projectRoot);
+    pbxprojPath = getPBXProjectPath(projectRoot, platform);
   } catch {
     return null;
   }
@@ -168,18 +170,20 @@ function updateBundleIdentifierForPbxprojObject(
  * Updates the bundle identifier for pbx projects inside the ios directory of the given project root
  *
  * @param {string} projectRoot Path to project root containing the ios directory
+ * @param {string} platform Platform name, e.g. 'ios'
  * @param {string} bundleIdentifier Desired bundle identifier
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
 function setBundleIdentifierForPbxproj(
   projectRoot: string,
+  platform: ModPlatform,
   bundleIdentifier: string,
   updateProductName: boolean = true
 ): void {
   // Get all pbx projects in the ${projectRoot}/ios directory
   let pbxprojPaths: string[] = [];
   try {
-    pbxprojPaths = getAllPBXProjectPaths(projectRoot);
+    pbxprojPaths = getAllPBXProjectPaths(projectRoot, platform);
   } catch {}
 
   for (const pbxprojPath of pbxprojPaths) {
@@ -193,8 +197,8 @@ function setBundleIdentifierForPbxproj(
 
 const defaultBundleId = '$(PRODUCT_BUNDLE_IDENTIFIER)';
 
-function resetAllPlistBundleIdentifiers(projectRoot: string): void {
-  const infoPlistPaths = getAllInfoPlistPaths(projectRoot);
+function resetAllPlistBundleIdentifiers(projectRoot: string, platform: ModPlatform): void {
+  const infoPlistPaths = getAllInfoPlistPaths(projectRoot, platform);
 
   for (const plistPath of infoPlistPaths) {
     resetPlistBundleIdentifier(plistPath);

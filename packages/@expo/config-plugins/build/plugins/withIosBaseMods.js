@@ -164,11 +164,12 @@ const defaultProviders = {
   appDelegate: (0, _createBaseMod().provider)({
     getFilePath({
       modRequest: {
-        projectRoot
+        projectRoot,
+        platform
       }
     }) {
       // TODO: Get application AppDelegate file from pbxproj.
-      return _ios().Paths.getAppDelegateFilePath(projectRoot);
+      return _ios().Paths.getAppDelegateFilePath(projectRoot, platform);
     },
     async read(filePath) {
       return _ios().Paths.getFileInfo(filePath);
@@ -223,10 +224,11 @@ const defaultProviders = {
   xcodeproj: (0, _createBaseMod().provider)({
     getFilePath({
       modRequest: {
-        projectRoot
+        projectRoot,
+        platform
       }
     }) {
-      return _ios().Paths.getPBXProjectPath(projectRoot);
+      return _ios().Paths.getPBXProjectPath(projectRoot, platform);
     },
     async read(filePath) {
       const project = _xcode().default.project(filePath);
@@ -245,7 +247,7 @@ const defaultProviders = {
     async getFilePath(config) {
       let project = null;
       try {
-        project = (0, _Xcodeproj().getPbxproj)(config.modRequest.projectRoot);
+        project = (0, _Xcodeproj().getPbxproj)(config.modRequest.projectRoot, config.modRequest.platform);
       } catch {
         // noop
       }
@@ -253,7 +255,7 @@ const defaultProviders = {
       // Only check / warn if a project actually exists, this'll provide
       // more accurate warning messages for users in managed projects.
       if (project) {
-        const infoPlistBuildProperty = (0, _getInfoPlistPath().getInfoPlistPathFromPbxproj)(project);
+        const infoPlistBuildProperty = (0, _getInfoPlistPath().getInfoPlistPathFromPbxproj)(project, config.modRequest.platform);
         if (infoPlistBuildProperty) {
           //: [root]/myapp/ios/MyApp/Info.plist
           const infoPlistPath = _path().default.join(
@@ -271,7 +273,7 @@ const defaultProviders = {
       }
       try {
         // Fallback on glob...
-        return await _ios().Paths.getInfoPlistPath(config.modRequest.projectRoot);
+        return await _ios().Paths.getInfoPlistPath(config.modRequest.projectRoot, config.modRequest.platform);
       } catch (error) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -323,8 +325,8 @@ const defaultProviders = {
     isIntrospective: true,
     async getFilePath(config) {
       try {
-        (0, _Entitlements().ensureApplicationTargetEntitlementsFileConfigured)(config.modRequest.projectRoot);
-        return _ios().Entitlements.getEntitlementsPath(config.modRequest.projectRoot) ?? '';
+        (0, _Entitlements().ensureApplicationTargetEntitlementsFileConfigured)(config.modRequest.projectRoot, config.modRequest.platform);
+        return _ios().Entitlements.getEntitlementsPath(config.modRequest.projectRoot, config.modRequest.platform) ?? '';
       } catch (error) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -379,10 +381,11 @@ const defaultProviders = {
   podfile: (0, _createBaseMod().provider)({
     getFilePath({
       modRequest: {
-        projectRoot
+        projectRoot,
+        platform
       }
     }) {
-      return _ios().Paths.getPodfilePath(projectRoot);
+      return _ios().Paths.getPodfilePath(projectRoot, platform);
     },
     // @ts-expect-error
     async read(filePath) {

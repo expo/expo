@@ -9,6 +9,7 @@ const originalFs = jest.requireActual('fs');
 
 describe(findApplicationTargetWithDependenciesAsync, () => {
   const projectRoot = '/app';
+  const platform = 'ios';
 
   afterEach(() => vol.reset());
 
@@ -27,6 +28,7 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
 
     const applicationTarget = await findApplicationTargetWithDependenciesAsync(
       projectRoot,
+      platform,
       'multitarget'
     );
     expect(applicationTarget.name).toBe('multitarget');
@@ -53,6 +55,7 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
 
     const applicationTarget = await findApplicationTargetWithDependenciesAsync(
       projectRoot,
+      platform,
       'easwatchtest'
     );
     expect(applicationTarget.name).toBe('easwatchtest');
@@ -83,6 +86,7 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
 
     const applicationTarget = await findApplicationTargetWithDependenciesAsync(
       projectRoot,
+      platform,
       'myapp'
     );
     expect(applicationTarget.signable).toBe(true);

@@ -51,7 +51,7 @@ const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
 const withIosIcons = config => {
   return (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
-    await setIconsAsync(config, config.modRequest.projectRoot);
+    await setIconsAsync(config, config.modRequest.projectRoot, config.modRequest.platform);
     return config;
   }]);
 };
@@ -75,14 +75,14 @@ function getIcons(config) {
   }
   return null;
 }
-async function setIconsAsync(config, projectRoot) {
+async function setIconsAsync(config, projectRoot, platform) {
   const icon = getIcons(config);
   if (!icon || typeof icon === 'string' && !icon || typeof icon === 'object' && !icon?.light && !icon?.dark && !icon?.tinted) {
     _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
   }
 
   // Something like projectRoot/ios/MyApp/
-  const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
+  const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot, platform);
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
   await fs().ensureDir((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH));
@@ -131,9 +131,9 @@ async function setIconsAsync(config, projectRoot) {
  *
  * @param projectRoot Expo project root path.
  */
-function getIosNamedProjectPath(projectRoot) {
-  const projectName = getProjectName(projectRoot);
-  return (0, _path().join)(projectRoot, 'ios', projectName);
+function getIosNamedProjectPath(projectRoot, platform) {
+  const projectName = getProjectName(projectRoot, platform);
+  return (0, _path().join)(projectRoot, platform, projectName);
 }
 function getAppleIconName(size, scale, appearance) {
   let name = 'App-Icon';

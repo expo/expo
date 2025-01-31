@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Pass `platform` to allow iOS config plugins to be adapted for use with `react-native-macos` in future. ([#34379](https://github.com/expo/expo/pull/34379) by [@shirakaba](https://github.com/shirakaba))
+
 ### 🐛 Bug fixes
 
 - Fix orphaned bridging header reference in prebuild. ([#33462](https://github.com/expo/expo/pull/33462) by [@EvanBacon](https://github.com/EvanBacon))

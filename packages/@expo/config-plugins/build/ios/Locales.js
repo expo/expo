@@ -54,6 +54,7 @@ const withLocales = config => {
   return (0, _iosPlugins().withXcodeProject)(config, async config => {
     config.modResults = await setLocalesAsync(config, {
       projectRoot: config.modRequest.projectRoot,
+      platform: config.modRequest.platform,
       project: config.modResults
     });
     return config;
@@ -65,6 +66,7 @@ function getLocales(config) {
 }
 async function setLocalesAsync(config, {
   projectRoot,
+  platform,
   project
 }) {
   const locales = getLocales(config);
@@ -73,8 +75,8 @@ async function setLocalesAsync(config, {
   }
   // possibly validate CFBundleAllowMixedLocalizations is enabled
   const localesMap = await getResolvedLocalesAsync(projectRoot, locales);
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
-  const supportingDirectory = (0, _path().join)(projectRoot, 'ios', projectName, 'Supporting');
+  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot, platform);
+  const supportingDirectory = (0, _path().join)(projectRoot, platform, projectName, 'Supporting');
 
   // TODO: Should we delete all before running? Revisit after we land on a lock file.
   const stringName = 'InfoPlist.strings';
