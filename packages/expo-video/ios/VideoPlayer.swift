@@ -160,16 +160,44 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       try drm.type.assertIsSupported()
       contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: asset)
     }
-
+    // added player metadata, specifically for TV implementation
+    let metadata = Metadata(
+      title: videoSource.metadata?.title ?? "",
+      artist: videoSource.metadata?.artist ?? "",
+      subTitle: videoSource.metadata?.subTitle ?? ""
+    )
+    let metadataItems = createMetadataItems(for: metadata)
+    playerItem.externalMetadata = metadataItems
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
     playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
 
     // The current item has to be replaced from the main thread. When replacing from other queues
     // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
     // which causes crashes.
-    DispatchQueue.main.async { [weak self] in
-      self?.pointer.replaceCurrentItem(with: playerItem)
+    DispatchQueue.main.async { [pointer] in
+      pointer.replaceCurrentItem(with: nil)
     }
+  }
+
+    func createMetadataItems(for metadata: Metadata) -> [AVMetadataItem] {
+    let mapping: [AVMetadataIdentifier: Any] = [
+      .commonIdentifierTitle: metadata.title,
+      .commonIdentifierArtist: metadata.artist,
+      .iTunesMetadataTrackSubTitle: metadata.subTitle
+    ]
+    return mapping.compactMap { createMetadataItem(for: $0, value: $1) }
+  }
+
+  private func createMetadataItem(for identifier: AVMetadataIdentifier, value: Any) -> AVMetadataItem {
+    let item = AVMutableMetadataItem()
+    item.identifier = identifier
+    item.value = value as? NSCopying & NSObjectProtocol
+    // Specify "und" to indicate an undefined language.
+    item.extendedLanguageTag = "und"
+    guard let copiedItem = item.copy() as? AVMetadataItem else {
+      fatalError("Failed to copy AVMetadataItem")
+    }
+    return copiedItem
   }
 
   /**
@@ -297,4 +325,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   static func == (lhs: VideoPlayer, rhs: VideoPlayer) -> Bool {
     return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
   }
+}
+
+struct Metadata {
+  var title: String
+  var artist: String
+  var subTitle: String
 }

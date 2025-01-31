@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Added an option to `generateThumbnailsAsync` to set the maximum size of generated thumbnails. ([#33599](https://github.com/expo/expo/pull/33599) by [@tsapeta](https://github.com/tsapeta))
-
+- [iOS] Titles and subtitles are now available in the tvOS video player from the metadata. ([#33639](https://github.com/expo/expo/pull/33639) by [@HADeveloper](https://github.com/HADeveloper))
 ### 🐛 Bug fixes
 
 - [Web] Fix `playbackRate` not being applied in the setup function.([#34182](https://github.com/expo/expo/pull/34182) by [@behenate](https://github.com/behenate))
