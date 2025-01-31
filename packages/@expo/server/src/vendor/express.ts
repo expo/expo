@@ -89,8 +89,12 @@ export async function respond(res: express.Response, expoRes: Response): Promise
   res.statusMessage = expoRes.statusText;
   res.status(expoRes.status);
 
-  for (const [key, value] of expoRes.headers.entries()) {
-    res.append(key, value);
+  if (typeof res.setHeaders === 'function') {
+    res.setHeaders(expoRes.headers);
+  } else {
+    for (const [key, value] of expoRes.headers.entries()) {
+      res.appendHeader(key, value);
+    }
   }
 
   if (expoRes.body) {
