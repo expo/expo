@@ -6,6 +6,7 @@ typedef NSURL * _Nullable (^EXDevLauncherBundleURLGetter)();
 @interface EXDevLauncherAppDelegate : RCTAppDelegate
 
 @property (nonatomic, copy, nonnull) EXDevLauncherBundleURLGetter bundleURLGetter;
+@property (nonatomic, strong, nonnull) RCTRootViewFactory *rootViewFactory;
 
 - (instancetype)initWithBundleURLGetter:(nonnull EXDevLauncherBundleURLGetter)bundleURLGetter;
 - (RCTRootViewFactory *)createRCTRootViewFactory;

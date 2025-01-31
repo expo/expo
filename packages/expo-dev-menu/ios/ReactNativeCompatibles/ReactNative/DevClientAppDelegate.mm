@@ -34,9 +34,7 @@
 @interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTTurboModuleManagerDelegate>
 @end
 
-@implementation DevClientAppDelegate {
-  RCTRootViewFactory * _internalRootViewFactory;
-}
+@implementation DevClientAppDelegate
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
@@ -63,24 +61,12 @@
 - (void)initRootViewFactory {
   RCTSetNewArchEnabled([self newArchEnabled]);
   RCTEnableTurboModule(self.turboModuleEnabled);
-
-//	self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self];
-
-//	UIView *rootView = [self.reactNativeFactory.rootViewFactory viewWithModuleName:self.moduleName
-//																															 initialProperties:self.initialProps
-//																																	 launchOptions:launchOptions];
-
-	_internalRootViewFactory = [self createRCTRootViewFactory];
-//  self.rootViewFactory = [self createRCTRootViewFactory];
+  
+  self.rootViewFactory = [self createRCTRootViewFactory];
 
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
-}
-
-- (RCTRootViewFactory *)rootViewFactory
-{
-	return _internalRootViewFactory;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
