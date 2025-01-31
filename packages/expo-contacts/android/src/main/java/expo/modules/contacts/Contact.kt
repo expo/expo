@@ -287,6 +287,10 @@ class Contact(var contactId: String, var appContext: AppContext) {
           .build()
       )
     }
+    op = ContentProviderOperation.newUpdate(ContactsContract.Contacts.CONTENT_URI)
+      .withSelection("${ContactsContract.Contacts._ID}=?", arrayOf(contactId))
+      .withValue(ContactsContract.Contacts.STARRED, if (isFavorite) 1 else 0)
+    ops.add(op.build())
 
     // Flush all data from linked db
     rawContactId?.let { id ->
