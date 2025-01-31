@@ -1,7 +1,6 @@
 /* eslint-disable no-var */
 import './assertion';
 
-import { installGlobals as installRemixGlobals } from '@remix-run/node';
 declare const Response: {
   prototype: Response;
   new (body?: BodyInit | null, init?: ResponseInit): Response;
@@ -25,12 +24,32 @@ export const ExpoRequest = Request;
 /** @deprecated */
 export const ExpoResponse = Response;
 
-export function installGlobals() {
-  // Use global polyfills from Undici
-  installRemixGlobals({ nativeFetch: true });
+/** Use global polyfills from undici */
+function installNativeFetchGlobals() {
+  // NOTE(@kitten): We defer requiring `undici` here
+  // The require here is only fine as long as we only have CommonJS entrypoints
+  const {
+    File: undiciFile,
+    fetch: undiciFetch,
+    FormData: undiciFormData,
+    Headers: undiciHeaders,
+    Request: undiciRequest,
+    Response: undiciResponse
+  } = require('undici');
+  globalThis.File = undiciFile;
+  globalThis.Headers = undiciHeaders;
+  globalThis.Request = undiciRequest;
+  globalThis.Response = undiciResponse;
+  globalThis.fetch = undiciFetch;
+  globalThis.FormData = undiciFormData;
 
-  global.ExpoRequest = Request;
-  global.ExpoResponse = Response;
+  // Add deprecated globals for `Expo` aliased classes
+  globalThis.ExpoRequest = undiciRequest;
+  globalThis.ExpoResponse = undiciResponse;
+}
+
+export function installGlobals() {
+  installNativeFetchGlobals();
 
   if (typeof Response.error !== 'function') {
     Response.error = function error() {
