@@ -234,8 +234,8 @@ function checkForDuplicatedConfigs(configs) {
     // Check for duplicate patterns in the config
     configs.reduce((acc, config) => {
         if (acc[config.pattern]) {
-            const a = acc[config.pattern].route;
-            const b = config.route;
+            const a = acc[config.pattern].route.map(({ name }) => name);
+            const b = config.route.map(({ name }) => name);
             // It's not a problem if the path string omitted from a inner most screen
             // For example, it's ok if a path resolves to `A > B > C` or `A > B`
             const intersects = a.length > b.length ? b.every((it, i) => a[i] === it) : a.every((it, i) => b[i] === it);
