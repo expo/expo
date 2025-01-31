@@ -7,7 +7,9 @@ export type { Slider, SliderProps } from '../components/Slider';
 /**
  * @hidden
  */
-export type ViewEvent<Name extends string, Data extends object> = Record<
+export type ViewEvent<Name extends string, Data> = Record<
   Name,
-  (event: { nativeEvent: Data }) => void
+  Data extends object
+    ? ((event: { nativeEvent: Data }) => void) | undefined
+    : (() => void) | undefined
 >;

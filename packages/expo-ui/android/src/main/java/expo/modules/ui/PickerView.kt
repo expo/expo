@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposeProps
 
@@ -25,21 +24,23 @@ class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<Pic
 
   init {
     setContent {
-      val selectedIndex by remember { props.selectedIndex }
-      val options by remember { props.options }
-      SingleChoiceSegmentedButtonRow {
-        options.forEachIndexed { index, label ->
-          SegmentedButton(
-            shape = SegmentedButtonDefaults.itemShape(
-              index = index,
-              count = options.size
-            ),
-            onClick = {
-              onOptionSelected(mapOf("index" to index, "label" to label))
-            },
-            selected = index == selectedIndex,
-            label = { Text(label) }
-          )
+      val (selectedIndex) = props.selectedIndex
+      val (options) = props.options
+      DynamicTheme {
+        SingleChoiceSegmentedButtonRow {
+          options.forEachIndexed { index, label ->
+            SegmentedButton(
+              shape = SegmentedButtonDefaults.itemShape(
+                index = index,
+                count = options.size
+              ),
+              onClick = {
+                onOptionSelected(mapOf("index" to index, "label" to label))
+              },
+              selected = index == selectedIndex,
+              label = { Text(label) }
+            )
+          }
         }
       }
     }
