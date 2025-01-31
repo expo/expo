@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed unstable fingerprint from `expoConfig` contents with absolute paths. ([#33926](https://github.com/expo/expo/pull/33926) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.11.7 — 2025-01-10
