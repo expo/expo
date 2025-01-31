@@ -2,6 +2,7 @@ import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
 import { AsyncNgrok } from './AsyncNgrok';
+import { AsyncWsTunnel } from './AsyncWsTunnel';
 import DevToolsPluginManager from './DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
@@ -9,7 +10,7 @@ import { PlatformBundlers } from './platformBundlers';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
-import { env } from '../../utils/env';
+import { env, envIsStackblitz } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { openBrowserAsync } from '../../utils/open';
 import {
@@ -90,8 +91,8 @@ export abstract class BundlerDevServer {
   /** Name of the bundler. */
   abstract get name(): string;
 
-  /** Ngrok instance for managing tunnel connections. */
-  protected ngrok: AsyncNgrok | null = null;
+  /** Tunnel instance for managing tunnel connections. */
+  protected tunnel: AsyncNgrok | AsyncWsTunnel | null = null;
   /** Interfaces with the Expo 'Development Session' API. */
   protected devSession: DevelopmentSession | null = null;
   /** Http server and related info. */
@@ -226,6 +227,8 @@ export abstract class BundlerDevServer {
       this.isTargetingNative()
     ) {
       await this._startTunnelAsync();
+    } else if (envIsStackblitz()) {
+      await this._startTunnelAsync();
     }
 
     if (!options.isExporting) {
@@ -243,13 +246,15 @@ export abstract class BundlerDevServer {
   }
 
   /** Create ngrok instance and start the tunnel server. Exposed for testing. */
-  public async _startTunnelAsync(): Promise<AsyncNgrok | null> {
+  public async _startTunnelAsync(): Promise<AsyncNgrok | AsyncWsTunnel | null> {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
-    debug('[ngrok] connect to port: ' + port);
-    this.ngrok = new AsyncNgrok(this.projectRoot, port);
-    await this.ngrok.startAsync();
-    return this.ngrok;
+    debug('[tunnel] connect to port: ' + port);
+    this.tunnel = envIsStackblitz()
+      ? new AsyncWsTunnel(this.projectRoot, port)
+      : new AsyncNgrok(this.projectRoot, port);
+    await this.tunnel.startAsync();
+    return this.tunnel;
   }
 
   protected async startDevSessionAsync() {
@@ -304,9 +309,9 @@ export abstract class BundlerDevServer {
     // Stop the dev session timer and tell Expo API to remove dev session.
     await this.devSession?.closeAsync();
 
-    // Stop ngrok if running.
-    await this.ngrok?.stopAsync().catch((e) => {
-      Log.error(`Error stopping ngrok:`);
+    // Stop tunnel if running.
+    await this.tunnel?.stopAsync().catch((e) => {
+      Log.error(`Error stopping tunnel:`);
       Log.exception(e);
     });
 
@@ -368,10 +373,17 @@ export abstract class BundlerDevServer {
     if (!instance?.location) {
       return null;
     }
+
+    // If we have an active WS tunnel instance, we always need to return the tunnel location.
+    if (this.tunnel && this.tunnel instanceof AsyncWsTunnel) {
+      return this.getUrlCreator().constructUrl();
+    }
+
     const { location } = instance;
     if (options.hostType === 'localhost') {
       return `${location.protocol}://localhost:${location.port}`;
     }
+
     return location.url ?? null;
   }
 
@@ -398,9 +410,9 @@ export abstract class BundlerDevServer {
     return this.getUrlCreator().constructUrl({ scheme: 'http' });
   }
 
-  /** Get the tunnel URL from ngrok. */
+  /** Get the tunnel URL from the tunnel. */
   public getTunnelUrl(): string | null {
-    return this.ngrok?.getActiveUrl() ?? null;
+    return this.tunnel?.getActiveUrl() ?? null;
   }
 
   /** Open the dev server in a runtime. */

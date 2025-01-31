@@ -1,4 +1,5 @@
 import { boolish, int, string } from 'getenv';
+import process from 'node:process';
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
 
@@ -254,3 +255,8 @@ class Env {
 }
 
 export const env = new Env();
+
+export function envIsStackblitz() {
+  // See: https://github.com/unjs/std-env/blob/4b1e03c4efce58249858efc2cc5f5eac727d0adb/src/providers.ts#L134-L143
+  return process.env.SHELL === '/bin/jsh' && !!process.versions.webcontainer;
+}

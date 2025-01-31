@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { canResolveDevClient, hasDirectDevClientDependency } from './detectDevClient';
 import { Log } from '../log';
+import { envIsStackblitz } from '../utils/env';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
 
@@ -142,6 +143,12 @@ export function resolveHostType(options: {
   } else if (options.localhost) {
     return 'localhost';
   }
+
+  // If no option is provided, and we are running in Stackblitz, enable tunnel by default
+  if (envIsStackblitz()) {
+    return 'tunnel';
+  }
+
   return 'lan';
 }
 

@@ -9,7 +9,7 @@ import * as Log from '../../log';
 import { delayAsync, resolveWithTimeout } from '../../utils/delay';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
-import { isNgrokClientError, NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
+import { isNgrokClientError, NgrokInstance, NgrokResolver } from '../doctor/tunnel/NgrokResolver';
 import { hasAdbReverseAsync, startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
 
