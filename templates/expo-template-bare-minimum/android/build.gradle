@@ -1,12 +1,24 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+def getRNVersion = { ->
+    return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
+}
+
+def isRN77 = { ->
+    def rnVersion = getRNVersion()
+    return rnVersion >= versionToNumber(0, 77, 0)
+}
+
 buildscript {
+    ext.safeExtGet = { prop, fallback ->
+      rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+    }
+
     ext {
         buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
 
         ndkVersion = "26.1.10909125"
     }
@@ -19,6 +31,10 @@ buildscript {
         classpath('com.facebook.react:react-native-gradle-plugin')
         classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
     }
+}
+
+project.afterEvaluate {
+    ext.kotlinVersion = findProperty('android.kotlinVersion') ?: (isRN77() ? '2.0.21' : '1.9.24')
 }
 
 apply plugin: "com.facebook.react.rootproject"
@@ -54,4 +70,25 @@ allprojects {
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
     }
+}
+
+static def versionToNumber(major, minor, patch) {
+    return major * 10000 + minor * 100 + patch
+}
+
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+    def nodeModulesVersion = providers.exec {
+        workingDir(projectDir)
+        commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
+    }.standardOutput.asText.get().trim()
+    def version = safeExtGet(overridePropName, nodeModulesVersion)
+
+    def coreVersion = version.split("-")[0]
+    def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+    return versionToNumber(
+            major,
+            minor,
+            patch
+    )
 }
