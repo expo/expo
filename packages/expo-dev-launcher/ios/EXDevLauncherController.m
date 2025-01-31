@@ -294,8 +294,7 @@
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
-	// xxxvojta
-  if (NO && _lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
+	if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
     // When launch to the last opend url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
     NSTimeInterval requestTimeout = 10.0;
@@ -341,12 +340,11 @@
   [self _removeInitModuleObserver];
   // Reset app react host
   [self.delegate destroyReactInstance];
-
-	// TODO this is wrong
-//	_appDelegate.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:_appDelegate];
-//	_appDelegate.reactNativeFactory = 
-//  _appDelegate.reactNativeFactory.rootViewFactory = [_appDelegate createRCTRootViewFactory];
-//	_appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory]; // original
+	
+  // @chrfalch: This is a bit stupied - in pre 0.77 we want to call the original
+  // RCTAppDelegate's createRCTRootViewFactory...
+  RCTAppDelegate* app = (RCTAppDelegate*)[UIApplication sharedApplication].delegate;
+  _appDelegate.rootViewFactory = [[app reactNativeFactory] createRCTRootViewFactory];
 
 
 #if RCT_DEV

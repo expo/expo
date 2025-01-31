@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
 
+// @todo @vonovak - Remove this - it is just for testing...
+@property(nonatomic, strong, nonnull) RCTRootViewFactory *rootViewFactory;
+
 @end
 
 NS_ASSUME_NONNULL_END

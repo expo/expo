@@ -21,18 +21,13 @@
 
 @end
 
-@implementation EXDevLauncherAppDelegate {
-//	RCTRootViewFactory * _rootViewFactory;
-	
-}
-
+@implementation EXDevLauncherAppDelegate
 
 - (instancetype)initWithBundleURLGetter:(nonnull EXDevLauncherBundleURLGetter)bundleURLGetter
 {
   if (self = [super init]) {
     self.bundleURLGetter = bundleURLGetter;
 		self.dependencyProvider = [RCTAppDependencyProvider new];
-//		_rootViewFactory = [self createRCTRootViewFactory];
   }
   return self;
 }
@@ -53,16 +48,5 @@
   }
   return [super getModuleClassFromName:name];
 }
-
-- (RCTRootViewFactory *)createRCTRootViewFactory {
-	return self.reactNativeFactory.rootViewFactory;
-}
-
-- (RCTRootViewFactory *)rootViewFactory
-{
-	return self.reactNativeFactory.rootViewFactory;
-}
-
-//dependencyProvider
 
 @end
