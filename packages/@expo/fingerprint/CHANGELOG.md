@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.11.8 — 2025-01-31
+
+### 🎉 New features
+
 - Add `SourceSkips.GitIgnore` to allow `.gitignore` changes to be excluded from the fingerpint ([#34220](https://github.com/expo/expo/pull/34220) by [@ball-hayden](https://github.com/ball-hayden))
 
 ### 🐛 Bug fixes

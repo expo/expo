@@ -20,7 +20,7 @@ try {
 }
 
 group = 'host.exp.exponent'
-version = '0.1.0'
+version = '0.1.1'
 
 dependencies {
   implementation 'androidx.work:work-runtime-ktx:2.9.1'
@@ -31,6 +31,6 @@ android {
   namespace "expo.modules.backgroundtask"
   defaultConfig {
     versionCode 23
-    versionName "0.1.0"
+    versionName "0.1.1"
   }
 }
