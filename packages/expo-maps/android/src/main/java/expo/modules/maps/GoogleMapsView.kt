@@ -2,7 +2,6 @@
 
 package expo.modules.maps
 
-import CustomLocationSource
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
@@ -157,14 +156,16 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
 
   @Composable
   private fun locationSourceFromProps(cameraState: State<CameraPositionState>): LocationSource? {
-    val locationSource = remember {
+    val coordinates = props.userLocation.value.coordinates
+    val followUserLocation = props.userLocation.value.followUserLocation
+
+    val locationSource = remember(coordinates) {
       CustomLocationSource()
     }
-
-    LaunchedEffect(props.userLocation.value.coordinates) {
-      props.userLocation.value.coordinates?.let { coordinates ->
+    LaunchedEffect(coordinates) {
+      coordinates?.let { coordinates ->
         locationSource.onLocationChanged(coordinates.toLocation())
-        if (props.userLocation.value.followUserLocation) {
+        if (followUserLocation) {
           cameraState.value.cameraMoveStartedReason.let { reason ->
             if (reason != CameraMoveStartedReason.GESTURE) {
               cameraState.value.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
@@ -173,7 +174,6 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         }
       }
     }
-
     return props.userLocation.value.coordinates?.let { coordinates ->
       locationSource.apply {
         onLocationChanged(coordinates.toLocation())

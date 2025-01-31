@@ -1,3 +1,5 @@
+package expo.modules.maps
+
 import android.location.Location
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener

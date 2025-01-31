@@ -34,7 +34,7 @@ export type UserLocation = {
      */
     coordinates: Coordinates;
     /**
-     * Camera should follow the user location.
+     * Should the camera follow the users location.
      */
     followUserLocation: boolean;
 };

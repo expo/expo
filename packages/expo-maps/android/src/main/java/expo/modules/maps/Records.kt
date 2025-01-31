@@ -27,11 +27,9 @@ data class Coordinates(
   fun toLatLng(): LatLng {
     return LatLng(latitude, longitude)
   }
-  fun toLocation(): Location {
-    val location = Location("CustomLocation")
-    location.latitude = latitude
-    location.longitude = longitude
-    return location
+  fun toLocation() = Location("CustomLocation").apply {
+    latitude = this@Coordinates.latitude
+    longitude = this@Coordinates.longitude
   }
 }
 
