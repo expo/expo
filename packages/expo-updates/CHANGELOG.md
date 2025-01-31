@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix issue where syncing codesigning config for bare projects would clobber existing Expo.plist config ([#34597](https://github.com/expo/expo/pull/34597) by [@brentvatne](https://github.com/brentvatne))
-
 ### 💡 Others
+
+## 0.26.15 — 2025-01-31
+
+### 🐛 Bug fixes
+
+- Fix issue where syncing codesigning config for bare projects would clobber existing Expo.plist config ([#34597](https://github.com/expo/expo/pull/34597) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.26.14 — 2025-01-31
 
