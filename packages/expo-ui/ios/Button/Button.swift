@@ -7,13 +7,18 @@ struct Button: ExpoSwiftUI.View {
   @EnvironmentObject var props: ButtonProps
 
   var body: some View {
-    SwiftUI.Button(role: props.buttonRole?.toNativeRole(), action: { props.onButtonPressed() }, label: {
-      if let systemImage = props.systemImage {
-        Label(props.text, systemImage: systemImage)
-      } else {
-        Text(props.text)
-      }
-    })
+    SwiftUI.Button(
+      role: props.buttonRole?.toNativeRole(),
+      action: {
+        props.onButtonPressed()
+      },
+      label: {
+        if let systemImage = props.systemImage {
+          Label(props.text, systemImage: systemImage)
+        } else {
+          Text(props.text)
+        }
+      })
     // TODO: Maybe there is a way to do a switch statement similarly to the `if` extension?
     .if(props.variant == .bordered, {
       $0.buttonStyle(.bordered)

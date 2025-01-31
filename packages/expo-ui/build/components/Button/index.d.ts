@@ -37,7 +37,9 @@ export type ButtonProps = {
     /**
      * A callback that is called when the button is pressed.
      */
-    onPress?: () => void;
+    onPress?: (event: {
+        nativeEvent: {};
+    }) => void;
     /**
      * A string describing the system image to display in the button.
      * @platform ios
@@ -59,7 +61,12 @@ export type ButtonProps = {
 };
 export type NativeButtonProps = Omit<Omit<ButtonProps, 'role'>, 'onPress'> & {
     buttonRole?: ButtonRole;
-    onButtonPressed?: () => void;
+    onButtonPressed?: (event: {
+        nativeEvent: {};
+    }) => void;
+    role?: null;
+    onPress?: null;
 };
+export declare function transformButtonProps(props: ButtonProps): NativeButtonProps;
 export declare function Button(props: ButtonProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

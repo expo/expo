@@ -11,5 +11,6 @@ public class ExpoUIModule: Module {
     View(SwitchView.self)
     View(SectionView.self)
     View(SliderView.self)
+    View(ExpoUI.ContextMenu.self)
   }
 }

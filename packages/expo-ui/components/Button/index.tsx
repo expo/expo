@@ -56,7 +56,7 @@ export type ButtonProps = {
   /**
    * A callback that is called when the button is pressed.
    */
-  onPress?: () => void;
+  onPress?: (event: { nativeEvent: {} }) => void;
   /**
    * A string describing the system image to display in the button.
    * @platform ios
@@ -80,7 +80,9 @@ export type ButtonProps = {
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 export type NativeButtonProps = Omit<Omit<ButtonProps, 'role'>, 'onPress'> & {
   buttonRole?: ButtonRole;
-  onButtonPressed?: () => void;
+  onButtonPressed?: (event: { nativeEvent: {} }) => void;
+  role?: null;
+  onPress?: null;
 };
 
 const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
@@ -88,17 +90,23 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
   'Button'
 );
 
-export function Button(props: ButtonProps) {
-  // We have to work around the `role` and `onPress` props being reserved by React Native.
-  const restProps = { ...props, role: null, onPress: null };
+// We have to work around the `role` and `onPress` props being reserved by React Native.
+export function transformButtonProps(props: ButtonProps): NativeButtonProps {
+  return {
+    ...props,
+    buttonRole: props.role,
+    onButtonPressed: props.onPress,
+    role: null,
+    onPress: null,
+  };
+}
 
+export function Button(props: ButtonProps) {
   // Min height from https://m3.material.io/components/buttons/specs, minWidth
   return (
     <ButtonNativeView
       style={[{ minWidth: 80, minHeight: 40 }, props.style]}
-      buttonRole={props.role}
-      onButtonPressed={props.onPress}
-      {...restProps}
+      {...transformButtonProps(props)}
     />
   );
 }

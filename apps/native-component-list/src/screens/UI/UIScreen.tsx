@@ -42,6 +42,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./SliderScreen'));
     },
   },
+  {
+    name: 'ContextMenu component',
+    route: 'ui/context-menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ContextMenuScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

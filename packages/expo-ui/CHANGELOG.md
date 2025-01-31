@@ -8,6 +8,7 @@
 
 - Add Button component.([#34340](https://github.com/expo/expo/pull/34340) by [@behenate](https://github.com/behenate))
 - Apple TV support and source restructure. ([#34532](https://github.com/expo/expo/pull/34532) by [@douglowder](https://github.com/douglowder))
+- Add `ContextMenu` component. ([#34553](https://github.com/expo/expo/pull/34553) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

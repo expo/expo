@@ -15,7 +15,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
+import java.io.Serializable
+
+open class ButtonPressedEvent() : Record, Serializable
 
 enum class ButtonVariant(val value: String) {
   DEFAULT("default"),
@@ -44,13 +48,13 @@ fun StyledButton(style: ButtonVariant, onPress: () -> Unit, content: @Composable
 
 class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonProps>(context, appContext) {
   override val props = ButtonProps()
-  private val onButtonPressed by EventDispatcher<Unit>()
+  private val onButtonPressed by EventDispatcher<ButtonPressedEvent>()
 
   init {
     setContent {
       val variant by remember { props.variant }
       val text by remember { props.text }
-      StyledButton(variant ?: ButtonVariant.DEFAULT, { onButtonPressed.invoke(Unit) }) {
+      StyledButton(variant ?: ButtonVariant.DEFAULT, { onButtonPressed.invoke(ButtonPressedEvent()) }) {
         Text(text)
       }
     }
