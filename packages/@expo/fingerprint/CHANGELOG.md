@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed unstable fingerprint from `expoConfig` contents with absolute paths. ([#33926](https://github.com/expo/expo/pull/33926) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - docs(fingerprint): correct typo in fingerprint cli ([#33887](https://github.com/expo/expo/pull/33887) by [@leopic](https://github.com/leopic))
