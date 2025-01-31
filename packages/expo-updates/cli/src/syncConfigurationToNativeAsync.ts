@@ -37,7 +37,7 @@ async function syncConfigurationToNativeAndroidAsync(
   options: SyncConfigurationToNativeOptions
 ): Promise<void> {
   const { exp } = getConfig(options.projectRoot, {
-    isPublicConfig: true,
+    isPublicConfig: false, // This must be false or it will drop codesigning config
     skipSDKVersionRequirement: true,
   });
 
@@ -84,7 +84,7 @@ async function syncConfigurationToNativeIosAsync(
   options: SyncConfigurationToNativeOptions
 ): Promise<void> {
   const { exp } = getConfig(options.projectRoot, {
-    isPublicConfig: true,
+    isPublicConfig: false, // This must be false or it will drop codesigning config
     skipSDKVersionRequirement: true,
   });
 
