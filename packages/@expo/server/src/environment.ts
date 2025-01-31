@@ -25,7 +25,7 @@ export const ExpoRequest = Request;
 export const ExpoResponse = Response;
 
 /** Use global polyfills from undici */
-function installNativeFetchGlobals() {
+export function installGlobals() {
   // NOTE(@kitten): We defer requiring `undici` here
   // The require here is only fine as long as we only have CommonJS entrypoints
   const {
@@ -46,39 +46,4 @@ function installNativeFetchGlobals() {
   // Add deprecated globals for `Expo` aliased classes
   globalThis.ExpoRequest = undiciRequest;
   globalThis.ExpoResponse = undiciResponse;
-}
-
-export function installGlobals() {
-  installNativeFetchGlobals();
-
-  if (typeof Response.error !== 'function') {
-    Response.error = function error() {
-      return new Response(null, { status: 500 });
-    };
-  }
-
-  if (typeof Response.json !== 'function') {
-    Response.json = function json(data: any, init?: ResponseInit) {
-      return new Response(JSON.stringify(data), init);
-    };
-  }
-
-  if (typeof Response.redirect !== 'function') {
-    Response.redirect = function redirect(url: string | URL, status?: number) {
-      if (!status) status = 302;
-      switch (status) {
-        case 301:
-        case 302:
-        case 303:
-        case 307:
-        case 308:
-          return new Response(null, {
-            headers: { Location: new URL(url).toString() },
-            status,
-          });
-        default:
-          throw new RangeError(`Invalid status code ${status}`);
-      }
-    };
-  }
 }
