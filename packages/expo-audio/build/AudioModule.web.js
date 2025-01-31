@@ -194,6 +194,12 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     }
     async setup() {
         this.mediaRecorder = await this.createMediaRecorder(this.options);
+        // Set up Web Audio API context and analyser
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.analyserNode = audioContext.createAnalyser();
+        this.analyserNode.fftSize = 128;
+        this.analyserNode.smoothingTimeConstant = 0.1;
+        this.audioContext = audioContext;
     }
     id = nextId();
     currentTime = 0;
@@ -203,6 +209,8 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     mediaRecorderUptimeOfLastStartResume = 0;
     mediaRecorderIsRecording = false;
     timeoutIds = [];
+    analyserNode = null;
+    audioContext = null;
     get isRecording() {
         return this.mediaRecorder?.state === 'recording';
     }
@@ -215,6 +223,9 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         }
         else {
             this.mediaRecorder?.start();
+            // Connect audio stream to analyser
+            const stream = this.audioContext?.createMediaStreamSource(this.mediaRecorder.stream);
+            stream?.connect(this.analyserNode);
         }
     }
     getAvailableInputs() {
@@ -231,12 +242,14 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         return this.setup();
     }
     getStatus() {
+        const metering = this.getMeteringLevel();
         return {
             canRecord: this.mediaRecorder?.state === 'recording' || this.mediaRecorder?.state === 'inactive',
             isRecording: this.mediaRecorder?.state === 'recording',
             durationMillis: this.getAudioRecorderDurationMillis(),
             mediaServicesDidReset: false,
             url: this.uri,
+            metering,
         };
     }
     pause() {
@@ -313,6 +326,17 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             duration += Date.now() - this.mediaRecorderUptimeOfLastStartResume;
         }
         return duration;
+    }
+    getMeteringLevel() {
+        if (!this.analyserNode)
+            return -Infinity; // Return a default value if AnalyserNode is not initialized
+        const dataArray = new Uint8Array(this.analyserNode.frequencyBinCount); // Array length is fftSize / 2
+        this.analyserNode.getByteFrequencyData(dataArray);
+        // Calculate the average power level
+        const sum = dataArray.reduce((a, b) => a + b, 0);
+        const average = sum / dataArray.length;
+        // Convert the average power level to decibels (dB)
+        return 20 * Math.log10(average / 255 || 1); // Avoid log of zero with `|| 1`
     }
 }
 export async function setAudioModeAsync(mode) { }
