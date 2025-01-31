@@ -38,7 +38,7 @@ export const ExpoRequest = Request;
 export const ExpoResponse = Response;
 
 /** Use global polyfills from undici */
-export function installGlobals() {
+export function installGlobals(): void {
   // NOTE(@kitten): We defer requiring `undici` here
   // The require here is only fine as long as we only have CommonJS entrypoints
   const {

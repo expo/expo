@@ -3,7 +3,7 @@ import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 import { pipeline } from 'node:stream/promises';
 import type * as express from 'express';
 
-import { createRequestHandler as createExpoHandler } from '..';
+import { createRequestHandler as createExpoHandler } from '../index';
 
 export type RequestHandler = (
   req: express.Request,

@@ -1,7 +1,7 @@
 import type { HandlerEvent, HandlerResponse } from '@netlify/functions';
 import { AbortController } from 'abort-controller';
 
-import { createRequestHandler as createExpoHandler } from '..';
+import { createRequestHandler as createExpoHandler } from '../index';
 
 export function createRequestHandler({ build }: { build: string }) {
   const handleRequest = createExpoHandler(build);

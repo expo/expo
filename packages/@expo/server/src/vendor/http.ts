@@ -3,7 +3,7 @@ import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 import { pipeline } from 'node:stream/promises';
 import * as http from 'http';
 
-import { createRequestHandler as createExpoHandler } from '..';
+import { createRequestHandler as createExpoHandler } from '../index';
 
 type NextFunction = (err?: any) => void;
 
