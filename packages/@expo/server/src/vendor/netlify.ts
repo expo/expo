@@ -13,7 +13,10 @@ export function createRequestHandler({ build }: { build: string }) {
   };
 }
 
-async function readableStreamToString(stream: ReadableStream<Uint8Array>, encoding: 'utf8' | 'base64') {
+async function readableStreamToString(
+  stream: ReadableStream<Uint8Array>,
+  encoding: 'utf8' | 'base64'
+) {
   const reader = stream.getReader();
   const chunks: Uint8Array[] = [];
   let chunk: ReadableStreamReadResult<Uint8Array>;

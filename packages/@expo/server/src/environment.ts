@@ -47,7 +47,7 @@ export function installGlobals(): void {
     FormData: undiciFormData,
     Headers: undiciHeaders,
     Request: undiciRequest,
-    Response: undiciResponse
+    Response: undiciResponse,
   } = require('undici');
   globalThis.File = undiciFile;
   globalThis.Headers = undiciHeaders;

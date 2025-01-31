@@ -1,7 +1,7 @@
-import { Readable } from 'node:stream';
-import { ReadableStream as NodeReadableStream } from 'node:stream/web';
-import { pipeline } from 'node:stream/promises';
 import * as http from 'http';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler } from '../index';
 

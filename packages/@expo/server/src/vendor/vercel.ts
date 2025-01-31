@@ -1,10 +1,10 @@
 // NOTE: VercelRequest/VercelResponse wrap http primitives in Node
 // plus some helper inputs and outputs, which we don't need to define
 // our interface types
-import { Readable } from 'node:stream';
-import { ReadableStream as NodeReadableStream } from 'node:stream/web';
-import { pipeline } from 'node:stream/promises';
 import * as http from 'http';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler } from '../index';
 
