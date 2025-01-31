@@ -19,14 +19,14 @@ data class SwitchProps(
 
 class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<SwitchProps>(context, appContext) {
   override val props = SwitchProps()
-  private val onCheckedChanged by EventDispatcher()
+  private val onCheckedChange by EventDispatcher()
 
   init {
     setContent {
       val (checked) = props.checked
       val (variant) = props.variant
       val onCheckedChange = { checked: Boolean ->
-        onCheckedChanged(mapOf("checked" to checked))
+        onCheckedChange(mapOf("checked" to checked))
       }
 
       @Composable
