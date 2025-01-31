@@ -1304,6 +1304,62 @@ test('chooses more exhaustive pattern', () => {
   expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
+test('chooses route with more initialRouteName alignment when non-expanded routes exist', () => {
+  const path = '/two/three';
+
+  const config = {
+    screens: {
+      '(one)': {
+        initialRouteName: 'one',
+        path: '(one)',
+        screens: {
+          one: { path: 'one' },
+          'two/three': { path: 'two/three' },
+        },
+      },
+      '(two)': {
+        initialRouteName: 'two',
+        path: '(two)',
+        screens: {
+          one: { path: 'one' },
+          two: {
+            path: 'two',
+            screens: {
+              three: { path: 'three' },
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: '(two)',
+        state: {
+          routes: [
+            {
+              name: 'two',
+              state: {
+                routes: [
+                  {
+                    name: 'three',
+                    path: '/two/three',
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
+});
+
 test('handles same paths beginnings', () => {
   const path = '/foos';
 
