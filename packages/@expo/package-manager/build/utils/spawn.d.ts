@@ -1,4 +1,4 @@
-import { SpawnOptions, SpawnPromise } from '@expo/spawn-async';
+import { SpawnPromise } from '@expo/spawn-async';
 /**
  * The pending spawn promise is similar to the spawn promise from `@expo/spawn-async`.
  * Instead of the `child` process being available immediately, the `child` is behind another promise.
@@ -13,9 +13,3 @@ export interface PendingSpawnPromise<T> extends Promise<T> {
     child: Promise<SpawnPromise<T>['child'] | null>;
 }
 export declare function createPendingSpawnAsync<V, T>(actionAsync: () => Promise<V>, spawnAsync: (result: V) => SpawnPromise<T>): PendingSpawnPromise<T>;
-/**
- * Spawn a command with sudo privileges.
- * On windows, this uses the `sudo-prompt` package.
- * on other systems, this uses the `sudo` binary.
- */
-export declare function spawnSudoAsync(command: string[], spawnOptions: SpawnOptions): Promise<void>;
