@@ -11,6 +11,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix regex on `expo-router/matcher` `matchLastGroupName` allows to use it on `IOS < 16.4` ([#33350](https://github.com/expo/expo/pull/33350) by [@antonio-serrat](https://github.com/Antonio-Serat))
+- Fix pushing the same route multiple times and `__EXPO_ROUTER_key` incorrectly showing up in query parameters ([#33430](https://github.com/expo/expo/pull/33430) by [@stephentuso](https://github.com/stephentuso))
+- Fix handling URL with both hash and params ([#33646](https://github.com/expo/expo/pull/33646) by [@stephentuso](https://github.com/stephentuso))
 - Fix error 'WeakSet key must be an object' in fast-refresh for invalid exports like cpp host objects. ([#34026](https://github.com/expo/expo/pull/34026) by [@chrfalch](https://github.com/chrfalch))
 - Fix render store (unstable_headers) on native platforms. ([#33978](https://github.com/expo/expo/pull/33978) by [@EvanBacon](https://github.com/EvanBacon))
 
@@ -23,11 +26,6 @@
 - Fix linting errors ([#34033](https://github.com/expo/expo/pull/34033) by [@marklawlor](https://github.com/marklawlor))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - Add Sitemap to exported views ([#34144](https://github.com/expo/expo/pull/34144) by [@davidavz](https://github.com/davidavz))
-
-### 🐛 Bug fixes
-
-- Fix regex on `expo-router/matcher` `matchLastGroupName` allows to use it on `IOS < 16.4` ([#33350](https://github.com/expo/expo/pull/33350) by [@antonio-serrat](https://github.com/Antonio-Serat))
-- Fix pushing the same route multiple times and `__EXPO_ROUTER_key` incorrectly showing up in query parameters ([#33430](https://github.com/expo/expo/pull/33430) by [@stephentuso](https://github.com/stephentuso))
 
 ## 4.0.15 - 2024-12-24
 
