@@ -33,7 +33,7 @@ Expo Maps provides access to the platform native map APIs on Android and iOS.
 > If you have already registered a project for another Google service on Android, such as Google Sign In, you enable the **Maps SDK for Android** on your project and jump to step 4.
 
 <Step label="1">
-#### Register a Google Cloud API project and enable the Maps SDK for Android
+**Register a Google Cloud API project and enable the Maps SDK for Android**
 
 - Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project.
 - Once it's created, go to the project and enable the **Maps SDK for Android**.
@@ -41,7 +41,7 @@ Expo Maps provides access to the platform native map APIs on Android and iOS.
 </Step>
 
 <Step label="2">
-#### Copy your app's SHA-1 certificate fingerprint
+**Copy your app's SHA-1 certificate fingerprint**
 
 <Tabs>
 <Tab label="For Google Play Store">
@@ -65,7 +65,7 @@ Expo Maps provides access to the platform native map APIs on Android and iOS.
 </Step>
 
 <Step label="3">
-#### Create an API key
+**Create an API key**
 
 - Go to [Google Cloud Credential manager](https://console.cloud.google.com/apis/credentials) and click **Create Credentials**, then **API Key**.
 - In the modal, click **Edit API key**.
@@ -78,7 +78,7 @@ Expo Maps provides access to the platform native map APIs on Android and iOS.
 </Step>
 
 <Step label="4">
-#### Add the API key to your project
+**Add the API key to your project**
 
 - Copy your **API Key** into your **app.json** under the `android.config.googleMaps.apiKey` field.
 - Create a new development build, and you can now use the Google Maps API on Android with `expo-maps`.
