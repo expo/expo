@@ -7,6 +7,7 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.UpdatesUtils
+import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.logging.UpdatesLogger
 import java.io.File
 import java.io.FileNotFoundException
@@ -71,6 +72,7 @@ class EmbeddedLoader internal constructor(
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
+    requestedUpdate: UpdateEntity?,
     callback: AssetDownloadCallback
   ) {
     val filename = UpdatesUtils.createFilenameForAsset(assetEntity)
