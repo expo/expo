@@ -1,15 +1,27 @@
 import './assertion';
-declare const Response: {
-    prototype: Response;
-    new (body?: BodyInit | null, init?: ResponseInit): Response;
-    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/error_static) */
-    error(): Response;
-    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/json_static) */
-    json(data: any, init?: ResponseInit): Response;
-    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirect_static) */
-    redirect(url: string | URL, status?: number): Response;
-};
+import type * as undici from 'undici';
 declare global {
+    interface RequestInit extends undici.RequestInit {
+        duplex?: 'half';
+    }
+    interface Request extends undici.Request {
+    }
+    var Request: typeof Request;
+    interface Response extends undici.Response {
+    }
+    var Response: typeof Response;
+    interface Headers extends undici.Headers {
+    }
+    var Headers: typeof Headers;
+    interface File extends undici.File {
+    }
+    var File: typeof File;
+    interface Headers extends undici.Headers {
+    }
+    var Headers: typeof Headers;
+    interface FormData extends undici.FormData {
+    }
+    var FormData: typeof FormData;
     /** @deprecated */
     var ExpoRequest: typeof Request;
     /** @deprecated */
@@ -22,14 +34,10 @@ export declare const ExpoRequest: {
 };
 /** @deprecated */
 export declare const ExpoResponse: {
-    new (body?: BodyInit | null, init?: ResponseInit): Response;
+    new (body?: BodyInit | null | undefined, init?: ResponseInit | undefined): Response;
     prototype: Response;
-    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/error_static) */
     error(): Response;
-    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/json_static) */
-    json(data: any, init?: ResponseInit): Response;
-    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirect_static) */
-    redirect(url: string | URL, status?: number): Response;
+    redirect(url: string | URL, status?: number | undefined): Response;
 };
+/** Use global polyfills from undici */
 export declare function installGlobals(): void;
-export {};
