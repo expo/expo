@@ -41,15 +41,15 @@ export const withXmlFontsAndroid: ConfigPlugin<XmlFonts[]> = (config, fonts) => 
   return withMainApplication(config, async (config) => {
     for (const { fontName, fontFiles } of fonts) {
       const xmlFileName = fontName?.toLowerCase().replace(/ /g, '_')!;
-
-      const fontXml = generateFontFamilyXml(fontFiles!);
+      const resolvedFonts = await resolveFontPaths(fontFiles!, config.modRequest.projectRoot);
+      const fontXml = generateFontFamilyXml(resolvedFonts);
       const fontsDir = path.join(config.modRequest.platformProjectRoot, 'app/src/main/res/font');
       await fs.mkdir(fontsDir, { recursive: true });
       const xmlPath = path.join(fontsDir, `${xmlFileName}.xml`);
       await fs.writeFile(xmlPath, fontXml);
 
       await Promise.all(
-        fontFiles!.map(async (file) => {
+        resolvedFonts.map(async (file) => {
           const destPath = path.join(fontsDir, path.basename(file));
           await fs.copyFile(path.resolve(__dirname, file), destPath);
         })
