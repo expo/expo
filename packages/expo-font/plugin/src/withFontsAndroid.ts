@@ -38,8 +38,8 @@ export const withFontsAndroid: ConfigPlugin<string[]> = (config, fonts) => {
 };
 
 export const withXmlFontsAndroid: ConfigPlugin<XmlFonts[]> = (config, fonts) => {
-  return withMainApplication(config, (config) => {
-    fonts.forEach(async ({ fontName, fontFiles }) => {
+  return withMainApplication(config, async (config) => {
+    for (const { fontName, fontFiles } of fonts) {
       const xmlFileName = fontName?.toLowerCase().replace(/ /g, '_')!;
 
       const fontXml = generateFontFamilyXml(fontFiles!);
@@ -66,7 +66,7 @@ export const withXmlFontsAndroid: ConfigPlugin<XmlFonts[]> = (config, fonts) => 
         'onCreate',
         `  ReactFontManager.getInstance().addCustomFont(this, "${fontName}", R.font.${xmlFileName})${isJava ? ';' : ''}\n  `
       );
-    });
+    }
 
     return config;
   });
