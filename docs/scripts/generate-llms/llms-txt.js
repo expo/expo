@@ -7,6 +7,7 @@ import {
   TITLE,
   DESCRIPTION,
   processSection,
+  exportTalksData,
 } from './utils.js';
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
 
@@ -56,17 +57,19 @@ function generateFullMarkdown({ title, description, sections }) {
 
 export async function generateLlmsTxt() {
   try {
-    const sections = Object.values({ home, general, learn, eas, reference: reference.latest })
+    const docSections = Object.values({ home, general, learn, eas, reference: reference.latest })
       .flat()
       .map(processSection)
       .filter(Boolean);
+    const talksData = exportTalksData();
+    const allSections = [...docSections, ...talksData.sections];
 
     await fs.promises.writeFile(
       path.join(process.cwd(), OUTPUT_DIRECTORY_NAME, OUTPUT_FILENAME_LLMS_TXT),
       generateFullMarkdown({
         title: TITLE,
         description: DESCRIPTION,
-        sections,
+        sections: allSections,
       })
     );
 
