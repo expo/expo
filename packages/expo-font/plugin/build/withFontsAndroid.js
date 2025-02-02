@@ -29,8 +29,8 @@ const withFontsAndroid = (config, fonts) => {
 };
 exports.withFontsAndroid = withFontsAndroid;
 const withXmlFontsAndroid = (config, fonts) => {
-    return (0, config_plugins_1.withMainApplication)(config, (config) => {
-        fonts.forEach(async ({ fontName, fontFiles }) => {
+    return (0, config_plugins_1.withMainApplication)(config, async (config) => {
+        for (const { fontName, fontFiles } of fonts) {
             const xmlFileName = fontName?.toLowerCase().replace(/ /g, '_');
             const fontXml = (0, utils_1.generateFontFamilyXml)(fontFiles);
             const fontsDir = path_1.default.join(config.modRequest.platformProjectRoot, 'app/src/main/res/font');
@@ -44,7 +44,7 @@ const withXmlFontsAndroid = (config, fonts) => {
             const isJava = config.modResults.language === 'java';
             config.modResults.contents = (0, codeMod_1.addImports)(config.modResults.contents, ['com.facebook.react.common.assets.ReactFontManager'], isJava);
             config.modResults.contents = (0, codeMod_1.appendContentsInsideDeclarationBlock)(config.modResults.contents, 'onCreate', `  ReactFontManager.getInstance().addCustomFont(this, "${fontName}", R.font.${xmlFileName})${isJava ? ';' : ''}\n  `);
-        });
+        }
         return config;
     });
 };
