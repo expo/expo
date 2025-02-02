@@ -471,4 +471,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/config/app/name/': '/versions/latest/config/app/#name',
   '/bare/': '/bare/overview/',
   '/accounts/working-together/': '/accounts/account-types/',
+
+  // After consolidating the "Internal distribution" information
+  '/guides/sharing-preview-releases/': '/build/internal-distribution/',
 };

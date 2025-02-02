@@ -13,6 +13,57 @@ EAS Build can help you with this by providing shareable URLs for your builds wit
 
 > Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to ad hoc and enterprise provisioning profiles. We'll talk more about this later in this doc.
 
+## Overview of distribution mechanisms
+
+Both Android and iOS offer ways to install a build of your app directly on a device. This gives you full control of putting specific builds on devices, allowing you to iterate quickly and have multiple builds of your app available for review at the same time.
+
+### Internal distribution
+
+This section provides an overview of mechanisms for internal distribution on both platforms.
+
+<Collapsible summary="Android: Build and distribute an APK">
+
+To share your app to Android devices, you must build an APK (Android application package file) of your project. APKs can be installed directly to an Android device over USB, by downloading the file over the web or through an email or chat app, once the user accepts the security warning for installing an app that has not gone through Play Store review. AAB (Android app bundle) binaries of your app must be distributed through the Play Store.
+
+</Collapsible>
+
+<Collapsible summary="iOS: Ad Hoc distribution">
+
+Apple offers [ad hoc provisioning profiles](https://help.apple.com/xcode/mac/current/#/dev7ccaf4d3c) to distribute your app to test devices once they have been registered
+to your Apple Developer account. This method requires a paid Apple Developer account and that account will only be able to use this method to distribute to at most 100 iPhones per year.
+
+You will need to know the UDID (Unique Device Identifier) of each device that will install your app, which may be challenging if you try to share with someone who is not a developer. Adding a new device will require a rebuild of your app.
+
+Setting up Ad Hoc certificates correctly can be intimidating if you haven't done it before and tedious even if you have. If you're using [EAS Build](/build/internal-distribution/), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts of setting up Ad Hoc credentials for you.
+
+</Collapsible>
+
+<Collapsible summary="iOS: Enterprise distribution">
+
+If your app is only intended for internal use and will not be distributed through the App Store, you should use Enterprise distribution. Unlike with Ad Hoc Distribution, the number of devices that can install your app is unlimited, and you do not need to manage each device's UDID. Enterprise Distribution requires membership in the more expensive [Apple Developer Enterprise Program](https://developer.apple.com/programs/enterprise/), which requires your organization to be a legal entity and go through Apple's verification process.
+
+</Collapsible>
+
+### Traditional mechanisms
+
+<Collapsible summary="Android: Google Play beta">
+
+Before a complete public release, [Google Play beta](https://support.google.com/googleplay/android-developer/answer/9845334?visit_id=638740965629093187-3840249980&rd=1) is another option to distribute your app to testers. You can set up either an internal, closed, or open test track and control who has access to the app.
+
+Each test track has its own requirements for the internal track; you can only invite up to 100 testers. Both closed and open tracks can invite large groups of testers. In closed track, you need to invite testers, while in open track, anyone can join your program.
+
+To use Google Play beta, you need to upload your app as an AAB (Android App Bundle) to the Google Play Console, set up a test track, and invite users via email or a shareable link. Testers can install the app through the Play Store, and you can collect feedback and crash reports directly from the Google Play Console. If you intend to ship new builds frequently, investing in distributing APKs directly to testers will be worthwhile.
+
+</Collapsible>
+
+<Collapsible summary="iOS: TestFlight">
+
+TestFlight is another option to distribute your app to iOS devices. TestFlight also requires a paid Apple Developer account, but allows you to share your app with up to 10,000 users that can be invited with their email or a public link. This method requires you to [upload your app](/submit/ios) to App Store Connect and wait for the automated review before you can share a build. If you intend to ship new builds frequently, investing the time to set up Ad Hoc distribution will be worthwhile.
+
+</Collapsible>
+
+## Internal distribution with EAS Build
+
 ## Setting up internal distribution
 
 The following steps will guide you through adding internal distribution to a project that is [already set up to build with EAS Build](/build/setup/). It will only take a few minutes in total to:
