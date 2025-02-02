@@ -1,8 +1,18 @@
+import { withMainApplication } from '@expo/config-plugins';
+import {
+  addImports,
+  appendContentsInsideDeclarationBlock,
+} from '@expo/config-plugins/build/android/codeMod';
 import { type ConfigPlugin, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { resolveFontPaths } from './utils';
+import { generateFontFamilyXml, resolveFontPaths } from './utils';
+
+export type XmlFonts = {
+  fontFiles?: string[];
+  fontName?: string;
+};
 
 export const withFontsAndroid: ConfigPlugin<string[]> = (config, fonts) => {
   return withDangerousMod(config, [
@@ -25,4 +35,39 @@ export const withFontsAndroid: ConfigPlugin<string[]> = (config, fonts) => {
       return config;
     },
   ]);
+};
+
+export const withXmlFontsAndroid: ConfigPlugin<XmlFonts[]> = (config, fonts) => {
+  return withMainApplication(config, (config) => {
+    fonts.forEach(async ({ fontName, fontFiles }) => {
+      const xmlFileName = fontName?.toLowerCase().replace(/ /g, '_')!;
+
+      const fontXml = generateFontFamilyXml(fontFiles!);
+      const fontsDir = path.join(config.modRequest.platformProjectRoot, 'app/src/main/res/font');
+      await fs.mkdir(fontsDir, { recursive: true });
+      const xmlPath = path.join(fontsDir, `${xmlFileName}.xml`);
+      await fs.writeFile(xmlPath, fontXml);
+
+      await Promise.all(
+        fontFiles!.map(async (file) => {
+          const destPath = path.join(fontsDir, path.basename(file));
+          await fs.copyFile(path.resolve(__dirname, file), destPath);
+        })
+      );
+
+      const isJava = config.modResults.language === 'java';
+      config.modResults.contents = addImports(
+        config.modResults.contents,
+        ['com.facebook.react.common.assets.ReactFontManager'],
+        isJava
+      );
+      config.modResults.contents = appendContentsInsideDeclarationBlock(
+        config.modResults.contents,
+        'onCreate',
+        `  ReactFontManager.getInstance().addCustomFont(this, "${fontName}", R.font.${xmlFileName})${isJava ? ';' : ''}\n  `
+      );
+    });
+
+    return config;
+  });
 };
