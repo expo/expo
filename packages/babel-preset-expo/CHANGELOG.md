@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- Add `resolve-from` to fix resolution issue.
 - Fix server action scope position during extraction. ([#33933](https://github.com/expo/expo/pull/33933) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others

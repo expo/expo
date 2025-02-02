@@ -50,7 +50,8 @@
     "@react-native/babel-preset": "0.76.3",
     "babel-plugin-react-native-web": "~0.19.13",
     "babel-plugin-syntax-hermes-parser": "0.25.1",
-    "react-refresh": "^0.14.2"
+    "react-refresh": "^0.14.2",
+    "resolve-from": "^5.0.0"
   },
   "peerDependencies": {
     "babel-plugin-react-compiler": "^19.0.0-beta-9ee70a1-20241017",
