@@ -91,6 +91,13 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'Expo Router, RSC & DOM Components',
+    event: 'Rocket Ship #059',
+    description: 'Evan Bacon',
+    videoId: 'y8qaHct3TWE',
+    link: 'https://podcast.galaxies.dev/episodes/059-expo-router-rsc-dom-components-with-evan-bacon',
+  },
+  {
     title: 'Universal React Native Apps with DOM & RSC',
     event: 'React Universe On Air #45',
     description: 'Evan Bacon',
@@ -205,9 +212,24 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'How to add Apple home screen widgets to React apps',
+    event: 'Expo Live Stream',
+    videoId: 'hgmAMrVRzRM',
+  },
+  {
+    title: 'Your 2025 React Native Tech Stack',
+    event: 'Expo Live Stream',
+    videoId: 'kqdrn-jEaXY',
+  },
+  {
     title: 'Radon IDE: the VS Code extension for React Native',
     event: 'Expo Live Stream',
     videoId: 'UeYmRKWhwFI',
+  },
+  {
+    title: 'Building 4 apps in 4 weeks with Expo',
+    event: 'Expo Live Stream',
+    videoId: 'YOfLHtK8B04',
   },
   {
     title: 'Launch Week 2024 AMA',
