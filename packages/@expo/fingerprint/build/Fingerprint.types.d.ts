@@ -58,15 +58,18 @@ export type FingerprintDiffItem = {
 export type Platform = 'android' | 'ios';
 export interface Options {
     /**
-     * Limit native files to those for specified platforms. Default is `['android', 'ios']`.
+     * Limit native files to those for specified platforms.
+     * @default ['android', 'ios']
      */
     platforms?: Platform[];
     /**
-     * I/O concurrency limit. Default is the number of CPU cores.
+     * I/O concurrency limit.
+     * @default The number of CPU cores.
      */
     concurrentIoLimit?: number;
     /**
-     * The algorithm to use for `crypto.createHash()`. Default is `'sha1'`.
+     * The algorithm to use for `crypto.createHash()`.
+     * @default 'sha1'
      */
     hashAlgorithm?: string;
     /**
@@ -102,7 +105,7 @@ export interface Options {
      */
     enableReactImportsPatcher?: boolean;
     /**
-     * Use the react-native core autolinking sources from expo-modules-autolinking rather than @react-native-community/cli.
+     * Use the react-native core autolinking sources from `expo-modules-autolinking` rather than `@react-native-community/cli`.
      * @default true for Expo SDK 52 and higher.
      */
     useRNCoreAutolinkingFromExpo?: boolean;
@@ -162,7 +165,7 @@ export interface HashSourceFile {
     type: 'file';
     filePath: string;
     /**
-     * Reasons of this source coming from
+     * Reasons of this source coming from.
      */
     reasons: string[];
 }
@@ -170,7 +173,7 @@ export interface HashSourceDir {
     type: 'dir';
     filePath: string;
     /**
-     * Reasons of this source coming from
+     * Reasons of this source coming from.
      */
     reasons: string[];
 }
@@ -179,7 +182,7 @@ export interface HashSourceContents {
     id: string;
     contents: string | Buffer;
     /**
-     * Reasons of this source coming from
+     * Reasons of this source coming from.
      */
     reasons: string[];
 }
@@ -187,7 +190,7 @@ export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents;
 export interface DebugInfoFile {
     path: string;
     hash: string;
-    /** Indicates whether the source is transformed by `fileHookTransform` */
+    /** Indicates whether the source is transformed by `fileHookTransform`. */
     isTransformed?: boolean;
 }
 export interface DebugInfoDir {
@@ -197,7 +200,7 @@ export interface DebugInfoDir {
 }
 export interface DebugInfoContents {
     hash: string;
-    /** Indicates whether the source is transformed by `fileHookTransform` */
+    /** Indicates whether the source is transformed by `fileHookTransform`. */
     isTransformed?: boolean;
 }
 export type DebugInfo = DebugInfoFile | DebugInfoDir | DebugInfoContents;
