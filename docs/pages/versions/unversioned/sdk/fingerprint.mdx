@@ -87,7 +87,7 @@ To work around this limitation, the library employs one of the following strateg
 
 1. Using `Function.name`: The library utilizes the `Function.name` property if available for named raw functions. This property provides a recognizable name for the function, which can be used as a fingerprint property.
 
-2. Using `withAnonymous`: For anonymous raw functions without a `Function.name`, the library resorts to using 'withAnonymous' as the fingerprint property. This is a generic identifier for anonymous functions.
+2. Using `withAnonymous`: For anonymous raw functions without a `Function.name`, the library resorts to using `withAnonymous` as the fingerprint property. This is a generic identifier for anonymous functions.
 
 Here's an example to illustrate a case in which the library will use [`withMyPlugin`, `withAnonymous`] as plugin properties for fingerprint hashing:
 
