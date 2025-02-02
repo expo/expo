@@ -110,7 +110,7 @@ export default ({ config }) => {
 };
 ```
 
-It's important to note that due to this design, if you make changes to the implementation of raw config plugins functions, such as altering the Info.plist value within `withMyPlugin`, the fingerprint will still generate the same hash value. To ensure unique fingerprints when modifying config plugins implementations, consider the following options:
+It's important to note that due to this design, if you make changes to the implementation of raw config plugins functions, such as altering the **Info.plist** value within `withMyPlugin`, the fingerprint will still generate the same hash value. To ensure unique fingerprints when modifying config plugins implementations, consider the following options:
 
 - Avoid Anonymous Functions: Avoid using anonymous raw config plugins functions. Instead, use named functions whenever possible, and ensure that their names remain consistent as long as the implementation changes.
 
