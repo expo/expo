@@ -3,6 +3,9 @@ title: Splash screen and app icon
 description: Learn how to add a splash screen and app icon to your Expo project.
 ---
 
+import { DocsLogo } from '@expo/styleguide';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
@@ -82,6 +85,13 @@ Open the app config file, and under plugins, set the following properties:
 ```
 
 To test your new splash screen, create a [preview](/build/eas-json/#preview-builds) or [production](/build/eas-json/#production-builds) build of your app.
+
+<BoxLink
+  title="Configurable splash screen properties"
+  description="Learn about the configurable properties of the SplashScreen API."
+  href="/versions/latest/sdk/splash-screen/#configurable-properties"
+  Icon={DocsLogo}
+/>
 
 > **warning** Do not use Expo Go to test your splash screen as Expo Go renders your app icon while the splash screen is visible. Instead, use a [preview build](/build/eas-json/#preview-builds) or a [production build](/build/eas-json/#production-builds).
 
