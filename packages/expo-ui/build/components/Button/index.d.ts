@@ -72,5 +72,6 @@ export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children
     buttonRole?: ButtonRole;
     text: string;
 } & ViewEvent<'onButtonPressed', void>;
+export declare function transformButtonProps(props: ButtonProps): NativeButtonProps;
 export declare function Button(props: ButtonProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

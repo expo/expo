@@ -52,10 +52,6 @@ export type ButtonVariant =
 
 export type ButtonProps = {
   /**
-   * The text to display inside the button.
-   */
-  text: string;
-  /**
    * A callback that is called when the button is pressed.
    */
   onPress?: () => void;
@@ -93,11 +89,9 @@ export type ButtonProps = {
   };
 };
 
-export type NativeButtonProps = Omit<ButtonProps, 'children'> & {
+export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children'> & {
   buttonRole?: ButtonRole;
   text: string;
-  role?: null;
-  onPress?: null;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
@@ -106,15 +100,14 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
   'Button'
 );
 
-// We have to work around the `role` and `onPress` props being reserved by React Native.
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
   return {
-    ...props,
     text: props.children ?? '',
     buttonRole: props.role,
     onButtonPressed: props.onPress,
-    role: null,
-    onPress: null,
+    systemImage: props.systemImage,
+    variant: props.variant,
+    colors: props.colors,
   };
 }
 

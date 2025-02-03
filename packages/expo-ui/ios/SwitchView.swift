@@ -14,7 +14,6 @@ struct SwitchView: ExpoSwiftUI.View {
   @EnvironmentObject var props: SwitchProps
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State var checked: Bool = false
-  
 
   var body: some View {
     ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {
@@ -31,7 +30,7 @@ struct SwitchView: ExpoSwiftUI.View {
       .onReceive(props.objectWillChange, perform: {
         checked = props.checked
       })
-      .onAppear() {
+      .onAppear {
         checked = props.checked
       }
       #if !os(tvOS)

@@ -15,7 +15,7 @@ struct MenuItems: View {
     fromElements?.forEach { element in
       let id = element.contextMenuElementID
       if let button = element.button {
-        button.onButtonPressed.onEventSent = { map in
+        button.onButtonPressed.onEventSent = { _ in
           props?.onContextMenuButtonPressed(addId(id, toMap: nil))
         }
       }

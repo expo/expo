@@ -13,7 +13,7 @@ import java.io.Serializable
 
 enum class ActivationMethod(val value: String) : Enumerable {
   SINGLE_PRESS("singlePress"),
-  LONG_PRESS("longPress"),
+  LONG_PRESS("longPress")
 }
 
 data class Submenu(

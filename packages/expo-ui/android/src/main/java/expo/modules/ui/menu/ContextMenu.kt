@@ -110,22 +110,24 @@ class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<Co
   val onContextMenuButtonPressed by EventDispatcher<ContextMenuButtonPressedEvent>()
   val onContextMenuSwitchCheckedChanged by EventDispatcher<ContextMenuSwitchCheckedChangedEvent>()
 
-  val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-    override fun onDown(e: MotionEvent): Boolean {
-      if (props.activationMethod.value == ActivationMethod.SINGLE_PRESS) {
-        expanded.value = !expanded.value
+  val gestureDetector = GestureDetector(
+    context,
+    object : GestureDetector.SimpleOnGestureListener() {
+      override fun onDown(e: MotionEvent): Boolean {
+        if (props.activationMethod.value == ActivationMethod.SINGLE_PRESS) {
+          expanded.value = !expanded.value
+        }
+        return super.onDown(e)
       }
-      return super.onDown(e)
-    }
 
-    override fun onLongPress(e: MotionEvent) {
-      if (props.activationMethod.value == ActivationMethod.LONG_PRESS) {
-        expanded.value = !expanded.value
+      override fun onLongPress(e: MotionEvent) {
+        if (props.activationMethod.value == ActivationMethod.LONG_PRESS) {
+          expanded.value = !expanded.value
+        }
+        return super.onLongPress(e)
       }
-      return super.onLongPress(e)
     }
-  })
-
+  )
 
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
     ev?.let {
@@ -138,10 +140,10 @@ class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<Co
     setContent {
       var elements by remember { props.elements }
 
-      return@setContent Box{
+      return@setContent Box {
         DropdownMenu(
           expanded = expanded.value,
-          onDismissRequest = { expanded.value = !expanded.value}
+          onDismissRequest = { expanded.value = !expanded.value }
         ) {
           FlatMenu(
             elements,

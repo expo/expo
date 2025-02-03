@@ -19,11 +19,11 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import java.io.Serializable
-
-open class ButtonPressedEvent() : Record, Serializable
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.ui.DynamicTheme
 import expo.modules.ui.compose
+
+open class ButtonPressedEvent() : Record, Serializable
 
 enum class ButtonVariant(val value: String) : Enumerable {
   DEFAULT("default"),
