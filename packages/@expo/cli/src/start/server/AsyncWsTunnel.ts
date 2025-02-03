@@ -58,6 +58,7 @@ function getTunnelOptions() {
 
   let session: string;
   do {
+    // TODO(cedric): replace this with non-random data generated from server to manage and prevent overlapping sessions
     session = randomBytes(12).toString('base64url');
   } while (!/^[A-Za-z0-9]/.test(session));
   debug('Session:', session);
