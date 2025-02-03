@@ -15,6 +15,8 @@ import expo.modules.devmenu.DevMenuManager
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import java.util.*
+import kotlin.concurrent.schedule
 
 private const val CLICK_DRAG_TOLERANCE = 10f
 private const val MARGIN = 24
@@ -37,9 +39,12 @@ class MovableFloatingActionButton(
   // eventRegion is used to add rounded corners to the touch area
   private var eventRegion = Region()
 
+  // timer to make the button translucent after a short delay
+  private var timerTask: TimerTask? = null
+
   init {
     layoutParams = LayoutParams(SIZE, SIZE).apply {
-      gravity = Gravity.BOTTOM or Gravity.END
+      gravity = Gravity.CENTER or Gravity.END
       setMargins(MARGIN, MARGIN, MARGIN, MARGIN)
     }
     z = Float.MAX_VALUE
@@ -50,8 +55,25 @@ class MovableFloatingActionButton(
       layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT).apply {
         gravity = Gravity.CENTER
       }
-      setBackgroundColor(Color.MAGENTA)
+      setBackgroundColor(Color.GRAY)
+
+      // TODO: figure out how to ensure the shadow isn't clipped
+      setElevation(3f)
     })
+
+    maybeFadeWithDelay(this)
+  }
+
+  fun setTranslucent(view: View) {
+    view.post {
+      view.animate().alpha(0.2f).setDuration(500).start()
+    }
+  }
+
+  fun setOpaque(view: View) {
+    view.post {
+      view.animate().alpha(1f).setDuration(100).start()
+    }
   }
 
   fun onClick() {
@@ -63,9 +85,29 @@ class MovableFloatingActionButton(
     DevMenuManager.openMenu(currentActivity)
   }
 
+  fun maybeFadeWithDelay(view: View) {
+    if (timerTask == null) {
+      setOpaque(view)
+    } else {
+      // clear any existing timer
+      if (timerTask != null) {
+        timerTask?.cancel()
+        timerTask = null
+      }
+    }
+
+    timerTask = Timer().schedule(2000) {
+      timerTask = null
+      setTranslucent(view)
+      return@schedule
+    }
+  }
+
   override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
     val layoutParams = view.layoutParams as MarginLayoutParams
     val action = motionEvent.action
+
+    maybeFadeWithDelay(view)
 
     when (action) {
       MotionEvent.ACTION_DOWN -> {

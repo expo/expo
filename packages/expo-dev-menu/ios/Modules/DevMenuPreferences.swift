@@ -28,6 +28,7 @@ public class DevMenuPreferences: Module {
     UserDefaults.standard.register(defaults: [
       motionGestureEnabledKey: true,
       touchGestureEnabledKey: true,
+      buttonGestureEnabledKey: false,
       keyCommandsEnabledKey: true,
       showsAtLaunchKey: false,
       isOnboardingFinishedKey: false
@@ -66,6 +67,20 @@ public class DevMenuPreferences: Module {
     set {
       setBool(newValue, forKey: touchGestureEnabledKey)
       DevMenuTouchInterceptor.isInstalled = newValue
+    }
+  }
+
+  /**
+    Whether to enable button tap gesture.
+   */
+  static var buttonGestureEnabled: Bool {
+    get {
+      return boolForKey(buttonGestureEnabledKey)
+    }
+    set {
+      setBool(newValue, forKey: buttonGestureEnabledKey)
+      // TODO: Implement button gesture
+      // DevMenuButtonInterceptor.isInstalled = newValue
     }
   }
 
