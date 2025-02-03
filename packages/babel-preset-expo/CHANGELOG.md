@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `decorators` option to configure the `@babel/plugin-proposal-decorators` plugin.
+- Add `decorators` option to configure the `@babel/plugin-proposal-decorators` plugin. ([#34647](https://github.com/expo/expo/pull/34647) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `babel-plugin-syntax-hermes-parser` to the server preset for native RSC. ([#34213](https://github.com/expo/expo/pull/34213) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `displayName` to DOM components for better debugging. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
 
