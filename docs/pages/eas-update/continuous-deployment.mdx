@@ -63,6 +63,16 @@ To exclude files causing the differences, add them to the **.fingerprintignore**
 
 </Collapsible>
 
+### App version numbers
+
+When using continuous deployment, version number incrementation must be done automatically. While the specifics will differ based on the preferred numbering scheme, the general strategy is:
+
+1. Before continuous deployment CI steps, check if a new release will be created (due to a new fingerprint).
+2. If so, bump the version number in the source code and push the version bump commit.
+3. Continue continuous deployment CI steps with the new commit.
+
+An example is provided in the [`continuous-deploy-fingerprint` GitHub Action documentation](https://github.com/expo/expo-github-action/tree/main/continuous-deploy-fingerprint#continuous-deployment-on-main-advanced).
+
 ## GitHub Action: expo-github-action
 
 An alternative GitHub action is [expo-github-action](https://github.com/expo/expo-github-action/tree/main) that can be used to publish updates on push and previews on pull requests. `continuous-deploy-fingerprint` uses fingerprints to determine if a build is needed or not to deploy an update, while `expo-github-action` will only publish updates.
