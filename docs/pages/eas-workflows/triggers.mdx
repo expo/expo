@@ -27,7 +27,7 @@ jobs:
 
 ## On pull request
 
-You can trigger a workflow on a pull request events with the `pull_request` trigger.
+You can trigger a workflow on a pull request event with the `pull_request` trigger.
 
 With the `branches` array you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']` only pull requests to `main` branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches.
 
