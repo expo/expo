@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@shopify/flash-list` from `1.7.1` to `1.7.3` ([#34635](https://github.com/expo/expo/pull/34635) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
@@ -1886,7 +1888,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- Updated `@shopify/flash-list` from `1.7.1` to `1.7.3`
 - Updated `@react-native-community/datetimepicker` from `6.7.3` to `7.2.0`. ([#23034](https://github.com/expo/expo/pull/23034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Updated `@react-native-community/netinfo` from `9.3.7` to `9.3.10`. ([#22892](https://github.com/expo/expo/pull/22892) by [@douglowder](https://github.com/douglowder))
 - Updated `@react-native-masked-view/masked-view` from `0.2.8` to `0.2.9`. ([#22875](https://github.com/expo/expo/pull/22875) by [@gabrieldonadel](https://github.com/gabrieldonadel))
