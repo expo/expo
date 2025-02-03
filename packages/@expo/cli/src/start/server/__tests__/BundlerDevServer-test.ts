@@ -8,6 +8,7 @@ import { getPlatformBundlers } from '../platformBundlers';
 jest.mock('../../../utils/open');
 jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
+jest.mock('../AsyncWsTunnel');
 jest.mock('../DevelopmentSession');
 jest.mock('../../platforms/ios/ApplePlatformManager', () => {
   class ApplePlatformManager {
@@ -90,8 +91,8 @@ class MockBundlerDevServer extends BundlerDevServer {
   getPublicUrlCreator() {
     return this.urlCreator;
   }
-  getNgrok() {
-    return this.ngrok;
+  getTunnel() {
+    return this.tunnel;
   }
   getDevSession() {
     return this.devSession;
@@ -182,8 +183,8 @@ describe('stopAsync', () => {
         hostType: 'tunnel',
       },
     });
-    const ngrok = server.getNgrok();
-    const devSession = server.getNgrok();
+    const ngrok = server.getTunnel();
+    const devSession = server.getTunnel();
 
     // Ensure services were started.
     expect(ngrok?.startAsync).toHaveBeenCalled();
