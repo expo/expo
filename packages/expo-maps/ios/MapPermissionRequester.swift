@@ -52,8 +52,9 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
       locationManager.requestWhenInUseAuthorization()
       _resolve = resolve
       _reject = reject
+    } else {
+      resolve(getPermissions())
     }
-    resolve(getPermissions())
   }
   
   func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
