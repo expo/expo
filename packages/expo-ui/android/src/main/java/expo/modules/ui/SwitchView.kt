@@ -55,7 +55,7 @@ class SwitchColors : Record {
 }
 
 data class SwitchProps(
-  val checked: MutableState<Boolean> = mutableStateOf(false),
+  val value: MutableState<Boolean> = mutableStateOf(false),
   val variant: MutableState<String> = mutableStateOf("switch"),
   val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors())
 ) : ComposeProps
@@ -66,7 +66,7 @@ class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<Swi
 
   init {
     setContent {
-      val (checked) = props.checked
+      val (checked) = props.value
       val (variant) = props.variant
       val (colors) = props.elementColors
       val onCheckedChange = { checked: Boolean ->

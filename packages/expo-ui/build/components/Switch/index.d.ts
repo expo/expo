@@ -47,7 +47,7 @@ export type SwitchProps = {
     /**
      * Indicates whether the switch is checked.
      */
-    checked: boolean;
+    value: boolean;
     /**
      * Label for the switch.
      *
@@ -63,11 +63,7 @@ export type SwitchProps = {
     /**
      * Callback function that is called when the checked state changes.
      */
-    onCheckedChange: (event: {
-        nativeEvent: {
-            checked: boolean;
-        };
-    }) => void;
+    onValueChange: (value: boolean) => void;
     /**
      * Optional style for the switch component.
      */

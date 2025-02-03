@@ -15,7 +15,7 @@ class ExpoUIModule : Module() {
     }
 
     View(SwitchView::class) {
-      Events("onCheckedChange")
+      Events("onValueChange")
     }
 
     View(Button::class) {
