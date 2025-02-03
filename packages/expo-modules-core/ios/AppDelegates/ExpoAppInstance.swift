@@ -32,10 +32,15 @@ open class ExpoAppInstance: RCTAppDelegate {
     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
   }
-//
+
 //	open override func rootViewFactory() -> RCTRootViewFactory {
 //		return rootViewFactoryInstance
 //	}
+
+	@objc
+	open override func createReactNativeFactory() -> RCTReactNativeFactory {
+		return RCTReactNativeFactory(delegate: self)
+	}
 
 	@objc
   open override func createRCTRootViewFactory() -> RCTRootViewFactory {
@@ -87,10 +92,11 @@ open class ExpoAppInstance: RCTAppDelegate {
       }
     }
 
+	// this doesn't work because self.reactNativeFactory is nil at this point; this should be in a subclass of RCTReactNativeFactory?
     return ExpoReactRootViewFactory(
       reactDelegate: reactDelegate,
       configuration: configuration,
-      turboModuleManagerDelegate: appDelegate
+			turboModuleManagerDelegate: self.reactNativeFactory
     )
   }
 
