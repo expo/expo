@@ -57,6 +57,20 @@ export default function PickerScreen() {
             }}
           />
         </Section>
+        <Section title="Radio picker">
+          <Picker
+            options={options}
+            selectedIndex={selectedIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setSelectedIndex(index);
+            }}
+            variant="radio"
+            style={{
+              width: 300,
+              height: 200,
+            }}
+          />
+        </Section>
       </Page>
     </ScrollView>
   );
