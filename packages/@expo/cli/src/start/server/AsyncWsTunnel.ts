@@ -35,14 +35,11 @@ export class AsyncWsTunnel {
               'Tunnel connection has been closed. This is often related to intermittent connection problems with the ws proxy servers. Restart the dev server to try connecting again.'
             ) + chalk.gray('\nCheck the Expo status page for outages: https://status.expo.dev/')
           );
-        } else if (status === 'connected') {
-          Log.log('Tunnel connected.');
         }
       },
     });
 
     debug('Tunnel URL:', this.serverUrl);
-    Log.log('Tunnel ready.');
   }
 
   async stopAsync(): Promise<void> {
