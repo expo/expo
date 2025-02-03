@@ -66,7 +66,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
     setContent {
       cameraState = updateCameraState()
       val markerState = markerStateFromProps()
-      val locationSource = locationSourceFromProps(cameraState)
+      val locationSource = locationSourceFromProps()
 
       GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -174,7 +174,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
   }
 
   @Composable
-  private fun locationSourceFromProps(cameraState: CameraPositionState): LocationSource? {
+  private fun locationSourceFromProps(): LocationSource? {
     val coordinates = props.userLocation.value.coordinates
     val followUserLocation = props.userLocation.value.followUserLocation
 
