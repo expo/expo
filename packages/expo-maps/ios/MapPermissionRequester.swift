@@ -1,11 +1,13 @@
+// Copyright 2025-present 650 Industries. All rights reserved.
+
 import ExpoModulesCore
 
 class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManagerDelegate {
   private var locationManager = CLLocationManager()
-  private var _resolve: EXPromiseResolveBlock?
-  private var _reject: EXPromiseRejectBlock?
+  private var resolve: EXPromiseResolveBlock?
+  private var reject: EXPromiseRejectBlock?
 
-  override public init() {
+  override init() {
     super.init()
     locationManager.delegate = self
   }
@@ -33,10 +35,10 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
     ]
   }
 
-  func getPermissions() -> [AnyHashable : Any]! {
+  func getPermissions() -> [AnyHashable: Any]! {
     var systemStatus: CLAuthorizationStatus
     let description = Bundle.main.infoDictionary?["NSLocationWhenInUseUsageDescription"] as? String
-    
+
     if description != nil {
       systemStatus = locationManager.authorizationStatus
     } else {
@@ -50,25 +52,26 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
   func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
     if locationManager.authorizationStatus == .notDetermined {
       locationManager.requestWhenInUseAuthorization()
-      _resolve = resolve
-      _reject = reject
+      self.resolve = resolve
+      self.reject = reject
     } else {
       resolve(getPermissions())
     }
   }
 
   func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-    if _resolve != nil {
-      _resolve?(getPermissions())
-      _resolve = nil
-      _reject = nil
+    if resolve != nil {
+      resolve?(getPermissions())
+      resolve = nil
+      reject = nil
     }
   }
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-    if _reject != nil {
-      _reject = nil
-      _reject = nil
+    if reject != nil {
+      reject?("E_LOCATION_MANAGER", "location request failed with error", error)
+      resolve = nil
+      reject = nil
     }
   }
 }

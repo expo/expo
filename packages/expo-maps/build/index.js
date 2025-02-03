@@ -1,9 +1,8 @@
-import { Platform } from 'react-native';
+import { createPermissionHook } from 'expo-modules-core';
+import ExpoMaps from './ExpoMaps';
 import * as AppleTypes from './apple/AppleMaps.types';
-import AppleMapsModule from './apple/AppleMapsModule';
 import { MapView as AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
-import GoogleMapsModule from './google/GoogleMapsModule';
 import { MapView as GoogleMapsView } from './google/GoogleMapsView';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 export var GoogleMaps;
@@ -18,17 +17,20 @@ export var AppleMaps;
     AppleMaps.View = AppleMapsView;
     AppleMaps.MapType = AppleTypes.MapType;
 })(AppleMaps || (AppleMaps = {}));
-export const requestPermissionsAsync = async () => {
-    return Platform.select({
-        ios: AppleMapsModule?.requestPermissionsAsync,
-        android: GoogleMapsModule?.requestPermissionsAsync,
-    })?.();
-};
-export const getPermissionsAsync = async () => {
-    return Platform.select({
-        ios: AppleMapsModule?.getPermissionsAsync,
-        android: GoogleMapsModule?.getPermissionsAsync,
-    })?.();
-};
+export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;
+export const getPermissionsAsync = ExpoMaps.getPermissionsAsync;
+/**
+ * Check or request permissions to access the location.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = useLocationPermissions();
+ * ```
+ */
+export const useLocationPermissions = createPermissionHook({
+    getMethod: getPermissionsAsync,
+    requestMethod: requestPermissionsAsync,
+});
 export * from './shared.types';
 //# sourceMappingURL=index.js.map

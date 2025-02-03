@@ -25,7 +25,17 @@ export declare namespace AppleMaps {
     type MapUiSettings = AppleTypes.MapUiSettings;
     type Marker = AppleTypes.Marker;
 }
-export declare const requestPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
-export declare const getPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
+export declare const requestPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const getPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+/**
+ * Check or request permissions to access the location.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = useLocationPermissions();
+ * ```
+ */
+export declare const useLocationPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [import("expo-modules-core").PermissionResponse | null, () => Promise<import("expo-modules-core").PermissionResponse>, () => Promise<import("expo-modules-core").PermissionResponse>];
 export * from './shared.types';
 //# sourceMappingURL=index.d.ts.map

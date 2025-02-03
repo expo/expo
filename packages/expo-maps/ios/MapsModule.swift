@@ -4,7 +4,7 @@ import ExpoModulesCore
 
 public class MapsModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoAppleMaps")
+    Name("ExpoMaps")
 
     OnCreate {
       guard let permissionsManager = appContext?.permissions else {
@@ -13,13 +13,6 @@ public class MapsModule: Module {
       permissionsManager.register([MapPermissionRequester()])
     }
 
-    Property("isMapsAvailable") {
-      if #available(iOS 18.0, *) {
-        return true
-      }
-      return false
-    }
-    
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
       guard let permissionsManager = appContext?.permissions else {
         return
@@ -41,7 +34,5 @@ public class MapsModule: Module {
         reject: promise.legacyRejecter
       )
     }
-
-    View(AppleMapsViewWrapper.self)
   }
 }
