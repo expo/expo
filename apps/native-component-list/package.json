@@ -77,7 +77,7 @@
     "expo-device": "~7.0.2",
     "expo-document-picker": "~13.0.2",
     "expo-face-detector": "~13.0.2",
-    "expo-file-system": "~18.0.8",
+    "expo-file-system": "~18.0.9",
     "expo-font": "~13.0.3",
     "expo-gl": "~15.0.4",
     "expo-haptics": "~14.0.1",
