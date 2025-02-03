@@ -40,6 +40,12 @@ The [`fingerprint` runtime version policy](/versions/latest/sdk/updates/#fingerp
 
 By automatically calculating the runtime version, you don't have to be concerned about native layer compatibility with the JavaScript application when deploying updates to builds.
 
+<Collapsible summary="How does fingerprint generation differ between managed and bare workflows?">
+
+The default project files included in the fingerprint hash differs between managed and bare workflow projects. EAS automatically detects your workflow by checking if the **android** and **ios** and directories are gitignored. If they are, EAS will treat the project as a managed workflow project, thus dictating that a hash of the `package.json` dependencies are sufficient to determine fingerprint compatibility.
+
+</Collapsible>
+
 <Collapsible summary="How do I debug fingerprint mismatches between my local machine and CI/CD?">
 
 If you notice different fingerprints being generated across different machines or environments, it may mean that unanticipated files are being included in the hash calculation. `@expo/fingerprint` has a predetermined set of files to include/exclude for hash calculation, but often your project setup may require additional excludes. For projects that include native directories (**android** and **ios**) this is more common.
