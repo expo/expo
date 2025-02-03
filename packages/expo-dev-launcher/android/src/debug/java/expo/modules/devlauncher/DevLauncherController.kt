@@ -148,7 +148,7 @@ class DevLauncherController private constructor() :
       val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
       val appIntent = createAppIntent()
 
-      internalUpdatesInterface?.reset()
+      DevLauncherKoinContext.app.koin.getOrNull<UpdatesInterface>()?.reset()
 
       val appLoaderFactory = get<DevLauncherAppLoaderFactoryInterface>()
       val appLoader = appLoaderFactory.createAppLoader(parsedUrl, parsedProjectUrl, manifestParser)
@@ -435,11 +435,7 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
-      // Call reactHost on application to ensure we initialise it correctly and only once before we pass it to the
-      // ReactHostWrapper. Calling reactApplication.reactHost has side effects that should be run independently of
-      // whether we're on the old or new architecture.
-      val reactHost = reactApplication.reactHost
-      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost) { reactHost })
+      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, { reactApplication.reactHost }))
       sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }
