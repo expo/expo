@@ -8,9 +8,9 @@ exports.expoUseDomDirectivePlugin = void 0;
  * Copyright © 2024 650 Industries.
  */
 const core_1 = require("@babel/core");
-const crypto_1 = __importDefault(require("crypto"));
-const path_1 = require("path");
-const url_1 = __importDefault(require("url"));
+const node_crypto_1 = __importDefault(require("node:crypto"));
+const node_path_1 = require("node:path");
+const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 function expoUseDomDirectivePlugin(api) {
     const { types: t } = api;
@@ -64,7 +64,7 @@ function expoUseDomDirectivePlugin(api) {
                     throw path.buildCodeFrameError('The "use dom" directive requires a default export to be present in the file.');
                 }
                 // Assert that _layout routes cannot be used in DOM components.
-                const fileBasename = (0, path_1.basename)(filePath);
+                const fileBasename = (0, node_path_1.basename)(filePath);
                 if (projectRoot &&
                     // Detecting if the file is in the router root would be extensive as it would cause a more complex
                     // cache key for each file. Instead, let's just check if the file is in the project root and is not a node_module,
@@ -80,7 +80,7 @@ function expoUseDomDirectivePlugin(api) {
                         throw path.buildCodeFrameError('API routes cannot be marked as DOM components.');
                     }
                 }
-                const outputKey = url_1.default.pathToFileURL(filePath).href;
+                const outputKey = node_url_1.default.pathToFileURL(filePath).href;
                 // Removes all imports using babel API, that will disconnect import bindings from the program.
                 // plugin-transform-typescript TSX uses the bindings to remove type imports.
                 // If the DOM component has `import React from 'react';`,
@@ -98,7 +98,7 @@ function expoUseDomDirectivePlugin(api) {
           import React from 'react';
           import { WebView } from 'expo/dom/internal';
           ${isProduction
-                    ? `const filePath = "${crypto_1.default.createHash('sha1').update(outputKey).digest('hex')}.html";`
+                    ? `const filePath = "${node_crypto_1.default.createHash('sha1').update(outputKey).digest('hex')}.html";`
                     : `const filePath = "${fileBasename}?file=" + ${JSON.stringify(outputKey)};`}
           const _Expo_DOMProxyComponent = React.forwardRef((props, ref) => {
             return React.createElement(WebView, { ref, ...props, filePath });

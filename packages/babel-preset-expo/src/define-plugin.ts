@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { NodePath } from '@babel/traverse';
+import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
 /**
@@ -62,7 +62,7 @@ const isLeftHandSideOfAssignmentExpression = (node: t.MemberExpression, parent: 
 
 const TYPEOF_PREFIX = 'typeof ';
 
-const plugin = ({ types }: { types: typeof t }): babel.PluginObj => {
+const plugin = (_: { types: typeof t }): babel.PluginObj => {
   const processNode = (
     replacements: Record<string, string>,
     nodePath: NodePath,
