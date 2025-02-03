@@ -14,7 +14,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   context: Context,
   appContext: AppContext
 ) : ExpoView(context, appContext) {
-  open val props: ComposeProps? = null
+  open val props: T? = null
 
   override val shouldUseAndroidLayout = true
 

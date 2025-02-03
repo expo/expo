@@ -207,6 +207,10 @@ export interface ExpoConfig {
          * Array of glob patterns specifying which files should be included in updates. Glob patterns are relative to the project root. A value of `['**']` will match all asset files within the project root. When not supplied all asset files will be included. Example: Given a value of `['app/images/** /*.png', 'app/fonts/** /*.woff']` all `.png` files in all subdirectories of `app/images` and all `.woff` files in all subdirectories of `app/fonts` will be included in updates.
          */
         assetPatternsToBeBundled?: string[];
+        /**
+         * Whether to disable the built-in expo-updates anti-bricking measures. Defaults to false. If set to true, this will allow overriding certain configuration options from the JS API, which is liable to leave an app in a bricked state if not done carefully. This should not be used in production.
+         */
+        disableAntiBrickingMeasures?: boolean;
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes

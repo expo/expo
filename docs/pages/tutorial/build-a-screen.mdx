@@ -131,13 +131,13 @@ const styles = StyleSheet.create({
 
 Let's divide the code into multiple files as we add more components to this screen. Throughout this tutorial, we'll use the components directory to create custom components.
 
-1. Create a **components** directory, and inside it, create the **ImageViewer.tsx** file.
+1. Create a top-level **components** directory, and inside it, create the **ImageViewer.tsx** file.
 2. Move the code to display the image in this file along with the `image` styles.
 
 {/* prettier-ignore */}
 ```tsx components/ImageViewer.tsx|collapseHeight=280
-import { StyleSheet } from "react-native";
-import { Image, type ImageSource } from "expo-image";
+import { StyleSheet } from 'react-native';
+import { Image, type ImageSource } from 'expo-image';
 
 type Props = {
   imgSource: ImageSource;
@@ -164,7 +164,7 @@ Import `ImageViewer` and use it in the **app/(tabs)/index.tsx**:
 ```tsx app/(tabs)/index.tsx|collapseHeight=320
 import { StyleSheet, View } from 'react-native';
 
-/* @tutinfo */import ImageViewer from "@/components/ImageViewer"; /* @end */
+/* @tutinfo */import ImageViewer from '@/components/ImageViewer'; /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -254,7 +254,7 @@ The app displays an alert when the user taps any of the buttons on the screen. I
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet } from 'react-native';
 
 /* @tutinfo */import Button from '@/components/Button'; /* @end */
 import ImageViewer from '@/components/ImageViewer';
@@ -374,9 +374,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
+  /* @tutinfo Conditionally render the primary themed button. */
   buttonIcon: {
     paddingRight: 8,
   },
+  /* @end */
   buttonLabel: {
     color: '#fff',
     fontSize: 16,

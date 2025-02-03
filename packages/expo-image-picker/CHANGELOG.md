@@ -6,9 +6,16 @@
 
 ### 🎉 New features
 
+- Added support for ordered selection and default tab selection on Android. ([#34223](https://github.com/expo/expo/pull/34223) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
+- [ios] fixed concurrency freeze on low-end iOS devices when selecting multiple images. ([#34585](https://github.com/expo/expo/pull/34585) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
 ## 16.0.3 — 2024-11-22
 

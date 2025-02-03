@@ -1,14 +1,26 @@
 apply plugin: 'com.android.library'
 
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useCoreDependencies()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
+
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  useLegacyExpoModulesCorePlugin()
+}
+
 group = 'host.exp.exponent'
 version = '16.0.3'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
 
 android {
   namespace "expo.modules.imagepicker"
@@ -23,10 +35,10 @@ android {
 }
 
 dependencies {
-  implementation "androidx.activity:activity-ktx:1.7.2"
-  implementation "androidx.appcompat:appcompat:1.6.1"
-  implementation "androidx.exifinterface:exifinterface:1.3.3"
-  implementation "com.github.CanHub:Android-Image-Cropper:4.3.1"
+  implementation "androidx.activity:activity-ktx:1.10.0"
+  implementation "androidx.appcompat:appcompat:1.7.0"
+  implementation "androidx.exifinterface:exifinterface:1.3.7"
+  implementation "com.vanniktech:android-image-cropper:4.6.0"
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3"
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3"
 

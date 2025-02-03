@@ -20,5 +20,9 @@ class ExpoUIModule : Module() {
     View(Button::class) {
       Events("onButtonPressed")
     }
+
+    View(SliderView::class) {
+      Events("onValueChanged")
+    }
   }
 }

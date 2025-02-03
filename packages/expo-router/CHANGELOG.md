@@ -16,10 +16,13 @@
 
 ### 💡 Others
 
+- Temporarily Remove RSC dependency. ([#34505](https://github.com/expo/expo/pull/34505) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `expo-linking` to synchronously get the initial URL. This fixes App Clips and improves RSC support. ([#34328](https://github.com/expo/expo/pull/34328) by [@EvanBacon](https://github.com/EvanBacon))
 - Polyfill relative fetch requests and `window.location` by default. ([#34169](https://github.com/expo/expo/pull/34169) by [@EvanBacon](https://github.com/EvanBacon))
 - Add less aggressive babel plugin migration warning. ([#33640](https://github.com/expo/expo/pull/33640) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix linting errors ([#34033](https://github.com/expo/expo/pull/34033) by [@marklawlor](https://github.com/marklawlor))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Add Sitemap to exported views ([#34144](https://github.com/expo/expo/pull/34144) by [@davidavz](https://github.com/davidavz))
 
 ### 🐛 Bug fixes
 
@@ -31,6 +34,7 @@
 ### 💡 Others
 
 - Bump react-navigation versions. ([#33758](https://github.com/expo/expo/pull/33758) by [@marklawlor](https://github.com/marklawlor))
+- Add `withLayoutContext` example. ([#34346](https://github.com/expo/expo/pull/34346) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 4.0.14 - 2024-12-19
 
@@ -145,6 +149,7 @@ _This version does not introduce any user-facing changes._
 
 - Move server action env to `@expo/metro-runtime`. ([#32597](https://github.com/expo/expo/pull/32597) by [@EvanBacon](https://github.com/EvanBacon))
 - Don't assume reanimated exists when testing expo-router ([#27548](https://github.com/expo/expo/pull/27548)) by [@henrymoulton](https://github.com/henrymoulton)
+- Add `anchor` to `unstable_settings` ([#28644](https://github.com/expo/expo/pull/28644) by [@marklawlor](https://github.com/marklawlor))
 
 ## 4.0.0-preview.11 — 2024-10-31
 

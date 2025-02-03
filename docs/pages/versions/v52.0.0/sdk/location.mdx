@@ -100,6 +100,19 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigReactNative>
 
+### Background location
+
+Background location allows your app to receive location updates while it is running in the background and includes both location updates and region monitoring through geofencing. This feature is subject to platform API limitations and system constraints:
+
+- Background location will stop if the user terminates the app.
+- Background location resumes if the user restarts the app.
+- <PlatformTag platform="android" /> A terminated app will not automatically restart when a location
+  or geofencing event occurs due to platform limitations.
+- <PlatformTag platform="ios" /> The system will restart the terminated app when a new geofence
+  event occurs.
+
+> **Info** On Android, the result of removing an app from the recent apps list varies by device vendor. For example, some implementations treat removing an app from the recent apps list as killing it. Read more about these differences here: [https://dontkillmyapp.com](https://dontkillmyapp.com).
+
 ### Background location configuration&ensp;<PlatformTag platform="ios" />
 
 To be able to run background location on iOS, you need to add the `location` value to the `UIBackgroundModes` array in your app's **Info.plist** file.
@@ -122,11 +135,9 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 ### Background location methods
 
-> **warning** **Warning:** Background location tracking support is provided as-is and is not guaranteed to work in all scenarios. We currently are not prioritizing resources to improve it, but we hope to in the future. You may want to use [`react-native-background-geolocation`](https://github.com/transistorsoft/react-native-background-geolocation) instead &mdash; it requires purchasing a license and is a well-maintained and supported library that includes a config plugin.
-
 To use Background Location methods, the following requirements apply:
 
-- Location permissions must be granted. On iOS it must be granted with `Always` option.
+- Location permissions must be granted.
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 - <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
   specified in **Info.plist** file. See [Background location
@@ -139,7 +150,7 @@ To use Background Location methods, the following requirements apply:
 
 To use Geofencing methods, the following requirements apply:
 
-- Location permissions must be granted. On iOS it must be granted with `Always` option.
+- Location permissions must be granted.
 - The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 
 When using Geofencing, the following platform differences apply:
@@ -152,6 +163,13 @@ When using Geofencing, the following platform differences apply:
 - <PlatformTag platform="ios" /> There is a [limit of
   20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions)
   `regions` that can be simultaneously monitored.
+
+### Background permissions
+
+To use location tracking or Geofencing in the background, you must request the appropriate permissions:
+
+- On Android, you must request both foreground and background permissions.
+- On iOS, it must be granted with the `Always` option using [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync).
 
 ## Usage
 
@@ -262,7 +280,7 @@ import * as Location from 'expo-location';
 
 ### Android
 
-> **warning**: Foreground and background services are not available in Expo Go for Android. Instead, we recommend using a [development build](/develop/development-builds/introduction/) to avoid limitations.
+> **warning** Foreground and background services are not available in Expo Go for Android. Instead, we recommend using a [development build](/develop/development-builds/introduction/) to avoid limitations.
 
 When you install the `expo-location` module, it automatically adds the following permissions:
 

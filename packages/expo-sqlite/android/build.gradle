@@ -2,15 +2,24 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'com.android.library'
 
-group = 'host.exp.exponent'
-version = '15.0.3'
+def useLegacyExpoModulesCorePlugin = {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  useCoreDependencies()
+  useDefaultAndroidSdkVersions()
+  useExpoPublishing()
+}
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
+try {
+  apply plugin: 'expo-module-gradle-plugin'
+} catch (e) {
+  if (!e instanceof UnknownPluginException) {
+    throw e
+  }
+
+  useLegacyExpoModulesCorePlugin()
+}
 
 String toPlatformIndependentPath(File path) {
   def result = path.toString()
@@ -22,6 +31,7 @@ String toPlatformIndependentPath(File path) {
 
 ext {
   USE_SQLCIPHER = findProperty('expo.sqlite.useSQLCipher') == 'true'
+  USE_LIBSQL = findProperty('expo.sqlite.useLibSQL') == 'true'
 }
 def SQLITE3_SRC_DIR = new File("${projectDir}/../vendor/sqlite3")
 if (ext.USE_SQLCIPHER) {
@@ -49,11 +59,15 @@ def reactNativeArchitectures() {
   return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+group = 'host.exp.exponent'
+version = '15.0.3'
+
 android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
     versionName "15.0.3"
+    buildConfigField "boolean", "USE_LIBSQL", project.ext.USE_LIBSQL.toString()
 
     externalNativeBuild {
       cmake {
@@ -61,7 +75,8 @@ android {
         arguments "-DANDROID_STL=c++_shared",
           "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}",
           "-DSQLITE_BUILDFLAGS=${getSQLiteBuildFlags()}",
-          "-DUSE_SQLCIPHER=${project.ext.USE_SQLCIPHER}"
+          "-DUSE_SQLCIPHER=${project.ext.USE_SQLCIPHER}",
+          "-DUSE_LIBSQL=${project.ext.USE_LIBSQL}"
       }
     }
   }
@@ -71,6 +86,7 @@ android {
     }
   }
   buildFeatures {
+    buildConfig true
     prefab true
   }
 }

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177), [#34205](https://github.com/expo/expo/pull/34205) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Fixed exceptions when converting empty blob data on iOS. ([#33564](https://github.com/expo/expo/pull/33564) by [@kudo](https://github.com/kudo))
@@ -17,6 +19,9 @@
 
 - Removed unused `SQLite3Wrapper` code for legacy implementation on Android. ([#33565](https://github.com/expo/expo/pull/33565) by [@kudo](https://github.com/kudo))
 - Enforce input validations in `kv-store` operations. ([#33874](https://github.com/expo/expo/pull/33874) by [@rtorrente](https://github.com/rtorrente))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Fixed resolving libsql binary issue on iOS. ([#34529](https://github.com/expo/expo/pull/34529) by [@kudo](https://github.com/kudo))
 
 ## 15.0.3 — 2024-11-12
 

@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
 
 group = 'host.exp.exponent'
 version = '2.0.6'
@@ -8,30 +9,25 @@ version = '2.0.6'
 // List of features that are required by linked modules
 def coreFeatures = project.findProperty("coreFeatures") ?: []
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
 
 buildscript {
-  def KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
-  if(KOTLIN_MAJOR_VERSION < 2) {
-    logger.warn("You need to use at least Kotlin 2.0.0 to enable jetpack compose support.")
-    return
-  }
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  ext.KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
+
+  if (KOTLIN_MAJOR_VERSION >= 2) {
+    repositories {
+      mavenCentral()
+    }
+
+    dependencies {
+      classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+    }
   }
 }
 
-try {
+if (KOTLIN_MAJOR_VERSION >= 2) {
   apply plugin: 'org.jetbrains.kotlin.plugin.compose'
-} catch (ignored) {}
+}
 
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -96,7 +92,7 @@ android {
 
     externalNativeBuild {
       cmake {
-        abiFilters (*reactNativeArchitectures())
+        abiFilters(*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
           "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
@@ -116,6 +112,13 @@ android {
   buildFeatures {
     buildConfig true
     prefab true
+    compose true
+  }
+
+  if (KOTLIN_MAJOR_VERSION < 2) {
+    composeOptions {
+      kotlinCompilerExtensionVersion = "1.5.14"
+    }
   }
 
   packagingOptions {
@@ -192,8 +195,8 @@ android {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion()}"
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
   implementation 'androidx.annotation:annotation:1.7.1'
 
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"

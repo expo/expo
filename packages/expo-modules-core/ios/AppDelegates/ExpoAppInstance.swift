@@ -4,6 +4,18 @@ private var reactDelegateHandlers = [ExpoReactDelegateHandler]()
 
 @objc(EXAppInstance)
 open class ExpoAppInstance: RCTAppDelegate {
+  /**
+   When using AppDelegate.mm which does not inherit ExpoAppInstance directly,
+   we pass an appDelegate to allow execute functions upon the true AppDelegate.
+   */
+  private weak var appDelegate: RCTAppDelegate?
+
+  @objc
+  public convenience init(appDelegate: RCTAppDelegate) {
+    self.init()
+    self.appDelegate = appDelegate
+  }
+
   @objc
   public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
@@ -22,8 +34,11 @@ open class ExpoAppInstance: RCTAppDelegate {
 
   @objc
   open override func createRCTRootViewFactory() -> RCTRootViewFactory {
+    let appDelegate = self.appDelegate ?? self
+
     let bundleUrlBlock: RCTBundleURLBlock = { [weak self] in
-      return self?.bundleURL()
+      let appDelegateWeak = self?.appDelegate ?? self
+      return appDelegateWeak?.bundleURL()
     }
 
     let configuration = RCTRootViewFactoryConfiguration(
@@ -34,16 +49,16 @@ open class ExpoAppInstance: RCTAppDelegate {
     )
 
     configuration.createRootViewWithBridge = { bridge, moduleName, initProps in
-      return self.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
+      return appDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
     }
 
     configuration.createBridgeWithDelegate = { delegate, launchOptions in
-      return self.createBridge(with: delegate, launchOptions: launchOptions)
+      return appDelegate.createBridge(with: delegate, launchOptions: launchOptions)
     }
 
     configuration.customizeRootView = { rootView in
       // @tsapeta: We cannot just call `self.customize(rootView)` – see the comment of the `customizeRootView:byAppDelegate:` function in EXAppDelegateWrapper.h
-      return EXAppDelegateWrapper.customizeRootView(rootView, by: self)
+      return EXAppDelegateWrapper.customizeRootView(rootView, by: appDelegate)
     }
 
     // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
@@ -51,26 +66,26 @@ open class ExpoAppInstance: RCTAppDelegate {
 
     if responds(to: #selector(extraModules(for:))) {
       configuration.extraModulesForBridge = { bridge in
-        return self.extraModules(for: bridge)
+        return appDelegate.extraModules(for: bridge)
       }
     }
 
     if responds(to: #selector(extraLazyModuleClasses(for:))) {
       configuration.extraLazyModuleClassesForBridge = { bridge in
-        return self.extraLazyModuleClasses(for: bridge)
+        return appDelegate.extraLazyModuleClasses(for: bridge)
       }
     }
 
     if responds(to: #selector(bridge(_:didNotFindModule:))) {
       configuration.bridgeDidNotFindModule = { bridge, moduleName in
-        return self.bridge(bridge, didNotFindModule: moduleName)
+        return appDelegate.bridge(bridge, didNotFindModule: moduleName)
       }
     }
 
     return ExpoReactRootViewFactory(
       reactDelegate: reactDelegate,
       configuration: configuration,
-      turboModuleManagerDelegate: self
+      turboModuleManagerDelegate: appDelegate
     )
   }
 

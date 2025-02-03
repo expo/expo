@@ -27,3 +27,4 @@ export declare function getUpdatesCodeSigningMetadata(config: Pick<ExpoConfigUpd
 export declare function getUpdatesCodeSigningMetadataStringified(config: Pick<ExpoConfigUpdates, 'updates'>): string | undefined;
 export declare function getUpdatesRequestHeaders(config: Pick<ExpoConfigUpdates, 'updates'>): NonNullable<ExpoConfigUpdates['updates']>['requestHeaders'];
 export declare function getUpdatesRequestHeadersStringified(config: Pick<ExpoConfigUpdates, 'updates'>): string | undefined;
+export declare function getDisableAntiBrickingMeasures(config: Pick<ExpoConfigUpdates, 'updates'>): boolean | undefined;

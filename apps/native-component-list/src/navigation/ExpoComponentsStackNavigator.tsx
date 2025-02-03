@@ -10,7 +10,7 @@ import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import { CameraScreens } from '../screens/Camera/CameraScreen';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
-import { MapsScreens } from '../screens/ExpoMapsRemake/MapsScreen';
+import { MapsScreens } from '../screens/ExpoMaps/MapsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
 import { UIScreens } from '../screens/UI/UIScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
@@ -362,15 +362,9 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ExpoMaps/ExpoMapsScreen'));
+      return optionalRequire(() => require('../screens/ExpoMaps/MapsScreen'));
     },
     name: 'ExpoMaps',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ExpoMapsRemake/MapsScreen'));
-    },
-    name: 'ExpoMaps (Remake)',
   },
   {
     getComponent() {

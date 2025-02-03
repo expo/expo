@@ -12,9 +12,14 @@ export type PickerProps = {
      */
     selectedIndex: number | null;
     /**
+     * A label displayed on the picker when in `menu` variant inside a form section on iOS.
+     * @platform iOS
+     */
+    label?: string;
+    /**
      * Callback function that is called when an option is selected.
      */
-    onOptionSelected: (event: {
+    onOptionSelected?: (event: {
         nativeEvent: {
             index: number;
             label: string;

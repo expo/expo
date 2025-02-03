@@ -7,10 +7,13 @@
 ### 🎉 New features
 
 - Add Button component.([#34340](https://github.com/expo/expo/pull/34340) by [@behenate](https://github.com/behenate))
+- Apple TV support and source restructure. ([#34532](https://github.com/expo/expo/pull/34532) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
 ## 0.0.1 — 2025-01-21
 

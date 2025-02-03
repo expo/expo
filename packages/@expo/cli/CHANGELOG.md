@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Force NODE_ENV during npx expo export and do not allow overwriting outside of `--dev` flag. ([#34533](https://github.com/expo/expo/pull/34533) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Add basic support for API routes with React Server Components enabled. ([#34211](https://github.com/expo/expo/pull/34211) by [@EvanBacon](https://github.com/EvanBacon))
@@ -22,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- Disable networking in webcontainers to improve compatibility. ([#34474](https://github.com/expo/expo/pull/34474) by [@EvanBacon](https://github.com/EvanBacon))
 - fix: add SSR HMR for nested server actions ([#34216](https://github.com/expo/expo/pull/34216) by [@EvanBacon](https://github.com/EvanBacon))
 - Add temporary fix for HMR in RSC. ([#34168](https://github.com/expo/expo/pull/34168) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix copying public files to dist/client in RSC exports. ([#34129](https://github.com/expo/expo/pull/34129) by [@EvanBacon](https://github.com/EvanBacon))
@@ -35,6 +38,8 @@
 - Add `EAI_AGAIN` DNS service errors to offline detection. ([#34014](https://github.com/expo/expo/pull/34014) by [@byCedric](https://github.com/byCedric))
 - Fix `static` and `server` projects not starting up correctly when project path contains URI-unsafe characters like spaces. ([#34289](https://github.com/expo/expo/pull/34289) by [@kitten](https://github.com/kitten))
 - Use POSIX path when converting route file name in API routes. ([#34307](https://github.com/expo/expo/pull/34307) by [@byCedric](https://github.com/byCedric))
+- Bind debugging infrastructure to `localhost` instead of LAN ip. ([#34368](https://github.com/expo/expo/pull/34368) by [@byCedric](https://github.com/byCedric))
+- Add fallback resolution strategy for dependencies and optional peer dependencies of `expo` and `expo-router` to prevent broken resolution for isolated dependencies and hoisting issues. ([#34286](https://github.com/expo/expo/pull/34286) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -46,6 +51,7 @@
 - Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
 - Added `--bytecode` option to `export:embed`. ([#33906](https://github.com/expo/expo/pull/33906) by [@kudo](https://github.com/kudo))
 - Exclude `@expo-google-fonts/*` packages from the New Architecture compatibility check. ([#34127](https://github.com/expo/expo/pull/34127) by [@Simek](https://github.com/Simek))
+- Pin to `internal-ip@6.1.0` ([#34325](https://github.com/expo/expo/pull/34325) by [@kitten](https://github.com/kitten))
 
 ## 0.22.7 - 2024-12-19
 

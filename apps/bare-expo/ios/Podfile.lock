@@ -428,10 +428,6 @@ PODS:
     - ExpoModulesCore
   - ExpoMaps (0.6.1):
     - ExpoModulesCore
-    - GoogleMaps (= 7.4.0)
-    - GooglePlaces (= 7.3.0)
-  - ExpoMapsRemake (0.1.0):
-    - ExpoModulesCore
   - ExpoMediaLibrary (17.0.3):
     - ExpoModulesCore
     - React-Core
@@ -619,12 +615,6 @@ PODS:
   - FBLazyVector (0.77.0)
   - fmt (11.0.2)
   - glog (0.3.5)
-  - GoogleMaps (7.4.0):
-    - GoogleMaps/Maps (= 7.4.0)
-  - GoogleMaps/Base (7.4.0)
-  - GoogleMaps/Maps (7.4.0):
-    - GoogleMaps/Base
-  - GooglePlaces (7.3.0)
   - hermes-engine (0.77.0):
     - hermes-engine/Pre-built (= 0.77.0)
   - hermes-engine/Pre-built (0.77.0)
@@ -2754,7 +2744,6 @@ DEPENDENCIES:
   - ExpoLocation (from `../../../packages/expo-location/ios`)
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMaps (from `../../../packages/expo-maps/ios`)
-  - ExpoMapsRemake (from `../../../packages/expo-maps-remake/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
@@ -2873,8 +2862,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - GoogleMaps
-    - GooglePlaces
     - libavif
     - libdav1d
     - libwebp
@@ -3038,9 +3025,6 @@ EXTERNAL SOURCES:
   ExpoMaps:
     inhibit_warnings: false
     :path: "../../../packages/expo-maps/ios"
-  ExpoMapsRemake:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-maps-remake/ios"
   ExpoMediaLibrary:
     inhibit_warnings: false
     :path: "../../../packages/expo-media-library/ios"
@@ -3325,7 +3309,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: dc2679a2b5d4c465ca881129074da95faee943d5
   ExpoFont: 7522d869d84ee2ee8093ee997fef5b86f85d856b
   ExpoGL: 3e7c3b8478a6783d737103b33b9c11235deb6675
-  ExpoHaptics: e636188d1d5f7ccb79f3c1bfab47aaf5a1768c73
+  ExpoHaptics: 6ef4fe4bd9db68df4d5d30bcbc4e37db77727970
   ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
   ExpoImageManipulator: 774eb1a17c5db07944d6f9000650d422ebb3ce47
   ExpoImagePicker: 440a560c9bfc63edae854d08b9f12f75bd11c112
@@ -3338,8 +3322,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: e0c5b5212381b0b800a2c1f715be823d17c51b05
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
-  ExpoMaps: 03f99cbb20655c2beb1bffdca0e6de6a0124f69e
-  ExpoMapsRemake: 2fc7965f585a7b11f1e0818193b7c63c15262d1c
+  ExpoMaps: b84e936b1c90ec650f8b6e9f1979f7479c3a28f6
   ExpoMediaLibrary: 2d20778aafaa2e6f60640167f0618cfacee6f81c
   ExpoMeshGradient: 0a9aca4028bd131bd8313b1899c004aad7526c37
   ExpoModulesCore: 0752390621dd30477420a8a3e8711d2852fc430c
@@ -3354,7 +3337,7 @@ SPEC CHECKSUMS:
   ExpoSMS: 884d6627c0848795ff9492fbfc7ba6087111e344
   ExpoSpeech: 27bb25844919711ebf0e201ce0bef2897d3693c7
   ExpoSplashScreen: 43692d041bf848883410ed9d8836871ca5cf4d6a
-  ExpoSQLite: 56051549ddac62c16460d4391b84994faf494f00
+  ExpoSQLite: 0a97e8932a344abb39882001ca15307c9f172396
   ExpoStoreReview: f3439c43f13fa497cfe07d16b095f39101ed5548
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
   ExpoSystemUI: 97ec8f20af5e8ca18d3191c5c72e8a04e6e2f02d
@@ -3371,8 +3354,6 @@ SPEC CHECKSUMS:
   FBLazyVector: 2bc03a5cf64e29c611bbc5d7eb9d9f7431f37ee6
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
-  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
-  GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: 1f783c3d53940aed0d2c84586f0b7a85ab7827ef
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3468,4 +3449,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 567bb58fe91a07874d34e36dc2ed989b409d33cd
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

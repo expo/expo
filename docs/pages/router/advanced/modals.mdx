@@ -139,7 +139,7 @@ export default function Modal() {
     <View style={styles.container}>
       <Text>Modal screen</Text>
       /* @info On web, use <CODE>../</CODE> as a simple way to navigate to the root. This is not analogous to <CODE>goBack</CODE>.*/
-      {!isPresented && <Link href="../">Dismiss modal</Link>}
+      {isPresented && <Link href="../">Dismiss modal</Link>}
       /* @end */
     </View>
   );
@@ -160,8 +160,8 @@ By default on iOS, the modal has a dark background which hides the status bar. T
 
 {/* prettier-ignore */}
 ```tsx app/modal.tsx|collapseHeight=250
-import { StyleSheet, Text, View, Platform } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, Platform } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 export default function Modal() {
   return (

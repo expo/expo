@@ -11,8 +11,16 @@ All jobs support the following properties:
 
 - `name` (optional): The name of the job, displayed on the Expo dashboard.
 - `if` (optional): Conditional expression that determines if the job should run. Limited to 250 characters.
-- `needs` (optional): List of job keys that must complete successfully before this job runs
-- `after` (optional): List of job keys that must complete (success or failure) before this job runs
+- `needs` (optional): List of job keys that must complete successfully before this job runs.
+- `after` (optional): List of job keys that must complete (success or failure) before this job runs.
+
+You can also define an optional [`environment`](/eas/environment-variables/#environments) property in custom jobs of type:
+
+- `update`
+- `deploy`
+- `maestro`
+
+You can also specify an `environment` in custom jobs. The build job will use the environment specific to the selected profile.
 
 ## Build your app
 
@@ -51,6 +59,7 @@ jobs:
   update:
     name: Publish Update
     type: update
+    environment: production | preview | development # optional, default: production
     params:
       message: string # optional - commit message used if not provided
       platform: android | ios | all # optional
@@ -67,6 +76,7 @@ jobs:
   e2e-test:
     name: Run E2E Tests
     type: maestro
+    environment: production | preview | development # optional, default: preview
     params:
       build_id: string # required - usually ${{ needs.build.outputs.build_id }}
       flow_path: string | string[] # required - path(s) to Maestro test file(s)
@@ -76,7 +86,7 @@ jobs:
 
 Gets an existing build based supplied params:
 
-```yaml .eas/workflows/get-build.yaml
+```yaml .eas/workflows/get-build.yml
 jobs:
   get-build:
     name: Get Build
@@ -100,12 +110,12 @@ jobs:
 
 Deploy to EAS Hosting:
 
-```yaml .eas/workflows/deploy.yaml
+```yaml .eas/workflows/deploy.yml
 jobs:
   deploy:
     name: Deploy App
     type: deploy
-    environment: production | preview | development # optional
+    environment: production | preview | development # optional, default: production
     params:
       alias: string # optional - custom alias for the new deployment
       prod: boolean # optional - create a production deployment
@@ -117,11 +127,12 @@ Run custom code during a workflow:
 
 {/* vale off */}
 
-```yaml .eas/workflows/custom-job.yaml
+```yaml .eas/workflows/custom-job.yml
 jobs:
   custom-job:
     name: Custom Task
     runs_on: linux-medium | linux-large | macos-medium | macos-large | linux-medium-nested-virtualization | linux-large-nested-virtualization # optional, default: linux-medium
+    environment: production | preview | development # optional, default: production
     defaults:
       run:
         working_directory: string # optional - relative to app base directory or absolute from repo root

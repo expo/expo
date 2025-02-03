@@ -513,19 +513,20 @@ function appendNotFoundRoute(directory: DirectoryNode, options: Options) {
 function getLayoutNode(node: RouteNode, options: Options) {
   /**
    * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
-   * Each of these layouts will have a different initialRouteName based upon the first group name.
+   * Each of these layouts will have a different anchor based upon the first group name.
    */
   // We may strip loadRoute during testing
   const groupName = matchLastGroupName(node.route);
   const childMatchingGroup = node.children.find((child) => {
     return child.route.replace(/\/index$/, '') === groupName;
   });
-  let initialRouteName = childMatchingGroup?.route;
+  let anchor = childMatchingGroup?.route;
   const loaded = node.loadRoute();
   if (loaded?.unstable_settings) {
     try {
       // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-      initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+      anchor =
+        loaded.unstable_settings.anchor ?? loaded.unstable_settings.initialRouteName ?? anchor;
     } catch (error: any) {
       if (error instanceof Error) {
         if (!error.message.match(/You cannot dot into a client module/)) {
@@ -536,9 +537,11 @@ function getLayoutNode(node: RouteNode, options: Options) {
 
     if (groupName) {
       // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
-      const groupSpecificInitialRouteName = loaded.unstable_settings?.[groupName]?.initialRouteName;
+      const groupSpecificInitialRouteName =
+        loaded.unstable_settings?.[groupName]?.anchor ??
+        loaded.unstable_settings?.[groupName]?.initialRouteName;
 
-      initialRouteName = groupSpecificInitialRouteName ?? initialRouteName;
+      anchor = groupSpecificInitialRouteName ?? anchor;
     }
   }
 
@@ -546,7 +549,7 @@ function getLayoutNode(node: RouteNode, options: Options) {
     ...node,
     route: node.route.replace(/\/?_layout$/, ''),
     children: [], // Each layout should have its own children
-    initialRouteName,
+    initialRouteName: anchor,
   };
 }
 
@@ -569,20 +572,21 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
      * Calculate the initialRouteNode
      *
      * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
-     * Each of these layouts will have a different initialRouteName based upon the first group.
+     * Each of these layouts will have a different anchor based upon the first group.
      */
     const groupName = matchGroupName(node.route);
     const childMatchingGroup = node.children.find((child) => {
       return child.route.replace(/\/index$/, '') === groupName;
     });
-    let initialRouteName = childMatchingGroup?.route;
+    let anchor = childMatchingGroup?.route;
     // We may strip loadRoute during testing
     if (!options.internal_stripLoadRoute) {
       const loaded = node.loadRoute();
       if (loaded?.unstable_settings) {
         try {
           // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-          initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+          anchor =
+            loaded.unstable_settings.anchor ?? loaded.unstable_settings.initialRouteName ?? anchor;
         } catch (error: any) {
           if (error instanceof Error) {
             if (!error.message.match(/You cannot dot into a client module/)) {
@@ -594,35 +598,36 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
         if (groupName) {
           // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
           const groupSpecificInitialRouteName =
+            loaded.unstable_settings?.[groupName]?.anchor ??
             loaded.unstable_settings?.[groupName]?.initialRouteName;
 
-          initialRouteName = groupSpecificInitialRouteName ?? initialRouteName;
+          anchor = groupSpecificInitialRouteName ?? anchor;
         }
       }
     }
 
-    if (initialRouteName) {
-      const initialRoute = node.children.find((child) => child.route === initialRouteName);
-      if (!initialRoute) {
-        const validInitialRoutes = node.children
+    if (anchor) {
+      const anchorRoute = node.children.find((child) => child.route === anchor);
+      if (!anchorRoute) {
+        const validAnchorRoutes = node.children
           .filter((child) => !child.generated)
           .map((child) => `'${child.route}'`)
           .join(', ');
 
         if (groupName) {
           throw new Error(
-            `Layout ${node.contextKey} has invalid initialRouteName '${initialRouteName}' for group '(${groupName})'. Valid options are: ${validInitialRoutes}`
+            `Layout ${node.contextKey} has invalid anchor '${anchor}' for group '(${groupName})'. Valid options are: ${validAnchorRoutes}`
           );
         } else {
           throw new Error(
-            `Layout ${node.contextKey} has invalid initialRouteName '${initialRouteName}'. Valid options are: ${validInitialRoutes}`
+            `Layout ${node.contextKey} has invalid anchor '${anchor}'. Valid options are: ${validAnchorRoutes}`
           );
         }
       }
 
       // Navigators can add initialsRoutes into the history, so they need to be to be included in the entryPoints
-      node.initialRouteName = initialRouteName;
-      entryPoints.push(initialRoute.contextKey);
+      node.initialRouteName = anchor;
+      entryPoints.push(anchorRoute.contextKey);
     }
 
     for (const child of node.children) {
