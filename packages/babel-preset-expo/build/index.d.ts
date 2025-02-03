@@ -1,10 +1,5 @@
 import { ConfigAPI, TransformOptions } from '@babel/core';
 type BabelPresetExpoPlatformOptions = {
-    /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
-    decorators?: false | {
-        legacy?: boolean;
-        version?: number;
-    };
     /** Enable or disable adding the Reanimated plugin by default. @default `true` */
     reanimated?: boolean;
     /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
