@@ -1,6 +1,5 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
-
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     "esModuleInterop": true,
     "declaration": true,
