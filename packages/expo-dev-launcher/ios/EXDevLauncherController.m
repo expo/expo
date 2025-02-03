@@ -344,7 +344,8 @@
   // @chrfalch: This is a bit stupied - in pre 0.77 we want to call the original
   // RCTAppDelegate's createRCTRootViewFactory...
   RCTAppDelegate* app = (RCTAppDelegate*)[UIApplication sharedApplication].delegate;
-  _appDelegate.rootViewFactory = [[app reactNativeFactory] createRCTRootViewFactory];
+//	app.reactNativeFactory
+  _appDelegate.rootViewFactory = [[app reactNativeFactory] rootViewFactory];
 
 
 #if RCT_DEV
