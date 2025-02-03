@@ -106,6 +106,8 @@ exceptions:
   - '.*FAQ.*'
   - '.*FCM.*'
   - '.*FYI.*'
+  - '.*fingerprintignore.*'
+  - '.*fingerprint.config.js.*'
   - '.*Generation.*'
   - '.*GitHub.*'
   - '.*GitHub Pages.*'
