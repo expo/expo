@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-import type { MapViewType, MapProps } from './GoogleMaps.types';
+import type { MapViewType, MapProps, SetCameraPositionConfig } from './GoogleMaps.types';
 
 type NativeMapViewProps = MapProps & {
   ref: React.MutableRefObject<MapViewType | null>;
@@ -39,7 +39,7 @@ export const MapView = React.forwardRef(
   ) => {
     const nativeRef = React.useRef<MapViewType | null>(null);
     React.useImperativeHandle(ref, () => ({
-      setCameraPosition(config: MapViewType['setCameraPosition']['arguments'][0]) {
+      setCameraPosition(config: SetCameraPositionConfig) {
         nativeRef.current?.setCameraPosition(config);
       },
     }));
