@@ -4,8 +4,6 @@ import * as GoogleTypes from './google/GoogleMaps.types';
 import { MapView as GoogleMapsView } from './google/GoogleMapsView';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 export declare namespace GoogleMaps {
-    const requestPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
-    const getPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
     const View: typeof GoogleMapsView;
     const StreetView: typeof GoogleStreetView;
     const MapType: typeof GoogleTypes.MapType;
@@ -27,5 +25,7 @@ export declare namespace AppleMaps {
     type MapUiSettings = AppleTypes.MapUiSettings;
     type Marker = AppleTypes.Marker;
 }
+export declare const requestPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
+export declare const getPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
 export * from './shared.types';
 //# sourceMappingURL=index.d.ts.map

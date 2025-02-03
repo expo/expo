@@ -1,1 +1,1 @@
-{"version":3,"file":"GoogleMapsModule.d.ts","sourceRoot":"","sources":["../../src/google/GoogleMapsModule.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,gBAAgB,EAAE,MAAM,oBAAoB,CAAC;;AAEtD,wBAA+E"}
+{"version":3,"file":"GoogleMapsModule.d.ts","sourceRoot":"","sources":["../../src/google/GoogleMapsModule.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,UAAU,EAAE,MAAM,iBAAiB,CAAC;;AAE7C,wBAAyE"}
