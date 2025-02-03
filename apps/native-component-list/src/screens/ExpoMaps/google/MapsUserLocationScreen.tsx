@@ -1,5 +1,4 @@
 import { GoogleMaps } from 'expo-maps';
-import { MapViewType } from 'expo-maps/build/google/GoogleMaps.types';
 import { useEffect, useRef, useState } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 
