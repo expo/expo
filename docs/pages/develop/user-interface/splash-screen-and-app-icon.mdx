@@ -20,7 +20,7 @@ A splash screen and an app icon are fundamental elements of a mobile app. They p
 
 A splash screen, also known as a launch screen, is the first screen a user sees when they open your app. It stays visible while the app is loading. You can also control the behavior of when a splash screen disappears by using the native [SplashScreen API](/versions/latest/sdk/splash-screen).
 
-The [expo-splash-screen module](/versions/latest/sdk/splash-screen) has a built-in [config plugin](/config-plugins/introduction) that lets you configure properties such as the splash icon and background color. Learn more about [configurable splash screen properties](/versions/latest/sdk/splash-screen/#configurable-properties).
+The [`expo-splash-screen`](/versions/latest/sdk/splash-screen) has a built-in [config plugin](/config-plugins/introduction) that lets you configure properties such as the splash icon and background color.
 
 <Step label="1">
 
@@ -28,12 +28,10 @@ The [expo-splash-screen module](/versions/latest/sdk/splash-screen) has a built-
 
 To create a splash screen icon, you can use this [Figma template](https://www.figma.com/community/file/1466490409418563617). It provides a bare minimum design for an icon and splash images for Android and iOS.
 
-<Collapsible summary="Splash screen icon recommendations">
 
 - Use a 1024x1024 image.
 - Use a **.png** file.
 - Use a transparent background.
-- Use the [Figma template](https://www.figma.com/community/file/1466490409418563617) to create your splash screen icon.
 
 </Collapsible>
 
@@ -53,7 +51,7 @@ After creating a splash screen icon, export it as a **.png** and save it in the 
 
 ### Configure the splash screen icon
 
-Open the app config file, under plugins set the corresponding properties as follows:
+Open the app config file, and under plugins, set the following properties:
 
 ```json app.json
 {
@@ -62,21 +60,21 @@ Open the app config file, under plugins set the corresponding properties as foll
       [
         "expo-splash-screen",
         {
-          /* @info The background color of the splash screen */
+          /* @info The background color of the splash screen. */
           "backgroundColor": "#232323",
           /* @end */
-          /* @info The path to the splash screen icon */
-          "image": "./assets/splash-icon.png",
+          /* @info The path to the splash screen icon. */
+          "image": "./assets/images/splash-icon.png",
           /* @end */
-          /* @info The path to the splash screen icon for dark mode (optional) */
+          /* @info The path to the splash screen icon for dark mode (optional). */
           "dark": {
-            "image": "./assets/splash-icon-dark.png",
+            "image": "./assets/images/splash-icon-dark.png",
             /* @end */
-            /* @info The background color of the splash screen for dark mode */
+            /* @info The background color of the splash screen for dark mode. */
             "backgroundColor": "#000000"
             /* @end */
           },
-          /* @info The width of the splash screen icon */
+          /* @info The width of the splash screen icon. */
           "imageWidth": 200
           /* @end */
         }
@@ -94,7 +92,7 @@ To test your new splash screen, create a [preview](/build/eas-json/#preview-buil
 
 <Collapsible summary={<>Configuring <CODE>expo-splash-screen</CODE> properties separately for Android and iOS</>}>
 
-[expo-splash-screen](/versions/latest/sdk/splash-screen) also supports `ios` and `android` properties for configuring the splash screen for a specific platform. See the following example:
+[`expo-splash-screen`](/versions/latest/sdk/splash-screen) also supports `android` and `ios` properties for configuring the splash screen for a specific platform. See the following example:
 
 ```json app.json
 {
@@ -105,12 +103,12 @@ To test your new splash screen, create a [preview](/build/eas-json/#preview-buil
         {
           "ios": {
             "backgroundColor": "#ffffff",
-            "image": "./assets/splash.png",
+            "image": "./assets/images/splash-icon.png",
             "resizeMode": "cover",
           },
           "android": {
             "backgroundColor": "#0c7cff",
-            "image": "./assets/splash-android-icon.png",
+            "image": "./assets/images/splash-android-icon.png",
             "imageWidth": 150,
             }
           }
@@ -188,16 +186,16 @@ For iOS, your app's icon should follow the [Apple Human Interface Guidelines](ht
 - 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. In case of a bare React Native project, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
 - The icon must be exactly square. For example, a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
-- Use `ios.icon` to specify different icons for various system appearances (e.g., dark, tinted) can be provided. If specified, this overrides the top-level icon key. See the example below:
+- Use `ios.icon` to specify different icons for various system appearances (for example, dark and tinted) can be provided. If specified, this overrides the top-level icon key in the app config file. See the example below:
 
 ```json app.json
 {
   "expo": {
     "ios": {
       "icon": {
-        "dark": "./assets/icons/ios-dark.png",
-        "light": "./assets/icons/ios-light.png",
-        "tinted": "./assets/icons/ios-tinted.png"
+        "dark": "./assets/images/ios-dark.png",
+        "light": "./assets/images/ios-light.png",
+        "tinted": "./assets/images/ios-tinted.png"
       }
     }
   }
