@@ -11,7 +11,9 @@
 <p align="center">
   <a aria-label="expo documentation" href="https://docs.expo.dev/more/expo-cli/">📚 Read the Documentation</a>
   &ensp;•&ensp;
-  <a aria-label="Contribute to Expo CLI" href="#contributing"><b>Contribute to Expo CLI</b></a>
+  <a aria-label="expo documentation" href="https://expo.dev/blog">Learn more on our blog</a>
+  &ensp;•&ensp;
+  <a aria-label="Contribute to Expo CLI" href="#contributing">Contribute to Expo CLI</a>
 </p>
 
 <p align="center">
