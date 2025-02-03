@@ -23,6 +23,8 @@ export namespace GoogleMaps {
   export type MapUiSettings = GoogleTypes.MapUiSettings;
   export type MapProperties = GoogleTypes.MapProperties;
   export type MapProps = GoogleTypes.MapProps;
+
+  export type MapViewType = GoogleTypes.MapViewType;
 }
 
 export namespace AppleMaps {

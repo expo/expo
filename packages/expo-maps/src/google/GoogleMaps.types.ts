@@ -269,6 +269,22 @@ export type MapProps = {
   }) => void;
 };
 
+export type SetCameraPositionConfig = CameraPosition & {
+  /**
+   * The duration of the animation in milliseconds.
+   */
+  duration?: number;
+};
+
+export type MapViewType = {
+  /**
+   * Update camera position.
+   *
+   * @param config New camera postion config.
+   */
+  setCameraPosition: (config?: SetCameraPositionConfig) => void;
+};
+
 export type StreetViewProps = {
   style?: StyleProp<ViewStyle>;
 

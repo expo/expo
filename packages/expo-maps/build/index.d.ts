@@ -1,12 +1,11 @@
 import * as AppleTypes from './apple/AppleMaps.types';
 import { MapView as AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
-import { MapView as GoogleMapsView } from './google/GoogleMapsView';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 export declare namespace GoogleMaps {
     const requestPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
     const getPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse | undefined>;
-    const View: typeof GoogleMapsView;
+    const View: import("react").ForwardRefExoticComponent<GoogleTypes.MapProps & import("react").RefAttributes<unknown>>;
     const StreetView: typeof GoogleStreetView;
     const MapType: typeof GoogleTypes.MapType;
     type MapType = GoogleTypes.MapType;
@@ -17,6 +16,7 @@ export declare namespace GoogleMaps {
     type MapUiSettings = GoogleTypes.MapUiSettings;
     type MapProperties = GoogleTypes.MapProperties;
     type MapProps = GoogleTypes.MapProps;
+    type MapViewType = GoogleTypes.MapViewType;
 }
 export declare namespace AppleMaps {
     const View: typeof AppleMapsView;

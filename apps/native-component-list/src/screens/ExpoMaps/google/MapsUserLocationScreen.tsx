@@ -1,6 +1,7 @@
 import { GoogleMaps } from 'expo-maps';
-import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { MapViewType } from 'expo-maps/build/google/GoogleMaps.types';
+import { useEffect, useRef, useState } from 'react';
+import { Button, StyleSheet, View } from 'react-native';
 
 import { FunctionParameter, useArguments } from '../../../components/FunctionDemo';
 import Configurator from '../../../components/FunctionDemo/Configurator';
@@ -22,6 +23,7 @@ export default function MapsUserLocationScreen() {
   const [args, updateArgument] = useArguments(parameters);
   const [isMyLocationEnabled, followUserLocation] = args as [boolean, boolean];
   const [offset, setOffset] = useState(0);
+  const ref = useRef<GoogleMaps.MapViewType | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,6 +36,7 @@ export default function MapsUserLocationScreen() {
     <View style={styles.container}>
       <View style={styles.container}>
         <GoogleMaps.View
+          ref={ref}
           style={{ width: 'auto', height: '100%' }}
           cameraPosition={{
             coordinates: {
@@ -58,6 +61,26 @@ export default function MapsUserLocationScreen() {
 
       <View style={styles.configurator}>
         <Configurator parameters={parameters} onChange={updateArgument} value={args} />
+        <Button title="Set empty" onPress={() => ref.current?.setCameraPosition()} />
+        <Button
+          title="Set 0, 0"
+          onPress={() =>
+            ref.current?.setCameraPosition({ coordinates: { latitude: 0, longitude: 0 } })
+          }
+        />
+        <Button
+          title="Set random"
+          onPress={() =>
+            ref.current?.setCameraPosition({
+              coordinates: {
+                latitude: Math.random() * 360 - 180,
+                longitude: Math.random() * 360 - 180,
+              },
+              zoom: Math.random() * 20,
+              duration: 5000,
+            })
+          }
+        />
       </View>
     </View>
   );
