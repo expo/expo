@@ -3,7 +3,6 @@ title: Configure status bar, splash screen and app icon
 description: In this tutorial, learn the basics of how to configure a status bar, app icon, and splash screen.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Step } from '~/ui/components/Step';
@@ -92,26 +91,27 @@ A splash screen is visible before the app's content is loaded. It uses a smaller
 
 The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) plugin already comes pre-installed in every project created using `create-expo-app`. This library provides a config plugin to configure the splash screen.
 
-In **app.json**, the `expo-splash-screen` plugin is already configured to use the app's icon as the splash screen image with the following snippet so we don't have to change anything. Let's take a look at our app now on Android and iOS:
+In **app.json**, the `expo-splash-screen` plugin is already configured to use the app's icon as the splash screen image with the following snippet so we don't have to change anything:
 
-<ContentSpotlight file="tutorial/splash-screen.mp4" />
-
-<Collapsible summary="Is the app loading too quickly for you to get a good look at the splash screen?">
-
-You can display the splash screen for longer intervals by using `preventAutoHideAsync()` method from `expo-splash-screen` library. This method delays hiding the splash screen until you call `hideAsync()`.
-
-Add the following code in **app/\_layout.tsx** to delay hiding the splash screen for five seconds.
-
-```tsx app/_layout.tsx
-import * as SplashScreen from 'expo-splash-screen';
-
-SplashScreen.preventAutoHideAsync();
-setTimeout(SplashScreen.hideAsync, 5000);
+```json app.json
+{
+  "plugins": [
+    /* @hide ... */ /* @end */
+    [
+      "expo-splash-screen",
+      {
+        "image": "./assets/images/icon.png"
+        /* @hide ... */ /* @end */
+      }
+    ]
+  ]
+}
 ```
 
-Don't forget to remove this code when you are done testing your splash screen.
+However, **to test the splash screen, we cannot use Expo Go or a [development build](/develop/development-builds/introduction/)**. To test it, we need to create a preview or a production build of our app. We recommend going through following resources to learn more about the splash screen configuration and how to test it:
 
-</Collapsible>
+- [Create a splash screen icon](/develop/user-interface/splash-screen-and-app-icon/#splash-screen) guide to learn how splash screen icon is configured.
+- To learn how to create an preview build, see [Internal distribution](/tutorial/eas/internal-distribution-builds/) guide in EAS Tutorial, or to create production builds see guides for [Android](/tutorial/eas/android-production-build/) and [iOS](/tutorial/eas/ios-production-build/).
 
 </Step>
 
