@@ -1,32 +1,24 @@
+import * as tunnel from '@expo/ws-tunnel';
 import chalk from 'chalk';
 import { randomBytes } from 'node:crypto';
 
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
-import { WsTunnelResolver } from '../doctor/tunnel/WsTunnelResolver';
 
 const debug = require('debug')('expo:start:server:ws-tunnel') as typeof console.log;
 
 export class AsyncWsTunnel {
-  /** Resolves the best instance of the WS tunnel, exposed for testing. */
-  resolver: WsTunnelResolver;
-
   /** Info about the currently running instance of tunnel. */
   private serverUrl: string | null = null;
 
-  constructor(
-    private projectRoot: string,
-    port: number
-  ) {
+  constructor(_projectRoot: string, port: number) {
     if (port !== 8081) {
       throw new CommandError(
         'WS_TUNNEL_PORT',
-        `The WS-tunnel only supports tunneling over port 8081, attempted to use port ${port}`
+        `WS-tunnel only supports tunneling over port 8081, attempted to use port ${port}`
       );
     }
-
-    this.resolver = new WsTunnelResolver(projectRoot);
   }
 
   public getActiveUrl(): string | null {
@@ -34,14 +26,7 @@ export class AsyncWsTunnel {
   }
 
   async startAsync(): Promise<void> {
-    const instance = await this.resolver.resolveAsync({
-      autoInstall: true,
-      shouldPrompt: false,
-      // Webcontainers do not support installing packages globally
-      prefersGlobalInstall: false,
-    });
-
-    this.serverUrl = await instance.startAsync({
+    this.serverUrl = await tunnel.startAsync({
       ...getTunnelOptions(),
       onStatusChange(status) {
         if (status === 'disconnected') {
@@ -62,7 +47,7 @@ export class AsyncWsTunnel {
 
   async stopAsync(): Promise<void> {
     debug('Stopping Tunnel');
-    await this.resolver.get()?.stopAsync();
+    await tunnel.stopAsync();
     this.serverUrl = null;
   }
 }
