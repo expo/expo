@@ -19,7 +19,7 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
   );
 }
 
-export function MapView({
+export function GoogleMapsView({
   onMapLoaded,
   onMapClick,
   onMapLongClick,
