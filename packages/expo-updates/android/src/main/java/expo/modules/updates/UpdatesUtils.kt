@@ -111,6 +111,7 @@ object UpdatesUtils {
       // write file atomically by writing it to a temporary path and then renaming
       // this protects us against partially written files if the process is interrupted
       val tmpFile = File(destination.absolutePath + ".tmp")
+      tmpFile.parentFile?.mkdirs()
       digestInputStream.use { input ->
         tmpFile.outputStream().use { output ->
           input.copyTo(output)
