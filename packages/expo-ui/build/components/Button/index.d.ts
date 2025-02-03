@@ -1,4 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
+import { ViewEvent } from '../../src';
 /**
  * The role of the button.
  * - `default` - The default button role.
@@ -31,10 +32,6 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
 export type ButtonVariant = 'default' | 'bordered' | 'plain' | 'borderedProminent' | 'borderless' | 'accessoryBar' | 'accessoryBarAction' | 'card' | 'link' | 'outlined' | 'elevated';
 export type ButtonProps = {
     /**
-     * The text to display inside the button.
-     */
-    text: string;
-    /**
      * A callback that is called when the button is pressed.
      */
     onPress?: () => void;
@@ -56,10 +53,24 @@ export type ButtonProps = {
      * Additional styles to apply to the button.
      */
     style?: StyleProp<ViewStyle>;
+    /**
+     * The text to display inside the button.
+     */
+    children: string;
+    /**
+     * Colors for button's core elements.
+     * @platform android
+     */
+    colors?: {
+        containerColor?: string;
+        contentColor?: string;
+        disabledContainerColor?: string;
+        disabledContentColor?: string;
+    };
 };
-export type NativeButtonProps = Omit<Omit<ButtonProps, 'role'>, 'onPress'> & {
+export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children'> & {
     buttonRole?: ButtonRole;
-    onButtonPressed?: () => void;
-};
+    text: string;
+} & ViewEvent<'onButtonPressed', void>;
 export declare function Button(props: ButtonProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

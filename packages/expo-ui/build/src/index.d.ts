@@ -6,7 +6,7 @@ export type { Slider, SliderProps } from '../components/Slider';
 /**
  * @hidden
  */
-export type ViewEvent<Name extends string, Data extends object> = Record<Name, (event: {
+export type ViewEvent<Name extends string, Data> = Record<Name, Data extends object ? ((event: {
     nativeEvent: Data;
-}) => void>;
+}) => void) | undefined : (() => void) | undefined>;
 //# sourceMappingURL=index.d.ts.map
