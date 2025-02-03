@@ -1,22 +1,22 @@
 import ExpoModulesCore
 
 class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManagerDelegate {
-  private var locationManager = CLLocationManager();
+  private var locationManager = CLLocationManager()
   private var _resolve: EXPromiseResolveBlock?
   private var _reject: EXPromiseRejectBlock?
-  
+
   override public init() {
     super.init()
     locationManager.delegate = self
   }
-  
-  static public func permissionType() -> String {
+
+  static func permissionType() -> String {
     return "location"
   }
-  
+
   func permissionWith(status systemStatus: CLAuthorizationStatus) -> [AnyHashable: Any] {
     var status: EXPermissionStatus
-    
+
     switch systemStatus {
     case .authorizedAlways, .authorizedWhenInUse:
       status = EXPermissionStatusGranted
@@ -27,13 +27,13 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
     @unknown default:
       status = EXPermissionStatusUndetermined
     }
-    
+
     return [
       "status": status.rawValue
     ]
   }
-  
-  public func getPermissions() -> [AnyHashable : Any]! {
+
+  func getPermissions() -> [AnyHashable : Any]! {
     var systemStatus: CLAuthorizationStatus
     let description = Bundle.main.infoDictionary?["NSLocationWhenInUseUsageDescription"] as? String
     
@@ -43,11 +43,11 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
       EXFatal(EXErrorWithMessage("This app is missing 'NSLocationWhenInUseUsageDescription', so MapKit services will fail. Add this entry to your bundle's Info.plist."))
       systemStatus = .denied
     }
-    
+
     return permissionWith(status: systemStatus)
   }
-  
-  public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
+
+  func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
     if locationManager.authorizationStatus == .notDetermined {
       locationManager.requestWhenInUseAuthorization()
       _resolve = resolve
@@ -56,7 +56,7 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
       resolve(getPermissions())
     }
   }
-  
+
   func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
     if _resolve != nil {
       _resolve?(getPermissions())
@@ -64,7 +64,7 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
       _reject = nil
     }
   }
-  
+
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
     if _reject != nil {
       _reject = nil
