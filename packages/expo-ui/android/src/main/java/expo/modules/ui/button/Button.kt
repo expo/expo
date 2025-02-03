@@ -18,9 +18,12 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
+import java.io.Serializable
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.ui.DynamicTheme
 import expo.modules.ui.compose
+
+open class ButtonPressedEvent() : Record, Serializable
 
 enum class ButtonVariant(val value: String) : Enumerable {
   DEFAULT("default"),
@@ -113,7 +116,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, onPress: () -> Un
 
 class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonProps>(context, appContext) {
   override val props = ButtonProps()
-  private val onButtonPressed by EventDispatcher<Unit>()
+  private val onButtonPressed by EventDispatcher<ButtonPressedEvent>()
 
   init {
     clipToPadding = false // needed for elevated buttons to work
@@ -127,7 +130,7 @@ class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonP
         StyledButton(
           variant ?: ButtonVariant.DEFAULT,
           colors,
-          { onButtonPressed.invoke(Unit) }
+          { onButtonPressed.invoke(ButtonPressedEvent()) }
         ) {
           Text(text)
         }

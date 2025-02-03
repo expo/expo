@@ -32,10 +32,11 @@ struct PickerView: ExpoSwiftUI.View {
         if props.selectedIndex == newValue {
           return
         }
-        props.onOptionSelected([
+        let payload = [
           "index": newValue ?? 0,
           "label": props.options[newValue ?? 0]
-        ])
+        ]
+        props.onOptionSelected(payload)
       })
       .onReceive(props.selectedIndex.publisher, perform: { newValue in
         if prevSelectedIndex == newValue {

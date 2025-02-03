@@ -100,17 +100,23 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
   'Button'
 );
 
+export function transformButtonProps(props: ButtonProps): NativeButtonProps {
+  return {
+    text: props.children ?? '',
+    buttonRole: props.role,
+    onButtonPressed: props.onPress,
+    systemImage: props.systemImage,
+    variant: props.variant,
+    colors: props.colors,
+  };
+}
+
 export function Button(props: ButtonProps) {
   // Min height from https://m3.material.io/components/buttons/specs, minWidth
   return (
     <ButtonNativeView
       style={StyleSheet.compose({ minWidth: 80, minHeight: 40 }, props.style)}
-      buttonRole={props.role}
-      onButtonPressed={props.onPress}
-      text={props.children ?? ''}
-      systemImage={props.systemImage}
-      variant={props.variant}
-      colors={props.colors}
+      {...transformButtonProps(props)}
     />
   );
 }
