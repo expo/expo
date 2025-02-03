@@ -26,19 +26,10 @@ fun MediaMetadataRetriever.generateThumbnailAtTime(
   requestedTime: Duration,
   options: VideoThumbnailOptions? = null
 ): VideoThumbnail {
-  val (maxWidth, maxHeight) = if (options?.maxWidth != null || options?.maxHeight != null) {
-    val width = options.maxWidth ?: Int.MAX_VALUE
-    val height = options.maxHeight ?: Int.MAX_VALUE
+  val sizeLimit = options?.toNativeSizeLimit()
 
-    require(width >= 1 && height >= 1) {
-      "Failed to generate a thumbnail: The maxWidth and maxHeight parameters must be greater than zero"
-    }
-    width to height
-  } else {
-    null to null
-  }
-
-  val bitmap = if (maxWidth != null && maxHeight != null) {
+  val bitmap = if (sizeLimit != null) {
+    val (maxWidth, maxHeight) = sizeLimit
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
       getScaledFrameAtTime(
         requestedTime.inWholeMicroseconds,
