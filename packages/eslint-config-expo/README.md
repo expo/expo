@@ -8,7 +8,7 @@ Base ESLint config for Expo projects. This is a minimal config that supports JSX
 yarn add --dev eslint-config-expo
 ```
 
-You will also need to install `eslint`:
+You will also need to install `eslint@9` or higher (from v9 onwards, this library uses [flat config](https://eslint.org/blog/2022/08/new-config-system-part-2/); see the [migration guide](https://eslint.org/docs/latest/use/migrate-to-9.0.0)):
 
 ```sh
 yarn add --dev eslint
@@ -16,20 +16,14 @@ yarn add --dev eslint
 
 ## Usage
 
-Import this config into your own ESLint [configuration](https://eslint.org/docs/latest/use/configure/configuration-files) using the `extends` option. ESLint checks both `package.json` and `.eslintrc.*` files for its configuration:
+Import this config into your [configuration file](https://eslint.org/docs/latest/use/configure/configuration-files#configuration-file), e.g. `eslint.config.js` and spread it into the config array:
 
-### package.json
 ```js
-{
-  "eslintConfig": {
-    "extends": ["expo", "eslint:recommended"]
-  }
-}
-```
+// eslint.config.js
+const expoConfig = require("eslint-config-expo");
 
-### .eslintrc.js
-```js
-module.exports = {
-  extends: ["expo", "eslint:recommended"],
-};
+module.exports = [
+  ...expoConfig,
+  // your other config
+];
 ```
