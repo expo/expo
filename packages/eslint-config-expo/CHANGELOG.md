@@ -3,6 +3,7 @@
 ## Unpublished
 
 ### 🛠 Breaking changes
+- Convert to flat config.
 
 ### 🎉 New features
 
