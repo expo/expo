@@ -1,4 +1,5 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
+import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Coordinates } from '../shared.types';
 export type Marker = {

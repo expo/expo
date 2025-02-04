@@ -3,7 +3,7 @@ import { AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 export declare namespace GoogleMaps {
-    const View: typeof GoogleMapsView;
+    const View: import("react").ForwardRefExoticComponent<Omit<GoogleTypes.MapProps, "ref"> & import("react").RefAttributes<GoogleTypes.MapViewType>>;
     const StreetView: typeof GoogleStreetView;
     const MapType: typeof GoogleTypes.MapType;
     type MapType = GoogleTypes.MapType;

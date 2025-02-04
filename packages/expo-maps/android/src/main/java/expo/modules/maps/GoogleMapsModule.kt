@@ -9,6 +9,10 @@ class GoogleMapsModule : Module() {
 
     View(GoogleMapsView::class) {
       Events("onMapLoaded", "onMapClick", "onMapLongClick", "onPOIClick", "onMarkerClick", "onCameraMove")
+
+      AsyncFunction("setCameraPosition") Coroutine { view: GoogleMapsView, config: SetCameraPositionConfig? ->
+        view.setCameraPosition(config)
+      }
     }
   }
 }
