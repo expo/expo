@@ -47,8 +47,8 @@ export function createExpoStart(options: Partial<BackgroundServerOptions> = {}) 
       if (info) {
         const url = new URL(JSON.parse(info).url);
         // NOTE(cedric): if it returns `localhost`, prefer to use `127.0.0.1` for Windows
-        if (url.host === 'localhost') {
-          url.host = '127.0.0.1';
+        if (url.hostname === 'localhost') {
+          url.hostname = '127.0.0.1';
         }
         return url;
       }
