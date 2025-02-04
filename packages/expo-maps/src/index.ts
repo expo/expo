@@ -24,7 +24,7 @@ export namespace GoogleMaps {
   export type MapProperties = GoogleTypes.MapProperties;
   export type MapProps = GoogleTypes.MapProps;
 
-  export type MapViewType = GoogleTypes.MapViewType;
+  export type MapView = GoogleTypes.MapViewType;
 }
 
 export namespace AppleMaps {

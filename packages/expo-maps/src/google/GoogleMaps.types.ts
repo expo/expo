@@ -1,5 +1,6 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
 import type { PermissionResponse } from 'expo-modules-core';
+import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { Coordinates } from '../shared.types';
@@ -200,6 +201,7 @@ export enum MapColorScheme {
 }
 
 export type MapProps = {
+  ref?: Ref<MapViewType>;
   style?: StyleProp<ViewStyle>;
 
   /**

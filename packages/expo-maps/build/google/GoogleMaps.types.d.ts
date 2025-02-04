@@ -1,5 +1,6 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
 import type { PermissionResponse } from 'expo-modules-core';
+import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Coordinates } from '../shared.types';
 export type Marker = {
@@ -166,6 +167,7 @@ export declare enum MapColorScheme {
     FOLLOW_SYSTEM = "FOLLOW_SYSTEM"
 }
 export type MapProps = {
+    ref?: Ref<MapViewType>;
     style?: StyleProp<ViewStyle>;
     /**
      * The initial camera position of the map.

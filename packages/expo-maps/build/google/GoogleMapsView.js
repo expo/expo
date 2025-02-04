@@ -10,7 +10,13 @@ function useNativeEvent(userHandler) {
         userHandler?.(event.nativeEvent);
     }, [userHandler]);
 }
-export function GoogleMapsView({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onCameraMove, markers, ...props }) {
+export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onCameraMove, markers, ...props }, ref) => {
+    const nativeRef = React.useRef(null);
+    React.useImperativeHandle(ref, () => ({
+        setCameraPosition(config) {
+            nativeRef.current?.setCameraPosition(config);
+        },
+    }));
     const onNativeMapLoaded = React.useCallback(() => {
         onMapLoaded?.();
     }, [onMapLoaded]);
