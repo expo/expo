@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 52.0.30 — 2025-02-04
+
+### 💡 Others
+
 - Added a debug only warning and style for zero height DOM components. ([#34375](https://github.com/expo/expo/pull/34375) by [@kudo](https://github.com/kudo))
 
 ## 52.0.29 — 2025-02-04
