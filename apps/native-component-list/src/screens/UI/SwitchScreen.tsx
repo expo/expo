@@ -14,6 +14,7 @@ export default function SwitchScreen() {
           onCheckedChanged={({ nativeEvent: { checked } }) => {
             setChecked(checked);
           }}
+          color="#ff0000"
           label="Never gonna give you up"
           variant="switch"
         />
@@ -26,6 +27,7 @@ export default function SwitchScreen() {
             setChecked(checked);
           }}
           label="Never gonna let you down"
+          color="#ff0000"
           variant="checkbox"
         />
       </Section>

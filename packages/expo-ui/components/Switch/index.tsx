@@ -27,6 +27,56 @@ export type SwitchProps = {
    * Optional style for the switch component.
    */
   style?: StyleProp<ViewStyle>;
+  /**
+   * Colors for switch's core elements.
+   * @platform android
+   */
+  elementColors?: {
+    /**
+     * Only for switch.
+     */
+    checkedThumbColor?: string;
+    /**
+     * Only for switch.
+     */
+    checkedTrackColor?: string;
+    /**
+     * Only for switch.
+     */
+    uncheckedThumbColor?: string;
+    /**
+     * Only for switch.
+     */
+    uncheckedTrackColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    checkedColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    disabledCheckedColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    uncheckedColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    disabledUncheckedColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    checkmarkColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    disabledIndeterminateColor?: string;
+  };
+  /**
+   * Picker color. On iOS it only applies to the `menu` variant.
+   */
+  color?: string;
 };
 
 const SwitchNativeView: React.ComponentType<SwitchProps> = requireNativeView(
@@ -34,6 +84,23 @@ const SwitchNativeView: React.ComponentType<SwitchProps> = requireNativeView(
   'SwitchView'
 );
 
+type NativeSwitchProps = SwitchProps;
+
+export function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
+  return {
+    ...props,
+    elementColors: props.elementColors
+      ? props.elementColors
+      : props.color
+        ? {
+            checkedTrackColor: props.color,
+            checkedColor: props.color,
+          }
+        : undefined,
+    color: props.color,
+  };
+}
+
 export function Switch(props: SwitchProps) {
-  return <SwitchNativeView {...props} />;
+  return <SwitchNativeView {...transformSwitchProps(props)} />;
 }

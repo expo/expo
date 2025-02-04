@@ -7,6 +7,7 @@ class SwitchProps: ExpoSwiftUI.ViewProps {
   @Field var checked: Bool
   @Field var variant: String?
   @Field var label: String?
+  @Field var color: Color?
   var onCheckedChanged = EventDispatcher()
 }
 
@@ -27,6 +28,7 @@ struct SwitchView: ExpoSwiftUI.View {
         ]
         props.onCheckedChanged(payload)
       })
+      .tint(props.color)
       .onReceive(props.objectWillChange, perform: {
         checked = props.checked
       })
