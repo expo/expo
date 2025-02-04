@@ -3,7 +3,6 @@ import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { StoplightIcon } from '@expo/styleguide-icons/custom/StoplightIcon';
-import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
@@ -12,6 +11,7 @@ import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
 import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 import { PaletteIcon } from '@expo/styleguide-icons/outline/PaletteIcon';
 import { Phone01Icon } from '@expo/styleguide-icons/outline/Phone01Icon';
 import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
@@ -220,7 +220,7 @@ function getIconElement(iconName?: string) {
     case 'Expo Router':
       return RouterLogo;
     case 'Push notifications':
-      return Bell03Icon;
+      return NotificationBoxIcon;
     case 'Distribution':
       return Phone01Icon;
     case 'UI programming':

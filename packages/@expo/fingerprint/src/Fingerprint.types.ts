@@ -5,7 +5,7 @@ import type { SourceSkips } from './sourcer/SourceSkips';
 export type FingerprintSource = HashSource & {
   /**
    * Hash value of the `source`.
-   * If the source is excluding by `Options.dirExcludes`, the value will be null.
+   * If the source is excluded the value will be null.
    */
   hash: string | null;
   /**
@@ -17,12 +17,12 @@ export type FingerprintSource = HashSource & {
 
 export interface Fingerprint {
   /**
-   * Sources and their hash values to generate a fingerprint
+   * Sources and their hash values from which the project fingerprint was generated.
    */
   sources: FingerprintSource[];
 
   /**
-   * The final hash value of the whole fingerprint
+   * The final hash value of the whole project fingerprint.
    */
   hash: string;
 }
@@ -67,17 +67,20 @@ export type Platform = 'android' | 'ios';
 
 export interface Options {
   /**
-   * Limit native files to those for specified platforms. Default is `['android', 'ios']`.
+   * Limit native files to those for specified platforms.
+   * @default ['android', 'ios']
    */
   platforms?: Platform[];
 
   /**
-   * I/O concurrency limit. Default is the number of CPU cores.
+   * I/O concurrency limit.
+   * @default The number of CPU cores.
    */
   concurrentIoLimit?: number;
 
   /**
-   * The algorithm to use for `crypto.createHash()`. Default is `'sha1'`.
+   * The algorithm to use for `crypto.createHash()`.
+   * @default 'sha1'
    */
   hashAlgorithm?: string;
 
@@ -119,7 +122,7 @@ export interface Options {
   enableReactImportsPatcher?: boolean;
 
   /**
-   * Use the react-native core autolinking sources from expo-modules-autolinking rather than @react-native-community/cli.
+   * Use the react-native core autolinking sources from `expo-modules-autolinking` rather than `@react-native-community/cli`.
    * @default true for Expo SDK 52 and higher.
    */
   useRNCoreAutolinkingFromExpo?: boolean;
@@ -144,7 +147,7 @@ export interface Options {
 type SourceSkipsKeys = keyof typeof SourceSkips;
 
 /**
- * Supported options from fingerprint.config.js
+ * Supported options for use in fingerprint.config.js
  */
 export type Config = Pick<
   Options,
@@ -199,29 +202,12 @@ export type FileHookTransformSource =
       id: string;
     };
 
-//#region internal types
-
-export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
-  platforms: NonNullable<Options['platforms']>;
-  concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
-  hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
-  sourceSkips: NonNullable<Options['sourceSkips']>;
-  enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
-
-  ignorePathMatchObjects: IMinimatch[];
-
-  /**
-   * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
-   */
-  ignoreDirMatchObjects: IMinimatch[];
-};
-
 export interface HashSourceFile {
   type: 'file';
   filePath: string;
 
   /**
-   * Reasons of this source coming from
+   * Reasons of this source coming from.
    */
   reasons: string[];
 }
@@ -231,7 +217,7 @@ export interface HashSourceDir {
   filePath: string;
 
   /**
-   * Reasons of this source coming from
+   * Reasons of this source coming from.
    */
   reasons: string[];
 }
@@ -242,7 +228,7 @@ export interface HashSourceContents {
   contents: string | Buffer;
 
   /**
-   * Reasons of this source coming from
+   * Reasons of this source coming from.
    */
   reasons: string[];
 }
@@ -252,7 +238,7 @@ export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents;
 export interface DebugInfoFile {
   path: string;
   hash: string;
-  /** Indicates whether the source is transformed by `fileHookTransform` */
+  /** Indicates whether the source is transformed by `fileHookTransform`. */
   isTransformed?: boolean;
 }
 
@@ -264,7 +250,7 @@ export interface DebugInfoDir {
 
 export interface DebugInfoContents {
   hash: string;
-  /** Indicates whether the source is transformed by `fileHookTransform` */
+  /** Indicates whether the source is transformed by `fileHookTransform`. */
   isTransformed?: boolean;
 }
 
@@ -292,5 +278,25 @@ export interface HashResultContents {
 }
 
 export type HashResult = HashResultFile | HashResultDir | HashResultContents;
+
+//#region internal types
+
+/**
+ * @hidden
+ */
+export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
+  platforms: NonNullable<Options['platforms']>;
+  concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
+  hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
+  sourceSkips: NonNullable<Options['sourceSkips']>;
+  enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
+
+  ignorePathMatchObjects: IMinimatch[];
+
+  /**
+   * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
+   */
+  ignoreDirMatchObjects: IMinimatch[];
+};
 
 //#endregion

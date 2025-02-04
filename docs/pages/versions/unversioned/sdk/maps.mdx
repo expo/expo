@@ -1,0 +1,116 @@
+---
+title: Maps
+sidebar_title: Maps (expo-maps)
+description: A library that provides access to Google Maps on Android and Apple Maps on iOS.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-maps'
+packageName: 'expo-maps'
+platforms: ['ios', 'android']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+> **warning** **Expo Maps is currently in alpha and subject to breaking changes. It is not available in the Expo Go app.**
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration
+
+Expo Maps provides access to the platform native map APIs on Android and iOS.
+
+- **Apple Maps is available on iOS only**. No additional configuration is required to use it after installing this package.
+- **Google Maps is available on Android only**. While Google provides a Google Maps SDK for iOS, Expo Maps supports it exclusively on Android. If you want to use Google Maps on iOS, you can look into using an [alternative library](https://reactnative.directory/) or [writing your own](/modules/overview/).
+
+**Before you can use Google Maps on Android**, you need to register a Google Cloud API project, enable the Maps SDK for Android, and add the associated configuration to your Expo project.
+
+<Collapsible summary="Set up Google Maps on Android">
+
+> If you have already registered a project for another Google service on Android, such as Google Sign In, you enable the **Maps SDK for Android** on your project and jump to step 4.
+
+<Step label="1">
+**Register a Google Cloud API project and enable the Maps SDK for Android**
+
+- Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project.
+- Once it's created, go to the project and enable the **Maps SDK for Android**.
+
+</Step>
+
+<Step label="2">
+**Copy your app's SHA-1 certificate fingerprint**
+
+<Tabs>
+<Tab label="For Google Play Store">
+
+- **If you are deploying your app to the Google Play Store**, you'll need to [upload your app binary to Google Play console](/submit/android/) at least once. This is required for Google to generate your app signing credentials.
+- Go to the **[Google Play Console](https://play.google.com/console) > (your app) > Release > Setup > App integrity > App Signing**.
+- Copy the value of **SHA-1 certificate fingerprint**.
+
+</Tab>
+
+<Tab label="For development builds">
+
+- If you have already created a [development build](/develop/development-builds/introduction/), your project will be signed using a debug keystore.
+- After the build is complete, go to your [project's dashboard](https://expo.dev/accounts/[username]/projects/[project-name]), then, under **Configure** > click **Credentials**.
+- Under **Application Identifiers**, click your project's package name and under **Android Keystore** copy the value of **SHA-1 Certificate Fingerprint**.
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+**Create an API key**
+
+- Go to [Google Cloud Credential manager](https://console.cloud.google.com/apis/credentials) and click **Create Credentials**, then **API Key**.
+- In the modal, click **Edit API key**.
+- Under **Key restrictions** > **Application restrictions**, choose **Android apps**.
+- Under **Restrict usage to your Android apps**, click **Add an item**.
+- Add your `android.package` from **app.json** (for example: `com.company.myapp`) to the package name field.
+- Then, add the **SHA-1 certificate fingerprint's** value from step 2.
+- Click **Done** and then click **Save**.
+
+</Step>
+
+<Step label="4">
+**Add the API key to your project**
+
+- Copy your **API Key** into your **app.json** under the `android.config.googleMaps.apiKey` field.
+- Create a new development build, and you can now use the Google Maps API on Android with `expo-maps`.
+
+</Step>
+
+</Collapsible>
+
+## Usage
+
+```tsx
+import { AppleMaps, GoogleMaps } from 'expo-maps';
+import { Platform, Text } from 'react-native';
+
+export default function App() {
+  if (Platform.OS === 'ios') {
+    return <AppleMaps.View style={{ flex: 1 }} />;
+  } else if (Platform.OS === 'android') {
+    return <GoogleMaps.View style={{ flex: 1 }} />;
+  } else {
+    return <Text>Maps are only available on Android and iOS</Text>;
+  }
+}
+```
+
+## API
+
+```js
+import { AppleMaps, GoogleMaps } from 'expo-maps';
+
+// ApplesMaps.View and GoogleMaps.View are the React components
+```
+
+<APISection packageName="expo-maps" apiName="Maps" />
