@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import MapKit
 
 class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManagerDelegate {
   private var locationManager = CLLocationManager()
@@ -35,14 +36,17 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
     ]
   }
 
-  func getPermissions() -> [AnyHashable: Any]! {
+  func getPermissions() -> [AnyHashable: Any] {
     var systemStatus: CLAuthorizationStatus
     let description = Bundle.main.infoDictionary?["NSLocationWhenInUseUsageDescription"] as? String
 
     if description != nil {
       systemStatus = locationManager.authorizationStatus
     } else {
-      EXFatal(EXErrorWithMessage("This app is missing 'NSLocationWhenInUseUsageDescription', so MapKit services will fail. Add this entry to your bundle's Info.plist."))
+      EXFatal(EXErrorWithMessage("""
+      This app is missing 'NSLocationWhenInUseUsageDescription',
+      so MapKit services will fail. Add this entry to your bundle's Info.plist.
+      """))
       systemStatus = .denied
     }
 

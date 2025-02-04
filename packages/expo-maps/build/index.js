@@ -3,7 +3,6 @@ import ExpoMaps from './ExpoMaps';
 import * as AppleTypes from './apple/AppleMaps.types';
 import { AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
-import GoogleMapsModule from './google/GoogleMapsModule';
 import { GoogleMapsView } from './google/GoogleMapsView';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 export var GoogleMaps;
