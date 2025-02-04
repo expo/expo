@@ -183,19 +183,25 @@ export function getPathDataFromState<ParamList extends object>(
 
         // Example:
         // - /home/_layout
-        // - /home/(a|b|c)/account/index  --> Hoisted to /home/_layout navigator
+        // - /home/(a|b|c)/index          --> Hoisted to /home/_layout navigator
+        // - /home/(a|b|c)/other          --> Hoisted to /home/_layout navigator
         // - /home/(profile)/me           --> Hoisted to /home/_layout navigator
         //
-        // route.push('/home/(a)')        --> This should navigate to /home/(a)/account/index
+        // route.push('/home/(a)')        --> This should navigate to /home/(a)/index
         // route.push('/home/(profile)')  --> This should navigate to /home/(profile)/me
         const screens = currentOptions[route.name].screens;
 
+        // Determine what screen the user wants to navigate to. If no screen is specified, assume there is an index screen
+        // In the examples above, this ensures that /home/(a) navigates to /home/(a)/index
         const targetScreen =
           // This is typed as unknown, so we need to add these extra assertions
           route.params && 'screen' in route.params && typeof route.params.screen === 'string'
             ? route.params.screen
             : 'index';
 
+        // If the target screen is not in the screens object, default to the first screen
+        // In the examples above, this ensures that /home/(profile) navigates to /home/(profile)/me
+        // As there is no index screen in the group
         const screen = screens
           ? screens[targetScreen]
             ? targetScreen
