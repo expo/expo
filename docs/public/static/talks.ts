@@ -317,6 +317,11 @@ export const YOUTUBE_VIDEOS = [
     videoId: 'kNbEEYlFIPs',
   },
   {
+    title: 'App icon and splash screen',
+    event: 'Expo Tutorials',
+    videoId: '3Bsw8a1BJoQ',
+  },
+  {
     title: 'How to manage Multiple App Environments with Expo',
     event: 'EAS Tutorials',
     videoId: 'uKGx3gRrhx0',
