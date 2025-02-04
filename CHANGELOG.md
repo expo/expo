@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@shopify/flash-list` from `1.7.1` to `1.7.3` ([#34635](https://github.com/expo/expo/pull/34635) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
