@@ -179,7 +179,7 @@ Platform-specific options have higher priority over top-level options.
 
 ### Babel Loader
 
-The babel loading mechanism must include the following properties on its `caller`.
+The Babel loading mechanism must include the following properties on its `caller`.
 
 #### platform
 
