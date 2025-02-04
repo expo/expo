@@ -15,11 +15,20 @@ To initialize a submodule on EAS Build builder:
 
 <Step label="1">
 
-Create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with a base64 encoded private SSH key that has permission to access submodule repositories.
+Encode the ssh key you want to use as base64
+```bash
+openssl enc -base64 -in my.key -out my.key.base64
+```
 
 </Step>
 
 <Step label="2">
+
+Create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with a base64 encoded private SSH key that has permission to access submodule repositories.
+
+</Step>
+
+<Step label="3">
 
 Add an [`eas-build-pre-install` npm hook](/build-reference/npm-hooks/) to check out those submodules, for example:
 
@@ -35,7 +44,13 @@ mkdir -p ~/.ssh
 # git remote set-url origin git@github.com:example/repo.git
 
 # restore private key from env variable and generate public key
-echo "$SSH_KEY_BASE64" | base64 -d > ~/.ssh/id_rsa
+# On android build servers, the -i flag is necessary to parse newlines
+# On macOS, this flag means "input file", so it has to be omitted
+if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+  echo "$SSH_KEY_BASE64" | base64 -di > ~/.ssh/id_rsa
+elif [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
+  echo "$SSH_KEY_BASE64" | base64 -d > ~/.ssh/id_rsa
+fi
 chmod 0600 ~/.ssh/id_rsa
 ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
 
