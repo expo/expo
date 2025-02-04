@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Fast Refresh not detecting file system updates. ([#34509](https://github.com/expo/expo/pull/34509) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 4.0.17 — 2025-01-19

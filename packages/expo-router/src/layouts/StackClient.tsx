@@ -1,12 +1,12 @@
 'use client';
 import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import {
-  createNativeStackNavigator,
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 
 import { withLayoutContext } from './withLayoutContext';
+import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 
 const NativeStackNavigator = createNativeStackNavigator().Navigator;
 

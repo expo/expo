@@ -1,5 +1,6 @@
 import { test, Page, WebSocket, expect } from '@playwright/test';
 import fs from 'node:fs';
+import fsPromise from 'node:fs/promises';
 import path from 'node:path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
@@ -12,6 +13,9 @@ test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
 const inputDir = 'fast-refresh';
+
+const appDir = path.join(projectRoot, '__e2e__', inputDir, 'app');
+const tempRoute = '/temp-route.tsx';
 
 test.describe(inputDir, () => {
   const expoStart = createExpoStart({
@@ -56,6 +60,8 @@ test.describe(inputDir, () => {
     await mutateFile(layoutFile, (contents) => {
       return contents.replace(/LAYOUT_VALUE_[\d\w]+/g, 'LAYOUT_VALUE');
     });
+
+    await fsPromise.unlink(appDir + tempRoute);
   });
 
   const targetDirectory = path.join(projectRoot, '__e2e__/fast-refresh/app');
@@ -141,6 +147,86 @@ test.describe(inputDir, () => {
     await expect(page.locator('[data-testid="index-count"]')).toHaveText('1');
     await expect(page.locator('[data-testid="layout-value"]')).toHaveText(nextValue);
     await expect(page.locator('[name="expo-nested-layout"]')).toHaveAttribute('content', nextValue);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('supports adding new files', async ({ page }) => {
+    // Listen for console logs and errors
+    const pageErrors = pageCollectErrors(page);
+
+    const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(expoStart, page);
+
+    // Ensure the initial state is correct
+    await expect(page.locator('[name="expo-nested-layout"]')).toHaveAttribute(
+      'content',
+      'LAYOUT_VALUE'
+    );
+
+    // Ensure the React Navigation Tabs component is visible
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ index' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
+
+    // If the file is added, a new tab should be visible
+    await fsPromise.copyFile(appDir + '/index.tsx', appDir + tempRoute);
+    await waitForFashRefresh();
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).toBeVisible();
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('supports renaming files', async ({ page }) => {
+    // Listen for console logs and errors
+    const pageErrors = pageCollectErrors(page);
+
+    const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(expoStart, page);
+
+    // Ensure the initial state is correct
+    await expect(page.locator('[name="expo-nested-layout"]')).toHaveAttribute(
+      'content',
+      'LAYOUT_VALUE'
+    );
+
+    // Ensure the React Navigation Tabs component is visible
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ index' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
+
+    // If the file is added, a new tab should be visible
+    await fsPromise.copyFile(appDir + '/index.tsx', appDir + tempRoute);
+    await waitForFashRefresh();
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).toBeVisible();
+
+    await fsPromise.rename(appDir + tempRoute, appDir + '/renamed.tsx');
+    await waitForFashRefresh();
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ renamed' })).toBeVisible();
+
+    await fsPromise.rename(appDir + '/renamed.tsx', appDir + tempRoute);
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('supports deleting files', async ({ page }) => {
+    // Listen for console logs and errors
+    const pageErrors = pageCollectErrors(page);
+
+    const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(expoStart, page);
+
+    await fsPromise.copyFile(appDir + '/index.tsx', appDir + tempRoute);
+
+    // Ensure the initial state is correct
+    await expect(page.locator('[name="expo-nested-layout"]')).toHaveAttribute(
+      'content',
+      'LAYOUT_VALUE'
+    );
+
+    // Ensure the React Navigation Tabs component is visible
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ index' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).toBeVisible();
+
+    // If a file is deleted, the tab should be removed
+    await fsPromise.unlink(appDir + tempRoute);
+    await waitForFashRefresh();
+    await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });
