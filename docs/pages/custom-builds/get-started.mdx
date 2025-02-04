@@ -1,99 +1,41 @@
 ---
 title: Get started with custom builds
 sidebar_title: Get started
-description: Learn how to extend EAS Build with custom build workflows.
+description: Learn how to extend EAS Build with custom builds.
 ---
 
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Custom builds allow running tests on the cloud, adding instructions for native platforms, resigning a build to share with your team or multiple test devices, and so on. With EAS Build, you can create build configs to customize the process so that you're not limited to generating Android and iOS applications. You can also do anything that you might want to do in a CI environment.
-
-This guide shows how to create and use a custom build config with EAS. It follows a scenario where you create a custom workflow to run tests on EAS Build. You can also use the defined steps in other scenarios.
+Custom builds allow customizing the build process for your project by running commands before, during, or after the build process.
 
 <Step label="1">
 
-## Add a test to the project
+## Create a custom build config
 
-To create a build config that runs tests, you have to prepare your project by installing `jest-expo` and `jest` as dependencies. Run the following command:
+To get started, create a directories and a file named **.eas/build/hello-world.yml** at the same level as **eas.json**. The location and name of both directories are important for EAS Build to identify that a project contains a custom build config.
 
-<Terminal cmd={['$ npx expo install -- --save-dev jest-expo jest react-test-renderer']} />
+Inside the **hello-world.yml**, you'll write your custom build config. The filename is unimportant; you can name it whatever you want. The only requirement is that the file extension uses **.yml**.
 
-Next, add a `test` script in **package.json**:
+Add the following custom build config steps in the file:
 
-{/* prettier-ignore */}
-```json package.json
-{
-  "scripts": {
-    /* @hide ... */ /* @end */
-    "test": "jest"
-  },
-  "jest": {
-    "preset": "jest-expo",
-    "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
-    ]
-  }
-}
+```yaml .eas/build/hello-world.yml
+build:
+  name: Hello World!
+  steps:
+    - run: echo "Hello, world!"
 ```
-
-For brevity, let's create an **App.test.js** at the root of your project and then add the following snippet:
-
-```js App.test.js
-import renderer from 'react-test-renderer';
-
-import App from './App';
-
-describe('<App />', () => {
-  it('has 1 child', () => {
-    const tree = renderer.create(<App />).toJSON();
-    expect(tree.children.length).toBe(1);
-  });
-});
-```
-
-> See [Unit testing with Jest](/develop/unit-testing/) for more information about configuring the `jest-expo` package and additional configuration options such as `transformIgnorePatterns`.
 
 </Step>
 
 <Step label="2">
 
-## Create a workflow
-
-You must add a build config file in your project to create a workflow. Create a directory path **.eas/build** at the same level as **eas.json**. For example, if the **eas.json** file is at the root of your project, create the directory at that level. Both path and name of both directories are important for EAS Build to identify that a project contains a custom build config.
-
-Inside it, you can create a new file called **test.yml**. This file contains the workflow config that you want to run. The filename is unimportant; you can name it whatever you want. The only requirement is that the file extension uses **.yml**.
-
-This file will contain steps to run tests on the EAS Build service. It'll install all the required dependencies from the **package.json** file of your project and execute the `npm test` script.
-
-Add the following workflow steps in the file:
-
-```yaml .eas/build/test.yml
-build:
-  name: Run tests
-  steps:
-    - eas/checkout
-    - run:
-        name: Install dependencies
-        command: npm install
-    - run:
-        name: Run tests
-        command: |
-          echo "Running tests..."
-          npm test
-```
-
-</Step>
-
-<Step label="3">
-
 ## Add `config` property in eas.json
 
-To use the custom build config, you must add the `config` property in **eas.json**. It contains the build config filename as the value you want to run on the EAS.
+To use the custom build config, add the `config` property in **eas.json** under a build profile.
 
 Let's create a new [build profile](/build/eas-json/#build-profiles) called `test` under `build` to run the custom config from the **test.yml** file:
 
@@ -101,14 +43,11 @@ Let's create a new [build profile](/build/eas-json/#build-profiles) called `test
 {
   "build": {
     /* @hide ... */ /* @end */
-    "test": {
+    "production": {
       "config": "test.yml",
-      "withoutCredentials": true
     },
 }
 ```
-
-Use the `withoutCredentials` option to skip the credentials setup on the CLI side, as they are not needed for running tests.
 
 If you wish to use separate configs for each platform, you can create separate YAML config files for Android and iOS. For example:
 
@@ -116,48 +55,38 @@ If you wish to use separate configs for each platform, you can create separate Y
 {
   "build": {
     /* @hide ... */ /* @end */
-    "test": {
+    "production": {
       "ios": {
-        "config": "test-ios.yml",
+        "config": "hello-ios.yml",
       },
       "android": {
-        "config": "test-android.yml",
-      },
-      "withoutCredentials": true
+        "config": "hello-android.yml",
+      }
     },
 }
 ```
 
 </Step>
 
-<Step label="4">
+<Step label="3">
 
-## Run build to test the workflow
+## Run a build to test the custom build config
 
-To test the workflow, run the following command:
+To test the custom build config, run the following command:
 
-<Terminal cmd={['$ eas build -p android -e test']} />
+<Terminal cmd={['$ eas build -p android -e production']} />
 
-After the build is complete, you can verify that the `npm test` script was executed by checking the logs on the **build details** page.
-
-<ContentSpotlight
-  alt="Example of a build config running tests on EAS Build."
-  src="/static/images/eas-build/custom-build.png"
-/>
+After the build is complete, you can verify that the `echo "Hello World!"` script was executed by checking the logs on the build's detail page.
 
 </Step>
 
-## Summary
+## Learn more
 
-- Build configs are customizable by adding steps you want to run on the EAS service as an extension to your existing regular builds.
-- You can configure the credentials for custom builds the same way as for regular builds. If you want to run a custom build that doesn't require credentials, you can use the `withoutCredentials` option as shown above. See [App credentials docs](/app-signing/app-credentials/) for more information.
-- If your regular builds have [EAS Secrets](/build-reference/variables/#adding-secrets-with-eas-cli), they are also available for custom builds.
-
-Check out the **example repository** for more detailed examples:
+Check out the example repository for more detailed examples:
 
 <BoxLink
   title="Custom build example repository"
-  description="A custom EAS Build example that includes examples for workflows such as setting up functions, using environment variables, uploading artifacts, and more."
+  description="A custom EAS Build example that includes examples for custom builds such as setting up functions, using environment variables, uploading artifacts, and more."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-custom-builds-example/tree/main"
 />
