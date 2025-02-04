@@ -225,7 +225,7 @@ struct ExpoCameraUtils {
 
     return mutableMetadata
   }
-  
+
   /**
    Saves the image as a file.
    */
@@ -233,23 +233,23 @@ struct ExpoCameraUtils {
     guard let cachesDirectory = appContext.config.cacheDirectory else {
       throw CameraSavingImageException()
     }
-    
+
     var result = [String: Any]()
     let directory = URL(fileURLWithPath: cachesDirectory.path).appendingPathComponent("Camera")
     let filename = UUID().uuidString.appending(".jpg")
     let fileUrl = directory.appendingPathComponent(filename)
-    
+
     FileSystemUtilities.ensureDirExists(at: directory)
-    
+
     guard let data = data(from: image, with: options.metadata ?? [:], quality: Float(options.quality)) else {
       throw CameraSavingImageException()
     }
-    
+
     result["url"] = fileUrl.absoluteString
     result["width"] = image.cgImage?.width ?? 0
     result["height"] = image.cgImage?.height ?? 0
     result["base64"] = options.base64 ? data.base64EncodedString() : nil
-        
+
     do {
       try data.write(to: fileUrl, options: .atomic)
     } catch let error {

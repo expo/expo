@@ -518,7 +518,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       promise.reject(CameraSavingImageException())
       return
     }
-    
+
     if options.pictureRef {
       if let image = UIImage(data: processedImageData) {
         promise.resolve(PictureRef(image), appContext: appContext)
