@@ -46,8 +46,10 @@ export function createExpoStart(options: Partial<BackgroundServerOptions> = {}) 
       const info = processFindPrefixedValue(chunk, '[__EXPO_E2E_TEST:server]');
       if (info) {
         const url = new URL(JSON.parse(info).url);
-        // NOTE(cedric): it returns `localhost`, but prefer to use `127.0.0.1` for Windows
-        url.host = '127.0.0.1';
+        // NOTE(cedric): if it returns `localhost`, prefer to use `127.0.0.1` for Windows
+        if (url.host === 'localhost') {
+          url.host = '127.0.0.1';
+        }
         return url;
       }
 
