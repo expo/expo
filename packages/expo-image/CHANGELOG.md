@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `tintColor="currentColor"` conflicts on web. ([#34604](https://github.com/expo/expo/pull/34604) by [@bradleyayers](https://github.com/bradleyayers))
+
 ### 💡 Others
 
 - Update `ImageProps` type so `children` are omitted. ([#33210](https://github.com/expo/expo/pull/33210) by [@ashaller2017](https://github.com/ashaller2017))

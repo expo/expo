@@ -8,7 +8,9 @@ export type SwitchProps = {
   checked: boolean;
   /**
    * Label for the switch.
-   * @platform android
+   *
+   * > On Android the label has an effect only when the `Switch` is used inside a `ContextMenu`.
+   * @platform ios
    */
   label?: string;
 

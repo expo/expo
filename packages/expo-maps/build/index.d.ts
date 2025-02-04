@@ -1,7 +1,7 @@
 import * as AppleTypes from './apple/AppleMaps.types';
-import { MapView as AppleMapsView } from './apple/AppleMapsView';
+import { AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
-import { MapView as GoogleMapsView } from './google/GoogleMapsView';
+import { GoogleMapsView } from './google/GoogleMapsView';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 export declare namespace GoogleMaps {
     const View: typeof GoogleMapsView;

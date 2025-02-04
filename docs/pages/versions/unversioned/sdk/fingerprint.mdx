@@ -1,22 +1,25 @@
 ---
-title: Fingerprint
+title: Expo Fingerprint
+sidebar_title: Fingerprint
 description: A library to generate a fingerprint from a React Native project.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/@expo/fingerprint'
 packageName: '@expo/fingerprint'
 platforms: ['node']
+isNew: true
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { CODE } from '~/ui/components/Text';
 
 `@expo/fingerprint` provides an API to generate a fingerprint (hash) of your project for use in determining compatibility between the native layer and JavaScript layer of your app. The hash calculation is configurable, but is by default derived from hashing app dependencies, custom native code, native project files, and configuration.
 
 ## Installation
 
-`@expo/fingerprint` is included with [expo](expo.mdx) and [expo-updates](updates.mdx) by default.
+`@expo/fingerprint` is included with [`expo`](expo.mdx) and [`expo-updates`](updates.mdx) by default.
 
-If you wish to use `@expo/fingerprint` as a standalone package, you can install it using:
+If you wish to use `@expo/fingerprint` as a standalone package, you can install it by running the command:
 
 <Terminal cmd={['$ npx expo install @expo/fingerprint']} />
 
@@ -36,7 +39,7 @@ import * as Fingerprint from '@expo/fingerprint';
 
 ### **.fingerprintignore**
 
-Placed in your project root, **.fingerprintignore** is a [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format)-like ignore mechanism used to exclude files from hash calculation. It behaves similarly but instead uses `minimatch` for pattern matching which has some [limitations](#options) (see documentation for `ignorePaths`).
+Placed in your project root, **.fingerprintignore** is a [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format)-like ignore mechanism used to exclude files from hash calculation. It behaves similarly but instead uses `minimatch` for pattern matching which has some [limitations](#options) (see documentation for `ignorePaths` under [Options](#options)).
 
 For example, to skip a folder but keep some files:
 
@@ -53,7 +56,7 @@ For example, to skip a folder but keep some files:
 
 Placed in your project root, **fingerprint.config.js** allows you to specify custom hash calculation configuration beyond what is configurable in the **.fingerprintignore**.
 
-For supported configurations, see [Config](#config) and [SourceSkips](#sourceskips).
+For supported configurations, see [Config](#config) and [`SourceSkips`](#sourceskips).
 
 Below is an example **fingerprint.config.js** configuration, assuming you have `@expo/fingerprint` installed as a direct dependency:
 
@@ -77,20 +80,20 @@ If you are using `@expo/fingerprint` through `expo` (where `@expo/fingerprint` i
 
 ## Limitations
 
-<Collapsible summary="Limited support for @expo/config-plugins raw functions">
+<Collapsible summary={<>Limited support for <CODE>@expo/config-plugins</CODE> raw functions</>}>
 
-When using config-plugins with raw functions, it's essential to be aware of certain limitations, particularly in the context of fingerprinting. The library makes a best effort to generate fingerprints for changes made through config-plugins; however, raw functions pose specific challenges. Raw functions are not serializable as fingerprints, which means they cannot be directly used for generating unique hashes.
+When using config plugins with raw functions, it's essential to be aware of certain limitations, particularly in the context of fingerprinting. The library makes a best effort to generate fingerprints for changes made through config plugins; however, raw functions pose specific challenges. Raw functions are not serializable as fingerprints, which means they cannot be directly used for generating unique hashes.
 
 To work around this limitation, the library employs one of the following strategies to create serializable fingerprints for raw functions:
 
-1. Using `Function.name` - The library utilizes the `Function.name` property if available for named raw functions. This property provides a recognizable name for the function, which can be used as a fingerprint property.
+1. Using `Function.name`: The library utilizes the `Function.name` property if available for named raw functions. This property provides a recognizable name for the function, which can be used as a fingerprint property.
 
-2. Using `withAnonymous` - For anonymous raw functions without a `Function.name`, the library resorts to using 'withAnonymous' as the fingerprint property. This is a generic identifier for anonymous functions.
+2. Using `withAnonymous`: For anonymous raw functions without a `Function.name`, the library resorts to using `withAnonymous` as the fingerprint property. This is a generic identifier for anonymous functions.
 
-Here's an example to illustrate a case in which the library will use ['withMyPlugin', 'withAnonymous'] as plugin properties for fingerprint hashing:
+Here's an example to illustrate a case in which the library will use [`withMyPlugin`, `withAnonymous`] as plugin properties for fingerprint hashing:
 
-```javascript
-// In app.config.js
+{/* prettier-ignore */}
+```js app.config.js
 const { withInfoPlist } = require('expo/config-plugins');
 
 const withMyPlugin = (config) => {
@@ -105,19 +108,18 @@ export default ({ config }) => {
   config.plugins.push(withMyPlugin);
   config.plugins.push((config) => config);
   return config;
-};`
+};
 ```
 
-It's important to note that due to this design, if you make changes to the implementation of raw config-plugins functions, such as altering the Info.plist value within 'withMyPlugin', the fingerprint will still generate the same hash value. To ensure unique fingerprints when modifying config-plugins implementations, consider the following options:
+It's important to note that due to this design, if you make changes to the implementation of raw config plugins functions, such as altering the **Info.plist** value within `withMyPlugin`, the fingerprint will still generate the same hash value. To ensure unique fingerprints when modifying config plugins implementations, consider the following options:
 
-- Avoid Anonymous Functions - Avoid using anonymous raw config-plugins functions. Instead, use named functions whenever possible, and ensure that their names remain consistent as long as the implementation changes.
+- Avoid Anonymous Functions: Avoid using anonymous raw config plugins functions. Instead, use named functions whenever possible, and ensure that their names remain consistent as long as the implementation changes.
 
-- Use Local config-plugins - Alternatively, you can create local config-plugins as separate modules, each with its own export. This approach allows you to specify a different function name when making changes to the config-plugins implementations.
+- Use Local config plugins: Alternatively, you can create local config plugins as separate modules, each with its own export. This approach allows you to specify a different function name when making changes to the config plugins implementations.
 
-Here's an example of using a local config-plugin:
+Here's an example of using a local config plugin:
 
-```javascript
-// In ./plugins/withMyPlugin.js
+```js ./plugins/withMyPlugin.js
 const { withInfoPlist } = require('expo/config-plugins');
 
 const withMyPlugin = config => {
@@ -131,17 +133,17 @@ const withMyPlugin = config => {
 module.exports = withMyPlugin;
 ```
 
-```json
-// in app.json
+{/* prettier-ignore */}
+```json app.json
 {
   "expo": {
-    // ...
+    /* @hide ... */ /* @end */
     "plugins": "./plugins/withMyPlugin"
   }
 }
 ```
 
-By following these guidelines, you can effectively manage changes to config-plugins and ensure that fingerprinting remains consistent and reliable.
+By following these guidelines, you can effectively manage changes to config plugins and ensure that fingerprinting remains consistent and reliable.
 
 </Collapsible>
 

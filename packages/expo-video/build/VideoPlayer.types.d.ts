@@ -190,11 +190,13 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 export type VideoThumbnailOptions = {
     /**
      * If provided, the generated thumbnail will not exceed this width in pixels, preserving its aspect ratio.
+     * @platform android
      * @platform ios
      */
     maxWidth?: number;
     /**
      * If provided, the generated thumbnail will not exceed this height in pixels, preserving its aspect ratio.
+     * @platform android
      * @platform ios
      */
     maxHeight?: number;

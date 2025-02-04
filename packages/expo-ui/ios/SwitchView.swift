@@ -22,13 +22,17 @@ struct SwitchView: ExpoSwiftUI.View {
         if props.checked == newValue {
           return
         }
-        props.onCheckedChanged([
+        let payload = [
           "checked": newValue
-        ])
+        ]
+        props.onCheckedChanged(payload)
       })
       .onReceive(props.objectWillChange, perform: {
         checked = props.checked
       })
+      .onAppear {
+        checked = props.checked
+      }
       #if !os(tvOS)
       .if(props.variant == "button") {
         $0.toggleStyle(.button)
