@@ -70,6 +70,7 @@ struct AppleMapsView: View {
             }
           }
         }
+        UserAnnotation()
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
