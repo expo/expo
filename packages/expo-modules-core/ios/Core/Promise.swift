@@ -4,7 +4,7 @@ public struct Promise: AnyArgument {
   public typealias ResolveClosure = (Any?) -> Void
   public typealias RejectClosure = (Exception) -> Void
 
-  internal let appContext: AppContext
+  internal weak var appContext: AppContext?
   public var resolver: ResolveClosure
   public var rejecter: RejectClosure
 
