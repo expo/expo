@@ -24,4 +24,18 @@ struct TakePictureOptions: Record {
 
   @Field
   var shutterSound: Bool? = true
+  
+  @Field
+  var pictureRef: Bool = false
+}
+
+struct SavePictureOptions: Record {
+  @Field
+  var quality: Double = 0
+  
+  @Field
+  var metadata: [String: Any]? = [:]
+  
+  @Field
+  var base64: Bool = false
 }
