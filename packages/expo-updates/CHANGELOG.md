@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Removed Apache Commons IO dependency and fixed crash issue on Android 7. ([#34638](https://github.com/expo/expo/pull/34638) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.26.15 — 2025-01-31
