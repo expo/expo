@@ -47,7 +47,7 @@
     "@react-native-picker/picker": "2.11.0",
     "@react-native-segmented-control/segmented-control": "2.5.4",
     "@shopify/flash-list": "1.7.1",
-    "expo": "~52.0.28",
+    "expo": "~52.0.29",
     "expo-build-properties": "~0.13.2",
     "expo-camera": "~16.0.14",
     "expo-dev-client": "~5.0.11",
