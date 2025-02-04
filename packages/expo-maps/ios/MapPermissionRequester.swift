@@ -64,18 +64,18 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
   }
 
   func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-    if resolve != nil {
-      resolve?(getPermissions())
-      resolve = nil
-      reject = nil
+    if let resolve {
+      resolve(getPermissions())
+      self.resolve = nil
+      self.reject = nil
     }
   }
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-    if reject != nil {
-      reject?("E_LOCATION_MANAGER", "location request failed with error", error)
-      resolve = nil
-      reject = nil
+    if let reject {
+      reject("E_LOCATION_MANAGER", "location request failed with error", error)
+      self.resolve = nil
+      self.reject = nil
     }
   }
 }
