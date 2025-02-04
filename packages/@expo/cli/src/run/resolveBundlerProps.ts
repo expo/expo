@@ -7,6 +7,7 @@ export interface BundlerProps {
   port: number;
   /** Skip opening the bundler from the native script. */
   shouldStartBundler: boolean;
+  host?: string;
 }
 
 export async function resolveBundlerPropsAsync(
@@ -14,6 +15,7 @@ export async function resolveBundlerPropsAsync(
   options: {
     port?: number;
     bundler?: boolean;
+    platform?: 'ios' | 'android' | 'web';
   }
 ): Promise<BundlerProps> {
   options.bundler = options.bundler ?? true;
@@ -38,9 +40,20 @@ export async function resolveBundlerPropsAsync(
     port = 8081;
   }
   Log.debug(`Resolved port: ${port}, start dev server: ${options.bundler}`);
+  let host: string | undefined;
+  try {
+    const response = await fetch(`http://localhost:${port}`, {
+      headers: { 'expo-platform': options.platform ?? 'ios' },
+    });
+    const manifest = await response.json();
+    host = manifest?.extra.expoClient.hostUri;
+  } catch (error) {
+    Log.debug(`Failed to read manifest ${error}`);
+  }
 
   return {
     shouldStartBundler: !!options.bundler,
     port,
+    host,
   };
 }

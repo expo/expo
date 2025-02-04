@@ -14,10 +14,12 @@ export async function startBundlerAsync(
     port,
     headless,
     scheme,
+    hostname,
   }: {
     port: number;
     headless?: boolean;
     scheme?: string;
+    hostname?: string;
   }
 ): Promise<DevServerManager> {
   const options: BundlerStartOptions = {
@@ -28,6 +30,7 @@ export async function startBundlerAsync(
 
     location: {
       scheme,
+      hostname,
     },
   };
 
