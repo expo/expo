@@ -6,7 +6,7 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
       true
     }
 
-    project.ext.safeExtGet = { prop, fallback https://kotlinlang.org/docs/releases.html#kotlin-release-compatibility->
+    project.ext.safeExtGet = { prop, fallback ->
       project.rootProject.ext.has(prop) ? project.rootProject.ext.get(prop) : fallback
     }
 
