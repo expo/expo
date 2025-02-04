@@ -3,7 +3,7 @@
 ## Unpublished
 
 ### 🛠 Breaking changes
-- Convert to flat config.
+- Convert to flat config. ([#34653](https://github.com/expo/expo/pull/34653) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🎉 New features
 
