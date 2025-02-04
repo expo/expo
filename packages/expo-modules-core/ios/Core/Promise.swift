@@ -4,6 +4,7 @@ public struct Promise: AnyArgument {
   public typealias ResolveClosure = (Any?) -> Void
   public typealias RejectClosure = (Exception) -> Void
 
+  internal let appContext: AppContext
   public var resolver: ResolveClosure
   public var rejecter: RejectClosure
 
@@ -17,8 +18,8 @@ public struct Promise: AnyArgument {
     }
   }
 
-  public func resolve(_ value: Any? = nil, appContext: AppContext? = nil) {
-    if let value = value as? AnySharedObject, let appContext {
+  public func resolve(_ value: Any? = nil) {
+    if let value = value as? AnySharedObject {
       let result = Conversions.convertFunctionResult(
         value,
         appContext: appContext,
