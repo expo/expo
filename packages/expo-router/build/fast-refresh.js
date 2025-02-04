@@ -54,10 +54,6 @@ if (process.env.NODE_ENV === 'development') {
                         if ('generateStaticParams' in value) {
                             expoRouterExports.add(value.generateStaticParams);
                         }
-                        // When ErrorBoundary is exported, the inverse dependency will also include the _ctx file.
-                        if ('ctx' in value && value.ctx.name === 'metroContext') {
-                            expoRouterExports.add(value.ctx);
-                        }
                     }
                 }
                 catch {

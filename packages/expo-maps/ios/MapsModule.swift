@@ -4,15 +4,35 @@ import ExpoModulesCore
 
 public class MapsModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoAppleMaps")
+    Name("ExpoMaps")
 
-    Property("isMapsAvailable") {
-      if #available(iOS 18.0, *) {
-        return true
+    OnCreate {
+      guard let permissionsManager = appContext?.permissions else {
+        return
       }
-      return false
+      permissionsManager.register([MapPermissionRequester()])
     }
 
-    View(AppleMapsViewWrapper.self)
+    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
+      guard let permissionsManager = appContext?.permissions else {
+        return
+      }
+      permissionsManager.getPermissionUsingRequesterClass(
+        MapPermissionRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter
+      )
+    }
+
+    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
+      guard let permissionsManager = appContext?.permissions else {
+        return
+      }
+      permissionsManager.askForPermission(
+        usingRequesterClass: MapPermissionRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter
+      )
+    }
   }
 }

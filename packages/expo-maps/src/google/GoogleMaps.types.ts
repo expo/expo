@@ -1,5 +1,4 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
-import type { PermissionResponse } from 'expo-modules-core';
 import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 
@@ -295,17 +294,4 @@ export type StreetViewProps = {
   isStreetNamesEnabled?: boolean;
   isUserNavigationEnabled?: boolean;
   isZoomGesturesEnabled?: boolean;
-};
-
-export type GoogleMapsModule = {
-  /**
-   * Asks the user to grant permissions for location.
-   * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
-   */
-  requestPermissionsAsync(): Promise<PermissionResponse>;
-  /**
-   * Checks user's permissions for accessing location.
-   * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
-   */
-  getPermissionsAsync(): Promise<PermissionResponse>;
 };

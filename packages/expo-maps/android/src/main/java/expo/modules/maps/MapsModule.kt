@@ -9,7 +9,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 class MapsModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExpoGoogleMaps")
+    Name("ExpoMaps")
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -17,14 +17,6 @@ class MapsModule : Module() {
 
     AsyncFunction("getPermissionsAsync") { promise: Promise ->
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-    }
-
-    View(GoogleMapsView::class) {
-      Events("onMapLoaded", "onMapClick", "onMapLongClick", "onPOIClick", "onMarkerClick", "onCameraMove")
-
-      AsyncFunction("setCameraPosition") Coroutine { view: GoogleMapsView, config: SetCameraPositionConfig? ->
-        view.setCameraPosition(config)
-      }
     }
   }
 }
