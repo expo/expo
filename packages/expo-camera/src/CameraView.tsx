@@ -14,7 +14,7 @@ import {
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
-import { PictureRef } from './PhotoRef';
+import { PictureRef } from './PictureRef';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
 const EventThrottleMs = 500;

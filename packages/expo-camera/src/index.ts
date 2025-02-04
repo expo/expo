@@ -91,7 +91,7 @@ export async function scanFromURLAsync(
 }
 
 export * from './Camera.types';
-export * from './PhotoRef';
+export * from './PictureRef';
 
 /**
  * @hidden

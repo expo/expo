@@ -9,7 +9,7 @@ import {
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
-import { PictureRef } from './PhotoRef';
+import { PictureRef } from './PictureRef';
 
 export type CameraType = 'front' | 'back';
 

@@ -1,7 +1,7 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription, NativeModule } from 'expo-modules-core';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
-import { PictureRef } from './PhotoRef';
+import { PictureRef } from './PictureRef';
 export type CameraType = 'front' | 'back';
 export type FlashMode = 'off' | 'on' | 'auto';
 export type ImageType = 'png' | 'jpg';
