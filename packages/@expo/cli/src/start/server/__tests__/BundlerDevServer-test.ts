@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { envIsStackblitz } from '../../../utils/env';
+import { envIsWebcontainer } from '../../../utils/env';
 import { openBrowserAsync } from '../../../utils/open';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
@@ -8,7 +8,7 @@ import { getPlatformBundlers } from '../platformBundlers';
 
 jest.mock(`../../../utils/env`, () => ({
   ...jest.requireActual('../../../utils/env'),
-  envIsStackblitz: jest.fn(() => false),
+  envIsWebcontainer: jest.fn(() => false),
 }));
 jest.mock('../../../utils/open');
 jest.mock(`../../../log`);
@@ -42,7 +42,7 @@ const originalEnv = process.env;
 
 beforeEach(() => {
   vol.reset();
-  jest.mocked(envIsStackblitz).mockReset();
+  jest.mocked(envIsWebcontainer).mockReset();
   delete process.env.EXPO_NO_REDIRECT_PAGE;
 });
 
@@ -156,7 +156,7 @@ describe('openPlatformAsync', () => {
 
   it(`opens a project in the browser using ws tunnel with metro web`, async () => {
     // Enable the auto-ws tunnel
-    jest.mocked(envIsStackblitz).mockReturnValue(true);
+    jest.mocked(envIsWebcontainer).mockReturnValue(true);
 
     const devServer = new MockMetroBundlerDevServer(
       '/',
@@ -434,7 +434,7 @@ describe('getJsInspectorBaseUrl', () => {
 
   it('should return ws tunnel url', async () => {
     // Enable the auto-ws tunnel
-    jest.mocked(envIsStackblitz).mockReturnValue(true);
+    jest.mocked(envIsWebcontainer).mockReturnValue(true);
 
     const devServer = new MockMetroBundlerDevServer(
       '/',
@@ -468,7 +468,7 @@ describe('getDevServerUrl', () => {
 
   it('returns proxy url for ws tunnel', async () => {
     // Enable the auto-ws tunnel
-    jest.mocked(envIsStackblitz).mockReturnValue(true);
+    jest.mocked(envIsWebcontainer).mockReturnValue(true);
 
     const devServer = new MockMetroBundlerDevServer(
       '/',

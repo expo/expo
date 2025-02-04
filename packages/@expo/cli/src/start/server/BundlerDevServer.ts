@@ -10,7 +10,7 @@ import { PlatformBundlers } from './platformBundlers';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
-import { env, envIsStackblitz } from '../../utils/env';
+import { env, envIsWebcontainer } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { openBrowserAsync } from '../../utils/open';
 import {
@@ -227,7 +227,7 @@ export abstract class BundlerDevServer {
       this.isTargetingNative()
     ) {
       await this._startTunnelAsync();
-    } else if (envIsStackblitz()) {
+    } else if (envIsWebcontainer()) {
       await this._startTunnelAsync();
     }
 
@@ -250,7 +250,7 @@ export abstract class BundlerDevServer {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
     debug('[tunnel] connect to port: ' + port);
-    this.tunnel = envIsStackblitz()
+    this.tunnel = envIsWebcontainer()
       ? new AsyncWsTunnel(this.projectRoot, port)
       : new AsyncNgrok(this.projectRoot, port);
     await this.tunnel.startAsync();

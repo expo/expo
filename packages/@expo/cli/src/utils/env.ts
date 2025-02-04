@@ -252,11 +252,19 @@ class Env {
     const isWebContainer = process.versions.webcontainer != null;
     return boolish('EXPO_NO_DEPENDENCY_VALIDATION', isWebContainer);
   }
+
+  /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
+  get EXPO_FORCE_WEBCONTAINER_ENV(): boolean {
+    return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
+  }
 }
 
 export const env = new Env();
 
-export function envIsStackblitz() {
+export function envIsWebcontainer() {
   // See: https://github.com/unjs/std-env/blob/4b1e03c4efce58249858efc2cc5f5eac727d0adb/src/providers.ts#L134-L143
-  return process.env.SHELL === '/bin/jsh' && !!process.versions.webcontainer;
+  return (
+    env.EXPO_FORCE_WEBCONTAINER_ENV ||
+    (process.env.SHELL === '/bin/jsh' && !!process.versions.webcontainer)
+  );
 }

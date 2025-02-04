@@ -1,12 +1,12 @@
 import * as process from 'node:process';
 
-import { envIsStackblitz } from '../env';
+import { envIsWebcontainer } from '../env';
 
 jest.mock('node:process', () => jest.requireActual('node:process'));
 
-describe(envIsStackblitz, () => {
+describe(envIsWebcontainer, () => {
   it('returns false without running in stackblitz', () => {
-    expect(envIsStackblitz()).toBe(false);
+    expect(envIsWebcontainer()).toBe(false);
   });
 
   it('returns true when running in stackblitz', () => {
@@ -14,6 +14,6 @@ describe(envIsStackblitz, () => {
     // @ts-expect-error
     process.versions.webcontainer = '1.33.7';
 
-    expect(envIsStackblitz()).toBe(true);
+    expect(envIsWebcontainer()).toBe(true);
   });
 });
