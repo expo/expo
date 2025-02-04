@@ -521,7 +521,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
     if options.pictureRef {
       if let image = UIImage(data: processedImageData) {
-        promise.resolve(PictureRef(image), appContext: appContext)
+        promise.resolve(PictureRef(image))
         return
       }
     }
