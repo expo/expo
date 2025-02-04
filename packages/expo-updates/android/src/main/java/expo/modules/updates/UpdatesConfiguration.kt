@@ -6,8 +6,6 @@ import android.net.Uri
 import android.util.Log
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.updates.codesigning.CodeSigningConfiguration
-import org.apache.commons.io.IOUtils
-import java.nio.charset.StandardCharsets
 
 enum class UpdatesConfigurationValidationResult {
   VALID,
@@ -215,7 +213,7 @@ data class UpdatesConfiguration(
 
       if (context != null && runtimeVersion == UPDATES_CONFIGURATION_RUNTIME_VERSION_READ_FINGERPRINT_FILE_SENTINEL) {
         return context.assets.open(FINGERPRINT_FILE_NAME).use { stream ->
-          IOUtils.toString(stream, StandardCharsets.UTF_8)
+          stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
         }
       }
 
