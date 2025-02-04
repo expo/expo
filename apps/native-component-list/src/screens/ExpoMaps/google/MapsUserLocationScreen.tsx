@@ -22,7 +22,7 @@ export default function MapsUserLocationScreen() {
   const [args, updateArgument] = useArguments(parameters);
   const [isMyLocationEnabled, followUserLocation] = args as [boolean, boolean];
   const [offset, setOffset] = useState(0);
-  const ref = useRef<GoogleMaps.MapViewType | null>(null);
+  const ref = useRef<GoogleMaps.MapView>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
