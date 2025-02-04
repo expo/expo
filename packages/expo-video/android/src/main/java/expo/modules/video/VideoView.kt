@@ -12,7 +12,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.Tracks
-import androidx.media3.ui.PlayerView
+import expo.modules.video.player.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView

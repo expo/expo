@@ -9,7 +9,7 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.ImageButton
-import androidx.media3.ui.PlayerView
+import expo.modules.video.player.PlayerView
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.utils.applyAutoEnterPiP
