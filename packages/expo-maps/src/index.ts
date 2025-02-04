@@ -1,14 +1,13 @@
+import { createPermissionHook } from 'expo-modules-core';
+
+import ExpoMaps from './ExpoMaps';
 import * as AppleTypes from './apple/AppleMaps.types';
 import { AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
-import GoogleMapsModule from './google/GoogleMapsModule';
 import { GoogleMapsView } from './google/GoogleMapsView';
 import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
 
 export namespace GoogleMaps {
-  export const requestPermissionsAsync = async () => GoogleMapsModule?.requestPermissionsAsync();
-  export const getPermissionsAsync = async () => GoogleMapsModule?.getPermissionsAsync();
-
   export const View = GoogleMapsView;
   export const StreetView = GoogleStreetView;
 
@@ -35,5 +34,22 @@ export namespace AppleMaps {
   export type MapUiSettings = AppleTypes.MapUiSettings;
   export type Marker = AppleTypes.Marker;
 }
+
+export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;
+export const getPermissionsAsync = ExpoMaps.getPermissionsAsync;
+
+/**
+ * Check or request permissions to access the location.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = useLocationPermissions();
+ * ```
+ */
+export const useLocationPermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});
 
 export * from './shared.types';
