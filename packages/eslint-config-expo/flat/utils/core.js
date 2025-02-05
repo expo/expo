@@ -1,6 +1,6 @@
 const expo = require('eslint-plugin-expo');
 const importPlugin = require('eslint-plugin-import');
-const { jsExtensions } = require('eslint-config-expo/utils/extensions');
+const { jsExtensions } = require('./extensions');
 
 const globals = require('globals');
 

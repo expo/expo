@@ -1,6 +1,6 @@
 const typescriptEslint = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
-const { jsExtensions, tsExtensions } = require('eslint-config-expo/utils/extensions');
+const { jsExtensions, tsExtensions } = require('./extensions');
 const importPlugin = require('eslint-plugin-import');
 
 const allExtensions = [...jsExtensions, ...tsExtensions];
