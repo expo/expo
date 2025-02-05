@@ -95,6 +95,8 @@ class VideoModule : Module() {
 
       OnViewDestroys {
         VideoManager.unregisterVideoView(it)
+        // Remove relations with mounted players
+        it.videoPlayer = null
       }
 
       OnViewDidUpdateProps { view ->
