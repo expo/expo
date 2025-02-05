@@ -88,6 +88,44 @@ Expo Maps provides access to the platform native map APIs on Android and iOS.
 
 </Collapsible>
 
+To display the user's location on the map, you need to declare and request location permission beforehand. You can configure this using the built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-maps",
+        {
+          "requestLocationPermission": "true",
+          "locationPermission": "Allow $(PRODUCT_NAME) to use your location"
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'requestLocationPermission',
+      description: 'A boolean to add permissions to **Info.plist** and AndroidManifest.xml.',
+      default: 'false',
+    },
+    {
+      name: 'locationPermission',
+      platform: 'ios',
+      description: 'A string to set the [`NSLocationWhenInUseUsageDescription`](#permission-nslocationwheninuseusagedescription) permission message.',
+      default: '"Allow $(PRODUCT_NAME) to use your location"',
+    },
+  ]}
+/>
+
 ## Usage
 
 ```tsx
