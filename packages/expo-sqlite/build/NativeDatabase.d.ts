@@ -16,6 +16,7 @@ export declare class NativeDatabase {
     execSync(source: string): void;
     serializeSync(databaseName: string): Uint8Array;
     prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
+    syncLibSQL(): void;
 }
 /**
  * Options for opening a database.
@@ -56,19 +57,12 @@ export interface SQLiteOpenOptions {
          * @default false
          */
         remoteOnly?: boolean;
-        /**
-         * The interval to sync the local database with the remote database.
-         * Only works when `remoteOnly` is `false`.
-         * @default 0 and disable automatic sync.
-         */
-        syncInterval?: number;
     };
 }
 type FlattenedOpenOptions = Omit<SQLiteOpenOptions, 'libSQLOptions'> & {
     libSQLUrl?: string;
     libSQLAuthToken?: string;
     libSQLRemoteOnly?: boolean;
-    libSQLSyncInterval?: number;
 };
 /**
  * Flattens the SQLiteOpenOptions that are passed to the native module.

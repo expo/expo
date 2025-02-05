@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added offline-writes support for libSQL. ([#34673](https://github.com/expo/expo/pull/34673) by [@kudo](https://github.com/kudo))
+
 ## 15.1.1 — 2025-01-28
 
 ### 🐛 Bug fixes
