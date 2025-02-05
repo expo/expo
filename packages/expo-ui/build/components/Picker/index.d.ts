@@ -34,6 +34,31 @@ export type PickerProps = {
      * Optional style to apply to the picker component.
      */
     style?: StyleProp<ViewStyle>;
+    /**
+     * Colors for picker's core elements.
+     * @platform android
+     */
+    elementColors?: {
+        activeBorderColor?: string;
+        activeContentColor?: string;
+        inactiveBorderColor?: string;
+        inactiveContentColor?: string;
+        disabledActiveBorderColor?: string;
+        disabledActiveContentColor?: string;
+        disabledInactiveBorderColor?: string;
+        disabledInactiveContentColor?: string;
+        activeContainerColor?: string;
+        inactiveContainerColor?: string;
+        disabledActiveContainerColor?: string;
+        disabledInactiveContainerColor?: string;
+    };
+    /**
+     * Picker color. On iOS it only applies to the `menu` variant.
+     */
+    color?: string;
 };
+type NativePickerProps = PickerProps;
+export declare function transformPickerProps(props: PickerProps): NativePickerProps;
 export declare function Picker(props: PickerProps): import("react").JSX.Element;
+export {};
 //# sourceMappingURL=index.d.ts.map

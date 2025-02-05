@@ -1,6 +1,52 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
+type SwitchElementColors = {
+  /**
+   * Only for switch.
+   */
+  checkedThumbColor?: string;
+  /**
+   * Only for switch.
+   */
+  checkedTrackColor?: string;
+  /**
+   * Only for switch.
+   */
+  uncheckedThumbColor?: string;
+  /**
+   * Only for switch.
+   */
+  uncheckedTrackColor?: string;
+};
+
+type CheckboxElementColors = {
+  /**
+   * Only for checkbox.
+   */
+  checkedColor?: string;
+  /**
+   * Only for checkbox.
+   */
+  disabledCheckedColor?: string;
+  /**
+   * Only for checkbox.
+   */
+  uncheckedColor?: string;
+  /**
+   * Only for checkbox.
+   */
+  disabledUncheckedColor?: string;
+  /**
+   * Only for checkbox.
+   */
+  checkmarkColor?: string;
+  /**
+   * Only for checkbox.
+   */
+  disabledIndeterminateColor?: string;
+};
+
 export type SwitchProps = {
   /**
    * Indicates whether the switch is checked.
@@ -28,56 +74,30 @@ export type SwitchProps = {
    */
   style?: StyleProp<ViewStyle>;
   /**
-   * Colors for switch's core elements.
-   * @platform android
-   */
-  elementColors?: {
-    /**
-     * Only for switch.
-     */
-    checkedThumbColor?: string;
-    /**
-     * Only for switch.
-     */
-    checkedTrackColor?: string;
-    /**
-     * Only for switch.
-     */
-    uncheckedThumbColor?: string;
-    /**
-     * Only for switch.
-     */
-    uncheckedTrackColor?: string;
-    /**
-     * Only for checkbox.
-     */
-    checkedColor?: string;
-    /**
-     * Only for checkbox.
-     */
-    disabledCheckedColor?: string;
-    /**
-     * Only for checkbox.
-     */
-    uncheckedColor?: string;
-    /**
-     * Only for checkbox.
-     */
-    disabledUncheckedColor?: string;
-    /**
-     * Only for checkbox.
-     */
-    checkmarkColor?: string;
-    /**
-     * Only for checkbox.
-     */
-    disabledIndeterminateColor?: string;
-  };
-  /**
    * Picker color. On iOS it only applies to the `menu` variant.
    */
   color?: string;
-};
+} & (
+  | {
+      variant: 'switch';
+      /**
+       * Colors for switch's core elements.
+       * @platform android
+       */
+      elementColors?: SwitchElementColors;
+    }
+  | {
+      variant: 'checkbox';
+      /**
+       * Colors for checkbox core elements.
+       * @platform android
+       */
+      elementColors?: CheckboxElementColors;
+    }
+  | {
+      variant: 'button';
+    }
+);
 
 const SwitchNativeView: React.ComponentType<SwitchProps> = requireNativeView(
   'ExpoUI',
@@ -86,19 +106,30 @@ const SwitchNativeView: React.ComponentType<SwitchProps> = requireNativeView(
 
 type NativeSwitchProps = SwitchProps;
 
+function getElementColors(props: SwitchProps) {
+  if (props.variant === 'button') {
+    return undefined;
+  }
+  if (!props.elementColors) {
+    if (props.variant === 'switch') {
+      return {
+        checkedTrackColor: props.color,
+      };
+    } else {
+      return {
+        checkedColor: props.color,
+      };
+    }
+  }
+  return props.elementColors;
+}
+
 export function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
   return {
     ...props,
-    elementColors: props.elementColors
-      ? props.elementColors
-      : props.color
-        ? {
-            checkedTrackColor: props.color,
-            checkedColor: props.color,
-          }
-        : undefined,
+    elementColors: props.variant === 'checkbox' ? getElementColors(props) : getElementColors(props),
     color: props.color,
-  };
+  } as NativeSwitchProps;
 }
 
 export function Switch(props: SwitchProps) {

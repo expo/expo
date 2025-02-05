@@ -1,4 +1,48 @@
 import { StyleProp, ViewStyle } from 'react-native';
+type SwitchElementColors = {
+    /**
+     * Only for switch.
+     */
+    checkedThumbColor?: string;
+    /**
+     * Only for switch.
+     */
+    checkedTrackColor?: string;
+    /**
+     * Only for switch.
+     */
+    uncheckedThumbColor?: string;
+    /**
+     * Only for switch.
+     */
+    uncheckedTrackColor?: string;
+};
+type CheckboxElementColors = {
+    /**
+     * Only for checkbox.
+     */
+    checkedColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    disabledCheckedColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    uncheckedColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    disabledUncheckedColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    checkmarkColor?: string;
+    /**
+     * Only for checkbox.
+     */
+    disabledIndeterminateColor?: string;
+};
 export type SwitchProps = {
     /**
      * Indicates whether the switch is checked.
@@ -27,6 +71,29 @@ export type SwitchProps = {
      * Optional style for the switch component.
      */
     style?: StyleProp<ViewStyle>;
-};
+    /**
+     * Picker color. On iOS it only applies to the `menu` variant.
+     */
+    color?: string;
+} & ({
+    variant: 'switch';
+    /**
+     * Colors for switch's core elements.
+     * @platform android
+     */
+    elementColors?: SwitchElementColors;
+} | {
+    variant: 'checkbox';
+    /**
+     * Colors for checkbox core elements.
+     * @platform android
+     */
+    elementColors?: CheckboxElementColors;
+} | {
+    variant: 'button';
+});
+type NativeSwitchProps = SwitchProps;
+export declare function transformSwitchProps(props: SwitchProps): NativeSwitchProps;
 export declare function Switch(props: SwitchProps): import("react").JSX.Element;
+export {};
 //# sourceMappingURL=index.d.ts.map
