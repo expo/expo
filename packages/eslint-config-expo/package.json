@@ -19,6 +19,7 @@
   "files": [
     "README.md",
     "default.js",
+    "flat.js",
     "flat",
     "utils"
   ],
