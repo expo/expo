@@ -3,6 +3,7 @@ package expo.modules.camera
 import android.Manifest
 import android.graphics.Bitmap
 import android.util.Log
+import android.util.Property
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import expo.modules.camera.analyzers.BarCodeScannerResultSerializer
@@ -22,6 +23,7 @@ import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.AsyncFunction
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -141,6 +143,28 @@ class CameraViewModule : Module() {
         moduleScope.cancel(ModuleDestroyedException())
       } catch (e: IllegalStateException) {
         Log.e(TAG, "The scope does not have a job in it")
+      }
+    }
+
+    Class<PictureRef>("Picture") {
+      Property("width") { picture: PictureRef ->
+        picture.ref.width
+      }
+
+      Property("height") { picture: PictureRef ->
+        picture.ref.height
+      }
+
+      AsyncFunction("savePictureAsync") { picture: PictureRef, options: PictureOptions, promise: Promise ->
+        val image = picture.ref
+
+        cacheDirectory.let {
+          moduleScope.launch {
+            ResolveTakenPicture(image.toByteArray(), promise, options, false, it) { response ->
+              promise.resolve(response)
+            }.resolve()
+          }
+        }
       }
     }
 
@@ -264,7 +288,7 @@ class CameraViewModule : Module() {
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
         if (!EmulatorUtilities.isRunningOnEmulator()) {
-          view.takePicture(options, promise, cacheDirectory)
+          view.takePicture(options, promise, cacheDirectory, runtimeContext)
         } else {
           val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
           moduleScope.launch {

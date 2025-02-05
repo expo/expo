@@ -73,6 +73,7 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
@@ -250,7 +251,7 @@ class ExpoCameraView(
     addView(previewView, 0)
   }
 
-  fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File) {
+  fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File, runtimeContext: RuntimeContext) {
     val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
     val hasShutterSound = options.shutterSound
@@ -280,6 +281,12 @@ class ExpoCameraView(
           if (options.fastMode) {
             promise.resolve(null)
           }
+
+          if (options.pictureRef) {
+            promise.resolve(PictureRef(image.toBitmap(), runtimeContext))
+            return
+          }
+
           cacheDirectory.let {
             scope.launch {
               val shouldMirror = mirror && lensFacing == CameraType.FRONT
