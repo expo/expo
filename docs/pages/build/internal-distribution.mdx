@@ -46,21 +46,25 @@ If your app is only intended for internal use and will not be distributed throug
 
 </Collapsible>
 
-### Traditional mechanisms
+### Google Play/App Store testing releases
 
 <Collapsible summary="Android: Google Play beta">
 
 Before a complete public release, [Google Play beta](https://support.google.com/googleplay/android-developer/answer/9845334?visit_id=638740965629093187-3840249980&rd=1) is another option to distribute your app to testers. You can set up either an internal, closed, or open test track and control who has access to the app.
 
-Each test track has its own requirements for the internal track; you can only invite up to 100 testers. Both closed and open tracks can invite large groups of testers. In closed track, you need to invite testers, while in open track, anyone can join your program.
+Each test track has its own requirements. For the internal track, you can only invite up to 100 testers. Both closed and open tracks support larger groups of testers. In closed tracks, you need to invite testers, while in open tracks, anyone can join your program.
 
-To use Google Play beta, you need to upload your app as an AAB (Android App Bundle) to the Google Play Console, set up a test track, and invite users via email or a shareable link. Testers can install the app through the Play Store, and you can collect feedback and crash reports directly from the Google Play Console. If you intend to ship new builds frequently, investing in distributing APKs directly to testers will be worthwhile.
+To use Google Play beta, you need to upload your app as an AAB (Android App Bundle) to the Google Play Console, set up a test track, and invite users via email or a shareable link. Testers can install the app through the Play Store, and you can collect feedback and crash reports directly from the Google Play Console.
 
 </Collapsible>
 
 <Collapsible summary="iOS: TestFlight">
 
-TestFlight is another option to distribute your app to iOS devices. TestFlight also requires a paid Apple Developer account, but allows you to share your app with up to 10,000 users that can be invited with their email or a public link. This method requires you to [upload your app](/submit/ios) to App Store Connect and wait for the automated review before you can share a build. If you intend to ship new builds frequently, investing the time to set up Ad Hoc distribution will be worthwhile.
+TestFlight is another option to distribute your app to iOS devices. TestFlight also requires a paid Apple Developer account. TestFlight's internal testing option allows you to create test groups that include up to 100 members of your Apple Developer account team, who then download the app through the TestFlight app. Some teams prefer TestFlight because it doesn't require a new build to add new testers, and apps stay updated automatically.
+
+TestFlight also includes an external testing option that allows you to share your app with up to 10,000 users via an email or a public link.
+
+Both internal and external test distribution in TestFlight require you to [upload your app](/submit/ios) to App Store Connect and wait for the automated review before you can share a build. However, external test builds will need to go through a more formal App Store review (which is distinct from the review that your app must undergo before production release) before being distributed.
 
 </Collapsible>
 
@@ -68,9 +72,9 @@ TestFlight is another option to distribute your app to iOS devices. TestFlight a
 
 Setting up an internal distribution build only takes a few minutes with EAS Build and provides a streamlined way to share your app with your team and testers for feedback.
 
-The setup requires configuring a build profile in the **eas.json** configuration file and setting `"distribution": "internal"` to a build profile. This configuration automatically generates **.apk** files for Android and **.ipa** files for iOS so that they can be installed on devices directly and do not require a development server to run the app.
+The setup requires setting `"distribution": "internal"` to the desired build profile in your **eas.json** file. This configuration automatically generates **.apk** files for Android and **.ipa** files for iOS so that they can be installed on devices directly and do not require a development server to run the app.
 
-For Android, the setup uses the Android keystore or can re-use the previously generated keystore for a [development build](/develop/development-builds/introduction/). However, iOS requires an ad hoc provisioning profile that explicitly allows devices to run that app based on that device's UDID. This can be done using `eas device:create` when creating a new build.
+For Android, EAS Build will generate a new Android keystore for signing the APK, or it will use an existing one if the package name is the same as your [development build](/develop/development-builds/introduction/). For iOS, EAS Build will generate an ad hoc provisioning profile that explicitly allows devices to run that app based on that device's UDID. This can be done using `eas device:create` when creating a new build.
 
 See the tutorial on Internal distribution with EAS Build below for more information on how to configure, create, and install a build:
 
@@ -83,11 +87,7 @@ See the tutorial on Internal distribution with EAS Build below for more informat
 
 ### Automation on CI (optional)
 
-It's possible to run internal distribution builds non-interactively in CI using the `--non-interactive` flag. However, if you are using ad hoc provisioning on iOS you will not be able to add new devices to your provisioning profile when using this flag. After registering a device through `eas device:create`, you need to run `eas build` interactively and authenticate with Apple for EAS to add the device to your provisioning profile. [Learn more about triggering builds from CI](/build/building-on-ci).
-
-{/* (@dsokal) this is not implemented yet */}
-
-{/* When using iOS ad hoc provisioning managed by Expo, if a teammate navigates to this URL on an iOS device that is not yet registered, they will be able to register their device and initiate a new build to include the updated profile that will run on their device. If the ad hoc provisioning profile is not managed by Expo, the user will be asked to contact the organization admin to add their device UDID and create a new build compatible with their device. */}
+It's possible to run internal distribution builds non-interactively in CI using the `--non-interactive` flag. However, if you are using ad hoc provisioning on iOS you will not be able to add new devices to your provisioning profile when using this flag. After registering a device through `eas device:create`, you need to run `eas build` interactively and authenticate with Apple in order for EAS to add the device to your provisioning profile. [Learn more about triggering builds from CI](/build/building-on-ci).
 
 ### Managing devices
 
