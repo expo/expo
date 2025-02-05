@@ -322,7 +322,7 @@ custom_job:
 
 #### `eas/install_node_modules`
 
-Installs node modules using the package manager (npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
+Installs node modules using the package manager (bun, npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
 
 ```yaml example.yml
 custom_job:
@@ -342,7 +342,7 @@ custom_job:
 
 #### `eas/prebuild`
 
-Runs the `expo prebuild` command using the package manager (npm, pnpm, or Yarn) detected based on your project with the command best suited for your build type and build environment.
+Runs the `expo prebuild` command using the package manager (bun, npm, pnpm, or Yarn) detected based on your project with the command best suited for your build type and build environment.
 
 ```yaml
 custom_job:
@@ -404,7 +404,7 @@ custom_job:
 | Input            | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ---------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                          |
-| `payload`        | `string` | The contents of the message you want to send defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                   |
+| `payload`        | `string` | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                         |
 | `slack_hook_url` | `string` | The URL of the previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${{ eas.env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide `slack_hook_url` input). |
 
 <BoxLink
@@ -416,7 +416,7 @@ custom_job:
 
 #### `eas/use_npm_token`
 
-Configures node package managers (npm, pnpm, or Yarn) for use with private packages, published either to npm or a private registry.
+Configures node package managers (bun, npm, pnpm, or Yarn) for use with private packages, published either to npm or a private registry.
 
 Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
 

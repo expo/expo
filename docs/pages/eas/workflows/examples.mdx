@@ -17,12 +17,33 @@ The following workflows are examples of how you can use EAS Workflows to automat
 
 <Collapsible summary="Prerequisites">
 
-To get started, you'll need to configure your project and devices to build and run development builds.
+To get started, you'll need to configure your project and devices to build and run development builds. Learn how to set up your environment for development builds with the following guides:
 
 <BoxLink
-  title="Development build prerequisites"
+  title="Android device setup"
   description="Get your project ready for development builds."
-  href="/develop/development-builds/create-a-build/#prerequisites"
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=android&device=physical"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Android emulator setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=android&device=simulated"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="iOS device setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=ios&device=physical"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="iOS simulator setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=ios&device=simulated"
   Icon={BookOpen02Icon}
 />
 
@@ -71,7 +92,7 @@ jobs:
       profile: development-simulator
 ```
 
-Run the workflow above with:
+Run the about workflow with:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/development-build.yml']} />
 
@@ -83,11 +104,11 @@ You can access preview updates in the development build UI and through scannable
 
 <Collapsible summary="Prerequisites">
 
-Your project needs have [EAS Update](/eas-update/introduction/) setup to publish preview updates. You can set up your project with:
+Your project needs to have [EAS Update](/eas-update/introduction/) setup to publish preview updates. You can set up your project with:
 
 <Terminal cmd={['$ eas update:configure']} />
 
-After that, you'll need to create new [development builds](/develop/development-builds/introduction/).
+After that, you'll need to create new [development builds](/develop/development-builds/create-a-build/).
 
 </Collapsible>
 
@@ -109,7 +130,7 @@ jobs:
 
 ## Deploy to production workflow
 
-When you're ready to deliver changes to your users, you can build and submit to the app stores or you can send and over-the-air update. The following workflow detects if you need new builds, and if so, it sends them to the app stores. If new builds are not required, it will send an over-the-air update.
+When you're ready to deliver changes to your users, you can build and submit to the app stores or you can send an over-the-air update. The following workflow detects if you need new builds, and if so, it sends them to the app stores. If new builds are not required, it will send an over-the-air update.
 
 <Collapsible summary="Prerequisites">
 

@@ -10,13 +10,13 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Custom builds allow customizing the build process for your project by running commands before, during, or after the build process.
+Custom builds allow customizing the build process for your project by running commands before, during, or after the build process. Customized builds can run from EAS CLI or when running builds in a React Native CI/CD pipeline, like with [EAS Workflows](/eas/workflows/get-started/).
 
 <Step label="1">
 
 ## Create a custom build config
 
-To get started, create a directories and a file named **.eas/build/hello-world.yml** at the same level as **eas.json**. The location and name of both directories are important for EAS Build to identify that a project contains a custom build config.
+To get started, create directories and a file named **.eas/build/hello-world.yml** at the same level as **eas.json**. The location and name of both directories are important for EAS Build to identify that a project contains a custom build config.
 
 Inside the **hello-world.yml**, you'll write your custom build config. The filename is unimportant; you can name it whatever you want. The only requirement is that the file extension uses **.yml**.
 
