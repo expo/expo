@@ -14,6 +14,9 @@ buildscript {
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
     ndkVersion = "26.1.10909125"
+
+    // For third party modules to get correct react-native directory
+    REACT_NATIVE_NODE_MODULES_DIR = project(':packages:react-native:ReactAndroid').projectDir.getParentFile()
   }
   repositories {
     google()
