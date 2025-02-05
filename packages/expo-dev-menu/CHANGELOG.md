@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed performance monitor does not show on iOS. ([#33855](https://github.com/expo/expo/pull/33855) by [@kudo](https://github.com/kudo))
+- [Android] Fixed `task ':expo-dev-menu:generateDebugLintModel' uses this output of task ':expo-dev-menu:copyAssets' without declaring an explicit or implicit dependency`.
 
 ### 💡 Others
 
