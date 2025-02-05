@@ -1,6 +1,7 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription, NativeModule } from 'expo-modules-core';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
+import { PictureRef } from './PictureRef';
 export type CameraType = 'front' | 'back';
 export type FlashMode = 'off' | 'on' | 'auto';
 export type ImageType = 'png' | 'jpg';
@@ -148,6 +149,10 @@ export type CameraPictureOptions = {
      * @default true
      */
     shutterSound?: boolean;
+    /**
+     * Whether the camera should return an image ref that can be used directly in the `Image` component.
+     */
+    pictureRef?: boolean;
 };
 export type CameraRecordingOptions = {
     /**
@@ -398,7 +403,7 @@ export type CameraViewProps = ViewProps & {
  * @hidden
  */
 export interface CameraViewRef {
-    readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
+    readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture | PictureRef>;
     readonly getAvailablePictureSizes: () => Promise<string[]>;
     readonly record: (options?: CameraRecordingOptions) => Promise<{
         uri: string;
@@ -471,4 +476,59 @@ export type ScanningOptions = {
  */
 export type BarcodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription as Subscription, };
+export type PhotoResult = {
+    /**
+     * A URI to the modified image (usable as the source for an `Image` or `Video` element).
+     */
+    uri: string;
+    /**
+     * Width of the image.
+     */
+    width: number;
+    /**
+     * Height of the image.
+     */
+    height: number;
+    /**
+     * A Base64 representation of the image.
+     */
+    base64?: string;
+};
+/**
+ * A map defining how modified image should be saved.
+ */
+export type SavePictureOptions = {
+    /**
+     * Specify the compression quality from `0` to `1`. `0` means compress for small size, and `1` means compress for maximum quality.
+     */
+    quality?: number;
+    /**
+     * Additional metadata to be included for the image.
+     */
+    metadata?: Record<string, any>;
+    /**
+     * Whether to also include the image data in Base64 format.
+     */
+    base64?: boolean;
+};
+export type CameraEvents = {
+    onModernBarcodeScanned: (event: ScanningResult) => void;
+};
+export declare class CameraNativeModule extends NativeModule<CameraEvents> {
+    /**
+     * @hidden
+     */
+    Picture: typeof PictureRef;
+    readonly isModernBarcodeScannerAvailable: boolean;
+    readonly toggleRecordingAsyncAvailable: boolean;
+    readonly isAvailableAsync: () => Promise<boolean>;
+    readonly launchScanner: (options?: ScanningOptions) => Promise<void>;
+    readonly dismissScanner: () => Promise<void>;
+    readonly scanFromURLAsync: (url: string, barcodeTypes?: BarcodeType[]) => Promise<BarcodeScanningResult[]>;
+    readonly getCameraPermissionsAsync: () => Promise<PermissionResponse>;
+    readonly requestCameraPermissionsAsync: () => Promise<PermissionResponse>;
+    readonly getMicrophonePermissionsAsync: () => Promise<PermissionResponse>;
+    readonly requestMicrophonePermissionsAsync: () => Promise<PermissionResponse>;
+    readonly getAvailableVideoCodecsAsync: () => Promise<VideoCodec[]>;
+}
 //# sourceMappingURL=Camera.types.d.ts.map

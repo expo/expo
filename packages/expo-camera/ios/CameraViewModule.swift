@@ -229,6 +229,24 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
     }
 
+    Class("Picture", PictureRef.self) {
+      Property("width") { (image: PictureRef) -> Int in
+        return image.ref.cgImage?.width ?? 0
+      }
+
+      Property("height") { (image: PictureRef) -> Int in
+        return image.ref.cgImage?.height ?? 0
+      }
+
+      AsyncFunction("savePictureAsync") { (image: PictureRef, options: SavePictureOptions?) -> [String: Any?] in
+        guard let appContext else {
+          throw Exceptions.AppContextLost()
+        }
+        let options = options ?? SavePictureOptions()
+        return try ExpoCameraUtils.saveImage(image.ref, options: options, appContext: appContext)
+      }
+    }
+
     AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in
       if #available(iOS 16.0, *) {
         await MainActor.run {
