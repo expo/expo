@@ -30,7 +30,9 @@ fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
 
   // Kotlin related
   extra.setIfNotExist("kotlinVersion") { versionCatalogs.getVersionOrDefault("kotlin", "2.0.21") }
-  extra.setIfNotExist("kspVersion") { versionCatalogs.getVersionOrDefault("ksp", "2.0.21-1.0.28") }
+  extra.setIfNotExist("kspVersion") {
+    versionCatalogs.getVersionOrDefault("ksp", KSPLookup.getValue(extra.get("kotlinVersion") as String))
+  }
 }
 
 inline fun ExtraPropertiesExtension.setIfNotExist(name: String, value: () -> Any) {

@@ -8,8 +8,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
 
-private const val defaultKotlinVersion = "2.0.21"
-
 abstract class ExpoModulesGradlePlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val kotlinVersion = getKotlinVersion(project)
@@ -37,17 +35,13 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
   }
 
   private fun getKotlinVersion(project: Project): String {
-    return project.extra.safeGet<String>("kotlinVersion") ?: defaultKotlinVersion
+    return project.rootProject.extra.safeGet<String>("kotlinVersion")
+      ?: throw IllegalStateException("`kotlinVersion` isn't defined.")
   }
 
   private fun getKSPVersion(project: Project, kotlinVersion: String): String {
-    return project.extra.safeGet<String>("kspVersion")
-      ?: getKSPVersionForKotlin(kotlinVersion)
-  }
-
-  private fun getKSPVersionForKotlin(kotlinVersion: String): String {
-    return KSPLookup[kotlinVersion]
-      ?: throw IllegalStateException("Couldn't find KSP version for Kotlin version $kotlinVersion")
+    return project.rootProject.extra.safeGet<String>("kspVersion")
+      ?: throw IllegalStateException("`kspVersion` isn't defined.")
   }
 
   companion object {
