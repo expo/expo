@@ -4,7 +4,7 @@ const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-maps/package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 const withMapsLocation = (config, { requestLocationPermission, locationPermission } = {}) => {
-    // If addLocationPermission is not set explicity, don't add the permissions
+    // Don't add the permissions if requestLocationPermission is not set explicity
     if (!requestLocationPermission) {
         return config;
     }
