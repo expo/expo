@@ -515,7 +515,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     }
 
     guard let processedImageData else {
-      promise.reject(CameraSavingImageException())
+      promise.reject(CameraSavingImageException("Image data could not be processed"))
       return
     }
 

@@ -231,7 +231,7 @@ struct ExpoCameraUtils {
    */
   static internal func saveImage(_ image: UIImage, options: SavePictureOptions, appContext: AppContext) throws -> [String: Any] {
     guard let cachesDirectory = appContext.config.cacheDirectory else {
-      throw CameraSavingImageException()
+      throw CameraSavingImageException("Failed to locate `cacheDirectory`")
     }
 
     var result = [String: Any]()
@@ -242,7 +242,7 @@ struct ExpoCameraUtils {
     FileSystemUtilities.ensureDirExists(at: directory)
 
     guard let data = data(from: image, with: options.metadata ?? [:], quality: Float(options.quality)) else {
-      throw CameraSavingImageException()
+      throw CameraSavingImageException("Image data could not be processed")
     }
 
     result["url"] = fileUrl.absoluteString
@@ -253,7 +253,7 @@ struct ExpoCameraUtils {
     do {
       try data.write(to: fileUrl, options: .atomic)
     } catch let error {
-      throw CameraSavingImageException()
+      throw CameraSavingImageException(error.localizedDescription)
     }
     return result
   }
