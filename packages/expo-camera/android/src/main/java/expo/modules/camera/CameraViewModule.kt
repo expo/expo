@@ -159,7 +159,7 @@ class CameraViewModule : Module() {
         picture.ref.height
       }
 
-      AsyncFunction("savePictureAsync") { picture: PictureRef, options: PictureOptions?, promise: Promise ->
+      AsyncFunction("savePictureAsync") { picture: PictureRef, options: SavePictureOptions?, promise: Promise ->
         val image = picture.ref
         val response = Bundle()
 

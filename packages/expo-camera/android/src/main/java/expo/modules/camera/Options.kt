@@ -17,6 +17,12 @@ data class PictureOptions(
   @Field val pictureRef: Boolean = false
 ) : Record
 
+data class SavePictureOptions(
+  @Field val quality: Double = 0.0,
+  @Field val base64: Boolean = false,
+  @Field val metadata: Map<String, Any>? = emptyMap(),
+) : Record
+
 data class RecordingOptions(
   @Field val maxDuration: Int = 0,
   @Field val maxFileSize: Int = 0

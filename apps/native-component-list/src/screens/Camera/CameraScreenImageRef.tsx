@@ -1,18 +1,12 @@
 import { CameraView, PictureRef } from 'expo-camera';
 import { Image } from 'expo-image';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, StyleSheet, Button, Text } from 'react-native';
 
 export default function CameraScreenImageRef() {
   const ref = useRef<CameraView>(null);
   const [picture, setPicture] = useState<PictureRef | null>(null);
   const [saveInfo, setSaveInfo] = useState<string | undefined>();
-
-  useEffect(() => {
-    ref.current?.getAvailablePictureSizesAsync().then((sizes) => {
-      console.log({ sizes });
-    });
-  }, []);
 
   const takePicture = async () => {
     if (ref.current) {
