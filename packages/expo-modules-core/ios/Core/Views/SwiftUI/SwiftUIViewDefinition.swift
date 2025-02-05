@@ -42,6 +42,10 @@ extension ExpoSwiftUI {
       let nameDefinitionElement = ViewNameDefinition(name: String(describing: viewType))
       super.init(HostingView<Props, ViewType>.self, elements: [nameDefinitionElement])
     }
+    
+    init(_ viewType: ViewType.Type, elements: [AnyViewDefinitionElement]) {
+      super.init(HostingView<Props, ViewType>.self, elements: elements)
+    }
 
     public override func createView(appContext: AppContext) -> UIView? {
 #if RCT_NEW_ARCH_ENABLED
@@ -66,6 +70,7 @@ extension ExpoSwiftUI {
         return field.key ?? convertLabelToKey(label)
       }
     }
+    
 
     public override func getSupportedEventNames() -> [String] {
       return dummyPropsMirror.children.compactMap { (label: String?, value: Any) in
