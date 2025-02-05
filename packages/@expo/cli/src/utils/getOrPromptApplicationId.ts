@@ -1,4 +1,6 @@
+import { GraphQLError } from '@0no-co/graphql.web';
 import { ExpoConfig, getConfig } from '@expo/config';
+import { CombinedError } from '@urql/core';
 import chalk from 'chalk';
 
 import { memoize } from './fn';
@@ -16,14 +18,28 @@ import {
   validatePackage,
   validatePackageWithWarning,
 } from './validateApplicationId';
+import { AppQuery } from '../api/graphql/queries/AppQuery';
 import * as Log from '../log';
-import { getAccountUsername } from './getAccountUsername';
 
 const debug = require('debug')('expo:app-id') as typeof console.log;
 
-function getExpoUsername(exp: ExpoConfig) {
-  // Account for if the environment variable was an empty string.
-  return getAccountUsername(exp) || 'anonymous';
+async function getRecommendedReverseDomainNameSecondPartAsync(
+  exp: ExpoConfig
+): Promise<string | null> {
+  const easProjectId = exp.extra?.eas?.projectId;
+  if (!easProjectId) {
+    return null;
+  }
+
+  try {
+    const app = await AppQuery.byIdAsync(easProjectId);
+    return app.ownerAccount.name;
+  } catch (e) {
+    if (e instanceof GraphQLError || e instanceof CombinedError) {
+      return null;
+    }
+    throw e;
+  }
 }
 
 const NO_BUNDLE_ID_MESSAGE = `Project must have a \`ios.bundleIdentifier\` set in the Expo config (app.json or app.config.js).`;
@@ -35,7 +51,7 @@ const NO_PACKAGE_MESSAGE = `Project must have a \`android.package\` set in the E
  * Prompted value will be validated against the App Store and a local regex.
  * If the project Expo config is a static JSON file, the bundle identifier will be updated in the config automatically.
  */
-export async function getOrPromptForBundleIdentifier(
+export async function getOrPromptForBundleIdentifierAsync(
   projectRoot: string,
   exp: ExpoConfig = getConfig(projectRoot).exp
 ): Promise<string> {
@@ -45,7 +61,11 @@ export async function getOrPromptForBundleIdentifier(
     return current;
   }
 
-  return promptForBundleIdWithInitialAsync(projectRoot, exp, getRecommendedBundleId(exp));
+  return promptForBundleIdWithInitialAsync(
+    projectRoot,
+    exp,
+    await getRecommendedBundleIdAsync(exp)
+  );
 }
 
 const memoLog = memoize(Log.log);
@@ -120,8 +140,8 @@ async function warnAndConfirmAsync(warning: string): Promise<boolean> {
   return true;
 }
 
-// Recommend a bundle identifier based on the username and project slug.
-function getRecommendedBundleId(exp: ExpoConfig): string | undefined {
+// Recommend a bundle identifier based on the account name of the owner of the project and project slug.
+async function getRecommendedBundleIdAsync(exp: ExpoConfig): Promise<string | undefined> {
   const possibleIdFromAndroid = exp.android?.package
     ? getSanitizedBundleIdentifier(exp.android.package)
     : undefined;
@@ -129,18 +149,25 @@ function getRecommendedBundleId(exp: ExpoConfig): string | undefined {
   if (possibleIdFromAndroid && validateBundleId(possibleIdFromAndroid)) {
     return possibleIdFromAndroid;
   } else {
-    const username = getExpoUsername(exp);
-    const possibleId = getSanitizedBundleIdentifier(`com.${username}.${exp.slug}`);
-    if (validateBundleId(possibleId)) {
-      return possibleId;
+    const recommendedReverseDomainNameSecondPart =
+      await getRecommendedReverseDomainNameSecondPartAsync(exp);
+    if (recommendedReverseDomainNameSecondPart) {
+      const possibleId = getSanitizedBundleIdentifier(
+        `com.${recommendedReverseDomainNameSecondPart}.${exp.slug}`
+      );
+      if (validateBundleId(possibleId)) {
+        return possibleId;
+      }
+    } else {
+      debug('Could not generate recommended name from EAS');
     }
   }
 
   return undefined;
 }
 
-// Recommend a package name based on the username and project slug.
-function getRecommendedPackageName(exp: ExpoConfig): string | undefined {
+// Recommend a package name based on the account name of the owner of the project and project slug.
+async function getRecommendedPackageNameAsync(exp: ExpoConfig): Promise<string | undefined> {
   const possibleIdFromApple = exp.ios?.bundleIdentifier
     ? getSanitizedPackage(exp.ios.bundleIdentifier)
     : undefined;
@@ -149,14 +176,21 @@ function getRecommendedPackageName(exp: ExpoConfig): string | undefined {
   if (possibleIdFromApple && validatePackage(possibleIdFromApple)) {
     return possibleIdFromApple;
   } else {
-    const username = getExpoUsername(exp);
-    const possibleId = getSanitizedPackage(`com.${username}.${exp.slug}`);
-    if (validatePackage(possibleId)) {
-      return possibleId;
-    } else {
-      debug(
-        `Recommended package name is invalid: "${possibleId}" (username: ${username}, slug: ${exp.slug})`
+    const recommendedReverseDomainNameSecondPart =
+      await getRecommendedReverseDomainNameSecondPartAsync(exp);
+    if (recommendedReverseDomainNameSecondPart) {
+      const possibleId = getSanitizedPackage(
+        `com.${recommendedReverseDomainNameSecondPart}.${exp.slug}`
       );
+      if (validatePackage(possibleId)) {
+        return possibleId;
+      } else {
+        debug(
+          `Recommended package name is invalid: "${possibleId}" (owner: ${recommendedReverseDomainNameSecondPart}, slug: ${exp.slug})`
+        );
+      }
+    } else {
+      debug('Could not generate recommended name from EAS');
     }
   }
   return undefined;
@@ -167,7 +201,7 @@ function getRecommendedPackageName(exp: ExpoConfig): string | undefined {
  * Prompted value will be validated against the Play Store and a local regex.
  * If the project Expo config is a static JSON file, the package name will be updated in the config automatically.
  */
-export async function getOrPromptForPackage(
+export async function getOrPromptForPackageAsync(
   projectRoot: string,
   exp: ExpoConfig = getConfig(projectRoot).exp
 ): Promise<string> {
@@ -180,8 +214,12 @@ export async function getOrPromptForPackage(
   return await promptForPackageAsync(projectRoot, exp);
 }
 
-function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Promise<string> {
-  return promptForPackageWithInitialAsync(projectRoot, exp, getRecommendedPackageName(exp));
+async function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Promise<string> {
+  return promptForPackageWithInitialAsync(
+    projectRoot,
+    exp,
+    await getRecommendedPackageNameAsync(exp)
+  );
 }
 
 async function promptForPackageWithInitialAsync(

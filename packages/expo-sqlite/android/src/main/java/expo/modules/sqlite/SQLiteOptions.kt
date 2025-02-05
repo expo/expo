@@ -25,8 +25,5 @@ internal data class OpenDatabaseOptions(
   val libSQLAuthToken: String? = null,
 
   @Field
-  val libSQLRemoteOnly: Boolean = false,
-
-  @Field
-  val libSQLSyncInterval: Int = 0
+  val libSQLRemoteOnly: Boolean = false
 ) : Record

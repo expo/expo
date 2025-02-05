@@ -24,9 +24,9 @@ internal final class CameraImageCaptureException: Exception {
   }
 }
 
-internal final class CameraSavingImageException: Exception {
+internal final class CameraSavingImageException: GenericException<String> {
   override var reason: String {
-    "Could not save the image"
+    "Failed to save image: \(param)"
   }
 }
 
