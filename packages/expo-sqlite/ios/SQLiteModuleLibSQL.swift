@@ -111,8 +111,9 @@ public final class SQLiteModule: Module {
                     auth_token: libSQLAuthToken,
                     read_your_writes: 1,
                     encryption_key: nil,
-                    sync_interval: Int32(options.libSQLSyncInterval),
-                    with_webpki: 1)
+                    sync_interval: 0,
+                    with_webpki: 1,
+                    offline: 1)
                   result = libsql_open_sync_with_config(libSQLConfig, &db, &errMsg)
                 }
               }
@@ -175,6 +176,14 @@ public final class SQLiteModule: Module {
       }
       Function("prepareSync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
         try prepareStatement(database: database, statement: statement, source: source)
+      }
+
+      AsyncFunction("syncLibSQL") { (database: NativeDatabase) in
+        var errMsg: UnsafePointer<CChar>?
+        if libsql_sync(database.pointer, &errMsg) != 0 {
+          let err = convertLibSqlErrorToString(errMsg)
+          throw SQLiteErrorException(convertLibSqlErrorToString(errMsg))
+        }
       }
     }
 

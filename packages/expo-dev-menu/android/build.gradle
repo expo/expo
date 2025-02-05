@@ -117,8 +117,7 @@ task copyAssets(type: Copy) {
 }
 
 project.afterEvaluate {
-  packageDebugAssets.dependsOn copyAssets
-  packageReleaseWithDevMenuAssets.dependsOn copyAssets
+  preBuild.dependsOn copyAssets
 }
 
 repositories {

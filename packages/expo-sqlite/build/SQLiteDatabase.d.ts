@@ -218,6 +218,11 @@ export declare class SQLiteDatabase {
      * @hidden
      */
     getAllSync<T>(source: string, ...params: SQLiteVariadicBindParams): T[];
+    /**
+     * Synchronize the local database with the remote libSQL server.
+     * This method is only available from libSQL integration.
+     */
+    syncLibSQL(): void;
 }
 /**
  * The default directory for SQLite databases.

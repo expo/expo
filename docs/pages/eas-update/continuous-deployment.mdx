@@ -40,6 +40,12 @@ The [`fingerprint` runtime version policy](/versions/latest/sdk/updates/#fingerp
 
 By automatically calculating the runtime version, you don't have to be concerned about native layer compatibility with the JavaScript application when deploying updates to builds.
 
+<Collapsible summary="How does fingerprint generation differ between managed and bare workflows?">
+
+The default project files included in the fingerprint hash differs between managed and bare workflow projects. EAS automatically detects your workflow by checking if the **android** and **ios** and directories are gitignored. If they are, EAS will treat the project as a managed workflow project, thus dictating that a hash of the `package.json` dependencies are sufficient to determine fingerprint compatibility.
+
+</Collapsible>
+
 <Collapsible summary="How do I debug fingerprint mismatches between my local machine and CI/CD?">
 
 If you notice different fingerprints being generated across different machines or environments, it may mean that unanticipated files are being included in the hash calculation. `@expo/fingerprint` has a predetermined set of files to include/exclude for hash calculation, but often your project setup may require additional excludes. For projects that include native directories (**android** and **ios**) this is more common.
@@ -56,6 +62,16 @@ To identify differences in fingerprints on different machines or environments:
 To exclude files causing the differences, add them to the **.fingerprintignore** file as described in the documentation for [`@expo/fingerprint`](/versions/latest/sdk/fingerprint).
 
 </Collapsible>
+
+### App version numbers
+
+When using continuous deployment, version number incrementation must be done automatically. While the specifics will differ based on the preferred numbering scheme, the general strategy is:
+
+1. Before continuous deployment CI steps, check if a new release will be created (due to a new fingerprint).
+2. If so, bump the version number in the source code and push the version bump commit.
+3. Continue continuous deployment CI steps with the new commit.
+
+An example is provided in the [`continuous-deploy-fingerprint` GitHub Action documentation](https://github.com/expo/expo-github-action/tree/main/continuous-deploy-fingerprint#continuous-deployment-on-main-advanced).
 
 ## GitHub Action: expo-github-action
 

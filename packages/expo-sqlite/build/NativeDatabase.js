@@ -11,7 +11,6 @@ export function flattenOpenOptions(options) {
             libSQLUrl: libSQLOptions.url,
             libSQLAuthToken: libSQLOptions.authToken,
             libSQLRemoteOnly: libSQLOptions.remoteOnly,
-            libSQLSyncInterval: libSQLOptions.syncInterval,
         });
     }
     return result;

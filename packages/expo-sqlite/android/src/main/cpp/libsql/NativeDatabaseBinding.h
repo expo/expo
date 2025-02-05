@@ -41,7 +41,8 @@ public:
 
   int libsql_open_remote(const std::string &url, const std::string &authToken);
   int libsql_open(const std::string &dbPath, const std::string &url,
-                  const std::string &authToken, int syncInterval);
+                  const std::string &authToken);
+  int libsql_sync();
 
   // helpers
   jni::local_ref<jni::JString> convertSqlLiteErrorToString();

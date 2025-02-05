@@ -282,6 +282,16 @@ export class SQLiteDatabase {
         }
         return allRows;
     }
+    /**
+     * Synchronize the local database with the remote libSQL server.
+     * This method is only available from libSQL integration.
+     */
+    syncLibSQL() {
+        if (typeof this.nativeDatabase.syncLibSQL !== 'function') {
+            throw new Error('syncLibSQL is not supported in the current environment');
+        }
+        return this.nativeDatabase.syncLibSQL();
+    }
 }
 /**
  * The default directory for SQLite databases.

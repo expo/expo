@@ -6,8 +6,8 @@ import { logConfig } from '../config/configAsync';
 import * as Log from '../log';
 import { env } from '../utils/env';
 import {
-  getOrPromptForBundleIdentifier,
-  getOrPromptForPackage,
+  getOrPromptForBundleIdentifierAsync,
+  getOrPromptForPackageAsync,
 } from '../utils/getOrPromptApplicationId';
 
 export async function configureProjectAsync(
@@ -25,12 +25,12 @@ export async function configureProjectAsync(
   let bundleIdentifier: string | undefined;
   if (platforms.includes('ios')) {
     // Check bundle ID before reading the config because it may mutate the config if the user is prompted to define it.
-    bundleIdentifier = await getOrPromptForBundleIdentifier(projectRoot, exp);
+    bundleIdentifier = await getOrPromptForBundleIdentifierAsync(projectRoot, exp);
   }
   let packageName: string | undefined;
   if (platforms.includes('android')) {
     // Check package before reading the config because it may mutate the config if the user is prompted to define it.
-    packageName = await getOrPromptForPackage(projectRoot, exp);
+    packageName = await getOrPromptForPackageAsync(projectRoot, exp);
   }
 
   let { exp: config } = await getPrebuildConfigAsync(projectRoot, {

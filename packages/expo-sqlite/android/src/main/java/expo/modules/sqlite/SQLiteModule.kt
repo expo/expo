@@ -98,7 +98,7 @@ class SQLiteModule : Module() {
             if (options.libSQLRemoteOnly) {
               database.ref.libsql_open_remote(libSQLUrl, libSQLAuthToken)
             } else {
-              database.ref.libsql_open(dbPath, libSQLUrl, libSQLAuthToken, options.libSQLSyncInterval)
+              database.ref.libsql_open(dbPath, libSQLUrl, libSQLAuthToken)
             }
           } else {
             if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
@@ -155,6 +155,13 @@ class SQLiteModule : Module() {
       }
       Function("prepareSync") { database: NativeDatabase, statement: NativeStatement, source: String ->
         prepareStatement(database, statement, source)
+      }
+
+      AsyncFunction("syncLibSQL") { database: NativeDatabase ->
+        maybeThrowForClosedDatabase(database)
+        if (database.ref.libsql_sync() != NativeDatabaseBinding.SQLITE_OK) {
+          throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        }
       }
     }
 

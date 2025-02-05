@@ -1,4 +1,4 @@
 import * as React from 'react';
-import type { MapProps } from './GoogleMaps.types';
-export declare function MapView({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onCameraMove, markers, ...props }: MapProps): React.JSX.Element | null;
+import type { MapProps, MapViewType } from './GoogleMaps.types';
+export declare const GoogleMapsView: React.ForwardRefExoticComponent<Omit<MapProps, "ref"> & React.RefAttributes<MapViewType>>;
 //# sourceMappingURL=GoogleMapsView.d.ts.map

@@ -44,6 +44,7 @@ void NativeDatabaseBinding::registerNatives() {
       makeNativeMethod("libsql_open_remote",
                        NativeDatabaseBinding::libsql_open_remote),
       makeNativeMethod("libsql_open", NativeDatabaseBinding::libsql_open),
+      makeNativeMethod("libsql_sync", NativeDatabaseBinding::libsql_sync),
       makeNativeMethod("convertSqlLiteErrorToString",
                        NativeDatabaseBinding::convertSqlLiteErrorToString),
   });
@@ -147,8 +148,7 @@ int NativeDatabaseBinding::libsql_open_remote(const std::string &url,
 
 int NativeDatabaseBinding::libsql_open(const std::string &dbPath,
                                        const std::string &url,
-                                       const std::string &authToken,
-                                       int syncInterval) {
+                                       const std::string &authToken) {
   const char *errMsg;
   libsql_config config = {
       .db_path = dbPath.c_str(),
@@ -156,8 +156,9 @@ int NativeDatabaseBinding::libsql_open(const std::string &dbPath,
       .auth_token = authToken.c_str(),
       .read_your_writes = 1,
       .encryption_key = nullptr,
-      .sync_interval = syncInterval,
+      .sync_interval = 0,
       .with_webpki = 1,
+      .offline = 1,
   };
   int ret = ::libsql_open_sync_with_config(config, &db, &errMsg);
   if (ret != 0) {
@@ -168,6 +169,16 @@ int NativeDatabaseBinding::libsql_open(const std::string &dbPath,
   if (ret != 0) {
     jni::throwNewJavaException(SQLiteErrorException::create(errMsg).get());
     return -1;
+  }
+  return 0;
+}
+
+int NativeDatabaseBinding::libsql_sync() {
+  const char *errMsg;
+  int ret = ::libsql_sync(db, &errMsg);
+  if (ret != 0) {
+    jni::throwNewJavaException(SQLiteErrorException::create(errMsg).get());
+    return ret;
   }
   return 0;
 }

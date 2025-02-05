@@ -27,6 +27,8 @@ export declare class NativeDatabase {
   public prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
 
   //#endregion
+
+  public syncLibSQL(): void;
 }
 
 /**
@@ -74,13 +76,6 @@ export interface SQLiteOpenOptions {
      * @default false
      */
     remoteOnly?: boolean;
-
-    /**
-     * The interval to sync the local database with the remote database.
-     * Only works when `remoteOnly` is `false`.
-     * @default 0 and disable automatic sync.
-     */
-    syncInterval?: number;
   };
 }
 
@@ -88,7 +83,6 @@ type FlattenedOpenOptions = Omit<SQLiteOpenOptions, 'libSQLOptions'> & {
   libSQLUrl?: string;
   libSQLAuthToken?: string;
   libSQLRemoteOnly?: boolean;
-  libSQLSyncInterval?: number;
 };
 
 /**
@@ -104,7 +98,6 @@ export function flattenOpenOptions(options: SQLiteOpenOptions): FlattenedOpenOpt
       libSQLUrl: libSQLOptions.url,
       libSQLAuthToken: libSQLOptions.authToken,
       libSQLRemoteOnly: libSQLOptions.remoteOnly,
-      libSQLSyncInterval: libSQLOptions.syncInterval,
     });
   }
   return result;

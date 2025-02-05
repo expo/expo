@@ -112,6 +112,14 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Maps permissions',
+      route: 'expo-maps/permissions',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsPermissionsScreen'));
+      },
+    },
+    {
       name: 'Maps Annotations',
       route: 'expo-maps/annotations',
       options: {},

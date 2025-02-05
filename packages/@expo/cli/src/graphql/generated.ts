@@ -19,11 +19,15 @@ export type Scalars = {
   Int: number;
   Float: number;
   DateTime: any;
+  DevDomainName: any;
   JSON: any;
   JSONObject: any;
+  WorkerDeploymentIdentifier: any;
+  WorkerDeploymentRequestID: any;
 };
 
 export type AccountAppsFilterInput = {
+  searchTerm?: InputMaybe<Scalars['String']>;
   sortByField: AccountAppsSortByField;
 };
 
@@ -48,24 +52,24 @@ export type AccountNotificationSubscriptionInput = {
 };
 
 export type AccountSsoConfigurationData = {
-  authEndpoint?: InputMaybe<Scalars['String']>;
   authProtocol: AuthProtocolType;
-  authProviderIdentifier: Scalars['String'];
+  authProviderIdentifier: AuthProviderIdentifier;
   clientIdentifier: Scalars['String'];
   clientSecret: Scalars['String'];
-  endSessionEndpoint?: InputMaybe<Scalars['String']>;
   issuer: Scalars['String'];
-  jwksEndpoint?: InputMaybe<Scalars['String']>;
-  revokeEndpoint?: InputMaybe<Scalars['String']>;
-  tokenEndpoint?: InputMaybe<Scalars['String']>;
-  userInfoEndpoint?: InputMaybe<Scalars['String']>;
 };
+
+export enum AccountUploadSessionType {
+  ProfileImageUpload = 'PROFILE_IMAGE_UPLOAD',
+  WorkflowsProjectSources = 'WORKFLOWS_PROJECT_SOURCES'
+}
 
 export enum ActivityTimelineProjectActivityType {
   Build = 'BUILD',
-  BuildJob = 'BUILD_JOB',
   Submission = 'SUBMISSION',
-  Update = 'UPDATE'
+  Update = 'UPDATE',
+  Worker = 'WORKER',
+  WorkflowRun = 'WORKFLOW_RUN'
 }
 
 export type AddUserInput = {
@@ -88,6 +92,7 @@ export type AndroidAppCredentialsFilter = {
 
 export type AndroidAppCredentialsInput = {
   fcmId?: InputMaybe<Scalars['ID']>;
+  googleServiceAccountKeyForFcmV1Id?: InputMaybe<Scalars['ID']>;
   googleServiceAccountKeyForSubmissionsId?: InputMaybe<Scalars['ID']>;
 };
 
@@ -99,11 +104,13 @@ export enum AndroidBuildType {
 }
 
 export type AndroidBuilderEnvironmentInput = {
+  bun?: InputMaybe<Scalars['String']>;
   env?: InputMaybe<Scalars['JSONObject']>;
   expoCli?: InputMaybe<Scalars['String']>;
   image?: InputMaybe<Scalars['String']>;
   ndk?: InputMaybe<Scalars['String']>;
   node?: InputMaybe<Scalars['String']>;
+  pnpm?: InputMaybe<Scalars['String']>;
   yarn?: InputMaybe<Scalars['String']>;
 };
 
@@ -134,6 +141,7 @@ export type AndroidJobInput = {
   developmentClient?: InputMaybe<Scalars['Boolean']>;
   experimental?: InputMaybe<Scalars['JSONObject']>;
   gradleCommand?: InputMaybe<Scalars['String']>;
+  loggerLevel?: InputMaybe<WorkerLoggerLevel>;
   mode?: InputMaybe<BuildMode>;
   projectArchive: ProjectArchiveSourceInput;
   projectRootDirectory: Scalars['String'];
@@ -162,9 +170,11 @@ export type AndroidJobOverridesInput = {
   buildType?: InputMaybe<AndroidBuildType>;
   builderEnvironment?: InputMaybe<AndroidBuilderEnvironmentInput>;
   cache?: InputMaybe<BuildCacheInput>;
+  customBuildConfig?: InputMaybe<CustomBuildConfigInput>;
   developmentClient?: InputMaybe<Scalars['Boolean']>;
   experimental?: InputMaybe<Scalars['JSONObject']>;
   gradleCommand?: InputMaybe<Scalars['String']>;
+  loggerLevel?: InputMaybe<WorkerLoggerLevel>;
   mode?: InputMaybe<BuildMode>;
   releaseChannel?: InputMaybe<Scalars['String']>;
   secrets?: InputMaybe<AndroidJobSecretsInput>;
@@ -187,7 +197,6 @@ export type AndroidKeystoreInput = {
   keyAlias: Scalars['String'];
   keyPassword?: InputMaybe<Scalars['String']>;
   keystorePassword: Scalars['String'];
-  type: AndroidKeystoreType;
 };
 
 export enum AndroidKeystoreType {
@@ -202,12 +211,15 @@ export type AndroidSubmissionConfigInput = {
   changesNotSentForReview?: InputMaybe<Scalars['Boolean']>;
   googleServiceAccountKeyId?: InputMaybe<Scalars['String']>;
   googleServiceAccountKeyJson?: InputMaybe<Scalars['String']>;
+  isVerboseFastlaneEnabled?: InputMaybe<Scalars['Boolean']>;
   releaseStatus?: InputMaybe<SubmissionAndroidReleaseStatus>;
+  rollout?: InputMaybe<Scalars['Float']>;
   track: SubmissionAndroidTrack;
 };
 
 export type AppDataInput = {
   id: Scalars['ID'];
+  internalDistributionBuildPrivacy?: InputMaybe<AppInternalDistributionBuildPrivacy>;
   privacy?: InputMaybe<Scalars['String']>;
 };
 
@@ -218,9 +230,13 @@ export type AppInfoInput = {
 export type AppInput = {
   accountId: Scalars['ID'];
   appInfo?: InputMaybe<AppInfoInput>;
-  privacy: AppPrivacy;
   projectName: Scalars['String'];
 };
+
+export enum AppInternalDistributionBuildPrivacy {
+  Private = 'PRIVATE',
+  Public = 'PUBLIC'
+}
 
 export type AppNotificationSubscriptionInput = {
   appId: Scalars['ID'];
@@ -256,6 +272,10 @@ export type AppStoreConnectApiKeyInput = {
   roles?: InputMaybe<Array<AppStoreConnectUserRole>>;
 };
 
+export type AppStoreConnectApiKeyUpdateInput = {
+  appleTeamId?: InputMaybe<Scalars['ID']>;
+};
+
 export enum AppStoreConnectUserRole {
   AccessToReports = 'ACCESS_TO_REPORTS',
   AccountHolder = 'ACCOUNT_HOLDER',
@@ -275,6 +295,10 @@ export enum AppStoreConnectUserRole {
   Unknown = 'UNKNOWN'
 }
 
+export enum AppUploadSessionType {
+  ProfileImageUpload = 'PROFILE_IMAGE_UPLOAD'
+}
+
 export type AppVersionInput = {
   appId: Scalars['ID'];
   applicationIdentifier: Scalars['String'];
@@ -282,6 +306,13 @@ export type AppVersionInput = {
   platform: AppPlatform;
   runtimeVersion?: InputMaybe<Scalars['String']>;
   storeVersion: Scalars['String'];
+};
+
+export type AppWithGithubRepositoryInput = {
+  accountId: Scalars['ID'];
+  appInfo?: InputMaybe<AppInfoInput>;
+  installationIdentifier?: InputMaybe<Scalars['String']>;
+  projectName: Scalars['String'];
 };
 
 export type AppleAppIdentifierInput = {
@@ -292,8 +323,16 @@ export type AppleAppIdentifierInput = {
 
 export enum AppleDeviceClass {
   Ipad = 'IPAD',
-  Iphone = 'IPHONE'
+  Iphone = 'IPHONE',
+  Mac = 'MAC',
+  Unknown = 'UNKNOWN'
 }
+
+export type AppleDeviceFilterInput = {
+  appleTeamIdentifier?: InputMaybe<Scalars['String']>;
+  class?: InputMaybe<AppleDeviceClass>;
+  identifier?: InputMaybe<Scalars['String']>;
+};
 
 export type AppleDeviceInput = {
   appleTeamId: Scalars['ID'];
@@ -328,9 +367,25 @@ export type ApplePushKeyInput = {
   keyP8: Scalars['String'];
 };
 
+export type AppleTeamFilterInput = {
+  appleTeamIdentifier?: InputMaybe<Scalars['String']>;
+};
+
 export type AppleTeamInput = {
   appleTeamIdentifier: Scalars['String'];
   appleTeamName?: InputMaybe<Scalars['String']>;
+  appleTeamType?: InputMaybe<AppleTeamType>;
+};
+
+export enum AppleTeamType {
+  CompanyOrOrganization = 'COMPANY_OR_ORGANIZATION',
+  Individual = 'INDIVIDUAL',
+  InHouse = 'IN_HOUSE'
+}
+
+export type AppleTeamUpdateInput = {
+  appleTeamName?: InputMaybe<Scalars['String']>;
+  appleTeamType?: InputMaybe<AppleTeamType>;
 };
 
 export enum AppsFilter {
@@ -351,9 +406,69 @@ export enum AssetMetadataStatus {
   Exists = 'EXISTS'
 }
 
+export type AuditLogExportInput = {
+  accountId: Scalars['ID'];
+  createdAfter: Scalars['String'];
+  createdBefore: Scalars['String'];
+  format: AuditLogsExportFormat;
+  targetEntityMutationType?: InputMaybe<Array<TargetEntityMutationType>>;
+  targetEntityTypeName?: InputMaybe<Array<EntityTypeName>>;
+};
+
+export type AuditLogFilterInput = {
+  entityTypes?: InputMaybe<Array<EntityTypeName>>;
+  mutationTypes?: InputMaybe<Array<TargetEntityMutationType>>;
+};
+
+export enum AuditLogsExportFormat {
+  Csv = 'CSV',
+  Json = 'JSON',
+  Jsonl = 'JSONL'
+}
+
 export enum AuthProtocolType {
   Oidc = 'OIDC'
 }
+
+export enum AuthProviderIdentifier {
+  GoogleWs = 'GOOGLE_WS',
+  MsEntraId = 'MS_ENTRA_ID',
+  Okta = 'OKTA',
+  OneLogin = 'ONE_LOGIN',
+  StubIdp = 'STUB_IDP'
+}
+
+export enum BackgroundJobResultType {
+  AuditLogsExport = 'AUDIT_LOGS_EXPORT',
+  GithubBuild = 'GITHUB_BUILD',
+  UserAuditLogsExport = 'USER_AUDIT_LOGS_EXPORT',
+  Void = 'VOID'
+}
+
+export enum BackgroundJobState {
+  Failure = 'FAILURE',
+  InProgress = 'IN_PROGRESS',
+  Queued = 'QUEUED',
+  Success = 'SUCCESS'
+}
+
+export type BranchFilterInput = {
+  searchTerm?: InputMaybe<Scalars['String']>;
+};
+
+export type BuildAnnotationDataInput = {
+  buildPhase: Scalars['String'];
+  exampleBuildLog?: InputMaybe<Scalars['String']>;
+  internalNotes?: InputMaybe<Scalars['String']>;
+  message: Scalars['String'];
+  regexFlags?: InputMaybe<Scalars['String']>;
+  regexString: Scalars['String'];
+  title: Scalars['String'];
+};
+
+export type BuildAnnotationFiltersInput = {
+  buildPhases: Array<Scalars['String']>;
+};
 
 export type BuildCacheInput = {
   clear?: InputMaybe<Scalars['Boolean']>;
@@ -373,18 +488,28 @@ export type BuildFilter = {
   appVersion?: InputMaybe<Scalars['String']>;
   buildProfile?: InputMaybe<Scalars['String']>;
   channel?: InputMaybe<Scalars['String']>;
+  developmentClient?: InputMaybe<Scalars['Boolean']>;
   distribution?: InputMaybe<DistributionType>;
+  fingerprintHash?: InputMaybe<Scalars['String']>;
   gitCommitHash?: InputMaybe<Scalars['String']>;
+  hasFingerprint?: InputMaybe<Scalars['Boolean']>;
   platform?: InputMaybe<AppPlatform>;
   runtimeVersion?: InputMaybe<Scalars['String']>;
   sdkVersion?: InputMaybe<Scalars['String']>;
+  simulator?: InputMaybe<Scalars['Boolean']>;
   status?: InputMaybe<BuildStatus>;
 };
 
 export type BuildFilterInput = {
   channel?: InputMaybe<Scalars['String']>;
+  developmentClient?: InputMaybe<Scalars['Boolean']>;
+  distributions?: InputMaybe<Array<DistributionType>>;
+  fingerprintHash?: InputMaybe<Scalars['String']>;
+  hasFingerprint?: InputMaybe<Scalars['Boolean']>;
   platforms?: InputMaybe<Array<AppPlatform>>;
   releaseChannel?: InputMaybe<Scalars['String']>;
+  runtimeVersion?: InputMaybe<Scalars['String']>;
+  simulator?: InputMaybe<Scalars['Boolean']>;
 };
 
 export enum BuildIosEnterpriseProvisioning {
@@ -392,18 +517,9 @@ export enum BuildIosEnterpriseProvisioning {
   Universal = 'UNIVERSAL'
 }
 
-export enum BuildJobLogsFormat {
-  Json = 'JSON',
-  Raw = 'RAW'
-}
-
-export enum BuildJobStatus {
-  Errored = 'ERRORED',
-  Finished = 'FINISHED',
-  InProgress = 'IN_PROGRESS',
-  Pending = 'PENDING',
-  SentToQueue = 'SENT_TO_QUEUE',
-  Started = 'STARTED'
+export enum BuildLimitThresholdExceededMetadataType {
+  Ios = 'IOS',
+  Total = 'TOTAL'
 }
 
 export type BuildMetadataInput = {
@@ -411,13 +527,17 @@ export type BuildMetadataInput = {
   appIdentifier?: InputMaybe<Scalars['String']>;
   appName?: InputMaybe<Scalars['String']>;
   appVersion?: InputMaybe<Scalars['String']>;
-  buildMode?: InputMaybe<BuildMode>;
   buildProfile?: InputMaybe<Scalars['String']>;
   channel?: InputMaybe<Scalars['String']>;
   cliVersion?: InputMaybe<Scalars['String']>;
   credentialsSource?: InputMaybe<BuildCredentialsSource>;
+  customNodeVersion?: InputMaybe<Scalars['String']>;
   customWorkflowName?: InputMaybe<Scalars['String']>;
+  developmentClient?: InputMaybe<Scalars['Boolean']>;
   distribution?: InputMaybe<DistributionType>;
+  environment?: InputMaybe<Scalars['String']>;
+  fingerprintHash?: InputMaybe<Scalars['String']>;
+  fingerprintSource?: InputMaybe<FingerprintSourceInput>;
   gitCommitHash?: InputMaybe<Scalars['String']>;
   gitCommitMessage?: InputMaybe<Scalars['String']>;
   iosEnterpriseProvisioning?: InputMaybe<BuildIosEnterpriseProvisioning>;
@@ -425,10 +545,13 @@ export type BuildMetadataInput = {
   message?: InputMaybe<Scalars['String']>;
   reactNativeVersion?: InputMaybe<Scalars['String']>;
   releaseChannel?: InputMaybe<Scalars['String']>;
+  requiredPackageManager?: InputMaybe<Scalars['String']>;
   runFromCI?: InputMaybe<Scalars['Boolean']>;
   runWithNoWaitFlag?: InputMaybe<Scalars['Boolean']>;
   runtimeVersion?: InputMaybe<Scalars['String']>;
   sdkVersion?: InputMaybe<Scalars['String']>;
+  selectedImage?: InputMaybe<Scalars['String']>;
+  simulator?: InputMaybe<Scalars['Boolean']>;
   trackingContext?: InputMaybe<Scalars['JSONObject']>;
   username?: InputMaybe<Scalars['String']>;
   workflow?: InputMaybe<BuildWorkflow>;
@@ -437,6 +560,7 @@ export type BuildMetadataInput = {
 export enum BuildMode {
   Build = 'BUILD',
   Custom = 'CUSTOM',
+  Repack = 'REPACK',
   Resign = 'RESIGN'
 }
 
@@ -445,6 +569,50 @@ export type BuildParamsInput = {
   resourceClass: BuildResourceClass;
   sdkVersion?: InputMaybe<Scalars['String']>;
 };
+
+export enum BuildPhase {
+  BuilderInfo = 'BUILDER_INFO',
+  CleanUpCredentials = 'CLEAN_UP_CREDENTIALS',
+  CompleteBuild = 'COMPLETE_BUILD',
+  ConfigureExpoUpdates = 'CONFIGURE_EXPO_UPDATES',
+  ConfigureXcodeProject = 'CONFIGURE_XCODE_PROJECT',
+  Custom = 'CUSTOM',
+  DownloadApplicationArchive = 'DOWNLOAD_APPLICATION_ARCHIVE',
+  EasBuildInternal = 'EAS_BUILD_INTERNAL',
+  FailBuild = 'FAIL_BUILD',
+  FixGradlew = 'FIX_GRADLEW',
+  InstallCustomTools = 'INSTALL_CUSTOM_TOOLS',
+  InstallDependencies = 'INSTALL_DEPENDENCIES',
+  InstallPods = 'INSTALL_PODS',
+  OnBuildCancelHook = 'ON_BUILD_CANCEL_HOOK',
+  OnBuildCompleteHook = 'ON_BUILD_COMPLETE_HOOK',
+  OnBuildErrorHook = 'ON_BUILD_ERROR_HOOK',
+  OnBuildSuccessHook = 'ON_BUILD_SUCCESS_HOOK',
+  ParseCustomWorkflowConfig = 'PARSE_CUSTOM_WORKFLOW_CONFIG',
+  PostInstallHook = 'POST_INSTALL_HOOK',
+  Prebuild = 'PREBUILD',
+  PrepareArtifacts = 'PREPARE_ARTIFACTS',
+  PrepareCredentials = 'PREPARE_CREDENTIALS',
+  PrepareProject = 'PREPARE_PROJECT',
+  PreInstallHook = 'PRE_INSTALL_HOOK',
+  PreUploadArtifactsHook = 'PRE_UPLOAD_ARTIFACTS_HOOK',
+  Queue = 'QUEUE',
+  ReadAppConfig = 'READ_APP_CONFIG',
+  ReadPackageJson = 'READ_PACKAGE_JSON',
+  RestoreCache = 'RESTORE_CACHE',
+  RunExpoDoctor = 'RUN_EXPO_DOCTOR',
+  RunFastlane = 'RUN_FASTLANE',
+  RunGradlew = 'RUN_GRADLEW',
+  SaveCache = 'SAVE_CACHE',
+  SetUpBuildEnvironment = 'SET_UP_BUILD_ENVIRONMENT',
+  SpinUpBuilder = 'SPIN_UP_BUILDER',
+  StartBuild = 'START_BUILD',
+  Unknown = 'UNKNOWN',
+  UploadApplicationArchive = 'UPLOAD_APPLICATION_ARCHIVE',
+  /** @deprecated No longer supported */
+  UploadArtifacts = 'UPLOAD_ARTIFACTS',
+  UploadBuildArtifacts = 'UPLOAD_BUILD_ARTIFACTS'
+}
 
 export enum BuildPriority {
   High = 'HIGH',
@@ -461,17 +629,21 @@ export enum BuildResourceClass {
   AndroidLarge = 'ANDROID_LARGE',
   AndroidMedium = 'ANDROID_MEDIUM',
   IosDefault = 'IOS_DEFAULT',
-  /** @deprecated Use IOS_INTEL_MEDIUM instead */
+  /** @deprecated No longer available. Use IOS_M_LARGE instead. */
   IosIntelLarge = 'IOS_INTEL_LARGE',
+  /** @deprecated No longer available. Use IOS_M_MEDIUM instead. */
   IosIntelMedium = 'IOS_INTEL_MEDIUM',
   IosLarge = 'IOS_LARGE',
   /** @deprecated Use IOS_M_MEDIUM instead */
   IosM1Large = 'IOS_M1_LARGE',
+  /** @deprecated Use IOS_M_MEDIUM instead */
   IosM1Medium = 'IOS_M1_MEDIUM',
   IosMedium = 'IOS_MEDIUM',
   IosMLarge = 'IOS_M_LARGE',
   IosMMedium = 'IOS_M_MEDIUM',
-  Legacy = 'LEGACY'
+  Legacy = 'LEGACY',
+  LinuxLarge = 'LINUX_LARGE',
+  LinuxMedium = 'LINUX_MEDIUM'
 }
 
 export enum BuildRetryDisabledReason {
@@ -488,7 +660,8 @@ export enum BuildStatus {
   Finished = 'FINISHED',
   InProgress = 'IN_PROGRESS',
   InQueue = 'IN_QUEUE',
-  New = 'NEW'
+  New = 'NEW',
+  PendingCancel = 'PENDING_CANCEL'
 }
 
 export enum BuildTrigger {
@@ -506,10 +679,35 @@ export enum BuildWorkflow {
   Unknown = 'UNKNOWN'
 }
 
+export type ChannelFilterInput = {
+  searchTerm?: InputMaybe<Scalars['String']>;
+};
+
 export type CodeSigningInfoInput = {
   alg: Scalars['String'];
   keyid: Scalars['String'];
   sig: Scalars['String'];
+};
+
+export enum ContinentCode {
+  Af = 'AF',
+  An = 'AN',
+  As = 'AS',
+  Eu = 'EU',
+  Na = 'NA',
+  Oc = 'OC',
+  Sa = 'SA',
+  T1 = 'T1'
+}
+
+export enum CrashSampleFor {
+  Newest = 'NEWEST',
+  Oldest = 'OLDEST'
+}
+
+export type CrashesFilters = {
+  crashKind?: InputMaybe<Array<WorkerDeploymentCrashKind>>;
+  name?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type CreateAccessTokenInput = {
@@ -531,9 +729,49 @@ export type CreateEnvironmentSecretInput = {
   value: Scalars['String'];
 };
 
+export type CreateEnvironmentVariableInput = {
+  environments?: InputMaybe<Array<EnvironmentVariableEnvironment>>;
+  fileName?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  overwrite?: InputMaybe<Scalars['Boolean']>;
+  type?: InputMaybe<EnvironmentSecretType>;
+  value: Scalars['String'];
+  visibility: EnvironmentVariableVisibility;
+};
+
+export type CreateFingerprintInput = {
+  hash: Scalars['String'];
+  source?: InputMaybe<FingerprintSourceInput>;
+};
+
 export type CreateGitHubAppInstallationInput = {
   accountId: Scalars['ID'];
   installationIdentifier: Scalars['Int'];
+};
+
+export type CreateGitHubBuildTriggerInput = {
+  appId: Scalars['ID'];
+  autoSubmit: Scalars['Boolean'];
+  buildProfile: Scalars['String'];
+  environment?: InputMaybe<EnvironmentVariableEnvironment>;
+  executionBehavior: GitHubBuildTriggerExecutionBehavior;
+  isActive: Scalars['Boolean'];
+  platform: AppPlatform;
+  /** A branch or tag name, or a wildcard pattern where the code change originates from. For example, `main` or `release/*`. */
+  sourcePattern: Scalars['String'];
+  submitProfile?: InputMaybe<Scalars['String']>;
+  /** A branch name or a wildcard pattern that the pull request targets. For example, `main` or `release/*`. */
+  targetPattern?: InputMaybe<Scalars['String']>;
+  type: GitHubBuildTriggerType;
+};
+
+export type CreateGitHubJobRunTriggerInput = {
+  appId: Scalars['ID'];
+  isActive: Scalars['Boolean'];
+  jobType: GitHubJobRunJobType;
+  sourcePattern: Scalars['String'];
+  targetPattern?: InputMaybe<Scalars['String']>;
+  triggerType: GitHubJobRunTriggerType;
 };
 
 export type CreateGitHubRepositoryInput = {
@@ -557,8 +795,42 @@ export type CreateIosSubmissionInput = {
   submittedBuildId?: InputMaybe<Scalars['ID']>;
 };
 
+export type CreateSharedEnvironmentVariableInput = {
+  environments?: InputMaybe<Array<EnvironmentVariableEnvironment>>;
+  fileName?: InputMaybe<Scalars['String']>;
+  isGlobal?: InputMaybe<Scalars['Boolean']>;
+  name: Scalars['String'];
+  overwrite?: InputMaybe<Scalars['Boolean']>;
+  type?: InputMaybe<EnvironmentSecretType>;
+  value: Scalars['String'];
+  visibility: EnvironmentVariableVisibility;
+};
+
 export type CustomBuildConfigInput = {
   path: Scalars['String'];
+};
+
+export enum CustomDomainDnsRecordType {
+  A = 'A',
+  Cname = 'CNAME',
+  Txt = 'TXT'
+}
+
+export enum CustomDomainStatus {
+  Active = 'ACTIVE',
+  Error = 'ERROR',
+  Pending = 'PENDING',
+  TimedOut = 'TIMED_OUT'
+}
+
+export type DatasetTimespan = {
+  end: Scalars['DateTime'];
+  start: Scalars['DateTime'];
+};
+
+export type DeploymentFilterInput = {
+  channel?: InputMaybe<Scalars['String']>;
+  runtimeVersion?: InputMaybe<Scalars['String']>;
 };
 
 export enum DistributionType {
@@ -577,8 +849,14 @@ export enum EasBuildDeprecationInfoType {
   UserFacing = 'USER_FACING'
 }
 
+export enum EasBuildWaiverType {
+  FastFailedBuild = 'FAST_FAILED_BUILD',
+  SystemError = 'SYSTEM_ERROR'
+}
+
 export enum EasService {
   Builds = 'BUILDS',
+  Jobs = 'JOBS',
   Updates = 'UPDATES'
 }
 
@@ -587,6 +865,7 @@ export enum EasServiceMetric {
   BandwidthUsage = 'BANDWIDTH_USAGE',
   Builds = 'BUILDS',
   ManifestRequests = 'MANIFEST_REQUESTS',
+  RunTime = 'RUN_TIME',
   UniqueUpdaters = 'UNIQUE_UPDATERS',
   UniqueUsers = 'UNIQUE_USERS'
 }
@@ -607,9 +886,55 @@ export type EditUpdateBranchInput = {
   newName: Scalars['String'];
 };
 
+export enum EntityTypeName {
+  AccountEntity = 'AccountEntity',
+  AccountSsoConfigurationEntity = 'AccountSSOConfigurationEntity',
+  AndroidAppCredentialsEntity = 'AndroidAppCredentialsEntity',
+  AndroidKeystoreEntity = 'AndroidKeystoreEntity',
+  AppEntity = 'AppEntity',
+  AppStoreConnectApiKeyEntity = 'AppStoreConnectApiKeyEntity',
+  AppleDeviceEntity = 'AppleDeviceEntity',
+  AppleDistributionCertificateEntity = 'AppleDistributionCertificateEntity',
+  AppleProvisioningProfileEntity = 'AppleProvisioningProfileEntity',
+  AppleTeamEntity = 'AppleTeamEntity',
+  BranchEntity = 'BranchEntity',
+  ChannelEntity = 'ChannelEntity',
+  CustomerEntity = 'CustomerEntity',
+  GoogleServiceAccountKeyEntity = 'GoogleServiceAccountKeyEntity',
+  IosAppCredentialsEntity = 'IosAppCredentialsEntity',
+  UserInvitationEntity = 'UserInvitationEntity',
+  UserPermissionEntity = 'UserPermissionEntity',
+  WorkerCustomDomainEntity = 'WorkerCustomDomainEntity',
+  WorkerDeploymentAliasEntity = 'WorkerDeploymentAliasEntity',
+  WorkerEntity = 'WorkerEntity',
+  WorkflowEntity = 'WorkflowEntity',
+  WorkflowRevisionEntity = 'WorkflowRevisionEntity'
+}
+
 export enum EnvironmentSecretType {
   FileBase64 = 'FILE_BASE64',
   String = 'STRING'
+}
+
+export enum EnvironmentVariableEnvironment {
+  Development = 'DEVELOPMENT',
+  Preview = 'PREVIEW',
+  Production = 'PRODUCTION'
+}
+
+export enum EnvironmentVariableScope {
+  Project = 'PROJECT',
+  Shared = 'SHARED'
+}
+
+export enum EnvironmentVariableVisibility {
+  Public = 'PUBLIC',
+  Secret = 'SECRET',
+  Sensitive = 'SENSITIVE'
+}
+
+export enum Experiment {
+  Orbit = 'ORBIT'
 }
 
 export enum Feature {
@@ -622,6 +947,45 @@ export enum Feature {
   /** Share access to projects */
   Teams = 'TEAMS'
 }
+
+export type FingerprintBuildsFilterInput = {
+  channel?: InputMaybe<Scalars['String']>;
+  developmentClient?: InputMaybe<Scalars['Boolean']>;
+  distributions?: InputMaybe<Array<DistributionType>>;
+  platforms?: InputMaybe<Array<AppPlatform>>;
+  releaseChannel?: InputMaybe<Scalars['String']>;
+  simulator?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type FingerprintFilterInput = {
+  hashes?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type FingerprintInfo = {
+  fingerprintHash: Scalars['String'];
+  fingerprintSource: FingerprintSourceInput;
+};
+
+export type FingerprintInfoGroup = {
+  android?: InputMaybe<FingerprintInfo>;
+  ios?: InputMaybe<FingerprintInfo>;
+  web?: InputMaybe<FingerprintInfo>;
+};
+
+export type FingerprintSourceInput = {
+  bucketKey?: InputMaybe<Scalars['String']>;
+  isDebugFingerprint?: InputMaybe<Scalars['Boolean']>;
+  type?: InputMaybe<FingerprintSourceType>;
+};
+
+export enum FingerprintSourceType {
+  Gcs = 'GCS'
+}
+
+export type GenerateLogRocketOrganizationLinkingUrlInput = {
+  accountId: Scalars['ID'];
+  callbackUrl: Scalars['String'];
+};
 
 export enum GitHubAppEnvironment {
   Development = 'DEVELOPMENT',
@@ -637,14 +1001,67 @@ export enum GitHubAppInstallationStatus {
 
 export type GitHubBuildInput = {
   appId: Scalars['ID'];
+  autoSubmit?: InputMaybe<Scalars['Boolean']>;
   baseDirectory?: InputMaybe<Scalars['String']>;
   buildProfile: Scalars['String'];
+  environment?: InputMaybe<EnvironmentVariableEnvironment>;
   gitRef: Scalars['String'];
   platform: AppPlatform;
+  /** Repack the golden dev client build instead of running full build process. Used for onboarding. Do not use outside of onboarding flow, as for now it's only created with this specific use case in mind. */
+  repack?: InputMaybe<Scalars['Boolean']>;
+  submitProfile?: InputMaybe<Scalars['String']>;
 };
+
+export enum GitHubBuildTriggerExecutionBehavior {
+  Always = 'ALWAYS',
+  BaseDirectoryChanged = 'BASE_DIRECTORY_CHANGED'
+}
+
+export enum GitHubBuildTriggerRunStatus {
+  Errored = 'ERRORED',
+  Success = 'SUCCESS'
+}
+
+export enum GitHubBuildTriggerType {
+  PullRequestUpdated = 'PULL_REQUEST_UPDATED',
+  PushToBranch = 'PUSH_TO_BRANCH',
+  TagUpdated = 'TAG_UPDATED'
+}
+
+export enum GitHubJobRunJobType {
+  PublishUpdate = 'PUBLISH_UPDATE'
+}
+
+export enum GitHubJobRunTriggerRunStatus {
+  Errored = 'ERRORED',
+  Success = 'SUCCESS'
+}
+
+export enum GitHubJobRunTriggerType {
+  PullRequestUpdated = 'PULL_REQUEST_UPDATED',
+  PushToBranch = 'PUSH_TO_BRANCH'
+}
 
 export type GoogleServiceAccountKeyInput = {
   jsonKey: Scalars['JSONObject'];
+};
+
+/**
+ * The value field is always sent from the client as a string,
+ * and then it's parsed server-side according to the filterType
+ */
+export type InsightsFilter = {
+  filterType: InsightsFilterType;
+  value: Scalars['String'];
+};
+
+export enum InsightsFilterType {
+  Platform = 'PLATFORM'
+}
+
+export type InsightsTimespan = {
+  end: Scalars['DateTime'];
+  start: Scalars['DateTime'];
 };
 
 export enum InvoiceDiscountType {
@@ -667,6 +1084,7 @@ export type IosAppCredentialsFilter = {
 };
 
 export type IosAppCredentialsInput = {
+  appStoreConnectApiKeyForBuildsId?: InputMaybe<Scalars['ID']>;
   appStoreConnectApiKeyForSubmissionsId?: InputMaybe<Scalars['ID']>;
   appleTeamId?: InputMaybe<Scalars['ID']>;
   pushKeyId?: InputMaybe<Scalars['ID']>;
@@ -679,6 +1097,7 @@ export enum IosBuildType {
 }
 
 export type IosBuilderEnvironmentInput = {
+  bun?: InputMaybe<Scalars['String']>;
   bundler?: InputMaybe<Scalars['String']>;
   cocoapods?: InputMaybe<Scalars['String']>;
   env?: InputMaybe<Scalars['JSONObject']>;
@@ -686,6 +1105,7 @@ export type IosBuilderEnvironmentInput = {
   fastlane?: InputMaybe<Scalars['String']>;
   image?: InputMaybe<Scalars['String']>;
   node?: InputMaybe<Scalars['String']>;
+  pnpm?: InputMaybe<Scalars['String']>;
   yarn?: InputMaybe<Scalars['String']>;
 };
 
@@ -717,6 +1137,7 @@ export type IosJobInput = {
   /** @deprecated */
   distribution?: InputMaybe<DistributionType>;
   experimental?: InputMaybe<Scalars['JSONObject']>;
+  loggerLevel?: InputMaybe<WorkerLoggerLevel>;
   mode?: InputMaybe<BuildMode>;
   projectArchive: ProjectArchiveSourceInput;
   projectRootDirectory: Scalars['String'];
@@ -742,10 +1163,12 @@ export type IosJobOverridesInput = {
   buildType?: InputMaybe<IosBuildType>;
   builderEnvironment?: InputMaybe<IosBuilderEnvironmentInput>;
   cache?: InputMaybe<BuildCacheInput>;
+  customBuildConfig?: InputMaybe<CustomBuildConfigInput>;
   developmentClient?: InputMaybe<Scalars['Boolean']>;
   /** @deprecated */
   distribution?: InputMaybe<DistributionType>;
   experimental?: InputMaybe<Scalars['JSONObject']>;
+  loggerLevel?: InputMaybe<WorkerLoggerLevel>;
   mode?: InputMaybe<BuildMode>;
   releaseChannel?: InputMaybe<Scalars['String']>;
   resign?: InputMaybe<BuildResignInput>;
@@ -791,20 +1214,66 @@ export type IosSubmissionConfigInput = {
   ascApiKey?: InputMaybe<AscApiKeyInput>;
   ascApiKeyId?: InputMaybe<Scalars['String']>;
   ascAppIdentifier: Scalars['String'];
+  isVerboseFastlaneEnabled?: InputMaybe<Scalars['Boolean']>;
+};
+
+export enum JobRunPriority {
+  High = 'HIGH',
+  Normal = 'NORMAL'
+}
+
+export enum JobRunStatus {
+  Canceled = 'CANCELED',
+  Errored = 'ERRORED',
+  Finished = 'FINISHED',
+  InProgress = 'IN_PROGRESS',
+  InQueue = 'IN_QUEUE',
+  New = 'NEW',
+  PendingCancel = 'PENDING_CANCEL'
+}
+
+export type LinkLogRocketOrganizationToExpoAccountInput = {
+  accountId: Scalars['ID'];
+  client_id: Scalars['String'];
+  client_secret: Scalars['String'];
+  orgName: Scalars['String'];
+  orgSlug: Scalars['String'];
+  state: Scalars['String'];
+};
+
+export type LinkSharedEnvironmentVariableInput = {
+  appId: Scalars['ID'];
+  environment?: InputMaybe<EnvironmentVariableEnvironment>;
+  environmentVariableId: Scalars['ID'];
+};
+
+export type LogsTimespan = {
+  end: Scalars['DateTime'];
+  start?: InputMaybe<Scalars['DateTime']>;
 };
 
 export enum MailchimpAudience {
-  ExpoDevelopers = 'EXPO_DEVELOPERS'
+  ExpoDevelopers = 'EXPO_DEVELOPERS',
+  ExpoDeveloperOnboarding = 'EXPO_DEVELOPER_ONBOARDING',
+  LaunchParty_2024 = 'LAUNCH_PARTY_2024',
+  NonprodExpoDevelopers = 'NONPROD_EXPO_DEVELOPERS'
 }
 
 export enum MailchimpTag {
   DevClientUsers = 'DEV_CLIENT_USERS',
-  EasMasterList = 'EAS_MASTER_LIST'
+  DidSubscribeToEasAtLeastOnce = 'DID_SUBSCRIBE_TO_EAS_AT_LEAST_ONCE',
+  EasMasterList = 'EAS_MASTER_LIST',
+  NewsletterSignupList = 'NEWSLETTER_SIGNUP_LIST'
 }
 
 export enum NotificationEvent {
   BuildComplete = 'BUILD_COMPLETE',
-  SubmissionComplete = 'SUBMISSION_COMPLETE'
+  BuildErrored = 'BUILD_ERRORED',
+  BuildLimitThresholdExceeded = 'BUILD_LIMIT_THRESHOLD_EXCEEDED',
+  BuildPlanCreditThresholdExceeded = 'BUILD_PLAN_CREDIT_THRESHOLD_EXCEEDED',
+  SubmissionComplete = 'SUBMISSION_COMPLETE',
+  SubmissionErrored = 'SUBMISSION_ERRORED',
+  Test = 'TEST'
 }
 
 export type NotificationSubscriptionFilter = {
@@ -815,7 +1284,8 @@ export type NotificationSubscriptionFilter = {
 };
 
 export enum NotificationType {
-  Email = 'EMAIL'
+  Email = 'EMAIL',
+  Web = 'WEB'
 }
 
 export enum OfferType {
@@ -825,6 +1295,16 @@ export enum OfferType {
   Prepaid = 'PREPAID',
   /** Term subscription */
   Subscription = 'SUBSCRIPTION'
+}
+
+export enum OnboardingDeviceType {
+  Device = 'DEVICE',
+  Simulator = 'SIMULATOR'
+}
+
+export enum OnboardingEnvironment {
+  DevBuild = 'DEV_BUILD',
+  ExpoGo = 'EXPO_GO'
 }
 
 export enum Order {
@@ -856,6 +1336,7 @@ export enum Permission {
 export type ProjectArchiveSourceInput = {
   bucketKey?: InputMaybe<Scalars['String']>;
   gitRef?: InputMaybe<Scalars['String']>;
+  metadataLocation?: InputMaybe<Scalars['String']>;
   repositoryUrl?: InputMaybe<Scalars['String']>;
   type: ProjectArchiveSourceType;
   url?: InputMaybe<Scalars['String']>;
@@ -872,14 +1353,90 @@ export enum ProjectArchiveSourceType {
 export type PublishUpdateGroupInput = {
   awaitingCodeSigningInfo?: InputMaybe<Scalars['Boolean']>;
   branchId: Scalars['String'];
+  environment?: InputMaybe<EnvironmentVariableEnvironment>;
   excludedAssets?: InputMaybe<Array<PartialManifestAsset>>;
+  fingerprintInfoGroup?: InputMaybe<FingerprintInfoGroup>;
   gitCommitHash?: InputMaybe<Scalars['String']>;
   isGitWorkingTreeDirty?: InputMaybe<Scalars['Boolean']>;
   message?: InputMaybe<Scalars['String']>;
   rollBackToEmbeddedInfoGroup?: InputMaybe<UpdateRollBackToEmbeddedGroup>;
+  rolloutInfoGroup?: InputMaybe<UpdateRolloutInfoGroup>;
   runtimeVersion: Scalars['String'];
+  turtleJobRunId?: InputMaybe<Scalars['String']>;
   updateInfoGroup?: InputMaybe<UpdateInfoGroup>;
 };
+
+export enum RequestMethod {
+  Delete = 'DELETE',
+  Get = 'GET',
+  Head = 'HEAD',
+  Options = 'OPTIONS',
+  Patch = 'PATCH',
+  Post = 'POST',
+  Put = 'PUT'
+}
+
+export type RequestsFilters = {
+  cacheStatus?: InputMaybe<Array<ResponseCacheStatus>>;
+  continent?: InputMaybe<Array<ContinentCode>>;
+  hasCustomDomainOrigin?: InputMaybe<Scalars['Boolean']>;
+  isAsset?: InputMaybe<Scalars['Boolean']>;
+  isCrash?: InputMaybe<Scalars['Boolean']>;
+  isLimitExceeded?: InputMaybe<Scalars['Boolean']>;
+  isVerifiedBot?: InputMaybe<Scalars['Boolean']>;
+  method?: InputMaybe<Array<RequestMethod>>;
+  os?: InputMaybe<Array<UserAgentOs>>;
+  pathname?: InputMaybe<Scalars['String']>;
+  requestId?: InputMaybe<Array<Scalars['WorkerDeploymentRequestID']>>;
+  responseType?: InputMaybe<Array<ResponseType>>;
+  status?: InputMaybe<Array<Scalars['Int']>>;
+  statusType?: InputMaybe<Array<ResponseStatusType>>;
+};
+
+export type RequestsOrderBy = {
+  direction?: InputMaybe<RequestsOrderByDirection>;
+  field: RequestsOrderByField;
+};
+
+export enum RequestsOrderByDirection {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
+
+export enum RequestsOrderByField {
+  AssetsSum = 'ASSETS_SUM',
+  CacheHitRatio = 'CACHE_HIT_RATIO',
+  CachePassRatio = 'CACHE_PASS_RATIO',
+  CrashesSum = 'CRASHES_SUM',
+  Duration = 'DURATION',
+  RequestsSum = 'REQUESTS_SUM'
+}
+
+export enum ResourceClassExperiment {
+  C3D = 'C3D',
+  N2 = 'N2'
+}
+
+export enum ResponseCacheStatus {
+  Hit = 'HIT',
+  Miss = 'MISS',
+  Pass = 'PASS'
+}
+
+export enum ResponseStatusType {
+  ClientError = 'CLIENT_ERROR',
+  None = 'NONE',
+  Redirect = 'REDIRECT',
+  ServerError = 'SERVER_ERROR',
+  Successful = 'SUCCESSFUL'
+}
+
+export enum ResponseType {
+  Asset = 'ASSET',
+  Crash = 'CRASH',
+  Rejected = 'REJECTED',
+  Route = 'ROUTE'
+}
 
 export type RobotDataInput = {
   name?: InputMaybe<Scalars['String']>;
@@ -895,13 +1452,27 @@ export enum Role {
   ViewOnly = 'VIEW_ONLY'
 }
 
+export type RuntimeBuildsFilterInput = {
+  channel?: InputMaybe<Scalars['String']>;
+  developmentClient?: InputMaybe<Scalars['Boolean']>;
+  distributions?: InputMaybe<Array<DistributionType>>;
+  platforms?: InputMaybe<Array<AppPlatform>>;
+  releaseChannel?: InputMaybe<Scalars['String']>;
+  simulator?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type RuntimeDeploymentsFilterInput = {
+  channel?: InputMaybe<Scalars['String']>;
+};
+
+export type RuntimeFilterInput = {
+  /** Only return runtimes shared with this branch */
+  branchId?: InputMaybe<Scalars['String']>;
+};
+
 export type SsoUserDataInput = {
   firstName?: InputMaybe<Scalars['String']>;
-  githubUsername?: InputMaybe<Scalars['String']>;
-  industry?: InputMaybe<Scalars['String']>;
   lastName?: InputMaybe<Scalars['String']>;
-  location?: InputMaybe<Scalars['String']>;
-  twitterUsername?: InputMaybe<Scalars['String']>;
 };
 
 export type SecondFactorDeviceConfiguration = {
@@ -917,10 +1488,6 @@ export enum SecondFactorMethod {
   /** SMS */
   Sms = 'SMS'
 }
-
-export type ServerlessFunctionIdentifierInput = {
-  gitCommitSHA1: Scalars['String'];
-};
 
 export enum StandardOffer {
   /** $29 USD per month, 30 day trial */
@@ -958,7 +1525,9 @@ export enum StatuspageIncidentStatus {
 export enum StatuspageServiceName {
   EasBuild = 'EAS_BUILD',
   EasSubmit = 'EAS_SUBMIT',
-  EasUpdate = 'EAS_UPDATE'
+  EasUpdate = 'EAS_UPDATE',
+  GithubApiRequests = 'GITHUB_API_REQUESTS',
+  GithubWebhooks = 'GITHUB_WEBHOOKS'
 }
 
 /** Possible statuses for a service. */
@@ -990,7 +1559,7 @@ export enum SubmissionAndroidTrack {
 }
 
 export type SubmissionArchiveSourceInput = {
-  /** Required if the archive source type is GCS_BUILD_APPLICATION_ARCHIVE or GCS_SUBMIT_ARCHIVE */
+  /** Required if the archive source type is GCS_BUILD_APPLICATION_ARCHIVE, GCS_BUILD_APPLICATION_ARCHIVE_ORCHESTRATOR or GCS_SUBMIT_ARCHIVE */
   bucketKey?: InputMaybe<Scalars['String']>;
   type: SubmissionArchiveSourceType;
   /** Required if the archive source type is URL */
@@ -999,6 +1568,7 @@ export type SubmissionArchiveSourceInput = {
 
 export enum SubmissionArchiveSourceType {
   GcsBuildApplicationArchive = 'GCS_BUILD_APPLICATION_ARCHIVE',
+  GcsBuildApplicationArchiveOrchestrator = 'GCS_BUILD_APPLICATION_ARCHIVE_ORCHESTRATOR',
   GcsSubmitArchive = 'GCS_SUBMIT_ARCHIVE',
   Url = 'URL'
 }
@@ -1007,6 +1577,11 @@ export type SubmissionFilter = {
   platform?: InputMaybe<AppPlatform>;
   status?: InputMaybe<SubmissionStatus>;
 };
+
+export enum SubmissionPriority {
+  High = 'HIGH',
+  Normal = 'NORMAL'
+}
 
 export enum SubmissionStatus {
   AwaitingBuild = 'AWAITING_BUILD',
@@ -1017,11 +1592,53 @@ export enum SubmissionStatus {
   InQueue = 'IN_QUEUE'
 }
 
+export enum TargetEntityMutationType {
+  Create = 'CREATE',
+  Delete = 'DELETE',
+  Update = 'UPDATE'
+}
+
 export type TimelineActivityFilterInput = {
   channels?: InputMaybe<Array<Scalars['String']>>;
   platforms?: InputMaybe<Array<AppPlatform>>;
   releaseChannels?: InputMaybe<Array<Scalars['String']>>;
   types?: InputMaybe<Array<ActivityTimelineProjectActivityType>>;
+};
+
+export type UpdateEnvironmentVariableInput = {
+  environments?: InputMaybe<Array<EnvironmentVariableEnvironment>>;
+  fileName?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  isGlobal?: InputMaybe<Scalars['Boolean']>;
+  name?: InputMaybe<Scalars['String']>;
+  type?: InputMaybe<EnvironmentSecretType>;
+  value?: InputMaybe<Scalars['String']>;
+  visibility?: InputMaybe<EnvironmentVariableVisibility>;
+};
+
+export type UpdateFilterInput = {
+  fingerprintHash?: InputMaybe<Scalars['String']>;
+  hasFingerprint?: InputMaybe<Scalars['Boolean']>;
+  runtimeVersion?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateGitHubBuildTriggerInput = {
+  autoSubmit: Scalars['Boolean'];
+  buildProfile: Scalars['String'];
+  environment?: InputMaybe<EnvironmentVariableEnvironment>;
+  executionBehavior: GitHubBuildTriggerExecutionBehavior;
+  isActive: Scalars['Boolean'];
+  platform: AppPlatform;
+  sourcePattern: Scalars['String'];
+  submitProfile?: InputMaybe<Scalars['String']>;
+  targetPattern?: InputMaybe<Scalars['String']>;
+  type: GitHubBuildTriggerType;
+};
+
+export type UpdateGitHubJobRunTriggerInput = {
+  isActive: Scalars['Boolean'];
+  sourcePattern: Scalars['String'];
+  targetPattern?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateGitHubRepositorySettingsInput = {
@@ -1040,6 +1657,17 @@ export type UpdateRollBackToEmbeddedGroup = {
   web?: InputMaybe<Scalars['Boolean']>;
 };
 
+export type UpdateRolloutInfo = {
+  rolloutControlUpdateId: Scalars['ID'];
+  rolloutPercentage: Scalars['Int'];
+};
+
+export type UpdateRolloutInfoGroup = {
+  android?: InputMaybe<UpdateRolloutInfo>;
+  ios?: InputMaybe<UpdateRolloutInfo>;
+  web?: InputMaybe<UpdateRolloutInfo>;
+};
+
 export type UpdatesFilter = {
   platform?: InputMaybe<AppPlatform>;
   runtimeVersions?: InputMaybe<Array<Scalars['String']>>;
@@ -1047,15 +1675,20 @@ export type UpdatesFilter = {
 };
 
 export enum UploadSessionType {
+  EasBuildGcsProjectMetadata = 'EAS_BUILD_GCS_PROJECT_METADATA',
   EasBuildGcsProjectSources = 'EAS_BUILD_GCS_PROJECT_SOURCES',
+  /** @deprecated Use EAS_BUILD_GCS_PROJECT_SOURCES instead. */
   EasBuildProjectSources = 'EAS_BUILD_PROJECT_SOURCES',
+  /** @deprecated Use EAS_SUBMIT_GCS_APP_ARCHIVE instead. */
   EasSubmitAppArchive = 'EAS_SUBMIT_APP_ARCHIVE',
-  EasSubmitGcsAppArchive = 'EAS_SUBMIT_GCS_APP_ARCHIVE'
+  EasSubmitGcsAppArchive = 'EAS_SUBMIT_GCS_APP_ARCHIVE',
+  EasUpdateFingerprint = 'EAS_UPDATE_FINGERPRINT'
 }
 
 export enum UsageMetricType {
   Bandwidth = 'BANDWIDTH',
   Build = 'BUILD',
+  Minute = 'MINUTE',
   Request = 'REQUEST',
   Update = 'UPDATE',
   User = 'USER'
@@ -1073,19 +1706,87 @@ export type UsageMetricsTimespan = {
   start: Scalars['DateTime'];
 };
 
+export enum UserAgentBrowser {
+  AndroidMobile = 'ANDROID_MOBILE',
+  Chrome = 'CHROME',
+  ChromeIos = 'CHROME_IOS',
+  Edge = 'EDGE',
+  FacebookMobile = 'FACEBOOK_MOBILE',
+  Firefox = 'FIREFOX',
+  FirefoxIos = 'FIREFOX_IOS',
+  InternetExplorer = 'INTERNET_EXPLORER',
+  Konqueror = 'KONQUEROR',
+  Mozilla = 'MOZILLA',
+  Opera = 'OPERA',
+  Safari = 'SAFARI',
+  SafariMobile = 'SAFARI_MOBILE',
+  SamsungInternet = 'SAMSUNG_INTERNET',
+  UcBrowser = 'UC_BROWSER'
+}
+
+export enum UserAgentOs {
+  Android = 'ANDROID',
+  ChromeOs = 'CHROME_OS',
+  Ios = 'IOS',
+  IpadOs = 'IPAD_OS',
+  Linux = 'LINUX',
+  MacOs = 'MAC_OS',
+  Windows = 'WINDOWS'
+}
+
+export type UserAuditLogExportInput = {
+  createdAfter: Scalars['String'];
+  createdBefore: Scalars['String'];
+  format: AuditLogsExportFormat;
+  targetEntityMutationType?: InputMaybe<Array<TargetEntityMutationType>>;
+  targetEntityTypeName?: InputMaybe<Array<UserEntityTypeName>>;
+  userId: Scalars['ID'];
+};
+
+export type UserAuditLogFilterInput = {
+  entityTypes?: InputMaybe<Array<UserEntityTypeName>>;
+  mutationTypes?: InputMaybe<Array<TargetEntityMutationType>>;
+};
+
 export type UserDataInput = {
-  appetizeCode?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
   firstName?: InputMaybe<Scalars['String']>;
   fullName?: InputMaybe<Scalars['String']>;
-  githubUsername?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
-  industry?: InputMaybe<Scalars['String']>;
   lastName?: InputMaybe<Scalars['String']>;
-  location?: InputMaybe<Scalars['String']>;
   profilePhoto?: InputMaybe<Scalars['String']>;
-  twitterUsername?: InputMaybe<Scalars['String']>;
   username?: InputMaybe<Scalars['String']>;
+};
+
+export enum UserEntityTypeName {
+  AccessTokenEntity = 'AccessTokenEntity',
+  DiscordUserEntity = 'DiscordUserEntity',
+  GitHubUserEntity = 'GitHubUserEntity',
+  PasswordEntity = 'PasswordEntity',
+  SsoUserEntity = 'SSOUserEntity',
+  UserEntity = 'UserEntity',
+  UserPermissionEntity = 'UserPermissionEntity',
+  UserSecondFactorBackupCodesEntity = 'UserSecondFactorBackupCodesEntity',
+  UserSecondFactorDeviceEntity = 'UserSecondFactorDeviceEntity'
+}
+
+export type UserPreferencesInput = {
+  onboarding?: InputMaybe<UserPreferencesOnboardingInput>;
+  selectedAccountName?: InputMaybe<Scalars['String']>;
+};
+
+export type UserPreferencesOnboardingInput = {
+  appId: Scalars['ID'];
+  deviceType?: InputMaybe<OnboardingDeviceType>;
+  environment?: InputMaybe<OnboardingEnvironment>;
+  isCLIDone?: InputMaybe<Scalars['Boolean']>;
+  lastUsed: Scalars['String'];
+  platform?: InputMaybe<AppPlatform>;
+};
+
+export type WebNotificationUpdateReadStateInput = {
+  id: Scalars['ID'];
+  isRead: Scalars['Boolean'];
 };
 
 export type WebhookFilter = {
@@ -1103,16 +1804,101 @@ export enum WebhookType {
   Submit = 'SUBMIT'
 }
 
+export enum WorkerDeploymentCrashKind {
+  ExceededCpu = 'EXCEEDED_CPU',
+  ExceededMemory = 'EXCEEDED_MEMORY',
+  ExceededSubrequests = 'EXCEEDED_SUBREQUESTS',
+  Generic = 'GENERIC',
+  Internal = 'INTERNAL',
+  ResponseStreamDisconnected = 'RESPONSE_STREAM_DISCONNECTED'
+}
+
+export enum WorkerDeploymentLogLevel {
+  Debug = 'DEBUG',
+  Error = 'ERROR',
+  Fatal = 'FATAL',
+  Info = 'INFO',
+  Log = 'LOG',
+  Warn = 'WARN'
+}
+
+export enum WorkerLoggerLevel {
+  Debug = 'DEBUG',
+  Error = 'ERROR',
+  Fatal = 'FATAL',
+  Info = 'INFO',
+  Trace = 'TRACE',
+  Warn = 'WARN'
+}
+
+export enum WorkflowJobStatus {
+  ActionRequired = 'ACTION_REQUIRED',
+  Canceled = 'CANCELED',
+  Failure = 'FAILURE',
+  InProgress = 'IN_PROGRESS',
+  New = 'NEW',
+  PendingCancel = 'PENDING_CANCEL',
+  Skipped = 'SKIPPED',
+  Success = 'SUCCESS'
+}
+
+export enum WorkflowJobType {
+  AppleDeviceRegistrationRequest = 'APPLE_DEVICE_REGISTRATION_REQUEST',
+  Build = 'BUILD',
+  Custom = 'CUSTOM',
+  Deploy = 'DEPLOY',
+  GetBuild = 'GET_BUILD',
+  MaestroTest = 'MAESTRO_TEST',
+  RequireApproval = 'REQUIRE_APPROVAL',
+  Submission = 'SUBMISSION',
+  Update = 'UPDATE'
+}
+
+export type WorkflowProjectSourceInput = {
+  easJsonBucketKey: Scalars['String'];
+  packageJsonBucketKey?: InputMaybe<Scalars['String']>;
+  projectArchiveBucketKey: Scalars['String'];
+  type: WorkflowProjectSourceType;
+};
+
+export enum WorkflowProjectSourceType {
+  Gcs = 'GCS'
+}
+
+export type WorkflowRevisionInput = {
+  fileName: Scalars['String'];
+  yamlConfig: Scalars['String'];
+};
+
+export type WorkflowRunInput = {
+  projectSource: WorkflowProjectSourceInput;
+};
+
+export enum WorkflowRunStatus {
+  ActionRequired = 'ACTION_REQUIRED',
+  Canceled = 'CANCELED',
+  Failure = 'FAILURE',
+  InProgress = 'IN_PROGRESS',
+  New = 'NEW',
+  PendingCancel = 'PENDING_CANCEL',
+  Success = 'SUCCESS'
+}
+
+export enum WorkflowRunTriggerEventType {
+  Github = 'GITHUB',
+  Manual = 'MANUAL'
+}
+
 export type AppByIdQueryVariables = Exact<{
   appId: Scalars['String'];
 }>;
 
 
-export type AppByIdQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, scopeKey: string, ownerAccount: { __typename?: 'Account', id: string } } } };
+export type AppByIdQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, scopeKey: string, ownerAccount: { __typename?: 'Account', id: string, name: string } } } };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CurrentUserQuery = { __typename?: 'RootQuery', meActor?: { __typename: 'Robot', firstName?: string | null, id: string, accounts: Array<{ __typename?: 'Account', id: string, users: Array<{ __typename?: 'UserPermission', permissions: Array<Permission>, actor: { __typename?: 'Robot', id: string } | { __typename?: 'SSOUser', id: string } | { __typename?: 'User', id: string } }> }> } | { __typename: 'SSOUser', username: string, id: string, primaryAccount: { __typename?: 'Account', id: string }, accounts: Array<{ __typename?: 'Account', id: string, users: Array<{ __typename?: 'UserPermission', permissions: Array<Permission>, actor: { __typename?: 'Robot', id: string } | { __typename?: 'SSOUser', id: string } | { __typename?: 'User', id: string } }> }> } | { __typename: 'User', username: string, id: string, primaryAccount: { __typename?: 'Account', id: string }, accounts: Array<{ __typename?: 'Account', id: string, users: Array<{ __typename?: 'UserPermission', permissions: Array<Permission>, actor: { __typename?: 'Robot', id: string } | { __typename?: 'SSOUser', id: string } | { __typename?: 'User', id: string } }> }> } | null };
 
-export type AppFragment = { __typename?: 'App', id: string, scopeKey: string, ownerAccount: { __typename?: 'Account', id: string } };
+export type AppFragment = { __typename?: 'App', id: string, scopeKey: string, ownerAccount: { __typename?: 'Account', id: string, name: string } };

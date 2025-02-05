@@ -112,7 +112,6 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
-  implementation("commons-io:commons-io:2.16.1")
   implementation("org.bouncycastle:bcutil-jdk15to18:1.78.1")
 
   testImplementation 'junit:junit:4.13.2'

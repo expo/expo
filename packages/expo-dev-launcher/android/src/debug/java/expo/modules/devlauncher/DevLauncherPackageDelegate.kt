@@ -18,8 +18,6 @@ import expo.modules.devlauncher.modules.DevLauncherAuth
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.modules.DevLauncherDevMenuExtension
 import expo.modules.devlauncher.react.DevLauncherReactNativeHostHandler
-import expo.modules.updatesinterface.UpdatesControllerRegistry
-import java.lang.ref.WeakReference
 
 object DevLauncherPackageDelegate {
   fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
@@ -36,10 +34,6 @@ object DevLauncherPackageDelegate {
         override fun onCreate(application: Application?) {
           check(application is ReactApplication)
           DevLauncherController.initialize(application)
-          UpdatesControllerRegistry.controller?.get()?.let {
-            DevLauncherController.instance.updatesInterface = it
-            it.updatesInterfaceCallbacks = WeakReference(DevLauncherController.instance)
-          }
         }
       }
     )
