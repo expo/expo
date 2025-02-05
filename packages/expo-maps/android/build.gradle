@@ -50,7 +50,11 @@ android {
   }
   if (KOTLIN_MAJOR_VERSION < 2) {
     composeOptions {
-      kotlinCompilerExtensionVersion = "1.5.14"
+      def versionsMap = [
+        "1.9.24": "1.5.14",
+        "1.9.25": "1.5.15",
+      ]
+      kotlinCompilerExtensionVersion = versionsMap[kotlinVersion()]
     }
   }
   lintOptions {
