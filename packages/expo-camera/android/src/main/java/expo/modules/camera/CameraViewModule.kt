@@ -36,7 +36,6 @@ import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 
-
 val cameraEvents = arrayOf(
   "onCameraReady",
   "onMountError",
@@ -168,10 +167,11 @@ class CameraViewModule : Module() {
             putInt("width", image.width)
             putInt("height", image.height)
           }
+
+          val quality = options?.quality ?: 0
           // Cache compressed image in imageStream
           ByteArrayOutputStream().use { imageStream ->
-            image.compress(Bitmap.CompressFormat.JPEG, ((options?.quality
-              ?: (1 * 100))).toInt(), imageStream)
+            image.compress(Bitmap.CompressFormat.JPEG, quality.toInt() * 100, imageStream)
             // Write compressed image to file in cache directory
             val filePath = writeStreamToFile(it, imageStream)
             image.recycle()

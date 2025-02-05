@@ -50,7 +50,6 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import expo.modules.camera.analyzers.BarcodeAnalyzer
 import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.common.BarcodeScannedEvent
