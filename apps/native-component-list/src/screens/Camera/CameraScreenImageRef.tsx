@@ -1,12 +1,18 @@
 import { CameraView, PictureRef } from 'expo-camera';
 import { Image } from 'expo-image';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Button, Text } from 'react-native';
 
 export default function CameraScreenImageRef() {
   const ref = useRef<CameraView>(null);
   const [picture, setPicture] = useState<PictureRef | null>(null);
   const [saveInfo, setSaveInfo] = useState<string | undefined>();
+
+  useEffect(() => {
+    ref.current?.getAvailablePictureSizesAsync().then((sizes) => {
+      console.log({ sizes });
+    });
+  }, []);
 
   const takePicture = async () => {
     if (ref.current) {
@@ -26,8 +32,8 @@ export default function CameraScreenImageRef() {
 
   return (
     <View style={styles.screen}>
-      <View style={{ flexDirection: 'row' }}>
-        <CameraView style={styles.camera} ref={ref} pictureSize="1920x1080" />
+      <View style={{ height: 300, flexDirection: 'row' }}>
+        <CameraView style={styles.camera} ref={ref} pictureSize="1920x1440" />
         <Image source={picture} style={styles.picture} />
       </View>
       <Button onPress={takePicture} title="Take Picture" />
@@ -48,10 +54,17 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+    margin: 10,
+    borderRadius: 10,
+    borderColor: 'black',
+    borderWidth: 2,
   },
   picture: {
     flex: 1,
-    height: 300,
+    margin: 10,
+    borderColor: 'black',
+    borderWidth: 2,
+    borderRadius: 10,
   },
   infoBox: {
     padding: 10,

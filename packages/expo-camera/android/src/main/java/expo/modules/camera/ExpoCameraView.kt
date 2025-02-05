@@ -50,6 +50,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import expo.modules.camera.analyzers.BarcodeAnalyzer
 import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.common.BarcodeScannedEvent
@@ -84,6 +85,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.roundToInt
 import kotlin.properties.Delegates
+import kotlin.text.toFloat
 
 const val ANIMATION_FAST_MILLIS = 50L
 const val ANIMATION_SLOW_MILLIS = 100L
@@ -202,6 +204,9 @@ class ExpoCameraView(
     setTorchEnabled(newValue)
   }
 
+  private var lastWidth = 0
+  private var lastHeight = 0
+
   private val onCameraReady by EventDispatcher<Unit>()
   private val onMountError by EventDispatcher<CameraMountErrorEvent>()
   private val onBarcodeScanned by EventDispatcher<BarcodeScannedEvent>(
@@ -237,8 +242,12 @@ class ExpoCameraView(
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     val width = right - left
     val height = bottom - top
-    previewView.layout(0, 0, width, height)
-    glSurfaceTexture?.setDefaultBufferSize(width, height)
+    if (width != lastWidth || height != lastHeight) {
+      previewView.layout(0, 0, width, height)
+      glSurfaceTexture?.setDefaultBufferSize(width, height)
+      lastWidth = width
+      lastHeight = height
+    }
   }
 
   override fun onViewAdded(child: View?) {
@@ -282,16 +291,13 @@ class ExpoCameraView(
             promise.resolve(null)
           }
 
-          if (options.pictureRef) {
-            promise.resolve(PictureRef(image.toBitmap(), runtimeContext))
-            return
-          }
-
           cacheDirectory.let {
             scope.launch {
               val shouldMirror = mirror && lensFacing == CameraType.FRONT
-              ResolveTakenPicture(data, promise, options, shouldMirror, it) { response: Bundle ->
-                onPictureSaved(response)
+              ResolveTakenPicture(data, promise, options, shouldMirror, runtimeContext, it) { response: Bundle ->
+                if (!options.pictureRef) {
+                  onPictureSaved(response)
+                }
               }.resolve()
             }
           }
@@ -405,12 +411,14 @@ class ExpoCameraView(
       {
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
-        previewView.scaleType =
-          if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
-            PreviewView.ScaleType.FIT_CENTER
-          } else {
-            PreviewView.ScaleType.FILL_CENTER
-          }
+        ratio?.let {
+          previewView.scaleType =
+            if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
+              PreviewView.ScaleType.FIT_CENTER
+            } else {
+              PreviewView.ScaleType.FILL_CENTER
+            }
+        }
 
         val resolutionSelector = buildResolutionSelector()
         val preview = Preview.Builder()
@@ -464,7 +472,7 @@ class ExpoCameraView(
           // Set the previous zoom level after recreating the camera
           camera?.cameraControl?.setLinearZoom(zoom.coerceIn(0f, 1f))
           this.cameraProvider = cameraProvider
-        } catch (e: Exception) {
+        } catch (_: Exception) {
           onMountError(
             CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
           )
@@ -623,11 +631,6 @@ class ExpoCameraView(
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
   }
 
-  fun releaseCamera() = appContext.mainQueue.launch {
-    shouldCreateCamera = true
-    cameraProvider?.unbindAll()
-  }
-
   private fun transformBarcodeScannerResultToViewCoordinates(barcode: BarCodeScannerResult) {
     val cornerPoints = barcode.cornerPoints
     val previewWidth = previewView.width
@@ -746,9 +749,17 @@ class ExpoCameraView(
     onPictureSaved(PictureSavedEvent(response.getInt("id"), response.getBundle("data")!!))
   }
 
-  fun cancelCoroutineScope() = try {
+  private fun cancelCoroutineScope() = try {
     scope.cancel(ModuleDestroyedException())
   } catch (e: Exception) {
     Log.e(CameraViewModule.TAG, "The scope does not have a job in it")
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    orientationEventListener.disable()
+    cancelCoroutineScope()
+    cameraProvider?.unbindAll()
+    glSurfaceTexture?.release()
   }
 }
