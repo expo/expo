@@ -42,7 +42,6 @@
     "prettier": "^3.4.2"
   },
   "peerDependencies": {
-    "eslint": ">=9",
-    "prettier": ">=3"
+    "eslint": "^8 || ^9"
   }
 }
