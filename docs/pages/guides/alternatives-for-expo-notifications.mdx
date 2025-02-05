@@ -1,63 +1,73 @@
 ---
 title: Alternatives for Expo Notifications
-sidebar_title: Alternatives for Expo Notifications
-hideTOC: true
 description: Learn about alternative services for sending push notifications.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
-Expo makes implementing push notifications easier by abstracting much of the complexity involved in communicating with Firebase Cloud Messaging (FCM) and Apple Push Notification Service (APNs). With Expo, you can handle notifications for both Android and iOS in the same way, saving development time on both the front-end and back-end.
+Expo simplifies push notification implementation by abstracting much of the complexity involved in communicating with [Firebase Cloud Messaging (FCM)](https://firebase.google.com/docs/cloud-messaging) and [Apple Push Notification Service (APNs)](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server). With Expo, you can handle notifications for both Android and iOS the same way, saving development time on both the front end and back end.
 
-Expo Notifications require minimal configuration, and there are many resources and tutorials available to help you get started. Additionally, Expo offers extra tooling like the [Expo Notifications Tool](https://expo.dev/notifications) for quickly testing notifications.
+[Expo Notifications](/push-notifications/overview) require minimal configuration, and you can find many resources and tutorials to help you get started. Additionally, Expo offers tools like the [Expo Notifications Tool](https://expo.dev/notifications) for quick testing.
 
-For server-side notification delivery, there are multiple SDKs to choose from. The Expo team maintains the [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node), and the community provides additional SDKs ([see the full list](https://docs.expo.dev/push-notifications/sending-notifications/#third-party-sdks)). Alternatively, you can send an [HTTP/2 request](https://docs.expo.dev/push-notifications/sending-notifications/#http2-api) directly to the Expo endpoint. This API does not require authentication, making it fast and easy to use.
+For server-side notification delivery, you have multiple SDK options. The Expo team maintains the [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node), and the community provides additional SDKs ([see the full list](https://docs.expo.dev/push-notifications/sending-notifications/#third-party-sdks)). Alternatively, you can send an [HTTP/2 request](https://docs.expo.dev/push-notifications/sending-notifications/#http2-api) directly to the Expo endpoint. This API does not require authentication, making it fast and easy to use.
 
-**No cost** is associated with sending notifications through the Expo push notification service.
+**There is no cost** associated with sending notifications through the Expo push notification service.
 
-Additionally, using Expo Notifications is not mandatory. You can use methods from expo-notifications, such as getDevicePushTokenAsync, to retrieve the native push token and use it with other services, or send notifications directly through FCM and APNs.
+Using Expo Notifications is optional. You can use methods from [`expo-notifications`](/versions/latest/sdk/notifications/), such as [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync), to retrieve the native push token and use it with other services.
 
 ## Limitations of Expo Notifications
 
-- **Dependency on Expo** - Your app relies on Expo's push notification service.
-- **Limited control** - Full customization of notifications (e.g., advanced background handling) may require direct FCM/APNs integration.
+- **Dependency on Expo** — Your app relies on Expo's push notification service.
+- **Limited control** — Full customization, such as advanced background handling, may require direct FCM/APNs integration.
+- **Rate limits** — Expo limits push notifications to **600 notifications per second per project**. If you exceed this rate, subsequent requests will fail until the rate drops below the limit. To manage this effectively, implement request throttling (included in the [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node)) and add retry logic to your server.
 
-## Notification Rate Limits
+## Alternative Push Notification Providers
 
-Expo limits push notification sending to **600 notifications per second per project**. If you exceed this rate, subsequent requests will fail until the rate drops below the limit.
-
-To handle this efficiently, we recommend implementing request throttling (which is built into the [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node)) and adding retry logic to your server.
-
-For apps requiring more granular control over background notification handling, a direct FCM/APNs implementation may be necessary.
-
-The following links provide alternative push notification providers that support expo integrations:
+If you need more control or additional features, consider using a third-party push notification provider. Below are some popular services that offer advanced features and integrations with Expo.
 
 ### OneSignal
 
-OneSignal is a customer engagement platform that provides push notifications, in-app messaging, SMS, and email services for web and mobile apps. They offer an Expo SDK that makes integrating it into your app fairly easy. See the following guide for a step-by-step integration.
+[OneSignal](https://onesignal.com/) is a customer engagement platform offering push notifications, in-app messaging, SMS, and email services for web and mobile apps. They provide an [Expo SDK](https://github.com/OneSignal/onesignal-expo-plugin) for easy integration. Follow the guide below for a step-by-step setup.
 
-[OneSignal Expo SDK Setup](https://documentation.onesignal.com/docs/react-native-expo-sdk-setup)
+<BoxLink
+  title="OneSignal Expo SDK Setup"
+  description="Learn how to integrate OneSignal in your Expo project."
+  href="https://documentation.onesignal.com/docs/react-native-expo-sdk-setup"
+/>
 
 ### Braze
 
-Braze is a customer engagement platform that enables businesses to deliver personalized, cross-channel messaging through push notifications, in-app messaging, email, SMS, and web. They offer a React Native SDK as well as an Expo plugin. See the [Expo example app](https://github.com/braze-inc/braze-expo-plugin/tree/main/example) for more info.
+[Braze](braze.com/) is a customer engagement platform that delivers personalized, cross-channel messaging through push notifications, in-app messaging, email, SMS, and web. They offer a [React Native SDK](https://github.com/braze-inc/braze-react-native-sdk) and an [Expo plugin](https://github.com/braze-inc/braze-expo-plugin/tree/main). Check out the [Expo example app](https://github.com/braze-inc/braze-expo-plugin/tree/main/example) for more details.
 
-[Braze Expo SDK Integration](https://www.braze.com/docs/developer_guide/platforms/react_native/sdk_integration/#sample-app)
+<BoxLink
+  title="Braze Expo Setup"
+  description="Learn how to integrate Braze in your Expo project."
+  href="https://www.braze.com/docs/developer_guide/platforms/react_native/sdk_integration"
+/>
 
 ### Customer.io
 
-[Customer.io](http://Customer.io) offers two main services: “Journeys” to set up campaigns and send messages, emails, push notifications, etc. and “Data Pipelines” for capturing data from your sources (expo app, website, etc) and forward data to the right destinations in your stack. They offer an Expo plugin for seamless integration with your app. See the [quick start guide](https://docs.customer.io/sdk/expo/quick-start-guide/).
+[Customer.io](http://Customer.io) provides two main services:
 
-[Customer.io Expo Quick Start Guide](https://docs.customer.io/sdk/expo/quick-start-guide/)
+- **Journeys** - Set up campaigns and send messages, emails, and push notifications.
+- **Data Pipelines** - Capture and forward data from your Expo app, website, or other sources to the right destinations in your stack.
 
-### Native Push Notifications
+They offer an [Expo plugin](https://github.com/customerio/customerio-expo-plugin) for seamless integration. Follow the guide below to get started.
 
-In some specific cases, you may want to handle your notifications natively. This gives full customization but comes with complex setup and maintenance burden. That said, you can still use expo-notifications to get the native push token and then use this device token to send and configure push notifications for each platform.
+<BoxLink
+  title="Customer.io Expo Quick Start Guide"
+  description="Learn how to integrate Customer.io in your Expo project."
+  href="https://docs.customer.io/sdk/expo/quick-start-guide/"
+/>
 
-#### APN (Apple Push Notifications)
+## Native Push Notifications
 
-Apple Push Notification (APN) is the native iOS service provided by Apple for sending push notifications. All the tools mentioned above wrap APN, offering useful abstractions. When integrating APN directly, you are responsible for setting up a provider server and configuring your app to handle notifications on the user’s device. Learn more at [Apple’s official documentation](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server).
+In some cases, you may need to handle notifications natively for full customization. While this increases complexity, you can still use [`expo-notifications`](/versions/latest/sdk/notifications/) to get the native push token and configure notifications separately for each platform.
 
-#### FCM (Firebase Cloud Messaging)
+### APNs (Apple Push Notification Service)
 
-Firebase Cloud Messaging (FCM) is a free, cross-platform messaging service that enables reliable message delivery. It allows you to notify client apps when new data, such as emails, is available for syncing. FCM can be used to re-engage users with notification messages or send payloads of up to 4096 bytes for instant messaging and other real-time use cases. Learn more at [Google’s documentation](https://firebase.google.com/docs/cloud-messaging).
+[Apple Push Notification Service (APNs)](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server) is the native iOS service for push notifications. The tools above wrap APNs with useful abstractions. If you integrate APNs directly, you must set up a provider server and configure your app to handle notifications on the user's device. Learn more in [Apple’s official documentation](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server).
+
+### FCM (Firebase Cloud Messaging)
+
+[Firebase Cloud Messaging (FCM)](https://firebase.google.com/docs/cloud-messaging) is a free, cross-platform messaging service for reliable message delivery. You can use it to notify client apps of new data, send messages, or handle real-time communication. Learn more in [Google’s documentation](https://firebase.google.com/docs/cloud-messaging).
