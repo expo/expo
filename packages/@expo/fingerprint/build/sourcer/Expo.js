@@ -177,6 +177,9 @@ function normalizeExpoConfig(config, projectRoot, options) {
         delete normalizedConfig.web?.favicon;
         delete normalizedConfig.web?.splash;
     }
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigExtraSection) {
+        delete normalizedConfig.extra;
+    }
     return (0, Utils_1.relativizeJsonPaths)(normalizedConfig, projectRoot);
 }
 /**
