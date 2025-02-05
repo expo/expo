@@ -9,17 +9,8 @@
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 #import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
 
-// TODO(vonovak,20250122) - Remove the if when 76 is not supported, or rather remove the EXAppDelegateWrapper because it's deprecated
-#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
-#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
-#endif
-
-@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
-@end
-
 @implementation EXAppDelegateWrapper {
   EXExpoAppDelegate *_expoAppDelegate;
-//	RCTRootViewFactory *_rootFac;
 }
 
 - (instancetype)init
@@ -28,9 +19,24 @@
     // TODO(kudo) to remove the `initWithAppDelegate` initializer when `EXAppDelegateWrapper` is removed
     _expoAppDelegate = [[EXExpoAppDelegate alloc] initWithAppDelegate:self];
     _expoAppDelegate.shouldCallReactNativeSetup = NO;
-//		_rootFac = [_expoAppDelegate createRCTRootViewFactory];
   }
   return self;
+}
+
+- (void)setModuleName:(NSString * _Nullable)moduleName {
+  _expoAppDelegate.moduleName = [moduleName copy];
+}
+
+- (NSString*) moduleName {
+  return _expoAppDelegate.moduleName;
+}
+
+- (void)setInitialProps:(NSDictionary * _Nullable)initialProps {
+  _expoAppDelegate.initialProps = initialProps;
+}
+
+- (NSDictionary*) initialProps {
+  return _expoAppDelegate.initialProps;
 }
 
 // This needs to be implemented, otherwise forwarding won't be called.
@@ -54,12 +60,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
-	self.dependencyProvider = [RCTAppDependencyProvider new];
-#endif
-//	self.reactNativeFactory.rootViewFactory = [self createRCTRootViewFactory];
-
-  [super application:application didFinishLaunchingWithOptions:launchOptions];
   return [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
@@ -71,18 +71,6 @@
 - (UIViewController *)createRootViewController
 {
   return [_expoAppDelegate createRootViewController];
-}
-
-//- (RCTRootViewFactory *)rootViewFactory
-//{
-////	return _expoAppDelegate.rootViewFactory;
-//	return _expoAppDelegate.rootViewFactory;
-////	return [_expoAppDelegate createRCTRootViewFactory];
-//}
-
-- (RCTRootViewFactory *)createRCTRootViewFactory
-{
-  return [_expoAppDelegate createRCTRootViewFactory];
 }
 
 - (void)customizeRootView:(UIView *)rootView
@@ -113,6 +101,16 @@
                    isFatal:(BOOL)isFatal
 {
 }
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+{
+  return [_expoAppDelegate getModuleInstanceFromClass:moduleClass];
+}
+
+- (Class)getModuleClassFromName:(const char *)name {
+  return [_expoAppDelegate getModuleClassFromName:name];
+}
+
 
 #pragma mark - Helpers
 
