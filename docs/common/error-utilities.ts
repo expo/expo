@@ -471,4 +471,11 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/config/app/name/': '/versions/latest/config/app/#name',
   '/bare/': '/bare/overview/',
   '/accounts/working-together/': '/accounts/account-types/',
+
+  // After moving from eas-workflows to eas/workflows
+  '/eas-workflows/get-started/': '/eas/workflows/get-started/',
+  '/eas-workflows/triggers/': '/eas/workflows/syntax/#on',
+  '/eas-workflows/jobs/': '/eas/workflows/syntax/#jobs',
+  '/eas-workflows/control-flow/': '/eas/workflows/syntax/#control-flow',
+  '/eas-workflows/variables/': '/eas/workflows/syntax/#jobsjob_idoutputs',
 };
