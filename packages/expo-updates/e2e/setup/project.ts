@@ -770,7 +770,7 @@ export async function initAsync(
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    '\nandroid.enableProguardInReleaseBuilds=true\nandroid.kotlinVersion=1.9.24\nEXPO_UPDATES_NATIVE_DEBUG=true',
+    '\nandroid.enableProguardInReleaseBuilds=true\nEXPO_UPDATES_NATIVE_DEBUG=true',
     'utf-8'
   );
 
