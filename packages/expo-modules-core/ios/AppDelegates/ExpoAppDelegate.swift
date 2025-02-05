@@ -2,11 +2,6 @@ import Dispatch
 import Foundation
 import React_RCTAppDelegate
 
-// TODO(vonovak,20250107) - Remove the if expression when we drop SDK 52 / RN 76 support
-#if canImport(ReactAppDependencyProvider)
-import ReactAppDependencyProvider
-#endif
-
 var subscribers = [ExpoAppDelegateSubscriberProtocol]()
 
 /**
@@ -24,11 +19,11 @@ open class ExpoAppDelegate: ExpoAppInstance {
    */
   @objc
   public var shouldCallReactNativeSetup: Bool = true
-
+  
   #if os(iOS) || os(tvOS)
   // MARK: - Initializing the App
 
-  open override func application(
+  open func application(
     _ application: UIApplication,
     willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
@@ -52,18 +47,15 @@ open class ExpoAppDelegate: ExpoAppInstance {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-#if canImport(ReactAppDependencyProvider)
-    self.dependencyProvider = RCTAppDependencyProvider()
-#endif
-    if shouldCallReactNativeSetup {
-      super.application(application, didFinishLaunchingWithOptions: launchOptions)
-    }
-
+    let result: Bool = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    
+    
     subscribers.forEach { subscriber in
       // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
       _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
     }
-    return true
+
+    return result
   }
 
   // TODO: - Configuring and Discarding Scenes
@@ -71,25 +63,25 @@ open class ExpoAppDelegate: ExpoAppInstance {
   // MARK: - Responding to App Life-Cycle Events
 
   @objc
-  open override func applicationDidBecomeActive(_ application: UIApplication) {
+  open  func applicationDidBecomeActive(_ application: UIApplication) {
     subscribers.forEach { $0.applicationDidBecomeActive?(application) }
   }
 
   @objc
-  open override func applicationWillResignActive(_ application: UIApplication) {
+  open  func applicationWillResignActive(_ application: UIApplication) {
     subscribers.forEach { $0.applicationWillResignActive?(application) }
   }
 
   @objc
-  open override func applicationDidEnterBackground(_ application: UIApplication) {
+  open  func applicationDidEnterBackground(_ application: UIApplication) {
     subscribers.forEach { $0.applicationDidEnterBackground?(application) }
   }
 
-  open override func applicationWillEnterForeground(_ application: UIApplication) {
+  open  func applicationWillEnterForeground(_ application: UIApplication) {
     subscribers.forEach { $0.applicationWillEnterForeground?(application) }
   }
 
-  open override func applicationWillTerminate(_ application: UIApplication) {
+  open  func applicationWillTerminate(_ application: UIApplication) {
     subscribers.forEach { $0.applicationWillTerminate?(application) }
   }
 
@@ -99,7 +91,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Downloading Data in the Background
 
-  open override func application(
+  open  func application(
     _ application: UIApplication,
     handleEventsForBackgroundURLSession identifier: String,
     completionHandler: @escaping () -> Void
@@ -130,15 +122,15 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Handling Remote Notification Registration
 
-  open override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+  open  func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     subscribers.forEach { $0.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
   }
 
-  open override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+  open  func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     subscribers.forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
   }
 
-  open override func application(
+  open  func application(
     _ application: UIApplication,
     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
@@ -183,13 +175,13 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Continuing User Activity and Handling Quick Actions
 
-  open override func application(_ application: UIApplication, willContinueUserActivityWithType userActivityType: String) -> Bool {
+  open  func application(_ application: UIApplication, willContinueUserActivityWithType userActivityType: String) -> Bool {
     return subscribers.reduce(false) { result, subscriber in
       return subscriber.application?(application, willContinueUserActivityWithType: userActivityType) ?? false || result
     }
   }
 
-  open override func application(
+  open  func application(
     _ application: UIApplication,
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
@@ -219,18 +211,18 @@ open class ExpoAppDelegate: ExpoAppInstance {
     }
   }
 
-  open override func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
+  open  func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
     return subscribers.forEach { $0.application?(application, didUpdate: userActivity) }
   }
 
-  open override func application(_ application: UIApplication, didFailToContinueUserActivityWithType userActivityType: String, error: Error) {
+  open  func application(_ application: UIApplication, didFailToContinueUserActivityWithType userActivityType: String, error: Error) {
     return subscribers.forEach {
       $0.application?(application, didFailToContinueUserActivityWithType: userActivityType, error: error)
     }
   }
 
 #if !os(tvOS)
-  open override func application(
+  open  func application(
     _ application: UIApplication,
     performActionFor shortcutItem: UIApplicationShortcutItem,
     completionHandler: @escaping (Bool) -> Void
@@ -264,7 +256,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Background Fetch
 
-  open override func application(
+  open  func application(
     _ application: UIApplication,
     performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
   ) {
@@ -312,7 +304,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   // MARK: - Opening a URL-Specified Resource
 
-  open override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+  open  func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
     return subscribers.reduce(false) { result, subscriber in
       return subscriber.application?(app, open: url, options: options) ?? false || result
     }
@@ -331,7 +323,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
    * a different orientation.
    */
 #if !os(tvOS)
-  open override func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+  open  func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
     let deviceOrientationMask = allowedOrientations(for: UIDevice.current.userInterfaceIdiom)
     let universalOrientationMask = allowedOrientations(for: .unspecified)
     let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask
