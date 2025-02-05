@@ -22,6 +22,8 @@ export namespace GoogleMaps {
   export type MapUiSettings = GoogleTypes.MapUiSettings;
   export type MapProperties = GoogleTypes.MapProperties;
   export type MapProps = GoogleTypes.MapProps;
+
+  export type MapView = GoogleTypes.MapViewType;
 }
 
 export namespace AppleMaps {
