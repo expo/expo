@@ -1,4 +1,4 @@
-const jsExtensions = ['.mjs', '.js', '.jsx'];
+const jsExtensions = ['.cjs', '.mjs', '.js', '.jsx'];
 
 const tsExtensions = ['.ts', '.tsx', '.d.ts'];
 
