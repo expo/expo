@@ -39,8 +39,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
           it.disposeComposition()
         }
 
-        override fun onViewDetachedFromWindow(v: View) {
-        }
+        override fun onViewDetachedFromWindow(v: View) = Unit
       })
     }
   }
