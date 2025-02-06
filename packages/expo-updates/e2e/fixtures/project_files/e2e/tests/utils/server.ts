@@ -24,12 +24,19 @@ let requestedStaticFiles: string[] = [];
 
 let protocolVersion: number = 1;
 let artificialDelay: number = 0;
+let serveOverriddenUrl: boolean = false;
 
-function start(port: any, protocol: number = 1, artificialDelayMs: number = 0) {
+function start(
+  port: any,
+  protocol: number = 1,
+  artificialDelayMs: number = 0,
+  shouldServeOverriddenUrl: boolean = false
+) {
   if (!server) {
     server = app.listen(port);
     protocolVersion = protocol;
     artificialDelay = artificialDelayMs;
+    serveOverriddenUrl = shouldServeOverriddenUrl;
   }
 }
 
@@ -105,6 +112,23 @@ app.post(
 );
 
 app.get('/update', (req: any, res: any) => {
+  if (serveOverriddenUrl) {
+    res.statusCode = 204;
+    res.setHeader('expo-protocol-version', 1);
+    res.setHeader('expo-sfv-version', 0);
+    res.setHeader('cache-control', 'private, max-age=0');
+    res.end();
+    return;
+  }
+  updateRequestHandler(req, res);
+});
+
+app.get('/update-override', (req: any, res: any) => {
+  // serve the update on overridden
+  updateRequestHandler(req, res);
+});
+
+const updateRequestHandler = (req: any, res: any) => {
   updateRequest = req;
   if (multipartResponseToServe) {
     // Protocol 1: multipart and rollbacks supported
@@ -161,7 +185,7 @@ app.get('/update', (req: any, res: any) => {
     }
     res.status(404).send('No update available');
   }
-});
+};
 
 async function waitForUpdateRequest(timeout: number): Promise<{ headers: any }> {
   const finishTime = new Date().getTime() + timeout;
