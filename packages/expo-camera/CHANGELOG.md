@@ -31,6 +31,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Fix setting `videoQuality` prop. ([#34082](https://github.com/expo/expo/pull/34082) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix an issue where the camera image is pixelated when using the gl integration. ([#34174](https://github.com/expo/expo/pull/34174) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix setting the camera preview provider. ([#34302](https://github.com/expo/expo/pull/34302) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix initial roation when used with `react-native-screens`. ([#34721](https://github.com/expo/expo/pull/34721) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 16.0.10 — 2024-12-16
 
