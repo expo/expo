@@ -68,11 +68,6 @@ android {
     buildTypes.each {
       it.buildConfigField 'String', 'VERSION', "\"${defaultConfig.versionName}\""
     }
-
-    releaseWithDevLauncher {
-      initWith release
-      matchingFallbacks = ['release', 'debug']
-    }
   }
 
   sourceSets {
@@ -96,9 +91,6 @@ android {
           srcDirs += "src/rn74/debug"
         }
       }
-    }
-    releaseWithDevLauncher {
-      setRoot 'src/debug'
     }
   }
 

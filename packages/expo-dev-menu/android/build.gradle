@@ -67,13 +67,6 @@ android {
     versionName '6.0.12'
   }
 
-  buildTypes {
-    releaseWithDevMenu {
-      initWith release
-      matchingFallbacks = ['release', 'debug']
-    }
-  }
-
   sourceSets {
     def rnVersion = getRNVersion()
     main {
@@ -89,10 +82,6 @@ android {
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
 
       }
-    }
-
-    releaseWithDevMenu {
-      setRoot 'src/debug'
     }
   }
   buildFeatures {
