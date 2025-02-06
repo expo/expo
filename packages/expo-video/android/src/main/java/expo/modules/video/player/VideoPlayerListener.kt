@@ -9,6 +9,7 @@ import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.TimeUpdate
+import expo.modules.video.records.VideoTrack
 
 @OptIn(UnstableApi::class)
 interface VideoPlayerListener {
@@ -23,4 +24,5 @@ interface VideoPlayerListener {
   fun onTimeUpdate(player: VideoPlayer, timeUpdate: TimeUpdate) {}
   fun onPlayedToEnd(player: VideoPlayer) {}
   fun onAudioMixingModeChanged(player: VideoPlayer, audioMixingMode: AudioMixingMode, oldAudioMixingMode: AudioMixingMode?) {}
+  fun onVideoTrackChanged(player: VideoPlayer, videoTrack: VideoTrack?, oldVideoTrack: VideoTrack?) {}
 }
