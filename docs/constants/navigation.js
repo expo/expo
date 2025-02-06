@@ -324,7 +324,6 @@ export const general = [
       makePage('workflow/upgrading-expo-sdk-walkthrough.mdx'),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
-        makePage('guides/sharing-preview-releases.mdx'),
         makePage('guides/using-hermes.mdx'),
         makePage('guides/ios-developer-mode.mdx'),
         makePage('guides/icons.mdx'),
