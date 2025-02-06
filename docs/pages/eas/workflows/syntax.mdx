@@ -363,17 +363,16 @@ custom_job:
         id: resolve_apple_team_id_from_credentials
     # @info #
     - uses: eas/prebuild
-      inputs:
+      with:
         clean: false
         apple_team_id: ${{ steps.resolve_apple_team_id_from_credentials.outputs.apple_team_id }}
     # @end #
 ```
 
-| Property               | Type      | Description                                                                                                                              |
-| ---------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                 | -         | The name of the step in the reusable function that shows in the build logs. Defaults to `Prebuild`.                                      |
-| `inputs.clean`         | `boolean` | Optional input defining whether the function should use `--clean` flag when running the command. Defaults to false                       |
-| `inputs.apple_team_id` | `boolean` | Optional input defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
+| Input           | Type      | Description                                                                                                                              |
+|-----------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------|
+| `clean`         | `boolean` | Optional input defining whether the function should use `--clean` flag when running the command. Defaults to false.                      |
+| `apple_team_id` | `boolean` | Optional input defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
 
 <BoxLink
   title="eas/prebuild source code"
@@ -396,7 +395,7 @@ custom_job:
     # @info #
     - uses: eas/send_slack_message
       # @end #
-      inputs:
+      with:
         message: 'This is a message to plain input URL'
         slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
 ```
