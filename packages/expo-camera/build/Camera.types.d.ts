@@ -78,6 +78,7 @@ export type CameraCapturedPicture = {
 export type CameraPictureOptions = {
     /**
      * Specify the compression quality from `0` to `1`. `0` means compress for small size, and `1` means compress for maximum quality.
+     * @default 1
      */
     quality?: number;
     /**
