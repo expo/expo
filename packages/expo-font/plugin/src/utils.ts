@@ -36,9 +36,10 @@ const weightMap: Record<string, number> = {
   black: 900,
   heavy: 900,
 };
+const weights = Object.keys(weightMap).sort((a, b) => b.length - a.length);
 
 export function getFontWeight(filename: string) {
-  for (const weight in weightMap) {
+  for (const weight of weights) {
     if (filename.toLowerCase().includes(weight)) {
       return weightMap[weight];
     }
