@@ -124,7 +124,7 @@ import * as Contacts from 'expo-contacts';
 
 ### Android
 
-You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
+This library automatically adds `READ_CONTACTS` and `WRITE_CONTACTS` permissions to your app:
 
 <AndroidPermissions permissions={['READ_CONTACTS', 'WRITE_CONTACTS']} />
 
