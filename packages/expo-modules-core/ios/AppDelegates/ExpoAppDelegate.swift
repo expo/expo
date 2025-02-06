@@ -1,6 +1,5 @@
 import Dispatch
 import Foundation
-import React_RCTAppDelegate
 
 var subscribers = [ExpoAppDelegateSubscriberProtocol]()
 
