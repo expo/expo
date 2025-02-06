@@ -1,5 +1,6 @@
 import type { RouteNode } from './Route';
 import { getRoutes as getRoutesCore, type Options as OptionsCore } from './getRoutesCore';
+import { getRedirectModule } from './getRoutesRedirect';
 import type { RequireContext } from './types';
 
 export type Options = Omit<OptionsCore, 'getSystemRoute'>;
@@ -17,7 +18,7 @@ export type Options = Omit<OptionsCore, 'getSystemRoute'>;
  */
 export function getRoutes(contextModule: RequireContext, options: Options = {}): RouteNode | null {
   return getRoutesCore(contextModule, {
-    getSystemRoute({ route, type }) {
+    getSystemRoute({ route, type }, defaults) {
       if (route === '' && type === 'layout') {
         // Root layout when no layout is defined.
         return {
@@ -57,6 +58,13 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           internal: true,
           dynamic: [{ name: '+not-found', deep: true, notFound: true }],
           children: [],
+        };
+      } else if (type === 'redirect' && defaults) {
+        return {
+          ...defaults,
+          loadRoute() {
+            return getRedirectModule(route);
+          },
         };
       }
       throw new Error(`Unknown system route: ${route} and type: ${type}`);

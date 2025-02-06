@@ -46,12 +46,30 @@ function getDirectoryTree(contextModule, options) {
     };
     let hasRoutes = false;
     let isValid = false;
-    for (const filePath of contextModule.keys()) {
+    const contextKeys = contextModule.keys();
+    const redirects = {};
+    let validRedirectDestinations;
+    for (const redirect of options.redirects ?? []) {
+        // Remove the leading `./` or `/`
+        const source = redirect.source.replace(/^\.?\//, '');
+        const targetDestination = redirect.destination.replace(/^\.?\//, '');
+        // Loop over this once and cache the valid destinations
+        validRedirectDestinations ??= contextKeys.map((key) => {
+            return [(0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(key)), key];
+        });
+        const destination = validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
+        if (!destination) {
+            throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
+        }
+        contextKeys.push(source);
+        redirects[source] = { source, destination };
+    }
+    for (const filePath of contextKeys) {
         if (ignoreList.some((regex) => regex.test(filePath))) {
             continue;
         }
         isValid = true;
-        const meta = getFileMeta(filePath, options);
+        const meta = getFileMeta(filePath, options, redirects);
         // This is a file that should be ignored. e.g maybe it has an invalid platform?
         if (meta.specificity < 0) {
             continue;
@@ -95,6 +113,17 @@ function getDirectoryTree(contextModule, options) {
             dynamic: null,
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
         };
+        if (meta.isRedirect) {
+            node.type = meta.isApi ? 'api-redirect' : 'redirect';
+            node.destinationContextKey = redirects[filePath].destination;
+            node.generated = true;
+            if (node.type === 'redirect') {
+                node = options.getSystemRoute({
+                    type: 'redirect',
+                    route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
+                }, node);
+            }
+        }
         if (process.env.NODE_ENV === 'development') {
             // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
             // filter the missing routes.
@@ -268,7 +297,7 @@ pathToRemove = '') {
     }
     return layout;
 }
-function getFileMeta(key, options) {
+function getFileMeta(key, options, redirects) {
     // Remove the leading `./`
     key = key.replace(/^\.\//, '');
     const parts = key.split('/');
@@ -321,6 +350,7 @@ function getFileMeta(key, options) {
         specificity,
         isLayout,
         isApi,
+        isRedirect: key in redirects,
     };
 }
 function getIgnoreList(options) {
@@ -440,6 +470,9 @@ function getLayoutNode(node, options) {
 function crawlAndAppendInitialRoutesAndEntryFiles(node, options, entryPoints = []) {
     if (node.type === 'route') {
         node.entryPoints = [...new Set([...entryPoints, node.contextKey])];
+    }
+    else if (node.type === 'redirect') {
+        node.entryPoints = [...new Set([...entryPoints, node.destinationContextKey])];
     }
     else if (node.type === 'layout') {
         if (!node.children) {

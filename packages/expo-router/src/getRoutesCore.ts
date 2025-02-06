@@ -5,6 +5,7 @@ import {
   matchDynamicName,
   matchGroupName,
   matchLastGroupName,
+  removeFileSystemDots,
   removeSupportedExtensions,
 } from './matchers';
 import type { RequireContext } from './types';
@@ -24,15 +25,21 @@ export type Options = {
   platformRoutes?: boolean;
   sitemap?: boolean;
   platform?: string;
+  redirects?: RedirectConfig[];
 
   /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
-  getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>) => RouteNode;
+  getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>, defaults?: RouteNode) => RouteNode;
 };
 
 type DirectoryNode = {
   layout?: RouteNode[];
   files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
+};
+
+export type RedirectConfig = {
+  source: string;
+  destination: string;
 };
 
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
@@ -89,14 +96,39 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   let hasRoutes = false;
   let isValid = false;
 
-  for (const filePath of contextModule.keys()) {
+  const contextKeys = contextModule.keys();
+  const redirects: Record<string, RedirectConfig> = {};
+
+  let validRedirectDestinations: [string, string][] | undefined;
+
+  for (const redirect of options.redirects ?? []) {
+    // Remove the leading `./` or `/`
+    const source = redirect.source.replace(/^\.?\//, '');
+    const targetDestination = redirect.destination.replace(/^\.?\//, '');
+
+    // Loop over this once and cache the valid destinations
+    validRedirectDestinations ??= contextKeys.map((key) => {
+      return [removeFileSystemDots(removeSupportedExtensions(key)), key];
+    });
+
+    const destination = validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
+
+    if (!destination) {
+      throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
+    }
+
+    contextKeys.push(source);
+    redirects[source] = { source, destination };
+  }
+
+  for (const filePath of contextKeys) {
     if (ignoreList.some((regex) => regex.test(filePath))) {
       continue;
     }
 
     isValid = true;
 
-    const meta = getFileMeta(filePath, options);
+    const meta = getFileMeta(filePath, options, redirects);
 
     // This is a file that should be ignored. e.g maybe it has an invalid platform?
     if (meta.specificity < 0) {
@@ -152,6 +184,22 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       dynamic: null,
       children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
     };
+
+    if (meta.isRedirect) {
+      node.type = meta.isApi ? 'api-redirect' : 'redirect';
+      node.destinationContextKey = redirects[filePath].destination;
+      node.generated = true;
+
+      if (node.type === 'redirect') {
+        node = options.getSystemRoute(
+          {
+            type: 'redirect',
+            route: removeFileSystemDots(removeSupportedExtensions(node.destinationContextKey)),
+          },
+          node
+        );
+      }
+    }
 
     if (process.env.NODE_ENV === 'development') {
       // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
@@ -361,7 +409,7 @@ function flattenDirectoryTreeToRoutes(
   return layout;
 }
 
-function getFileMeta(key: string, options: Options) {
+function getFileMeta(key: string, options: Options, redirects: Record<string, RedirectConfig>) {
   // Remove the leading `./`
   key = key.replace(/^\.\//, '');
 
@@ -423,6 +471,7 @@ function getFileMeta(key: string, options: Options) {
     specificity,
     isLayout,
     isApi,
+    isRedirect: key in redirects,
   };
 }
 
@@ -560,6 +609,8 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
 ) {
   if (node.type === 'route') {
     node.entryPoints = [...new Set([...entryPoints, node.contextKey])];
+  } else if (node.type === 'redirect') {
+    node.entryPoints = [...new Set([...entryPoints, node.destinationContextKey!])];
   } else if (node.type === 'layout') {
     if (!node.children) {
       throw new Error(`Layout "${node.contextKey}" does not contain any child routes`);
