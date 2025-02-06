@@ -1,5 +1,3 @@
-import React_RCTAppDelegate
-
 private var reactDelegateHandlers = [ExpoReactDelegateHandler]()
 
 public typealias ExpAppDelegateProtocol = UIApplicationDelegate & UISceneDelegate & RCTReactNativeFactoryDelegate
@@ -28,7 +26,7 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
   // Default initializer
   public override init() {
     super.init()
-    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)    
+    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)
   }
 
   @objc
