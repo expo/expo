@@ -61,7 +61,9 @@ test.describe(inputDir, () => {
       return contents.replace(/LAYOUT_VALUE_[\d\w]+/g, 'LAYOUT_VALUE');
     });
 
-    await fsPromise.unlink(appDir + tempRoute);
+    if (fs.existsSync(appDir + tempRoute)) {
+      await fsPromise.unlink(appDir + tempRoute);
+    }
   });
 
   const targetDirectory = path.join(projectRoot, '__e2e__/fast-refresh/app');
