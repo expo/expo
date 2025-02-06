@@ -186,7 +186,7 @@ deploy:
   # @info #
   type: deploy
   # @end #
-  environment: production | preview | development # optional
+  environment: production | preview | development # optional, defaults to production
   params:
     alias: string # optional
     prod: boolean # optional
@@ -218,14 +218,13 @@ get-build:
 
 #### `submit`
 
-Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/).
+Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment` it uses the environment used to create build referenced in `build_id`.
 
 ```yaml
 submit:
   # @info #
   type: submit
   # @end #
-  environment: production | preview | development # optional
   params:
     build_id: string # required
     profile: string # optional, default: production
@@ -240,12 +239,28 @@ update:
   # @info #
   type: update
   # @end #
-  environment: production | preview | development # optional
+  environment: production | preview | development # optional, defaults to production
   params:
     message: string # optional
     platform: string # optional - android, ios, or all
     branch: string # optional
     channel: string # optional - cannot be used with branch
+```
+
+#### `maestro`
+
+Runs [Maestro](https://maestro.mobile.dev/) tests on a build.
+
+```yaml
+maestro:
+  # @info #
+  type: maestro
+  # @end #
+  environment: production | preview | development # optional, defaults to preview
+  image: string # optional, defaults to 'default'. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+  params:
+    build_id: string # required
+    flow_path: string | string[] # required
 ```
 
 ## Custom jobs
@@ -255,7 +270,8 @@ Runs custom code and can use built-in EAS functions. Does not require a `type` f
 ```yaml
 custom_job:
   runs_on: linux-medium | linux-large | macos-medium | macos-large | linux-medium-nested-virtualization | linux-large-nested-virtualization # optional, default: linux-medium
-  environment: production | preview | development # optional
+  environment: production | preview | development # optional, defaults to production
+  image: string # optional, defaults to 'default'. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
   steps:
     # ...
 ```
