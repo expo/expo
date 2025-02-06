@@ -1,6 +1,7 @@
 ---
 title: Alternatives for Expo Notifications
-description: Learn about alternative services for sending push notifications.
+sidebar_title: Expo Notifications alternatives
+description: Learn about alternative push notification services to Expo Notifications.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -17,9 +18,9 @@ Using Expo Notifications is optional. You can use methods from [`expo-notificati
 
 ## Limitations of Expo Notifications
 
-- **Dependency on Expo** — Your app relies on Expo's push notification service.
-- **Limited control** — Full customization, such as advanced background handling, may require direct FCM/APNs integration.
-- **Rate limits** — Expo limits push notifications to **600 notifications per second per project**. If you exceed this rate, subsequent requests will fail until the rate drops below the limit. To manage this effectively, implement request throttling (included in the [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node)) and add retry logic to your server.
+- **Dependency on Expo**: Your app relies on Expo's push notification service.
+- **Limited control**: Full customization, such as advanced background handling, may require direct FCM/APNs integration.
+- **Rate limits**: Expo limits push notifications to **600 notifications per second per project**. If you exceed this rate, subsequent requests will fail until the rate drops below the limit. To manage this effectively, implement request throttling (included in the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node)) and add retry logic to your server.
 
 ## Alternative Push Notification Providers
 
@@ -49,8 +50,8 @@ If you need more control or additional features, consider using a third-party pu
 
 [Customer.io](http://Customer.io) provides two main services:
 
-- **Journeys** - Set up campaigns and send messages, emails, and push notifications.
-- **Data Pipelines** - Capture and forward data from your Expo app, website, or other sources to the right destinations in your stack.
+- **Journeys**: Set up campaigns and send messages, emails, and push notifications.
+- **Data Pipelines**: Capture and forward data from your Expo app, website, or other sources to the right destinations in your stack.
 
 They offer an [Expo plugin](https://github.com/customerio/customerio-expo-plugin) for seamless integration. Follow the guide below to get started.
 
@@ -62,11 +63,11 @@ They offer an [Expo plugin](https://github.com/customerio/customerio-expo-plugin
 
 ## Native Push Notifications
 
-In some cases, you may need to handle notifications natively for full customization. While this increases complexity, you can still use [`expo-notifications`](/versions/latest/sdk/notifications/) to get the native push token and configure notifications separately for each platform.
+Sometimes, you may need to handle notifications natively for full customization. While this increases complexity, you can still use [`expo-notifications`](/versions/latest/sdk/notifications/) to get the native push token and configure notifications separately for each platform.
 
 ### APNs (Apple Push Notification Service)
 
-[Apple Push Notification Service (APNs)](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server) is the native iOS service for push notifications. The tools above wrap APNs with useful abstractions. If you integrate APNs directly, you must set up a provider server and configure your app to handle notifications on the user's device. Learn more in [Apple’s official documentation](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server).
+[Apple Push Notification Service (APNs)](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server) is the native iOS service for push notifications. The providers above wrap APNs with useful abstractions. If you integrate APNs directly, you must set up a provider server and configure your app to handle notifications on the user's device. Learn more in [Apple's official documentation](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server).
 
 ### FCM (Firebase Cloud Messaging)
 
