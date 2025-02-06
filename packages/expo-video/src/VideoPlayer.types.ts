@@ -259,7 +259,9 @@ export type VideoSource =
       /**
        * Specifies the DRM options which will be used by the player while loading the video.
        */
-      advertisement?: GoogleIMA;
+      advertisement?: {
+        googleIMA?: GoogleIMA;
+      };
 
       /**
        * The asset ID of a local video asset, acquired with the `require` function.

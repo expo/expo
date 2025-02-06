@@ -76,11 +76,23 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate, VideoPla
     addSubview(playerViewController.view)
   }
     
+    func checkForAds(){
+        let videoPlayerItem = player?.pointer.currentItem as? VideoPlayerItem
+        let advertisement = videoPlayerItem?.videoSource.advertisement?.googleIMA?.adTagUri
+        
+        if let adTagUri = advertisement {
+            let adDisplayContainer = IMAAdDisplayContainer( adContainer: playerViewController.view,  viewController: playerViewController)
+            
+            adsManager.requestAds(
+                adDisplayContainer: adDisplayContainer,
+                adTagUri: adTagUri
+            )
+        }
+    }
+    
   func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?){
-      if (newStatus == .readyToPlay){
-          let adDisplayContainer = IMAAdDisplayContainer(adContainer: playerViewController.view, viewController: playerViewController)
-          adsManager.requestAds(adDisplayContainer: adDisplayContainer)
-      }
+      // TODO: Fix trigger point for when to show ads
+      if newStatus == .readyToPlay { checkForAds() }
   }
 
   deinit {

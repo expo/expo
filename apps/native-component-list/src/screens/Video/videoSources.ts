@@ -10,7 +10,7 @@ const localVideoSource: VideoSource = {
   },
 };
 
-const bigBuckBunnySource: VideoSource = {
+const bigBuckBunnySource: Exclude<VideoSource, string | number | null> = {
   uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
   metadata: {
     title: 'Big Buck Bunny',
