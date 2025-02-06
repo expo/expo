@@ -58,9 +58,6 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
   const isAppConfigFieldsNotSyncedCheckEnabled = getAppConfigFieldsNotSyncedCheckStatus(pkg);
 
   if (getReactNativeDirectoryCheckEnabled(exp, pkg)) {
-    Log.log(
-      'Enabled experimental React Native Directory checks. Unset the EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK environment variable to disable this check.'
-    );
     resolvedChecks.push(new ReactNativeDirectoryCheck());
   }
 
