@@ -25,6 +25,7 @@ import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -173,17 +174,21 @@ class CameraViewModule : Module() {
           ByteArrayOutputStream().use { imageStream ->
             image.compress(Bitmap.CompressFormat.JPEG, quality.toInt() * 100, imageStream)
             // Write compressed image to file in cache directory
-            val filePath = writeStreamToFile(it, imageStream)
-            image.recycle()
-            val imageFile = File(filePath)
-            val fileUri = Uri.fromFile(imageFile).toString()
-            response.putString("uri", fileUri)
+            try {
+              val filePath = writeStreamToFile(it, imageStream)
+              image.recycle()
+              val imageFile = File(filePath)
+              val fileUri = Uri.fromFile(imageFile).toString()
+              response.putString("uri", fileUri)
 
-            // Write base64-encoded image to the response if requested
-            if (options?.base64 == true) {
-              response.putString("base64", Base64.encodeToString(imageStream.toByteArray(), Base64.NO_WRAP))
+              // Write base64-encoded image to the response if requested
+              if (options?.base64 == true) {
+                response.putString("base64", Base64.encodeToString(imageStream.toByteArray(), Base64.NO_WRAP))
+              }
+              promise.resolve(response)
+            } catch (e: CodedException) {
+              promise.reject(e)
             }
-            promise.resolve(response)
           }
         }
       }

@@ -18,7 +18,7 @@ data class PictureOptions(
 ) : Record
 
 data class SavePictureOptions(
-  @Field val quality: Double = 0.0,
+  @Field val quality: Double = 1.0,
   @Field val base64: Boolean = false,
   @Field val metadata: Map<String, Any>? = emptyMap()
 ) : Record

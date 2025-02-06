@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
+import expo.modules.camera.CameraExceptions.WriteImageException
 import expo.modules.camera.PictureOptions
 import expo.modules.camera.PictureRef
 import expo.modules.camera.utils.CameraViewHelper.addExifData
@@ -169,6 +170,7 @@ class ResolveTakenPicture(
         is Resources.NotFoundException -> promise.reject(ERROR_TAG, DIRECTORY_NOT_FOUND_MSG, e)
         is IOException -> promise.reject(ERROR_TAG, UNKNOWN_IO_EXCEPTION_MSG, e)
         is IllegalArgumentException -> promise.reject(ERROR_TAG, PARAMETER_EXCEPTION_MSG, e)
+        is WriteImageException -> promise.reject(e)
         else -> promise.reject(ERROR_TAG, UNKNOWN_EXCEPTION_MSG, e)
       }
       e.printStackTrace()
@@ -276,7 +278,7 @@ fun writeStreamToFile(directory: File, inputStream: ByteArrayOutputStream): Stri
     }
     return outputPath
   } catch (e: IOException) {
-    e.printStackTrace()
+    throw WriteImageException(e.message)
   }
   return null
 }
