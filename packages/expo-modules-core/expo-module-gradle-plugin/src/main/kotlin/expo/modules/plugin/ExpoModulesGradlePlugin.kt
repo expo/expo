@@ -8,6 +8,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
 
+private val lock = Any()
+
 abstract class ExpoModulesGradlePlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val kotlinVersion = getKotlinVersion(project)
@@ -36,15 +38,11 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
 
   private fun getKotlinVersion(project: Project): String {
     return project.rootProject.extra.safeGet<String>("kotlinVersion")
-      ?: throw IllegalStateException("`kotlinVersion` isn't defined.")
+      ?: project.logger.warnIfNotDefined("kotlinVersion", "2.0.21")
   }
 
   private fun getKSPVersion(project: Project, kotlinVersion: String): String {
     return project.rootProject.extra.safeGet<String>("kspVersion")
-      ?: throw IllegalStateException("`kspVersion` isn't defined.")
-  }
-
-  companion object {
-    private val lock = Any()
+      ?: project.logger.warnIfNotDefined("kspVersion", "2.0.21-1.0.28")
   }
 }

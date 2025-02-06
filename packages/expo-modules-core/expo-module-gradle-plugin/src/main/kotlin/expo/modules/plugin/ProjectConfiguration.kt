@@ -32,12 +32,12 @@ internal fun Project.applyDefaultDependencies() {
 internal fun Project.applyDefaultAndroidSdkVersions() {
   extensions.getByType(LibraryExtension::class.java).apply {
     compileSdk = rootProject.extra.safeGet("compileSdkVersion")
-      ?: throw IllegalStateException("`compileSdkVersion` isn't defined.")
+      ?: logger.warnIfNotDefined("compileSdkVersion", 35)
     defaultConfig {
       minSdk = rootProject.extra.safeGet("minSdkVersion")
-        ?: throw IllegalStateException("`minSdkVersion` isn't defined.")
+        ?: logger.warnIfNotDefined("minSdkVersion", 24)
       targetSdk = rootProject.extra.safeGet("targetSdkVersion")
-        ?: throw IllegalStateException("`targetSdkVersion` isn't defined.")
+        ?: logger.warnIfNotDefined("targetSdkVersion", 34)
     }
 
     lintOptions.isAbortOnError = false
