@@ -5,7 +5,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXReactNativeFactoryDelegate: RCTDefaultReactNativeFactoryDelegate
 
-- (instancetype)initWithFactory:(RCTReactNativeFactory*) reactNativeFactory;
+- (instancetype)init;
 
 @end
 
