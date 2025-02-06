@@ -98,11 +98,11 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
     .reverse();
 
   const apiRoutes = uniqueBy(
-    flat.filter(([, , route]) => route.type === 'api'),
+    flat.filter(([, , route]) => route.type === 'api' || route.type === 'api-redirect'),
     ([path]) => path
   );
   const otherRoutes = uniqueBy(
-    flat.filter(([, , route]) => route.type === 'route'),
+    flat.filter(([, , route]) => route.type === 'route' || route.type === 'redirect'),
     ([path]) => path
   );
   const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
@@ -122,11 +122,12 @@ function getMatchableManifestForPaths(
     const matcher: ExpoRouterServerManifestV1Route = getNamedRouteRegex(
       normalizedRoutePath,
       absoluteRoute,
-      node.contextKey
+      node.destinationContextKey ?? node.contextKey
     );
     if (node.generated) {
       matcher.generated = true;
     }
+
     return matcher;
   });
 }
