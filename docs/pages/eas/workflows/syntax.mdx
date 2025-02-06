@@ -569,7 +569,7 @@ jobs:
 #### `eas/send_slack_message`
 
 Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel.
-The message can be specified as plain text or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
+The message can be specified as plaintext or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
 With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation.
 For example, `'Build URL: ${{ eas.job.expoBuildUrl }}'`, `Build finished with status: ${{ steps.run_fastlane.status_text }}`, `Build failed with error: ${{ steps.run_gradle.error_text }}`.
 Either "message" or "payload" has to be specified, but not both.
