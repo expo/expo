@@ -1,2 +1,12 @@
 import { requireNativeModule } from 'expo-modules-core';
-export default requireNativeModule('ExpoFontLoader');
+
+const m =
+  typeof window === 'undefined'
+    ? // React server mock
+      {
+        getLoadedFonts() {
+          return [];
+        },
+      }
+    : requireNativeModule('ExpoFontLoader');
+export default m;
