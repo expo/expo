@@ -1,11 +1,15 @@
-import { useGlobalSearchParams } from './hooks';
+import { createElement } from 'react';
+
+import { useStoreRouteInfo } from './global-state/router-store';
 import { Redirect } from './link/Link';
 import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
 
 export function getRedirectModule(route: string) {
   return {
     default: function RedirectComponent() {
-      const params = useGlobalSearchParams();
+      // Use the store directly instead of useGlobalSearchParams.
+      // Importing the hooks directly causes build errors on the server
+      const params = useStoreRouteInfo().params;
 
       // Replace dynamic parts of the route with the actual values from the params
       let href = route
@@ -30,7 +34,7 @@ export function getRedirectModule(route: string) {
         href += `?${queryString}`;
       }
 
-      return <Redirect href={href} />;
+      return createElement(Redirect, { href });
     },
   };
 }
