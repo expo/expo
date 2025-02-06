@@ -314,10 +314,10 @@ async function preparePackageJson(
 
   const extraDevDependencies = configureE2E
     ? {
-        '@config-plugins/detox': '^5.0.1',
+        '@config-plugins/detox': '^9.0.0',
         '@types/express': '^4.17.17',
         '@types/jest': '^29.4.0',
-        detox: '^20.4.0',
+        detox: '^20.33.0',
         express: '^4.18.2',
         'form-data': '^4.0.0',
         jest: '^29.3.1',
