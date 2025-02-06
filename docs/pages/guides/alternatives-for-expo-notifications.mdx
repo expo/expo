@@ -65,10 +65,10 @@ They offer an [Expo plugin](https://github.com/customerio/customerio-expo-plugin
 
 Sometimes, you may need to handle notifications natively for full customization. While this increases complexity, you can still use [`expo-notifications`](/versions/latest/sdk/notifications/) to get the native push token and configure notifications separately for each platform.
 
-### APNs (Apple Push Notification Service)
-
-[Apple Push Notification Service (APNs)](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server) is the native iOS service for push notifications. The providers above wrap APNs with useful abstractions. If you integrate APNs directly, you must set up a provider server and configure your app to handle notifications on the user's device. Learn more in [Apple's official documentation](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server).
-
 ### FCM (Firebase Cloud Messaging)
 
 [Firebase Cloud Messaging (FCM)](https://firebase.google.com/docs/cloud-messaging) is a free, cross-platform messaging service for reliable message delivery. You can use it to notify client apps of new data, send messages, or handle real-time communication. Learn more in [Google’s documentation](https://firebase.google.com/docs/cloud-messaging).
+
+### APNs (Apple Push Notification Service)
+
+[Apple Push Notification Service (APNs)](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server) is the native iOS service for push notifications. The providers above wrap APNs with useful abstractions. If you integrate APNs directly, you must set up a provider server and configure your app to handle notifications on the user's device. Learn more in [Apple's official documentation](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server).
