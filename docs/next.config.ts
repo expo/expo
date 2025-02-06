@@ -15,6 +15,7 @@ import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
 import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
+import remarkSDKCompatibility from './mdx-plugins/remark-sdk-compatibility.js';
 import navigation from './public/static/constants/navigation.json';
 import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
@@ -75,6 +76,7 @@ const nextConfig: NextConfig = {
               remarkCodeTitle,
               remarkExportHeadings,
               remarkLinkRewrite,
+              remarkSDKCompatibility,
               [remarkCreateStaticProps, `{ meta: meta || {}, headings: headings || [] }`],
             ],
             rehypePlugins: [rehypeSlug],
