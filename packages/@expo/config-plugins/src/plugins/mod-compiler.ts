@@ -158,7 +158,7 @@ export async function evalModsAsync(
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = path.join(projectRoot, platformName);
       const projectName =
-        platformName === 'ios' ? getHackyProjectName(projectRoot, config) : undefined;
+        platformName === 'ios' ? getHackyProjectName(projectRoot, platformName, config) : undefined;
 
       for (const [modName, mod] of entries) {
         const modRequest = {
@@ -195,7 +195,7 @@ export async function evalModsAsync(
         });
 
         // Sanity check to help locate non compliant mods.
-        config = assertModResults(results, platformName, modName);
+        config = assertModResults(results, platformName as ModPlatform, modName);
         // @ts-ignore: `modResults` is added for modifications
         delete config.modResults;
         // @ts-ignore: `modRequest` is added for modifications

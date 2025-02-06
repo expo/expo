@@ -16,6 +16,8 @@ jest.mock('fs');
 jest.mock('../../utils/warnings');
 
 describe(findSchemeNames, () => {
+  const platform = 'ios';
+
   afterEach(() => {
     vol.reset();
   });
@@ -30,11 +32,13 @@ describe(findSchemeNames, () => {
       '/'
     );
 
-    expect(findSchemeNames('/')).toStrictEqual(['client.beta', 'my_app', 'my-app']);
+    expect(findSchemeNames('/', platform)).toStrictEqual(['client.beta', 'my_app', 'my-app']);
   });
 });
 
 describe(getPodfilePath, () => {
+  const platform = 'ios';
+
   afterEach(() => {
     vol.reset();
   });
@@ -50,15 +54,19 @@ describe(getPodfilePath, () => {
       },
       '/app'
     );
-    expect(getPodfilePath('/app')).toBe('/app/ios/Podfile');
+    expect(getPodfilePath('/app', platform)).toBe('/app/ios/Podfile');
   });
 
   it(`throws when no podfile is found`, () => {
-    expect(() => getPodfilePath('/none')).toThrow(UnexpectedError);
+    const platform = 'ios';
+
+    expect(() => getPodfilePath('/none', platform)).toThrow(UnexpectedError);
   });
 });
 
 describe(getXcodeProjectPath, () => {
+  const platform = 'ios';
+
   afterEach(() => {
     vol.reset();
   });
@@ -74,11 +82,11 @@ describe(getXcodeProjectPath, () => {
       },
       '/app'
     );
-    expect(getXcodeProjectPath('/app')).toBe('/app/ios/testproject.xcodeproj');
+    expect(getXcodeProjectPath('/app', platform)).toBe('/app/ios/testproject.xcodeproj');
   });
 
   it(`throws when no paths are found`, () => {
-    expect(() => getXcodeProjectPath('/none')).toThrow(UnexpectedError);
+    expect(() => getXcodeProjectPath('/none', platform)).toThrow(UnexpectedError);
   });
 
   it(`warns when multiple paths are found`, () => {
@@ -93,7 +101,7 @@ describe(getXcodeProjectPath, () => {
       '/app'
     );
 
-    expect(getXcodeProjectPath('/app')).toBe('/app/ios/otherproject.xcodeproj');
+    expect(getXcodeProjectPath('/app', platform)).toBe('/app/ios/otherproject.xcodeproj');
     expect(WarningAggregator.addWarningIOS).toHaveBeenLastCalledWith(
       'paths-xcodeproj',
       'Found multiple *.xcodeproj file paths, using "ios/otherproject.xcodeproj". Ignored paths: ["ios/testproject.xcodeproj"]'
@@ -116,7 +124,7 @@ describe(getXcodeProjectPath, () => {
       '/app'
     );
 
-    expect(getXcodeProjectPath('/app')).toBe('/app/ios/botherproject.xcodeproj');
+    expect(getXcodeProjectPath('/app', platform)).toBe('/app/ios/botherproject.xcodeproj');
     expect(WarningAggregator.addWarningIOS).toHaveBeenLastCalledWith(
       'paths-xcodeproj',
       'Found multiple *.xcodeproj file paths, using "ios/botherproject.xcodeproj". Ignored paths: ["ios/otherproject.xcodeproj","ios/testproject.xcodeproj","ios/aa/otherproject.xcodeproj"]'
@@ -135,7 +143,7 @@ describe(getXcodeProjectPath, () => {
       '/app'
     );
 
-    expect(getXcodeProjectPath('/app')).toBe('/app/ios/otherproject.xcodeproj');
+    expect(getXcodeProjectPath('/app', platform)).toBe('/app/ios/otherproject.xcodeproj');
     expect(WarningAggregator.addWarningIOS).toHaveBeenLastCalledWith(
       'paths-xcodeproj',
       'Found multiple *.xcodeproj file paths, using "ios/otherproject.xcodeproj". Ignored paths: ["ios/testproject.xcodeproj"]'
@@ -149,11 +157,13 @@ describe(getXcodeProjectPath, () => {
       },
       '/app'
     );
-    expect(() => getXcodeProjectPath('/app')).toThrow(UnexpectedError);
+    expect(() => getXcodeProjectPath('/app', platform)).toThrow(UnexpectedError);
   });
 });
 
 describe(getAppDelegate, () => {
+  const platform = 'ios';
+
   beforeEach(() => {
     vol.reset();
   });
@@ -174,7 +184,7 @@ describe(getAppDelegate, () => {
       '/objc'
     );
 
-    expect(getAppDelegate('/objc')).toStrictEqual({
+    expect(getAppDelegate('/objc', platform)).toStrictEqual({
       contents: '',
       path: '/objc/ios/testproject/AppDelegate.m',
       language: 'objc',
@@ -184,7 +194,7 @@ describe(getAppDelegate, () => {
   it(`returns Swift path`, () => {
     vol.fromJSON(rnFixture, '/');
 
-    expect(getAppDelegate('/')).toStrictEqual({
+    expect(getAppDelegate('/', platform)).toStrictEqual({
       contents: expect.any(String),
       path: '/ios/HelloWorld/AppDelegate.swift',
       language: 'swift',
@@ -203,7 +213,7 @@ describe(getAppDelegate, () => {
       '/swift'
     );
 
-    expect(getAppDelegate('/swift')).toStrictEqual({
+    expect(getAppDelegate('/swift', platform)).toStrictEqual({
       contents: '',
       path: '/swift/ios/testproject/AppDelegate.swift',
       language: 'swift',
@@ -221,8 +231,8 @@ describe(getAppDelegate, () => {
       '/invalid'
     );
 
-    expect(() => getAppDelegate('/invalid')).toThrow(UnexpectedError);
-    expect(() => getAppDelegate('/invalid')).toThrow(/AppDelegate/);
+    expect(() => getAppDelegate('/invalid', platform)).toThrow(UnexpectedError);
+    expect(() => getAppDelegate('/invalid', platform)).toThrow(/AppDelegate/);
   });
 
   it(`warns when multiple paths are found`, () => {
@@ -239,7 +249,7 @@ describe(getAppDelegate, () => {
       '/confusing'
     );
 
-    expect(getAppDelegate('/confusing')).toStrictEqual({
+    expect(getAppDelegate('/confusing', platform)).toStrictEqual({
       contents: '',
       path: '/confusing/ios/testproject/AppDelegate.m',
       language: 'objc',
@@ -252,6 +262,8 @@ describe(getAppDelegate, () => {
 });
 
 describe(getAllInfoPlistPaths, () => {
+  const platform = 'ios';
+
   beforeAll(async () => {
     const project = {
       'ExampleE2E-tvOS/Info.plist': '',
@@ -268,7 +280,7 @@ describe(getAllInfoPlistPaths, () => {
   });
 
   it(`gets paths in order`, () => {
-    expect(getAllInfoPlistPaths('/app')).toStrictEqual([
+    expect(getAllInfoPlistPaths('/app', platform)).toStrictEqual([
       '/app/ios/ExampleE2E/Info.plist',
       '/app/ios/ExampleE2E-tvOS/Info.plist',
       '/app/ios/ExampleE2ETests/Info.plist',

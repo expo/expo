@@ -9,6 +9,7 @@ jest.mock('fs');
 
 describe(createBuildSourceFile, () => {
   const projectRoot = '/alpha';
+  const platform = 'ios';
   beforeAll(async () => {
     vol.fromJSON(rnFixture, projectRoot);
   });
@@ -18,11 +19,11 @@ describe(createBuildSourceFile, () => {
   });
 
   it(`creates a source file`, () => {
-    const project = getPbxproj(projectRoot);
+    const project = getPbxproj(projectRoot, platform);
     // perform action
     createBuildSourceFile({
       project,
-      nativeProjectRoot: path.join(projectRoot, 'ios'),
+      nativeProjectRoot: path.join(projectRoot, platform),
       filePath: 'HelloWorld/myfile.swift',
       fileContents: '// hello',
     });
@@ -38,6 +39,6 @@ describe(createBuildSourceFile, () => {
       sourceTree: '"<group>"',
     });
 
-    expect(vol.existsSync(path.join(projectRoot, 'ios/HelloWorld/myfile.swift'))).toBe(true);
+    expect(vol.existsSync(path.join(projectRoot, platform, 'HelloWorld/myfile.swift'))).toBe(true);
   });
 });

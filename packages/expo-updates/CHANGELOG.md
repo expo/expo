@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Pass `platform` value through to the Xcode utils that now expect it. Will allow `expo-updates` to be adapted for use with `react-native-macos` in future. ([#34379](https://github.com/expo/expo/pull/34379) by [@shirakaba](https://github.com/shirakaba))
 - Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
 - Add `Updates.setUpdateURLAndRequestHeadersOverride()` to allow overriding update URL configuration from the JS API. ([#34422](https://github.com/expo/expo/pull/34422), [#34423](https://github.com/expo/expo/pull/34423), [#34425](https://github.com/expo/expo/pull/34425), [#34426](https://github.com/expo/expo/pull/34426), [#34454](https://github.com/expo/expo/pull/34454), [#34455](https://github.com/expo/expo/pull/34455), [#34428](https://github.com/expo/expo/pull/34428), [#34404](https://github.com/expo/expo/pull/34404) by [@kudo](https://github.com/kudo), [@wschurman](https://github.com/wschurman))
 

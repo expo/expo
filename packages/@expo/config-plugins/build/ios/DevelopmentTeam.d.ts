@@ -1,6 +1,6 @@
 import type { ExpoConfig } from '@expo/config-types';
 import { type XCBuildConfiguration } from 'xcode';
-import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import type { ConfigPlugin, ModPlatform, XcodeProject } from '../Plugin.types';
 /**
  * Set the Apple development team ID for all build configurations using the first native target.
  */
@@ -24,6 +24,7 @@ export declare function updateDevelopmentTeamForPbxproj(project: XcodeProject, a
  * Updates the Apple development team ID for pbx projects inside the ios directory of the given project root
  *
  * @param {string} projectRoot Path to project root containing the ios directory
+ * @param {ModPlatform} platform Platform name, e.g. 'ios'
  * @param {[string]} appleTeamId Desired Apple development team ID
  */
-export declare function setDevelopmentTeamForPbxproj(projectRoot: string, appleTeamId?: string): void;
+export declare function setDevelopmentTeamForPbxproj(projectRoot: string, platform: ModPlatform, appleTeamId?: string): void;

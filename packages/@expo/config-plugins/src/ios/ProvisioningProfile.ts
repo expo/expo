@@ -1,6 +1,7 @@
 import fs from 'fs';
 
 import { findFirstNativeTarget, findNativeTargetByName } from './Target';
+import { ModPlatform } from '../Plugin.types';
 import {
   ConfigurationSectionEntry,
   getBuildConfigurationsForListId,
@@ -20,6 +21,7 @@ type ProvisioningProfileSettings = {
 
 export function setProvisioningProfileForPbxproj(
   projectRoot: string,
+  platform: ModPlatform,
   {
     targetName,
     profileName,
@@ -27,7 +29,7 @@ export function setProvisioningProfileForPbxproj(
     buildConfiguration = 'Release',
   }: ProvisioningProfileSettings
 ): void {
-  const project = getPbxproj(projectRoot);
+  const project = getPbxproj(projectRoot, platform);
 
   const nativeTargetEntry = targetName
     ? findNativeTargetByName(project, targetName)
