@@ -234,7 +234,7 @@ export class AsyncNgrok {
     let randomness: string;
     do {
       randomness = crypto.randomBytes(5).toString('base64url');
-    } while (randomness.startsWith('_')); // _ is an invalid character for a hostname
+    } while (!/^[A-Za-z0-9]|[A-Za-z0-9]$/.test(randomness)); // _ is an invalid character for a hostname
 
     await ProjectSettings.setAsync(this.projectRoot, { urlRandomness: randomness });
     debug('Resetting project randomness:', randomness);
