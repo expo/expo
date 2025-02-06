@@ -4,6 +4,8 @@ description: Learn how to quickly get started by creating a new project with Exp
 sidebar_title: Installation
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
@@ -66,13 +68,46 @@ You'll need to install the following dependencies:
 
 ### Setup entry point
 
-For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/\_layout.js**](/router/advanced/root-layout).
+For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/\_layout.tsx**](/router/advanced/root-layout).
 
 ```json package.json
 {
   "main": "expo-router/entry"
 }
 ```
+
+<Collapsible summary="Custom entry point to initialize and load side-effects">
+
+You can create a custom entry point in your Expo Router project to initialize and load side-effects before your app loads the root layout (**app/\_layout.tsx**). Below are some of the common cases for a custom entry point:
+
+- Initializing global services like analytics, error reporting, and so on.
+- Setting up polyfills
+- Ignoring specific logs using `LogBox` from `react-native`
+
+1. Create a new file in the root of your project, such as **index.js**. After creating this file, the project structure should look like this:
+
+   <FileTree files={['app/_layout.tsx', 'index.js', 'package.json', 'Other project files']} />
+
+2. Import or add your custom configuration to the file. Then, import `expo-router/entry` to register the app entry. Remember to always import it last to ensure all configurations are properly set up before the app renders.
+
+   ```js index.js
+   // Import side effects first and services
+
+   // Initialize services
+
+   // Register app entry through Expo Router
+   import 'expo-router/entry';
+   ```
+
+3. Update the `main` property in **package.json** to point to the new entry file.
+
+   ```json package.json
+   {
+     "main": "index.js"
+   }
+   ```
+
+</Collapsible>
 
 </Step>
 
