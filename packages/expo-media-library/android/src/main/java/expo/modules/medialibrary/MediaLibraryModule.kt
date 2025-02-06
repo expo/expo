@@ -57,6 +57,16 @@ class MediaLibraryModule : Module() {
   private var imagesObserver: MediaStoreContentObserver? = null
   private var videosObserver: MediaStoreContentObserver? = null
   private var awaitingAction: Action? = null
+  private val isExpoGo by lazy {
+    context.resources.getString(R.string.is_expo_go).toBoolean()
+  }
+  private val allowedPermissionsList by lazy {
+    if (isExpoGo) {
+      listOf(GranularPermission.AUDIO)
+    } else {
+      listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+    }
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoMediaLibrary")
@@ -72,7 +82,8 @@ class MediaLibraryModule : Module() {
     Events(LIBRARY_DID_CHANGE_EVENT)
 
     AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+      val granularPermissions = permissions ?: allowedPermissionsList
+      maybeThrowIfExpoGo(granularPermissions)
       askForPermissionsWithPermissionsManager(
         appContext.permissions,
         MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
@@ -81,7 +92,8 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("getPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+      val granularPermissions = permissions ?: allowedPermissionsList
+      maybeThrowIfExpoGo(granularPermissions)
       getPermissionsWithPermissionsManager(
         appContext.permissions,
         MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
@@ -395,7 +407,7 @@ class MediaLibraryModule : Module() {
 
   private fun hasReadPermissions(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      val permissions = mutableListOf(READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO)
+      val permissions = allowedPermissionsList.map { it.toManifestPermission() }.toMutableList()
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         permissions.add(READ_MEDIA_VISUAL_USER_SELECTED)
       }
@@ -410,6 +422,14 @@ class MediaLibraryModule : Module() {
       appContext.permissions
         ?.hasGrantedPermissions(*permissions)
         ?.not() ?: false
+    }
+  }
+
+  private fun maybeThrowIfExpoGo(permissions: List<GranularPermission>) {
+    if (permissions.contains(GranularPermission.PHOTO) || permissions.contains(GranularPermission.VIDEO)) {
+      if (isExpoGo) {
+        throw PermissionsException("Due to changes in Androids permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build")
+      }
     }
   }
 
