@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig, IOS } from '@expo/config-types';
 
 import { InfoPlist } from './IosConfig.types';
 import { createInfoPlistPluginWithPropertyGuard } from '../plugins/ios-plugins';
@@ -21,11 +21,20 @@ export const withBuildNumber = createInfoPlistPluginWithPropertyGuard(
   'withBuildNumber'
 );
 
-export function getVersion(config: Pick<ExpoConfig, 'version'>) {
-  return config.version || '1.0.0';
+export function getVersion(
+  config: Pick<ExpoConfig, 'version'> & {
+    ios?: Pick<IOS, 'version'>;
+  }
+) {
+  return config.ios?.version || config.version || '1.0.0';
 }
 
-export function setVersion(config: Pick<ExpoConfig, 'version'>, infoPlist: InfoPlist): InfoPlist {
+export function setVersion(
+  config: Pick<ExpoConfig, 'version'> & {
+    ios?: Pick<IOS, 'version'>;
+  },
+  infoPlist: InfoPlist
+): InfoPlist {
   return {
     ...infoPlist,
     CFBundleShortVersionString: getVersion(config),
