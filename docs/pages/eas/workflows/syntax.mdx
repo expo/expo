@@ -301,7 +301,7 @@ jobs:
 
 #### `submit`
 
-Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/).
+Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment` it uses the environment used to create build referenced in `build_id`.
 
 ```yaml
 jobs:
@@ -329,6 +329,22 @@ jobs:
       platform: string # optional - android, ios, or all
       branch: string # optional
       channel: string # optional - cannot be used with branch
+```
+
+#### `maestro`
+
+Runs [Maestro](https://maestro.mobile.dev/) tests on a build.
+
+```yaml
+maestro:
+  # @info #
+  type: maestro
+  # @end #
+  environment: production | preview | development # optional, defaults to preview
+  image: string # optional, defaults to 'default'. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+  params:
+    build_id: string # required
+    flow_path: string | string[] # required
 ```
 
 ## Custom jobs

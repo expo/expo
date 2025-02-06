@@ -50,7 +50,7 @@ class ButtonColors : Record {
 data class ButtonProps(
   val text: MutableState<String> = mutableStateOf(""),
   val variant: MutableState<ButtonVariant?> = mutableStateOf(ButtonVariant.DEFAULT),
-  val colors: MutableState<ButtonColors> = mutableStateOf(ButtonColors())
+  val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors())
 
 ) : ComposeProps
 
@@ -125,7 +125,7 @@ class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonP
     setContent {
       val (variant) = props.variant
       val (text) = props.text
-      val (colors) = props.colors
+      val (colors) = props.elementColors
       DynamicTheme {
         StyledButton(
           variant ?: ButtonVariant.DEFAULT,

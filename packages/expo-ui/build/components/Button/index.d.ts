@@ -61,12 +61,16 @@ export type ButtonProps = {
      * Colors for button's core elements.
      * @platform android
      */
-    colors?: {
+    elementColors?: {
         containerColor?: string;
         contentColor?: string;
         disabledContainerColor?: string;
         disabledContentColor?: string;
     };
+    /**
+     * Button color.
+     */
+    color?: string;
 };
 export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children'> & {
     buttonRole?: ButtonRole;

@@ -81,12 +81,16 @@ export type ButtonProps = {
    * Colors for button's core elements.
    * @platform android
    */
-  colors?: {
+  elementColors?: {
     containerColor?: string;
     contentColor?: string;
     disabledContainerColor?: string;
     disabledContentColor?: string;
   };
+  /**
+   * Button color.
+   */
+  color?: string;
 };
 
 export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children'> & {
@@ -101,13 +105,19 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
 );
 
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
+  const { role, children, onPress, ...restProps } = props;
   return {
-    text: props.children ?? '',
-    buttonRole: props.role,
-    onButtonPressed: props.onPress,
-    systemImage: props.systemImage,
-    variant: props.variant,
-    colors: props.colors,
+    ...restProps,
+    text: children ?? '',
+    buttonRole: role,
+    onButtonPressed: onPress,
+    elementColors: props.elementColors
+      ? props.elementColors
+      : props.color
+        ? {
+            containerColor: props.color,
+          }
+        : undefined,
   };
 }
 
@@ -115,8 +125,8 @@ export function Button(props: ButtonProps) {
   // Min height from https://m3.material.io/components/buttons/specs, minWidth
   return (
     <ButtonNativeView
-      style={StyleSheet.compose({ minWidth: 80, minHeight: 40 }, props.style)}
       {...transformButtonProps(props)}
+      style={StyleSheet.compose({ minWidth: 80, minHeight: 40 }, props.style)}
     />
   );
 }
