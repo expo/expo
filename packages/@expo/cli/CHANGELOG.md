@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Mute require cycle warnings triggered from node_modules in API routes. [#27039](https://github.com/expo/expo/pull/27039) by [@hdwatts](https://github.com/hdwatts)
+
 ### 🛠 Breaking changes
 
 - Force NODE_ENV during npx expo export and do not allow overwriting outside of `--dev` flag. ([#34533](https://github.com/expo/expo/pull/34533) by [@EvanBacon](https://github.com/EvanBacon))
