@@ -45,8 +45,8 @@ Each variant requires a unique Android Application ID and iOS Bundle Identifier 
 - In **app.config.js**, add environment variables called `IS_DEV` and`IS_PREVIEW` for `development` and `preview` build profiles:
 
 ```js app.config.js
-const IS_DEV = process.env.APP_VARIANT === 'development';
-const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
+const IS_DEV = process.env.EXPO_PUBLIC_APP_VARIANT === 'development';
+const IS_PREVIEW = process.env.EXPO_PUBLIC_APP_VARIANT === 'preview';
 ```
 
 - Add two functions that dynamically change the app name, Android Application ID and iOS Bundle Identifier:
@@ -107,7 +107,7 @@ export default {
 
 ## Configure eas.json
 
-In **eas.json**, add the `APP_VARIANT` environment variable:
+In **eas.json**, add the `EXPO_PUBLIC_APP_VARIANT` environment variable:
 
 {/* prettier-ignore */}
 ```json eas.json|collapseHeight=440
@@ -116,17 +116,17 @@ In **eas.json**, add the `APP_VARIANT` environment variable:
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      /* @info Add <CODE>env.APP_VARIANT</CODE> to access the environment variable for the build profile*/
+      /* @info Add <CODE>env.EXPO_PUBLIC_APP_VARIANT</CODE> to access the environment variable for the build profile*/
       "env": {
-        "APP_VARIANT": "development"
+        "EXPO_PUBLIC_APP_VARIANT": "development"
       }
       /* @end */
     },
     "preview": {
       "distribution": "internal",
-      /* @info Add <CODE>env.APP_VARIANT</CODE> to access the environment variable for the build profile*/
+      /* @info Add <CODE>env.EXPO_PUBLIC_APP_VARIANT</CODE> to access the environment variable for the build profile*/
       "env": {
-        "APP_VARIANT": "preview"
+        "EXPO_PUBLIC_APP_VARIANT": "preview"
       }
       /* @end */
     }
@@ -135,7 +135,7 @@ In **eas.json**, add the `APP_VARIANT` environment variable:
 }
 ```
 
-Running `eas build --profile development` will now set `APP_VARIANT` to `development`.
+Running `eas build --profile development` will now set `EXPO_PUBLIC_APP_VARIANT` to `development`.
 
 > **Note**: Since we changed the Android Application ID and iOS Bundle Identifier, the EAS CLI will prompt us to generate a new Keystore for Android and a new provisioning profile for iOS. To learn more about what these steps include, see the previous chapter for more information.
 
@@ -149,12 +149,12 @@ Since our `ios-simulator` build profile extends `development`, this configuratio
 
 > After builds are complete, follow the same procedure from previous chapters to install them on a device or emulator/simulator.
 
-Since we're identifying our development build with the `APP_VARIANT` environment variable, we need to pass it to the command when starting the development server. To do this, add a `dev` script in the [`"scripts"`](https://docs.npmjs.com/cli/v10/using-npm/scripts) field of our project's **package.json**:
+Since we're identifying our development build with the `EXPO_PUBLIC_APP_VARIANT` environment variable, we need to pass it to the command when starting the development server. To do this, add a `dev` script in the [`"scripts"`](https://docs.npmjs.com/cli/v10/using-npm/scripts) field of our project's **package.json**:
 
 ```json package.json
 {
   "scripts": {
-    "dev": "APP_VARIANT=development npx expo start"
+    "dev": "EXPO_PUBLIC_APP_VARIANT=development npx expo start"
   }
 }
 ```
