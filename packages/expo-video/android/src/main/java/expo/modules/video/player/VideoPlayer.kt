@@ -2,9 +2,11 @@ package expo.modules.video.player
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
+import android.util.Log
 import android.view.SurfaceView
 import androidx.media3.common.C
 import android.webkit.URLUtil
+import androidx.media3.common.AdViewProvider
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
@@ -16,7 +18,13 @@ import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.ima.ImaAdsLoader
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ads.AdsLoader
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import com.google.ads.interactivemedia.v3.api.AdEvent
+import com.google.ads.interactivemedia.v3.api.AdEvent.AdEventListener
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.video.IntervalUpdateClock
@@ -47,11 +55,26 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl.Builder().build()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
   val trackSelector = DefaultTrackSelector(context)
+  var player = buildExoPlayer()
 
-  val player = ExoPlayer
-    .Builder(context, renderersFactory)
-    .setLooper(context.mainLooper)
-    .setLoadControl(loadControl)
+  var playerView: PlayerView? = null
+    set(value) {
+      field = value
+      value?.let {
+          // Release previous plater // TODO: Use or create helper function
+          player.release()
+          player.removeListener((playerListener))
+
+          // Initiate the new player
+          player = buildExoPlayer()
+          playerView?.player=player
+          player.addListener(playerListener)
+          prepare()
+      }
+    }
+
+  private val adsLoader: ImaAdsLoader = ImaAdsLoader.Builder( context)
+    .setAdEventListener(buildAdEventListener())
     .build()
 
   val serviceConnection = PlaybackServiceConnection(WeakReference(this))
@@ -150,6 +173,32 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       field = value
       sendEvent(PlayerEvent.AudioMixingModeChanged(value, old))
     }
+
+  fun buildAdEventListener(): AdEventListener {
+    return AdEventListener { event: AdEvent ->
+      val eventType = event.type
+      Log.d("IMA", "Received AD Event: $eventType")
+    }
+  }
+
+  fun buildExoPlayer(): ExoPlayer {
+    var builder = ExoPlayer
+      .Builder(context, renderersFactory)
+      .setLooper(context.mainLooper)
+      .setLoadControl(loadControl)
+      .apply {
+        // Include Ad insertion if the playerView and adsLoader are available
+        playerView?.let {
+          setMediaSourceFactory(
+            DefaultMediaSourceFactory(context)
+              .setLocalAdInsertionComponents({ adsLoader }, it as AdViewProvider)
+          )
+          Log.d("IMA", "Ad Insertion Completed.")
+        }
+      }
+
+    return builder.build()
+  }
 
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -265,7 +314,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   fun prepare() {
     val newSource = uncommittedSource
-    val mediaSource = newSource?.toMediaSource(context)
+    val mediaSource = newSource?.toMediaSource(context, adsLoader, playerView)
     mediaSource?.let {
       player.setMediaSource(it)
       player.prepare()
@@ -273,7 +322,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       uncommittedSource = null
     } ?: run {
       player.clearMediaItems()
-      player.prepare()
+      // TODO: HACK: Re-initiating exoplayer to include ads. This is done here since player view is available
+      lastLoadedSource?.toMediaSource(context, adsLoader, playerView)?.let {
+        adsLoader.setPlayer(playerView?.player)
+        player.prepare()
+        player.setMediaSource(it)
+      }
     }
   }
 
