@@ -24,7 +24,7 @@ const withBuildNumber = exports.withBuildNumber = (0, _iosPlugins().createInfoPl
   expoConfigProperty: 'ios.buildNumber'
 }, 'withBuildNumber');
 function getVersion(config) {
-  return config.version || '1.0.0';
+  return config.ios?.version || config.version || '1.0.0';
 }
 function setVersion(config, infoPlist) {
   return {

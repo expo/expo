@@ -14,6 +14,16 @@ describe('version', () => {
       CFBundleShortVersionString: '0.0.1',
     });
   });
+
+  it(`uses ios.version if it's given in config`, () => {
+    expect(getVersion({ version: '1.0.0', ios: { version: '1.2.3' } })).toBe('1.2.3');
+  });
+
+  it(`sets the ios.version as CFBundleShortVersionString`, () => {
+    expect(setVersion({ version: '0.0.1', ios: { version: '1.2.3' } }, {})).toMatchObject({
+      CFBundleShortVersionString: '1.2.3',
+    });
+  });
 });
 
 describe('build number', () => {

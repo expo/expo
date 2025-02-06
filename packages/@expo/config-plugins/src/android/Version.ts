@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import { Android, ExpoConfig } from '@expo/config-types';
 
 import { ConfigPlugin } from '../Plugin.types';
 import { withAppBuildGradle, withProjectBuildGradle } from '../plugins/android-plugins';
@@ -56,11 +56,20 @@ export function setMinBuildScriptExtVersion(
   return buildGradle.replace(regex, `$1${Math.max(minVersion, currentVersionNum)}`);
 }
 
-export function getVersionName(config: Pick<ExpoConfig, 'version'>) {
-  return config.version ?? null;
+export function getVersionName(
+  config: Pick<ExpoConfig, 'version'> & {
+    android?: Pick<Android, 'version'>;
+  }
+) {
+  return config.android?.version ?? config.version ?? null;
 }
 
-export function setVersionName(config: Pick<ExpoConfig, 'version'>, buildGradle: string) {
+export function setVersionName(
+  config: Pick<ExpoConfig, 'version'> & {
+    android?: Pick<Android, 'version'>;
+  },
+  buildGradle: string
+) {
   const versionName = getVersionName(config);
   if (versionName === null) {
     return buildGradle;

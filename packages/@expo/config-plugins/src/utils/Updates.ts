@@ -36,7 +36,7 @@ export function getAppVersion(config: Pick<ExpoConfig, 'version'>): string {
 export function getNativeVersion(
   config: Pick<ExpoConfig, 'version'> & {
     android?: Pick<Android, 'versionCode'>;
-    ios?: Pick<IOS, 'buildNumber'>;
+    ios?: Pick<IOS, 'buildNumber' | 'version'>;
   },
   platform: 'android' | 'ios'
 ): string {
