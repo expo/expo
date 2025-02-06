@@ -27,7 +27,7 @@ describe('exports static', () => {
           EXPO_USE_FAST_RESOLVER: 'true',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
             {
-              source: '/fake-redirect',
+              source: '/styled-redirect',
               destination: '/styled',
             },
           ] as RedirectConfig[]),
@@ -56,8 +56,8 @@ describe('exports static', () => {
       expect(await server.fetchAsync('/').then((res) => res.text())).toMatch(/<div id="root">/);
     });
 
-    it(`gets a redirect`, async () => {
-      expect(await server.fetchAsync('/fake-redirect').then((res) => res.status)).toBe(200);
+    it(`gets a screen redirect`, async () => {
+      expect(await server.fetchAsync('/styled-redirect').then((res) => res.status)).toBe(200);
     });
   });
 
@@ -78,7 +78,7 @@ describe('exports static', () => {
     expect(files).toContain('styled.html');
 
     // Redirect routes
-    expect(files).toContain('fake-redirect.html');
+    expect(files).toContain('styled-redirect.html');
 
     // generateStaticParams values
     expect(files).toContain('[post].html');

@@ -1,13 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRedirectModule = void 0;
-const hooks_1 = require("./hooks");
+const react_1 = require("react");
+const router_store_1 = require("./global-state/router-store");
 const Link_1 = require("./link/Link");
 const matchers_1 = require("./matchers");
 function getRedirectModule(route) {
     return {
         default: function RedirectComponent() {
-            const params = (0, hooks_1.useGlobalSearchParams)();
+            // Use the store directly instead of useGlobalSearchParams.
+            // Importing the hooks directly causes build errors on the server
+            const params = (0, router_store_1.useStoreRouteInfo)().params;
             // Replace dynamic parts of the route with the actual values from the params
             let href = route
                 .split('/')
@@ -27,7 +30,7 @@ function getRedirectModule(route) {
             if (queryString) {
                 href += `?${queryString}`;
             }
-            return <Link_1.Redirect href={href}/>;
+            return (0, react_1.createElement)(Link_1.Redirect, { href });
         },
     };
 }
