@@ -35,7 +35,7 @@ async function run() {
 
   // TODO: add offline flag
 
-  const projectRootArg = args.find((arg) => !arg.startsWith('-'));
+  const projectRootArg = args[0] === '--verbose' ? undefined : args[0];
 
   const projectRoot = path.resolve(process.cwd(), projectRootArg ?? process.cwd());
 

@@ -175,7 +175,9 @@ export async function actionAsync(projectRoot: string, showVerboseTestResults: b
           return;
         }
       }
-      Log.exit(`${failedJobs.length} checks failed, indicating possible issues with the project.`);
+      Log.exit(
+        `${failedJobs.length} ${failedJobs.length === 1 ? 'check' : 'checks'} failed, indicating possible issues with the project.`
+      );
     } else {
       Log.log(
         chalk.green(
