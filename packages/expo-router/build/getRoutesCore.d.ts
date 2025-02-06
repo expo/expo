@@ -12,8 +12,13 @@ export type Options = {
     platformRoutes?: boolean;
     sitemap?: boolean;
     platform?: string;
+    redirects?: RedirectConfig[];
     /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
-    getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>) => RouteNode;
+    getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>, defaults?: RouteNode) => RouteNode;
+};
+export type RedirectConfig = {
+    source: string;
+    destination: string;
 };
 /**
  * Given a Metro context module, return an array of nested routes.
