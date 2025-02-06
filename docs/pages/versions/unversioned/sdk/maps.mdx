@@ -10,7 +10,9 @@ isNew: true
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
@@ -114,13 +116,14 @@ To display the user's location on the map, you need to declare and request locat
   properties={[
     {
       name: 'requestLocationPermission',
-      description: 'A boolean to add permissions to **Info.plist** and AndroidManifest.xml.',
+      description: 'A boolean to add permissions to **AndroidManifest.xml** and **Info.plist**.',
       default: 'false',
     },
     {
       name: 'locationPermission',
       platform: 'ios',
-      description: 'A string to set the [`NSLocationWhenInUseUsageDescription`](#permission-nslocationwheninuseusagedescription) permission message.',
+      description:
+        'A string to set the [`NSLocationWhenInUseUsageDescription`](#permission-nslocationwheninuseusagedescription) permission message.',
       default: '"Allow $(PRODUCT_NAME) to use your location"',
     },
   ]}
@@ -152,3 +155,28 @@ import { AppleMaps, GoogleMaps } from 'expo-maps';
 ```
 
 <APISection packageName="expo-maps" apiName="Maps" />
+
+## Permissions
+
+### Android
+
+To show the user's location on the map, the `expo-maps` module requires the following permissions:
+
+- `ACCESS_COARSE_LOCATION`: for approximate device location
+- `ACCESS_FINE_LOCATION`: for precise device location
+
+<AndroidPermissions
+  permissions={[
+    'ACCESS_COARSE_LOCATION',
+    'ACCESS_FINE_LOCATION',
+    'FOREGROUND_SERVICE',
+    'FOREGROUND_SERVICE_LOCATION',
+    'ACCESS_BACKGROUND_LOCATION',
+  ]}
+/>
+
+### iOS
+
+The following usage description keys are used by this library:
+
+<IOSPermissions permissions={['NSLocationWhenInUseUsageDescription']} />
