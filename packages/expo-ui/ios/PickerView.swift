@@ -8,6 +8,7 @@ class PickerProps: ExpoSwiftUI.ViewProps {
   @Field var selectedIndex: Int?
   @Field var variant: String?
   @Field var label: String?
+  @Field var color: Color?
   var onOptionSelected = EventDispatcher()
 }
 
@@ -23,6 +24,7 @@ struct PickerView: ExpoSwiftUI.View {
           Text(option).tag(index)
         }
       }
+      .tint(props.color)
       #if !os(tvOS)
       .if(props.variant == "wheel", { $0.pickerStyle(.wheel) })
       #endif

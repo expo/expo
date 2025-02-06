@@ -73,19 +73,24 @@ export default function UIScreen() {
           </>
         )}
         {Platform.OS === 'android' && (
-          <Section title="Colored Buttons">
+          <Section title="Android Custom Colored Buttons">
             <Button
               style={styles.button}
-              colors={{ containerColor: '#007BFF', contentColor: '#FFFFFF' }}>
+              elementColors={{ containerColor: '#007BFF', contentColor: '#FF6347' }}>
               Blue
             </Button>
             <Button
               style={styles.button}
-              colors={{ containerColor: '#FF6347', contentColor: '#FFFFFF' }}>
+              elementColors={{ containerColor: '#FF6347', contentColor: '#007BFF' }}>
               Red
             </Button>
           </Section>
         )}
+        <Section title="Tinted Buttons">
+          <Button style={styles.button} color="#f00f0f">
+            Red
+          </Button>
+        </Section>
       </ScrollView>
     </Page>
   );

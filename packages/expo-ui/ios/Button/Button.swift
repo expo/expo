@@ -19,6 +19,7 @@ struct Button: ExpoSwiftUI.View {
           Text(props.text)
         }
       })
+    .tint(props.color)
     // TODO: Maybe there is a way to do a switch statement similarly to the `if` extension?
     .if(props.variant == .bordered, {
       $0.buttonStyle(.bordered)

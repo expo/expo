@@ -12,7 +12,7 @@ struct SectionView: ExpoSwiftUI.View {
   @EnvironmentObject var props: SectionProps
 
   var body: some View {
-    var form = Form {
+    let form = Form {
       Section(header: Text(props.title ?? "")) {
         Children().padding(EdgeInsets(top: 0, leading: 0, bottom: props.heightOffset, trailing: 0))
       }
