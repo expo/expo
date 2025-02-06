@@ -169,7 +169,7 @@ class CameraViewModule : Module() {
             putInt("height", image.height)
           }
 
-          val quality = options?.quality ?: 0
+          val quality = options?.quality ?: 1
           // Cache compressed image in imageStream
           ByteArrayOutputStream().use { imageStream ->
             image.compress(Bitmap.CompressFormat.JPEG, quality.toInt() * 100, imageStream)
