@@ -8,12 +8,16 @@ export type Options<ParamList extends object> = ExpoOptions & {
     screens: PathConfigMap<ParamList>;
 };
 type ParseConfig = Record<string, (value: string) => any>;
+export type RouteSegment = {
+    name: string;
+    initialRouteName?: string;
+};
 export type RouteConfig = ExpoRouteConfig & {
     screen: string;
     regex?: RegExp;
     path: string;
     pattern: string;
-    routeNames: string[];
+    route: RouteSegment[];
     parse?: ParseConfig;
 };
 export type InitialRouteConfig = {
