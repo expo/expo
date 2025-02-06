@@ -134,8 +134,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   let onResponsiveOrientationChanged = EventDispatcher()
 
   private var deviceOrientation: UIInterfaceOrientation {
-    UIApplication.shared.connectedScenes.compactMap { $0 as?
-      UIWindowScene
+    UIApplication.shared.connectedScenes.compactMap {
+      $0 as? UIWindowScene
     }.first?.interfaceOrientation ?? .unknown
   }
 
