@@ -60,6 +60,9 @@ module.exports = {
         origin: 'http://localhost:8081/',
         sitemap:
           process.env.E2E_ROUTER_SITEMAP === 'false' ? false : process.env.E2E_ROUTER_SITEMAP,
+        redirects: process.env.E2E_ROUTER_REDIRECTS
+          ? JSON.parse(process.env.E2E_ROUTER_REDIRECTS)
+          : undefined,
       },
     ],
   ],

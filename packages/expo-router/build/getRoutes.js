@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIgnoreList = exports.extrapolateGroups = exports.generateDynamic = exports.getExactRoutes = exports.getRoutes = void 0;
 const getRoutesCore_1 = require("./getRoutesCore");
+const getRoutesRedirect_1 = require("./getRoutesRedirect");
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -16,7 +17,7 @@ const getRoutesCore_1 = require("./getRoutesCore");
  */
 function getRoutes(contextModule, options = {}) {
     return (0, getRoutesCore_1.getRoutes)(contextModule, {
-        getSystemRoute({ route, type }) {
+        getSystemRoute({ route, type }, defaults) {
             if (route === '' && type === 'layout') {
                 // Root layout when no layout is defined.
                 return {
@@ -60,6 +61,14 @@ function getRoutes(contextModule, options = {}) {
                     internal: true,
                     dynamic: [{ name: '+not-found', deep: true, notFound: true }],
                     children: [],
+                };
+            }
+            else if (type === 'redirect' && defaults) {
+                return {
+                    ...defaults,
+                    loadRoute() {
+                        return (0, getRoutesRedirect_1.getRedirectModule)(route);
+                    },
                 };
             }
             throw new Error(`Unknown system route: ${route} and type: ${type}`);
