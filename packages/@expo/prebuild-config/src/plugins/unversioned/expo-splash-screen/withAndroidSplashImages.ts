@@ -100,16 +100,21 @@ const DRAWABLES_CONFIGS: {
   },
 };
 
-export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
+export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig | null> = (
+  config,
+  splash
+) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      await setSplashImageDrawablesAsync(
-        config,
-        props,
-        config.modRequest.projectRoot,
-        props?.imageWidth ?? 200
-      );
+      if (splash) {
+        await setSplashImageDrawablesAsync(
+          config,
+          splash,
+          config.modRequest.projectRoot,
+          splash?.imageWidth ?? 200
+        );
+      }
       return config;
     },
   ]);
