@@ -19,6 +19,8 @@ const packageJson = () => require('../package.json');
 async function run() {
   const args = process.argv.slice(2);
 
+  let showVerboseTestResults = false;
+
   if (args.some((arg) => ['-v', '--version'].includes(arg))) {
     logVersionAndExit();
   }
@@ -27,9 +29,15 @@ async function run() {
     logHelpAndExit();
   }
 
+  if (args.some((arg) => ['--verbose'].includes(arg))) {
+    showVerboseTestResults = true;
+  }
+
   // TODO: add offline flag
 
-  const projectRoot = path.resolve(process.cwd(), args[0] ?? process.cwd());
+  const projectRootArg = args.find((arg) => !arg.startsWith('-'));
+
+  const projectRoot = path.resolve(process.cwd(), projectRootArg ?? process.cwd());
 
   await fs.access(projectRoot, constants.F_OK).catch((err: any) => {
     if (err) {
@@ -38,7 +46,7 @@ async function run() {
     }
   });
 
-  await actionAsync(projectRoot);
+  await actionAsync(projectRoot, showVerboseTestResults);
 }
 
 function logVersionAndExit() {
@@ -55,7 +63,8 @@ function logHelpAndExit() {
   Options:
 
     -h, --help       output usage information
-    -v, --version    output the version number`);
+    -v, --version    output the version number
+    --verbose        print all test results, including passing ones`);
   process.exit(0);
 }
 
