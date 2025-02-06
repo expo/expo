@@ -418,9 +418,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       return
     }
 
-    let imageData = photo.fileDataRepresentation()
     handleCapturedImageData(
-      imageData: imageData,
+      imageData: photo.fileDataRepresentation(),
       metadata: photo.metadata,
       options: options,
       promise: promise
@@ -455,12 +454,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     let croppedSize = AVMakeRect(aspectRatio: previewSize, insideRect: cropRect)
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
-
-    let path = FileSystemUtilities.generatePathInCache(
-      appContext,
-      in: "Camera",
-      extension: ".jpg"
-    )
 
     let width = takenImage.size.width
     let height = takenImage.size.height
@@ -522,9 +515,22 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     }
 
     guard let processedImageData else {
-      promise.reject(CameraSavingImageException())
+      promise.reject(CameraSavingImageException("Image data could not be processed"))
       return
     }
+
+    if options.pictureRef {
+      if let image = UIImage(data: processedImageData) {
+        promise.resolve(PictureRef(image))
+        return
+      }
+    }
+
+    let path = FileSystemUtilities.generatePathInCache(
+      appContext,
+      in: "Camera",
+      extension: ".jpg"
+    )
 
     response["uri"] = ExpoCameraUtils.write(data: processedImageData, to: path)
     response["width"] = width

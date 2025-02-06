@@ -1,4 +1,4 @@
-import { GoogleMaps } from 'expo-maps';
+import { getPermissionsAsync, GoogleMaps, requestPermissionsAsync } from 'expo-maps';
 import { StyleSheet, View } from 'react-native';
 
 import { FunctionParameter, useArguments } from '../../../components/FunctionDemo';
@@ -39,12 +39,9 @@ export default function MapsPermissionsScreen() {
         <Configurator parameters={parameters} onChange={updateArgument} value={args} />
         <SimpleActionDemo
           title="requestPermissionsAsync"
-          action={() => GoogleMaps.requestPermissionsAsync()}
+          action={() => requestPermissionsAsync()}
         />
-        <SimpleActionDemo
-          title="getPermissionsAsync"
-          action={() => GoogleMaps.getPermissionsAsync()}
-        />
+        <SimpleActionDemo title="getPermissionsAsync" action={() => getPermissionsAsync()} />
       </View>
     </View>
   );

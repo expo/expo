@@ -8,7 +8,7 @@ exports.reactClientReferencesPlugin = void 0;
  * Copyright © 2024 650 Industries.
  */
 const core_1 = require("@babel/core");
-const url_1 = __importDefault(require("url"));
+const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 function reactClientReferencesPlugin(api) {
     const isReactServer = api.caller(common_1.getIsReactServer);
@@ -32,7 +32,7 @@ function reactClientReferencesPlugin(api) {
                     // This can happen in tests or systems that use Babel standalone.
                     throw new Error('[Babel] Expected a filename to be set in the state');
                 }
-                const outputKey = url_1.default.pathToFileURL(filePath).href;
+                const outputKey = node_url_1.default.pathToFileURL(filePath).href;
                 function iterateExports(callback, type) {
                     const exportNames = new Set();
                     // Collect all of the exports

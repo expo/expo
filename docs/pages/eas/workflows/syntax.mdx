@@ -1,0 +1,440 @@
+---
+title: Syntax for EAS Workflows
+description: Reference guide for the EAS Workflows configuration file syntax.
+maxHeadingDepth: 5
+---
+
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+A workflow is a configurable automated process made up of one or more jobs. You must create a YAML file to define your workflow configuration.
+
+## YAML syntax for workflows
+
+Workflow files use YAML syntax and must have either a `.yml` or `.yaml` file extension. If you're new to YAML and want to learn more, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
+
+Workflow files are located in the `.eas/workflows` directory in your project, and should be at the same level as your [**eas.json**](/eas/introduction/eas-json) file.
+
+## `name`
+
+The name of the workflow. This is displayed on the Expo dashboard on the workflows list page and is the title of the workflow's detail page.
+
+```yaml
+# @info #
+name: My workflow
+# @end #
+```
+
+## `on`
+
+The `on` key defines which GitHub events trigger the workflow. Any workflow can be triggered with the `eas workflow:run` command, regardless of the `on` key.
+
+### `on.push`
+
+Runs your workflow when you push a commit to matching branches.
+
+With the `branches` array, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only push to the `main` branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on push events to all branches.
+
+```yaml
+on:
+  # @info #
+  push:
+    # @end #
+    branches:
+      - 'main'
+      - 'feature/**'
+      # other branches names and globs
+```
+
+### `on.pull_request`
+
+Runs your workflow when a pull request event occurs on the matching branches.
+
+With the `branches` array, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to the `main` branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches.
+
+With the `types` array, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
+
+- `opened`
+- `reopened`
+- `synchronize`
+
+```yaml
+on:
+  # @info #
+  pull_request:
+    # @end #
+    branches:
+      - 'main'
+      - 'feature/**'
+      # other branch names and globs
+    types:
+      - 'opened'
+      # other event types
+```
+
+## `jobs`
+
+A workflow run is made up of one or more jobs.
+
+### `jobs.<job_id>`
+
+Each job must have an id. For example, `build` in the following YAML:
+
+```yaml
+jobs:
+  # @info #
+  build:
+    # @end #
+    # ...
+```
+
+### `jobs.<job_id>.name`
+
+The name of the job displayed on the workflow's detail page.
+
+```yaml
+jobs:
+  build:
+    # @info #
+    name: Build app
+    # @end #
+```
+
+## Control flow
+
+You can control when jobs run and what jobs must complete successfully before a job runs using the `needs` and `after` keywords. In addition, you can use the `if` keyword to control whether a job should run based on a condition.
+
+### `jobs.<job_id>.needs`
+
+A list of job IDs that must complete successfully before this job will run.
+
+```yaml
+jobs:
+  test:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: tsc
+        run: yarn tsc
+  build:
+    # @info #
+    needs: [test]
+    # @end #
+    type: build
+    params:
+      platform: ios
+```
+
+### `jobs.<job_id>.after`
+
+A list of job IDs that must complete (successfully or not) before this job will run.
+
+```yaml
+jobs:
+  build:
+    type: build
+    params:
+      platform: ios
+  notify:
+    # @info #
+    after: [build]
+    # @end #
+```
+
+### `jobs.<job_id>.if`
+
+The `if` conditional determines if a job should run.
+
+```yaml
+jobs:
+  build:
+    # @info #
+    if: ${{ github.ref == 'refs/heads/main' }}
+    # @end #
+```
+
+## Pre-packaged jobs
+
+### `jobs.<job_id>.type`
+
+Specifies the type of pre-packaged job to run. Pre-packaged jobs produce specialized UI according to the type of job on the workflow's detail page.
+
+#### `build`
+
+Creates an Android or iOS build of your project using [EAS Build](/build/introduction/).
+
+```yaml
+build:
+  # @info #
+  type: build
+  # @end #
+  params:
+    platform: ios | android # required
+    profile: string # optional, default: production
+```
+
+Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
+
+#### `deploy`
+
+Deploys your application using [EAS Hosting](/eas/hosting/introduction/).
+
+```yaml
+deploy:
+  # @info #
+  type: deploy
+  # @end #
+  environment: production | preview | development # optional
+  params:
+    alias: string # optional
+    prod: boolean # optional
+```
+
+#### `get-build`
+
+Retrieves an existing build from EAS that matches the provided parameters.
+
+```yaml
+get-build:
+  # @info #
+  type: get-build
+  # @end #
+  params:
+    platform: ios | android # optional
+    profile: string # optional
+    distribution: store | internal | simulator # optional
+    channel: string # optional
+    app_identifier: string # optional
+    app_build_version: string # optional
+    app_version: string # optional
+    git_commit_hash: string # optional
+    fingerprint_hash: string # optional
+    sdk_version: string # optional
+    runtime_version: string # optional
+    simulator: boolean # optional
+```
+
+#### `submit`
+
+Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/).
+
+```yaml
+submit:
+  # @info #
+  type: submit
+  # @end #
+  environment: production | preview | development # optional
+  params:
+    build_id: string # required
+    profile: string # optional, default: production
+```
+
+#### `update`
+
+Publishes an update using [EAS Update](/eas-update/introduction/).
+
+```yaml
+update:
+  # @info #
+  type: update
+  # @end #
+  environment: production | preview | development # optional
+  params:
+    message: string # optional
+    platform: string # optional - android, ios, or all
+    branch: string # optional
+    channel: string # optional - cannot be used with branch
+```
+
+## Custom jobs
+
+Runs custom code and can use built-in EAS functions. Does not require a `type` field.
+
+```yaml
+custom_job:
+  runs_on: linux-medium | linux-large | macos-medium | macos-large | linux-medium-nested-virtualization | linux-large-nested-virtualization # optional, default: linux-medium
+  environment: production | preview | development # optional
+  steps:
+    # ...
+```
+
+### `jobs.<job_id>.steps`
+
+A job contains a sequence of tasks called `steps`. Steps can run commands or use an action.
+
+```yaml
+jobs:
+  custom_job:
+    # @info #
+    steps:
+      - name: My first step
+        run: echo "Hello World"
+    # @end #
+```
+
+### `jobs.<job_id>.outputs`
+
+A list of outputs for the job. Job outputs are available to all downstream jobs that depend on this job. Set outputs in a step using the `set-output` function.
+
+```yaml
+jobs:
+  job_1:
+    # @info #
+    outputs:
+      output_1: ${{ steps.step_1.outputs.test }}
+    # @end #
+    steps:
+      - id: step_1
+        run: set-output test "hello world"
+
+  job_2:
+    needs: [job_1]
+    steps:
+      # @info #
+      - run: echo ${{ needs.job_1.outputs.output_1 }}
+      # @end #
+```
+
+### Built-in EAS functions
+
+EAS provides a set of built-in reusable functions that you can use in a workflow without defining the function definition.
+
+#### `eas/checkout`
+
+Checks out your project source files.
+
+For example, a workflow with the following `steps` will check out the project and list the files in the **assets** directory:
+
+```yaml
+custom_job:
+  steps:
+    - uses: eas/checkout
+```
+
+<BoxLink
+  title="eas/checkout source code"
+  description="View the source code for the eas/checkout function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
+/>
+
+#### `eas/install_node_modules`
+
+Installs node modules using the package manager (bun, npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
+
+```yaml example.yml
+custom_job:
+  steps:
+    - uses: eas/checkout
+    # @info #
+    - uses: eas/install_node_modules
+    # @end #
+```
+
+<BoxLink
+  title="eas/install_node_modules source code"
+  description="View the source code for the eas/install_node_modules function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
+/>
+
+#### `eas/prebuild`
+
+Runs the `expo prebuild` command using the package manager (bun, npm, pnpm, or Yarn) detected based on your project with the command best suited for your build type and build environment.
+
+```yaml
+custom_job:
+  steps:
+    - uses: eas/checkout
+    - uses: eas/install_node_modules
+    # @info #
+    - uses: eas/prebuild
+    # @end #
+```
+
+```yaml
+custom_job:
+  steps:
+    - uses: eas/checkout
+    - uses: eas/install_node_modules
+    - uses: eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    # @info #
+    - uses: eas/prebuild
+      inputs:
+        clean: false
+        apple_team_id: ${{ steps.resolve_apple_team_id_from_credentials.outputs.apple_team_id }}
+    # @end #
+```
+
+| Property               | Type      | Description                                                                                                                              |
+| ---------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                 | -         | The name of the step in the reusable function that shows in the build logs. Defaults to `Prebuild`.                                      |
+| `inputs.clean`         | `boolean` | Optional input defining whether the function should use `--clean` flag when running the command. Defaults to false                       |
+| `inputs.apple_team_id` | `boolean` | Optional input defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
+
+<BoxLink
+  title="eas/prebuild source code"
+  description="View the source code for the eas/resolve_apple_team_id_from_credentials function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+/>
+
+#### `eas/send_slack_message`
+
+Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel.
+The message can be specified as plain text or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
+With both cases, you can reference build job properties and [use other steps outputs](#use-output-from-one-step-to-another) in the message for dynamic evaluation.
+For example, `'Build URL: ${{ eas.job.expoBuildUrl }}'`, `Build finished with status: ${{ steps.run_fastlane.status_text }}`, `Build failed with error: ${{ steps.run_gradle.error_text }}`.
+Either "message" or "payload" has to be specified, but not both.
+
+```yaml
+custom_job:
+  steps:
+    # @info #
+    - uses: eas/send_slack_message
+      # @end #
+      inputs:
+        message: 'This is a message to plain input URL'
+        slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
+```
+
+| Input            | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                          |
+| `payload`        | `string` | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                         |
+| `slack_hook_url` | `string` | The URL of the previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${{ eas.env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide `slack_hook_url` input). |
+
+<BoxLink
+  title="eas/send_slack_message source code"
+  description="View the source code for the eas/send_slack_message function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
+/>
+
+#### `eas/use_npm_token`
+
+Configures node package managers (bun, npm, pnpm, or Yarn) for use with private packages, published either to npm or a private registry.
+
+Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
+
+```yaml example.yml
+custom_job:
+  name: Install private npm modules
+  steps:
+    - uses: eas/checkout
+    # @info #
+    - uses: eas/use_npm_token
+    # @end #
+    - name: Install dependencies
+      run: npm install # <---- Can now install private packages
+```
+
+<BoxLink
+  title="eas/use_npm_token source code"
+  description="View the source code for the eas/use_npm_token function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
+/>

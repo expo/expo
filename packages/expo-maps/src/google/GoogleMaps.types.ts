@@ -1,5 +1,5 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
-import type { PermissionResponse } from 'expo-modules-core';
+import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { Coordinates } from '../shared.types';
@@ -200,6 +200,7 @@ export enum MapColorScheme {
 }
 
 export type MapProps = {
+  ref?: Ref<MapViewType>;
   style?: StyleProp<ViewStyle>;
 
   /**
@@ -269,6 +270,22 @@ export type MapProps = {
   }) => void;
 };
 
+export type SetCameraPositionConfig = CameraPosition & {
+  /**
+   * The duration of the animation in milliseconds.
+   */
+  duration?: number;
+};
+
+export type MapViewType = {
+  /**
+   * Update camera position.
+   *
+   * @param config New camera postion config.
+   */
+  setCameraPosition: (config?: SetCameraPositionConfig) => void;
+};
+
 export type StreetViewProps = {
   style?: StyleProp<ViewStyle>;
 
@@ -277,17 +294,4 @@ export type StreetViewProps = {
   isStreetNamesEnabled?: boolean;
   isUserNavigationEnabled?: boolean;
   isZoomGesturesEnabled?: boolean;
-};
-
-export type GoogleMapsModule = {
-  /**
-   * Asks the user to grant permissions for location.
-   * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
-   */
-  requestPermissionsAsync(): Promise<PermissionResponse>;
-  /**
-   * Checks user's permissions for accessing location.
-   * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
-   */
-  getPermissionsAsync(): Promise<PermissionResponse>;
 };
