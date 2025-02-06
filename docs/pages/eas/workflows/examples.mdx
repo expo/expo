@@ -1,0 +1,260 @@
+---
+title: Example workflows
+description: Common workflows that are useful for your project.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+The following workflows are examples of how you can use EAS Workflows to automate your development and release processes. They can help you and your team develop, review each other's PRs, and release changes to your users.
+
+## Development builds workflow
+
+[Development builds](/develop/development-builds/introduction/) are specialized builds of your project that include Expo's developer tools. These types of builds include all native dependencies inside your project, enabling you to run a production-like build of your project on a simulator, emulator, or a physical device.
+
+<Collapsible summary="Prerequisites">
+
+To get started, you'll need to configure your project and devices to build and run development builds. Learn how to set up your environment for development builds with the following guides:
+
+<BoxLink
+  title="Android device setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=android&device=physical"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Android emulator setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=android&device=simulated"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="iOS device setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=ios&device=physical"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="iOS simulator setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=ios&device=simulated"
+  Icon={BookOpen02Icon}
+/>
+
+After you've configured your project and devices, add the following build profiles to your **eas.json** file.
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+</Collapsible>
+
+The following workflow creates a build for each platform and for both physical devices, Android emulators, and iOS simulators. They all will run in parallel.
+
+```yaml .eas/workflows/development-build.yml
+name: Development Build
+
+jobs:
+  android_development_build:
+    type: build
+    params:
+      platform: android
+      profile: development
+  ios_device_development_build:
+    type: build
+    params:
+      platform: ios
+      profile: development
+  ios_simulator_development_build:
+    type: build
+    params:
+      platform: ios
+      profile: development-simulator
+```
+
+Run the about workflow with:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/development-build.yml']} />
+
+## PR preview workflow
+
+Once you've made changes to your project, you can share a preview of your changes with your team by publishing a [preview update](/review/share-previews-with-your-team/).
+
+You can access preview updates in the development build UI and through scannable QR codes on the Expo dashboard. When publishing a preview on every commit, your team can review changes without pulling the latest changes and running them locally.
+
+<Collapsible summary="Prerequisites">
+
+Your project needs to have [EAS Update](/eas-update/introduction/) setup to publish preview updates. You can set up your project with:
+
+<Terminal cmd={['$ eas update:configure']} />
+
+After that, you'll need to create new [development builds](/develop/development-builds/create-a-build/).
+
+</Collapsible>
+
+The following workflow publishes a preview update for every commit on every branch.
+
+```yaml .eas/workflows/pr-preview.yml
+name: Publish Preview Update
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  publish_preview_update:
+    type: update
+    params:
+      branch: ${{ github.ref || 'test' }}
+```
+
+## Deploy to production workflow
+
+When you're ready to deliver changes to your users, you can build and submit to the app stores or you can send an over-the-air update. The following workflow detects if you need new builds, and if so, it sends them to the app stores. If new builds are not required, it will send an over-the-air update.
+
+<Collapsible summary="Prerequisites">
+
+To get started, you'll need to set up EAS Build, EAS Submit, and EAS Update.
+
+To set up EAS Build, follow this guide:
+
+<BoxLink
+  title="EAS Build prerequisites"
+  description="Get your project ready for EAS Build."
+  href="/build/setup/"
+  Icon={BookOpen02Icon}
+/>
+
+To set up EAS Submit, follow these guides for each app store:
+
+<BoxLink
+  title="Google Play Store prerequisites"
+  description="Get your project ready for Google Play Store submissions."
+  href="/submit/android/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Apple App Store prerequisites"
+  description="Get your project ready for Apple App Store submissions."
+  href="/submit/ios/"
+  Icon={BookOpen02Icon}
+/>
+
+And finally, you'll need to set up EAS Update, which you can do with:
+
+<Terminal cmd={['$ eas update:configure']} />
+
+</Collapsible>
+
+The following workflow runs on each push to the `main` branch and performs the following:
+
+- Takes a hash of the native characteristics of the project using [Expo Fingerprint](/versions/latest/sdk/fingerprint/).
+- Checks if a build already exists for the fingerprint.
+- If a build does not exist, it will build the project and submit it to the app stores.
+- If a build exists, it will send an over-the-air update.
+
+```yaml .eas/workflows/deploy-to-production.yml
+name: Deploy to production
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  fingerprint:
+    name: Fingerprint
+    outputs:
+      android_fingerprint_hash: ${{ steps.fingerprint_step_id.outputs.android_fingerprint_hash }}
+      ios_fingerprint_hash: ${{ steps.fingerprint_step_id.outputs.ios_fingerprint_hash }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - name: Install additional tools
+        run: sudo apt-get update -y && sudo apt-get install -y jq
+      - name: Set fingerprint variables
+        id: fingerprint_step_id
+        run: |
+          ANDROID_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android)
+          ANDROID_FINGERPRINT_HASH=$(echo $ANDROID_FINGERPRINT | jq -r '.hash')
+          IOS_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform ios)
+          IOS_FINGERPRINT_HASH=$(echo $IOS_FINGERPRINT | jq -r '.hash')
+          set-output ios_fingerprint_hash $IOS_FINGERPRINT_HASH
+          set-output android_fingerprint_hash $ANDROID_FINGERPRINT_HASH
+  get_android_build:
+    name: Check for existing android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+  get_ios_build:
+    name: Check for existing ios build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+  build_android:
+    name: Build Android
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: production
+  submit_android_build:
+    name: Submit Android Build
+    needs: [build_android]
+    type: submit
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+  submit_ios_build:
+    name: Submit iOS Build
+    needs: [build_ios]
+    type: submit
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+  publish_android_update:
+    name: Publish Android update
+    needs: [get_android_build]
+    if: ${{ needs.get_android_build.outputs.build_id }}
+    type: update
+    params:
+      branch: ${{ github.ref }}
+      platform: android
+  publish_ios_update:
+    name: Publish iOS update
+    needs: [get_ios_build]
+    if: ${{ needs.get_ios_build.outputs.build_id }}
+    type: update
+    params:
+      branch: ${{ github.ref }}
+      platform: ios
+```

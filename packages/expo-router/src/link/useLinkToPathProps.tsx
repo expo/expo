@@ -1,11 +1,11 @@
 import { MouseEvent } from 'react';
 import { GestureResponderEvent, Platform } from 'react-native';
 
+import { emitDomLinkEvent } from './useDomComponentNavigation';
+import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { useExpoRouter } from '../global-state/router-store';
 import { LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
-import { emitDomLinkEvent } from './useDomComponentNavigation';
-import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { shouldLinkExternally } from '../utils/url';
 
 function eventShouldPreventDefault(

@@ -2,8 +2,8 @@ import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 
 import {
-  getOrPromptForBundleIdentifier,
-  getOrPromptForPackage,
+  getOrPromptForBundleIdentifierAsync,
+  getOrPromptForPackageAsync,
 } from '../utils/getOrPromptApplicationId';
 
 /** Ensure config is written, and prompts for application identifiers. */
@@ -18,11 +18,11 @@ export async function ensureConfigAsync(
   // Prompt for the Android package first because it's more strict than the bundle identifier
   // this means you'll have a better chance at matching the bundle identifier with the package name.
   if (platforms.includes('android')) {
-    await getOrPromptForPackage(projectRoot);
+    await getOrPromptForPackageAsync(projectRoot);
   }
 
   if (platforms.includes('ios')) {
-    await getOrPromptForBundleIdentifier(projectRoot);
+    await getOrPromptForBundleIdentifierAsync(projectRoot);
   }
 
   // Read config again because prompting for bundle id or package name may have mutated the results.

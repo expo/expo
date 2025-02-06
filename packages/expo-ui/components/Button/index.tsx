@@ -1,5 +1,7 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+
+import { ViewEvent } from '../../src';
 
 /**
  * The role of the button.
@@ -50,10 +52,6 @@ export type ButtonVariant =
 
 export type ButtonProps = {
   /**
-   * The text to display inside the button.
-   */
-  text: string;
-  /**
    * A callback that is called when the button is pressed.
    */
   onPress?: () => void;
@@ -75,30 +73,50 @@ export type ButtonProps = {
    * Additional styles to apply to the button.
    */
   style?: StyleProp<ViewStyle>;
+  /**
+   * The text to display inside the button.
+   */
+  children: string;
+  /**
+   * Colors for button's core elements.
+   * @platform android
+   */
+  colors?: {
+    containerColor?: string;
+    contentColor?: string;
+    disabledContainerColor?: string;
+    disabledContentColor?: string;
+  };
 };
+
+export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children'> & {
+  buttonRole?: ButtonRole;
+  text: string;
+} & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
-export type NativeButtonProps = Omit<Omit<ButtonProps, 'role'>, 'onPress'> & {
-  buttonRole?: ButtonRole;
-  onButtonPressed?: () => void;
-};
-
 const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
   'ExpoUI',
   'Button'
 );
 
-export function Button(props: ButtonProps) {
-  // We have to work around the `role` and `onPress` props being reserved by React Native.
-  const restProps = { ...props, role: null, onPress: null };
+export function transformButtonProps(props: ButtonProps): NativeButtonProps {
+  return {
+    text: props.children ?? '',
+    buttonRole: props.role,
+    onButtonPressed: props.onPress,
+    systemImage: props.systemImage,
+    variant: props.variant,
+    colors: props.colors,
+  };
+}
 
+export function Button(props: ButtonProps) {
   // Min height from https://m3.material.io/components/buttons/specs, minWidth
   return (
     <ButtonNativeView
-      style={[{ minWidth: 80, minHeight: 40 }, props.style]}
-      buttonRole={props.role}
-      onButtonPressed={props.onPress}
-      {...restProps}
+      style={StyleSheet.compose({ minWidth: 80, minHeight: 40 }, props.style)}
+      {...transformButtonProps(props)}
     />
   );
 }

@@ -9,7 +9,7 @@
       "ServerRegistrationModule",
       "SchedulerModule"
     ],
-    "appDelegateSubscribers": ["PushTokenAppDelegateSubscriber"]
+    "appDelegateSubscribers": ["NotificationsAppDelegateSubscriber"]
   },
   "android": {
     "modules": [

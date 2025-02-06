@@ -9,18 +9,21 @@ type CollapsibleGridProps = {
   initialCount?: number;
 };
 
-export function CollapsibleTalksGridWrapper({ items, initialCount = 9 }: CollapsibleGridProps) {
+export function CollapsibleTalksGridWrapper({ items }: CollapsibleGridProps) {
   const [showAll, setShowAll] = useState(false);
+  const initialRowCount = 3;
+  const itemsPerRow = 4;
+  const initialItems = initialRowCount * itemsPerRow;
 
   return (
     <>
       <TalkGridWrapper>
-        {items.slice(0, showAll ? items.length : initialCount).map(item => (
+        {items.slice(0, showAll ? items.length : initialItems).map(item => (
           <TalkGridCell key={item.videoId ?? item.event} {...item} />
         ))}
       </TalkGridWrapper>
 
-      {items.length > initialCount && (
+      {items.length > initialItems && (
         <div className="mt-6 flex justify-center">
           <Button
             theme="secondary"

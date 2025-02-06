@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Remove unused `sudo-prompt` dependency ([#34559](https://github.com/expo/expo/pull/34559) by [@kitten](https://github.com/kitten))
+
 ## 1.6.1 — 2024-11-13
 
 _This version does not introduce any user-facing changes._
