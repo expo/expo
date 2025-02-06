@@ -19,6 +19,8 @@
   "files": [
     "README.md",
     "default.js",
+    "flat.js",
+    "flat",
     "utils"
   ],
   "author": "Expo",
@@ -37,12 +39,11 @@
     "eslint-plugin-react-hooks": "^5.1.0"
   },
   "devDependencies": {
-    "eslint": "^8.57.1",
+    "eslint": "^9.18.0",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.4.2"
   },
   "peerDependencies": {
-    "eslint": ">=8.10 <9",
-    "prettier": ">=3"
+    "eslint": "^8 || ^9"
   }
 }

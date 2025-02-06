@@ -16,13 +16,29 @@ yarn add --dev eslint
 
 ## Usage
 
+### With [flat config](https://eslint.org/blog/2022/08/new-config-system-part-2/) (recommended)
+
+Import this config into your [configuration file](https://eslint.org/docs/latest/use/configure/configuration-files#configuration-file), e.g. `eslint.config.js` and spread it into the config array.
+
+```js
+// eslint.config.js
+const expoConfig = require("eslint-config-expo/flat");
+
+module.exports = [
+  ...expoConfig,
+  // your other config
+];
+```
+
+### With legacy config
+
 Import this config into your own ESLint [configuration](https://eslint.org/docs/latest/use/configure/configuration-files) using the `extends` option. ESLint checks both `package.json` and `.eslintrc.*` files for its configuration:
 
 ### package.json
 ```js
 {
   "eslintConfig": {
-    "extends": ["expo", "eslint:recommended"]
+    "extends": ["expo"]
   }
 }
 ```
@@ -30,6 +46,6 @@ Import this config into your own ESLint [configuration](https://eslint.org/docs/
 ### .eslintrc.js
 ```js
 module.exports = {
-  extends: ["expo", "eslint:recommended"],
+  extends: ["expo"],
 };
 ```
