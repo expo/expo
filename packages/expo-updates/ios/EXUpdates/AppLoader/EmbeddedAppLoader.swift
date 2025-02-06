@@ -119,7 +119,7 @@ public final class EmbeddedAppLoader: AppLoader {
     ))
   }
 
-  override public func downloadAsset(_ asset: UpdateAsset) {
+  override public func downloadAsset(_ asset: UpdateAsset, requestedUpdate: Update) {
     FileDownloader.assetFilesQueue.async {
       self.handleAssetDownloadAlreadyExists(asset)
     }
