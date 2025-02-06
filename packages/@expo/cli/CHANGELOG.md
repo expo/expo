@@ -48,6 +48,7 @@
 - Move getAccountUsername from `@expo/config` to CLI for internal usage ([#33249](https://github.com/expo/expo/pull/33249) by [@wschurman](https://github.com/wschurman))
 - Add e2e tests for browser history and hash param ([#33524](https://github.com/expo/expo/pull/33524) by [@stephentuso](https://github.com/stephentuso))
 - Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
+- Add e2e test for URL with hash and params ([#33646](https://github.com/expo/expo/pull/33646) by [@stephentuso](https://github.com/stephentuso))
 - Added `--bytecode` option to `export:embed`. ([#33906](https://github.com/expo/expo/pull/33906) by [@kudo](https://github.com/kudo))
 - Exclude `@expo-google-fonts/*` packages from the New Architecture compatibility check. ([#34127](https://github.com/expo/expo/pull/34127) by [@Simek](https://github.com/Simek))
 - Pin to `internal-ip@6.1.0` ([#34325](https://github.com/expo/expo/pull/34325) by [@kitten](https://github.com/kitten))
