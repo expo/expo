@@ -1,7 +1,4 @@
 import React_RCTAppDelegate
-#if canImport(ReactAppDependencyProvider)
-  import ReactAppDependencyProvider
-#endif
 
 private var reactDelegateHandlers = [ExpoReactDelegateHandler]()
 
@@ -15,38 +12,46 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
    */
   private weak var appDelegate: RCTReactNativeFactoryDelegate?
   
-  public var reactNativeFactory: RCTReactNativeFactory?
-  
-  public var bridge: RCTBridge?
+  /// The window object, used to render the UIViewControllers
   public var window: UIWindow?
+
+  /// From RCTAppDelegate
+  @objc public var bridge: RCTBridge?
+  @objc public var moduleName: String = ""
+  @objc public var initialProps: [AnyHashable: Any]?
+
+  public private(set) var reactNativeFactory: ExpoReactNativeFactory?
+
+  /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
+  public var automaticallyLoadReactNativeWindow: Bool = true
   
-  @objc public var moduleName: NSString = ""
-  @objc public var initialProps: [AnyHashable : Any]?
-  
-  
-//	private lazy var rootViewFactoryInstance: RCTRootViewFactory = createRCTRootViewFactory()
+  // Default initializer
+  public override init() {
+    super.init()
+    self.reactNativeFactory = ExpoReactNativeFactory(delegate: self, reactDelegate: self.reactDelegate)    
+  }
 
   @objc
   public convenience init(appDelegate: RCTReactNativeFactoryDelegate) {
     self.init()
     self.appDelegate = appDelegate
-    self.reactNativeFactory = EXReactNativeFactory(delegate: self, createRootViewFactory: createRCTRootViewFactory)
-    
-#if canImport(ReactAppDependencyProvider)
-    self.dependencyProvider = RCTAppDependencyProvider()
-#endif
   }
   
   open func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    loadReactNativeWindow(launchOptions: launchOptions)
+    if (automaticallyLoadReactNativeWindow) {
+      loadReactNativeWindow(launchOptions: launchOptions)
+    }
     return true
   }
   
   func loadReactNativeWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-    let rootView = self.reactNativeFactory!.rootViewFactory.view(
+    guard let reactNativeFactory = self.reactNativeFactory else {
+      fatalError("loadReactNativeWindow: Missing reactNativeFactory in ExpoAppInstance")
+    }
+    let rootView = reactNativeFactory.rootViewFactory.view(
         withModuleName: self.moduleName as String,
         initialProperties: self.initialProps,
         launchOptions: launchOptions
@@ -93,14 +98,18 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
                         initialProps: [AnyHashable: Any]?,
                         launchOptions: [AnyHashable: Any]?) -> UIView {
     /*if self.newArchEnabled() {
-     // TODO:
+     // TODO(chrfalch)
       let reactHost = self.reactNativeFactory.rootViewFactory.reactHost
         assert(reactHost == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
     } else {
         assert(self.rootViewFactory.bridge == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
     }*/
+    
+    guard let reactNativeFactory = self.reactNativeFactory else {
+      fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppInstance")
+    }
 
-    let rootViewFactory = self.reactNativeFactory!.rootViewFactory
+    let rootViewFactory = reactNativeFactory.rootViewFactory
     let configuration = rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration
 
     if let bundleURL = bundleURL {
@@ -110,7 +119,7 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
     }
 
     if let moduleName = moduleName {
-      self.moduleName = moduleName as NSString
+      self.moduleName = moduleName
     }
 
     if let initialProps = initialProps {
@@ -131,66 +140,6 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
     }
 
     return rootView
-    
-    
-  }
-  
-  func createRCTRootViewFactory() -> RCTRootViewFactory {
-    
-    let appDelegate = self.appDelegate ?? self
-
-    let bundleUrlBlock: RCTBundleURLBlock = { [weak self] in
-      let appDelegateWeak = self?.appDelegate ?? self      
-      return appDelegateWeak?.bundleURL()
-    }
-
-    let configuration = RCTRootViewFactoryConfiguration(
-      bundleURLBlock: bundleUrlBlock,
-      newArchEnabled: newArchEnabled(),
-      turboModuleEnabled: turboModuleEnabled(),
-      bridgelessEnabled: bridgelessEnabled()
-    )
-
-    configuration.createRootViewWithBridge = { bridge, moduleName, initProps in
-      return appDelegate.createRootView!(with: bridge, moduleName: moduleName, initProps: initProps)
-    }
-
-    configuration.createBridgeWithDelegate = { delegate, launchOptions in
-      return appDelegate.createBridge!(with: delegate, launchOptions: launchOptions)
-    }
-
-    configuration.customizeRootView = { rootView in
-      // @tsapeta: We cannot just call `self.customize(rootView)` – see the comment of the `customizeRootView:byAppDelegate:` function in EXAppDelegateWrapper.h
-      // TODO bring back this: return EXAppDelegateWrapper.customizeRootView(rootView, by: appDelegate as! RCTAppDelegate)
-    }
-
-    // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
-    configuration.sourceURLForBridge = nil
-
-    if responds(to: #selector(extraModules(for:))) {
-      configuration.extraModulesForBridge = { bridge in
-        return appDelegate.extraModules!(for: bridge)
-      }
-    }
-
-    if responds(to: #selector(extraLazyModuleClasses(for:))) {
-      configuration.extraLazyModuleClassesForBridge = { bridge in
-        return appDelegate.extraLazyModuleClasses!(for: bridge)
-      }
-    }
-
-    if responds(to: #selector(bridge(_:didNotFindModule:))) {
-      configuration.bridgeDidNotFindModule = { bridge, moduleName in
-        return appDelegate.bridge!(bridge, didNotFindModule: moduleName)
-      }
-    }
-
-	// this doesn't work because self.reactNativeFactory is nil at this point; this should be in a subclass of RCTReactNativeFactory?
-    return ExpoReactRootViewFactory(
-      reactDelegate: reactDelegate,
-      configuration: configuration,
-			turboModuleManagerDelegate: appDelegate
-    )
   }
 
   open override func sourceURL(for bridge: RCTBridge) -> URL? {
@@ -209,5 +158,5 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
       .forEach { handlerTuple in
         reactDelegateHandlers.append(handlerTuple.handler.init())
       }
-  }
+  }   
 }
