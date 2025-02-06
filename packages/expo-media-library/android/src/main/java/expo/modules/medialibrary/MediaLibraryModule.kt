@@ -57,6 +57,16 @@ class MediaLibraryModule : Module() {
   private var imagesObserver: MediaStoreContentObserver? = null
   private var videosObserver: MediaStoreContentObserver? = null
   private var awaitingAction: Action? = null
+  private val isExpoGo by lazy {
+    context.resources.getString(R.string.is_expo_go).toBoolean()
+  }
+  private val allowedPermissionsList by lazy {
+    if (isExpoGo) {
+      listOf(GranularPermission.AUDIO)
+    } else {
+      listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+    }
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoMediaLibrary")
@@ -72,7 +82,8 @@ class MediaLibraryModule : Module() {
     Events(LIBRARY_DID_CHANGE_EVENT)
 
     AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+      val granularPermissions = permissions ?: allowedPermissionsList
+      maybeThrowIfExpoGo(granularPermissions)
       askForPermissionsWithPermissionsManager(
         appContext.permissions,
         MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
@@ -81,7 +92,8 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("getPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+      val granularPermissions = permissions ?: allowedPermissionsList
+      maybeThrowIfExpoGo(granularPermissions)
       getPermissionsWithPermissionsManager(
         appContext.permissions,
         MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
@@ -284,14 +296,15 @@ class MediaLibraryModule : Module() {
             )
           }
 
-      videosObserver = MediaStoreContentObserver(handler, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO)
-        .also { videoObserver ->
-          contentResolver.registerContentObserver(
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            true,
-            videoObserver
-          )
-        }
+      videosObserver =
+        MediaStoreContentObserver(handler, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO)
+          .also { videoObserver ->
+            contentResolver.registerContentObserver(
+              MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+              true,
+              videoObserver
+            )
+          }
     }
 
     OnStopObserving {
@@ -322,15 +335,16 @@ class MediaLibraryModule : Module() {
     }
   }
 
-  private inline fun withModuleScope(promise: Promise, crossinline block: () -> Unit) = moduleCoroutineScope.launch {
-    try {
-      block()
-    } catch (e: CodedException) {
-      promise.reject(e)
-    } catch (e: ModuleDestroyedException) {
-      promise.reject(TAG, "MediaLibrary module destroyed", e)
+  private inline fun withModuleScope(promise: Promise, crossinline block: () -> Unit) =
+    moduleCoroutineScope.launch {
+      try {
+        block()
+      } catch (e: CodedException) {
+        promise.reject(e)
+      } catch (e: ModuleDestroyedException) {
+        promise.reject(TAG, "MediaLibrary module destroyed", e)
+      }
     }
-  }
 
   private val isMissingPermissions: Boolean
     get() = hasReadPermissions()
@@ -339,7 +353,10 @@ class MediaLibraryModule : Module() {
     get() = hasWritePermissions()
 
   @SuppressLint("InlinedApi")
-  private fun getManifestPermissions(writeOnly: Boolean, granularPermissions: List<GranularPermission>): Array<String> {
+  private fun getManifestPermissions(
+    writeOnly: Boolean,
+    granularPermissions: List<GranularPermission>
+  ): Array<String> {
     // ACCESS_MEDIA_LOCATION should not be requested if it's absent in android-manifest
     // If only audio permission is requested, we don't need to request media location permissions
     val shouldAddMediaLocationAccess =
@@ -347,7 +364,9 @@ class MediaLibraryModule : Module() {
         MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION) &&
         !(
           Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            granularPermissions.count() == 1 && granularPermissions.contains(GranularPermission.AUDIO)
+            granularPermissions.count() == 1 && granularPermissions.contains(
+              GranularPermission.AUDIO
+            )
           )
 
     val shouldAddWriteExternalStorage =
@@ -356,7 +375,12 @@ class MediaLibraryModule : Module() {
 
     val shouldAddGranularPermissions =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-        granularPermissions.all { MediaLibraryUtils.hasManifestPermission(context, it.toManifestPermission()) }
+        granularPermissions.all {
+          MediaLibraryUtils.hasManifestPermission(
+            context,
+            it.toManifestPermission()
+          )
+        }
 
     val shouldIncludeGranular = shouldAddGranularPermissions && !writeOnly
     return listOfNotNull(
@@ -368,7 +392,10 @@ class MediaLibraryModule : Module() {
   }
 
   @SuppressLint("InlinedApi")
-  private fun getGranularPermissions(shouldIncludeGranular: Boolean, granularPermissions: List<GranularPermission>): Array<String> {
+  private fun getGranularPermissions(
+    shouldIncludeGranular: Boolean,
+    granularPermissions: List<GranularPermission>
+  ): Array<String> {
     return if (shouldIncludeGranular) {
       listOfNotNull(
         READ_MEDIA_IMAGES.takeIf { granularPermissions.contains(GranularPermission.PHOTO) },
@@ -381,9 +408,11 @@ class MediaLibraryModule : Module() {
   }
 
   private inline fun throwUnlessPermissionsGranted(isWrite: Boolean = true, block: () -> Unit) {
-    val missingPermissionsCondition = if (isWrite) isMissingWritePermission else isMissingPermissions
+    val missingPermissionsCondition =
+      if (isWrite) isMissingWritePermission else isMissingPermissions
     if (missingPermissionsCondition) {
-      val missingPermissionsMessage = if (isWrite) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
+      val missingPermissionsMessage =
+        if (isWrite) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
       throw PermissionsException(missingPermissionsMessage)
     }
     block()
@@ -395,7 +424,7 @@ class MediaLibraryModule : Module() {
 
   private fun hasReadPermissions(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      val permissions = mutableListOf(READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO)
+      val permissions = allowedPermissionsList.map { it.toManifestPermission() }.toMutableList()
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         permissions.add(READ_MEDIA_VISUAL_USER_SELECTED)
       }
@@ -410,6 +439,14 @@ class MediaLibraryModule : Module() {
       appContext.permissions
         ?.hasGrantedPermissions(*permissions)
         ?.not() ?: false
+    }
+  }
+
+  private fun maybeThrowIfExpoGo(permissions: List<GranularPermission>) {
+    if (isExpoGo) {
+      if (permissions.contains(GranularPermission.PHOTO) || permissions.contains(GranularPermission.VIDEO)) {
+        throw PermissionsException("Due to changes in Androids permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build")
+      }
     }
   }
 
