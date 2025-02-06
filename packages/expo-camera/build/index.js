@@ -77,6 +77,7 @@ export async function scanFromURLAsync(url, barcodeTypes = ['qr']) {
     return CameraManager.scanFromURLAsync(url, barcodeTypes);
 }
 export * from './Camera.types';
+export * from './PictureRef';
 /**
  * @hidden
  */

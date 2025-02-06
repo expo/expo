@@ -67,6 +67,15 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-local-authentication': ['LocalAuthentication.ts'],
   'expo-localization': ['Localization.ts'],
   'expo-location': ['index.ts'],
+  'expo-maps': [
+    [
+      'index.ts',
+      'apple/AppleMapsView.tsx',
+      'apple/AppleMaps.types.ts',
+      'google/GoogleMapsView.tsx',
+      'google/GoogleMaps.types.ts',
+    ],
+  ],
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
@@ -98,6 +107,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
   'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
+  '@expo/fingerprint': ['index.ts'],
 };
 
 const executeCommand = async (

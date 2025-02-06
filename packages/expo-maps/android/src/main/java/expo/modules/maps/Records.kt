@@ -17,6 +17,17 @@ import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 
+data class SetCameraPositionConfig(
+  @Field
+  val coordinates: Coordinates?,
+
+  @Field
+  val zoom: Float?,
+
+  @Field
+  val duration: Int?
+) : Record
+
 data class Coordinates(
   @Field
   val latitude: Double = 0.0,

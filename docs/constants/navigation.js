@@ -40,7 +40,6 @@ const easDirectories = [
   'eas-insights',
   'distribution',
   'custom-builds',
-  'eas-workflows',
   'hosting',
   'billing',
   'accounts',
@@ -383,11 +382,9 @@ export const eas = [
     }
   ),
   makeSection('EAS Workflows', [
-    makePage('eas-workflows/get-started.mdx'),
-    makePage('eas-workflows/triggers.mdx'),
-    makePage('eas-workflows/jobs.mdx'),
-    makePage('eas-workflows/control-flow.mdx'),
-    makePage('eas-workflows/variables.mdx'),
+    makePage('eas/workflows/get-started.mdx'),
+    makePage('eas/workflows/examples.mdx'),
+    makePage('eas/workflows/syntax.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),

@@ -14,6 +14,7 @@ async function initPrismAsync() {
   await import('prismjs/components/prism-objectivec' as Language);
   await import('prismjs/components/prism-properties' as Language);
   await import('prismjs/components/prism-ruby' as Language);
+  await import('prismjs/components/prism-ignore' as Language);
 }
 
 await initPrismAsync();
