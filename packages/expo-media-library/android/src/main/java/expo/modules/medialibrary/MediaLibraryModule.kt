@@ -361,26 +361,26 @@ class MediaLibraryModule : Module() {
     // If only audio permission is requested, we don't need to request media location permissions
     val shouldAddMediaLocationAccess =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-          MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION) &&
-          !(
-              Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                  granularPermissions.count() == 1 && granularPermissions.contains(
-                GranularPermission.AUDIO
-              )
-              )
+        MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION) &&
+        !(
+          Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            granularPermissions.count() == 1 && granularPermissions.contains(
+              GranularPermission.AUDIO
+            )
+          )
 
     val shouldAddWriteExternalStorage =
       Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
-          MediaLibraryUtils.hasManifestPermission(context, WRITE_EXTERNAL_STORAGE)
+        MediaLibraryUtils.hasManifestPermission(context, WRITE_EXTERNAL_STORAGE)
 
     val shouldAddGranularPermissions =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-          granularPermissions.all {
-            MediaLibraryUtils.hasManifestPermission(
-              context,
-              it.toManifestPermission()
-            )
-          }
+        granularPermissions.all {
+          MediaLibraryUtils.hasManifestPermission(
+            context,
+            it.toManifestPermission()
+          )
+        }
 
     val shouldIncludeGranular = shouldAddGranularPermissions && !writeOnly
     return listOfNotNull(
