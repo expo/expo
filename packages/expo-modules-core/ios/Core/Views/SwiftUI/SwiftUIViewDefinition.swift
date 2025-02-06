@@ -6,7 +6,7 @@ import Combine
 /**
  A protocol for SwiftUI views that need to access props.
  */
-public protocol ExpoSwiftUIView<Props>: SwiftUI.View {
+public protocol ExpoSwiftUIView<Props>: SwiftUI.View, AnyArgument {
   associatedtype Props: ExpoSwiftUI.ViewProps
 
   var props: Props { get }
@@ -14,7 +14,7 @@ public protocol ExpoSwiftUIView<Props>: SwiftUI.View {
   init()
 }
 
-public extension ExpoSwiftUIView {
+public extension ExpoSwiftUIView  {
   /**
    Returns React's children as SwiftUI views.
    */
@@ -22,6 +22,10 @@ public extension ExpoSwiftUIView {
     ZStack(alignment: .topLeading) {
       ForEach(props.children ?? []) { $0 }
     }
+  }
+  
+  static func getDynamicType() -> AnyDynamicType {
+    return DynamicSwiftUIViewType(innerType: Self.self)
   }
 }
 
@@ -41,6 +45,10 @@ extension ExpoSwiftUI {
       // We assume SwiftUI views are exported as named views under the class name
       let nameDefinitionElement = ViewNameDefinition(name: String(describing: viewType))
       super.init(HostingView<Props, ViewType>.self, elements: [nameDefinitionElement])
+    }
+
+    init(_ viewType: ViewType.Type, elements: [AnyViewDefinitionElement]) {
+      super.init(HostingView<Props, ViewType>.self, elements: elements)
     }
 
     public override func createView(appContext: AppContext) -> UIView? {

@@ -16,6 +16,10 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View {
   @EnvironmentObject var props: AppleMapsViewProps
+  
+  func setCameraPosition(config: Double) -> Bool {
+    return true
+  }
 
   var body: some View {
     if #available(iOS 18.0, *) {
@@ -32,6 +36,10 @@ struct AppleMapsView: View {
   @EnvironmentObject var props: AppleMapsViewProps
   @State private var mapCameraPosition: MapCameraPosition = .automatic
   @State var selection: MapSelection<MKMapItem>?
+  
+  func setCameraPosition(config: Double) -> Bool {
+    return true
+  }
 
   var body: some View {
     let properties = props.properties
