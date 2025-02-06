@@ -3,6 +3,7 @@ package expo.modules.plugin
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import expo.modules.plugin.text.Colors
+import expo.modules.plugin.text.withColor
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -31,7 +32,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
       // Adds the subproject as a dependency to the current project (expo package).
       project.dependencies.add("api", subproject)
 
-      project.logger.quiet("  - ${Colors.GREEN}${subproject.name}${Colors.RESET} (${subproject.version})")
+      project.logger.quiet("  - ${subproject.name.withColor(Colors.GREEN)} (${subproject.version})")
     }
 
     project.logger.quiet("")
