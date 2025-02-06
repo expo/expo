@@ -2,27 +2,27 @@
 
 @interface EXReactNativeFactory ()
 
-@property (nonatomic, copy) RCTRootViewFactory * (^createRootViewFactory)(void);
+-(RCTRootViewFactory*) internalCreateRCTRootViewFactory;
 
 @end
 
 @implementation EXReactNativeFactory
 
-- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate
-           createRootViewFactory:(RCTRootViewFactory * (^)(void))createRootViewFactory {
-  // Make sure we save the factory before calling super - super calls createRCTRootViewFactory
-  _createRootViewFactory = [createRootViewFactory copy];
+- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate {
   self = [super initWithDelegate:delegate];
+  if (self != nil) {
+    // Initialization?
+  }
   return self;
 }
 
-- (RCTRootViewFactory *)createRCTRootViewFactory {
-  if (self.createRootViewFactory == nil) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"ExpoReactNativeFactory: createRootViewFactory is nil. Cannot create RCTRootViewFactory."
-                                 userInfo:nil];
-  }
-  return self.createRootViewFactory();
+- (RCTRootViewFactory *) createRCTRootViewFactory {
+  return [self internalCreateRCTRootViewFactory];
+}
+
+- (RCTRootViewFactory *) internalCreateRCTRootViewFactory {
+  RCTFatal(RCTErrorWithMessage(@"EXReactNativeFactory - internalCreateRCTRootViewFactory should be overridden and implemented!"));
+  return nil;
 }
 
 @end
