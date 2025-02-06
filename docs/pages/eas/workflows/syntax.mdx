@@ -186,7 +186,7 @@ deploy:
   # @info #
   type: deploy
   # @end #
-  environment: production | preview | development # optional
+  environment: production | preview | development # optional, defaults to production
   params:
     alias: string # optional
     prod: boolean # optional
@@ -218,14 +218,13 @@ get-build:
 
 #### `submit`
 
-Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/).
+Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment` it uses the environment used to create build referenced in `build_id`.
 
 ```yaml
 submit:
   # @info #
   type: submit
   # @end #
-  environment: production | preview | development # optional
   params:
     build_id: string # required
     profile: string # optional, default: production
@@ -240,12 +239,28 @@ update:
   # @info #
   type: update
   # @end #
-  environment: production | preview | development # optional
+  environment: production | preview | development # optional, defaults to production
   params:
     message: string # optional
     platform: string # optional - android, ios, or all
     branch: string # optional
     channel: string # optional - cannot be used with branch
+```
+
+#### `maestro`
+
+Runs [Maestro](https://maestro.mobile.dev/) tests on a build.
+
+```yaml
+maestro:
+  # @info #
+  type: maestro
+  # @end #
+  environment: production | preview | development # optional, defaults to preview
+  image: string # optional, defaults to 'default'. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+  params:
+    build_id: string # required
+    flow_path: string | string[] # required
 ```
 
 ## Custom jobs
@@ -255,7 +270,8 @@ Runs custom code and can use built-in EAS functions. Does not require a `type` f
 ```yaml
 custom_job:
   runs_on: linux-medium | linux-large | macos-medium | macos-large | linux-medium-nested-virtualization | linux-large-nested-virtualization # optional, default: linux-medium
-  environment: production | preview | development # optional
+  environment: production | preview | development # optional, defaults to production
+  image: string # optional, defaults to 'default'. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
   steps:
     # ...
 ```
@@ -363,21 +379,20 @@ custom_job:
         id: resolve_apple_team_id_from_credentials
     # @info #
     - uses: eas/prebuild
-      inputs:
+      with:
         clean: false
         apple_team_id: ${{ steps.resolve_apple_team_id_from_credentials.outputs.apple_team_id }}
     # @end #
 ```
 
-| Property               | Type      | Description                                                                                                                              |
-| ---------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                 | -         | The name of the step in the reusable function that shows in the build logs. Defaults to `Prebuild`.                                      |
-| `inputs.clean`         | `boolean` | Optional input defining whether the function should use `--clean` flag when running the command. Defaults to false                       |
-| `inputs.apple_team_id` | `boolean` | Optional input defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
+| Input           | Type      | Description                                                                                                                              |
+| --------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `clean`         | `boolean` | Optional input defining whether the function should use `--clean` flag when running the command. Defaults to false.                      |
+| `apple_team_id` | `boolean` | Optional input defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
 
 <BoxLink
   title="eas/prebuild source code"
-  description="View the source code for the eas/resolve_apple_team_id_from_credentials function on GitHub."
+  description="View the source code for the eas/prebuild function on GitHub."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
 />
@@ -396,7 +411,7 @@ custom_job:
     # @info #
     - uses: eas/send_slack_message
       # @end #
-      inputs:
+      with:
         message: 'This is a message to plain input URL'
         slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
 ```
