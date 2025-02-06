@@ -8,7 +8,7 @@ export declare function findFocusedRoute(state: InitialState): (Omit<import("@re
         routes: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>[];
         type: string;
         stale: false;
-    }>, "routes" | "stale">> & {
+    }>, "stale" | "routes">> & {
         routes: (Omit<import("@react-navigation/routers").Route<string, object | undefined>, "key"> & any)[];
     }> | undefined;
 }) | undefined;

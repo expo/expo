@@ -38,7 +38,7 @@ function getDirectoryTree(contextModule, options) {
         ignoreList.push(...options.ignore);
     }
     if (!options.preserveApiRoutes) {
-        ignoreList.push(/\+api\.[tj]sx?$/);
+        ignoreList.push(/\+api$/, /\+api\.[tj]sx?$/);
     }
     const rootDirectory = {
         files: new Map(),
@@ -53,6 +53,10 @@ function getDirectoryTree(contextModule, options) {
         // Remove the leading `./` or `/`
         const source = redirect.source.replace(/^\.?\//, '');
         const targetDestination = redirect.destination.replace(/^\.?\//, '');
+        const normalizedSource = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
+        if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+            continue;
+        }
         // Loop over this once and cache the valid destinations
         validRedirectDestinations ??= contextKeys.map((key) => {
             return [(0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(key)), key];
