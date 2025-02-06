@@ -53,44 +53,6 @@ export const DEFAULT_IGNORE_PATHS = [
 
   // Ignore nested node_modules
   '**/node_modules/**/node_modules/**',
-
-  // Ignore default javascript files when calling `getConfig()`
-  '**/node_modules/@babel/**/*',
-  '**/node_modules/@expo/**/*',
-  '**/node_modules/@jridgewell/**/*',
-  '**/node_modules/expo/config.js',
-  '**/node_modules/expo/config-plugins.js',
-  `**/node_modules/{${[
-    'ajv',
-    'ajv-formats',
-    'ajv-keywords',
-    'ansi-styles',
-    'chalk',
-    'debug',
-    'dotenv',
-    'dotenv-expand',
-    'escape-string-regexp',
-    'getenv',
-    'graceful-fs',
-    'fast-deep-equal',
-    'fast-uri',
-    'has-flag',
-    'imurmurhash',
-    'js-tokens',
-    'json5',
-    'json-schema-traverse',
-    'ms',
-    'picocolors',
-    'lines-and-columns',
-    'require-from-string',
-    'resolve-from',
-    'schema-utils',
-    'signal-exit',
-    'sucrase',
-    'supports-color',
-    'ts-interface-checker',
-    'write-file-atomic',
-  ].join(',')}}/**/*`,
 ];
 
 export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
