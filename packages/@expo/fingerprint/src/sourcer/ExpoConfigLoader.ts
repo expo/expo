@@ -36,7 +36,10 @@ async function runAsync(programName: string, args: string[] = []) {
     .filter((modulePath) => !loadedModulesBefore.has(modulePath))
     .map((modulePath) => path.relative(projectRoot, modulePath));
 
-  const ignoredPaths = await loadIgnoredPathsAsync(ignoredFile);
+  const ignoredPaths = [
+    ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
+    ...(await loadIgnoredPathsAsync(ignoredFile)),
+  ];
   const filteredLoadedModules = loadedModules.filter(
     (modulePath) => !isIgnoredPath(modulePath, ignoredPaths)
   );
@@ -102,3 +105,43 @@ function setNodeEnv(mode: 'development' | 'production') {
   // @ts-expect-error: Add support for external React libraries being loaded in the same process.
   globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
 }
+
+// Ignore default javascript files when calling `getConfig()`
+const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
+  '**/node_modules/@babel/**/*',
+  '**/node_modules/@expo/**/*',
+  '**/node_modules/@jridgewell/**/*',
+  '**/node_modules/expo/config.js',
+  '**/node_modules/expo/config-plugins.js',
+  `**/node_modules/{${[
+    'ajv',
+    'ajv-formats',
+    'ajv-keywords',
+    'ansi-styles',
+    'chalk',
+    'debug',
+    'dotenv',
+    'dotenv-expand',
+    'escape-string-regexp',
+    'getenv',
+    'graceful-fs',
+    'fast-deep-equal',
+    'fast-uri',
+    'has-flag',
+    'imurmurhash',
+    'js-tokens',
+    'json5',
+    'json-schema-traverse',
+    'ms',
+    'picocolors',
+    'lines-and-columns',
+    'require-from-string',
+    'resolve-from',
+    'schema-utils',
+    'signal-exit',
+    'sucrase',
+    'supports-color',
+    'ts-interface-checker',
+    'write-file-atomic',
+  ].join(',')}}/**/*`,
+];

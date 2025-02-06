@@ -18,6 +18,7 @@
 - Finish adding args to fingerprint CLI. ([#34045](https://github.com/expo/expo/pull/34045) by [@wschurman](https://github.com/wschurman))
 - Added `.env` support for `ExpoConfigLoader`. ([#33967](https://github.com/expo/expo/pull/33967) by [@kudo](https://github.com/kudo))
 - Add docs for @expo/fingerprint ([#34450](https://github.com/expo/expo/pull/34450) by [@wschurman](https://github.com/wschurman))
+- Added more default ignored paths for default template. ([#34695](https://github.com/expo/expo/pull/34695) by [@kudo](https://github.com/kudo))
 
 ## 0.11.6 - 2024-12-24
 
