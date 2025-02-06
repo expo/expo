@@ -25,8 +25,9 @@ export type PickerProps = {
   /**
    * The variant of the picker, which determines its appearance and behavior.
    * The 'wheel' and 'menu' variants are iOS only.
+   * @default 'segmented'
    */
-  variant: 'wheel' | 'segmented' | 'menu';
+  variant?: 'wheel' | 'segmented' | 'menu';
   /**
    * Optional style to apply to the picker component.
    */
@@ -65,6 +66,7 @@ type NativePickerProps = PickerProps;
 export function transformPickerProps(props: PickerProps): NativePickerProps {
   return {
     ...props,
+    variant: props.variant ?? 'segmented',
     elementColors: props.elementColors
       ? props.elementColors
       : props.color
