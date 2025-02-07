@@ -148,6 +148,10 @@ If `undefined` (default), this will be set automatically via `caller.supportsSta
 
 Changes the engine preset in `@react-native/babel-preset` based on the JavaScript engine that is being targeted. In Expo SDK 50 and greater, this is automatically set based on the [`jsEngine`](https://docs.expo.dev/versions/latest/config/app/#jsengine) option in your `app.json`.
 
+### `enableImportMetaTransform`
+
+Enable `import.meta` -> `globalThis.ExpoImportMetaRegistry` transform, defaults to `true`.
+
 ### `enableBabelRuntime`
 
 Passed to `@react-native/babel-preset`.

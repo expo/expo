@@ -181,6 +181,9 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.disableImportExportTransform) {
         extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
+    if (platformOptions.enableImportMetaTransform !== false) {
+        extraPlugins.push(require('./import-meta-transform-plugin').expoImportMetaTransformPlugin);
+    }
     return {
         presets: [
             [
