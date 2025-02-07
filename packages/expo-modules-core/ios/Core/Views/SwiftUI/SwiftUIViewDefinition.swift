@@ -10,11 +10,13 @@ public protocol ExpoSwiftUIView<Props>: SwiftUI.View, AnyArgument {
   associatedtype Props: ExpoSwiftUI.ViewProps
 
   var props: Props { get }
+  static func convert(from value: any ExpoSwiftUI.View, appContext: AppContext) throws -> Self
+  static func getDynamicType() -> AnyDynamicType
 
   init()
 }
 
-public extension ExpoSwiftUIView  {
+public extension ExpoSwiftUIView {
   /**
    Returns React's children as SwiftUI views.
    */
@@ -26,6 +28,12 @@ public extension ExpoSwiftUIView  {
   
   static func getDynamicType() -> AnyDynamicType {
     return DynamicSwiftUIViewType(innerType: Self.self)
+  }
+  
+  static func convert(from value: any ExpoSwiftUI.View, appContext: AppContext) -> Self {
+    dump(value)
+    dump(Self.self)
+    return value as! Self
   }
 }
 

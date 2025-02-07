@@ -7,7 +7,7 @@ import SwiftUI
  */
 internal protocol AnyExpoSwiftUIHostingView {
   func updateProps(_ rawProps: [String: Any])
-  func getContentView() -> any SwiftUI.View
+  func getContentView() -> any ExpoSwiftUI.View
 }
 
 extension ExpoSwiftUI {
@@ -17,8 +17,8 @@ extension ExpoSwiftUI {
    A hosting view that renders a SwiftUI view inside the UIKit view hierarchy.
    */
   public final class HostingView<Props: ViewProps, ContentView: View<Props>>: ExpoView, AnyExpoSwiftUIHostingView {
-    func getContentView() -> any SwiftUI.View {
-      return rootView
+    func getContentView() -> any ExpoSwiftUI.View {
+      return contentView
     }
     
 //    let rootView: any View<Props>
@@ -30,7 +30,7 @@ extension ExpoSwiftUI {
      */
     private let props: Props
     
-    private let rootView: any SwiftUI.View
+    private let contentView: any ExpoSwiftUI.View
 
     /**
      Additiional utilities for controlling shadow node behavior.
@@ -46,8 +46,8 @@ extension ExpoSwiftUI {
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
-      let rootView = AnyView(ContentView().environmentObject(props).environmentObject(shadowNodeProxy))
-      self.rootView = rootView
+      self.contentView = ContentView()
+      let rootView = AnyView(contentView.environmentObject(props).environmentObject(shadowNodeProxy))
       self.props = props
       self.hostingController = UIHostingController(rootView: rootView)
 

@@ -2,7 +2,7 @@
 
 internal struct DynamicSwiftUIViewType: AnyDynamicType {
   let innerType: any ExpoSwiftUIView.Type
-  typealias HostingView = ExpoSwiftUI.HostingView
+//  typealias HostingView = ExpoSwiftUI.HostingView
 
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return innerType == InnerType.self
@@ -38,7 +38,7 @@ internal struct DynamicSwiftUIViewType: AnyDynamicType {
     guard let view = appContext.findView(withTag: viewTag, ofType: AnyExpoSwiftUIHostingView.self) else {
       throw ArgumentConversionException() // TODO
     }
-    return view.getContentView() as innerType.Type
+    return try innerType.convert(from: view.getContentView(), appContext: appContext)
   }
 
   var description: String {

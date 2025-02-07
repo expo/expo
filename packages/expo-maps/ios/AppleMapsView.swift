@@ -18,21 +18,38 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View {
   @EnvironmentObject var props: AppleMapsViewProps
   
   func setCameraPosition(config: Double) -> Bool {
-    return true
+    return appleMapsView?.setCameraPosition(config: config) ?? false
+  }
+  
+  var appleMapsView: (any AppleMapsViewProtocol)?
+  
+  init() {
+    if #available(iOS 18.0, *) {
+      appleMapsView = AppleMapsView()
+    } else {
+      appleMapsView = nil
+    }
   }
 
   var body: some View {
     if #available(iOS 18.0, *) {
-      AppleMapsView()
-        .environmentObject(props)
+      if let  appleMapsView = appleMapsView as? AppleMapsView {
+        appleMapsView
+          .environmentObject(props)
+      }
+     
     } else {
       EmptyView()
     }
   }
 }
 
+public protocol AppleMapsViewProtocol: View {
+  func setCameraPosition(config: Double) -> Bool
+}
+
 @available(iOS 18.0, *)
-struct AppleMapsView: View {
+struct AppleMapsView: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
   @State private var mapCameraPosition: MapCameraPosition = .automatic
   @State var selection: MapSelection<MKMapItem>?
