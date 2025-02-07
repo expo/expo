@@ -167,13 +167,13 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     guard let device = ExpoCameraUtils.device(with: .video, preferring: presetCamera) else {
       return
     }
-    
+
     session.beginConfiguration()
     defer { session.commitConfiguration() }
     if let captureDeviceInput {
       session.removeInput(captureDeviceInput)
     }
-    
+
     do {
       let deviceInput = try AVCaptureDeviceInput(device: device)
       if session.canAddInput(deviceInput) {
@@ -253,21 +253,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       updateSessionAudioIsMuted()
     } else {
       cleanupMovieFileCapture()
-    }
-  }
-  
-  private func addBlurEffect() {
-    Task { @MainActor in
-      let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
-      visualEffectView.frame = self.bounds
-      visualEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-      self.addSubview(visualEffectView)
-      
-      UIView.animate(withDuration: 1, animations: {
-        visualEffectView.alpha = 0
-      }) { _ in
-        visualEffectView.removeFromSuperview()
-      }
     }
   }
 
