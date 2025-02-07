@@ -145,7 +145,7 @@ The [EAS environment variable](/eas/environment-variables/) environment to set f
 - `preview`
 - `development`
 
-The `environment` key is available on all jobs except for the pre-packaged `build` and `get-build` jobs.
+The `environment` key is available on all jobs except for the pre-packaged `build`, `submit`, and `get-build` jobs.
 
 ```yaml
 jobs:
@@ -360,7 +360,7 @@ jobs:
 
 ### `jobs.<job_id>.runs_on`
 
-Specifies the worker that will execute the job.
+Specifies the worker that will execute the job. Available only on custom jobs.
 
 ```yaml
 jobs:
@@ -410,7 +410,7 @@ jobs:
 
 ### `jobs.<job_id>.steps`
 
-A job contains a sequence of tasks called `steps`. Steps can run commands or use an action.
+A job contains a sequence of tasks called `steps`. Steps can run commands.
 
 ```yaml
 jobs:
@@ -565,7 +565,7 @@ jobs:
         id: resolve_apple_team_id_from_credentials
       # @info #
       - uses: eas/prebuild
-        inputs:
+        with:
           clean: false
           apple_team_id: ${{ steps.resolve_apple_team_id_from_credentials.outputs.apple_team_id }}
       # @end #
@@ -599,7 +599,7 @@ jobs:
       # @info #
       - uses: eas/send_slack_message
         # @end #
-        inputs:
+        with:
           message: 'This is a message to plain input URL'
           slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
 ```
