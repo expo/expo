@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Added more default ignored paths for default template. ([#34695](https://github.com/expo/expo/pull/34695) by [@kudo](https://github.com/kudo))
+- Added `SourceSkips.ExpoConfigExtraSection`. ([#34697](https://github.com/expo/expo/pull/34697) by [@kudo](https://github.com/kudo))
 
 ## 0.11.8 — 2025-01-31
 
