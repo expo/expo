@@ -191,7 +191,7 @@ dependencies {
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'commons-io:commons-io:2.6'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation "com.vanniktech:android-image-cropper:4.3.1"
+  implementation "com.github.CanHub:Android-Image-Cropper:4.3.1"
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
   api 'com.airbnb.android:lottie:3.4.0'
