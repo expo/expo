@@ -19,7 +19,7 @@ Expo apps can work with any notification service or capabilities offered by the 
 - Includes an Expo Dashboard to track notifications and user engagement
 - Supports testing notifications with the [Expo Notifications Tool](https://expo.dev/notifications)
 
-#### Considerations and Limitations:
+#### Considerations and limitations:
 
 - Does not support advanced platform features like notification extensions
 - Limited to 600 notifications per second per project, which works for most apps but may not suit high-volume scenarios
@@ -35,7 +35,7 @@ For implementation details, see the [Expo push notifications overview](/push-not
 - Supports [Notification Service Extensions](https://documentation.onesignal.com/docs/service-extensions) for Android and iOS
 - Provides a custom dashboard for managing notifications and user engagement
 
-#### Considerations and Limitations:
+#### Considerations and limitations:
 
 - Not free. OneSignal offers free limits, but advanced features (e.g., segmentation, automation) require a paid plan. See the [OneSignal pricing page](https://onesignal.com/pricing).
 - Depends on OneSignal to maintain their Expo plugin and SDK.
@@ -55,7 +55,7 @@ For implementation details, see the [Expo push notifications overview](/push-not
 - Supports customizable push notifications with images, videos, and location
 - Includes a dashboard for managing campaigns and journey orchestration
 
-#### Considerations and Limitations:
+#### Considerations and limitations:
 
 - Requires contacting Sales for pricing information
 - Depends on Braze to maintain their Expo plugin and SDK
@@ -75,7 +75,7 @@ For implementation details, see the [Expo push notifications overview](/push-not
 - Supports customizable push notifications with images, videos, and location
 - Includes a dashboard for managing campaigns and journey orchestration
 
-#### Considerations and Limitations:
+#### Considerations and limitations:
 
 - Not free. Customer.io does not offer a free tier. The "Essentials" plan starts at $100/month. See the [Customer.io pricing page](https://customer.io/pricing) for more details.
 - Depends on Customer.io to maintain their Expo plugin and SDK.
@@ -86,7 +86,7 @@ For implementation details, see the [Expo push notifications overview](/push-not
   href="https://docs.customer.io/sdk/expo/quick-start-guide/"
 />
 
-### Send Notifications Directly via FCM and APNs
+### Send notifications directly via FCM and APNs
 
 In some cases, you may need to handle notifications natively for full customization. While this adds complexity, you can still use [`expo-notifications`](/versions/latest/sdk/notifications/) to retrieve the native push token and configure notifications separately for each platform.
 
@@ -107,7 +107,7 @@ This approach differs from using FCM solely for Android notifications. Instead, 
 
 > Even though FCM handles notifications for both platforms, iOS notifications still go through APNs. Firebase automatically manages this routing. Learn more in the [React Native Firebase messaging documentation](https://rnfirebase.io/messaging/usage).
 
-### Tips and Important Considerations
+### Tips and important considerations
 
 - **Avoid mixing client-side implementations**: Different notification services may have conflicting client-side implementations. Use a consistent approach to prevent potential issues.
 - **Web notifications**: Expo notifications do not support web notifications. However, some third-party solutions may offer this capability. Consider your app's requirements when choosing a service.
