@@ -8,7 +8,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate, VideoPla
   lazy var playerViewController = AVPlayerViewController()
 
   var adsManager = VideoAdsManager()
-  
   var observer: VideoPlayerObserver?
 
 
@@ -76,11 +75,11 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate, VideoPla
     addSubview(playerViewController.view)
   }
     
-    func checkForAds(){
-        let videoPlayerItem = player?.pointer.currentItem as? VideoPlayerItem
+    func prepareAds(player: AVPlayer, videoPlayerItem: VideoPlayerItem?){
         let advertisement = videoPlayerItem?.videoSource.advertisement?.googleIMA?.adTagUri
         
         if let adTagUri = advertisement {
+            // TODO: Set loading ads (waitForPreroll config?)
             let adDisplayContainer = IMAAdDisplayContainer( adContainer: playerViewController.view,  viewController: playerViewController)
             
             adsManager.requestAds(
@@ -89,10 +88,10 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate, VideoPla
             )
         }
     }
-    
-  func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?){
-      // TODO: Fix trigger point for when to show ads
-      if newStatus == .readyToPlay { checkForAds() }
+
+  func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {
+      // Initial preparations of the new play item ads
+      prepareAds(player: player, videoPlayerItem: playerItem as? VideoPlayerItem)
   }
 
   deinit {
