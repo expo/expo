@@ -106,3 +106,9 @@ This approach differs from using FCM solely for Android notifications. Instead, 
 - Includes a free tier with generous limits
 
 > Even though FCM handles notifications for both platforms, iOS notifications still go through APNs. Firebase automatically manages this routing. Learn more in the [React Native Firebase messaging documentation](https://rnfirebase.io/messaging/usage).
+
+### Tips and Important Considerations
+
+- **Avoid mixing client-side implementations**: Different notification services may have conflicting client-side implementations. Use a consistent approach to prevent potential issues.
+- **Web notifications**: Expo notifications do not support web notifications. However, some third-party solutions may offer this capability. Consider your app's requirements when choosing a service.
+- **Token management**: Track both Expo push tokens and native device tokens in your database. This provides flexibility for future integrations, especially with marketing tools that send notifications directly via FCM or APNs.
