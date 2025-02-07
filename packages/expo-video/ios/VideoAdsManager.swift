@@ -4,9 +4,16 @@ import Foundation
 import GoogleInteractiveMediaAds
 
 class VideoAdsManager: NSObject, IMAAdsLoaderDelegate, IMAAdsManagerDelegate {
-    private var adsLoader: IMAAdsLoader
+    private var adsLoader: IMAAdsLoader = IMAAdsLoader(settings: nil)
     var adsManager: IMAAdsManager!
     var contentPlayhead: IMAAVPlayerContentPlayhead?
+    var isPlayingAd: Bool = false {
+        didSet {
+            // Ensures the content and Ad player are syncronized
+            if isPlayingAd { player?.ref.pause() }
+            else { player?.ref.play() }
+        }
+    }
     
     weak var player: VideoPlayer? {
         didSet {
@@ -14,10 +21,9 @@ class VideoAdsManager: NSObject, IMAAdsLoaderDelegate, IMAAdsManagerDelegate {
         }
     }
     
-    
     override init() {
-        self.adsLoader = IMAAdsLoader()
         super.init()
+        
         self.adsLoader.delegate = self
     }
     
@@ -33,28 +39,18 @@ class VideoAdsManager: NSObject, IMAAdsLoaderDelegate, IMAAdsManagerDelegate {
         adsLoader.requestAds(with: request)
     }
     
-    // Ensures the content and Ad player are syncronized
-    func syncPlayers(isPlayingAd: Bool){
-        if isPlayingAd {
-            player?.ref.pause()
-        } else {
-            player?.ref.play()
-        }
-    }
-    
-    
     // MARK: - IMAAdsLoaderDelegate
     
-    func adsLoader(_ loader: IMAAdsLoader!, adsLoadedWith adsLoadedData: IMAAdsLoadedData!) {
+    func adsLoader(_ loader: IMAAdsLoader, adsLoadedWith adsLoadedData: IMAAdsLoadedData) {
       adsManager = adsLoadedData.adsManager
       adsManager?.delegate = self
       adsManager.initialize(with: nil)
-        print("Loaded ads")
+        print("AdLoader successfully initialized")
     }
 
-    func adsLoader(_ loader: IMAAdsLoader!, failedWith adErrorData: IMAAdLoadingErrorData!) {
+    func adsLoader(_ loader: IMAAdsLoader, failedWith adErrorData: IMAAdLoadingErrorData) {
         print("Error loading ads: " + (adErrorData.adError.message ?? "No message"))
-        syncPlayers(isPlayingAd: false)
+        self.isPlayingAd = false
     }
     
     // MARK: - IMAAdsManagerDelegate
@@ -70,16 +66,16 @@ class VideoAdsManager: NSObject, IMAAdsLoaderDelegate, IMAAdsManagerDelegate {
     public func adsManager(_ adsManager: IMAAdsManager, didReceive error: IMAAdError) {
       // Fall back to playing content
         print("AdsManager error: " + (error.message ?? "NONE"))
-        syncPlayers(isPlayingAd: false)
+        self.isPlayingAd = false
     }
     
     public func adsManagerDidRequestContentPause(_ adsManager: IMAAdsManager) {
       // Pause the content for the SDK to play ads.
-        syncPlayers(isPlayingAd: true)
+        self.isPlayingAd = true
     }
 
     public func adsManagerDidRequestContentResume(_ adsManager: IMAAdsManager) {
       // Resume the content since the SDK is done playing ads (at least for now).
-        syncPlayers(isPlayingAd: false)
+        self.isPlayingAd = false
     }
 }
