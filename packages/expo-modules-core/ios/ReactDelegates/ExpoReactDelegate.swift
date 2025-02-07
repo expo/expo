@@ -31,7 +31,7 @@ public class ExpoReactDelegate: NSObject {
             fatalError("The `UIApplication.shared.delegate` is neither an `ExpoAppInstance` nor an `EXAppDelegateWrapper`.")
         }
         return expoAppInstance.recreateRootView(
-          bundleURL: nil,
+          withBundleURL: nil,
           moduleName: moduleName,
           initialProps: initialProperties,
           launchOptions: launchOptions

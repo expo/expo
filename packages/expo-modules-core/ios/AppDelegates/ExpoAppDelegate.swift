@@ -11,13 +11,6 @@ var subscribers = [ExpoAppDelegateSubscriberProtocol]()
  */
 @objc(EXExpoAppDelegate)
 open class ExpoAppDelegate: ExpoAppInstance {
-  /**
-   Whether to skip calling the React Native instance setup from `RCTAppDelegate`.
-   Set this property to `false` if your app delegate is not supposed to initialize a React Native app,
-   but only to handle the app delegate subscribers.
-   */
-  @objc
-  public var shouldCallReactNativeSetup: Bool = true
   
   #if os(iOS) || os(tvOS)
   // MARK: - Initializing the App
@@ -46,9 +39,8 @@ open class ExpoAppDelegate: ExpoAppInstance {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    let result: Bool = super.application(application, didFinishLaunchingWithOptions: launchOptions)
-    
-    
+    var result: Bool = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        
     subscribers.forEach { subscriber in
       // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
       _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)

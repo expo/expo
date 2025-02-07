@@ -62,10 +62,16 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     guard let reactDelegate = self.reactDelegate else {
       fatalError("`reactDelegate` should not be nil")
     }
-    guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
-      fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
-    }
-    let rootView = rctAppDelegate.recreateRootView(
+    
+    class DummySelectorHandler: NSObject { @objc func dummyMethod() {} }
+    
+    guard let expoAppInstance = (UIApplication.shared.delegate as? ExpoAppInstance) ??
+      // todo: Remove when EXAppDelegateWrapper is removed
+      (UIApplication.shared.delegate as? EXAppDelegateWrapper)?.forwardingTarget(for: #selector(DummySelectorHandler().dummyMethod)) as? ExpoAppInstance else {
+        fatalError("The `UIApplication.shared.delegate` is neither an `ExpoAppInstance` nor an `EXAppDelegateWrapper`.")
+    }    
+    
+    let rootView = expoAppInstance.recreateRootView(
       withBundleURL: AppController.sharedInstance.launchAssetUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,

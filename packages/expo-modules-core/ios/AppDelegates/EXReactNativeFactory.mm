@@ -8,14 +8,6 @@
 
 @implementation EXReactNativeFactory
 
-- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate {
-  self = [super initWithDelegate:delegate];
-  if (self != nil) {
-    // Initialization?
-  }
-  return self;
-}
-
 - (RCTRootViewFactory *) createRCTRootViewFactory {
   return [self internalCreateRCTRootViewFactory];
 }

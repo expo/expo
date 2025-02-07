@@ -7,7 +7,7 @@ public class ExpoReactNativeFactory: EXReactNativeFactory {
   
   @objc public init(delegate: any RCTReactNativeFactoryDelegate, reactDelegate: ExpoReactDelegate) {
     self.reactDelegate = reactDelegate
-    super.init(delegate: delegate)
+    super.init(delegate: delegate)    
   }
   
   @objc func internalCreateRCTRootViewFactory() -> RCTRootViewFactory {

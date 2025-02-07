@@ -18,7 +18,7 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
   @objc public var moduleName: String = ""
   @objc public var initialProps: [AnyHashable: Any]?
 
-  public private(set) var reactNativeFactory: ExpoReactNativeFactory?
+  @objc public private(set) var reactNativeFactory: ExpoReactNativeFactory?
 
   /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
   public var automaticallyLoadReactNativeWindow: Bool = true
@@ -83,37 +83,30 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
 #endif
   }
   
-  
-  func windowScene(_ windowScene: UIWindowScene,
-                    didUpdate previousCoordinateSpace: UICoordinateSpace,
-                    interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation,
-                    traitCollection previousTraitCollection: UITraitCollection) {
-       NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RCTWindowFrameDidChangeNotification"), object: self)
-  }
-  
-  func recreateRootView(bundleURL: URL?,
-                        moduleName: String?,
-                        initialProps: [AnyHashable: Any]?,
-                        launchOptions: [AnyHashable: Any]?) -> UIView {
-    /*if self.newArchEnabled() {
-     // TODO(chrfalch)
-      let reactHost = self.reactNativeFactory.rootViewFactory.reactHost
-        assert(reactHost == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
-    } else {
-        assert(self.rootViewFactory.bridge == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
-    }*/
+  @objc public func recreateRootView(withBundleURL: URL?,
+                                        moduleName: String?,
+                                      initialProps: [AnyHashable: Any]?,
+                                     launchOptions: [AnyHashable: Any]?) -> UIView {
     
     guard let reactNativeFactory = self.reactNativeFactory else {
       fatalError("recreateRootView: Missing reactNativeFactory in ExpoAppInstance")
     }
-
+    
     let rootViewFactory = reactNativeFactory.rootViewFactory
+    
+    if self.newArchEnabled() {
+      // chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
+      assert(rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
+    } else {
+      assert(rootViewFactory.bridge == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
+    }
+  
     let configuration = rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration
 
-    if let bundleURL = bundleURL {
-        configuration?.bundleURLBlock = {
-            return bundleURL
-        }
+    if let bundleURL = withBundleURL {
+      configuration?.bundleURLBlock = {
+        return bundleURL
+      }
     }
 
     if let moduleName = moduleName {
@@ -126,15 +119,15 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
 
     let rootView: UIView
     if let factory = rootViewFactory as? ExpoReactRootViewFactory {
-        // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
-        // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
-        rootView = factory.superView(withModuleName: self.moduleName as String,
-                                     initialProperties: self.initialProps ?? [:],
-                                     launchOptions: launchOptions ?? [:])
+      // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
+      // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
+      rootView = factory.superView(withModuleName: self.moduleName as String,
+                                initialProperties: self.initialProps ?? [:],
+                                    launchOptions: launchOptions ?? [:])
     } else {
-        rootView = rootViewFactory.view(withModuleName: self.moduleName as String,
-                                        initialProperties: self.initialProps,
-                                        launchOptions: launchOptions)
+      rootView = rootViewFactory.view(withModuleName: self.moduleName as String,
+                                   initialProperties: self.initialProps,
+                                       launchOptions: launchOptions)
     }
 
     return rootView
@@ -143,7 +136,17 @@ open class ExpoAppInstance: EXReactNativeFactoryDelegate, UIApplicationDelegate,
   open override func sourceURL(for bridge: RCTBridge) -> URL? {
     // This method is called only in the old architecture. For compatibility just use the result of a new `bundleURL` method.
     return bundleURL()
-  }  
+  }
+  
+  // MARK: UISceneDelegate
+  
+  func windowScene(_ windowScene: UIWindowScene,
+                    didUpdate previousCoordinateSpace: UICoordinateSpace,
+                    interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation,
+                    traitCollection previousTraitCollection: UITraitCollection) {
+       NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RCTWindowFrameDidChangeNotification"), object: self)
+  }
+  
   
   // MARK: - Statics
 
