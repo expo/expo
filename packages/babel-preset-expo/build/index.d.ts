@@ -67,6 +67,11 @@ type BabelPresetExpoPlatformOptions = {
     };
     /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
     minifyTypeofWindow?: boolean;
+    /**
+     * Enable `import.meta` -> `globalThis.ExpoImportMetaRegistry` transform.
+     * @default `true`
+     */
+    enableImportMetaTransform?: boolean;
 };
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
     /** Web-specific settings. */
