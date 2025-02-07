@@ -27,6 +27,7 @@ export function AppleMapsView({
   ...props
 }: MapProps) {
   const onNativeMapClick = useNativeEvent(onMapClick);
+  const onNativeMarkerClick = useNativeEvent(onMarkerClick);
   const onNativeCameraMove = useNativeEvent(onCameraMove);
 
   const parsedAnnotations = annotations?.map((annotation) => ({
@@ -44,6 +45,7 @@ export function AppleMapsView({
       {...props}
       annotations={parsedAnnotations}
       onMapClick={onNativeMapClick}
+      onMarkerClick={onNativeMarkerClick}
       onCameraMove={onNativeCameraMove}
     />
   );
