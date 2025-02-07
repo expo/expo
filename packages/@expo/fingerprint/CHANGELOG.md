@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed unstable fingerprint from `expoConfig` contents with absolute paths. ([#33926](https://github.com/expo/expo/pull/33926) by [@kudo](https://github.com/kudo))
+- Fix typo in help output and debug. ([#34766](https://github.com/expo/expo/pull/34766) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
