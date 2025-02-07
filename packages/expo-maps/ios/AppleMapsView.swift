@@ -99,7 +99,7 @@ struct AppleMapsView: View {
         mapCameraPosition = convertToMapCamera(position: newValue)
       }
       .onChange(of: selection) { _, newValue in
-        if let marker = props.markers.first(where: { $0.mapItem == newValue?.value}) {
+        if let marker = props.markers.first(where: { $0.mapItem == newValue?.value }) {
           props.onMarkerClick([
             "title": marker.title,
             "tintColor": marker.tintColor,
