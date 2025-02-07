@@ -100,7 +100,6 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
                 highWaterMark: 1024,
             });
             if (options.enableReactImportsPatcher &&
-                options.platforms.includes('ios') &&
                 (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))) {
                 const transform = new ReactImportsPatcher_1.ReactImportsPatchTransform();
                 stream = (0, stream_1.pipeline)(stream, transform, (err) => {
