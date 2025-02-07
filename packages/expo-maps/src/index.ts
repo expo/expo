@@ -5,36 +5,43 @@ import * as AppleTypes from './apple/AppleMaps.types';
 import { AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
 import { GoogleMapsView } from './google/GoogleMapsView';
-import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
+import { GoogleStreetView } from './google/GoogleStreetView';
 
+/**
+ * @hidden
+ */
 export namespace GoogleMaps {
   export const View = GoogleMapsView;
   export const StreetView = GoogleStreetView;
 
-  export const MapType = GoogleTypes.MapType;
-  export type MapType = GoogleTypes.MapType;
+  export const MapType = GoogleTypes.GoogleMapsType;
+  export type MapType = GoogleTypes.GoogleMapsType;
 
-  export const MapColorScheme = GoogleTypes.MapColorScheme;
-  export type MapColorScheme = GoogleTypes.MapColorScheme;
+  export const MapColorScheme = GoogleTypes.GoogleMapsColorScheme;
+  export type MapColorScheme = GoogleTypes.GoogleMapsColorScheme;
 
-  export type Marker = GoogleTypes.Marker;
-  export type CameraPosition = GoogleTypes.CameraPosition;
-  export type MapUiSettings = GoogleTypes.MapUiSettings;
-  export type MapProperties = GoogleTypes.MapProperties;
-  export type MapProps = GoogleTypes.MapProps;
+  export type Marker = GoogleTypes.GoogleMapsMarker;
+  export type MapUISettings = GoogleTypes.GoogleMapsUISettings;
+  export type MapProperties = GoogleTypes.GoogleMapsProperties;
 
-  export type MapView = GoogleTypes.MapViewType;
+  export type MapProps = GoogleTypes.GoogleMapsViewProps;
+  export type MapView = GoogleTypes.GoogleMapsViewType;
 }
 
+/**
+ * @hidden
+ */
 export namespace AppleMaps {
   export const View = AppleMapsView;
 
-  export const MapType = AppleTypes.MapType;
-  export type MapType = AppleTypes.MapType;
-  export type CameraPosition = AppleTypes.CameraPosition;
-  export type MapProperties = AppleTypes.MapProperties;
-  export type MapUiSettings = AppleTypes.MapUiSettings;
-  export type Marker = AppleTypes.Marker;
+  export const MapType = AppleTypes.AppleMapsType;
+  export type MapType = AppleTypes.AppleMapsType;
+
+  export type Marker = AppleTypes.AppleMapsMarker;
+  export type MapUISettings = AppleTypes.AppleMapsUISettings;
+  export type MapProperties = AppleTypes.AppleMapsProperties;
+
+  export type MapProps = AppleTypes.AppleMapsViewProps;
 }
 
 export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;

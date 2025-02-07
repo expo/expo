@@ -4,18 +4,24 @@ import * as AppleTypes from './apple/AppleMaps.types';
 import { AppleMapsView } from './apple/AppleMapsView';
 import * as GoogleTypes from './google/GoogleMaps.types';
 import { GoogleMapsView } from './google/GoogleMapsView';
-import { StreetView as GoogleStreetView } from './google/GoogleStreetView';
+import { GoogleStreetView } from './google/GoogleStreetView';
+/**
+ * @hidden
+ */
 export var GoogleMaps;
 (function (GoogleMaps) {
     GoogleMaps.View = GoogleMapsView;
     GoogleMaps.StreetView = GoogleStreetView;
-    GoogleMaps.MapType = GoogleTypes.MapType;
-    GoogleMaps.MapColorScheme = GoogleTypes.MapColorScheme;
+    GoogleMaps.MapType = GoogleTypes.GoogleMapsType;
+    GoogleMaps.MapColorScheme = GoogleTypes.GoogleMapsColorScheme;
 })(GoogleMaps || (GoogleMaps = {}));
+/**
+ * @hidden
+ */
 export var AppleMaps;
 (function (AppleMaps) {
     AppleMaps.View = AppleMapsView;
-    AppleMaps.MapType = AppleTypes.MapType;
+    AppleMaps.MapType = AppleTypes.AppleMapsType;
 })(AppleMaps || (AppleMaps = {}));
 export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;
 export const getPermissionsAsync = ExpoMaps.getPermissionsAsync;

@@ -1,19 +1,19 @@
 /**
  * The type of map to display.
  */
-export var MapType;
-(function (MapType) {
+export var AppleMapsType;
+(function (AppleMapsType) {
     /**
      * Satellite imagery with roads and points of interest overlayed.
      */
-    MapType["HYBRID"] = "HYBRID";
+    AppleMapsType["HYBRID"] = "HYBRID";
     /**
      * Standard road map.
      */
-    MapType["STANDARD"] = "STANDARD";
+    AppleMapsType["STANDARD"] = "STANDARD";
     /**
      * Satellite imagery.
      */
-    MapType["IMAGERY"] = "IMAGERY";
-})(MapType || (MapType = {}));
+    AppleMapsType["IMAGERY"] = "IMAGERY";
+})(AppleMapsType || (AppleMapsType = {}));
 //# sourceMappingURL=AppleMaps.types.js.map

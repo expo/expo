@@ -2,9 +2,9 @@ import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-import type { MapProps } from './AppleMaps.types';
+import type { AppleMapsViewProps } from './AppleMaps.types';
 
-let NativeView: React.ComponentType<MapProps> | null;
+let NativeView: React.ComponentType<AppleMapsViewProps> | null;
 
 if (Platform.OS === 'ios') {
   NativeView = requireNativeView('ExpoAppleMaps');
@@ -25,7 +25,7 @@ export function AppleMapsView({
   onCameraMove,
   annotations,
   ...props
-}: MapProps) {
+}: AppleMapsViewProps) {
   const onNativeMapClick = useNativeEvent(onMapClick);
   const onNativeMarkerClick = useNativeEvent(onMarkerClick);
   const onNativeCameraMove = useNativeEvent(onCameraMove);
