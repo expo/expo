@@ -30,7 +30,7 @@ class ExpoUIModule : Module() {
       Events(
         "onContextMenuButtonPressed",
         "onContextMenuPickerOptionSelected",
-        "onContextMenuSwitchCheckedChanged",
+        "onContextMenuSwitchValueChanged",
         "onExpandedChanged"
       )
     }

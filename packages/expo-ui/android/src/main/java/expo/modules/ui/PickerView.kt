@@ -3,7 +3,6 @@ package expo.modules.ui
 import android.content.Context
 import android.graphics.Color
 import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoComposeView
@@ -16,7 +15,6 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.ui.button.ButtonColors
 
 class PickerColors : Record {
   @Field

@@ -32,7 +32,7 @@ struct SwitchView: ExpoSwiftUI.View {
         checked = props.value
       })
       .onAppear {
-        checked = props.checked
+        checked = props.value
       }
       #if !os(tvOS)
       .if(props.variant == "button") {

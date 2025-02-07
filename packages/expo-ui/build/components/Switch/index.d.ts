@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 type SwitchElementColors = {
     /**
      * Only for switch.
@@ -63,7 +63,7 @@ export type SwitchProps = {
     /**
      * Callback function that is called when the checked state changes.
      */
-    onValueChange: (value: boolean) => void;
+    onValueChange?: (value: boolean) => void;
     /**
      * Optional style for the switch component.
      */
@@ -88,8 +88,13 @@ export type SwitchProps = {
     elementColors?: CheckboxElementColors;
 } | {
     variant: 'button';
+    elementColors?: undefined;
 });
-type NativeSwitchProps = SwitchProps;
+type NativeSwitchProps = Omit<SwitchProps, 'onValueChange'> & {
+    onValueChange: (event: NativeSyntheticEvent<{
+        value: boolean;
+    }>) => void;
+};
 export declare function transformSwitchProps(props: SwitchProps): NativeSwitchProps;
 export declare function Switch(props: SwitchProps): import("react").JSX.Element;
 export {};
