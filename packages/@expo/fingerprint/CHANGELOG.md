@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added more default ignored paths for default template. ([#34695](https://github.com/expo/expo/pull/34695) by [@kudo](https://github.com/kudo))
+
 ## 0.11.8 — 2025-01-31
 
 ### 🎉 New features
