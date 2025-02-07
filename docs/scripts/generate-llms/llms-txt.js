@@ -61,7 +61,7 @@ export async function generateLlmsTxt() {
       .flat()
       .map(processSection)
       .filter(Boolean);
-    const talksData = exportTalksData();
+    const talksData = await exportTalksData();
     const allSections = [...docSections, ...talksData.sections];
 
     await fs.promises.writeFile(

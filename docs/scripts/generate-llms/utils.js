@@ -2,8 +2,6 @@ import frontmatter from 'front-matter';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { compileTalksFile } from './compileTalks.js';
-
 export const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
 export const OUTPUT_DIRECTORY_NAME = 'public';
 export const OUTPUT_FILENAME_EXPO_DOCS = 'llms-full.txt';
@@ -14,8 +12,6 @@ export const DESCRIPTION =
   'Expo is an open-source React Native framework for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app such as live updates, instantly sharing your app, and web support. The company behind Expo also offers Expo Application Services (EAS), which are deeply integrated cloud services for Expo and React Native apps.';
 export const DESCRIPTION_EAS =
   'Expo Application Services (EAS) are deeply integrated cloud services for Expo and React Native apps, from the team behind Expo.';
-const compiledFilePath = compileTalksFile();
-const { TALKS, PODCASTS, LIVE_STREAMS } = await import(compiledFilePath);
 
 export function processPageData(pageHref, pageName) {
   if (!pageHref || pageHref.startsWith('http')) {
@@ -274,7 +270,8 @@ function processTalks(talks, type = 'video') {
   });
 }
 
-export function exportTalksData() {
+export async function exportTalksData() {
+  const { TALKS, PODCASTS, LIVE_STREAMS } = await import('./talks.js');
   return {
     title: 'Additional Resources',
     description: 'Collection of talks, podcasts, and live streams from the Expo team',
