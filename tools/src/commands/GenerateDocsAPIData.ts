@@ -103,6 +103,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-system-ui': ['SystemUI.ts'],
   'expo-task-manager': ['TaskManager.ts'],
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
+  'expo-ui': ['index.ts'],
   'expo-updates': ['index.ts'],
   'expo-video': ['index.ts'],
   'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
