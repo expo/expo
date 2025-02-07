@@ -219,7 +219,7 @@ dependencies {
   implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
   implementation 'commons-io:commons-io:1.4'
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation 'com.vanniktech:android-image-cropper:4.6.0'
+  implementation 'com.vanniktech:android-image-cropper:4.3.1'
   implementation 'commons-codec:commons-codec:1.10'
   implementation 'com.google.zxing:core:3.3.3'
   implementation 'net.openid:appauth:0.4.1'
