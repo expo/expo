@@ -351,7 +351,7 @@ export const general = [
         makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
         makePage('guides/in-app-purchases.mdx'),
-        makePage('guides/alternatives-for-expo-notifications.mdx'),
+        makePage('guides/notifications-services.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
