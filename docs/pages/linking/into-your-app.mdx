@@ -7,7 +7,7 @@ description: Learn how to handle an incoming URL in your React Native and Expo a
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-This guide provides steps to configure standard **deep links** in your project by adding a custom scheme.
+This guide provides steps to configure standard **deep links** in your project by adding a custom scheme. For production apps, you probably want to (also) set up app [Universal linking](/linking/overview/#universal-linking).
 
 ## Add a custom scheme in app config
 
@@ -47,7 +47,7 @@ Running the above command:
 
 - Opens your app's `/details` screen
 - The `android` or `ios` options specify that the link should be opened on Android or iOS
-- Alternatively, you can open the link by searching for it in the device's native browser. For example, open Safari on iOS and type `myapp://` in the address bar to prompt the device to open your app.
+- Alternatively, you can try opening the link by clicking a link like `<a href="scheme://">Click me</a>` in the device's web browser. Note that entering the link in the address bar may not work as expected - use [universal linking](/linking/overview/#universal-linking) for that ability!
 
 <Collapsible summary="Test a link using Expo Go">
 
@@ -116,4 +116,4 @@ export default function Home() {
 
 If a user does not have your app installed, deep links to your app will not work. Attribution services like [Branch](https://www.branch.io/deep-linking/) offer solutions for conditionally linking to your app or web page.
 
-Universal links is another solution you can use to handle such cases, in which the route to your web page determines whether or not the app is installed. For more details, see [Universal Links](/linking/ios-universal-links/).
+Universal links is another solution you can use to handle such cases, in which the route to your web page determines whether or not the app is installed. For more details, see [Universal linking](/linking/overview/#universal-linking).
