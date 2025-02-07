@@ -110,18 +110,20 @@ public final class RemoteAppLoader: AppLoader {
             assetExtraHeaders: asset.extraRequestHeaders
           )
 
-          self.downloader.downloadAsset(
-            fromURL: assetUrl,
-            verifyingHash: asset.expectedHash,
-            toPath: urlOnDisk.path,
-            extraHeaders: extraHeaders
-          ) { data, response, _ in
-            DispatchQueue.global().async {
-              self.handleAssetDownload(withData: data, response: response, asset: asset)
-            }
-          } errorBlock: { error in
-            DispatchQueue.global().async {
-              self.handleAssetDownload(withError: error, asset: asset)
+          FileDownloader.assetFilesQueue.async {
+            self.downloader.downloadAsset(
+              fromURL: assetUrl,
+              verifyingHash: asset.expectedHash,
+              toPath: urlOnDisk.path,
+              extraHeaders: extraHeaders
+            ) { data, response, _ in
+              DispatchQueue.global().async {
+                self.handleAssetDownload(withData: data, response: response, asset: asset)
+              }
+            } errorBlock: { error in
+              DispatchQueue.global().async {
+                self.handleAssetDownload(withError: error, asset: asset)
+              }
             }
           }
         }
