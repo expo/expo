@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add guards when using the module in expo go. ([#34738](https://github.com/expo/expo/pull/34738) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 17.0.5 — 2025-01-10
 
 _This version does not introduce any user-facing changes._
