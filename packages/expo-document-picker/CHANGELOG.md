@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Allow setting of the `com.apple.developer.ubiquity-kvstore-identifier` entitlement directly. ([#34338](https://github.com/expo/expo/pull/34338) by [@keith-kurak](https://github.com/keith-kurak))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.0.3 — 2025-02-07
+
+### 🎉 New features
+
+- [iOS] Allow setting of the `com.apple.developer.ubiquity-kvstore-identifier` entitlement directly. ([#34338](https://github.com/expo/expo/pull/34338) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 13.0.2 — 2025-01-10
 

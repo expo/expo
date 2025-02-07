@@ -36,7 +36,7 @@
   "expo-crypto": "~14.0.2",
   "expo-dev-client": "~5.0.11",
   "expo-device": "~7.0.2",
-  "expo-document-picker": "~13.0.2",
+  "expo-document-picker": "~13.0.3",
   "expo-face-detector": "~13.0.2",
   "expo-file-system": "~18.0.10",
   "expo-font": "~13.0.3",
