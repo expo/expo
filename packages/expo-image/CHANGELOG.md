@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `tintColor="currentColor"` conflicts on web. ([#34604](https://github.com/expo/expo/pull/34604) by [@bradleyayers](https://github.com/bradleyayers))
+- [Android] Add headers to `loadAsync` requests.
 
 ### 💡 Others
 
