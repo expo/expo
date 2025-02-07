@@ -1,14 +1,14 @@
 #import <ExpoModulesCore/RCTAppDelegate+Recreate.h>
 #import <React/RCTRootView.h>
 
-typedef NSURL * _Nullable (^EXDevLauncherBundleURLGetter)();
+typedef NSURL * _Nullable (^EXDevLauncherBundleURLGetter)(void);
 
-@interface EXDevLauncherAppDelegate : RCTAppDelegate
+@interface EXDevLauncherAppDelegate : RCTDefaultReactNativeFactoryDelegate
 
 @property (nonatomic, copy, nonnull) EXDevLauncherBundleURLGetter bundleURLGetter;
-@property (nonatomic, strong, nonnull) RCTRootViewFactory *rootViewFactory;
 
-- (instancetype)initWithBundleURLGetter:(nonnull EXDevLauncherBundleURLGetter)bundleURLGetter;
-- (RCTRootViewFactory *)createRCTRootViewFactory;
+- (instancetype _Nonnull)initWithBundleURLGetter:(nonnull EXDevLauncherBundleURLGetter)bundleURLGetter;
+
+@property(nonatomic, strong, nonnull) RCTReactNativeFactory *reactNativeFactory;
 
 @end

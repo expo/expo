@@ -12,7 +12,7 @@
 
 @implementation EXReactNativeFactoryDelegate
 
-- (instancetype)init {
+- (instancetype) init {
   self = [super init];
   if (self != nil) {
     self.dependencyProvider = [[RCTAppDependencyProvider alloc] init];

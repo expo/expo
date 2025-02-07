@@ -14,20 +14,13 @@
 
 #import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
-@interface RCTAppDelegate ()
-
-- (RCTRootViewFactory *)createRCTRootViewFactory;
-- (Class)getModuleClassFromName:(const char *)name;
-
-@end
-
 @implementation EXDevLauncherAppDelegate
 
 - (instancetype)initWithBundleURLGetter:(nonnull EXDevLauncherBundleURLGetter)bundleURLGetter
 {
   if (self = [super init]) {
     self.bundleURLGetter = bundleURLGetter;
-		self.dependencyProvider = [RCTAppDependencyProvider new];
+    self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self];
   }
   return self;
 }

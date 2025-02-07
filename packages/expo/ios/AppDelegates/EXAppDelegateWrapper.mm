@@ -17,8 +17,7 @@
 {
   if (self = [super init]) {
     // TODO(kudo) to remove the `initWithAppDelegate` initializer when `EXAppDelegateWrapper` is removed
-    _expoAppDelegate = [[EXExpoAppDelegate alloc] initWithAppDelegate:self];
-    _expoAppDelegate.shouldCallReactNativeSetup = NO;
+    _expoAppDelegate = [[EXExpoAppDelegate alloc] initWithAppDelegate:self];    
   }
   return self;
 }
@@ -53,7 +52,7 @@
   return _expoAppDelegate;
 }
 
-#pragma mark - RCTAppDelegate
+#pragma mark - UIApplicationDelegate
 
 // Make sure to override all necessary methods from `RCTAppDelegate` here, explicitly forwarding everything to `_expoAppDelegate`.
 // `forwardingTargetForSelector` works only for methods that are not specified in this and `RCTAppDelegate` classes.

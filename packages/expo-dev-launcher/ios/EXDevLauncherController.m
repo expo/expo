@@ -340,13 +340,6 @@
   [self _removeInitModuleObserver];
   // Reset app react host
   [self.delegate destroyReactInstance];
-	
-  // @chrfalch: This is a bit stupied - in pre 0.77 we want to call the original
-  // RCTAppDelegate's createRCTRootViewFactory...
-  RCTAppDelegate* app = (RCTAppDelegate*)[UIApplication sharedApplication].delegate;
-//	app.reactNativeFactory
-  _appDelegate.rootViewFactory = [[app reactNativeFactory] rootViewFactory];
-
 
 #if RCT_DEV
   NSURL *url = [self devLauncherURL];
@@ -357,6 +350,8 @@
 
   [self _addInitModuleObserver];
 #endif
+  
+  // EXAppInstance* app = (EXAppInstance*)[UIApplication sharedApplication].delegate;
 
   UIView *rootView;
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -364,9 +359,9 @@
                                                name:RCTContentDidAppearNotification
                                              object:rootView];
 
-  rootView = [[_appDelegate rootViewFactory] viewWithModuleName:@"main"
-                                                     initialProperties:nil
-                                                     launchOptions:_launchOptions];
+  rootView = [[[_appDelegate reactNativeFactory] rootViewFactory] viewWithModuleName:@"main"
+                                                                   initialProperties:nil
+                                                                       launchOptions:_launchOptions];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
@@ -419,7 +414,7 @@
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
 
   // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (_appDelegate.rootViewFactory.reactHost == nil) {
+  if (_appDelegate.reactNativeFactory.rootViewFactory.reactHost == nil) {
     [self navigateToLauncher];
   }
 

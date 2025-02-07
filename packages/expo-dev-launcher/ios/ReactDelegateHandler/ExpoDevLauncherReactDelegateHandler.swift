@@ -5,7 +5,7 @@ import EXUpdatesInterface
 
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
-  private weak var rctAppDelegate: RCTAppDelegate?
+  private weak var expoAppInstance: ExpoAppInstance? // todo(chrfalch) we're really just looking for the reactNativeFactory...
   private weak var reactDelegate: ExpoReactDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
@@ -39,30 +39,35 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
   @objc
   public func isReactInstanceValid() -> Bool {
-		return self.rctAppDelegate?.rootViewFactory().value(forKey: "reactHost") != nil
+    return self.expoAppInstance?.reactNativeFactory?.rootViewFactory.value(forKey: "reactHost") != nil
   }
 
   @objc
   public func destroyReactInstance() {
-		self.rctAppDelegate?.rootViewFactory().setValue(nil, forKey: "reactHost")
+    self.expoAppInstance?.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "reactHost")
   }
 
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
-      fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
+    // todo: remove: Util so that can extract the target from EXAppDelegateWrapper
+    class DummySelectorHandler: NSObject { @objc func dummyMethod() {} }
+    
+    guard let expoAppInstance = (UIApplication.shared.delegate as? ExpoAppInstance) ??
+      // todo: Remove when EXAppDelegateWrapper is removed
+      (UIApplication.shared.delegate as? EXAppDelegateWrapper)?.forwardingTarget(for: #selector(DummySelectorHandler().dummyMethod)) as? ExpoAppInstance else {
+        fatalError("The `UIApplication.shared.delegate` is neither an `ExpoAppInstance` nor an `EXAppDelegateWrapper`.")
     }
-    self.rctAppDelegate = rctAppDelegate
+    self.expoAppInstance = expoAppInstance
 
     // Reset rctAppDelegate so we can relaunch the app
-    if rctAppDelegate.bridgelessEnabled() {
-			rctAppDelegate.rootViewFactory().setValue(nil, forKey: "_reactHost")
+    if (expoAppInstance.reactNativeFactory?.delegate?.newArchEnabled() ?? false) {
+      expoAppInstance.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
-			rctAppDelegate.rootViewFactory().setValue(nil, forKey: "bridge")
+      expoAppInstance.reactNativeFactory?.setValue(nil, forKey: "bridge")
     }
 
-    let rootView = rctAppDelegate.recreateRootView(
+    let rootView = expoAppInstance.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,
