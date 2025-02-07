@@ -586,11 +586,7 @@ class ExpoCameraView(
   private fun setCameraZoom(value: Float) {
     val maxZoomRatio = camera?.cameraInfo?.zoomState?.value?.maxZoomRatio ?: 1f
     val targetZoomRatio = max(1f, min(maxZoomRatio, value.coerceIn(0f, 1f) * maxZoomRatio))
-    try {
-      camera?.cameraControl?.setZoomRatio(targetZoomRatio)
-    } catch (e: Exception) {
-      camera?.cameraControl?.setLinearZoom(value.coerceIn(0f, 1f))
-    }
+    camera?.cameraControl?.setZoomRatio(targetZoomRatio)
   }
 
   private fun observeCameraState(cameraInfo: CameraInfo) {
