@@ -27,7 +27,7 @@ export type PickerProps = {
     }) => void;
     /**
      * The variant of the picker, which determines its appearance and behavior.
-     * The 'wheel' and 'menu' variants are iOS only.
+     * The 'wheel' and 'menu' variants are iOS only, the 'radio' variant is Android only.
      */
     variant: 'wheel' | 'segmented' | 'menu' | 'radio';
     /**
