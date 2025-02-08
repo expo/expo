@@ -10,7 +10,7 @@
 
 - [Android] Add missing ProGuard rule to fix task consumer failed ([#34098](https://github.com/expo/expo/pull/34098) by [@cornejobarraza](https://github.com/cornejobarraza))
 - [iOS] `startLocationUpdatesAsync` should not require background permissions ([#33617](https://github.com/expo/expo/pull/33617) by [@andrejpavlovic](https://github.com/andrejpavlovic)
-- [Android] Use less specific exception in catch block of `resolveUserSettingsForRequest`.
+- [Android] Use less specific exception in catch block of `resolveUserSettingsForRequest`. ([#34784](https://github.com/expo/expo/pull/34784) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
