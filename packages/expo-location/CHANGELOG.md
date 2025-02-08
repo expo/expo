@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Use less specific exception in catch block of `resolveUserSettingsForRequest`. ([#34784](https://github.com/expo/expo/pull/34784) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 18.0.5 — 2025-01-10
