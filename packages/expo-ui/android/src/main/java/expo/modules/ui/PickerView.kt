@@ -5,11 +5,10 @@ import android.graphics.Color
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.RadioButton
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -28,7 +26,9 @@ import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.ui.button.ButtonColors
 
 class PickerColors : Record {
@@ -89,55 +89,56 @@ class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<Pic
 
       @Composable
       fun SegmentedComposable() {
-      DynamicTheme {
-        SingleChoiceSegmentedButtonRow {
-          options.forEachIndexed { index, label ->
-            SegmentedButton(
-              shape = SegmentedButtonDefaults.itemShape(
-                index = index,
-                count = options.size
-              ),
-              onClick = {
-                onOptionSelected(mapOf("index" to index, "label" to label))
-              },
-              selected = index == selectedIndex,
-              label = { Text(label) },
-              colors = SegmentedButtonDefaults.colors(
-                activeBorderColor = colors.activeBorderColor.compose,
-                activeContentColor = colors.activeContentColor.compose,
-                inactiveBorderColor = colors.inactiveBorderColor.compose,
-                inactiveContentColor = colors.inactiveContentColor.compose,
-                disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
-                disabledActiveContentColor = colors.disabledActiveContentColor.compose,
-                disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
-                disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
-                activeContainerColor = colors.activeContainerColor.compose,
-                inactiveContainerColor = colors.inactiveContainerColor.compose,
-                disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
-                disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
-              )
-            )
+          DynamicTheme {
+              SingleChoiceSegmentedButtonRow {
+                  options.forEachIndexed { index, label ->
+                      SegmentedButton(
+                          shape = SegmentedButtonDefaults.itemShape(
+                              index = index,
+                              count = options.size
+                          ),
+                          onClick = {
+                              onOptionSelected(mapOf("index" to index, "label" to label))
+                          },
+                          selected = index == selectedIndex,
+                          label = { Text(label) },
+                          colors = SegmentedButtonDefaults.colors(
+                              activeBorderColor = colors.activeBorderColor.compose,
+                              activeContentColor = colors.activeContentColor.compose,
+                              inactiveBorderColor = colors.inactiveBorderColor.compose,
+                              inactiveContentColor = colors.inactiveContentColor.compose,
+                              disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
+                              disabledActiveContentColor = colors.disabledActiveContentColor.compose,
+                              disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
+                              disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
+                              activeContainerColor = colors.activeContainerColor.compose,
+                              inactiveContainerColor = colors.inactiveContainerColor.compose,
+                              disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
+                              disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
+                          )
+                      )
+                  }
+              }
           }
-        }
       }
-          }
+
         @Composable
         fun RadioComposable() {
             DynamicTheme {
-            Column(Modifier.selectableGroup()) {
-                options.forEachIndexed { index, label ->
-                    Row(
-                        Modifier.fillMaxWidth()
-                            .height(28.dp)
-                            .selectable(
-                                selected = index == selectedIndex,
-                                onClick = {
-                                    onOptionSelected(mapOf("index" to index, "label" to label))
-                                },
-                                role = Role.RadioButton
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                Column(Modifier.selectableGroup()) {
+                    options.forEachIndexed { index, label ->
+                        Row(
+                            Modifier.fillMaxWidth()
+                                .height(28.dp)
+                                .selectable(
+                                    selected = index == selectedIndex,
+                                    onClick = {
+                                        onOptionSelected(mapOf("index" to index, "label" to label))
+                                    },
+                                    role = Role.RadioButton
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                         RadioButton(
                             selected = index == selectedIndex,
                             onClick = null
