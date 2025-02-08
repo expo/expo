@@ -7,7 +7,7 @@ iconUrl: '/static/images/packages/expo-notifications.png'
 platforms: ['android*', 'ios*']
 ---
 
-import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
+import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
@@ -26,7 +26,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
   title="Notification guides"
   description="Do not miss our guides on how to set up, send, and handle push notifications."
   href="/push-notifications/overview/"
-  Icon={Bell03Icon}
+  Icon={NotificationBoxIcon}
 />
 
 > **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` is unavailable in Expo Go from SDK 53. A [development build](/develop/development-builds/introduction/) is required to use push notifications. Local notifications (in-app notifications) remain available in Expo Go.
