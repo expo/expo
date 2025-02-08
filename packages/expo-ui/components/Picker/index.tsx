@@ -25,12 +25,35 @@ export type PickerProps = {
   /**
    * The variant of the picker, which determines its appearance and behavior.
    * The 'wheel' and 'menu' variants are iOS only, the 'radio' variant is Android only.
+   * @default 'segmented'
    */
-  variant: 'wheel' | 'segmented' | 'menu' | 'radio';
+  variant?: 'wheel' | 'segmented' | 'menu' | 'radio';
   /**
    * Optional style to apply to the picker component.
    */
   style?: StyleProp<ViewStyle>;
+  /**
+   * Colors for picker's core elements.
+   * @platform android
+   */
+  elementColors?: {
+    activeBorderColor?: string;
+    activeContentColor?: string;
+    inactiveBorderColor?: string;
+    inactiveContentColor?: string;
+    disabledActiveBorderColor?: string;
+    disabledActiveContentColor?: string;
+    disabledInactiveBorderColor?: string;
+    disabledInactiveContentColor?: string;
+    activeContainerColor?: string;
+    inactiveContainerColor?: string;
+    disabledActiveContainerColor?: string;
+    disabledInactiveContainerColor?: string;
+  };
+  /**
+   * Picker color. On iOS it only applies to the `menu` variant.
+   */
+  color?: string;
 };
 
 const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
@@ -38,6 +61,23 @@ const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
   'PickerView'
 );
 
+type NativePickerProps = PickerProps;
+
+export function transformPickerProps(props: PickerProps): NativePickerProps {
+  return {
+    ...props,
+    variant: props.variant ?? 'segmented',
+    elementColors: props.elementColors
+      ? props.elementColors
+      : props.color
+        ? {
+            activeContainerColor: props.color,
+          }
+        : undefined,
+    color: props.color,
+  };
+}
+
 export function Picker(props: PickerProps) {
-  return <PickerNativeView {...props} />;
+  return <PickerNativeView {...transformPickerProps(props)} />;
 }

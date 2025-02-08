@@ -32,13 +32,14 @@ export default function SliderScreen() {
           value={value}
           min={-1}
           max={5}
-          colors={{
+          elementColors={{
             thumbColor: '#ff0000',
             activeTrackColor: '#ffff00',
             inactiveTrackColor: '#ff00ff',
             activeTickColor: '#ff0000',
             inactiveTickColor: '#00ff00',
           }}
+          color="#ff0000"
           onValueChange={(value) => {
             setValue(value);
           }}

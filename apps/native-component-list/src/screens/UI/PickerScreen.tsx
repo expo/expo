@@ -57,6 +57,20 @@ export default function PickerScreen() {
             }}
           />
         </Section>
+        <Section title="Tinted picker">
+          <Picker
+            options={options}
+            selectedIndex={selectedIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setSelectedIndex(index);
+            }}
+            color="#ff5500"
+            style={{
+              width: 300,
+              height: 100,
+            }}
+          />
+        </Section>
         <Section title="Radio picker">
           <Picker
             options={options}

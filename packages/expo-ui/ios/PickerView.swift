@@ -8,6 +8,7 @@ class PickerProps: ExpoSwiftUI.ViewProps {
   @Field var selectedIndex: Int?
   @Field var variant: String?
   @Field var label: String?
+  @Field var color: Color?
   var onOptionSelected = EventDispatcher()
 }
 
@@ -23,6 +24,7 @@ struct PickerView: ExpoSwiftUI.View {
           Text(option).tag(index)
         }
       }
+      .tint(props.color)
       #if !os(tvOS)
       .if(props.variant == "wheel", { $0.pickerStyle(.wheel) })
       #endif
@@ -32,10 +34,11 @@ struct PickerView: ExpoSwiftUI.View {
         if props.selectedIndex == newValue {
           return
         }
-        props.onOptionSelected([
+        let payload = [
           "index": newValue ?? 0,
           "label": props.options[newValue ?? 0]
-        ])
+        ]
+        props.onOptionSelected(payload)
       })
       .onReceive(props.selectedIndex.publisher, perform: { newValue in
         if prevSelectedIndex == newValue {

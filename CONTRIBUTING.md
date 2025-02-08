@@ -30,8 +30,9 @@ Manual smoke tests are included in `apps/native-component-list`, which is a good
 
 1. If you are an Expo team member, clone the repository. If you are an external contributor, [fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch main git@github.com:expo/expo.git`, skipping most of the branches and history to clone it faster.
 2. Install [direnv](https://direnv.net/). On macOS: `brew install direnv`. Don't forget to install the [shell hook](https://direnv.net/docs/hook.html) to your shell profile.
-3. Install [git-lfs](https://git-lfs.github.com/). On macOS: `brew install git-lfs`.
-4. Install [Node LTS](https://nodejs.org/).
+3. Install Ruby 3.3 or later. On macOS: `brew install ruby@3.3`
+4. Install [git-lfs](https://git-lfs.github.com/). On macOS: `brew install git-lfs`.
+5. Install [Node LTS](https://nodejs.org/).
 
 ### Set up documentation
 

@@ -254,7 +254,7 @@ expoConfig: ExpoConfig | null;
 
 > [!IMPORTANT]
 >
-> If you are fixing issues in package's reference or after an SDK version is released, make sure to only update the `unversioned` reference of that package. This way the changes will be reflected in the next SDK version from the `main` branch. Updating the reference for a specific SDK version requires updating that SDK's branch.
+> If you are fixing issues in package's reference or after an SDK version is released, make sure to only update the `unversioned` reference of that package. This way the changes will be reflected in the next SDK version from the `main` branch. Updating the reference for a specific SDK version requires updating that SDK's branch (see collapsible below) and SDK team decides cherry-picking changes for the specific SDK branch (after an SDK version has been released).
 
 In the terminal window and run the following command with to generate the JSON data file for the package (which is stored at the location `expo/docs/public/static/data/[SDK-VERSION]`)
 

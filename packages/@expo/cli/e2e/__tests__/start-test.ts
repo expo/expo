@@ -2,7 +2,12 @@
 import fs from 'fs';
 import path from 'path';
 
-import { projectRoot, getLoadedModulesAsync, setupTestProjectWithOptionsAsync } from './utils';
+import {
+  projectRoot,
+  getLoadedModulesAsync,
+  setupTestProjectWithOptionsAsync,
+  getRouterE2ERoot,
+} from './utils';
 import { createExpoStart, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -193,5 +198,34 @@ describe('start - dev clients', () => {
   it('runs `npx expo start` in dev client mode, using environment variable from .env', async () => {
     const response = await expo.fetchBundleAsync('/');
     expect(response.ok).toBeTruthy();
+  });
+});
+
+describe('start - webcontainer', () => {
+  const expo = createExpoStart({
+    cwd: getRouterE2ERoot(),
+    port: 8081, // Only port 8081 is supported with the ws-tunnel
+    env: {
+      NODE_ENV: 'development',
+      EXPO_USE_STATIC: 'server',
+      E2E_ROUTER_SRC: 'server',
+      E2E_ROUTER_ASYNC: 'development',
+      EXPO_USE_FAST_RESOLVER: 'true',
+      // Force webcontainer mode
+      CI: 'false',
+      EXPO_FORCE_WEBCONTAINER_ENV: 'true',
+    },
+  });
+
+  beforeEach(async () => {
+    await expo.startAsync();
+  });
+  afterAll(async () => {
+    await expo.stopAsync();
+  });
+
+  it('starts with ws-tunnel enabled by default', () => {
+    // Ensure dev server URL points to the ws tunnel by default
+    expect(expo.url.href).toContain('.boltexpo.dev:');
   });
 });

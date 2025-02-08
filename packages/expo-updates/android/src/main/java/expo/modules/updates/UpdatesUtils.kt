@@ -8,7 +8,6 @@ import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
-import org.apache.commons.io.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
@@ -112,7 +111,12 @@ object UpdatesUtils {
       // write file atomically by writing it to a temporary path and then renaming
       // this protects us against partially written files if the process is interrupted
       val tmpFile = File(destination.absolutePath + ".tmp")
-      FileUtils.copyInputStreamToFile(digestInputStream, tmpFile)
+      tmpFile.parentFile?.mkdirs()
+      digestInputStream.use { input ->
+        tmpFile.outputStream().use { output ->
+          input.copyTo(output)
+        }
+      }
 
       // this message digest must be read after the input stream has been consumed in order to get the hash correctly
       val md = digestInputStream.messageDigest
