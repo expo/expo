@@ -13,6 +13,7 @@
 - Run the React imports patcher for any platform if iOS sources are detected ([#34760](https://github.com/expo/expo/pull/34760) by [@capezzbr](https://github.com/capezzbr))
 
 - Fixed unstable fingerprint from `expoConfig` contents with absolute paths. ([#33926](https://github.com/expo/expo/pull/33926) by [@kudo](https://github.com/kudo))
+- Fix typo in help output and debug. ([#34766](https://github.com/expo/expo/pull/34766) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
