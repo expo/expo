@@ -490,7 +490,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
           val resolvable = e as ResolvableApiException
           mUIManager.registerActivityEventListener(this@LocationModule)
           resolvable.startResolutionForResult(appContext.throwingActivity, CHECK_SETTINGS_REQUEST_CODE)
-        } catch (e: SendIntentException) {
+        } catch (e: Throwable) {
           // Ignore the error.
           executePendingRequests(Activity.RESULT_CANCELED)
         }
