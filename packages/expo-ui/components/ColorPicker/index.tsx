@@ -1,23 +1,22 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
+import { processColor, StyleProp, ViewStyle } from 'react-native';
 
 /**
  * Props for the ColorPicker component.
  */
 export type ColorPickerProps = {
   /**
-   * The index of the currently selected option.
+   * The currently selected color in the format `#RRGGBB` or `#RRGGBBAA`.
    */
   selection: string | null;
   /**
-   * A label displayed on the ColorPicker when in `menu` variant inside a form section on iOS.
-   * @platform iOS
+   * A label displayed on the ColorPicker.
    */
   label?: string;
   /**
-   * Callback function that is called when an option is selected.
+   * Callback function that is called when a new color is selected.
    */
-  onValueChanged?: (event: { nativeEvent: { hex: string } }) => void;
+  onValueChanged?: (event: { nativeEvent: { value: string } }) => void;
   /**
    * Optional style to apply to the ColorPicker component.
    */
@@ -28,11 +27,12 @@ export type ColorPickerProps = {
   supportsOpacity?: boolean;
 };
 
-const ColorPickerNativeView: React.ComponentType<ColorPickerProps> = requireNativeView(
-  'ExpoUI',
-  'ColorPickerView'
-);
+const ColorPickerNativeView: React.ComponentType<
+  Omit<ColorPickerProps, 'selection'> & {
+    selection: ReturnType<typeof processColor>;
+  }
+> = requireNativeView('ExpoUI', 'ColorPickerView');
 
-export function ColorPicker(props: ColorPickerProps) {
-  return <ColorPickerNativeView {...props} />;
+export function ColorPicker({ selection, ...restProps }: ColorPickerProps) {
+  return <ColorPickerNativeView selection={processColor(selection || '')} {...restProps} />;
 }

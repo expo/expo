@@ -24,10 +24,9 @@ struct ColorPickerView: ExpoSwiftUI.View {
       }
       .onChange(of: color) { newValue in
         let newHex = colorToHex(UIColor(newValue))
-        
         if newHex != previousHex {
           previousHex = newHex
-          let payload = ["hex": newHex]
+          let payload = ["value": newHex]
           props.onValueChanged(payload)
         }
       }

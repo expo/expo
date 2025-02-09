@@ -25,205 +25,218 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
-import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Brush
+import kotlin.math.roundToInt
 
-
-// 🎨 ColorPicker Props
 data class ColorPickerProps(
-    val selectedColor: MutableState<ComposeColor> = mutableStateOf(ComposeColor.Red),
-    val label: MutableState<String?> = mutableStateOf(null),
-    val supportsOpacity: MutableState<Boolean> = mutableStateOf(false)
+  val selection: MutableState<Int> = mutableStateOf(Color.RED),
+  val label: MutableState<String?> = mutableStateOf(null),
+  val supportsOpacity: MutableState<Boolean> = mutableStateOf(false)
 ) : ComposeProps
 
 @OptIn(ExperimentalMaterial3Api::class)
 class ColorPickerView(context: Context, appContext: AppContext) : ExpoComposeView<ColorPickerProps>(context, appContext) {
-    override val props = ColorPickerProps()
-    private val onValueChanged by EventDispatcher()
+  override val props = ColorPickerProps()
+  private val onValueChanged by EventDispatcher()
 
-    init {
-        setContent {
-            var showSheet by remember { mutableStateOf(false) }
-            val selectedColor = props.selectedColor
-            var alpha by remember { mutableStateOf(1f) }
+  init {
+    setContent {
+      var showSheet by remember { mutableStateOf(false) }
+      val currentColor = remember(props.selection.value) {
+        ComposeColor(props.selection.value)
+      }
+      var alpha by remember { mutableFloatStateOf(currentColor.alpha) }
 
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        if (props.label.value != null) {
+          Text(
+            props.label.value!!,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f)
+          )
+          Spacer(modifier = Modifier.width(8.dp))
+        }
+        Box(
+          modifier = Modifier
+            .size(24.dp)
+            .clip(CircleShape)
+            .background(currentColor)
+            .clickable {
+              showSheet = true
+            }
+        )
+      }
+
+      if (showSheet) {
+        ModalBottomSheet(
+          onDismissRequest = { showSheet = false },
+          sheetState = rememberModalBottomSheetState()
+        ) {
+          Column(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp)
+          ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+              verticalAlignment = Alignment.CenterVertically
             ) {
-                if (props.label.value != null) {
-                    Text(
-                        props.label.value!!,
-                        style = MaterialTheme.typography.bodyMedium, 
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .background(selectedColor.value)
-                        .clickable {
-                            showSheet = true
-                        }
-                )
+              Text("Select a color",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.weight(1f))
+              IconButton(onClick = { showSheet = false }) {
+                Icon(Icons.Default.Close, "Close")
+              }
             }
 
-            if (showSheet) {
-                ModalBottomSheet(
-                    onDismissRequest = { showSheet = false },
-                    sheetState = rememberModalBottomSheetState()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        // Header moved up with less spacing
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("Select a color", 
-                                style = MaterialTheme.typography.headlineSmall, 
-                                modifier = Modifier.weight(1f))
-                            IconButton(onClick = { showSheet = false }) {
-                                Icon(Icons.Default.Close, "Close")
-                            }
-                        }
+            Spacer(modifier = Modifier.height(16.dp))
 
-                        Spacer(modifier = Modifier.height(16.dp))
+            ColorSpectrumPicker(
+              initialColor = currentColor.toArgb(),
+              alpha = alpha,
+              onValueChanged = { newColor ->
+                val argbColor = newColor.toArgb()
+                props.selection.value = argbColor
+                onValueChanged(mapOf("value" to colorToHex(argbColor, props.supportsOpacity.value)))
+              }
+            )
 
-                        // Color Spectrum Picker with corrected callback
-                        ColorSpectrumPicker(
-                            selectedColor = selectedColor.value,
-                            alpha = alpha,
-                            onValueChanged = { color ->
-                                selectedColor.value = color
-                                onValueChanged(mapOf("hex" to colorToHex(color)))
-                            }
-                        )
+            Spacer(modifier = Modifier.height(16.dp))
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Only show opacity controls if supported
-                        if (props.supportsOpacity.value) {
-                            Text("Opacity", style = MaterialTheme.typography.bodyMedium)
-                            Slider(
-                                value = alpha,
-                                onValueChange = { newAlpha ->
-                                    alpha = newAlpha
-                                    val currentColor = selectedColor.value
-                                    selectedColor.value = currentColor.copy(alpha = newAlpha)
-                                    onValueChanged(mapOf("hex" to colorToHex(selectedColor.value)))
-                                },
-                                valueRange = 0f..1f
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                        } else {
-                            // Force alpha to 1f when opacity is not supported
-                            LaunchedEffect(selectedColor.value) {
-                                if (selectedColor.value.alpha != 1f) {
-                                    selectedColor.value = selectedColor.value.copy(alpha = 1f)
-                                }
-                            }
-                        }
-                    }
+            if (props.supportsOpacity.value) {
+              Text("Opacity", style = MaterialTheme.typography.bodyMedium)
+              Slider(
+                value = alpha,
+                onValueChange = { newAlpha ->
+                  alpha = newAlpha
+                  val updatedColor = currentColor.copy(alpha = newAlpha)
+                  val argbColor = updatedColor.toArgb()
+                  props.selection.value = argbColor
+                  onValueChanged(mapOf("value" to colorToHex(argbColor, true)))
+                },
+                valueRange = 0f..1f
+              )
+              Spacer(modifier = Modifier.height(16.dp))
+            } else {
+              LaunchedEffect(currentColor) {
+                if (currentColor.alpha != 1f) {
+                  val opaqueColor = currentColor.copy(alpha = 1f)
+                  props.selection.value = opaqueColor.toArgb()
                 }
+              }
             }
+          }
         }
+      }
     }
-    
-    private fun colorToHex(color: ComposeColor): String {
-        val finalColor = if (!props.supportsOpacity.value) {
-            color.copy(alpha = 1f)
-        } else {
-            color
-        }
-        return String.format("#%08X", finalColor.toArgb())
+  }
+
+  private fun colorToHex(argb: Int, includeAlpha: Boolean): String {
+    return if (includeAlpha) {
+      String.format("#%08X", argb)
+    } else {
+      // Mask out the alpha channel and only keep RGB
+      String.format("#%06X", 0xFFFFFF and argb)
     }
+  }
 }
 
-// 🎨 Color Spectrum Picker (2D Hue + Saturation)
 @Composable
 fun ColorSpectrumPicker(
-    selectedColor: ComposeColor,
-    alpha: Float,
-    onValueChanged: (ComposeColor) -> Unit
+  initialColor: Int,
+  alpha: Float,
+  onValueChanged: (ComposeColor) -> Unit
 ) {
-    var hue by remember { mutableStateOf(0f) }
-    var saturation by remember { mutableStateOf(1f) }
-    val spectrumHeight = 300.dp
-    val spectrumWidth = 400.dp
+  val hsv = FloatArray(3)
+  Color.colorToHSV(initialColor, hsv)
+
+  var currentHue by remember { mutableStateOf(hsv[0]) }
+  var currentSaturation by remember { mutableStateOf(hsv[1]) }
+  val spectrumHeight = 300.dp
+  val spectrumWidth = 400.dp
+
+  val currentColor by remember(currentHue, currentSaturation, alpha) {
+    derivedStateOf {
+      hsvToColor(currentHue, currentSaturation, 1f).copy(alpha = alpha)
+    }
+  }
+
+  Box(
+    modifier = Modifier
+      .width(spectrumWidth)
+      .height(spectrumHeight)
+      .clip(RoundedCornerShape(8.dp))
+      .background(ComposeColor.White)
+  ) {
+    Canvas(
+      modifier = Modifier
+        .matchParentSize()
+        .pointerInput(Unit) {
+          detectDragGestures(
+            onDragStart = { offset ->
+              val x = offset.x.coerceIn(0f, size.width.toFloat())
+              val y = offset.y.coerceIn(0f, size.height.toFloat())
+
+              currentHue = (y / size.height) * 360f
+              currentSaturation = 1f - (x / size.width)
+              onValueChanged(currentColor)
+            },
+            onDrag = { change, _ ->
+              val x = change.position.x.coerceIn(0f, size.width.toFloat())
+              val y = change.position.y.coerceIn(0f, size.height.toFloat())
+
+              currentHue = (y / size.height) * 360f
+              currentSaturation = 1f - (x / size.width)
+              onValueChanged(currentColor)
+            }
+          )
+        }
+    ) {
+      val hueGradient = Brush.verticalGradient(
+        colors = listOf(
+          hsvToColor(0f, 1f, 1f),
+          hsvToColor(60f, 1f, 1f),
+          hsvToColor(120f, 1f, 1f),
+          hsvToColor(180f, 1f, 1f),
+          hsvToColor(240f, 1f, 1f),
+          hsvToColor(300f, 1f, 1f),
+          hsvToColor(360f, 1f, 1f)
+        )
+      )
+
+      val saturationGradient = Brush.horizontalGradient(
+        colors = listOf(
+          ComposeColor.White.copy(alpha = 0f),
+          ComposeColor.White
+        )
+      )
+
+      drawRect(brush = hueGradient)
+      drawRect(brush = saturationGradient)
+    }
 
     Box(
-        modifier = Modifier
-            .width(spectrumWidth)
-            .height(spectrumHeight)
-            .clip(RoundedCornerShape(8.dp))
-            .background(ComposeColor.White)
-    ) {
-        Canvas(
-            modifier = Modifier
-                .matchParentSize()
-                .pointerInput(Unit) {
-                    detectDragGestures { change, _ ->
-                        val x = change.position.x.coerceIn(0f, size.width.toFloat())
-                        val y = change.position.y.coerceIn(0f, size.height.toFloat())
-                        
-                        hue = (y / size.height) * 360f
-                        saturation = 1f - (x / size.width)
-                        
-                        onValueChanged(hsvToColor(hue, saturation, 1f).copy(alpha = alpha))
-                    }
-                }
-        ) {
-            // Fixed gradients with proper float values
-            val hueGradient = Brush.verticalGradient(
-                colors = listOf(
-                    hsvToColor(0f, 1f, 1f),
-                    hsvToColor(60f, 1f, 1f),
-                    hsvToColor(120f, 1f, 1f),
-                    hsvToColor(180f, 1f, 1f),
-                    hsvToColor(240f, 1f, 1f),
-                    hsvToColor(300f, 1f, 1f),
-                    hsvToColor(360f, 1f, 1f)
-                )
-            )
-
-            val saturationGradient = Brush.horizontalGradient(
-                colors = listOf(
-                    ComposeColor.White.copy(alpha = 0f),
-                    ComposeColor.White
-                )
-            )
-
-            drawRect(brush = hueGradient)
-            drawRect(brush = saturationGradient)
-        }
-
-        // Cursor
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .offset(
-                    x = (spectrumWidth.value * (1 - saturation)).dp - 12.dp,
-                    y = (spectrumHeight.value * (hue / 360f)).dp - 12.dp
-                )
-                .clip(CircleShape)
-                .background(selectedColor)
-                .border(2.dp, ComposeColor.White, CircleShape)
+      modifier = Modifier
+        .size(24.dp)
+        .offset(
+          x = (spectrumWidth.value * (1 - currentSaturation)).dp - 12.dp,
+          y = (spectrumHeight.value * (currentHue / 360f)).dp - 12.dp
         )
-    }
+        .clip(CircleShape)
+        .background(currentColor)
+        .border(2.dp, ComposeColor.White, CircleShape)
+    )
+  }
 }
 
-// 🔄 Convert HSV to ComposeColor
 fun hsvToColor(hue: Float, saturation: Float, value: Float): ComposeColor {
-    val hsv = floatArrayOf(hue, saturation, value)
-    return ComposeColor(Color.HSVToColor(hsv))
+  val hsv = floatArrayOf(hue, saturation, value)
+  return ComposeColor(Color.HSVToColor(hsv))
 }
