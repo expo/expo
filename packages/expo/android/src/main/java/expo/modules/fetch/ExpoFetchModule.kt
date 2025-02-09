@@ -15,7 +15,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import okhttp3.JavaNetCookieJar
 import java.net.URL
@@ -35,8 +34,10 @@ class ExpoFetchModule : Module() {
     get() = appContext.reactContext as? ReactContext ?: throw Exceptions.ReactContextLost()
 
   private val moduleCoroutineScope by lazy {
-    CoroutineScope(appContext.modulesQueue.coroutineContext +
-      CoroutineName("expo.modules.fetch.CoroutineScope"))
+    CoroutineScope(
+      appContext.modulesQueue.coroutineContext +
+        CoroutineName("expo.modules.fetch.CoroutineScope")
+    )
   }
 
   override fun definition() = ModuleDefinition {
