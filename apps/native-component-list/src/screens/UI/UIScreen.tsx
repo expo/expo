@@ -50,6 +50,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ContextMenuScreen'));
     },
   },
+  {
+    name: 'Color Picker component',
+    route: 'ui/color-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ColorPickerScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

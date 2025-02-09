@@ -19,6 +19,7 @@ export default function PickerScreen() {
             selectedIndex={selectedIndex}
             onOptionSelected={({ nativeEvent: { index } }) => {
               setSelectedIndex(index);
+              console.log('Selected index:', index);
             }}
             variant="segmented"
             style={{

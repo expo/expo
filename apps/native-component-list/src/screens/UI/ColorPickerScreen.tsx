@@ -1,0 +1,41 @@
+import { ColorPicker } from '@expo/ui/components/ColorPicker';
+import * as React from 'react';
+import { Dimensions, ScrollView, Text } from 'react-native';
+
+import { Page, Section } from '../../components/Page';
+import { Switch } from '@expo/ui/components/Switch';
+
+export default function PickerScreen() {
+  const [color, setColor] = React.useState<string | null>('blue');
+  const [supportsOpacity, setSupportsOpacity] = React.useState<boolean>(false);
+  return (
+    <ScrollView>
+      <Page>
+        <Section title="Color Picker">
+          <Text>Color: {color}</Text>
+          <Switch
+            label="Supports opacity"
+            checked={supportsOpacity}
+            onCheckedChanged={({ nativeEvent: { checked } }) => setSupportsOpacity(checked)}
+          />
+          <ColorPicker
+            label="Select a color"
+            selection={color}
+            supportsOpacity={false}
+            onValueChanged={({ nativeEvent: { hex } }) => {
+              setColor(hex);
+            }}
+            style={{
+              width: Dimensions.get('window').width - 20,
+              height: 100,
+            }}
+          />
+        </Section>
+      </Page>
+    </ScrollView>
+  );
+}
+
+PickerScreen.navigationOptions = {
+  title: 'Picker',
+};
