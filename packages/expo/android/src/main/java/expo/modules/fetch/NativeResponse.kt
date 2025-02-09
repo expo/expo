@@ -8,8 +8,6 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -19,7 +17,6 @@ import java.io.IOException
 internal class NativeResponse(appContext: AppContext, private val coroutineScope: CoroutineScope) :
   SharedObject(appContext), Callback {
   val sink = ResponseSink()
-  private val lock = Mutex()
   private var state: ResponseState = ResponseState.INITIALIZED
     get() = synchronized(this) { field }
     private set(value) {
@@ -27,9 +24,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         field = value
       }
       coroutineScope.launch {
-        this@NativeResponse.lock.withLock {
-          this@NativeResponse.stateChangeOnceListeners.removeAll { it(value) }
-        }
+        this@NativeResponse.stateChangeOnceListeners.removeAll { it(value) }
       }
     }
   private val stateChangeOnceListeners: MutableList<StateChangeListener> = mutableListOf()
