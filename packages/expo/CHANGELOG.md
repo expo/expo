@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Avoid `PromiseAlreadySettledException` on canceling `expo/fetch` requests. ([#34778](https://github.com/expo/expo/pull/34778) by [@yukukotani](https://github.com/yukukotani))
+
 ### 💡 Others
 
 ## 52.0.31 — 2025-02-06
