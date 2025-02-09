@@ -15,6 +15,13 @@ function _debug() {
   };
   return data;
 }
+function _path() {
+  const data = _interopRequireDefault(require("path"));
+  _path = function () {
+    return data;
+  };
+  return data;
+}
 function _withMod() {
   const data = require("./withMod");
   _withMod = function () {
@@ -45,6 +52,7 @@ function createBaseMod({
       async action({
         modRequest: {
           nextMod,
+          templateProjectRoot,
           ...modRequest
         },
         ...config
@@ -55,8 +63,27 @@ function createBaseMod({
             modRequest
           };
           const filePath = await getFilePath(results, props);
-          debug(`mods.${platform}.${modName}: file path: ${filePath || '[skipped]'}`);
-          const modResults = await read(filePath, results, props);
+          let inputFilePath = filePath;
+
+          // Change the input file path for resetting the provider.
+          if (templateProjectRoot) {
+            inputFilePath = await getFilePath({
+              ...results,
+              modRequest: {
+                ...results.modRequest,
+                // Calculate new paths relative to the replacement template root.
+                platformProjectRoot: _path().default.join(templateProjectRoot, results.modRequest.platform),
+                projectRoot: templateProjectRoot
+              }
+            }, props);
+          }
+          if (inputFilePath === filePath) {
+            debug(`mods.${platform}.${modName}: file path: ${filePath || '[skipped]'}`);
+          } else {
+            debug(`mods.${platform}.${modName}: file path input: ${inputFilePath || '[skipped]'}`);
+            debug(`mods.${platform}.${modName}: file path output: ${filePath || '[skipped]'}`);
+          }
+          const modResults = await read(inputFilePath, results, props);
           results = await nextMod({
             ...results,
             modResults,

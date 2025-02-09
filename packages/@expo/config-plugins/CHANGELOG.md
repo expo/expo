@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add fast reset system for serialized mods.
+
 ### 🐛 Bug fixes
 
 - Fix orphaned bridging header reference in prebuild. ([#33462](https://github.com/expo/expo/pull/33462) by [@EvanBacon](https://github.com/EvanBacon))
