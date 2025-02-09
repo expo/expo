@@ -385,6 +385,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/examples.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/upgrade.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
