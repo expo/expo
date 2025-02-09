@@ -59,6 +59,13 @@ export type ContextMenuProps = {
   children: ReactNode;
 
   /**
+   * The color of the container holding the context menu items.
+   *
+   * @platform android
+   */
+  color?: string;
+
+  /**
    * Optional styles to apply to the `ContextMenu`
    */
   style?: StyleProp<ViewStyle>;
