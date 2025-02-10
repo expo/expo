@@ -1,0 +1,51 @@
+---
+title: Estimate bandwidth usage
+description: Learn how to estimate bandwidth usage with EAS Update.
+---
+
+# Understanding Update Bandwidth Usage
+
+EAS Update enables an app to update its own non-native pieces (such as JS, styling, and images) over-the-air. This guide explains how bandwidth is consumed and optimized.
+
+## Bandwidth Calculation Breakdown
+
+Each billing cycle includes a predefined bandwidth allocation, which translates to a specific number of updates your users can download. Here's how we estimate bandwidth usage:
+
+- **Update Size:** The key factor in bandwidth consumption is the size of each update. For example, if an update modifies only the JavaScript portion of your app and is **10 MB uncompressed**, we can further optimize this with compression.
+- **Compression Ratio:** Hermes bytecode, commonly used in React Native apps, achieves an estimated **2.6× compression ratio**. This means the actual downloaded update size is approximately:
+  
+  ```text
+  10 MB / 2.6 ≈ 3.85 MB per update
+  ```
+
+- **Total Downloads:** Given a bandwidth allocation, we estimate how many users can download an update. For example, if your plan includes **1 TiB (1,024 GiB) of bandwidth per billing cycle**, the number of updates that can be downloaded is:
+
+  ```text
+  (1,024 GiB × 1,024 MiB) / 3.85 MiB ≈ 272,935 updates
+  ```
+
+## Measuring Your Actual Update Size
+
+To determine the actual compressed size of your Hermes bundle, run the following command:
+
+```sh
+gzip -9 -k bundle.hbc
+ls -lh bundle.hbc.gz
+```
+
+This will generate a **gzip-compressed** version of your Hermes bundle (`bundle.hbc.gz`) and display its size. You can use this to refine bandwidth calculations based on your app’s real-world update sizes.
+
+## Factors That Affect Bandwidth Consumption
+
+Actual bandwidth usage varies due to:
+
+- **User Behavior:** While theoretical calculations assume every user downloads every update, many users only receive updates when reopening the app, meaning they may skip intermediate updates.
+- **Missing Assets:** Any assets not included in the embedded build but required in the update (e.g., fonts, images, or other dependencies) will need to be downloaded as well, increasing bandwidth usage.
+
+## Best Practices to Optimize Bandwidth Usage
+
+1. **Minimize Update Size:** Avoid bundling unnecessary assets in updates.
+2. **Monitor Usage:** Check your bandwidth metrics to detect unusual spikes or inefficiencies.
+
+
+
