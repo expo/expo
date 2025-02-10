@@ -276,7 +276,7 @@ export function test({ describe, expect, it, ...t }) {
       expect(buffer.length).toBe(512);
     });
 
-    it('should stream response as async iterator', async () => {
+    it('should complete stream response async iterator', async () => {
       const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=2', {
         headers: {
           Accept: 'text/event-stream',
@@ -311,8 +311,6 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(chunks.length).toBe(2);
-      // const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
-      // expect(buffer.length).toBe(512);
     });
   });
 
