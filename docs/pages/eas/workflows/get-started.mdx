@@ -9,8 +9,6 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Builds, submissions, updates, and more are all a part of delivering your app to users. EAS Workflows consist of a sequence of jobs, which help you and your team get things done. With workflows, you can build your project, run end-to-end tests, submit that build to the app stores, and then run custom scripts after the submission is complete. Since each job can have prerequisites and conditionals, you can automate your and your team's CI/CD for your React Native project.
 
-> **info** Got feedback or feature requests? Send us an email at workflows@expo.dev.
-
 <Collapsible summary="How do workflows compare to other CI services?">
 
 EAS Workflows are designed to help you and your team release your app. It comes preconfigured with pre-packaged job types that can build, submit, update, run Maestro tests, and more. All job types run on EAS, so you'll only have to manage one set of YAML files, and all the artifacts from your job runs will appear on [expo.dev](https://expo.dev/).
@@ -97,6 +95,8 @@ jobs:
       build_id: ${{ needs.build.outputs.build_id }}
 ```
 
+> **info**Download the [Expo VS Code extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) to get descriptions and autocompletions for your workflow files.
+
 ## Run your workflow
 
 Once you have a workflow file and your project is connected to Expo's GitHub app, you can trigger your workflow by pushing a commit to your GitHub repository. For the workflow to run, you'll need to make sure the trigger (defined with `on`) you defined in your workflow is met.
@@ -106,3 +106,5 @@ Alternatively, you can trigger a workflow manually by running the following comm
 <Terminal cmd={['$ npx eas-cli@latest workflow:run .eas/workflows/<your-workflow-file>.yml']} />
 
 Once you do, you can see your workflow running on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows).
+
+> Got feedback or feature requests? Send us an email at workflows@expo.dev.
