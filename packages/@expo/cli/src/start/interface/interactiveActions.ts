@@ -62,7 +62,9 @@ export class DevServerManagerActions {
         if (options.devClient === false) {
           // TODO: if development build, change this message!
           Log.log(
-            printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)')
+            printItem(
+              'Scan the QR code with Expo Go (Android) or the Camera app (iOS) to open in Expo Go.'
+            )
           );
         } else {
           Log.log(
