@@ -2,7 +2,6 @@ import type { SharedRef as SharedRefType } from 'expo/types';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { Coordinates } from '../shared.types';
-import { Ref } from 'react';
 
 export type Marker = {
   /**
@@ -117,7 +116,6 @@ export type Annotation = {
 } & Marker;
 
 export type MapProps = {
-  ref?: Ref<MapViewType>;
   style?: StyleProp<ViewStyle>;
 
   /**
@@ -165,20 +163,4 @@ export type MapProps = {
     tilt: number;
     bearing: number;
   }) => void;
-};
-
-export type SetCameraPositionConfig = CameraPosition & {
-  /**
-   * The duration of the animation in milliseconds.
-   */
-  duration?: number;
-};
-
-export type MapViewType = {
-  /**
-   * Update camera position.
-   *
-   * @param config New camera postion config.
-   */
-  setCameraPosition: (config?: SetCameraPositionConfig) => void;
 };
