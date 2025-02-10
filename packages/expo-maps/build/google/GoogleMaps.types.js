@@ -1,25 +1,29 @@
 /**
  * The type of map to display.
+ * @platform android
  */
-export var GoogleMapsType;
-(function (GoogleMapsType) {
+export var GoogleMapsMapType;
+(function (GoogleMapsMapType) {
     /**
      * Satellite imagery with roads and points of interest overlayed.
      */
-    GoogleMapsType["HYBRID"] = "HYBRID";
+    GoogleMapsMapType["HYBRID"] = "HYBRID";
     /**
      * Standard road map.
      */
-    GoogleMapsType["NORMAL"] = "NORMAL";
+    GoogleMapsMapType["NORMAL"] = "NORMAL";
     /**
      * Satellite imagery.
      */
-    GoogleMapsType["SATELLITE"] = "SATELLITE";
+    GoogleMapsMapType["SATELLITE"] = "SATELLITE";
     /**
      * Topographic data.
      */
-    GoogleMapsType["TERRAIN"] = "TERRAIN";
-})(GoogleMapsType || (GoogleMapsType = {}));
+    GoogleMapsMapType["TERRAIN"] = "TERRAIN";
+})(GoogleMapsMapType || (GoogleMapsMapType = {}));
+/**
+ * @platform android
+ */
 export var GoogleMapsColorScheme;
 (function (GoogleMapsColorScheme) {
     GoogleMapsColorScheme["LIGHT"] = "LIGHT";

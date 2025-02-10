@@ -10,6 +10,9 @@ if (Platform.OS === 'android') {
   NativeView = requireNativeView('ExpoGoogleStreetView');
 }
 
+/**
+ * @platform android
+ */
 export function GoogleStreetView(props: GoogleStreetViewProps) {
   if (!NativeView) {
     return null;

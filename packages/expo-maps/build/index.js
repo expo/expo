@@ -12,7 +12,7 @@ export var GoogleMaps;
 (function (GoogleMaps) {
     GoogleMaps.View = GoogleMapsView;
     GoogleMaps.StreetView = GoogleStreetView;
-    GoogleMaps.MapType = GoogleTypes.GoogleMapsType;
+    GoogleMaps.MapType = GoogleTypes.GoogleMapsMapType;
     GoogleMaps.MapColorScheme = GoogleTypes.GoogleMapsColorScheme;
 })(GoogleMaps || (GoogleMaps = {}));
 /**
@@ -21,7 +21,7 @@ export var GoogleMaps;
 export var AppleMaps;
 (function (AppleMaps) {
     AppleMaps.View = AppleMapsView;
-    AppleMaps.MapType = AppleTypes.AppleMapsType;
+    AppleMaps.MapType = AppleTypes.AppleMapsMapType;
 })(AppleMaps || (AppleMaps = {}));
 export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;
 export const getPermissionsAsync = ExpoMaps.getPermissionsAsync;

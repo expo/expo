@@ -8,8 +8,8 @@ import { GoogleStreetView } from './google/GoogleStreetView';
 export declare namespace GoogleMaps {
     const View: import("react").ForwardRefExoticComponent<Omit<GoogleTypes.GoogleMapsViewProps, "ref"> & import("react").RefAttributes<GoogleTypes.GoogleMapsViewType>>;
     const StreetView: typeof GoogleStreetView;
-    const MapType: typeof GoogleTypes.GoogleMapsType;
-    type MapType = GoogleTypes.GoogleMapsType;
+    const MapType: typeof GoogleTypes.GoogleMapsMapType;
+    type MapType = GoogleTypes.GoogleMapsMapType;
     const MapColorScheme: typeof GoogleTypes.GoogleMapsColorScheme;
     type MapColorScheme = GoogleTypes.GoogleMapsColorScheme;
     type Marker = GoogleTypes.GoogleMapsMarker;
@@ -17,14 +17,15 @@ export declare namespace GoogleMaps {
     type MapProperties = GoogleTypes.GoogleMapsProperties;
     type MapProps = GoogleTypes.GoogleMapsViewProps;
     type MapView = GoogleTypes.GoogleMapsViewType;
+    type StreetViewProps = GoogleTypes.GoogleStreetViewProps;
 }
 /**
  * @hidden
  */
 export declare namespace AppleMaps {
     const View: typeof AppleMapsView;
-    const MapType: typeof AppleTypes.AppleMapsType;
-    type MapType = AppleTypes.AppleMapsType;
+    const MapType: typeof AppleTypes.AppleMapsMapType;
+    type MapType = AppleTypes.AppleMapsMapType;
     type Marker = AppleTypes.AppleMapsMarker;
     type MapUISettings = AppleTypes.AppleMapsUISettings;
     type MapProperties = AppleTypes.AppleMapsProperties;

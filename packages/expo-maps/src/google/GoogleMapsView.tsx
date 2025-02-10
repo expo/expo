@@ -23,6 +23,9 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
   );
 }
 
+/**
+ * @platform android
+ */
 export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsViewProps>(
   (
     {

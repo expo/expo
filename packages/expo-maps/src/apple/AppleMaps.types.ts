@@ -3,6 +3,9 @@ import type { StyleProp, ViewStyle } from 'react-native';
 
 import { CameraPosition, Coordinates } from '../shared.types';
 
+/**
+ * @platform ios
+ */
 export type AppleMapsMarker = {
   /**
    * The SF Symbol to display for the marker.
@@ -25,6 +28,9 @@ export type AppleMapsMarker = {
   tintColor?: string;
 };
 
+/**
+ * @platform ios
+ */
 export type AppleMapsUISettings = {
   /**
    * Whether the compass is enabled on the map.
@@ -50,22 +56,26 @@ export type AppleMapsUISettings = {
 
 /**
  * The type of map to display.
+ * @platform ios
  */
-export enum AppleMapsType {
+export enum AppleMapsMapType {
   /**
-   * Satellite imagery with roads and points of interest overlayed.
+   * A satellite image of the area with road and road name layers on top.
    */
   HYBRID = 'HYBRID',
   /**
-   * Standard road map.
+   * A street map that shows the position of all roads and some road names.
    */
   STANDARD = 'STANDARD',
   /**
-   * Satellite imagery.
+   * A satellite image of the area.
    */
   IMAGERY = 'IMAGERY',
 }
 
+/**
+ * @platform ios
+ */
 export type AppleMapsProperties = {
   /**
    * Whether the traffic layer is enabled on the map.
@@ -75,7 +85,7 @@ export type AppleMapsProperties = {
   /**
    * Defines which map type should be used.
    */
-  mapType?: AppleMapsType;
+  mapType?: AppleMapsMapType;
 
   /**
    * If true, the user can select a location on the map to get more information.
@@ -83,6 +93,9 @@ export type AppleMapsProperties = {
   selectionEnabled?: boolean;
 };
 
+/**
+ * @platform ios
+ */
 export type AppleMapsAnnotation = {
   /**
    * The background color of the annotation.
@@ -102,6 +115,9 @@ export type AppleMapsAnnotation = {
   icon?: SharedRefType<'image'>;
 } & AppleMapsMarker;
 
+/**
+ * @platform ios
+ */
 export type AppleMapsViewProps = {
   style?: StyleProp<ViewStyle>;
 

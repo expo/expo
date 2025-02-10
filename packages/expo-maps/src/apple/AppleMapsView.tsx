@@ -19,6 +19,9 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
   );
 }
 
+/**
+ * @platform ios
+ */
 export function AppleMapsView({
   onMapClick,
   onMarkerClick,

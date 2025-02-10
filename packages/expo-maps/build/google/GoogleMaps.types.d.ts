@@ -2,6 +2,9 @@ import type { SharedRef as SharedRefType } from 'expo/types';
 import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { CameraPosition, Coordinates } from '../shared.types';
+/**
+ * @platform android
+ */
 export type GoogleMapsMarker = {
     /**
      * The coordinates of the marker.
@@ -28,6 +31,9 @@ export type GoogleMapsMarker = {
      */
     icon?: SharedRefType<'image'>;
 };
+/**
+ * @platform android
+ */
 export type GoogleMapsUserLocation = {
     /**
      * User location coordinates.
@@ -38,6 +44,9 @@ export type GoogleMapsUserLocation = {
      */
     followUserLocation: boolean;
 };
+/**
+ * @platform android
+ */
 export type GoogleMapsUISettings = {
     /**
      * Whether the compass is enabled on the map.
@@ -82,19 +91,18 @@ export type GoogleMapsUISettings = {
     zoomGesturesEnabled?: boolean;
     /**
      * Whether the scale bar is displayed when zooming.
-     * @platform ios
      */
     scaleBarEnabled?: boolean;
     /**
      * Whether the user is allowed to change the pitch type.
-     * @platform ios
      */
     togglePitchEnabled?: boolean;
 };
 /**
  * The type of map to display.
+ * @platform android
  */
-export declare enum GoogleMapsType {
+export declare enum GoogleMapsMapType {
     /**
      * Satellite imagery with roads and points of interest overlayed.
      */
@@ -112,6 +120,9 @@ export declare enum GoogleMapsType {
      */
     TERRAIN = "TERRAIN"
 }
+/**
+ * @platform android
+ */
 export type GoogleMapsProperties = {
     /**
      * Whether the building layer is enabled on the map.
@@ -132,28 +143,31 @@ export type GoogleMapsProperties = {
     /**
      * Defines which map type should be used.
      */
-    mapType?: GoogleMapsType;
+    mapType?: GoogleMapsMapType;
     /**
      * If true, the user can select a location on the map to get more information.
-     * @platform ios
      */
     selectionEnabled?: boolean;
     /**
      * The maximum zoom level for the map.
-     * @platform android
      */
     maxZoomPreference?: number;
     /**
      * The minimum zoom level for the map.
-     * @platform android
      */
     minZoomPreference?: number;
 };
+/**
+ * @platform android
+ */
 export declare enum GoogleMapsColorScheme {
     LIGHT = "LIGHT",
     DARK = "DARK",
     FOLLOW_SYSTEM = "FOLLOW_SYSTEM"
 }
+/**
+ * @platform android
+ */
 export type GoogleMapsViewProps = {
     ref?: Ref<GoogleMapsViewType>;
     style?: StyleProp<ViewStyle>;
@@ -219,12 +233,18 @@ export type GoogleMapsViewProps = {
         bearing: number;
     }) => void;
 };
+/**
+ * @platform android
+ */
 export type SetCameraPositionConfig = CameraPosition & {
     /**
      * The duration of the animation in milliseconds.
      */
     duration?: number;
 };
+/**
+ * @platform android
+ */
 export type GoogleMapsViewType = {
     /**
      * Update camera position.
@@ -232,6 +252,9 @@ export type GoogleMapsViewType = {
      */
     setCameraPosition: (config?: SetCameraPositionConfig) => void;
 };
+/**
+ * @platform android
+ */
 export type GoogleStreetViewProps = {
     style?: StyleProp<ViewStyle>;
     position?: Coordinates;

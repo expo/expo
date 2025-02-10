@@ -14,8 +14,8 @@ export namespace GoogleMaps {
   export const View = GoogleMapsView;
   export const StreetView = GoogleStreetView;
 
-  export const MapType = GoogleTypes.GoogleMapsType;
-  export type MapType = GoogleTypes.GoogleMapsType;
+  export const MapType = GoogleTypes.GoogleMapsMapType;
+  export type MapType = GoogleTypes.GoogleMapsMapType;
 
   export const MapColorScheme = GoogleTypes.GoogleMapsColorScheme;
   export type MapColorScheme = GoogleTypes.GoogleMapsColorScheme;
@@ -26,6 +26,8 @@ export namespace GoogleMaps {
 
   export type MapProps = GoogleTypes.GoogleMapsViewProps;
   export type MapView = GoogleTypes.GoogleMapsViewType;
+
+  export type StreetViewProps = GoogleTypes.GoogleStreetViewProps;
 }
 
 /**
@@ -34,8 +36,8 @@ export namespace GoogleMaps {
 export namespace AppleMaps {
   export const View = AppleMapsView;
 
-  export const MapType = AppleTypes.AppleMapsType;
-  export type MapType = AppleTypes.AppleMapsType;
+  export const MapType = AppleTypes.AppleMapsMapType;
+  export type MapType = AppleTypes.AppleMapsMapType;
 
   export type Marker = AppleTypes.AppleMapsMarker;
   export type MapUISettings = AppleTypes.AppleMapsUISettings;

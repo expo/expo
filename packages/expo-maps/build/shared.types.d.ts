@@ -20,6 +20,9 @@ export type CameraPosition = {
      */
     zoom?: number;
 };
+/**
+ * @hidden
+ */
 export type MapsModule = {
     /**
      * Asks the user to grant permissions for location.
