@@ -84,6 +84,7 @@ With the `types` array, you can trigger the workflow only on the specified pull 
 - `opened`
 - `reopened`
 - `synchronize`
+- `labeled`
 
 ```yaml
 on:
@@ -97,6 +98,37 @@ on:
     types:
       - 'opened'
       # other event types
+```
+
+### `on.pull_request_labeled`
+
+Runs your workflow when a pull request is labeled with a matching label.
+
+With the `labels` array, you can specify which labels, when assigned to your pull request, will trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label will trigger the workflow. Defaults to `[]` when not provided, which means no labels will trigger the workflow.
+
+You can also provide the list of matching labels directly to `on.pull_request_labeled` for simpler syntax.
+
+```yaml
+on:
+  # @info #
+  pull_request_labeled:
+    # @end #
+    labels:
+      - 'Test'
+      - 'Preview'
+      # other labels
+```
+
+Alternatively:
+
+```yaml
+on:
+  # @info #
+  pull_request_labeled:
+    # @end #
+    - 'Test'
+    - 'Preview'
+    # other labels
 ```
 
 ## `jobs`
