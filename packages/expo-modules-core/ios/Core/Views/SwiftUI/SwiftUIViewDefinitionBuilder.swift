@@ -11,20 +11,6 @@ extension ExpoSwiftUI {
     }
 
     /**
-     Accepts `Events` definition element of `View`.
-     */
-    public static func buildExpression(_ element: EventsDefinition) -> AnyViewDefinitionElement {
-      return element
-    }
-
-    /**
-     Accepts `Prop` definition element and lets to skip defining the view type — it's inferred from the `View` definition.
-     */
-    public static func buildExpression<PropType: AnyArgument>(_ element: ConcreteViewProp<ViewType, PropType>) -> AnyViewDefinitionElement {
-      return element
-    }
-
-    /**
      Accepts functions as a view definition elements.
      */
     public static func buildExpression<ElementType: ViewDefinitionFunctionElement>(
