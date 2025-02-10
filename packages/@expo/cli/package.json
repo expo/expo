@@ -42,7 +42,7 @@
     "@0no-co/graphql.web": "^1.0.8",
     "@babel/runtime": "^7.20.0",
     "@expo/code-signing-certificates": "^0.0.5",
-    "@expo/config": "~10.0.8",
+    "@expo/config": "~10.0.9",
     "@expo/config-plugins": "~9.0.15",
     "@expo/devcert": "^1.1.2",
     "@expo/env": "~0.4.1",

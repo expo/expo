@@ -37,7 +37,7 @@
     "expo-module-scripts": "^4.0.3"
   },
   "dependencies": {
-    "@expo/config": "~10.0.8",
+    "@expo/config": "~10.0.9",
     "@expo/config-plugins": "~9.0.15",
     "@expo/config-types": "^52.0.4",
     "@expo/image-utils": "^0.6.4",
