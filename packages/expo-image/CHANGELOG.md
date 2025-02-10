@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Add headers to `loadAsync` requests. ([#34767](https://github.com/expo/expo/pull/34767) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 2.0.4 — 2025-01-10
