@@ -54,7 +54,9 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
             }
           }
 
-          onComplete(BarCodeScannerResult(barcode.format, barcode.displayValue, raw, cornerPoints, image.width, image.height))
+          val extra = parseExtraDate(barcode)
+
+          onComplete(BarCodeScannerResult(barcode.format, barcode.displayValue, raw, extra, cornerPoints, image.width, image.height))
         }
         .addOnFailureListener {
           Log.d("SCANNER", it.cause?.message ?: "Barcode scanning failed")
@@ -64,7 +66,6 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
         }
     }
   }
-
 
   private fun parseExtraDate(barcode: Barcode): Bundle {
     val result = Bundle()
