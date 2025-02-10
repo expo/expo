@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../src';
+import { ViewEvent } from '../../src/types';
 type AndroidVariant = 'picker' | 'input';
 type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
 type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';

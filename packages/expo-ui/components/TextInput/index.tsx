@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../src';
+import { ViewEvent } from '../../src/types';
 
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
 

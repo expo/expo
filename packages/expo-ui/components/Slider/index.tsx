@@ -1,7 +1,19 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../src';
+import { ViewEvent } from '../../src/types';
+
+/**
+ * Colors for slider's core elements.
+ * @platform android
+ */
+export type SliderElementColors = {
+  thumbColor?: string;
+  activeTrackColor?: string;
+  inactiveTrackColor?: string;
+  activeTickColor?: string;
+  inactiveTickColor?: string;
+};
 
 export type SliderProps = {
   /**
@@ -32,54 +44,29 @@ export type SliderProps = {
    * Colors for slider's core elements.
    * @platform android
    */
-  elementColors?: {
-    thumbColor?: string;
-    activeTrackColor?: string;
-    inactiveTrackColor?: string;
-    activeTickColor?: string;
-    inactiveTickColor?: string;
-  };
-  /**
-   * Slider color.
-   */
-  color?: string;
+  colors?: SliderElementColors;
   /**
    * Callback triggered on dragging along the slider.
    */
   onValueChange?: (value: number) => void;
 };
 
-type NativeSliderProps = Omit<SliderProps, 'onValueChange'> &
-  ViewEvent<'onValueChanged', { value: number }>;
-
-const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeView(
-  'ExpoUI',
-  'SliderView'
-);
-
-export function transformSliderProps(props: SliderProps): NativeSliderProps {
-  return {
-    ...props,
-    min: props.min ?? 0,
-    max: props.max ?? 1,
-    steps: props.steps ?? 0,
-    value: props.value ?? 0,
-    onValueChanged: ({ nativeEvent: { value } }) => {
-      props?.onValueChange?.(value);
-    },
-    elementColors: props.elementColors
-      ? props.elementColors
-      : props.color
-        ? {
-            thumbColor: props.color,
-            activeTrackColor: props.color,
-            activeTickColor: props.color,
-          }
-        : undefined,
-    color: props.color,
-  };
-}
+const SliderNativeView: React.ComponentType<
+  Omit<SliderProps, 'onValueChange'> & ViewEvent<'onValueChanged', { value: number }>
+> = requireNativeView('ExpoUI', 'SliderView');
 
 export function Slider(props: SliderProps) {
-  return <SliderNativeView {...transformSliderProps(props)} />;
+  return (
+    <SliderNativeView
+      {...props}
+      colors={{ ...props.colors }}
+      min={props.min ?? 0}
+      max={props.max ?? 1}
+      steps={props.steps ?? 0}
+      value={props.value ?? 0}
+      onValueChanged={({ nativeEvent: { value } }) => {
+        props?.onValueChange?.(value);
+      }}
+    />
+  );
 }
