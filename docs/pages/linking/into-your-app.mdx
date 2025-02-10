@@ -7,7 +7,7 @@ description: Learn how to handle an incoming URL in your React Native and Expo a
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-This guide provides steps to configure standard **deep links** in your project by adding a custom scheme. For production apps, you probably want to (also) set up app [Universal linking](/linking/overview/#universal-linking).
+This guide provides steps to configure standard **deep links** in your project by adding a custom scheme. For production apps, you probably want to (also) set up [Universal / App Links](/linking/overview/#universal-linking).
 
 ## Add a custom scheme in app config
 
@@ -116,4 +116,4 @@ export default function Home() {
 
 If a user does not have your app installed, deep links to your app will not work. Attribution services like [Branch](https://www.branch.io/deep-linking/) offer solutions for conditionally linking to your app or web page.
 
-Universal links is another solution you can use to handle such cases, in which the route to your web page determines whether or not the app is installed. For more details, see [Universal linking](/linking/overview/#universal-linking).
+Universal / App Links is another solution you can use to handle such cases. This type of linking allows your app to open when a user clicks follows a HTTP(S) link pointing to your web domain. If the user doesn't have your app installed, the link takes them to your website. For more details, see [universal linking](/linking/overview/#universal-linking).
