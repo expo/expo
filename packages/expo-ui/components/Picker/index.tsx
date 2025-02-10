@@ -24,10 +24,10 @@ export type PickerProps = {
   onOptionSelected?: (event: { nativeEvent: { index: number; label: string } }) => void;
   /**
    * The variant of the picker, which determines its appearance and behavior.
-   * The 'wheel' and 'menu' variants are iOS only.
+   * The 'wheel' and 'menu' variants are iOS only, the 'radio' variant is Android only.
    * @default 'segmented'
    */
-  variant?: 'wheel' | 'segmented' | 'menu';
+  variant?: 'wheel' | 'segmented' | 'menu' | 'radio';
   /**
    * Optional style to apply to the picker component.
    */
