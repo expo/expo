@@ -114,7 +114,7 @@ export default function App() {
   const record = async () => {
     await audioRecorder.prepareToRecordAsync();
     audioRecorder.record();
-  }
+  };
 
   const stopRecording = async () => {
     // The recording will be available on `audioRecorder.uri`.
