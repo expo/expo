@@ -61,11 +61,7 @@ export class DevServerManagerActions {
         Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
         if (options.devClient === false) {
           // TODO: if development build, change this message!
-          Log.log(
-            printItem(
-              'Scan the QR code with Expo Go (Android) or the Camera app (iOS) to open in Expo Go.'
-            )
-          );
+          Log.log(printItem('Scan the QR code above to open the project in Expo Go.'));
         } else {
           Log.log(
             printItem(
