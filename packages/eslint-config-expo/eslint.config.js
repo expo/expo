@@ -1,6 +1,6 @@
 const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
 const globals = require('globals');
-const expoConfig = require('./default');
+const expoConfig = require('./flat');
 
 module.exports = [
   ...expoConfig,

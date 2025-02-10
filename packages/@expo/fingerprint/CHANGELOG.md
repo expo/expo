@@ -10,7 +10,9 @@
 
 ### 🐛 Bug fixes
 
+- Run the React imports patcher for any platform if iOS sources are detected ([#34760](https://github.com/expo/expo/pull/34760) by [@capezzbr](https://github.com/capezzbr))
 - Fixed unstable fingerprint from `expoConfig` contents with absolute paths. ([#33926](https://github.com/expo/expo/pull/33926) by [@kudo](https://github.com/kudo))
+- Fix typo in help output and debug. ([#34766](https://github.com/expo/expo/pull/34766) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -18,6 +20,8 @@
 - Finish adding args to fingerprint CLI. ([#34045](https://github.com/expo/expo/pull/34045) by [@wschurman](https://github.com/wschurman))
 - Added `.env` support for `ExpoConfigLoader`. ([#33967](https://github.com/expo/expo/pull/33967) by [@kudo](https://github.com/kudo))
 - Add docs for @expo/fingerprint ([#34450](https://github.com/expo/expo/pull/34450) by [@wschurman](https://github.com/wschurman))
+- Added more default ignored paths for default template. ([#34695](https://github.com/expo/expo/pull/34695) by [@kudo](https://github.com/kudo))
+- Added `SourceSkips.ExpoConfigExtraSection`. ([#34697](https://github.com/expo/expo/pull/34697) by [@kudo](https://github.com/kudo))
 
 ## 0.11.6 - 2024-12-24
 

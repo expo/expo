@@ -10,8 +10,9 @@ function useNativeEvent(userHandler) {
         userHandler?.(event.nativeEvent);
     }, [userHandler]);
 }
-export function MapView({ onMapClick, onMarkerClick, onCameraMove, annotations, ...props }) {
+export function AppleMapsView({ onMapClick, onMarkerClick, onCameraMove, annotations, ...props }) {
     const onNativeMapClick = useNativeEvent(onMapClick);
+    const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const parsedAnnotations = annotations?.map((annotation) => ({
         ...annotation,
@@ -21,6 +22,6 @@ export function MapView({ onMapClick, onMarkerClick, onCameraMove, annotations, 
     if (!NativeView) {
         return null;
     }
-    return (<NativeView {...props} annotations={parsedAnnotations} onMapClick={onNativeMapClick} onCameraMove={onNativeCameraMove}/>);
+    return (<NativeView {...props} annotations={parsedAnnotations} onMapClick={onNativeMapClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove}/>);
 }
 //# sourceMappingURL=AppleMapsView.js.map

@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAsyncRoutes = exports.getInlineEnvVarsEnabled = exports.getExpoRouterAbsoluteAppRoot = exports.getIsServer = exports.getReactCompiler = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getIsReactServer = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
-const path_1 = __importDefault(require("path"));
+const node_path_1 = __importDefault(require("node:path"));
 function hasModule(name) {
     try {
         return !!require.resolve(name);
@@ -111,11 +111,11 @@ exports.getIsServer = getIsServer;
 function getExpoRouterAbsoluteAppRoot(caller) {
     assertExpoBabelCaller(caller);
     const rootModuleId = caller?.routerRoot ?? './app';
-    if (path_1.default.isAbsolute(rootModuleId)) {
+    if (node_path_1.default.isAbsolute(rootModuleId)) {
         return rootModuleId;
     }
     const projectRoot = getPossibleProjectRoot(caller) || '/';
-    return path_1.default.join(projectRoot, rootModuleId);
+    return node_path_1.default.join(projectRoot, rootModuleId);
 }
 exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
 function getInlineEnvVarsEnabled(caller) {

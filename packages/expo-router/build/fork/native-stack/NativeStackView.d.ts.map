@@ -1,0 +1,1 @@
+{"version":3,"file":"NativeStackView.d.ts","sourceRoot":"","sources":["../../../src/fork/native-stack/NativeStackView.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,IAAI,iBAAiB,EAAE,MAAM,gCAAgC,CAAC;AACtF,OAAO,EAAE,cAAc,EAAuB,MAAM,OAAO,CAAC;AAI5D,wBAAgB,eAAe,CAAC,KAAK,EAAE,cAAc,CAAC,OAAO,iBAAiB,CAAC,+BAM9E"}

@@ -3,9 +3,9 @@
 ## Unpublished
 
 ### 🛠 Breaking changes
-- Convert to flat config. ([#34029](https://github.com/expo/expo/pull/34371) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🎉 New features
+- Support flat config. ([#34653](https://github.com/expo/expo/pull/34653) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 

@@ -8,7 +8,7 @@ class SliderProps: ExpoSwiftUI.ViewProps {
   @Field var steps: Int = 0
   @Field var min: Float = 0.0
   @Field var max: Float = 1.0
-
+  @Field var color: Color?
   var onValueChanged = EventDispatcher()
 }
 
@@ -37,6 +37,7 @@ struct SliderView: ExpoSwiftUI.View {
         "value": newValue
       ])
     })
+    .tint(props.color)
     .onReceive(props.value.publisher, perform: { newValue in
       var sliderValue = newValue
       sliderValue = max(sliderValue, props.min)

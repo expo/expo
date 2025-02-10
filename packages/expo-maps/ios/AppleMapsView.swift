@@ -11,6 +11,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   let onMapClick = EventDispatcher()
+  let onMarkerClick = EventDispatcher()
   let onCameraMove = EventDispatcher()
 }
 
@@ -70,6 +71,7 @@ struct AppleMapsView: View {
             }
           }
         }
+        UserAnnotation()
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
@@ -95,6 +97,19 @@ struct AppleMapsView: View {
       }
       .onChange(of: props.cameraPosition) { _, newValue in
         mapCameraPosition = convertToMapCamera(position: newValue)
+      }
+      .onChange(of: selection) { _, newValue in
+        if let marker = props.markers.first(where: { $0.mapItem == newValue?.value }) {
+          props.onMarkerClick([
+            "title": marker.title,
+            "tintColor": marker.tintColor,
+            "systemImage": marker.systemImage,
+            "coordinates": [
+              "latitude": marker.coordinates.latitude,
+              "longitude": marker.coordinates.longitude
+            ]
+          ])
+        }
       }
       .onMapCameraChange(frequency: .onEnd) { context in
         let cameraPosition = context.region.center
