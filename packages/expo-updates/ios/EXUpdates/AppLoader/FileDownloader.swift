@@ -231,15 +231,15 @@ public final class FileDownloader {
     assetExtraHeaders: [String: Any]?
   ) -> [String: Any] {
     var extraHeaders: [String: Any] = assetExtraHeaders ?? [:]
-    if let launchedUpdate = launchedUpdate {
+    if let launchedUpdate {
       extraHeaders["Expo-Current-Update-ID"] = launchedUpdate.updateId.uuidString.lowercased()
     }
 
-    if let embeddedUpdate = embeddedUpdate {
+    if let embeddedUpdate {
       extraHeaders["Expo-Embedded-Update-ID"] = embeddedUpdate.updateId.uuidString.lowercased()
     }
 
-    if let requestedUpdate = requestedUpdate {
+    if let requestedUpdate {
       extraHeaders["Expo-Requested-Update-ID"] = requestedUpdate.updateId.uuidString.lowercased()
     }
 
