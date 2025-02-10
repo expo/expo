@@ -338,6 +338,9 @@ redirects[accounts/working-together]=accounts/account-types
 redirects[versions/latest/sdk/random]=versions/latest/sdk/crypto
 redirects[eas-update/known-issues]=eas-update/introduction
 
+# After consolidating the "Internal distribution" information
+redirects[guides/sharing-preview-releases]=build/internal-distribution
+
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

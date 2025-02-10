@@ -54,11 +54,11 @@ function getExpoDependencyChunks({
             'expo-audio',
             'expo-av',
             'expo-blur',
+            'expo-crypto',
             'expo-image',
             'expo-linear-gradient',
             'expo-linking',
             'expo-localization',
-            'expo-crypto',
             'expo-network',
             'expo-secure-store',
             'expo-symbols',
@@ -314,10 +314,10 @@ async function preparePackageJson(
 
   const extraDevDependencies = configureE2E
     ? {
-        '@config-plugins/detox': '^5.0.1',
+        '@config-plugins/detox': '^9.0.0',
         '@types/express': '^4.17.17',
         '@types/jest': '^29.4.0',
-        detox: '^20.4.0',
+        detox: '^20.33.0',
         express: '^4.18.2',
         'form-data': '^4.0.0',
         jest: '^29.3.1',
@@ -367,7 +367,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.76.6-0',
+        'react-native': 'npm:react-native-tvos@~0.77.0-0',
         '@react-native-tvos/config-tv': '^0.1.1',
       },
       expo: {
@@ -460,7 +460,15 @@ function transformAppJsonForE2E(
   runtimeVersion: string,
   isTV: boolean
 ) {
-  const plugins: any[] = ['expo-updates', '@config-plugins/detox'];
+  const plugins: any[] = [
+    'expo-updates',
+    [
+      '@config-plugins/detox',
+      {
+        subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
+      },
+    ],
+  ];
   if (isTV) {
     plugins.push([
       '@react-native-tvos/config-tv',
@@ -576,7 +584,15 @@ export function transformAppJsonForUpdatesDisabledE2E(
   projectName: string,
   runtimeVersion: string
 ) {
-  const plugins: any[] = ['expo-updates', '@config-plugins/detox'];
+  const plugins: any[] = [
+    'expo-updates',
+    [
+      '@config-plugins/detox',
+      {
+        subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
+      },
+    ],
+  ];
   return {
     ...appJson,
     expo: {
@@ -770,7 +786,7 @@ export async function initAsync(
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    '\nandroid.enableProguardInReleaseBuilds=true\nandroid.kotlinVersion=1.9.24\nEXPO_UPDATES_NATIVE_DEBUG=true',
+    '\nandroid.enableProguardInReleaseBuilds=true\nEXPO_UPDATES_NATIVE_DEBUG=true',
     'utf-8'
   );
 

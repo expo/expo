@@ -218,6 +218,10 @@ function normalizeExpoConfig(
     delete normalizedConfig.web?.splash;
   }
 
+  if (sourceSkips & SourceSkips.ExpoConfigExtraSection) {
+    delete normalizedConfig.extra;
+  }
+
   return relativizeJsonPaths(normalizedConfig, projectRoot);
 }
 

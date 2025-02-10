@@ -113,9 +113,11 @@ const DRAWABLES_CONFIGS = {
     dimensionsMultiplier: 4
   }
 };
-const withAndroidSplashImages = (config, props) => {
+const withAndroidSplashImages = (config, splash) => {
   return (0, _configPlugins().withDangerousMod)(config, ['android', async config => {
-    await setSplashImageDrawablesAsync(config, props, config.modRequest.projectRoot, props?.imageWidth ?? 200);
+    if (splash) {
+      await setSplashImageDrawablesAsync(config, splash, config.modRequest.projectRoot, splash?.imageWidth ?? 200);
+    }
     return config;
   }]);
 };
