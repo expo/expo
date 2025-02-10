@@ -9,7 +9,6 @@ import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.barcode.common.Barcode.BarcodeValueType
 import com.google.mlkit.vision.common.InputImage
 import expo.modules.camera.CameraViewHelper
 import expo.modules.camera.records.BarcodeType
