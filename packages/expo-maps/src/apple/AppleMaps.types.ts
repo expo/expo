@@ -1,11 +1,14 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { Coordinates } from '../shared.types';
+import { CameraPosition, Coordinates } from '../shared.types';
 
-export type Marker = {
+/**
+ * @platform ios
+ */
+export type AppleMapsMarker = {
   /**
-   * The SF symbol to display for the marker.
+   * The SF Symbol to display for the marker.
    */
   systemImage?: string;
 
@@ -25,20 +28,10 @@ export type Marker = {
   tintColor?: string;
 };
 
-export type CameraPosition = {
-  /**
-   * The middle point of the camera.
-   */
-  coordinates?: Coordinates;
-
-  /**
-   * The zoom level of the camera.
-   * For some view sizez, lower zoom levels might not be available.
-   */
-  zoom?: number;
-};
-
-export type MapUiSettings = {
+/**
+ * @platform ios
+ */
+export type AppleMapsUISettings = {
   /**
    * Whether the compass is enabled on the map.
    * If enabled, the compass is only visible when the map is rotated.
@@ -63,23 +56,27 @@ export type MapUiSettings = {
 
 /**
  * The type of map to display.
+ * @platform ios
  */
-export enum MapType {
+export enum AppleMapsMapType {
   /**
-   * Satellite imagery with roads and points of interest overlayed.
+   * A satellite image of the area with road and road name layers on top.
    */
   HYBRID = 'HYBRID',
   /**
-   * Standard road map.
+   * A street map that shows the position of all roads and some road names.
    */
   STANDARD = 'STANDARD',
   /**
-   * Satellite imagery.
+   * A satellite image of the area.
    */
   IMAGERY = 'IMAGERY',
 }
 
-export type MapProperties = {
+/**
+ * @platform ios
+ */
+export type AppleMapsProperties = {
   /**
    * Whether the traffic layer is enabled on the map.
    */
@@ -88,7 +85,7 @@ export type MapProperties = {
   /**
    * Defines which map type should be used.
    */
-  mapType?: MapType;
+  mapType?: AppleMapsMapType;
 
   /**
    * If true, the user can select a location on the map to get more information.
@@ -96,7 +93,10 @@ export type MapProperties = {
   selectionEnabled?: boolean;
 };
 
-export type Annotation = {
+/**
+ * @platform ios
+ */
+export type AppleMapsAnnotation = {
   /**
    * The background color of the annotation.
    */
@@ -113,9 +113,12 @@ export type Annotation = {
    * The custom icon to display in the annotation.
    */
   icon?: SharedRefType<'image'>;
-} & Marker;
+} & AppleMapsMarker;
 
-export type MapProps = {
+/**
+ * @platform ios
+ */
+export type AppleMapsViewProps = {
   style?: StyleProp<ViewStyle>;
 
   /**
@@ -126,22 +129,22 @@ export type MapProps = {
   /**
    * The array of markers to display on the map.
    */
-  markers?: Marker[];
+  markers?: AppleMapsMarker[];
 
   /**
    * The array of annotations to display on the map.
    */
-  annotations?: Annotation[];
+  annotations?: AppleMapsAnnotation[];
 
   /**
    * The `MapUiSettings` to be used for UI-specific settings on the map.
    */
-  uiSettings?: MapUiSettings;
+  uiSettings?: AppleMapsUISettings;
 
   /**
    * The properties for the map.
    */
-  properties?: MapProperties;
+  properties?: AppleMapsProperties;
 
   /**
    * Lambda invoked when the user clicks on the map.
@@ -152,7 +155,7 @@ export type MapProps = {
   /**
    * Lambda invoked when the marker is clicked
    */
-  onMarkerClick?: (event: Marker) => void;
+  onMarkerClick?: (event: AppleMapsMarker) => void;
 
   /**
    * Lambda invoked when the map was moved by the user.
