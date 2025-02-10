@@ -57,8 +57,8 @@ class AudioPlayer(
   private var visualizer: Visualizer? = null
   private var playing = false
 
-  val currentTime get() = player.currentPosition / 1000
-  val duration get() = if (player.duration != C.TIME_UNSET) player.duration / 1000 else 0
+  val currentTime get() = player.currentPosition.toFloat() / 1000
+  val duration get() = if (player.duration != C.TIME_UNSET) player.duration.toFloat() / 1000 else 0
 
   init {
     addPlayerListeners()
