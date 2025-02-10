@@ -2,7 +2,6 @@ package expo.modules.ui
 
 import android.content.Context
 import android.graphics.Color
-import android.os.Build
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Slider
