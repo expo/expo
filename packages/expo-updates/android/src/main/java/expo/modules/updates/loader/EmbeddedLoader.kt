@@ -73,6 +73,7 @@ class EmbeddedLoader internal constructor(
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
     requestedUpdate: UpdateEntity?,
+    embeddedUpdate: UpdateEntity?,
     callback: AssetDownloadCallback
   ) {
     val filename = UpdatesUtils.createFilenameForAsset(assetEntity)

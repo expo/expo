@@ -205,7 +205,7 @@ class DatabaseLauncher(
       // we still don't have the asset locally, so try downloading it remotely
       assetsToDownload++
 
-      val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(asset, launchedUpdate, embeddedUpdate?.updateEntity, requestedUpdate)
+      val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate?.updateEntity, requestedUpdate)
       fileDownloader.downloadAsset(
         asset,
         updatesDirectory,

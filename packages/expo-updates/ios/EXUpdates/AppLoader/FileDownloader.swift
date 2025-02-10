@@ -227,10 +227,9 @@ public final class FileDownloader {
   static func extraHeadersForRemoteAssetRequest(
     launchedUpdate: Update?,
     embeddedUpdate: Update?,
-    requestedUpdate: Update?,
-    assetExtraHeaders: [String: Any]?
+    requestedUpdate: Update?
   ) -> [String: Any] {
-    var extraHeaders: [String: Any] = assetExtraHeaders ?? [:]
+    var extraHeaders: [String: Any] = [:]
     if let launchedUpdate {
       extraHeaders["Expo-Current-Update-ID"] = launchedUpdate.updateId.uuidString.lowercased()
     }
