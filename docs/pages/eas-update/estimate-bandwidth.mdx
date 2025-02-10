@@ -13,7 +13,7 @@ Each billing cycle includes a predefined bandwidth allocation, which translates 
 
 - **Update Size:** The key factor in bandwidth consumption is the size of each update. For example, if an update modifies only the JavaScript portion of your app and is **10 MB uncompressed**, we can further optimize this with compression.
 - **Compression Ratio:** Hermes bytecode, commonly used in React Native apps, achieves an estimated **2.6× compression ratio**. This means the actual downloaded update size is approximately:
-  
+
   ```text
   10 MB / 2.6 ≈ 3.85 MB per update
   ```
@@ -46,6 +46,3 @@ Actual bandwidth usage varies due to:
 
 1. **Minimize Update Size:** Avoid bundling unnecessary assets in updates.
 2. **Monitor Usage:** Check your bandwidth metrics to detect unusual spikes or inefficiencies.
-
-
-
