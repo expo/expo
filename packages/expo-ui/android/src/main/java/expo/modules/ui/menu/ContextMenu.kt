@@ -65,7 +65,7 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
               if (it.variant == "checkbox") {
                 Checkbox(
-                  checked = it.checked,
+                  checked = it.value,
                   onCheckedChange = null,
                   modifier = Modifier
                     .padding(horizontal = 5.dp)
@@ -73,7 +73,7 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
                 )
               } else {
                 Switch(
-                  checked = it.checked,
+                  checked = it.value,
                   onCheckedChange = null,
                   modifier = Modifier
                     .padding(start = 5.dp)
@@ -86,7 +86,7 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
         modifier = Modifier.wrapContentSize(Alignment.Center),
         onClick = {
           dispatchers.switchCheckedChanged(
-            ContextMenuSwitchCheckedChangedEvent(!it.checked, id)
+            ContextMenuSwitchValueChangeEvent(!it.value, id)
           )
         }
       )
@@ -101,14 +101,14 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
 
 data class ContextMenuDispatchers(
   val buttonPressed: ViewEventCallback<ContextMenuButtonPressedEvent>,
-  val switchCheckedChanged: ViewEventCallback<ContextMenuSwitchCheckedChangedEvent>
+  val switchCheckedChanged: ViewEventCallback<ContextMenuSwitchValueChangeEvent>
 )
 
 class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<ContextMenuProps>(context, appContext) {
   override val props = ContextMenuProps()
   val expanded = mutableStateOf(false)
   val onContextMenuButtonPressed by EventDispatcher<ContextMenuButtonPressedEvent>()
-  val onContextMenuSwitchCheckedChanged by EventDispatcher<ContextMenuSwitchCheckedChangedEvent>()
+  val onContextMenuSwitchValueChanged by EventDispatcher<ContextMenuSwitchValueChangeEvent>()
 
   val gestureDetector = GestureDetector(
     context,
@@ -150,7 +150,7 @@ class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<Co
             null,
             dispatchers = ContextMenuDispatchers(
               buttonPressed = onContextMenuButtonPressed,
-              switchCheckedChanged = onContextMenuSwitchCheckedChanged
+              switchCheckedChanged = onContextMenuSwitchValueChanged
             )
           )
         }

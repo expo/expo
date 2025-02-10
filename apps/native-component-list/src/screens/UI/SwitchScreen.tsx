@@ -4,16 +4,14 @@ import * as React from 'react';
 import { Page, Section } from '../../components/Page';
 
 export default function SwitchScreen() {
-  const [checked, setChecked] = React.useState<boolean>(false);
+  const [checked, setChecked] = React.useState<boolean>(true);
   return (
     <Page>
       <Section title="Switch">
         <Switch
-          checked={checked}
+          value={checked}
           style={{ width: 300, height: 50 }}
-          onCheckedChanged={({ nativeEvent: { checked } }) => {
-            setChecked(checked);
-          }}
+          onValueChange={setChecked}
           color="#ff0000"
           label="Never gonna give you up"
           variant="switch"
@@ -21,11 +19,9 @@ export default function SwitchScreen() {
       </Section>
       <Section title="Checkbox Switch">
         <Switch
-          checked={checked}
+          value={checked}
           style={{ width: 300, height: 50 }}
-          onCheckedChanged={({ nativeEvent: { checked } }) => {
-            setChecked(checked);
-          }}
+          onValueChange={setChecked}
           label="Never gonna let you down"
           color="#ff0000"
           variant="checkbox"
@@ -33,11 +29,9 @@ export default function SwitchScreen() {
       </Section>
       <Section title="Button Switch">
         <Switch
-          checked={checked}
+          value={checked}
           style={{ width: 300, height: 50 }}
-          onCheckedChanged={({ nativeEvent: { checked } }) => {
-            setChecked(checked);
-          }}
+          onValueChange={setChecked}
           label="Never gonna run around and desert you"
           variant="button"
         />

@@ -7,7 +7,7 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.ui.button.ButtonVariant
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.ui.CheckedChangedEvent
+import expo.modules.ui.ValueChangeEvent
 import expo.modules.ui.button.ButtonPressedEvent
 import java.io.Serializable
 
@@ -40,7 +40,7 @@ class ContextMenuButtonProps(
 ) : Record, Serializable
 
 class ContextMenuSwitchProps(
-  @Field val checked: Boolean = false,
+  @Field val value: Boolean = false,
   @Field val label: String = "",
   @Field var variant: String = ""
 ) : Record, Serializable
@@ -49,7 +49,7 @@ open class ContextMenuButtonPressedEvent(
   @Field val contextMenuElementID: String
 ) : ButtonPressedEvent()
 
-class ContextMenuSwitchCheckedChangedEvent(
-  @Field override val checked: Boolean = false,
+class ContextMenuSwitchValueChangeEvent(
+  @Field override val value: Boolean = false,
   @Field val contextMenuElementID: String
-) : CheckedChangedEvent()
+) : ValueChangeEvent()
