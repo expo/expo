@@ -35,14 +35,8 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
         const { message } = await (0, SpawnIPC_1.spawnWithIpcAsync)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
         const stdoutJson = JSON.parse(message);
         config = stdoutJson.config;
-        expoConfig = normalizeExpoConfig(config.exp, options);
+        expoConfig = normalizeExpoConfig(config.exp, projectRoot, options);
         loadedModules = stdoutJson.loadedModules;
-        results.push({
-            type: 'contents',
-            id: 'expoConfig',
-            contents: (0, Utils_1.stringifyJsonSorted)(expoConfig),
-            reasons: ['expoConfig'],
-        });
     }
     catch (e) {
         if (e instanceof Error) {
@@ -109,6 +103,13 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
         return result;
     }))).filter(Boolean);
     results.push(...externalFileSources);
+    expoConfig = postUpdateExpoConfig(expoConfig, projectRoot);
+    results.push({
+        type: 'contents',
+        id: 'expoConfig',
+        contents: (0, Utils_1.stringifyJsonSorted)(expoConfig),
+        reasons: ['expoConfig'],
+    });
     // config plugins
     const configPluginModules = loadedModules.map((modulePath) => ({
         type: 'file',
@@ -119,7 +120,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     return results;
 }
 exports.getExpoConfigSourcesAsync = getExpoConfigSourcesAsync;
-function normalizeExpoConfig(config, options) {
+function normalizeExpoConfig(config, projectRoot, options) {
     // Deep clone by JSON.parse/stringify that assumes the config is serializable.
     const normalizedConfig = JSON.parse(JSON.stringify(config));
     const { sourceSkips } = options;
@@ -176,7 +177,22 @@ function normalizeExpoConfig(config, options) {
         delete normalizedConfig.web?.favicon;
         delete normalizedConfig.web?.splash;
     }
-    return normalizedConfig;
+    if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigExtraSection) {
+        delete normalizedConfig.extra;
+    }
+    return (0, Utils_1.relativizeJsonPaths)(normalizedConfig, projectRoot);
+}
+/**
+ * Gives the last chance to modify the ExpoConfig.
+ * For example, we can remove some fields that are already included in the fingerprint.
+ */
+function postUpdateExpoConfig(config, projectRoot) {
+    // The config is already a clone, so we can modify it in place for performance.
+    // googleServicesFile may contain absolute paths on EAS with file-based secrets.
+    // Given we include googleServicesFile as external files already, we can remove it from the config.
+    delete config.android?.googleServicesFile;
+    delete config.ios?.googleServicesFile;
+    return config;
 }
 /**
  * Create a temporary file with ignored paths from options that will be read by the ExpoConfigLoader.

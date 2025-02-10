@@ -3,6 +3,7 @@ package expo.modules.ui
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.ui.button.Button
+import expo.modules.ui.menu.ContextMenu
 
 class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -14,7 +15,7 @@ class ExpoUIModule : Module() {
     }
 
     View(SwitchView::class) {
-      Events("onCheckedChanged")
+      Events("onValueChange")
     }
 
     View(Button::class) {
@@ -23,6 +24,15 @@ class ExpoUIModule : Module() {
 
     View(SliderView::class) {
       Events("onValueChanged")
+    }
+
+    View(ContextMenu::class) {
+      Events(
+        "onContextMenuButtonPressed",
+        "onContextMenuPickerOptionSelected",
+        "onContextMenuSwitchValueChanged",
+        "onExpandedChanged"
+      )
     }
   }
 }

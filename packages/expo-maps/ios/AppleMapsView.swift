@@ -11,6 +11,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   let onMapClick = EventDispatcher()
+  let onMarkerClick = EventDispatcher()
   let onCameraMove = EventDispatcher()
 }
 
@@ -33,8 +34,6 @@ struct AppleMapsView: View {
   @State private var mapCameraPosition: MapCameraPosition = .automatic
   @State var selection: MapSelection<MKMapItem>?
 
-  @Namespace var mapScope
-
   var body: some View {
     let properties = props.properties
     let uiSettings = props.uiSettings
@@ -44,30 +43,35 @@ struct AppleMapsView: View {
       Map(position: $mapCameraPosition, selection: $selection) {
         ForEach(props.markers) { marker in
           Marker(
-            coordinate: marker.clLocationCoordinate2D,
-            label: { Text(marker.title) }
+            marker.title,
+            systemImage: marker.systemImage,
+            coordinate: marker.clLocationCoordinate2D
           )
+          .tint(marker.tintColor)
           .tag(MapSelection(marker.mapItem))
         }
 
         ForEach(props.annotations) { annotation in
-          let coordinates = annotation.coordinates
           Annotation(
             annotation.title,
-            coordinate: CLLocationCoordinate2D(
-              latitude: coordinates.latitude,
-              longitude: coordinates.longitude
-            )
+            coordinate: annotation.clLocationCoordinate2D
           ) {
             ZStack {
-              RoundedRectangle(cornerRadius: 5)
-                .fill(annotation.backgroundColor)
+              if let icon = annotation.icon {
+                Image(uiImage: icon.ref)
+                  .resizable()
+                  .frame(width: 50, height: 50)
+              } else {
+                RoundedRectangle(cornerRadius: 5)
+                  .fill(annotation.backgroundColor)
+              }
               Text(annotation.text)
                 .foregroundStyle(annotation.textColor)
                 .padding(5)
             }
           }
         }
+        UserAnnotation()
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
@@ -93,6 +97,19 @@ struct AppleMapsView: View {
       }
       .onChange(of: props.cameraPosition) { _, newValue in
         mapCameraPosition = convertToMapCamera(position: newValue)
+      }
+      .onChange(of: selection) { _, newValue in
+        if let marker = props.markers.first(where: { $0.mapItem == newValue?.value }) {
+          props.onMarkerClick([
+            "title": marker.title,
+            "tintColor": marker.tintColor,
+            "systemImage": marker.systemImage,
+            "coordinates": [
+              "latitude": marker.coordinates.latitude,
+              "longitude": marker.coordinates.longitude
+            ]
+          ])
+        }
       }
       .onMapCameraChange(frequency: .onEnd) { context in
         let cameraPosition = context.region.center

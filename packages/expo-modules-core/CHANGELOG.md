@@ -9,11 +9,14 @@
 - [Android] Added support for Jetpack Compose views. ([#33759](https://github.com/expo/expo/pull/33759) by [@aleqsio](https://github.com/aleqsio))
 - support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
 - Implemented dispatching events by SwiftUI views. ([#33860](https://github.com/expo/expo/pull/33860) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Support returning `SharedObject`s from a `Promise`. ([#34655](https://github.com/expo/expo/pull/34655) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
+- [Android] Fixes compose views disappearing on navigation. ([#34689](https://github.com/expo/expo/pull/34689) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fixes view managers not deallocating when reloading. ([#33760](https://github.com/expo/expo/pull/33760) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fixes `AppContext` is lost in nested converters. ([#34373](https://github.com/expo/expo/pull/34373) by [@lukmccall](https://github.com/lukmccall))
+- Fixed **AppDelegate.mm** methods not be called on iOS. ([#34464](https://github.com/expo/expo/pull/34464) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -27,6 +30,7 @@
 - Show `UnimplementedExpoView` in place of SwiftUI views when the New Architecture is not enabled. ([#33901](https://github.com/expo/expo/pull/33901) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Use REACT_NATIVE_PATH to determine react-native version ([#34042](https://github.com/expo/expo/pull/34042) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Allowed extending `process.env` types. ([#34112](https://github.com/expo/expo/pull/34112) by [@kudo](https://github.com/kudo))
+- [Android] Started using expo modules gradle plugin.
 
 ### ⚠️ Notices
 

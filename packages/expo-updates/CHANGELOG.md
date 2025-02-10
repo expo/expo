@@ -9,17 +9,23 @@
 ### 🎉 New features
 
 - Add new state machine context about startup procedure. ([#32433](https://github.com/expo/expo/pull/32433) by [@wschurman](https://github.com/wschurman))
+- Add `Updates.setUpdateURLAndRequestHeadersOverride()` to allow overriding update URL configuration from the JS API. ([#34422](https://github.com/expo/expo/pull/34422), [#34423](https://github.com/expo/expo/pull/34423), [#34425](https://github.com/expo/expo/pull/34425), [#34426](https://github.com/expo/expo/pull/34426), [#34454](https://github.com/expo/expo/pull/34454), [#34455](https://github.com/expo/expo/pull/34455), [#34428](https://github.com/expo/expo/pull/34428), [#34404](https://github.com/expo/expo/pull/34404) by [@kudo](https://github.com/kudo), [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
 - Fix an issue where `launchFallbackUpdateFromDisk` is called from a foreground thread leading to ANRs. ([#33693](https://github.com/expo/expo/pull/33693) by [@alanjhughes](https://github.com/alanjhughes))
 - [android] Use more robust mechanism for determining empty multipart bodies. ([#33977](https://github.com/expo/expo/pull/33977) by [@wschurman](https://github.com/wschurman))
 - fix E2E tests in Detox debug build ([#32951](https://github.com/expo/expo/pull/32951) by [@matejkriz](https://github.com/matejkriz))
+- Fix issue where syncing codesigning config for bare projects would clobber existing Expo.plist config ([#34597](https://github.com/expo/expo/pull/34597) by [@brentvatne](https://github.com/brentvatne))
+- Removed Apache Commons IO dependency and fixed crash issue on Android 7. ([#34638](https://github.com/expo/expo/pull/34638) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - [Android] Made ReactNativeFeatureFlags a parameter to the constructor of the ErrorRecovery class to be able to make tests pass ([#34363](https://github.com/expo/expo/pull/34363) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Inject logger from controllers down to dependent objects. ([#34035](https://github.com/expo/expo/pull/34035) by [@wschurman](https://github.com/wschurman))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Fixed build error on iOS Expo Go. ([#34485](https://github.com/expo/expo/pull/34485) by [@kudo](https://github.com/kudo))
+- Fixed Android unit test errors in BuilDataTest. ([#34510](https://github.com/expo/expo/pull/34510) by [@kudo](https://github.com/kudo))
 
 ## 0.26.10 - 2024-12-05
 

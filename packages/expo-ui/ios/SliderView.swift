@@ -8,7 +8,7 @@ class SliderProps: ExpoSwiftUI.ViewProps {
   @Field var steps: Int = 0
   @Field var min: Float = 0.0
   @Field var max: Float = 1.0
-
+  @Field var color: Color?
   var onValueChanged = EventDispatcher()
 }
 
@@ -26,6 +26,7 @@ struct SliderView: ExpoSwiftUI.View {
   @State var value: Float = 0.0
 
   var body: some View {
+    #if !os(tvOS)
     Slider(value: $value, in: props.min...props.max, step: getStep(props.min, props.max, props.steps) )
     .onChange(of: value, perform: { newValue in
       if props.value == newValue {
@@ -36,11 +37,15 @@ struct SliderView: ExpoSwiftUI.View {
         "value": newValue
       ])
     })
+    .tint(props.color)
     .onReceive(props.value.publisher, perform: { newValue in
       var sliderValue = newValue
       sliderValue = max(sliderValue, props.min)
       sliderValue = min(sliderValue, props.max)
       value = sliderValue
     })
+    #else
+    Text("Slider not supported on this platform")
+    #endif
   }
 }

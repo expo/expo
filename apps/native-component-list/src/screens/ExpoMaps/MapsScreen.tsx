@@ -30,6 +30,22 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Maps permissions',
+      route: 'expo-maps/permissions',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsPermissionsScreen'));
+      },
+    },
+    {
+      name: 'Maps custom location',
+      route: 'expo-maps/custom-location',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsUserLocationScreen'));
+      },
+    },
+    {
       name: 'Maps UI settings',
       route: 'expo-maps/ui-settings',
       options: {},
@@ -61,6 +77,14 @@ export const MapsScreens = Platform.select({
         return optionalRequire(() => require('./google/MapsImageRefIntegrationScreen'));
       },
     },
+    {
+      name: 'Street view',
+      route: 'expo-maps/street-view',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsStreetViewScreen'));
+      },
+    },
   ],
   ios: [
     {
@@ -85,6 +109,14 @@ export const MapsScreens = Platform.select({
       options: {},
       getComponent() {
         return optionalRequire(() => require('./apple/MapsPropertiesScreen'));
+      },
+    },
+    {
+      name: 'Maps permissions',
+      route: 'expo-maps/permissions',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsPermissionsScreen'));
       },
     },
     {
@@ -120,7 +152,7 @@ export const MapsScreens = Platform.select({
       },
     },
     {
-      name: 'Marker with custom image',
+      name: 'Annotation with custom image',
       route: 'expo-maps/image-ref',
       options: {},
       getComponent() {

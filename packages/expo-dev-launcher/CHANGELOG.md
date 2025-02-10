@@ -10,14 +10,17 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed issue with initialization of the dev client being wrong on the old architecture ([#34398](https://github.com/expo/expo/pull/34398) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fixed black stuck screen when loading an unreachable server from last opened url. ([#34067](https://github.com/expo/expo/pull/34067) by [@kudo](https://github.com/kudo))
 - [iOS] Read EAS project id and url from manifest instead of updates interface. ([#34342](https://github.com/expo/expo/pull/34342) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Read EAS project id and url from AndroidManifest instead of updates interface. ([#34342](https://github.com/expo/expo/pull/34342) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
 - [6/n] upgrade to react-native 0.77 - improve 0.76 compatibility ([#34078](https://github.com/expo/expo/pull/34078) by [@vonovak](https://github.com/vonovak))
 - Fixed broken local UI development on Android. ([#33714](https://github.com/expo/expo/pull/33714) by [@kudo](https://github.com/kudo))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 
 ## 5.0.21 - 2024-12-24
 

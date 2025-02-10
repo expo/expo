@@ -5,6 +5,11 @@ import { Coordinates } from '../shared.types';
 
 export type Marker = {
   /**
+   * The SF symbol to display for the marker.
+   */
+  systemImage?: string;
+
+  /**
    * The coordinates of the marker.
    */
   coordinates?: Coordinates;
@@ -15,9 +20,9 @@ export type Marker = {
   title?: string;
 
   /**
-   * The custom icon to display for the marker.
+   * The tint color of the marker.
    */
-  icon?: SharedRefType<'image'>;
+  tintColor?: string;
 };
 
 export type CameraPosition = {
@@ -92,9 +97,22 @@ export type MapProperties = {
 };
 
 export type Annotation = {
+  /**
+   * The background color of the annotation.
+   */
   backgroundColor?: string;
+  /**
+   * The text to display in the annotation.
+   */
   text?: string;
+  /**
+   * The text color of the annotation.
+   */
   textColor?: string;
+  /**
+   * The custom icon to display in the annotation.
+   */
+  icon?: SharedRefType<'image'>;
 } & Marker;
 
 export type MapProps = {

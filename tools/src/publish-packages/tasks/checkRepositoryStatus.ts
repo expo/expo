@@ -1,12 +1,11 @@
 import chalk from 'chalk';
-import inquirer from 'inquirer';
 
 import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
-const { cyan, yellow, blue } = chalk;
+const { cyan, blue } = chalk;
 
 /**
  * Checks whether the current branch is correct and working dir is not dirty.
@@ -68,20 +67,9 @@ async function checkBranchNameAsync(branchName: string) {
     return true;
   }
 
-  logger.warn(
-    '⚠️ ',
-    `It's recommended to publish from ${blue('main')} branch, while you're at ${blue(branchName)}`
-  );
+  logger.warn('💡', `You are publishing from the ${blue(branchName)}.`);
 
-  const { confirmed } = await inquirer.prompt<{ confirmed: boolean }>([
-    {
-      type: 'confirm',
-      name: 'confirmed',
-      prefix: yellow('⚠️ '),
-      message: yellow(`Do you want to proceed?`),
-      default: true,
-    },
-  ]);
+  // Insert any validation here if needed in the future.
   logger.log();
-  return confirmed;
+  return true;
 }

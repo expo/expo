@@ -40,7 +40,6 @@ const easDirectories = [
   'eas-insights',
   'distribution',
   'custom-builds',
-  'eas-workflows',
   'hosting',
   'billing',
   'accounts',
@@ -67,7 +66,7 @@ const generalDirectories = fs
 
 // --- Navigation ---
 
-const home = [
+export const home = [
   makeSection('Get started', [
     makePage('get-started/introduction.mdx'),
     makePage('get-started/create-a-project.mdx'),
@@ -150,7 +149,7 @@ const home = [
   makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
 
-const general = [
+export const general = [
   makeSection('', [makePage('guides/overview.mdx')]),
   makeSection('Development process', [
     makePage('workflow/overview.mdx'),
@@ -325,7 +324,6 @@ const general = [
       makePage('workflow/upgrading-expo-sdk-walkthrough.mdx'),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
-        makePage('guides/sharing-preview-releases.mdx'),
         makePage('guides/using-hermes.mdx'),
         makePage('guides/ios-developer-mode.mdx'),
         makePage('guides/icons.mdx'),
@@ -371,7 +369,7 @@ const general = [
   ]),
 ];
 
-const eas = [
+export const eas = [
   makeSection(
     '',
     [
@@ -384,11 +382,9 @@ const eas = [
     }
   ),
   makeSection('EAS Workflows', [
-    makePage('eas-workflows/get-started.mdx'),
-    makePage('eas-workflows/triggers.mdx'),
-    makePage('eas-workflows/jobs.mdx'),
-    makePage('eas-workflows/control-flow.mdx'),
-    makePage('eas-workflows/variables.mdx'),
+    makePage('eas/workflows/get-started.mdx'),
+    makePage('eas/workflows/examples.mdx'),
+    makePage('eas/workflows/syntax.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
@@ -501,6 +497,7 @@ const eas = [
       makePage('eas-update/standalone-service.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/migrate-from-classic-updates.mdx'),
+      makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/faq.mdx'),
     ]),
   ]),
@@ -545,7 +542,7 @@ const eas = [
   ]),
 ];
 
-const learn = [
+export const learn = [
   makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
     'Expo tutorial',
@@ -665,7 +662,7 @@ const versionsReference = VERSIONS.reduce(
   {}
 );
 
-const reference = { ...versionsReference, latest: versionsReference['latest'] };
+export const reference = { ...versionsReference, latest: versionsReference['latest'] };
 
 export default {
   home,

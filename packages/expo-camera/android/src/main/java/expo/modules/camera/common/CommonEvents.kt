@@ -10,7 +10,8 @@ class BarcodeScannedEvent(
   @Field val raw: String,
   @Field val type: String,
   @Field val cornerPoints: ArrayList<Bundle>,
-  @Field val bounds: Bundle
+  @Field val bounds: Bundle,
+  @Field val extra: Bundle?
 ) : Record
 
 class CameraMountErrorEvent(

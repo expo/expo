@@ -49,7 +49,7 @@ The remote service must implement the [Expo Updates protocol](/technical-specs/e
 
 There are build-time configuration options that control the behavior of the library. For most apps, these configuration values are set in the [app config](/workflow/configuration/) under the [`updates` property](../config/app/#updates).
 
-| [App Config property](../config/app/#updates)                                 | Default  | Required?   | iOS plist/dictionary key          | Android meta-data name                                           | Android Map key          |
+| [App config property](../config/app/#updates)                                 | Default  | Required?   | iOS plist/dictionary key          | Android meta-data name                                           | Android Map key          |
 | ----------------------------------------------------------------------------- | -------- | ----------- | --------------------------------- | ---------------------------------------------------------------- | ------------------------ |
 | [`updates.enabled`](../config/app/#enabled)                                   | `true`   | <NoIcon />  | `EXUpdatesEnabled`                | `expo.modules.updates.ENABLED`                                   | `enabled`                |
 | [`updates.url`](../config/app/#url)                                           | (none)   | <YesIcon /> | `EXUpdatesURL`                    | `expo.modules.updates.EXPO_UPDATE_URL`                           | `updateUrl`              |
@@ -181,7 +181,7 @@ The `"fingerprint"` runtime version policy automatically calculates the runtime 
 }
 ```
 
-This policy works for both projects with and without custom native code. It works by using the `@expo/fingerprint` package to calculate the hash of your project during builds and updates to determine build-update compatibility (also known as the runtime).
+This policy works for both projects with and without custom native code. It works by using the [`@expo/fingerprint`](fingerprint) package to calculate the hash of your project during builds and updates to determine build-update compatibility (also known as the runtime).
 
 </Collapsible>
 

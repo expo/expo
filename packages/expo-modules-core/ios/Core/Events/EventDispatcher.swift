@@ -21,6 +21,8 @@ public final class EventDispatcher {
    */
   internal var handler: Handler?
 
+  public var onEventSent: (([String: Any]) -> Void)?
+
   /**
    Default initializer of the event dispatcher. Provide a custom name if you want the dispatcher
    to refer to an event with different name than the property holding the dispatcher.
@@ -36,6 +38,7 @@ public final class EventDispatcher {
    */
   public func callAsFunction(_ payload: [String: Any]) {
     handler?(payload)
+    onEventSent?(payload)
   }
 
   /**
@@ -43,6 +46,7 @@ public final class EventDispatcher {
    */
   public func callAsFunction(_ payload: Record) {
     handler?(payload.toDictionary())
+    onEventSent?(payload.toDictionary())
   }
 
   /**
@@ -50,6 +54,7 @@ public final class EventDispatcher {
    */
   public func callAsFunction() {
     handler?([:])
+    onEventSent?([:])
   }
 }
 

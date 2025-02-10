@@ -131,14 +131,6 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "contents",
   },
   {
-    "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#ffffff","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"fingerprint-e2e-managed","orientation":"portrait","platforms":["android","ios"],"sdkVersion":"49.0.0","slug":"fingerprint-e2e-managed","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
-    "id": "expoConfig",
-    "reasons": [
-      "expoConfig",
-    ],
-    "type": "contents",
-  },
-  {
     "filePath": "./assets/icon.png",
     "reasons": [
       "expoConfigExternalFile",
@@ -158,6 +150,14 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoConfigExternalFile",
     ],
     "type": "file",
+  },
+  {
+    "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#ffffff","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"fingerprint-e2e-managed","orientation":"portrait","platforms":["android","ios"],"sdkVersion":"49.0.0","slug":"fingerprint-e2e-managed","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+    "id": "expoConfig",
+    "reasons": [
+      "expoConfig",
+    ],
+    "type": "contents",
   },
   {
     "filePath": ".gitignore",

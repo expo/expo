@@ -45,7 +45,7 @@ jobs:
 
       - name: Install Maestro
         run: |
-          export MAESTRO_VERSION=1.36.0
+          export MAESTRO_VERSION=1.39.9
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 

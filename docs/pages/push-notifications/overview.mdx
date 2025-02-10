@@ -5,50 +5,53 @@ description: An overview of Expo push notification service.
 hideTOC: true
 ---
 
-import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
+import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { NotificationsVideo } from '~/ui/components/NotificationsVideo';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Expo simplifies implementing push notifications by handling much of the complexity involved in communicating with Firebase Cloud Messaging (FCM) or Apple Push Notification Service (APNs). This allows you to treat Android and iOS notifications in the same way and save time both on the front-end and back-end.
 
 Follow the video or links below to learn how to set up push notifications, send them, and handle incoming notifications in your app.
 
-<NotificationsVideo />
-
+<VideoBoxLink
+  videoId="BCCjGtKtBjE"
+  title="Expo Notifications with EAS | Complete Guide"
+  description="Learn how to set up push notifications in an Expo project. This video covers configuring Firebase for FCM v1 on Android, setting up Android and iOS credentials on EAS, building with EAS Build, and testing with Expo Notifications tool."
+/>
 <br />
 
 <BoxLink
   title="What you need to know about notifications"
   description="Different kinds of notifications and notification behaviors you need to know before you get started."
   href="/push-notifications/what-you-need-to-know"
-  Icon={Bell03Icon}
+  Icon={NotificationBoxIcon}
 />
 
 <BoxLink
   title="Set up push notifications, get a push token and credentials"
   description="All you need to do to get started quickly."
   href="/push-notifications/push-notifications-setup"
-  Icon={Bell03Icon}
+  Icon={NotificationBoxIcon}
 />
 
 <BoxLink
   title="Send push notifications"
   description="See how to call Expo Push Service API to send push notifications from your server."
   href="/push-notifications/sending-notifications"
-  Icon={Bell03Icon}
+  Icon={NotificationBoxIcon}
 />
 
 <BoxLink
   title="Handle incoming notifications"
   description="Learn how to respond to a notification received by your app and take an action based on the event."
   href="/push-notifications/receiving-notifications"
-  Icon={Bell03Icon}
+  Icon={NotificationBoxIcon}
 />
 
 <BoxLink
   title="Troubleshooting and Frequently asked questions (FAQ)"
   description="A collection of common questions about Expo's push notification service."
   href="/push-notifications/faq"
-  Icon={Bell03Icon}
+  Icon={NotificationBoxIcon}
 />

@@ -17,6 +17,8 @@ import {
 } from '~/ui/components/ConfigSection';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
+> **warning** The `Video` and `Audio` APIs from `expo-av` are being replaced by improved versions in [expo-video](video.mdx) and [expo-audio](audio.mdx). We recommend using those libraries instead, `expo-av` is not receiving patches and will be removed in an upcoming release.
+
 The [`Audio.Sound`](audio.mdx) objects and [`Video`](video-av.mdx) components share a unified imperative API for media playback.
 
 Note that for `Video`, all of the operations are also available via props on the component. However, we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.

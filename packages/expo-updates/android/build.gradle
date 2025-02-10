@@ -112,13 +112,13 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
-  implementation("commons-io:commons-io:2.16.1")
   implementation("org.bouncycastle:bcutil-jdk15to18:1.78.1")
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'androidx.test:core:1.5.0'
   testImplementation "io.mockk:mockk:$mockk_version"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion()}"
+  testImplementation 'org.robolectric:robolectric:4.14.1'
 
   androidTestImplementation 'com.squareup.okio:okio:2.9.0'
   androidTestImplementation 'androidx.test:runner:1.5.2'

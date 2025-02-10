@@ -557,9 +557,54 @@ All functions and view prop setters accept all common primitive types in Swift a
 
 _Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. For example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers `(x, y)` or a JavaScript object with numeric `x` and `y` properties.
 
+The built-in Convertibles are documented [further below](#built-in-convertibles). You can define additional Convertibles by making native Swift types conform to the `Convertible` protocol:
+
+<PaddedAPIBox header="Convertible" platforms={["ios"]}>
+
+`Convertible` is a Swift protocol with one static method:
+
+<APIMethod
+  name="convert"
+  comment="A static method that converts a dynamically typed value from JavaScript to an instance of the Swift type conforming to `Convertible`. Implementers should throw an exception when the given value is invalid or of an unsupported type."
+  returnTypeName="Self"
+  parameters={[
+    {
+      name: 'value',
+      comment: 'A value from JavaScript to convert',
+      typeName: 'Any?',
+    },
+    {
+      name: 'appContext',
+      comment: 'The context object for the currently running Expo app instance',
+      typeName: 'AppContext',
+    },
+  ]}
+/>
+
+### Example
+
+```swift Swift
+import ExpoModulesCore
+
+extension CMTime: @retroactive Convertible {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> CMTime {
+    if let seconds = value as? Double {
+      return CMTime(seconds: seconds, preferredTimescale: .max)
+    }
+    throw Conversions.ConvertingException<CMTime>(value)
+  }
+}
+```
+
+</PaddedAPIBox>
+
+> **Info** Support for defining Convertibles with Kotlin is planned to be available by SDK 53.
+
 ---
 
-Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are already made convertible.
+## Built-in Convertibles
+
+Some common iOS types from the `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
 | Native iOS Type         | TypeScript                                                                                                                                                                        |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

@@ -1,139 +1,104 @@
-import { H4 } from '@expo/html-elements';
-import { Button, ButtonProps } from '@expo/ui/components/Button';
+import { Button } from '@expo/ui/components/Button';
 import * as React from 'react';
-import { Platform, FlatList, ScrollView, View, StyleSheet } from 'react-native';
+import { Platform, ScrollView, StyleSheet } from 'react-native';
 
-import { Page } from '../../components/Page';
-
-function ButtonRenderItem(props: ButtonProps) {
-  return (
-    <Button
-      style={styles.buttonStyle}
-      onPress={() => {
-        console.log('Button pressed');
-      }}
-      {...props}
-    />
-  );
-}
-
-function ButtonDemoFlatList(props: { title: string; data: ButtonProps[] }) {
-  return (
-    <View style={styles.stretch}>
-      <H4>{props.title}</H4>
-      <FlatList
-        data={props.data}
-        renderItem={({ item }) => <ButtonRenderItem {...item} />}
-        scrollEnabled={false}
-        style={styles.stretch}
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapper}
-      />
-    </View>
-  );
-}
-
-const defaultButton: ButtonProps[] = [
-  {
-    text: 'Default button',
-  },
-];
-
-const buttonStylesData: ButtonProps[] = [
-  {
-    text: 'Default',
-  },
-  {
-    text: 'Bordered',
-    variant: 'bordered',
-  },
-  {
-    text: 'Borderless',
-    variant: 'borderless',
-  },
-];
-
-if (Platform.OS === 'ios') {
-  buttonStylesData.push(
-    {
-      text: 'Bordered Prominent',
-      variant: 'borderedProminent',
-    },
-    {
-      text: 'Plain',
-      variant: 'plain',
-    }
-  );
-}
-
-if (Platform.OS === 'android') {
-  buttonStylesData.push(
-    {
-      text: 'Outlined',
-      variant: 'outlined',
-    },
-    {
-      text: 'Elevated',
-      variant: 'elevated',
-    }
-  );
-}
-
-const buttonImagesData: ButtonProps[] = [
-  {
-    text: 'Folder',
-    systemImage: 'folder.badge.plus',
-  },
-  {
-    text: 'Tortoise',
-    systemImage: 'tortoise.fill',
-  },
-  {
-    text: 'Trash',
-    systemImage: 'trash',
-  },
-  {
-    text: 'Heart',
-    systemImage: 'heart.fill',
-  },
-];
-
-const buttonRolesData: ButtonProps[] = [
-  {
-    text: 'Default',
-    role: 'default',
-  },
-  {
-    text: 'Cancel',
-    role: 'cancel',
-  },
-  {
-    text: 'Destructive',
-    role: 'destructive',
-  },
-];
+import { Page, Section } from '../../components/Page';
 
 export default function UIScreen() {
   return (
     <Page>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ButtonDemoFlatList title="Default" data={defaultButton} />
-        <ButtonDemoFlatList title="System Styles" data={buttonStylesData} />
+        <Section title="Default">
+          <Button style={styles.button}>Test</Button>
+        </Section>
+        <Section title="System Styles">
+          <Button style={styles.button} variant="default">
+            Default
+          </Button>
+          <Button style={styles.button} variant="bordered">
+            Bordered
+          </Button>
+          <Button style={styles.button} variant="borderless">
+            Borderless
+          </Button>
+          {Platform.OS === 'ios' && (
+            <>
+              <Button style={styles.button} variant="borderedProminent">
+                Bordered Prominent
+              </Button>
+              <Button style={styles.button} variant="plain">
+                Plain
+              </Button>
+            </>
+          )}
+          {Platform.OS === 'android' && (
+            <>
+              <Button style={styles.button} variant="outlined">
+                Outlined
+              </Button>
+              <Button style={styles.button} variant="elevated">
+                Elevated
+              </Button>
+            </>
+          )}
+        </Section>
         {Platform.OS === 'ios' && (
-          <ButtonDemoFlatList title="System Images (Apple only)" data={buttonImagesData} />
+          <>
+            <Section title="Button Roles">
+              <Button style={styles.button} role="default">
+                Default
+              </Button>
+              <Button style={styles.button} role="cancel">
+                Cancel
+              </Button>
+              <Button style={styles.button} role="destructive">
+                Destructive
+              </Button>
+            </Section>
+
+            <Section title="Button Images">
+              <Button style={styles.button} systemImage="folder.badge.plus">
+                Folder
+              </Button>
+              <Button style={styles.button} systemImage="tortoise.fill">
+                Tortoise
+              </Button>
+              <Button style={styles.button} systemImage="trash">
+                Trash
+              </Button>
+              <Button style={styles.button} systemImage="heart.fill">
+                Heart
+              </Button>
+            </Section>
+          </>
         )}
-        {Platform.OS === 'ios' && (
-          <ButtonDemoFlatList title="Button Roles (Apple only)" data={buttonRolesData} />
+        {Platform.OS === 'android' && (
+          <Section title="Android Custom Colored Buttons">
+            <Button
+              style={styles.button}
+              elementColors={{ containerColor: '#007BFF', contentColor: '#FF6347' }}>
+              Blue
+            </Button>
+            <Button
+              style={styles.button}
+              elementColors={{ containerColor: '#FF6347', contentColor: '#007BFF' }}>
+              Red
+            </Button>
+          </Section>
         )}
+        <Section title="Tinted Buttons">
+          <Button style={styles.button} color="#f00f0f">
+            Red
+          </Button>
+        </Section>
       </ScrollView>
     </Page>
   );
 }
 
 const styles = StyleSheet.create({
-  buttonStyle: {
-    width: 150,
-    height: 50,
+  button: {
+    width: 120,
     margin: 5,
     overflow: 'visible',
   },

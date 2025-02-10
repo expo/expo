@@ -206,6 +206,47 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       });
     });
 
+    it('Contacts.updateContactAsync() with multiple urls / remove url', async () => {
+      const contactId = await Contacts.addContactAsync({
+        [Contacts.Fields.FirstName]: 'Ken',
+        [Contacts.Fields.UrlAddresses]: [
+          { url: 'https://react-dev.com' },
+          { url: 'https://expo.com' },
+        ],
+      });
+      expect(typeof contactId).toBe('string');
+      const contact = await Contacts.getContactByIdAsync(contactId);
+      expect(contact.urlAddresses.length).toBe(2);
+
+      const modifiedId = await Contacts.updateContactAsync({
+        ...contact,
+        [Contacts.Fields.UrlAddresses]: [],
+      });
+      expect(typeof modifiedId).toBe('string');
+      const contactModified = await Contacts.getContactByIdAsync(modifiedId);
+      expect(contactModified.urlAddresses).toBe(undefined);
+    });
+
+    it('Contacts.updateContactAsync() with multiple urls / add url', async () => {
+      const contactId = await Contacts.addContactAsync({
+        [Contacts.Fields.FirstName]: 'Kenny',
+        [Contacts.Fields.UrlAddresses]: [{ url: 'https://react-dev.com', label: 'home' }],
+      });
+      expect(typeof contactId).toBe('string');
+      const contact = await Contacts.getContactByIdAsync(contactId);
+      expect(contact.urlAddresses.length).toBe(1);
+      const modifiedId = await Contacts.updateContactAsync({
+        ...contact,
+        [Contacts.Fields.UrlAddresses]: [
+          { url: 'https://react-dev.com', label: 'work' },
+          { url: 'https://expo.com', label: 'home' },
+        ],
+      });
+      expect(typeof modifiedId).toBe('string');
+      const contactModified = await Contacts.getContactByIdAsync(modifiedId);
+      expect(contactModified.urlAddresses.length).toBe(2);
+    });
+
     it('Contacts.writeContactToFileAsync() returns uri', async () => {
       createdContacts.map(async ({ id }) => {
         const localUri = await Contacts.writeContactToFileAsync({ id });
@@ -485,6 +526,25 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(result[Contacts.Fields.FirstName]).toEqual('Andy');
     });
 
+    it('Contacts.updateContactAsync() and toggle isFavorite', async () => {
+      const contacts = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.IsFavorite],
+      });
+      const favoriteContact = contacts.data.find((contact) => contact.isFavorite);
+      expect(favoriteContact).toBeDefined();
+      expect(typeof favoriteContact.isFavorite).toBe('boolean');
+      expect(favoriteContact.isFavorite).toBe(true);
+      await Contacts.updateContactAsync({
+        id: favoriteContact.id,
+        [Contacts.Fields.IsFavorite]: false,
+      });
+      const modifiedContact = await Contacts.getContactByIdAsync(favoriteContact.id, [
+        Contacts.Fields.IsFavorite,
+      ]);
+      expect(typeof modifiedContact.isFavorite).toBe('boolean');
+      expect(modifiedContact.isFavorite).toBe(false);
+    });
+
     it('Contacts.removeContactAsync() finishes successfully', async () => {
       const contactId = await createSimpleContact('Hi', 'Joe');
 
@@ -647,6 +707,17 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
           expect(typeof defaultContainerId).toBe('string');
         }
       }
+    });
+
+    it('Contacts.updateContactAsync() with image', async () => {
+      const contactId = await createContactWithImage({
+        [Contacts.Fields.FirstName]: 'Kenny',
+        [Contacts.Fields.LastName]: 'Bday guy',
+      });
+      expect(typeof contactId).toBe('string');
+      const contact = await Contacts.getContactByIdAsync(contactId);
+      const modifiedId = await Contacts.updateContactAsync(contact);
+      expect(typeof modifiedId).toBe('string');
     });
   });
 }

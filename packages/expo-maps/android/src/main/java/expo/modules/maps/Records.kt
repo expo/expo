@@ -4,6 +4,7 @@ package expo.modules.maps
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.MapProperties
@@ -16,6 +17,17 @@ import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 
+data class SetCameraPositionConfig(
+  @Field
+  val coordinates: Coordinates?,
+
+  @Field
+  val zoom: Float?,
+
+  @Field
+  val duration: Int?
+) : Record
+
 data class Coordinates(
   @Field
   val latitude: Double = 0.0,
@@ -25,6 +37,10 @@ data class Coordinates(
 ) : Record {
   fun toLatLng(): LatLng {
     return LatLng(latitude, longitude)
+  }
+  fun toLocation() = Location("CustomLocation").apply {
+    latitude = this@Coordinates.latitude
+    longitude = this@Coordinates.longitude
   }
 }
 
@@ -54,6 +70,14 @@ data class CameraPositionRecord(
 
   @Field
   val zoom: Float = 10f
+) : Record
+
+data class UserLocationRecord(
+  @Field
+  val coordinates: Coordinates? = null,
+
+  @Field
+  val followUserLocation: Boolean = false
 ) : Record
 
 data class MapUiSettingsRecord(

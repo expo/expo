@@ -27,7 +27,7 @@ extension ExpoSwiftUI {
     }
 
     public var body: some SwiftUI.View {
-      if #available(iOS 16.0, *) {
+      if #available(iOS 16.0, tvOS 16.0, *) {
         content.fixedSize(horizontal: axis.contains(.horizontal), vertical: axis.contains(.vertical))
         .onGeometryChange(for: CGSize.self) { proxy in
           proxy.size
@@ -40,7 +40,7 @@ extension ExpoSwiftUI {
       } else {
         // TODO: throw a warning
         content.onAppear(perform: {
-          log.warn("AutoSizingStack is not supported on iOS < 16.0")
+          log.warn("AutoSizingStack is not supported on iOS/tvOS < 16.0")
         })
       }
     }

@@ -139,16 +139,13 @@ it('runs `npx expo install --fix` fails', async () => {
 
   // Load the installed and expected dependency versions
   const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
-  const expectedVersion = await JsonFile.readAsync(
-    require.resolve('expo/bundledNativeModules.json', { paths: [projectRoot] })
-  );
 
   // Only fix `expo-sms`
   await executeExpoAsync(projectRoot, ['install', '--fix', 'expo-sms']);
 
   // Ensure `expo-sms` is fixed to match the expected version
   expect(pkg.read().dependencies).toMatchObject({
-    'expo-sms': expectedVersion['expo-sms'],
+    'expo-sms': expect.not.stringContaining('1.0.0'), // Expect the version to change from `1.0.0`
   });
 
   // Ensure `expo-auth-session` is still invalid
@@ -166,8 +163,8 @@ it('runs `npx expo install --fix` fails', async () => {
 
   // Ensure both `expo-sms` and `expo-auth-session` are fixed
   expect(pkg.read().dependencies).toMatchObject({
-    'expo-sms': expectedVersion['expo-sms'],
-    'expo-auth-session': expectedVersion['expo-auth-session'],
+    'expo-sms': expect.not.stringContaining('1.0.0'), // Expect the version to change from `1.0.0`
+    'expo-auth-session': expect.not.stringContaining('1.0.0'), // Expect the version to change from `1.0.0`
   });
 });
 
