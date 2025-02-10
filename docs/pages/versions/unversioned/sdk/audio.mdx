@@ -111,7 +111,10 @@ import { useAudioRecorder, RecordingOptions, AudioModule, RecordingPresets } fro
 export default function App() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 
-  const record = () => audioRecorder.record();
+  const record = async () => {
+    await audioRecorder.prepareToRecordAsync();
+    audioRecorder.record();
+  }
 
   const stopRecording = async () => {
     // The recording will be available on `audioRecorder.uri`.
