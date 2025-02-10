@@ -17,19 +17,11 @@ extension ExpoSwiftUI {
    A hosting view that renders a SwiftUI view inside the UIKit view hierarchy.
    */
   public final class HostingView<Props: ViewProps, ContentView: View<Props>>: ExpoView, AnyExpoSwiftUIHostingView {
-    func getContentView() -> any ExpoSwiftUI.View {
-      return contentView
-    }
-    
-//    let rootView: any View<Props>
-//
-//    
     /**
      Props object that stores all the props for this particular view.
      It's an environment object that is observed by the content view.
      */
     private let props: Props
-    
     private let contentView: any ExpoSwiftUI.View
 
     /**
@@ -87,6 +79,13 @@ extension ExpoSwiftUI {
       } catch let error {
         log.error("Updating props for \(ContentView.self) has failed: \(error.localizedDescription)")
       }
+    }
+    
+    /**
+     Returns inner SwiftUI view.
+     */
+    public func getContentView() -> any ExpoSwiftUI.View {
+      return contentView
     }
 
     /**

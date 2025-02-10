@@ -1,9 +1,4 @@
-//
-//  ViewDefinitionBuilder.swift
-//  Pods
-//
-//  Created by Aleksander Mikucki on 17/01/2025.
-//
+// Copyright 2024-present 650 Industries. All rights reserved.
 
 extension ExpoSwiftUI {
   /**
@@ -14,21 +9,21 @@ extension ExpoSwiftUI {
     public static func buildBlock(_ elements: AnyViewDefinitionElement...) -> [AnyViewDefinitionElement] {
       return elements
     }
-    
+
     /**
      Accepts `Events` definition element of `View`.
      */
     public static func buildExpression(_ element: EventsDefinition) -> AnyViewDefinitionElement {
       return element
     }
-    
+
     /**
      Accepts `Prop` definition element and lets to skip defining the view type — it's inferred from the `View` definition.
      */
     public static func buildExpression<PropType: AnyArgument>(_ element: ConcreteViewProp<ViewType, PropType>) -> AnyViewDefinitionElement {
       return element
     }
-    
+
     /**
      Accepts functions as a view definition elements.
      */
@@ -37,7 +32,7 @@ extension ExpoSwiftUI {
     ) -> AnyViewDefinitionElement {
       return element
     }
-    
+
     /**
      Accepts functions that take the owner as a view definition elements.
      */

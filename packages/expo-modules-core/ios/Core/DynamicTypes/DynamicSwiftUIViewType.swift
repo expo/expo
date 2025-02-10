@@ -1,8 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
-internal struct DynamicSwiftUIViewType: AnyDynamicType {
-  let innerType: any ExpoSwiftUIView.Type
-//  typealias HostingView = ExpoSwiftUI.HostingView
+internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicType {
+  let innerType: ViewType.Type
 
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return innerType == InnerType.self
@@ -36,7 +35,7 @@ internal struct DynamicSwiftUIViewType: AnyDynamicType {
       throw NonMainThreadException()
     }
     guard let view = appContext.findView(withTag: viewTag, ofType: AnyExpoSwiftUIHostingView.self) else {
-      throw ArgumentConversionException() // TODO
+      throw Exceptions.SwiftUIViewNotFound((tag: viewTag, type: innerType.self))
     }
     return try innerType.convert(from: view.getContentView(), appContext: appContext)
   }
