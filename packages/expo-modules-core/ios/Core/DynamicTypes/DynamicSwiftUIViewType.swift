@@ -37,7 +37,7 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
     guard let view = appContext.findView(withTag: viewTag, ofType: AnyExpoSwiftUIHostingView.self) else {
       throw Exceptions.SwiftUIViewNotFound((tag: viewTag, type: innerType.self))
     }
-    return try innerType.convert(from: view.getContentView(), appContext: appContext)
+    return view.getContentView()
   }
 
   var description: String {

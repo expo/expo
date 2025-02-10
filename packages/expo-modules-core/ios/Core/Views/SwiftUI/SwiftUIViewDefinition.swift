@@ -11,7 +11,6 @@ public protocol ExpoSwiftUIView<Props>: SwiftUI.View, AnyArgument {
 
   var props: Props { get }
   static func getDynamicType() -> AnyDynamicType
-  static func convert(from value: any ExpoSwiftUI.View, appContext: AppContext) throws -> Self
 
   init()
 }
@@ -28,10 +27,6 @@ public extension ExpoSwiftUIView {
 
   static func getDynamicType() -> AnyDynamicType {
     return DynamicSwiftUIViewType(innerType: Self.self)
-  }
-
-  static func convert(from value: any ExpoSwiftUI.View, appContext: AppContext) -> Self {
-    return value as! Self
   }
 }
 

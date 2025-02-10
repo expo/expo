@@ -80,7 +80,7 @@ extension ExpoSwiftUI {
         log.error("Updating props for \(ContentView.self) has failed: \(error.localizedDescription)")
       }
     }
-    
+
     /**
      Returns inner SwiftUI view.
      */
