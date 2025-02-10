@@ -294,7 +294,7 @@ export function test({ describe, expect, it, ...t }) {
       expect(buffer.length).toBe(512);
     });
 
-    it('should break stream response async iterator ', async () => {
+    it('should break stream response async iterator', async () => {
       const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=2', {
         headers: {
           Accept: 'text/event-stream',
