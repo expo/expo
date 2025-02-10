@@ -1,4 +1,4 @@
-// Copyright 2023-present 650 Industries. All rights reserved.
+// Copyright 2025-present 650 Industries. All rights reserved.
 
 internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicType {
   let innerType: ViewType.Type

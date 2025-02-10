@@ -1,4 +1,4 @@
-// Copyright 2024-present 650 Industries. All rights reserved.
+// Copyright 2025-present 650 Industries. All rights reserved.
 
 extension ExpoSwiftUI {
   /**
