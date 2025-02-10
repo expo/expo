@@ -81,6 +81,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.io.File
+import java.lang.Float.max
+import java.lang.Float.min
 import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
@@ -150,7 +152,7 @@ class ExpoCameraView(
   var zoom: Float = 0f
     set(value) {
       field = value
-      camera?.cameraControl?.setLinearZoom(value.coerceIn(0f, 1f))
+      setCameraZoom(value)
     }
 
   var autoFocus: FocusMode = FocusMode.OFF
@@ -431,7 +433,7 @@ class ExpoCameraView(
             observeCameraState(it.cameraInfo)
           }
           // Set the previous zoom level after recreating the camera
-          camera?.cameraControl?.setLinearZoom(zoom.coerceIn(0f, 1f))
+          setCameraZoom(zoom)
           this.cameraProvider = cameraProvider
         } catch (e: Exception) {
           onMountError(
@@ -542,6 +544,12 @@ class ExpoCameraView(
         .build()
       it.cameraControl.startFocusAndMetering(action)
     }
+  }
+
+  private fun setCameraZoom(value: Float) {
+    val maxZoomRatio = camera?.cameraInfo?.zoomState?.value?.maxZoomRatio ?: 1f
+    val targetZoomRatio = max(1f, min(maxZoomRatio, value.coerceIn(0f, 1f) * maxZoomRatio))
+    camera?.cameraControl?.setZoomRatio(targetZoomRatio)
   }
 
   private fun observeCameraState(cameraInfo: CameraInfo) {
