@@ -10,7 +10,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.draw.alpha
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
