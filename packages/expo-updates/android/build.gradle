@@ -3,6 +3,25 @@ buildscript {
     safeExtGet = { prop, defaultVal ->
       return rootProject.hasProperty(prop) ? project[prop] : defaultVal
     }
+    boolish = { value ->
+      return value.toString().toBoolean()
+    }
+    getKspVersion = {
+      if (rootProject.hasProperty("kspVersion")) {
+        return rootProject["kspVersion"]
+      }
+
+      // We can remove this path once we update the test environment
+      // to use the same version of Kotlin as the `expo/expo` repo.
+      def kotlinVersion = rootProject["kotlinVersion"]
+      if (kotlinVersion == "2.0.21") {
+        return "2.0.21-1.0.28"
+      } else if (kotlinVersion == "1.9.25") {
+        return "1.9.25-1.0.20"
+      }
+
+      return "1.9.24-1.0.20"
+    }
   }
 
   repositories {
@@ -10,7 +29,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${safeExtGet("kspVersion", "2.0.21-1.0.28")}"
+    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${getKspVersion()}"
   }
 }
 
