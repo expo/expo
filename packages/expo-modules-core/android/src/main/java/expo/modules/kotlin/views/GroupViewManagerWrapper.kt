@@ -3,6 +3,7 @@ package expo.modules.kotlin.views
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.uimanager.ReactStylesDiffMap
+import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.getBackingMap
@@ -31,6 +32,16 @@ class GroupViewManagerWrapper(
   override fun onAfterUpdateTransaction(view: ViewGroup) {
     super.onAfterUpdateTransaction(view)
     viewWrapperDelegate.onViewDidUpdateProps(view)
+  }
+
+  override fun updateState(
+    view: ViewGroup,
+    props: ReactStylesDiffMap?,
+    stateWrapper: StateWrapper?
+  ): Any? {
+    val view = view as? ExpoView ?: return null
+    view.stateWrapper = stateWrapper
+    return super.updateState(view, props, stateWrapper)
   }
 
   override fun getNativeProps(): MutableMap<String, String> {

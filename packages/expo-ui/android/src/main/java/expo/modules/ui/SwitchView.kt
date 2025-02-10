@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -104,10 +105,12 @@ class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<Swi
       }
 
       DynamicTheme {
-        if (variant == "switch") {
-          SwitchComposable()
-        } else {
-          CheckboxComposable()
+        AutoSizingComposable(shadowNodeProxy) {
+          if (variant == "switch") {
+            SwitchComposable()
+          } else {
+            CheckboxComposable()
+          }
         }
       }
     }
