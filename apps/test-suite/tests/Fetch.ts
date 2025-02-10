@@ -275,6 +275,45 @@ export function test({ describe, expect, it, ...t }) {
       const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
       expect(buffer.length).toBe(512);
     });
+
+    it('should stream response as async iterator', async () => {
+      const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=2', {
+        headers: {
+          Accept: 'text/event-stream',
+        },
+      });
+
+      expect(resp.body[Symbol.asyncIterator]).not.toBeNull();
+
+      const chunks = [];
+      for await (const chunk of resp.body) {
+        chunks.push(chunk);
+      }
+      expect(chunks.length).toBeGreaterThan(3);
+      const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+      expect(buffer.length).toBe(512);
+    });
+
+    it('should break stream response async iterator ', async () => {
+      const resp = await fetch('https://httpbin.test.k6.io/drip?numbytes=512&duration=2', {
+        headers: {
+          Accept: 'text/event-stream',
+        },
+      });
+
+      expect(resp.body[Symbol.asyncIterator]).not.toBeNull();
+
+      const chunks = [];
+      for await (const chunk of resp.body) {
+        chunks.push(chunk);
+        if (chunks.length === 2) {
+          break;
+        }
+      }
+      expect(chunks.length).toBe(2);
+      // const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+      // expect(buffer.length).toBe(512);
+    });
   });
 
   describe('Concurrent requests', () => {
