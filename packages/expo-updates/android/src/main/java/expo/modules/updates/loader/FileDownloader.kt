@@ -602,6 +602,7 @@ class FileDownloader(
     ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())
+        .addHeadersFromJSONObject(assetEntity.extraRequestHeaders)
         .addHeadersFromJSONObject(extraHeaders)
         .header("Expo-Platform", "android")
         .header("Expo-Protocol-Version", "1")
@@ -705,12 +706,11 @@ class FileDownloader(
     }
 
     fun getExtraHeadersForRemoteAssetRequest(
-      assetEntity: AssetEntity,
       launchedUpdate: UpdateEntity?,
       embeddedUpdate: UpdateEntity?,
       requestedUpdate: UpdateEntity?
     ): JSONObject {
-      val extraHeaders = assetEntity.extraRequestHeaders ?: JSONObject()
+      val extraHeaders = JSONObject()
 
       launchedUpdate?.let {
         extraHeaders.put("Expo-Current-Update-ID", it.id.toString().lowercase())

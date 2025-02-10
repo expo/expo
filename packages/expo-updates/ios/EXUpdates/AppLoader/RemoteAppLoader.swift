@@ -84,7 +84,7 @@ public final class RemoteAppLoader: AppLoader {
     }
   }
 
-  override public func downloadAsset(_ asset: UpdateAsset, requestedUpdate: Update) {
+  override public func downloadAsset(_ asset: UpdateAsset, extraHeaders: [String: Any]) {
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
 
     FileDownloader.assetFilesQueue.async {
@@ -101,30 +101,18 @@ public final class RemoteAppLoader: AppLoader {
           )
           return
         }
-        self.database.databaseQueue.async {
-          let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
-          let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
-            launchedUpdate: self.launchedUpdate,
-            embeddedUpdate: embeddedUpdate,
-            requestedUpdate: requestedUpdate,
-            assetExtraHeaders: asset.extraRequestHeaders
-          )
-
-          FileDownloader.assetFilesQueue.async {
-            self.downloader.downloadAsset(
-              fromURL: assetUrl,
-              verifyingHash: asset.expectedHash,
-              toPath: urlOnDisk.path,
-              extraHeaders: extraHeaders
-            ) { data, response, _ in
-              DispatchQueue.global().async {
-                self.handleAssetDownload(withData: data, response: response, asset: asset)
-              }
-            } errorBlock: { error in
-              DispatchQueue.global().async {
-                self.handleAssetDownload(withError: error, asset: asset)
-              }
-            }
+        self.downloader.downloadAsset(
+          fromURL: assetUrl,
+          verifyingHash: asset.expectedHash,
+          toPath: urlOnDisk.path,
+          extraHeaders: extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { (current, _) in current }
+        ) { data, response, _ in
+          DispatchQueue.global().async {
+            self.handleAssetDownload(withData: data, response: response, asset: asset)
+          }
+        } errorBlock: { error in
+          DispatchQueue.global().async {
+            self.handleAssetDownload(withError: error, asset: asset)
           }
         }
       }

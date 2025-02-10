@@ -56,10 +56,10 @@ class RemoteLoader internal constructor(
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
     requestedUpdate: UpdateEntity?,
+    embeddedUpdate: UpdateEntity?,
     callback: AssetDownloadCallback
   ) {
-    val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)?.updateEntity
-    val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(assetEntity, launchedUpdate, embeddedUpdate, requestedUpdate)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate, requestedUpdate)
     mFileDownloader.downloadAsset(assetEntity, updatesDirectory, extraHeaders, callback)
   }
 
