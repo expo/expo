@@ -19,7 +19,7 @@ export default function ColorPickerScreen() {
             onValueChange={setSupportsOpacity}
           />
           <ColorPicker
-            label="Select a colo!r"
+            label="Select a color"
             selection={color}
             supportsOpacity={supportsOpacity}
             onValueChanged={setColor}
