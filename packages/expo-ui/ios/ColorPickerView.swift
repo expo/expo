@@ -34,7 +34,7 @@ struct ColorPickerView: ExpoSwiftUI.View {
     color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
     let components = [red, green, blue, alpha].map { Int($0 * 255) }
     let format = props.supportsOpacity ? "#%02X%02X%02X%02X" : "#%02X%02X%02X"
-    return props.supportsOpacity 
+    return props.supportsOpacity
       ? String(format: format, components[0], components[1], components[2], components[3])
       : String(format: format, components[0], components[1], components[2])
   }
