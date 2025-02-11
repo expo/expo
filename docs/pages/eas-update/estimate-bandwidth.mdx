@@ -40,8 +40,8 @@ This will generate **Brotli- and Gzip-compressed** versions of your Hermes bundl
 
 Actual bandwidth usage varies due to:
 
-- **User behavior:** While theoretical calculations assume every user downloads every update, many users only receive updates when reopening the app, meaning they may skip intermediate updates.
-- **Missing assets:** Any assets not included in the embedded build but required in the update (e.g., fonts, images, or other dependencies) will need to be downloaded as well, increasing bandwidth usage.
+- **User behavior:** Theoretical calculations assume every user downloads every update. However, many users only get updates when they reopen the app, often skipping intermediate updates. As a result, actual bandwidth usage is usually much lower than the theoretical maximum.
+- **Missing assets:** If an update includes assets such as fonts and images that are not already on the device, they will need to be downloaded as well.
 
 ## Best practices to optimize bandwidth usage
 
