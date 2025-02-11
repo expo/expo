@@ -53,6 +53,15 @@ export class AsyncWsTunnel {
   }
 }
 
+// Generate a base-36 string of 5 characters (from 32 bits of randomness)
+function randomStr() {
+  const MASK = (1 << 5) - 1;
+  let x = 1 + Math.round(Math.random() * (~1 >>> 0));
+  let out = '';
+  for (let i = 0; i < 5; i++, x = x >> 5) out += (x & MASK).toString(36);
+  return out;
+}
+
 function getTunnelSession(): string {
   const leaseId = Buffer.from(hostname()).toString('base64url');
   const leaseFile = path.join(tempDir, `_ws_tunnel_lease_${leaseId}`);
@@ -61,10 +70,8 @@ function getTunnelSession(): string {
     session = fs.readFileSync(leaseFile, 'utf8').trim() || null;
   } catch {}
   if (!session) {
-    do {
-      // TODO(cedric): replace this with non-random data generated from server to manage and prevent overlapping sessions
-      session = randomBytes(12).toString('base64url');
-    } while (!/^[A-Za-z0-9]/.test(session));
+    // NOTE(@kitten): Randomness should be about 2.21e+23
+    session = randomStr() + randomStr() + randomStr();
     fs.writeFileSync(leaseFile, session, 'utf8');
   }
   return session;
