@@ -13,13 +13,6 @@ android {
     versionName '6.0.12'
   }
 
-  buildTypes {
-    releaseWithDevMenu {
-      initWith release
-      matchingFallbacks = ['release', 'debug']
-    }
-  }
-
   sourceSets {
     debug {
       java {
@@ -27,10 +20,6 @@ android {
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
 
       }
-    }
-
-    releaseWithDevMenu {
-      setRoot 'src/debug'
     }
   }
   buildFeatures {
