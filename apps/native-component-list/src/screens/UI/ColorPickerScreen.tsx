@@ -5,7 +5,7 @@ import { Dimensions, ScrollView, Text } from 'react-native';
 import { Page, Section } from '../../components/Page';
 import { Switch } from '@expo/ui/components/Switch';
 
-export default function PickerScreen() {
+export default function ColorPickerScreen() {
   const [color, setColor] = React.useState<string | null>('blue');
   const [supportsOpacity, setSupportsOpacity] = React.useState<boolean>(false);
   return (
@@ -36,6 +36,6 @@ export default function PickerScreen() {
   );
 }
 
-PickerScreen.navigationOptions = {
-  title: 'Picker',
+ColorPickerScreen.navigationOptions = {
+  title: 'Color Picker',
 };
