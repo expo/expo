@@ -22,9 +22,7 @@ export default function ColorPickerScreen() {
             label="Select a color"
             selection={color}
             supportsOpacity={supportsOpacity}
-            onValueChanged={({ nativeEvent: { value } }) => {
-              setColor(value);
-            }}
+            onValueChanged={setColor}
             style={{
               width: Dimensions.get('window').width - 20,
               height: 100,
