@@ -12,14 +12,16 @@ export default function ColorPickerScreen() {
     <ScrollView>
       <Page>
         <Section title="Color Picker">
-          <Text>Color: {color}</Text>
+          <Text>
+            Color: {color} isOn: {supportsOpacity ? 'yes' : 'no'}
+          </Text>
           <Switch
             label="Supports opacity"
-            checked={supportsOpacity}
-            onCheckedChanged={({ nativeEvent: { checked } }) => setSupportsOpacity(checked)}
+            value={supportsOpacity}
+            onValueChange={setSupportsOpacity}
           />
           <ColorPicker
-            label="Select a color"
+            label="Select a colo!r"
             selection={color}
             supportsOpacity={supportsOpacity}
             onValueChanged={setColor}
