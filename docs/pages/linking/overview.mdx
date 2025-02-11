@@ -19,7 +19,7 @@ Linking allows your app to interact with incoming and outgoing URLs. In this pro
 
 There are different linking strategies you handle in your Expo app:
 
-- Linking to your app using your web domain links ([universal linking](#universal-linking) using the `https` scheme)
+- Linking to your app using your web domain links ([universal linking](#universal-linking) using the `https` or `http` scheme)
 - Linking to your app from other apps or websites using a custom scheme (deep links)
 - Linking to other apps from your app (outgoing links)
 
@@ -76,7 +76,7 @@ For example, by clicking a product advertisement, your app will open on the user
 
 This link is constructed by three parts:
 
-- **Scheme**: The URL scheme that identifies the app that should open the URL (example: `myapp://`). It can also be `https` or `http` for non-standard deep links - we recommend [universal linking](#universal-linking) for http(s)-based deep links.
+- **Scheme**: The URL scheme that identifies the app that should open the URL (example: `myapp://`). It can also be `https` or `http` for non-standard deep links. We recommend [universal linking](#universal-linking) for http(s)-based deep links.
 - **Host**: The domain name of the app that should open the URL (example: `web-app.com`).
 - **Path**: The path to the screen that should be opened (example: `/product`). If the path isn't specified, the user is taken to the home screen of the app.
 
