@@ -1,6 +1,5 @@
 import * as tunnel from '@expo/ws-tunnel';
 import chalk from 'chalk';
-import { randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
 import { hostname } from 'node:os';
 import * as path from 'node:path';
