@@ -26,14 +26,15 @@ Each subscription plan includes a predefined bandwidth allocation per billing cy
 
 ## Measuring your actual update size
 
-To determine the actual compressed size of your Hermes bundle, run the following command:
+To determine the actual compressed size of your Hermes bundle, run the following commands:
 
 ```sh
+brotli -5 -k bundle.hbc
 gzip -9 -k bundle.hbc
-ls -lh bundle.hbc.gz
+ls -lh bundle.hbc.br bundle.hbc.gz
 ```
 
-This will generate a **gzip-compressed** version of your Hermes bundle (`bundle.hbc.gz`) and display its size. You can use this to refine bandwidth calculations based on your app’s real-world update sizes.
+This will generate **Brotli- and Gzip-compressed** versions of your Hermes bundle (bundle.hbc.br and bundle.hbc.gz) and display their sizes. You can use this to refine bandwidth calculations based on your app’s real-world update sizes.
 
 ## Factors that affect bandwidth consumption
 
