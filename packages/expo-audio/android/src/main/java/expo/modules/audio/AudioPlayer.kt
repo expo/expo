@@ -20,12 +20,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -54,7 +51,7 @@ class AudioPlayer(
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
   private var playing = false
-  
+
   private var updateJob: Job? = null
 
   val currentTime get() = player.currentPosition / 1000f

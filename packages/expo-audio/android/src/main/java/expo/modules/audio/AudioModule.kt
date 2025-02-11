@@ -381,7 +381,7 @@ class AudioModule : Module() {
   }
 
   private fun createDataSourceFactory(audioSource: AudioSource): DataSource.Factory {
-    val uri = if(Util.isLocalFileUri(Uri.parse(audioSource.uri))) {
+    val uri = if (Util.isLocalFileUri(Uri.parse(audioSource.uri))) {
       Uri.fromFile(File(audioSource.uri))
     } else {
       Uri.parse(audioSource.uri)

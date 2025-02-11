@@ -12,7 +12,6 @@ import android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.core.content.ContextCompat
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -29,7 +28,8 @@ class AudioRecorder(
   private val options: RecordingOptions
 ) : SharedObject(appContext),
   MediaRecorder.OnErrorListener,
-  MediaRecorder.OnInfoListener { var filePath: String? = null
+  MediaRecorder.OnInfoListener {
+  var filePath: String? = null
   private var meteringEnabled = options.isMeteringEnabled
   private var durationAlreadyRecorded = 0L
   var isPrepared = false
