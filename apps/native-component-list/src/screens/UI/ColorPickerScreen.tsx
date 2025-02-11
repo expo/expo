@@ -6,7 +6,7 @@ import { Page, Section } from '../../components/Page';
 import { Switch } from '@expo/ui/components/Switch';
 
 export default function PickerScreen() {
-  const [color, setColor] = React.useState<string | null>('#ffffff');
+  const [color, setColor] = React.useState<string | null>('blue');
   const [supportsOpacity, setSupportsOpacity] = React.useState<boolean>(false);
   return (
     <ScrollView>

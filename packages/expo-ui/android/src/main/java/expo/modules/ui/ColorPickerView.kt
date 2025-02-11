@@ -17,19 +17,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
-import androidx.compose.ui.graphics.Brush
-import kotlin.math.roundToInt
 
 data class ColorPickerProps(
-  val selection: MutableState<Int> = mutableStateOf(Color.RED),
+  val selection: MutableState<Int> = mutableIntStateOf(Color.WHITE),
   val label: MutableState<String?> = mutableStateOf(null),
   val supportsOpacity: MutableState<Boolean> = mutableStateOf(false)
 ) : ComposeProps
@@ -53,29 +55,55 @@ class ColorPickerView(context: Context, appContext: AppContext) : ExpoComposeVie
           .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
       ) {
-        if (props.label.value != null) {
+        props.label.value?.let {
           Text(
-            props.label.value!!,
+            it,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f)
           )
           Spacer(modifier = Modifier.width(8.dp))
         }
-        Box(
+        Box(contentAlignment = Alignment.Center,
           modifier = Modifier
-            .size(24.dp)
             .clip(CircleShape)
-            .background(currentColor)
             .clickable {
               showSheet = true
             }
-        )
+        ) {
+          // Outer Ring
+          Box(
+            modifier = Modifier
+              .size(34.dp)
+              .clip(CircleShape)
+              .border(
+                width = 4.dp,
+                shape = CircleShape,
+                brush = Brush.sweepGradient(listOf(
+                  ComposeColor(0xFFFF3B30), // Red
+                  ComposeColor(0xFFFF9500), // Orange
+                  ComposeColor(0xFFFFCC00), // Yellow
+                  ComposeColor(0xFF34C759), // Green
+                  ComposeColor(0xFF5AC8FA), // Cyan
+                  ComposeColor(0xFF007AFF), // Blue
+                  ComposeColor(0xFF5856D6), // Purple
+                  ComposeColor(0xFFFF2D55)  // Pink/Magenta
+                ))
+              )
+          )
+          Box(
+            modifier = Modifier
+              .size(20.dp)
+              .clip(CircleShape)
+              .background(currentColor)
+          )
+        }
       }
 
       if (showSheet) {
         ModalBottomSheet(
           onDismissRequest = { showSheet = false },
-          sheetState = rememberModalBottomSheetState()
+          sheetState = rememberModalBottomSheetState(),
+          dragHandle = null
         ) {
           Column(
             modifier = Modifier
@@ -85,19 +113,43 @@ class ColorPickerView(context: Context, appContext: AppContext) : ExpoComposeVie
             Row(
               modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(vertical = 12.dp),
               verticalAlignment = Alignment.CenterVertically
             ) {
-              Text("Select a color",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.weight(1f))
-              IconButton(onClick = { showSheet = false }) {
-                Icon(Icons.Default.Close, "Close")
+              Box(modifier = Modifier.size(32.dp))
+              Text(
+                  props.label.value ?: "Select a color",
+                  style = MaterialTheme.typography.bodyLarge,
+                  modifier = Modifier.weight(1f),
+                  fontWeight = FontWeight.Bold,
+                  textAlign = TextAlign.Center
+              )
+              Box(
+                  modifier = Modifier
+                      .size(32.dp)
+                      .background(
+                          color = MaterialTheme.colorScheme.surfaceVariant,
+                          shape = CircleShape
+                      )
+                      .border(
+                          width = 1.dp,
+                          color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f),
+                          shape = CircleShape
+                      )
+              ) {
+                  IconButton(
+                      onClick = { showSheet = false },
+                      modifier = Modifier.size(32.dp)
+                  ) {
+                      Icon(
+                          Icons.Default.Close,
+                          contentDescription = "Close",
+                          tint = MaterialTheme.colorScheme.onSurfaceVariant
+                      )
+                  }
               }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             ColorSpectrumPicker(
               initialColor = currentColor.toArgb(),
               alpha = alpha,
@@ -224,15 +276,23 @@ fun ColorSpectrumPicker(
 
     Box(
       modifier = Modifier
-        .size(24.dp)
         .offset(
           x = (spectrumWidth.value * (1 - currentSaturation)).dp - 12.dp,
           y = (spectrumHeight.value * (currentHue / 360f)).dp - 12.dp
         )
+        .size(28.dp)
+        .shadow(2.dp, CircleShape, clip = false)
         .clip(CircleShape)
-        .background(currentColor)
-        .border(2.dp, ComposeColor.White, CircleShape)
-    )
+        .background(ComposeColor.White)
+        .padding(2.dp)
+    ) {
+      Box(
+        modifier = Modifier
+          .fillMaxSize()
+          .clip(CircleShape)
+          .background(currentColor)
+      )
+    }
   }
 }
 
