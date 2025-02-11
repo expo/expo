@@ -160,7 +160,7 @@ import { Switch } from '@expo/ui/components/Switch';
 
 <Switch
   checked={checked}
-  onCheckedChanged={({ nativeEvent: { checked } }) => {
+  onValueChange={checked => {
     setChecked(checked);
   }}
   label="Play music"
@@ -191,7 +191,7 @@ import { Switch } from '@expo/ui/components/Switch';
 
 <Switch
   checked={checked}
-  onCheckedChanged={({ nativeEvent: { checked } }) => {
+  onValueChange={checked => {
     setChecked(checked);
   }}
   label="Play music"
