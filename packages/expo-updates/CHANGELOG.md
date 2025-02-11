@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed incorrect error log on Android. ([#34785](https://github.com/expo/expo/pull/34785) by [@kudo](https://github.com/kudo))
+
 ## 0.26.18 — 2025-02-12
 
 ### 🐛 Bug fixes
