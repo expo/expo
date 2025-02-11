@@ -42,36 +42,54 @@ export default function UIScreen() {
             </>
           )}
         </Section>
-        {Platform.OS === 'ios' && (
-          <>
-            <Section title="Button Roles">
-              <Button style={styles.button} role="default">
-                Default
-              </Button>
-              <Button style={styles.button} role="cancel">
-                Cancel
-              </Button>
-              <Button style={styles.button} role="destructive">
-                Destructive
-              </Button>
-            </Section>
+        <>
+          <Section title="Button Roles">
+            <Button style={styles.button} role="default">
+              Default
+            </Button>
+            <Button style={styles.button} role="cancel">
+              Cancel
+            </Button>
+            <Button style={styles.button} role="destructive">
+              Destructive
+            </Button>
+          </Section>
 
-            <Section title="Button Images">
-              <Button style={styles.button} systemImage="folder.badge.plus">
-                Folder
-              </Button>
-              <Button style={styles.button} systemImage="tortoise.fill">
-                Tortoise
-              </Button>
-              <Button style={styles.button} systemImage="trash">
-                Trash
-              </Button>
-              <Button style={styles.button} systemImage="heart.fill">
-                Heart
-              </Button>
-            </Section>
-          </>
-        )}
+          <Section title="Button Images">
+            <Button
+              style={styles.button}
+              systemImage={Platform.select({
+                ios: 'folder.badge.plus',
+                android: 'person',
+              })}>
+              Folder
+            </Button>
+            <Button
+              style={styles.button}
+              systemImage={Platform.select({
+                ios: 'tortoise.fill',
+                android: 'bug_report',
+              })}>
+              Tortoise
+            </Button>
+            <Button
+              style={styles.button}
+              systemImage={Platform.select({
+                ios: 'trash',
+                android: 'delete',
+              })}>
+              Trash
+            </Button>
+            <Button
+              style={styles.button}
+              systemImage={Platform.select({
+                ios: 'heart.fill',
+                android: 'favorite',
+              })}>
+              Heart
+            </Button>
+          </Section>
+        </>
         {Platform.OS === 'android' && (
           <Section title="Android Custom Colored Buttons">
             <Button
@@ -98,7 +116,7 @@ export default function UIScreen() {
 
 const styles = StyleSheet.create({
   button: {
-    width: 120,
+    width: 150,
     margin: 5,
     overflow: 'visible',
   },

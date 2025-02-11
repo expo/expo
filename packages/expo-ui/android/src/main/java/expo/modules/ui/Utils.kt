@@ -3,12 +3,14 @@ package expo.modules.ui
 import android.graphics.Color
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
@@ -50,3 +52,36 @@ val Color?.compose: androidx.compose.ui.graphics.Color
 
 val Color?.composeOrNull: androidx.compose.ui.graphics.Color?
   get() = colorToComposeColorOrNull(this)
+
+
+// Icons
+fun getImageVector(icon: String?): ImageVector? {
+  if (icon.isNullOrEmpty()) return null
+  return try {
+    val iconsPackage = "androidx.compose.material.icons."
+    val iconName = snakeToPascalCase(icon)
+    val className = buildString {
+      append(iconsPackage)
+      append("filled")
+      append('.')
+      append(iconName)
+      append("Kt")
+    }
+
+    Class.forName(className).getDeclaredMethod("get$iconName", Icons.Filled.javaClass).invoke(
+      null,
+      Icons.Filled
+    ) as ImageVector
+  } catch (e: Throwable) {
+    println("icons ${e.message}")
+    null
+  }
+}
+
+fun snakeToPascalCase(input: String): String {
+  return input.split('_').joinToString("") { word ->
+    word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+  }.let {
+    if (it.first().isDigit()) "_$it" else it
+  }
+}
