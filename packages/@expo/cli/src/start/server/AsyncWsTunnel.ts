@@ -6,7 +6,7 @@ import * as path from 'node:path';
 import tempDir from 'temp-dir';
 
 import * as Log from '../../log';
-import { env } from '../../utils/env';
+import { env, envIsWebcontainer } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 
 const debug = require('debug')('expo:start:server:ws-tunnel') as typeof console.log;
@@ -62,18 +62,20 @@ function randomStr() {
 }
 
 function getTunnelSession(): string {
-  const leaseId = Buffer.from(hostname()).toString('base64url');
-  const leaseFile = path.join(tempDir, `_ws_tunnel_lease_${leaseId}`);
-  let session: string | null = null;
-  try {
-    session = fs.readFileSync(leaseFile, 'utf8').trim() || null;
-  } catch {}
-  if (!session) {
-    // NOTE(@kitten): Randomness should be about 2.21e+23
-    session = randomStr() + randomStr() + randomStr();
+  if (envIsWebcontainer()) {
+    const leaseId = Buffer.from(hostname()).toString('base64url');
+    const leaseFile = path.join(tempDir, `_ws_tunnel_lease_${leaseId}`);
+    try {
+      const session = fs.readFileSync(leaseFile, 'utf8').trim() || null;
+      if (session) return session;
+    } catch {}
+    const session = randomStr() + randomStr() + randomStr();
     fs.writeFileSync(leaseFile, session, 'utf8');
+    return session;
+  } else {
+    const session = randomStr() + randomStr() + randomStr();
+    return session;
   }
-  return session;
 }
 
 function getTunnelOptions() {
