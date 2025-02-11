@@ -22,7 +22,8 @@
     ".": {
       "react-server": "./build/index.server.js",
       "default": "./build/index.js"
-    }
+    },
+    "./build/server": "./build/server.js"
   },
   "keywords": [
     "react-native",

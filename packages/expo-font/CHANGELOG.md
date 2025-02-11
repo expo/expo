@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Add missing export specifier.
 - [ios] Fix crash when writing to fontFamilyAliases ([#34044](https://github.com/expo/expo/pull/34044) by [@techied](https://github.com/techied))
 
 ### 💡 Others
