@@ -1,9 +1,9 @@
 import { ColorPicker } from '@expo/ui/components/ColorPicker';
+import { Switch } from '@expo/ui/components/Switch';
 import * as React from 'react';
 import { Dimensions, ScrollView, Text } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
-import { Switch } from '@expo/ui/components/Switch';
 
 export default function ColorPickerScreen() {
   const [color, setColor] = React.useState<string | null>('blue');
