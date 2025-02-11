@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 import { useCallback } from 'react';
-import { processColor, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, processColor, StyleProp, ViewStyle } from 'react-native';
 
 /**
  * Props for the ColorPicker component.
@@ -28,17 +28,19 @@ export type ColorPickerProps = {
   supportsOpacity?: boolean;
 };
 
+type OnValueChangeEvent = NativeSyntheticEvent<{ value: string }>;
+
 const ColorPickerNativeView: React.ComponentType<
   Omit<ColorPickerProps, 'selection' | 'onValueChanged'> & {
     selection: ReturnType<typeof processColor>;
-    onValueChanged: (event: { nativeEvent: { value: string } }) => void;
+    onValueChanged: (event: OnValueChangeEvent) => void;
   }
 > = requireNativeView('ExpoUI', 'ColorPickerView');
 
 export function ColorPicker({ selection, onValueChanged, ...restProps }: ColorPickerProps) {
   const onNativeValueChanged = useCallback(
-    ({ nativeEvent: { value } }) => {
-      onValueChanged?.(value);
+    (event: OnValueChangeEvent) => {
+      onValueChanged?.(event.nativeEvent.value);
     },
     [onValueChanged]
   );
