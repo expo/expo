@@ -73,6 +73,12 @@ struct MapProperties: Record {
   @Field var selectionEnabled: Bool = true
 }
 
+struct SetCameraPositionConfig: Record {
+  @Field var coordinates: Coordinate?
+  @Field var zoom: Double?
+  @Field var duration: Int?
+}
+
 enum MapType: String, Enumerable {
   case standard = "STANDARD"
   case hybrid = "HYBRID"

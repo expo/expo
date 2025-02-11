@@ -13,6 +13,10 @@ public class AppleMapsModule: Module {
       return false
     }
 
-    View(AppleMapsViewWrapper.self)
+    View(AppleMapsViewWrapper.self) {
+      AsyncFunction("setCameraPosition") { (view: AppleMapsViewWrapper, config: SetCameraPositionConfig) in
+        view.setCameraPosition(config: config)
+      }
+    }
   }
 }
