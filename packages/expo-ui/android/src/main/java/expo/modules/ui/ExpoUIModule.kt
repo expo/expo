@@ -34,9 +34,5 @@ class ExpoUIModule : Module() {
         "onExpandedChanged"
       )
     }
-
-    View(ColorPickerView::class) {
-      Events("onValueChanged")
-    }
   }
 }
