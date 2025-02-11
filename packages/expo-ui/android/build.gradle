@@ -12,13 +12,13 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'expo.modules.ui'
-version = '0.0.1'
+version = '0.0.2'
 
 android {
   namespace "expo.modules.ui"
   defaultConfig {
     versionCode 1
-    versionName "0.0.1"
+    versionName "0.0.2"
   }
   buildFeatures {
     compose true
