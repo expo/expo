@@ -61,20 +61,16 @@ function randomStr() {
 }
 
 function getTunnelSession(): string {
+  let session = randomStr() + randomStr() + randomStr();
   if (envIsWebcontainer()) {
     const leaseId = Buffer.from(hostname()).toString('base64url');
     const leaseFile = path.join(tempDir, `_ws_tunnel_lease_${leaseId}`);
     try {
-      const session = fs.readFileSync(leaseFile, 'utf8').trim() || null;
-      if (session) return session;
+      session = fs.readFileSync(leaseFile, 'utf8').trim() || session;
+      fs.writeFileSync(leaseFile, session, 'utf8');
     } catch {}
-    const session = randomStr() + randomStr() + randomStr();
-    fs.writeFileSync(leaseFile, session, 'utf8');
-    return session;
-  } else {
-    const session = randomStr() + randomStr() + randomStr();
-    return session;
   }
+  return session;
 }
 
 function getTunnelOptions() {
