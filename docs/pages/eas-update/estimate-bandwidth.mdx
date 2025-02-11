@@ -43,7 +43,8 @@ Actual bandwidth usage varies due to:
 - **User behavior:** Theoretical calculations assume every user downloads every update. However, many users only get updates when they reopen the app, often skipping intermediate updates. As a result, actual bandwidth usage is usually much lower than the theoretical maximum.
 - **Missing assets:** If an update includes assets such as fonts and images that are not already on the device, they will need to be downloaded as well.
 
-## Best practices to optimize bandwidth usage
+## Optimizing bandwidth usage
 
-1. **Minimize update size:** Avoid bundling unnecessary assets in updates.
-2. **Monitor usage:** Check your bandwidth metrics to detect unusual spikes or inefficiencies.
+1. **Monitor usage first:** The easiest way to manage bandwidth is to track your [usage metrics](https://expo.dev/accounts/[account]/settings/usage) and identify any unusual spikes or inefficiencies.
+2. **Optimize asset size:** Reduce the size of your assets with [this guide](/eas-update/optimize-assets).
+3. **Exclude assets when needed:** Use [asset selection](/eas-update/asset-selection) to reduce the number of assets included with each update. This is an advanced optimization and other approaches should be tried first.
