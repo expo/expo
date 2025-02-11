@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 
 type SwitchElementColors = {
   /**
@@ -51,7 +51,7 @@ export type SwitchProps = {
   /**
    * Indicates whether the switch is checked.
    */
-  checked: boolean;
+  value: boolean;
   /**
    * Label for the switch.
    *
@@ -65,11 +65,10 @@ export type SwitchProps = {
    * @default 'switch'
    */
   variant?: 'checkbox' | 'switch' | 'button';
-
   /**
    * Callback function that is called when the checked state changes.
    */
-  onCheckedChanged: (event: { nativeEvent: { checked: boolean } }) => void;
+  onValueChange?: (value: boolean) => void;
   /**
    * Optional style for the switch component.
    */
@@ -97,15 +96,18 @@ export type SwitchProps = {
     }
   | {
       variant: 'button';
+      elementColors?: undefined;
     }
 );
 
-const SwitchNativeView: React.ComponentType<SwitchProps> = requireNativeView(
+type NativeSwitchProps = Omit<SwitchProps, 'onValueChange'> & {
+  onValueChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
+};
+
+const SwitchNativeView: React.ComponentType<NativeSwitchProps> = requireNativeView(
   'ExpoUI',
   'SwitchView'
 );
-
-type NativeSwitchProps = SwitchProps;
 
 function getElementColors(props: SwitchProps) {
   if (props.variant === 'button') {
@@ -129,8 +131,11 @@ export function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
   return {
     ...props,
     variant: props.variant ?? 'switch',
-    elementColors: props.variant === 'checkbox' ? getElementColors(props) : getElementColors(props),
+    elementColors: getElementColors(props),
     color: props.color,
+    onValueChange: ({ nativeEvent: { value } }) => {
+      props?.onValueChange?.(value);
+    },
   } as NativeSwitchProps;
 }
 

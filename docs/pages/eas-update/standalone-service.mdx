@@ -6,6 +6,7 @@ hideTOC: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 EAS Update works great as a standalone service, so you can use it with or without EAS Build and other EAS services. All of its main features are designed to be agnostic of the build pipeline, and its used in production by large organizations that do not use other EAS services.
 
@@ -21,6 +22,13 @@ That said, many organizations are already heavily invested in their CI/CD infras
 
 ## Using EAS Update without EAS Build
 
-Most of the [installation and configuration steps](/eas-update/getting-started) are identical whether you are using EAS Build or not. The primary difference is that you will need to configure the update [channel](/eas-update/eas-cli/) manually.
+Most of the [installation and configuration steps](/eas-update/getting-started) are identical whether or not you use EAS Build. The primary difference is how the update [channel](/eas-update/eas-cli/) is configured. When using EAS Build, the channel from **eas.json** will automatically be added to your build's **AndroidManifest.xml** and **Expo.plist** at build time. When not using EAS build, this must be configured manually by [setting the request header in the app config](/eas-update/getting-started/#configure-update-channels-in-appjson), followed by manually creating the channel on the server.
 
-A build of your app points to a single EAS Update channel that it will pull updates from, such as `preview` or `production`. Before you create a build, you'll need to configure the channel name. If you create a build with EAS Build, the channel name from **eas.json** will automatically be added to our build's **AndroidManifest.xml** and **Expo.plist** at build time. The primary difference between using EAS Update without EAS Build is that you will need to configure this field manually.
+<Terminal
+  cmd={[
+    '# Create a channel named `production` (for example, which points to the production EAS Update branch by default)',
+    '# Your channel names may vary depending on release process',
+    '$ eas channel:create production',
+  ]}
+  cmdCopy="eas channel:create production"
+/>

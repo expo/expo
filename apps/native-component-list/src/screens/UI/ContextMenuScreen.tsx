@@ -37,16 +37,16 @@ export default function ContextMenuScreen() {
         onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
       />
       <Switch
-        checked={switchChecked}
+        value={switchChecked}
         label="Do u love doggos?"
         variant="checkbox"
-        onCheckedChanged={({ nativeEvent: { checked } }) => setSwitchChecked(checked)}
+        onValueChange={setSwitchChecked}
       />
       <Switch
-        checked={switch2Checked}
+        value={switch2Checked}
         variant="switch"
         label="Will u marry doggos?"
-        onCheckedChanged={({ nativeEvent: { checked } }) => setSwitch2Checked(checked)}
+        onValueChange={setSwitch2Checked}
       />
       <Button role="destructive" systemImage="hand.thumbsdown">
         I don't like doggos 😡

@@ -74,6 +74,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
       'apple/AppleMaps.types.ts',
       'google/GoogleMapsView.tsx',
       'google/GoogleMaps.types.ts',
+      'google/GoogleStreetView.tsx',
     ],
   ],
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],

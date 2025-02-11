@@ -211,12 +211,14 @@ jobs:
     type: get-build
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: production
   get_ios_build:
     name: Check for existing ios build
     needs: [fingerprint]
     type: get-build
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: production
   build_android:
     name: Build Android
     needs: [get_android_build]
@@ -251,7 +253,7 @@ jobs:
     if: ${{ needs.get_android_build.outputs.build_id }}
     type: update
     params:
-      branch: ${{ github.ref || 'test' }}
+      branch: production
       platform: android
   publish_ios_update:
     name: Publish iOS update
@@ -259,6 +261,6 @@ jobs:
     if: ${{ needs.get_ios_build.outputs.build_id }}
     type: update
     params:
-      branch: ${{ github.ref || 'test' }}
+      branch: production
       platform: ios
 ```

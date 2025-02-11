@@ -93,7 +93,7 @@ function resolvePluginForModule(projectRoot, pluginReference) {
       };
     }
   }
-  throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`, 'PLUGIN_NOT_FOUND');
+  throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`, 'PLUGIN_NOT_FOUND');
 }
 
 // TODO: Test windows
