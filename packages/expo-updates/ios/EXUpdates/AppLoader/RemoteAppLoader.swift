@@ -105,7 +105,7 @@ public final class RemoteAppLoader: AppLoader {
           fromURL: assetUrl,
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,
-          extraHeaders: extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { (current, _) in current }
+          extraHeaders: extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { current, _ in current }
         ) { data, response, _ in
           DispatchQueue.global().async {
             self.handleAssetDownload(withData: data, response: response, asset: asset)
