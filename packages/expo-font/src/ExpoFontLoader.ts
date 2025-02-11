@@ -7,6 +7,7 @@ const m =
         getLoadedFonts() {
           return [];
         },
+        loadAsync() {},
       }
     : requireNativeModule('ExpoFontLoader');
 export default m;
