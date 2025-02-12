@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `didNotificationResponseReceived` being duplicating fired for pending notification responses. ([#34849](https://github.com/expo/expo/pull/34849) by [@xc2](https://github.com/xc2))
+
 ### 💡 Others
 
 - Add better error when Firebase is not set up ([#34694](https://github.com/expo/expo/pull/34694) by [@vonovak](https://github.com/vonovak))
