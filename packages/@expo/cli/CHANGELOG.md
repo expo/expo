@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Preserve proxy leases on webcontainers ([#34831](https://github.com/expo/expo/pull/34831) by [@kitten](https://github.com))
+
 ## 0.22.13 — 2025-02-06
 
 _This version does not introduce any user-facing changes._
