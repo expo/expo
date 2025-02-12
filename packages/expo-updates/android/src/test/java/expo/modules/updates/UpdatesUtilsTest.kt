@@ -87,8 +87,8 @@ class UpdatesUtilsTest : TestCase() {
   fun testBytesToHex_negativeByteInArray() {
     val hashString = "B04C4878AFAEDEADBEEFCAFEBABE0123456789ABCDEF0123456789ABCDEF0123"
     val hashBytes = hashString.chunked(2)
-        .map { it.toInt(16).toByte() }
-        .toByteArray()
+      .map { it.toInt(16).toByte() }
+      .toByteArray()
 
     Assert.assertEquals(
       hashString,
