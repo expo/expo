@@ -18,6 +18,7 @@
 - fix E2E tests in Detox debug build ([#32951](https://github.com/expo/expo/pull/32951) by [@matejkriz](https://github.com/matejkriz))
 - Fix issue where syncing codesigning config for bare projects would clobber existing Expo.plist config ([#34597](https://github.com/expo/expo/pull/34597) by [@brentvatne](https://github.com/brentvatne))
 - Removed Apache Commons IO dependency and fixed crash issue on Android 7. ([#34638](https://github.com/expo/expo/pull/34638) by [@kudo](https://github.com/kudo))
+- [Android] Fix `bytesToHex` `ArrayIndexOutOfBoundsException` during conversion. ([#34855](https://github.com/expo/expo/pull/34855) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
