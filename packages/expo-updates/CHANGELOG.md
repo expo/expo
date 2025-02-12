@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `bytesToHex` `ArrayIndexOutOfBoundsException` during conversion. ([#34855](https://github.com/expo/expo/pull/34855) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 0.26.17 — 2025-02-06
