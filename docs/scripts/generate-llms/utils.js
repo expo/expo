@@ -249,3 +249,57 @@ export function generateSectionMarkdown(section) {
 
   return content;
 }
+
+function generateVideoUrl(videoId) {
+  return `https://www.youtube.com/watch?v=${videoId}`;
+}
+
+function processTalks(talks, type = 'video') {
+  return talks.map(talk => {
+    if (type === 'podcast' && talk.link) {
+      return {
+        title: talk.title,
+        url: talk.link,
+      };
+    }
+
+    return {
+      title: talk.title,
+      url: talk.videoId ? generateVideoUrl(talk.videoId) : '',
+    };
+  });
+}
+
+export async function exportTalksData() {
+  const { TALKS, PODCASTS, LIVE_STREAMS, YOUTUBE_VIDEOS } = await import('./talks.js');
+  return {
+    title: 'Additional Resources',
+    description: 'Collection of talks, podcasts, and live streams from the Expo team',
+    sections: [
+      {
+        title: 'Conference Talks',
+        items: processTalks(TALKS),
+        groups: [],
+        sections: [],
+      },
+      {
+        title: 'Podcasts',
+        items: processTalks(PODCASTS, 'podcast'),
+        groups: [],
+        sections: [],
+      },
+      {
+        title: 'Live Streams',
+        items: processTalks(LIVE_STREAMS),
+        groups: [],
+        sections: [],
+      },
+      {
+        title: 'YouTube Tutorials',
+        items: processTalks(YOUTUBE_VIDEOS),
+        groups: [],
+        sections: [],
+      },
+    ],
+  };
+}

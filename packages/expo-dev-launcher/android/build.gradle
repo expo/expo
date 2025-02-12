@@ -1,60 +1,12 @@
-apply plugin: 'com.android.library'
+import expo.modules.plugin.gradle.ExpoModuleExtension
 
-def useLegacyExpoModulesCorePlugin = {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-  useCoreDependencies()
-  useDefaultAndroidSdkVersions()
-}
-
-def usesModernPlugin = true
-try {
-  apply plugin: 'expo-module-gradle-plugin'
-} catch (e) {
-  if (!e instanceof UnknownPluginException) {
-    throw e
-  }
-
-  usesModernPlugin = false
-  useLegacyExpoModulesCorePlugin()
-}
-
-def versionToNumber(major, minor, patch) {
-  return major * 10000 + minor * 100 + patch
-}
-
-def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = providers.exec {
-    workingDir(projectDir)
-    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
-  }.standardOutput.asText.get().trim()
-  def version = safeExtGet(overridePropName, nodeModulesVersion)
-
-  def coreVersion = version.split("-")[0]
-  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
-
-  return versionToNumber(
-      major,
-      minor,
-      patch
-  )
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
 }
 
 def getRNVersion = {
-  if (usesModernPlugin) {
-    return project.extensions.getByType(expo.modules.plugin.gradle.ExpoModuleExtension).reactNativeVersion.toNumber()
-  } else {
-    // TODO(@lukmccall): Remove when we drop support for the legacy core plugin
-    return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
-  }
-}
-
-buildscript {
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
+  return project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
 }
 
 android {
@@ -68,20 +20,15 @@ android {
     buildTypes.each {
       it.buildConfigField 'String', 'VERSION', "\"${defaultConfig.versionName}\""
     }
-
-    releaseWithDevLauncher {
-      initWith release
-      matchingFallbacks = ['release', 'debug']
-    }
   }
 
   sourceSets {
     def rnVersion = getRNVersion()
     main {
       java {
-        if (rnVersion >= versionToNumber(0, 77, 0)) {
+        if (rnVersion.isAtLeast(0, 77, 0)) {
           srcDirs += "src/rn77/main"
-        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
+        } else if (rnVersion.isAtLeast(0, 74, 0)) {
           // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
           srcDirs += "src/rn74/main"
         }
@@ -89,16 +36,13 @@ android {
     }
     debug {
       java {
-        if (rnVersion >= versionToNumber(0, 77, 0)) {
+        if (rnVersion.isAtLeast(0, 77, 0)) {
           srcDirs += "src/rn77/debug"
-        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
+        } else if (rnVersion.isAtLeast(0, 74, 0)) {
           // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
           srcDirs += "src/rn74/debug"
         }
       }
-    }
-    releaseWithDevLauncher {
-      setRoot 'src/debug'
     }
   }
 

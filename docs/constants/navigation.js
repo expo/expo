@@ -324,7 +324,6 @@ export const general = [
       makePage('workflow/upgrading-expo-sdk-walkthrough.mdx'),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
-        makePage('guides/sharing-preview-releases.mdx'),
         makePage('guides/using-hermes.mdx'),
         makePage('guides/ios-developer-mode.mdx'),
         makePage('guides/icons.mdx'),
@@ -386,6 +385,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/examples.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/upgrade.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
