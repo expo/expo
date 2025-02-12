@@ -42,7 +42,7 @@ export default function UIScreen() {
             </>
           )}
         </Section>
-        <>
+        {Platform.OS === 'ios' && (
           <Section title="Button Roles">
             <Button style={styles.button} role="default">
               Default
@@ -54,47 +54,40 @@ export default function UIScreen() {
               Destructive
             </Button>
           </Section>
-
-          <Section title="Button Images">
-            <Button
-              variant="bordered"
-              style={styles.button}
-              systemImage={Platform.select({
-                ios: 'folder.badge.plus',
-                android: 'person',
-              })}>
-              Folder
-            </Button>
-            <Button
-              variant="elevated"
-              style={styles.button}
-              systemImage={Platform.select({
-                ios: 'tortoise.fill',
-                android: 'bug_report',
-              })}>
-              Tortoise
-            </Button>
-            <Button
-              variant="borderless"
-              style={styles.button}
-              systemImage={Platform.select({
-                ios: 'trash',
-                android: 'delete',
-              })}
-              elementColors={{ contentColor: '#FF6347' }}>
-              Trash
-            </Button>
-            <Button
-              variant="outlined"
-              style={styles.button}
-              systemImage={Platform.select({
-                ios: 'heart.fill',
-                android: 'favorite',
-              })}>
-              Heart
-            </Button>
-          </Section>
-        </>
+        )}
+        <Section title="Button Images">
+          <Button variant="bordered" style={styles.button} systemImage="folder">
+            Folder
+          </Button>
+          <Button
+            variant="elevated"
+            style={styles.button}
+            systemImage={Platform.select({
+              ios: 'tortoise.fill',
+              android: 'bug_report',
+            })}>
+            Tortoise
+          </Button>
+          <Button
+            variant="borderless"
+            style={styles.button}
+            systemImage={Platform.select({
+              ios: 'trash',
+              android: 'delete',
+            })}
+            elementColors={{ contentColor: '#FF6347' }}>
+            Trash
+          </Button>
+          <Button
+            variant="outlined"
+            style={styles.button}
+            systemImage={Platform.select({
+              ios: 'heart.fill',
+              android: 'favorite',
+            })}>
+            Heart
+          </Button>
+        </Section>
         {Platform.OS === 'android' && (
           <Section title="Android Custom Colored Buttons">
             <Button
