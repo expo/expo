@@ -34,12 +34,14 @@ on:
       - packages/expo-linking/**
       - packages/expo-localization/**
       - packages/expo-manifests/**
+      - packages/expo-media-library/**
       - packages/expo-modules-autolinking/**
       - packages/expo-modules-core/**
       - packages/expo-network/**
       - packages/expo-secure-store/**
       - packages/expo-splash-screen/**
       - packages/expo-symbols/**
+      - packages/expo-system-ui/**
       - packages/expo-structured-headers/**
       - packages/expo-ui/**
       - packages/expo-updates-interface/**
