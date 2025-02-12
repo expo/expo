@@ -11,7 +11,7 @@ EAS Update enables an app to update its own non-native pieces (such as JS, styli
 
 Each subscription plan includes a predefined bandwidth allocation per billing cycle, which translates to a specific number of updates your users can download. Here's how we estimate bandwidth usage:
 
-- **Update size:** The key factor in bandwidth consumption is the size of update assets that are not already on the device. If an update only modifies the JavaScript portion of your app, users will only download the new Javascript. To begin an example, if the uncompressed Javascript portion is **10 MB**, compression can further reduce its size.
+- **Update size:** The key factor in bandwidth consumption is the size of update assets that are not already on the device. If an update only modifies the JavaScript portion of your app, users will only download the new Javascript. To begin an example, let's say the uncompressed Javascript portion generated during export is **10 MB**. Compression will further reduce its size.
 - **Compression ratio:** The level of compression depends on the file type. JavaScript and Hermes bytecode (commonly used in React Native apps) can be compressed, while images and icons are not automatically compressed. In the example above, a Hermes bytecode bundle achieves an estimated **2.6× compression ratio**, reducing the actual download size to:
 
   ```text
