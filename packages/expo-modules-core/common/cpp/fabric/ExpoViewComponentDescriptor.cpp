@@ -23,8 +23,26 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
 
   const auto snode = dynamic_cast<ExpoViewShadowNode *>(&shadowNode);
   const auto state = snode->getStateData();
-  if (!isnan(state._width) or !isnan(state._height)) {
-    snode->setSize({state._width, state._height});
+
+  auto width = state._width;
+  auto height = state._height;
+
+  if (!isnan(width) or !isnan(height)) {
+    auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(snode->getProps());
+
+    // The node has width and/or height set – shadowNodeProxy.setSize() was called.
+    auto widthProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Width);
+    auto heightProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Height);
+
+    if(widthProp.value().isDefined()) {
+      // view has fixed dimension size set in props, so we should not autosize it in that axis
+      width = widthProp.value().unwrap();
+    }
+    if(heightProp.value().isDefined()) {
+      height = heightProp.value().unwrap();
+    }
+
+    snode->setSize({width, height});
   }
   ConcreteComponentDescriptor::adopt(shadowNode);
 }
