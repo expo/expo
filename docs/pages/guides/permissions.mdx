@@ -41,7 +41,7 @@ The only way to remove permissions that are added by package-level **AndroidMani
 
 <ConfigReactNative>
 
-Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:node="remove"` attribute to a `<use-permission>` tag to ensure it is removed, even if it's included in a library **AndroidManifest.xml**.
+Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:node="remove"` attribute to a `<use-permission>` tag to ensure it is removed, even if it's included in a library's **AndroidManifest.xml**.
 
 ```xml
 <manifest xmlns:tools="http://schemas.android.com/tools">
