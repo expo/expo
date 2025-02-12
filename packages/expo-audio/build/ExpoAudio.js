@@ -54,7 +54,7 @@ export function useAudioRecorderState(recorder, interval = 500) {
             setState(recorder.getStatus());
         }, interval);
         return () => clearInterval(int);
-    }, [recorder.id]);
+    }, [recorder.id, interval]);
     return state;
 }
 /**

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed useAudioRecorderState not reacting to interval change
+
 ### 💡 Others
 
 ## 0.3.4 — 2025-01-19
