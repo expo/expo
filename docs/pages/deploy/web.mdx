@@ -1,4 +1,43 @@
 ---
 title: Publish your web app
-description: Learn how to publish your React app.
+sidebar_title: Deploy web apps
+description: Learn how to deploy your web app using EAS Hosting.
 ---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+If you are building a universal app, you can quickly deploy your React app using [EAS Hosting](/eas/hosting/introduction/). It is a service for deploying web apps built with Expo Router and React.
+
+## Prerequisites
+
+Before you begin, in your project's **app.json** file, ensure that the [`expo.web.output`](/versions/latest/config/app/#output) property either `static` or `server`.
+
+## Export your web project
+
+To deploy your web app, you need to create a static build of your web project. Export your web project into a **dist** directory by running the following command:
+
+<Terminal cmd={['$ npx expo export --platform web']} />
+
+> Remember to re-run this command every time before deploying when you make changes to your web app.
+
+## Initial deployment
+
+To publish your web app, run the following [EAS CLI](/develop/tools/#eas-cli) command:
+
+<Terminal cmd={['$ eas deploy']} />
+
+After running this command for the first time, you'll be prompted to select a preview subdomain for your project. This subdomain is a prefix used to create a preview URL and is used for production deployments. For example, in `https://test-app--1234.expo.app`, `test-app` is the preview subdomain.
+
+Once your deployment is complete, the EAS CLI will output a preview URL to access your deployed app.
+
+## Production deployment
+
+To create a production deployment, run the following [EAS CLI](/develop/tools/#eas-cli) command:
+
+<Terminal cmd={['$ eas deploy --prod']} />
+
+Once your deployment is complete, the EAS CLI will output a production URL to access your deployed app.
+
+## Learn more
+
+You can learn more about setting up [deployment aliases](/eas/hosting/deployments-and-aliases/), using a [custom domain](/eas/hosting/custom-domain/), or [deploying an API Route](/router/reference/api-routes/#deployment).
