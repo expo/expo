@@ -10,7 +10,7 @@ import path from 'path';
  */
 const ANDROID_DEFAULT_LOCATION: Readonly<Partial<Record<NodeJS.Platform, string>>> = {
   darwin: path.join(os.homedir(), 'Library', 'Android', 'sdk'),
-  linux: path.join(os.homedir(), 'Android', 'sdk'),
+  linux: path.join(os.homedir(), 'Android', 'Sdk'),
   win32: path.join(os.homedir(), 'AppData', 'Local', 'Android', 'Sdk'),
 };
 
