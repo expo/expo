@@ -19,13 +19,21 @@ import {
   validatePackageWithWarning,
 } from './validateApplicationId';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
+import { getSettings } from '../api/user/UserSettings';
 import * as Log from '../log';
 
 const debug = require('debug')('expo:app-id') as typeof console.log;
 
+const ANONYMOUS_USERNAME = 'anonymous';
+
 async function getRecommendedReverseDomainNameSecondPartAsync(
   exp: ExpoConfig
 ): Promise<string | null> {
+  // Get the cached username.
+  const cachedUsername = getSettings().read().auth?.username;
+  if (cachedUsername) {
+    return cachedUsername;
+  }
   const easProjectId = exp.extra?.eas?.projectId;
   if (!easProjectId) {
     return null;
@@ -150,16 +158,12 @@ async function getRecommendedBundleIdAsync(exp: ExpoConfig): Promise<string | un
     return possibleIdFromAndroid;
   } else {
     const recommendedReverseDomainNameSecondPart =
-      await getRecommendedReverseDomainNameSecondPartAsync(exp);
-    if (recommendedReverseDomainNameSecondPart) {
-      const possibleId = getSanitizedBundleIdentifier(
-        `com.${recommendedReverseDomainNameSecondPart}.${exp.slug}`
-      );
-      if (validateBundleId(possibleId)) {
-        return possibleId;
-      }
-    } else {
-      debug('Could not generate recommended name from EAS');
+      (await getRecommendedReverseDomainNameSecondPartAsync(exp)) ?? ANONYMOUS_USERNAME;
+    const possibleId = getSanitizedBundleIdentifier(
+      `com.${recommendedReverseDomainNameSecondPart}.${exp.slug}`
+    );
+    if (validateBundleId(possibleId)) {
+      return possibleId;
     }
   }
 
@@ -177,20 +181,17 @@ async function getRecommendedPackageNameAsync(exp: ExpoConfig): Promise<string |
     return possibleIdFromApple;
   } else {
     const recommendedReverseDomainNameSecondPart =
-      await getRecommendedReverseDomainNameSecondPartAsync(exp);
-    if (recommendedReverseDomainNameSecondPart) {
-      const possibleId = getSanitizedPackage(
-        `com.${recommendedReverseDomainNameSecondPart}.${exp.slug}`
-      );
-      if (validatePackage(possibleId)) {
-        return possibleId;
-      } else {
-        debug(
-          `Recommended package name is invalid: "${possibleId}" (owner: ${recommendedReverseDomainNameSecondPart}, slug: ${exp.slug})`
-        );
-      }
+      (await getRecommendedReverseDomainNameSecondPartAsync(exp)) ?? ANONYMOUS_USERNAME;
+
+    const possibleId = getSanitizedPackage(
+      `com.${recommendedReverseDomainNameSecondPart}.${exp.slug}`
+    );
+    if (validatePackage(possibleId)) {
+      return possibleId;
     } else {
-      debug('Could not generate recommended name from EAS');
+      debug(
+        `Recommended package name is invalid: "${possibleId}" (owner: ${recommendedReverseDomainNameSecondPart}, slug: ${exp.slug})`
+      );
     }
   }
   return undefined;
