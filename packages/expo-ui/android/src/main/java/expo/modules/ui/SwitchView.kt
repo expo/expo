@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.MaterialTheme
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Switch
@@ -13,13 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
 
-open class CheckedChangedEvent(
-  @Field open val checked: Boolean = false
+open class ValueChangeEvent(
+  @Field open val value: Boolean = false
 ) : Record, Serializable
 
 class SwitchColors : Record {
@@ -55,22 +55,22 @@ class SwitchColors : Record {
 }
 
 data class SwitchProps(
-  val checked: MutableState<Boolean> = mutableStateOf(false),
+  val value: MutableState<Boolean> = mutableStateOf(false),
   val variant: MutableState<String> = mutableStateOf("switch"),
   val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors())
 ) : ComposeProps
 
 class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<SwitchProps>(context, appContext) {
   override val props = SwitchProps()
-  private val onCheckedChanged by EventDispatcher<CheckedChangedEvent>()
+  private val onValueChange by EventDispatcher<ValueChangeEvent>()
 
   init {
     setContent {
-      val (checked) = props.checked
+      val (checked) = props.value
       val (variant) = props.variant
       val (colors) = props.elementColors
       val onCheckedChange = { checked: Boolean ->
-        onCheckedChanged(CheckedChangedEvent(checked))
+        onValueChange(ValueChangeEvent(checked))
       }
 
       @Composable
@@ -83,7 +83,7 @@ class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<Swi
             checkedThumbColor = colors.checkedThumbColor.composeOrNull ?: SwitchDefaults.colors().checkedThumbColor,
             checkedTrackColor = colors.checkedTrackColor.composeOrNull ?: SwitchDefaults.colors().checkedTrackColor,
             uncheckedThumbColor = colors.uncheckedThumbColor.composeOrNull ?: SwitchDefaults.colors().uncheckedThumbColor,
-            uncheckedTrackColor = colors.uncheckedTrackColor.composeOrNull ?: SwitchDefaults.colors().uncheckedTrackColor,
+            uncheckedTrackColor = colors.uncheckedTrackColor.composeOrNull ?: SwitchDefaults.colors().uncheckedTrackColor
           )
         )
       }
@@ -105,10 +105,12 @@ class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<Swi
       }
 
       DynamicTheme {
-        if (variant == "switch") {
-          SwitchComposable()
-        } else {
-          CheckboxComposable()
+        AutoSizingComposable(shadowNodeProxy) {
+          if (variant == "switch") {
+            SwitchComposable()
+          } else {
+            CheckboxComposable()
+          }
         }
       }
     }

@@ -58,9 +58,13 @@ on:
 
 ### `on.push`
 
-Runs your workflow when you push a commit to matching branches.
+Runs your workflow when you push a commit to matching branches and/or tags.
 
-With the `branches` array, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only push to the `main` branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on push events to all branches.
+With the `branches` array, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only push to the `main` branch will trigger the workflow. Supports globs.
+
+With the `tags` array, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed will trigger the workflow. Supports globs.
+
+When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger on push events to all branches and will not trigger on tag pushes. If only one of the two arrays is provided the other defaults to `[]`.
 
 ```yaml
 on:
@@ -70,7 +74,11 @@ on:
     branches:
       - 'main'
       - 'feature/**'
-      # other branches names and globs
+      # other branch names and globs
+    tags:
+      - 'v1'
+      - 'v2*'
+      # other tag names and globs
 ```
 
 ### `on.pull_request`
@@ -84,6 +92,7 @@ With the `types` array, you can trigger the workflow only on the specified pull 
 - `opened`
 - `reopened`
 - `synchronize`
+- `labeled`
 
 ```yaml
 on:
@@ -97,6 +106,37 @@ on:
     types:
       - 'opened'
       # other event types
+```
+
+### `on.pull_request_labeled`
+
+Runs your workflow when a pull request is labeled with a matching label.
+
+With the `labels` array, you can specify which labels, when assigned to your pull request, will trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label will trigger the workflow. Defaults to `[]` when not provided, which means no labels will trigger the workflow.
+
+You can also provide the list of matching labels directly to `on.pull_request_labeled` for simpler syntax.
+
+```yaml
+on:
+  # @info #
+  pull_request_labeled:
+    # @end #
+    labels:
+      - 'Test'
+      - 'Preview'
+      # other labels
+```
+
+Alternatively:
+
+```yaml
+on:
+  # @info #
+  pull_request_labeled:
+    # @end #
+    - 'Test'
+    - 'Preview'
+    # other labels
 ```
 
 ## `jobs`

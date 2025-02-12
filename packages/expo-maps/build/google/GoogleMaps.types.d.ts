@@ -1,8 +1,11 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
 import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { Coordinates } from '../shared.types';
-export type Marker = {
+import { CameraPosition, Coordinates } from '../shared.types';
+/**
+ * @platform android
+ */
+export type GoogleMapsMarker = {
     /**
      * The coordinates of the marker.
      */
@@ -28,28 +31,23 @@ export type Marker = {
      */
     icon?: SharedRefType<'image'>;
 };
-export type UserLocation = {
+/**
+ * @platform android
+ */
+export type GoogleMapsUserLocation = {
     /**
      * User location coordinates.
      */
     coordinates: Coordinates;
     /**
-     * Should the camera follow the users location.
+     * Should the camera follow the users' location.
      */
     followUserLocation: boolean;
 };
-export type CameraPosition = {
-    /**
-     * The middle point of the camera.
-     */
-    coordinates?: Coordinates;
-    /**
-     * The zoom level of the camera.
-     * For some view sizez, lower zoom levels might not be available.
-     */
-    zoom?: number;
-};
-export type MapUiSettings = {
+/**
+ * @platform android
+ */
+export type GoogleMapsUISettings = {
     /**
      * Whether the compass is enabled on the map.
      * If enabled, the compass is only visible when the map is rotated.
@@ -93,19 +91,18 @@ export type MapUiSettings = {
     zoomGesturesEnabled?: boolean;
     /**
      * Whether the scale bar is displayed when zooming.
-     * @platform ios
      */
     scaleBarEnabled?: boolean;
     /**
      * Whether the user is allowed to change the pitch type.
-     * @platform ios
      */
     togglePitchEnabled?: boolean;
 };
 /**
  * The type of map to display.
+ * @platform android
  */
-export declare enum MapType {
+export declare enum GoogleMapsMapType {
     /**
      * Satellite imagery with roads and points of interest overlayed.
      */
@@ -123,7 +120,10 @@ export declare enum MapType {
      */
     TERRAIN = "TERRAIN"
 }
-export type MapProperties = {
+/**
+ * @platform android
+ */
+export type GoogleMapsProperties = {
     /**
      * Whether the building layer is enabled on the map.
      */
@@ -143,30 +143,33 @@ export type MapProperties = {
     /**
      * Defines which map type should be used.
      */
-    mapType?: MapType;
+    mapType?: GoogleMapsMapType;
     /**
      * If true, the user can select a location on the map to get more information.
-     * @platform ios
      */
     selectionEnabled?: boolean;
     /**
      * The maximum zoom level for the map.
-     * @platform android
      */
     maxZoomPreference?: number;
     /**
      * The minimum zoom level for the map.
-     * @platform android
      */
     minZoomPreference?: number;
 };
-export declare enum MapColorScheme {
+/**
+ * @platform android
+ */
+export declare enum GoogleMapsColorScheme {
     LIGHT = "LIGHT",
     DARK = "DARK",
     FOLLOW_SYSTEM = "FOLLOW_SYSTEM"
 }
-export type MapProps = {
-    ref?: Ref<MapViewType>;
+/**
+ * @platform android
+ */
+export type GoogleMapsViewProps = {
+    ref?: Ref<GoogleMapsViewType>;
     style?: StyleProp<ViewStyle>;
     /**
      * The initial camera position of the map.
@@ -175,23 +178,23 @@ export type MapProps = {
     /**
      * The array of markers to display on the map.
      */
-    markers?: Marker[];
+    markers?: GoogleMapsMarker[];
     /**
      * The `MapUiSettings` to be used for UI-specific settings on the map.
      */
-    uiSettings?: MapUiSettings;
+    uiSettings?: GoogleMapsUISettings;
     /**
      * The properties for the map.
      */
-    properties?: MapProperties;
+    properties?: GoogleMapsProperties;
     /**
      * Defines the color scheme for the map.
      */
-    colorScheme?: MapColorScheme;
+    colorScheme?: GoogleMapsColorScheme;
     /**
      * User location, overrides default behavior.
      */
-    userLocation?: UserLocation;
+    userLocation?: GoogleMapsUserLocation;
     /**
      * Lambda invoked when the map is loaded.
      */
@@ -219,7 +222,7 @@ export type MapProps = {
     /**
      * Lambda invoked when the marker is clicked
      */
-    onMarkerClick?: (event: Marker) => void;
+    onMarkerClick?: (event: GoogleMapsMarker) => void;
     /**
      * Lambda invoked when the map was moved by the user.
      */
@@ -230,21 +233,29 @@ export type MapProps = {
         bearing: number;
     }) => void;
 };
+/**
+ * @platform android
+ */
 export type SetCameraPositionConfig = CameraPosition & {
     /**
      * The duration of the animation in milliseconds.
      */
     duration?: number;
 };
-export type MapViewType = {
+/**
+ * @platform android
+ */
+export type GoogleMapsViewType = {
     /**
      * Update camera position.
-     *
-     * @param config New camera postion config.
+     * @param config New camera position config.
      */
     setCameraPosition: (config?: SetCameraPositionConfig) => void;
 };
-export type StreetViewProps = {
+/**
+ * @platform android
+ */
+export type GoogleStreetViewProps = {
     style?: StyleProp<ViewStyle>;
     position?: Coordinates;
     isPanningGesturesEnabled?: boolean;

@@ -69,7 +69,7 @@ open class LoaderFiles {
       context.resources.openRawResource(id)
         .use { inputStream -> return UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, null) }
     } catch (e: Exception) {
-      Log.e(TAG, "Failed to copy asset " + asset.embeddedAssetFilename, e)
+      Log.e(TAG, "Failed to copy resource asset ${asset.resourcesFolder}/${asset.embeddedAssetFilename}", e)
       throw e
     }
   }

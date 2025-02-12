@@ -10,6 +10,6 @@ import { DocumentPickerOptions, DocumentPickerResult } from './types';
  *
  * If the user cancelled the document picking, the promise resolves to `{ type: 'cancel' }`.
  */
-export declare function getDocumentAsync({ type, copyToCacheDirectory, multiple, }?: DocumentPickerOptions): Promise<DocumentPickerResult>;
+export declare function getDocumentAsync({ type, copyToCacheDirectory, multiple, base64, }?: DocumentPickerOptions): Promise<DocumentPickerResult>;
 export * from './types';
 //# sourceMappingURL=index.d.ts.map

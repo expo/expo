@@ -6,10 +6,6 @@ import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.extra
 
-private const val defaultCompileSdkVersion = 35
-private const val defaultMinSdkVersion = 24
-private const val defaultTargetSdkVersion = 35
-
 internal fun Project.applyDefaultPlugins() {
   if (!plugins.hasPlugin("com.android.library")) {
     plugins.apply("com.android.library")
@@ -35,10 +31,13 @@ internal fun Project.applyDefaultDependencies() {
 
 internal fun Project.applyDefaultAndroidSdkVersions() {
   extensions.getByType(LibraryExtension::class.java).apply {
-    compileSdk = project.extra.safeGet("compileSdkVersion") ?: defaultCompileSdkVersion
+    compileSdk = rootProject.extra.safeGet("compileSdkVersion")
+      ?: logger.warnIfNotDefined("compileSdkVersion", 35)
     defaultConfig {
-      minSdk = project.extra.safeGet("minSdkVersion") ?: defaultMinSdkVersion
-      targetSdk = project.extra.safeGet("targetSdkVersion") ?: defaultTargetSdkVersion
+      minSdk = rootProject.extra.safeGet("minSdkVersion")
+        ?: logger.warnIfNotDefined("minSdkVersion", 24)
+      targetSdk = rootProject.extra.safeGet("targetSdkVersion")
+        ?: logger.warnIfNotDefined("targetSdkVersion", 34)
     }
 
     lintOptions.isAbortOnError = false

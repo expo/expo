@@ -10,6 +10,9 @@ function useNativeEvent(userHandler) {
         userHandler?.(event.nativeEvent);
     }, [userHandler]);
 }
+/**
+ * @platform ios
+ */
 export function AppleMapsView({ onMapClick, onMarkerClick, onCameraMove, annotations, ...props }) {
     const onNativeMapClick = useNativeEvent(onMapClick);
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);

@@ -3,7 +3,6 @@ package expo.modules.ui
 import android.content.Context
 import android.graphics.Color
 import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoComposeView
@@ -13,10 +12,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.ui.button.ButtonColors
 
 class PickerColors : Record {
   @Field
@@ -72,33 +71,35 @@ class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<Pic
       val (options) = props.options
       val (colors) = props.elementColors
       DynamicTheme {
-        SingleChoiceSegmentedButtonRow {
-          options.forEachIndexed { index, label ->
-            SegmentedButton(
-              shape = SegmentedButtonDefaults.itemShape(
-                index = index,
-                count = options.size
-              ),
-              onClick = {
-                onOptionSelected(mapOf("index" to index, "label" to label))
-              },
-              selected = index == selectedIndex,
-              label = { Text(label) },
-              colors = SegmentedButtonDefaults.colors(
-                activeBorderColor = colors.activeBorderColor.compose,
-                activeContentColor = colors.activeContentColor.compose,
-                inactiveBorderColor = colors.inactiveBorderColor.compose,
-                inactiveContentColor = colors.inactiveContentColor.compose,
-                disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
-                disabledActiveContentColor = colors.disabledActiveContentColor.compose,
-                disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
-                disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
-                activeContainerColor = colors.activeContainerColor.compose,
-                inactiveContainerColor = colors.inactiveContainerColor.compose,
-                disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
-                disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
+        AutoSizingComposable(shadowNodeProxy) {
+          SingleChoiceSegmentedButtonRow {
+            options.forEachIndexed { index, label ->
+              SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(
+                  index = index,
+                  count = options.size
+                ),
+                onClick = {
+                  onOptionSelected(mapOf("index" to index, "label" to label))
+                },
+                selected = index == selectedIndex,
+                label = { Text(label) },
+                colors = SegmentedButtonDefaults.colors(
+                  activeBorderColor = colors.activeBorderColor.compose,
+                  activeContentColor = colors.activeContentColor.compose,
+                  inactiveBorderColor = colors.inactiveBorderColor.compose,
+                  inactiveContentColor = colors.inactiveContentColor.compose,
+                  disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
+                  disabledActiveContentColor = colors.disabledActiveContentColor.compose,
+                  disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
+                  disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
+                  activeContainerColor = colors.activeContainerColor.compose,
+                  inactiveContainerColor = colors.inactiveContainerColor.compose,
+                  disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
+                  disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
+                )
               )
-            )
+            }
           }
         }
       }

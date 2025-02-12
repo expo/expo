@@ -1,9 +1,12 @@
 import * as tunnel from '@expo/ws-tunnel';
 import chalk from 'chalk';
-import { randomBytes } from 'node:crypto';
+import * as fs from 'node:fs';
+import { hostname } from 'node:os';
+import * as path from 'node:path';
+import tempDir from 'temp-dir';
 
 import * as Log from '../../log';
-import { env } from '../../utils/env';
+import { env, envIsWebcontainer } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 
 const debug = require('debug')('expo:start:server:ws-tunnel') as typeof console.log;
@@ -49,18 +52,31 @@ export class AsyncWsTunnel {
   }
 }
 
+// Generate a base-36 string of 5 characters (from 32 bits of randomness)
+function randomStr() {
+  return (Math.random().toString(36) + '00000').slice(2, 7);
+}
+
+function getTunnelSession(): string {
+  let session = randomStr() + randomStr() + randomStr();
+  if (envIsWebcontainer()) {
+    const leaseId = Buffer.from(hostname()).toString('base64url');
+    const leaseFile = path.join(tempDir, `_ws_tunnel_lease_${leaseId}`);
+    try {
+      session = fs.readFileSync(leaseFile, 'utf8').trim() || session;
+      fs.writeFileSync(leaseFile, session, 'utf8');
+    } catch {}
+  }
+  return session;
+}
+
 function getTunnelOptions() {
   const userDefinedSubdomain = env.EXPO_TUNNEL_SUBDOMAIN;
   if (userDefinedSubdomain && typeof userDefinedSubdomain === 'string') {
     debug('Session:', userDefinedSubdomain);
     return { session: userDefinedSubdomain };
+  } else {
+    const session = getTunnelSession();
+    return { session };
   }
-
-  let session: string;
-  do {
-    // TODO(cedric): replace this with non-random data generated from server to manage and prevent overlapping sessions
-    session = randomBytes(12).toString('base64url');
-  } while (!/^[A-Za-z0-9]/.test(session));
-  debug('Session:', session);
-  return { session };
 }
