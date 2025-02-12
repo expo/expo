@@ -119,10 +119,7 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
     ...restProps,
     text: children ?? '',
     buttonRole: role,
-    systemImage: Platform.select({
-      ios: systemImage?.ios,
-      android: systemImage?.android,
-    }),
+    systemImage: systemImage?.[Platform.OS],
     onButtonPressed: onPress,
     elementColors: props.elementColors
       ? props.elementColors
