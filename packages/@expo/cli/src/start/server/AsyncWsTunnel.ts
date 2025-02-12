@@ -54,10 +54,7 @@ export class AsyncWsTunnel {
 
 // Generate a base-36 string of 5 characters (from 32 bits of randomness)
 function randomStr() {
-  let x = 1 + Math.round(Math.random() * (~1 >>> 0));
-  let out = '';
-  for (let i = 0; i < 5; i++, x = x >>> 6) out += (x % 36).toString(36);
-  return out;
+  return (Math.random().toString(36) + "00000").slice(2, 7);
 }
 
 function getTunnelSession(): string {
