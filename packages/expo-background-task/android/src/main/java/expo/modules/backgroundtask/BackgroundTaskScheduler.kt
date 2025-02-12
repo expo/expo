@@ -184,7 +184,7 @@ object BackgroundTaskScheduler {
     val consumers = taskService.getTaskConsumers(appScopeKey)
     Log.d(TAG, "runTasks: number of consumers ${consumers.size}")
 
-    if (consumers.size == 0) {
+    if (consumers.isEmpty()) {
       return false
     }
 
