@@ -64,6 +64,8 @@ function getTunnelSession(): string {
     const leaseFile = path.join(tempDir, `_ws_tunnel_lease_${leaseId}`);
     try {
       session = fs.readFileSync(leaseFile, 'utf8').trim() || session;
+    } catch {}
+    try {
       fs.writeFileSync(leaseFile, session, 'utf8');
     } catch {}
   }
