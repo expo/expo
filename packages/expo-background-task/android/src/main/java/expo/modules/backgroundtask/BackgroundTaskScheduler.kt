@@ -6,7 +6,9 @@ import android.util.Log
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
@@ -55,14 +57,16 @@ object BackgroundTaskScheduler {
   /**
    * Schedules the worker task to run. The worker should run periodically.
    */
-  suspend fun startWorker(context: Context, appScopeKey: String): Boolean {
+  suspend fun scheduleWorker(context: Context, appScopeKey: String, cancelExisting: Boolean = true): Boolean {
     if (numberOfRegisteredTasksOfThisType == 0) {
       Log.d(TAG, "Will not enqueue worker. No registered tasks to run.")
       return false
     }
 
     // Stop the current worker (if any)
-    stopWorker(context)
+    if (cancelExisting) {
+      stopWorker(context)
+    }
 
     Log.d(TAG, "Enqueuing worker with identifier $WORKER_IDENTIFIER")
 
@@ -75,37 +79,65 @@ object BackgroundTaskScheduler {
       .setRequiredNetworkType(NetworkType.CONNECTED)
       .build()
 
-    // Create the work request
-    val builder = PeriodicWorkRequestBuilder<BackgroundTaskWork>(
-      repeatIntervalTimeUnit = TimeUnit.MINUTES,
-      repeatInterval = intervalMinutes
-    )
-      .setInputData(data)
-      .setConstraints(constraints)
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      // Add minimum interval here as well so that the work doesn't start immediately
-      builder.setInitialDelay(Duration.ofMinutes(intervalMinutes))
-    }
-
-    // Create work request
-    val workRequest = builder.build()
-
     // Get Work manager
     val workManager = WorkManager.getInstance(context)
 
-    // Enqueue the work
-    return try {
-      workManager.enqueueUniquePeriodicWork(
-        WORKER_IDENTIFIER,
-        ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-        workRequest
-      ).await()
+    // We have two different paths here, since on Android 24-25 we need to use a periodic request
+    // builder since the OneTimeWorkRequest doesn't support setting initial delay (which is how we
+    // control executing a task periodically - we spawn a One-time work request when backgrounding,
+    // and when this is done we spawn a new one. This makes it a lot easier to debug since we can
+    // use adb to spawn jobs whenever we want)
+    // The following is the path we have to follow on  Android.O and later:
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      // Create the work request
+      val builder = OneTimeWorkRequestBuilder<BackgroundTaskWork>()
+        .setInputData(data)
+        .setConstraints(constraints)
 
-      true
-    } catch (e: Exception) {
-      Log.e(TAG, "Worker failed to start with error " + e.message)
-      false
+      // Add minimum interval here as well so that the work doesn't start immediately
+      builder.setInitialDelay(Duration.ofMinutes(intervalMinutes))
+
+      // Create work request
+      val workRequest = builder.build()
+
+      // Enqueue the work
+      return try {
+        workManager.enqueueUniqueWork(
+          WORKER_IDENTIFIER,
+          // This is where we decide if we should cancel or replace the task - cancelling is done
+          // when spawning the first task, while appending is when we spawn from a running task
+          // to set up the next periodic run of the task
+          if (cancelExisting) ExistingWorkPolicy.REPLACE else ExistingWorkPolicy.APPEND,
+          workRequest
+        ).await()
+
+        true
+      } catch (e: Exception) {
+        Log.e(TAG, "Worker failed to start with error " + e.message)
+        false
+      }
+    } else {
+      val builder = PeriodicWorkRequestBuilder<BackgroundTaskWork>(
+        repeatIntervalTimeUnit = TimeUnit.MINUTES,
+        repeatInterval = intervalMinutes
+      )
+
+      // Create work request
+      val workRequest = builder.build()
+
+      // Enqueue the work
+      return try {
+        workManager.enqueueUniquePeriodicWork(
+          WORKER_IDENTIFIER,
+          ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+          workRequest
+        ).await()
+
+        true
+      } catch (e: Exception) {
+        Log.e(TAG, "Worker failed to start with error " + e.message)
+        false
+      }
     }
   }
 
