@@ -56,35 +56,41 @@ export default function UIScreen() {
           </Section>
         )}
         <Section title="Button Images">
-          <Button variant="bordered" style={styles.button} systemImage="folder">
+          <Button
+            variant="bordered"
+            style={styles.button}
+            systemImage={{
+              ios: 'folder',
+              android: 'filled.AccountBox',
+            }}>
             Folder
           </Button>
           <Button
             variant="elevated"
             style={styles.button}
-            systemImage={Platform.select({
-              ios: 'tortoise.fill',
-              android: 'bug_report',
-            })}>
+            systemImage={{
+              ios: 'tortoise',
+              android: 'filled.Warning',
+            }}>
             Tortoise
           </Button>
           <Button
             variant="borderless"
             style={styles.button}
-            systemImage={Platform.select({
+            systemImage={{
               ios: 'trash',
-              android: 'delete',
-            })}
+              android: 'outlined.Delete',
+            }}
             elementColors={{ contentColor: '#FF6347' }}>
             Trash
           </Button>
           <Button
             variant="outlined"
             style={styles.button}
-            systemImage={Platform.select({
-              ios: 'heart.fill',
-              android: 'favorite',
-            })}>
+            systemImage={{
+              ios: 'heart',
+              android: 'outlined.Favorite',
+            }}>
             Heart
           </Button>
         </Section>

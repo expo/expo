@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Platform, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
+import MaterialIcon from './types';
 import { ViewEvent } from '../../src';
 
 /**
@@ -60,7 +61,10 @@ export type ButtonProps = {
    * @platform ios - SF Symbols
    * @platform android - Material Icons
    */
-  systemImage?: string;
+  systemImage?: {
+    ios?: string;
+    android?: MaterialIcon;
+  };
   /**
    * Indicated the role of the button.
    * @platform ios
@@ -94,9 +98,13 @@ export type ButtonProps = {
   color?: string;
 };
 
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children'> & {
+export type NativeButtonProps = Omit<
+  ButtonProps,
+  'role' | 'onPress' | 'children' | 'systemImage'
+> & {
   buttonRole?: ButtonRole;
   text: string;
+  systemImage?: string;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
@@ -106,11 +114,15 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
 );
 
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
-  const { role, children, onPress, ...restProps } = props;
+  const { role, children, onPress, systemImage, ...restProps } = props;
   return {
     ...restProps,
     text: children ?? '',
     buttonRole: role,
+    systemImage: Platform.select({
+      ios: systemImage?.ios,
+      android: systemImage?.android,
+    }),
     onButtonPressed: onPress,
     elementColors: props.elementColors
       ? props.elementColors

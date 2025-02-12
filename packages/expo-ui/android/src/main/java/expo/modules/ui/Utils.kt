@@ -3,7 +3,6 @@ package expo.modules.ui
 import android.graphics.Color
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -59,21 +58,10 @@ val Color?.composeOrNull: androidx.compose.ui.graphics.Color?
 fun getImageVector(icon: String?): ImageVector? {
   if (icon.isNullOrEmpty()) return null
   return try {
-    val iconsPackage = "androidx.compose.material.icons"
-    val iconName = snakeToPascalCase(icon)
-    val className = "${iconsPackage}.filled.${iconName}Kt"
-    Class.forName(className)
-      .getDeclaredMethod("get$iconName", Icons.Filled.javaClass)
-      .invoke(null, Icons.Filled) as ImageVector
-  } catch (e: Throwable) {
-    null
-  }
-}
-
-fun snakeToPascalCase(input: String): String {
-  return input.split('_').joinToString("") { word ->
-    word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-  }.let {
-    if (it.first().isDigit()) "_$it" else it
+    val (theme, name) = icon.split(".")
+    val clazz = Class.forName("androidx.compose.material.icons.$theme.${name}Kt")
+    clazz.declaredMethods[0].invoke(clazz::class, null) as ImageVector
+  } catch (e: Exception) {
+    return null
   }
 }
