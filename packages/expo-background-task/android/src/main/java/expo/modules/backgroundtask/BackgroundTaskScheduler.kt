@@ -82,7 +82,7 @@ object BackgroundTaskScheduler {
     // Get Work manager
     val workManager = WorkManager.getInstance(context)
 
-    // We have two different paths here, since on Android 24-25 we need to use a periodic request
+    // We have two different paths here, since on Android 14-15 we need to use a periodic request
     // builder since the OneTimeWorkRequest doesn't support setting initial delay (which is how we
     // control executing a task periodically - we spawn a One-time work request when backgrounding,
     // and when this is done we spawn a new one. This makes it a lot easier to debug since we can
