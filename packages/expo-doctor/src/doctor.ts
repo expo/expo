@@ -161,6 +161,9 @@ export async function actionAsync(projectRoot: string, showVerboseTestResults: b
             `${checksInScope.length - failedJobs.length}/${checksInScope.length} checks passed. ${failedJobs.length} checks failed. Possible issues detected:`
           )
         );
+        if (!showVerboseTestResults) {
+          Log.log('Use the --verbose flag to see more details about passed checks.');
+        }
         Log.log();
         // actual issues will output in order of the sequence of tests, due to rules of Promise.all()
         failedJobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
