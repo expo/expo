@@ -54,26 +54,19 @@ val Color?.composeOrNull: androidx.compose.ui.graphics.Color?
   get() = colorToComposeColorOrNull(this)
 
 
-// Icons
+/**
+ * Gets the ImageVector for a given icon name using reflection.
+ */
 fun getImageVector(icon: String?): ImageVector? {
   if (icon.isNullOrEmpty()) return null
   return try {
-    val iconsPackage = "androidx.compose.material.icons."
+    val iconsPackage = "androidx.compose.material.icons"
     val iconName = snakeToPascalCase(icon)
-    val className = buildString {
-      append(iconsPackage)
-      append("filled")
-      append('.')
-      append(iconName)
-      append("Kt")
-    }
-
-    Class.forName(className).getDeclaredMethod("get$iconName", Icons.Filled.javaClass).invoke(
-      null,
-      Icons.Filled
-    ) as ImageVector
+    val className = "${iconsPackage}.filled.${iconName}Kt"
+    Class.forName(className)
+      .getDeclaredMethod("get$iconName", Icons.Filled.javaClass)
+      .invoke(null, Icons.Filled) as ImageVector
   } catch (e: Throwable) {
-    println("icons ${e.message}")
     null
   }
 }
