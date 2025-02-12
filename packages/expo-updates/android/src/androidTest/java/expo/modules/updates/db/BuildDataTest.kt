@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.UpdatesConfigurationOverride
 import expo.modules.updates.db.entity.UpdateEntity
 import io.mockk.spyk
 import io.mockk.verify
@@ -77,6 +78,7 @@ class BuildDataTest {
     val buildDataJSON = spyBuildData.getBuildDataFromDatabase(db, scopeKey)
     assertNotNull(buildDataJSON)
     verify(exactly = 0) { spyBuildData.clearAllUpdatesFromDatabase(any()) }
+    verify(exactly = 0) { spyBuildData.clearManifestMetadataFromDatabase(any()) }
     verify(exactly = 1) { spyBuildData.setBuildDataInDatabase(any(), any()) }
   }
 
@@ -89,6 +91,7 @@ class BuildDataTest {
     assertTrue(isConsistentDefault)
     assertFalse(isConsistentTestChannel)
     verify(exactly = 0) { spyBuildData.clearAllUpdatesFromDatabase(any()) }
+    verify(exactly = 0) { spyBuildData.clearManifestMetadataFromDatabase(any()) }
     verify(exactly = 1) { spyBuildData.setBuildDataInDatabase(any(), any()) }
 
     spyBuildData.ensureBuildDataIsConsistent(updatesConfigTestTwoChannel, db)
@@ -99,6 +102,7 @@ class BuildDataTest {
     assertFalse(isConsistentDefaultAfter)
     assertTrue(isConsistentTestChannelAfter)
     verify(exactly = 1) { spyBuildData.clearAllUpdatesFromDatabase(any()) }
+    verify(exactly = 1) { spyBuildData.clearManifestMetadataFromDatabase(any()) }
     verify(exactly = 2) { spyBuildData.setBuildDataInDatabase(any(), any()) }
 
     val allUpdates = db.updateDao().loadAllUpdates()
@@ -114,6 +118,7 @@ class BuildDataTest {
     assertTrue(isConsistentTest)
     assertFalse(isConsistentTestTwo)
     verify(exactly = 0) { spyBuildData.clearAllUpdatesFromDatabase(any()) }
+    verify(exactly = 0) { spyBuildData.clearManifestMetadataFromDatabase(any()) }
     verify(exactly = 1) { spyBuildData.setBuildDataInDatabase(any(), any()) }
 
     spyBuildData.ensureBuildDataIsConsistent(updatesConfigTestChannel, db)
@@ -124,9 +129,72 @@ class BuildDataTest {
     assertTrue(isConsistentTestAfter)
     assertFalse(isConsistentTestTwoAfter)
     verify(exactly = 0) { spyBuildData.clearAllUpdatesFromDatabase(any()) }
+    verify(exactly = 0) { spyBuildData.clearManifestMetadataFromDatabase(any()) }
     verify(exactly = 1) { spyBuildData.setBuildDataInDatabase(any(), any()) }
 
     val allUpdates = db.updateDao().loadAllUpdates()
     assertEquals(1, allUpdates.size)
+  }
+
+  @Test
+  fun ensureBuildDataIsConsistent_buildDataIsInconsistent_configOverride() {
+    spyBuildData.setBuildDataInDatabase(db, updatesConfigTestChannel)
+
+    val configOverride = UpdatesConfigurationOverride(
+      Uri.parse("https://example.com"),
+      mapOf("expo-channel-name" to "fromOverride")
+    )
+    val configWithOverride = UpdatesConfiguration(
+      context = null,
+      overrideMap = buildMapTestChannel,
+      disableAntiBrickingMeasures = true,
+      configOverride = configOverride
+    )
+
+    spyBuildData.ensureBuildDataIsConsistent(configWithOverride, db)
+
+    val buildDataJSONTestChannel = spyBuildData.getBuildDataFromDatabase(db, scopeKey)!!
+    val isConsistentDefaultAfter = spyBuildData.isBuildDataConsistent(updatesConfigTestChannel, buildDataJSONTestChannel)
+    val isConsistentTestChannelAfter = spyBuildData.isBuildDataConsistent(configWithOverride, buildDataJSONTestChannel)
+    assertFalse(isConsistentDefaultAfter)
+    assertTrue(isConsistentTestChannelAfter)
+    verify(exactly = 1) { spyBuildData.clearAllUpdatesFromDatabase(any()) }
+    verify(exactly = 1) { spyBuildData.clearManifestMetadataFromDatabase(any()) }
+    verify(exactly = 2) { spyBuildData.setBuildDataInDatabase(any(), any()) }
+
+    val allUpdates = db.updateDao().loadAllUpdates()
+    assertEquals(0, allUpdates.size)
+  }
+
+  @Test
+  fun ensureBuildDataIsConsistent_buildDataIsInconsistent_hasEmbeddedUpdate() {
+    spyBuildData.setBuildDataInDatabase(db, updatesConfigTestChannel)
+
+    // Even the updateUrl and requestHeaders not changing here,
+    // using configOverride would disable embedded update and having inconsistent build data.
+    val configOverride = UpdatesConfigurationOverride(
+      Uri.parse("https://exp.host/@test/test"),
+      mapOf("expo-channel-name" to "test")
+    )
+    val configWithOverride = UpdatesConfiguration(
+      context = null,
+      overrideMap = buildMapTestChannel,
+      disableAntiBrickingMeasures = true,
+      configOverride = configOverride
+    )
+
+    spyBuildData.ensureBuildDataIsConsistent(configWithOverride, db)
+
+    val buildDataJSONTestChannel = spyBuildData.getBuildDataFromDatabase(db, scopeKey)!!
+    val isConsistentDefaultAfter = spyBuildData.isBuildDataConsistent(updatesConfigTestChannel, buildDataJSONTestChannel)
+    val isConsistentTestChannelAfter = spyBuildData.isBuildDataConsistent(configWithOverride, buildDataJSONTestChannel)
+    assertFalse(isConsistentDefaultAfter)
+    assertTrue(isConsistentTestChannelAfter)
+    verify(exactly = 1) { spyBuildData.clearAllUpdatesFromDatabase(any()) }
+    verify(exactly = 1) { spyBuildData.clearManifestMetadataFromDatabase(any()) }
+    verify(exactly = 2) { spyBuildData.setBuildDataInDatabase(any(), any()) }
+
+    val allUpdates = db.updateDao().loadAllUpdates()
+    assertEquals(0, allUpdates.size)
   }
 }

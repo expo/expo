@@ -140,11 +140,27 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
         promise.reject(error)
       }
     }
+
+    Function("setUpdateURLAndRequestHeadersOverride") { (configOverride: UpdatesConfigOverrideParam?) in
+      try AppController.sharedInstance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigOverride())
+    }
   }
 
   public func onStateMachineContextEvent(context: UpdatesStateContext) {
     sendEvent(EXUpdatesStateChangeEventName, [
       "context": context.json
     ])
+  }
+
+  internal struct UpdatesConfigOverrideParam: Record {
+    @Field var updateUrl: URL?
+    @Field var requestHeaders: [String: String]
+
+    func toUpdatesConfigOverride() -> UpdatesConfigOverride {
+      return UpdatesConfigOverride(
+        updateUrl: updateUrl,
+        requestHeaders: requestHeaders
+      )
+    }
   }
 }
