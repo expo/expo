@@ -53,7 +53,6 @@ val Color?.compose: androidx.compose.ui.graphics.Color
 val Color?.composeOrNull: androidx.compose.ui.graphics.Color?
   get() = colorToComposeColorOrNull(this)
 
-
 /**
  * Gets the ImageVector for a given icon name using reflection.
  */

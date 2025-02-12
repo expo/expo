@@ -57,6 +57,7 @@ export default function UIScreen() {
 
           <Section title="Button Images">
             <Button
+              variant="bordered"
               style={styles.button}
               systemImage={Platform.select({
                 ios: 'folder.badge.plus',
@@ -65,6 +66,7 @@ export default function UIScreen() {
               Folder
             </Button>
             <Button
+              variant="elevated"
               style={styles.button}
               systemImage={Platform.select({
                 ios: 'tortoise.fill',
@@ -73,14 +75,17 @@ export default function UIScreen() {
               Tortoise
             </Button>
             <Button
+              variant="borderless"
               style={styles.button}
               systemImage={Platform.select({
                 ios: 'trash',
                 android: 'delete',
-              })}>
+              })}
+              elementColors={{ contentColor: '#FF6347' }}>
               Trash
             </Button>
             <Button
+              variant="outlined"
               style={styles.button}
               systemImage={Platform.select({
                 ios: 'heart.fill',
