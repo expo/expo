@@ -146,7 +146,7 @@ class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonP
                 Icon(
                   it,
                   contentDescription = systemImage,
-                  modifier = Modifier.padding(end = 10.dp)
+                  modifier = Modifier.padding(end = 8.dp)
                 )
               }
               Text(text)
