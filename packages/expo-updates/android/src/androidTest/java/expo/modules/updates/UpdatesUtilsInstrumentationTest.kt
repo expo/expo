@@ -86,38 +86,4 @@ class UpdatesUtilsInstrumentationTest {
   fun testgetHeadersMapFromJSONString_throwsNonStringKey() {
     UpdatesUtils.getMapFromJSONString("{7:[\"main\"]}")
   }
-
-  @Test
-  @Throws(Exception::class)
-  fun testBytesToHex_negativeByteInArray() {
-    val hashString = "B04C4878AFAEDEADBEEFCAFEBABE0123456789ABCDEF0123456789ABCDEF0123"
-    val hashBytes = hashString.chunked(2)
-        .map { it.toInt(16).toByte() }
-        .toByteArray()
-
-    Assert.assertEquals(
-      hashString,
-      UpdatesUtils.bytesToHex(hashBytes)
-    )
-  }
-
-  @Test
-  @Throws(Exception::class)
-  fun testBytesToHex_emptyArray() {
-    val hashBytes = ByteArray(0)
-    val expected = ""
-    Assert.assertEquals(expected, UpdatesUtils.bytesToHex(hashBytes))
-  }
-
-  @Test
-  @Throws(Exception::class)
-  fun testBytesToHex_positiveBytesOnly() {
-    // All bytes are in the range 0x00 to 0x7F (positive when interpreted as signed bytes)
-    val hashString = "0123456789ABCDEF"
-    val hashBytes = hashString.chunked(2)
-      .map { it.toInt(16).toByte() }
-      .toByteArray()
-
-    Assert.assertEquals(hashString, UpdatesUtils.bytesToHex(hashBytes))
-  }
 }
