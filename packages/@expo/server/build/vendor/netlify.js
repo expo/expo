@@ -1,24 +1,39 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isBinaryType = exports.convertRequest = exports.createHeaders = exports.respond = exports.createRequestHandler = void 0;
-const node_1 = require("@remix-run/node");
 const abort_controller_1 = require("abort-controller");
-const __1 = require("..");
+const index_1 = require("../index");
 function createRequestHandler({ build }) {
-    const handleRequest = (0, __1.createRequestHandler)(build);
+    const handleRequest = (0, index_1.createRequestHandler)(build);
     return async (event) => {
         const response = await handleRequest(convertRequest(event));
         return respond(response);
     };
 }
 exports.createRequestHandler = createRequestHandler;
+async function readableStreamToString(stream, encoding) {
+    const reader = stream.getReader();
+    const chunks = [];
+    let chunk;
+    try {
+        do {
+            chunk = await reader.read();
+            if (chunk.value)
+                chunks.push(chunk.value);
+        } while (!chunk.done);
+    }
+    finally {
+        reader.releaseLock();
+    }
+    return Buffer.concat(chunks).toString(encoding);
+}
 async function respond(res) {
     const contentType = res.headers.get('Content-Type');
     let body;
     const isBase64Encoded = isBinaryType(contentType);
     if (res.body) {
         if (isBase64Encoded) {
-            body = await (0, node_1.readableStreamToString)(res.body, 'base64');
+            body = await readableStreamToString(res.body, 'base64');
         }
         else {
             body = await res.text();
