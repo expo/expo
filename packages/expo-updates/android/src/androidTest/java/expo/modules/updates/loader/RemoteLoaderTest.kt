@@ -80,7 +80,7 @@ class RemoteLoaderTest {
 
     every { mockFileDownloader.downloadAsset(any(), any(), any(), any()) } answers {
       val asset = firstArg<AssetEntity>()
-      val callback = arg<AssetDownloadCallback>(2)
+      val callback = arg<AssetDownloadCallback>(3)
       callback.onSuccess(asset, true)
     }
 
@@ -107,7 +107,7 @@ class RemoteLoaderTest {
   fun testRemoteLoader_FailureToDownloadAssets() {
     every { mockFileDownloader.downloadAsset(any(), any(), any(), any()) } answers {
       val asset = firstArg<AssetEntity>()
-      val callback = arg<AssetDownloadCallback>(2)
+      val callback = arg<AssetDownloadCallback>(3)
       callback.onFailure(IOException("mock failed to download asset"), asset)
     }
 
