@@ -3,6 +3,8 @@ import { Platform } from 'expo-modules-core';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
+import { ViewEvent } from '../../src';
+
 type AndroidVariant = 'picker' | 'input';
 
 type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
@@ -68,14 +70,20 @@ export type DatePickerProps = {
   is24Hour?: boolean;
 };
 
-type NativeDatePickerProps = Omit<DatePickerProps, 'iosVariant' | 'androidVariant'> & {
+type NativeDatePickerProps = Omit<
+  DatePickerProps,
+  'iosVariant' | 'androidVariant' | 'onDateSelected'
+> & {
   variant?: IOSVariant | AndroidVariant;
-};
+} & ViewEvent<'onDateSelected', { date: Date }>;
 
 export function transformDatePickerProps(props: DatePickerProps): NativeDatePickerProps {
   const { iosVariant, androidVariant, ...rest } = props;
   return {
     ...rest,
+    onDateSelected: ({ nativeEvent: { date } }) => {
+      props?.onDateSelected?.(new Date(date));
+    },
     variant: Platform.OS === 'ios' ? iosVariant : androidVariant,
   };
 }
@@ -85,21 +93,6 @@ const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = require
   'DateTimePickerView'
 );
 
-function useNativeEvent(userHandler?: (date: Date) => void) {
-  return React.useCallback(
-    (event) => {
-      userHandler?.(new Date(event.nativeEvent.date));
-    },
-    [userHandler]
-  );
-}
-
-export function DateTimePicker({ onDateSelected, ...props }: DatePickerProps) {
-  const onNativeDateSelected = useNativeEvent(onDateSelected);
-  return (
-    <DatePickerNativeView
-      onDateSelected={onNativeDateSelected}
-      {...transformDatePickerProps(props)}
-    />
-  );
+export function DateTimePicker(props: DatePickerProps) {
+  return <DatePickerNativeView {...transformDatePickerProps(props)} />;
 }

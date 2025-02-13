@@ -31,13 +31,13 @@ import android.graphics.Color as AndroidColor
 
 data class DatePickerResult(
   @Field
-  val date: Long?,
+  val date: Long?
 ) : Record
 
 enum class DisplayedComponents(val value: String) : Enumerable {
   DATE("date"),
   HOUR_AND_MINUTE("hourAndMinute"),
-  DATE_AND_TIME("dateAndTime");
+  DATE_AND_TIME("dateAndTime")
 }
 
 enum class Variant(val value: String) : Enumerable {
@@ -61,7 +61,7 @@ data class DateTimePickerProps(
   val displayedComponents: MutableState<DisplayedComponents> = mutableStateOf(DisplayedComponents.DATE),
   val showVariantToggle: MutableState<Boolean> = mutableStateOf(true),
   val is24Hour: MutableState<Boolean> = mutableStateOf(true),
-  val color: MutableState<AndroidColor?> = mutableStateOf(null),
+  val color: MutableState<AndroidColor?> = mutableStateOf(null)
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
@@ -99,7 +99,7 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
       initialSelectedDateMillis = initialDate?.time ?: Date().time,
       initialDisplayedMonthMillis = initialDate?.time ?: Date().time,
       yearRange = DatePickerDefaults.YearRange,
-      selectableDates = DatePickerDefaults.AllDates,
+      selectableDates = DatePickerDefaults.AllDates
     )
   }
 
@@ -116,7 +116,7 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
         titleContentColor = colorToComposeColor(props.color.value),
         selectedDayContainerColor = colorToComposeColor(props.color.value),
         todayDateBorderColor = colorToComposeColor(props.color.value),
-        headlineContentColor = colorToComposeColor(props.color.value),
+        headlineContentColor = colorToComposeColor(props.color.value)
       )
     )
   }
@@ -135,7 +135,7 @@ fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     TimePickerState(
       initialHour = hour,
       initialMinute = minute,
-      is24Hour = props.is24Hour.value,
+      is24Hour = props.is24Hour.value
     )
   }
 
