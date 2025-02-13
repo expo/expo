@@ -20,6 +20,7 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       applyKotlin(kotlinVersion, kspVersion)
       applyDefaultDependencies()
       applyDefaultAndroidSdkVersions()
+      applyPublishing()
     }
 
     // Adds the expoGradleHelper extension to the gradle instance if it doesn't exist.
