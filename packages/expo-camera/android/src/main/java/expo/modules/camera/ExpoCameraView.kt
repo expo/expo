@@ -144,6 +144,12 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
+  var flashMode = FlashMode.OFF
+    set(value) {
+      field = value
+      setCameraFlashMode(value)
+    }
+
   var cameraMode: CameraMode = CameraMode.PICTURE
     set(value) {
       field = value
@@ -312,9 +318,7 @@ class ExpoCameraView(
   }
 
   fun setCameraFlashMode(mode: FlashMode) {
-    if (imageCaptureUseCase?.flashMode != mode.mapToLens()) {
-      imageCaptureUseCase?.flashMode = mode.mapToLens()
-    }
+    imageCaptureUseCase?.flashMode = mode.mapToLens()
   }
 
   private fun setTorchEnabled(enabled: Boolean) {
@@ -444,6 +448,7 @@ class ExpoCameraView(
 
         imageCaptureUseCase = ImageCapture.Builder()
           .setResolutionSelector(resolutionSelector)
+          .setFlashMode(flashMode.mapToLens())
           .build()
 
         val videoCapture = createVideoCapture()
