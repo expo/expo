@@ -5,14 +5,23 @@ import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
 type SubmenuElement = ReactElement<ButtonProps> | ReactElement<SwitchProps> | ReactElement<PickerProps> | ReactElement<SubmenuProps>;
 type ContentChildren = SubmenuElement | SubmenuElement[];
+/**
+ * @hidden
+ */
 export type ContextMenuContentProps = {
     children: ContentChildren;
 };
+/**
+ * @hidden
+ */
 export type EventHandlers = {
     [key: string]: {
         [key: string]: (event: NativeSyntheticEvent<any>) => void;
     };
 };
+/**
+ * @hidden
+ */
 export type ContextMenuElementBase = {
     contextMenuElementID: string;
 };
