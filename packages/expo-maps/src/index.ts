@@ -44,6 +44,7 @@ export namespace AppleMaps {
   export type MapProperties = AppleTypes.AppleMapsProperties;
 
   export type MapProps = AppleTypes.AppleMapsViewProps;
+  export type MapView = AppleTypes.AppleMapsViewType;
 }
 
 export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;
