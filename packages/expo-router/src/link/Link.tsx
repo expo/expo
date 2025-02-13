@@ -10,7 +10,7 @@ import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
-import { Preload } from '../Preload';
+import { Prefetch } from '../Prefetch';
 import { Slot } from '../ui/Slot';
 
 export interface LinkComponent {
@@ -133,7 +133,7 @@ function ExpoRouterLink(
     download,
     withAnchor,
     dangerouslySingular: singular,
-    preload,
+    prefetch,
     ...rest
   }: LinkProps,
   ref: ForwardedRef<Text>
@@ -190,9 +190,9 @@ function ExpoRouterLink(
     />
   );
 
-  return preload ? (
+  return prefetch ? (
     <>
-      <Preload href={href} />
+      <Prefetch href={href} />
       {element}
     </>
   ) : (

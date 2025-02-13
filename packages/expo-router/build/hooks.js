@@ -80,7 +80,7 @@ function useRouter() {
         dismissAll: router_store_1.store.dismissAll,
         dismissTo: router_store_1.store.dismissTo,
         navigate: router_store_1.store.navigate,
-        preload: router_store_1.store.preload,
+        prefetch: router_store_1.store.prefetch,
         push: router_store_1.store.push,
         reload: router_store_1.store.reload,
         replace: router_store_1.store.replace,

@@ -196,6 +196,7 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      */
     withAnchor?: boolean;
     /**
+  <<<<<<< HEAD
      * When navigating in a Stack, if the target is valid then screens in the history that matches
      * the uniqueness constraint will be removed.
      *
@@ -204,8 +205,11 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
     dangerouslySingular?: SingularOptions;
     /**
      * Preloads the route when the component is rendered on a focused screen.
+  =======
+     * Prefetches the route when the component is rendered on a focused screen.
+  >>>>>>> 62f3cf8ba6 (Rename to prefetch)
      */
-    preload?: boolean;
+    prefetch?: boolean;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];

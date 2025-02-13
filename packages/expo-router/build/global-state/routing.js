@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 <<<<<<< HEAD
+<<<<<<< HEAD
 exports.navigate = navigate;
 exports.reload = reload;
 exports.push = push;
@@ -49,6 +50,9 @@ exports.linkTo = linkTo;
 =======
 exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.preload = exports.reload = exports.navigate = void 0;
 >>>>>>> e16c9cb250 ([router]: Add preload functionality)
+=======
+exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismissTo = exports.dismiss = exports.push = exports.prefetch = exports.reload = exports.navigate = void 0;
+>>>>>>> a5dce7b836 (Rename to prefetch)
 const native_1 = require("@react-navigation/native");
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
@@ -72,11 +76,15 @@ function reload() {
 <<<<<<< HEAD
 =======
 exports.reload = reload;
-function preload(href, options) {
+function prefetch(href, options) {
     return linkTo.bind(this)((0, href_1.resolveHref)(href), { ...options, event: 'PRELOAD' });
 }
+<<<<<<< HEAD
 exports.preload = preload;
 >>>>>>> e16c9cb250 ([router]: Add preload functionality)
+=======
+exports.prefetch = prefetch;
+>>>>>>> a5dce7b836 (Rename to prefetch)
 function push(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
 }

@@ -15,7 +15,7 @@ const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const hooks_1 = require("../hooks");
 const useFocusEffect_1 = require("../useFocusEffect");
 const useLinkHooks_1 = require("./useLinkHooks");
-const Preload_1 = require("../Preload");
+const Prefetch_1 = require("../Prefetch");
 const Slot_1 = require("../ui/Slot");
 /**
  * Redirects to the `href` as soon as the component is mounted.
@@ -82,7 +82,7 @@ exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
 function ExpoRouterLink({ href, replace, push, dismissTo, 
 // TODO: This does not prevent default on the anchor tag.
-relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySingular: singular, preload, ...rest }, ref) {
+relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySingular: singular, prefetch, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
     const style = (0, useLinkHooks_1.useInteropClassName)(rest);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
@@ -121,8 +121,8 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
         },
         default: { onPress },
     })}/>);
-    return preload ? (<>
-      <Preload_1.Preload href={href}/>
+    return prefetch ? (<>
+      <Prefetch_1.Prefetch href={href}/>
       {element}
     </>) : (element);
 }

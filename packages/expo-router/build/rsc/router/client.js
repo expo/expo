@@ -273,7 +273,6 @@ function useRouter_UNSTABLE() {
         back,
         forward,
         prefetch,
-        preload: prefetch,
     };
 }
 const RouterSlot = ({ route, routerData, cachedRef, id, fallback, children, }) => {

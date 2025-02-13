@@ -37,7 +37,7 @@ export function reload(this: RouterStore) {
   throw new Error('The reload method is not implemented in the client-side router yet.');
 }
 
-export function preload(this: RouterStore, href: Href, options?: NavigationOptions) {
+export function prefetch(this: RouterStore, href: Href, options?: NavigationOptions) {
   return linkTo.bind(this)(resolveHref(href), { ...options, event: 'PRELOAD' });
 }
 

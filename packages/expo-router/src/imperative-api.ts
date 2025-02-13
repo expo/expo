@@ -74,9 +74,9 @@ export type Router = {
    */
   reload: () => void;
   /**
-   * The preload a screen in the background before navigating to it
+   * The prefetch a screen in the background before navigating to it
    */
-  preload: (name: Href) => void;
+  prefetch: (name: Href) => void;
 };
 
 /**
@@ -94,5 +94,5 @@ export const router: Router = {
   canGoBack: () => store.canGoBack(),
   setParams: (params) => store.setParams(params),
   reload: () => store.reload(),
-  preload: (name) => store.preload(name),
+  prefetch: (name) => store.prefetch(name),
 };
