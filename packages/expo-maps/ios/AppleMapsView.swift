@@ -15,9 +15,8 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   let onCameraMove = EventDispatcher()
 }
 
-
 protocol AppleMapsViewProtocol: View {
-  func setCameraPosition(config: CameraPosition?) -> ()
+  func setCameraPosition(config: CameraPosition?)
 }
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View, AppleMapsViewProtocol {
@@ -32,7 +31,7 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View, AppleMapsViewProtocol {
     }
   }
 
-  func setCameraPosition(config: CameraPosition?) -> () {
+  func setCameraPosition(config: CameraPosition?) {
     appleMapsView?.setCameraPosition(config: config)
   }
 
@@ -52,7 +51,7 @@ struct AppleMapsView: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
   @ObservedObject var state = AppleMapsViewState()
 
-  func setCameraPosition(config: CameraPosition?) -> () {
+  func setCameraPosition(config: CameraPosition?) {
     withAnimation {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
