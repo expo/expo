@@ -16,10 +16,18 @@ public final class FileSystemNextModule: Module {
       ]
     }
 
-    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, promise: Promise) in
+    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptionsNext?, promise: Promise) in
       try to.validatePermission(.write)
 
-      let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, responseOrNil, errorOrNil in
+      var request = URLRequest(url: url)
+
+      if let headers = options?.headers {
+        headers.forEach { key, value in
+          request.addValue(value, forHTTPHeaderField: key)
+        }
+      }
+
+      let downloadTask = URLSession.shared.downloadTask(with: request) { urlOrNil, responseOrNil, errorOrNil in
         guard errorOrNil == nil else {
           return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
         }
