@@ -20,7 +20,7 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.78.0-rc.4",
+    "react-native": "0.78.0-rc.5",
     "react-native-safe-area-context": "5.2.0-beta.0",
     "react": "19.0.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
