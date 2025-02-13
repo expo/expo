@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIgnoreList = exports.extrapolateGroups = exports.generateDynamic = exports.getExactRoutes = exports.getRoutes = void 0;
 const getRoutesCore_1 = require("./getRoutesCore");
-const getRoutesRedirect_1 = require("./getRoutesRedirect");
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -63,11 +62,11 @@ function getRoutes(contextModule, options = {}) {
                     children: [],
                 };
             }
-            else if (type === 'redirect' && defaults) {
+            else if ((type === 'redirect' || type === 'rewrite') && defaults) {
                 return {
                     ...defaults,
                     loadRoute() {
-                        return (0, getRoutesRedirect_1.getRedirectModule)(route);
+                        return require('./getRoutesRedirects').getRedirectModule(route);
                     },
                 };
             }

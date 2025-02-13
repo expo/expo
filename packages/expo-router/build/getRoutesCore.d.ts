@@ -13,10 +13,17 @@ export type Options = {
     sitemap?: boolean;
     platform?: string;
     redirects?: RedirectConfig[];
+    rewrites?: RewriteConfig[];
+    preserveRedirectAndRewrites?: boolean;
     /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
     getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>, defaults?: RouteNode) => RouteNode;
 };
 export type RedirectConfig = {
+    source: string;
+    destination: string;
+    permanent?: boolean;
+};
+export type RewriteConfig = {
     source: string;
     destination: string;
 };

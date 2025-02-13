@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { ctx } from 'expo-router/_ctx';
 
 import { createPages } from './create-pages';
@@ -19,6 +20,7 @@ const UNIMPLEMENTED_PARAMS = new Proxy(
 
 export default createPages(async ({ createPage, createLayout, unstable_setBuildData }) => {
   const routes = getRoutes(ctx, {
+    ...Constants.expoConfig?.extra?.router,
     platform: process.env.EXPO_OS,
     skipGenerated: true,
     importMode: 'lazy',
