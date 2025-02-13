@@ -5,5 +5,5 @@ export type PreloadProps = {
 /**
  * When rendered on a focused screen, this component will preload the specified route.
  */
-export declare function Preload(props: PreloadProps): null;
-//# sourceMappingURL=Preload.d.ts.map
+export declare function Prefetch(props: PreloadProps): null;
+//# sourceMappingURL=Prefetch.d.ts.map

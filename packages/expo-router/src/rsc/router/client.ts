@@ -378,7 +378,6 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     back,
     forward,
     prefetch,
-    preload: prefetch,
   };
 }
 

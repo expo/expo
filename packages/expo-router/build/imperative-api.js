@@ -17,6 +17,6 @@ exports.router = {
     canGoBack: () => router_store_1.store.canGoBack(),
     setParams: (params) => router_store_1.store.setParams(params),
     reload: () => router_store_1.store.reload(),
-    preload: (name) => router_store_1.store.preload(name),
+    prefetch: (name) => router_store_1.store.prefetch(name),
 };
 //# sourceMappingURL=imperative-api.js.map

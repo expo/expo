@@ -270,7 +270,6 @@ function useRouter_UNSTABLE() {
         back,
         forward,
         prefetch,
-        preload: prefetch,
     };
 }
 exports.useRouter_UNSTABLE = useRouter_UNSTABLE;
