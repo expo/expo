@@ -15,23 +15,22 @@ enum class Direction {
 @Composable
 fun AutoSizingComposable(shadowNodeProxy: ShadowNodeProxy, axis: EnumSet<Direction> = EnumSet.allOf(Direction::class.java), content: @Composable () -> Unit) {
   Layout(
-    content = content,
     modifier = Modifier.fillMaxSize(),
-    measurePolicy = { measurables, constraints ->
-      val measurable = measurables.first()
-      val minIntrinsicWidth = measurable.minIntrinsicWidth(constraints.minHeight)
-      val minIntrinsicHeight = measurable.minIntrinsicHeight(minIntrinsicWidth)
-      val intrinsicWidth = minIntrinsicWidth.toDouble() / Resources.getSystem().displayMetrics.density
-      val intrinsicHeight = minIntrinsicHeight.toDouble() / Resources.getSystem().displayMetrics.density
-      val width: Double = if (axis.contains(Direction.HORIZONTAL)) intrinsicWidth else Double.NaN
-      val height: Double = if (axis.contains(Direction.VERTICAL)) intrinsicHeight else Double.NaN
-      shadowNodeProxy.setViewSize(width, height)
+    content = content,
+  ) { measurables, constraints ->
+    val measurable = measurables.first()
+    val minIntrinsicWidth = measurable.minIntrinsicWidth(constraints.minHeight)
+    val minIntrinsicHeight = measurable.minIntrinsicHeight(minIntrinsicWidth)
+    val intrinsicWidth = minIntrinsicWidth.toDouble() / Resources.getSystem().displayMetrics.density
+    val intrinsicHeight = minIntrinsicHeight.toDouble() / Resources.getSystem().displayMetrics.density
+    val width: Double = if (axis.contains(Direction.HORIZONTAL)) intrinsicWidth else Double.NaN
+    val height: Double = if (axis.contains(Direction.VERTICAL)) intrinsicHeight else Double.NaN
+    shadowNodeProxy.setViewSize(width, height)
 
-      val placeable = measurable.measure(constraints)
+    val placeable = measurable.measure(constraints)
 
-      layout(placeable.measuredWidth, placeable.measuredHeight) {
-        placeable.place(0, 0)
-      }
+    layout(placeable.measuredWidth, placeable.measuredHeight) {
+      placeable.place(0, 0)
     }
-  )
+  }
 }

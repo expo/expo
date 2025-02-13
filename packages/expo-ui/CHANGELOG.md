@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Adds `DateTimePicker` component.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

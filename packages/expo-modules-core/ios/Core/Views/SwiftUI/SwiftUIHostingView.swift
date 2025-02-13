@@ -39,7 +39,12 @@ extension ExpoSwiftUI {
       let rootView = ContentView().environmentObject(props).environmentObject(shadowNodeProxy)
 
       self.props = props
-      self.hostingController = UIHostingController(rootView: rootView)
+      let controller = UIHostingController(rootView: rootView)
+
+      if #available(iOS 16.0, *) {
+        controller.sizingOptions = [.intrinsicContentSize]
+      }
+      self.hostingController = controller
 
       super.init(appContext: appContext)
 
