@@ -148,6 +148,9 @@ export type AppleMapsViewProps = {
         bearing: number;
     }) => void;
 };
+/**
+ * @platform ios
+ */
 export type AppleMapsViewType = {
     /**
      * Update camera position.
