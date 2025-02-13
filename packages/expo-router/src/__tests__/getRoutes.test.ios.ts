@@ -599,7 +599,7 @@ describe('anchor', () => {
     });
   });
 
-  it.only(`throws if anchor does not match a route`, () => {
+  it(`throws if anchor does not match a route`, () => {
     expect(() => {
       getRoutes(
         inMemoryContext({
