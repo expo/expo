@@ -249,33 +249,6 @@ EXPO_UNSTABLE_DEPLOY_SERVER=1
 
 <Step label="4">
 
-Create an `EXPO_TOKEN` for the project and add it to the `.env` file. See: [Access Tokens](https://expo.dev/accounts/[account]/settings/access-tokens).
-
-```sh .env
-EXPO_UNSTABLE_DEPLOY_SERVER=1
-# @info <a target="_blank" href="https://expo.dev/accounts/[account]/settings/access-tokens" style="text-decoration:underline;">Setup the token</a> #
-EXPO_TOKEN=xxxxxxx
-# @end #
-```
-
-</Step>
-
-<Step label="5">
-
-Set the `owner` field in the **app.json** to the owner of the project (this is usually your EAS username).
-
-```json app.json
-{
-  "expo": {
-    "owner": "bacon"
-  }
-}
-```
-
-</Step>
-
-<Step label="6">
-
 You're now ready to use automatic server deployment! Run the build command to start the process.
 
 <Terminal cmd={['$ eas build']} />
