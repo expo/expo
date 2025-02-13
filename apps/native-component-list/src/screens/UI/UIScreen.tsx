@@ -19,7 +19,7 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Date Picker component',
+    name: 'Date Time Picker component',
     route: 'ui/date-picker',
     options: {},
     getComponent() {
