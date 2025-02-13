@@ -11,12 +11,12 @@ export type PreloadProps = {
 /**
  * When rendered on a focused screen, this component will preload the specified route.
  */
-export function Preload(props: PreloadProps) {
+export function Prefetch(props: PreloadProps) {
   const navigation = useOptionalNavigation();
 
   useEffect(() => {
     if (navigation?.isFocused()) {
-      router.preload(props.href);
+      router.prefetch(props.href);
     }
   }, [navigation, props.href]);
 

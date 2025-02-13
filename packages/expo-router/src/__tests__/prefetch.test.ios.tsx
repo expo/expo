@@ -1,12 +1,11 @@
 import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import React from 'react';
 
-import { Preload } from '../Preload';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import { screen, renderRouter, act } from '../testing-library';
 
-it('preload a sibling route', () => {
+it('prefetch a sibling route', () => {
   renderRouter({
     index: function Index() {
       return null;
@@ -27,7 +26,7 @@ it('preload a sibling route', () => {
   });
 
   act(() => {
-    router.preload('/test');
+    router.prefetch('/test');
   });
 
   expect(screen).toHaveRouterState({
@@ -54,7 +53,7 @@ it('preload a sibling route', () => {
   } as StackNavigationState<ParamListBase>);
 });
 
-it('will preload the correct route within a group', () => {
+it('will prefetch the correct route within a group', () => {
   renderRouter({
     '(a)/index': () => null,
     '(a)/test': () => null,
@@ -73,7 +72,7 @@ it('will preload the correct route within a group', () => {
   });
 
   act(() => {
-    router.preload('/test');
+    router.prefetch('/test');
   });
 
   expect(screen).toHaveRouterState({
@@ -100,7 +99,7 @@ it('will preload the correct route within a group', () => {
   } as StackNavigationState<ParamListBase>);
 });
 
-it('will preload the correct route within nested groups', () => {
+it('will prefetch the correct route within nested groups', () => {
   renderRouter({
     '(a)/index': () => null,
     '(a)/(c)/test': () => null,
@@ -119,7 +118,7 @@ it('will preload the correct route within nested groups', () => {
   });
 
   act(() => {
-    router.preload('/test');
+    router.prefetch('/test');
   });
 
   expect(screen).toHaveRouterState({
@@ -163,7 +162,7 @@ it('works with relative Href', () => {
   });
 
   act(() => {
-    router.preload('./test');
+    router.prefetch('./test');
   });
 
   expect(screen).toHaveRouterState({
@@ -207,7 +206,7 @@ it('works with params', () => {
   });
 
   act(() => {
-    router.preload('./test?foo=bar');
+    router.prefetch('./test?foo=bar');
   });
 
   expect(screen).toHaveRouterState({
@@ -263,7 +262,7 @@ it('ignores the current route', () => {
   });
 
   act(() => {
-    router.preload('/directory');
+    router.prefetch('/directory');
   });
 
   expect(screen).toHaveRouterState({
@@ -299,7 +298,7 @@ it('ignores the current route', () => {
   } as StackNavigationState<ParamListBase>);
 });
 
-it('can preload a deeply nested route', () => {
+it('can prefetch a deeply nested route', () => {
   const jestFn = jest.fn();
 
   renderRouter(
@@ -340,7 +339,7 @@ it('can preload a deeply nested route', () => {
   });
 
   act(() => {
-    router.preload('/directory/apple/banana');
+    router.prefetch('/directory/apple/banana');
   });
 
   expect(screen).toHavePathname('/directory');
@@ -391,7 +390,7 @@ it('can preload a deeply nested route', () => {
   } as StackNavigationState<ParamListBase>);
 });
 
-it('can preload a parent route', () => {
+it('can prefetch a parent route', () => {
   renderRouter(
     {
       _layout: () => <Stack />,
@@ -448,7 +447,7 @@ it('can preload a parent route', () => {
   });
 
   act(() => {
-    router.preload('/directory/test');
+    router.prefetch('/directory/test');
   });
 
   expect(screen).toHavePathname('/directory/apple/banana');
@@ -501,38 +500,6 @@ it('can preload a parent route', () => {
           stale: false,
           type: 'stack',
         } as StackNavigationState<ParamListBase>,
-      },
-    ],
-    stale: false,
-    type: 'stack',
-  } as StackNavigationState<ParamListBase>);
-});
-
-it('will preload a route on focus', () => {
-  renderRouter({
-    index: () => {
-      return <Preload href="/test" />;
-    },
-    test: () => null,
-  });
-
-  expect(screen).toHaveRouterState({
-    index: 0,
-    key: expect.any(String),
-    preloadedRoutes: [
-      {
-        key: expect.any(String),
-        name: 'test',
-        params: {},
-      },
-    ],
-    routeNames: ['index', 'test', '_sitemap', '+not-found'],
-    routes: [
-      {
-        key: expect.any(String),
-        name: 'index',
-        params: undefined,
-        path: '/',
       },
     ],
     stale: false,

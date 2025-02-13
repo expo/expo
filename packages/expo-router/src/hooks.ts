@@ -74,7 +74,7 @@ export function useRouter(): Router {
       dismissAll: store.dismissAll,
       dismissTo: store.dismissTo,
       navigate: store.navigate,
-      preload: store.preload,
+      prefetch: store.prefetch,
       push: store.push,
       reload: store.reload,
       replace: store.replace,
