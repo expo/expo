@@ -1,4 +1,5 @@
 import type { SharedRef as SharedRefType } from 'expo/types';
+import type { Ref } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { CameraPosition, Coordinates } from '../shared.types';
 /**
@@ -104,6 +105,7 @@ export type AppleMapsAnnotation = {
  * @platform ios
  */
 export type AppleMapsViewProps = {
+    ref?: Ref<AppleMapsViewType>;
     style?: StyleProp<ViewStyle>;
     /**
      * The initial camera position of the map.
@@ -145,5 +147,14 @@ export type AppleMapsViewProps = {
         tilt: number;
         bearing: number;
     }) => void;
+};
+export type AppleMapsViewType = {
+    /**
+     * Update camera position.
+     * Animation duration is not supported on iOS.
+     *
+     * @param config New camera postion.
+     */
+    setCameraPosition: (config?: CameraPosition) => void;
 };
 //# sourceMappingURL=AppleMaps.types.d.ts.map
