@@ -30,6 +30,8 @@ install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
 
+install('ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
+
 installFormDataPatch(FormData);
 
 // Polyfill async iterator symbol for Hermes.
