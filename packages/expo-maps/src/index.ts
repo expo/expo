@@ -35,6 +35,8 @@ export namespace AppleMaps {
   export type MapProperties = AppleTypes.MapProperties;
   export type MapUiSettings = AppleTypes.MapUiSettings;
   export type Marker = AppleTypes.Marker;
+
+  export type MapView = AppleTypes.AppleMapsViewType;
 }
 
 export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;

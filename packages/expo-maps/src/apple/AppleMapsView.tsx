@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-import type { MapProps } from './AppleMaps.types';
+import type { AppleMapsViewType, CameraPosition, MapProps } from './AppleMaps.types';
 
 let NativeView: React.ComponentType<MapProps> | null;
 
@@ -19,34 +19,41 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
   );
 }
 
-export function AppleMapsView({
-  onMapClick,
-  onMarkerClick,
-  onCameraMove,
-  annotations,
-  ...props
-}: MapProps) {
-  const onNativeMapClick = useNativeEvent(onMapClick);
-  const onNativeMarkerClick = useNativeEvent(onMarkerClick);
-  const onNativeCameraMove = useNativeEvent(onCameraMove);
+/**
+ * @platform ios
+ */
+export const AppleMapsView = React.forwardRef<AppleMapsViewType, MapProps>(
+  ({ onMapClick, onMarkerClick, onCameraMove, annotations, ...props }, ref) => {
+    const nativeRef = React.useRef<AppleMapsViewType>(null);
+    React.useImperativeHandle(ref, () => ({
+      setCameraPosition(config?: CameraPosition) {
+        nativeRef.current?.setCameraPosition(config);
+      },
+    }));
 
-  const parsedAnnotations = annotations?.map((annotation) => ({
-    ...annotation,
-    // @ts-expect-error
-    icon: annotation.icon?.__expo_shared_object_id__,
-  }));
+    const onNativeMapClick = useNativeEvent(onMapClick);
+    const onNativeMarkerClick = useNativeEvent(onMarkerClick);
+    const onNativeCameraMove = useNativeEvent(onCameraMove);
 
-  if (!NativeView) {
-    return null;
+    const parsedAnnotations = annotations?.map((annotation) => ({
+      ...annotation,
+      // @ts-expect-error
+      icon: annotation.icon?.__expo_shared_object_id__,
+    }));
+
+    if (!NativeView) {
+      return null;
+    }
+
+    return (
+      <NativeView
+        {...props}
+        ref={nativeRef}
+        annotations={parsedAnnotations}
+        onMapClick={onNativeMapClick}
+        onMarkerClick={onNativeMarkerClick}
+        onCameraMove={onNativeCameraMove}
+      />
+    );
   }
-
-  return (
-    <NativeView
-      {...props}
-      annotations={parsedAnnotations}
-      onMapClick={onNativeMapClick}
-      onMarkerClick={onNativeMarkerClick}
-      onCameraMove={onNativeCameraMove}
-    />
-  );
-}
+);
