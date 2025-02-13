@@ -6,7 +6,7 @@ export declare function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'updates'>)
 export declare function getAppVersion(config: Pick<ExpoConfig, 'version'>): string;
 export declare function getNativeVersion(config: Pick<ExpoConfig, 'version'> & {
     android?: Pick<Android, 'versionCode'>;
-    ios?: Pick<IOS, 'buildNumber'>;
+    ios?: Pick<IOS, 'buildNumber' | 'version'>;
 }, platform: 'android' | 'ios'): string;
 export declare function getRuntimeVersionNullableAsync(...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersionAsync>): Promise<string | null>;
 export declare function getRuntimeVersionAsync(projectRoot: string, config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
