@@ -35,5 +35,9 @@ gradlePlugin {
       id = "expo-autolinking"
       implementationClass = "expo.modules.plugin.ExpoAutolinkingPlugin"
     }
+    create("expoRootProjectPlugin") {
+      id = "expo-root-project"
+      implementationClass = "expo.modules.plugin.ExpoRootProjectPlugin"
+    }
   }
 }

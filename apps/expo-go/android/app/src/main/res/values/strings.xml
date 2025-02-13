@@ -11,4 +11,5 @@
   <string name="default_notification_channel_group">Default</string>
   <string name="persistent_notification_channel_name">Project notifications</string>
   <string name="persistent_notification_channel_desc">Persistent notifications that provide debug info about open projects</string>
+  <string name="is_expo_go">true</string>
 </resources>

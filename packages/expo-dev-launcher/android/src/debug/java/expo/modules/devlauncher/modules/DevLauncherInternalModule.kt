@@ -10,6 +10,7 @@ import android.net.Uri
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.core.utilities.EmulatorUtilities
+import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
@@ -60,7 +61,9 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
     val map = Arguments.createMap()
 
     val runtimeVersion = controller.updatesInterface?.runtimeVersion
-    val projectUri = controller.updatesInterface?.updateUrl
+    val projectUrl = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_UPDATE_URL")
+
+    val projectUri = Uri.parse(projectUrl)
     val appId = projectUri?.lastPathSegment ?: ""
 
     val isModernManifestProtocol = projectUri?.host.equals("u.expo.dev") || projectUri?.host.equals("staging-u.expo.dev")

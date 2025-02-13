@@ -3,7 +3,8 @@ import {
   Appearance,
   StatusBar as NativeStatusBar,
   useColorScheme,
-  ColorSchemeName,
+  type ColorSchemeName,
+  type ColorValue,
 } from 'react-native';
 
 // @docsMissing
@@ -118,7 +119,9 @@ export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
  * @param hidden If the status bar should be hidden.
  * @param animation Animation to use when toggling hidden, defaults to `'none'`.
  */
-export const setStatusBarHidden = NativeStatusBar.setHidden;
+export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimation) {
+  NativeStatusBar.setHidden(hidden, animation);
+}
 
 // @needsAudit
 /**
@@ -127,7 +130,9 @@ export const setStatusBarHidden = NativeStatusBar.setHidden;
  * @param animated `true` to animate the background color change, `false` to change immediately.
  * @platform android
  */
-export const setStatusBarBackgroundColor = NativeStatusBar.setBackgroundColor;
+export function setStatusBarBackgroundColor(backgroundColor: ColorValue, animated?: boolean) {
+  NativeStatusBar.setBackgroundColor(backgroundColor, animated);
+}
 
 // @needsAudit
 /**
@@ -135,8 +140,9 @@ export const setStatusBarBackgroundColor = NativeStatusBar.setBackgroundColor;
  * @param visible If the network activity indicator should be visible.
  * @platform ios
  */
-export const setStatusBarNetworkActivityIndicatorVisible =
-  NativeStatusBar.setNetworkActivityIndicatorVisible;
+export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {
+  NativeStatusBar.setNetworkActivityIndicatorVisible(visible);
+}
 
 // @needsAudit
 /**
@@ -145,7 +151,9 @@ export const setStatusBarNetworkActivityIndicatorVisible =
  * rendered under the status bar. This is always `true` on iOS and cannot be changed.
  * @platform android
  */
-export const setStatusBarTranslucent = NativeStatusBar.setTranslucent;
+export function setStatusBarTranslucent(translucent: boolean) {
+  NativeStatusBar.setTranslucent(translucent);
+}
 
 function styleToBarStyle(
   style: StatusBarStyle = 'auto',

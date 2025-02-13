@@ -103,16 +103,6 @@ export type UpdateCheckResult =
   | UpdateCheckResultNotAvailable;
 
 /**
- * @deprecated
- */
-export type UpdateCheckResultSuccess = UpdateCheckResultAvailable;
-
-/**
- * @deprecated
- */
-export type UpdateCheckResultFailure = UpdateCheckResultNotAvailable;
-
-/**
  * The successful result of fetching a new update.
  */
 export type UpdateFetchResultSuccess = {

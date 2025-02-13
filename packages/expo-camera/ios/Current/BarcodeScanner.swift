@@ -108,9 +108,6 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
   }
 
   private func addOutputs() async {
-    session.beginConfiguration()
-    defer { session.commitConfiguration() }
-
     delegate = MetaDataDelegate(
       settings: settings,
       previewLayer: previewLayer,
@@ -118,6 +115,7 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       zxingEnabled: zxingEnabled,
       metadataResultHandler: self)
 
+    session.beginConfiguration()
     if metadataOutput == nil {
       let output = AVCaptureMetadataOutput()
       output.setMetadataObjectsDelegate(delegate, queue: sessionQueue)
@@ -137,6 +135,7 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
         videoDataOutput = output
       }
     }
+    session.commitConfiguration()
   }
 
   private func removeOutputs() async {

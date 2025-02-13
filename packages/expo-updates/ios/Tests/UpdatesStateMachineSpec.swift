@@ -22,13 +22,13 @@ class UpdatesStateMachineSpec: ExpoSpec {
     describe("default state") {
       it("instantiates") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         expect(machine.getStateForTesting()) == .idle
       }
 
       it("sequence numbers") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         expect(machine.getStateForTesting()) == .idle
 
         expect(machine.context.sequenceNumber) == 0
@@ -43,7 +43,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("restart") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         expect(machine.getStateForTesting()) == .idle
 
         expect(machine.context.isRestarting) == false
@@ -59,7 +59,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle startStartup and endStartup") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
 
         machine.processEventForTesting(.startStartup)
         expect(machine.getStateForTesting()) == .idle
@@ -72,7 +72,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle check and checkCompleteAvailable") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
 
         machine.processEventForTesting(.check)
         expect(machine.getStateForTesting()) == .checking
@@ -92,7 +92,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle check and checkCompleteUnavailable") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
 
         machine.processEventForTesting(.check)
         expect(machine.getStateForTesting()) == .checking
@@ -108,7 +108,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle download and downloadComplete") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
 
         machine.processEventForTesting(.download)
         expect(machine.getStateForTesting()) == .downloading
@@ -126,7 +126,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle rollback") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
         let commitTime = Date()
         machine.processEventForTesting(.check)
         expect(machine.getStateForTesting()) == .checking
@@ -143,7 +143,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("invalid transitions are handled as expected") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
 
         machine.processEventForTesting(.check)
         expect(machine.getStateForTesting()) == .checking
@@ -183,7 +183,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("invalid state values are handled as expected") {
         let testStateChangeEventManager = TestStateChangeEventManager()
-        let machine = UpdatesStateMachine(eventManager: testStateChangeEventManager, validUpdatesStateValues: [UpdatesStateValue.idle])
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: [UpdatesStateValue.idle])
 
         expect(machine.processEventForTesting(.download)).to(throwAssertion())
         expect(machine.getStateForTesting()) == .idle

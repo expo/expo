@@ -7,9 +7,12 @@ iconUrl: '/static/images/packages/expo-camera.png'
 platforms: ['android*', 'ios*', 'web']
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { BoxLink } from '~/ui/components/BoxLink';
 import {
   ConfigReactNative,
   ConfigPluginExample,
@@ -157,6 +160,15 @@ const styles = StyleSheet.create({
 ```
 
 </SnackInline>
+
+### Advanced usage
+
+<BoxLink
+  title="Camera app example"
+  description="A complete example that shows how to take a picture and display it. Written in TypeScript."
+  Icon={GithubIcon}
+  href="https://github.com/expo/examples/tree/master/with-camera"
+/>
 
 ## Web support
 

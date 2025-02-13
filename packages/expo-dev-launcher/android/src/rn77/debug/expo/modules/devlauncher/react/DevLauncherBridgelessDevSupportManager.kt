@@ -36,7 +36,8 @@ class DevLauncherBridgelessDevSupportManager(
   null,
   null,
   null
-), DevLauncherKoinComponent {
+),
+  DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface? by optInject()
 
   init {

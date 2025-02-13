@@ -20,12 +20,23 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    A reference to the module holder that stores the module definition.
    */
   weak var moduleHolder: ModuleHolder?
+  /**
+   A reference to the module definition
+   */
+  var viewDefinition: AnyViewDefinition?
+
+  /**
+   A boolean indicating if the view manager represents the default module view – the first exported definition available without specifying a view name.
+   */
+  var isDefaultModuleView: Bool = true
 
   /**
    The designated initializer. At first, we use this base class to hide `ModuleHolder` from Objective-C runtime.
    */
-  public init(_ moduleHolder: ModuleHolder) {
+  public init(_ moduleHolder: ModuleHolder, _ viewDefinition: AnyViewDefinition, isDefaultModuleView: Bool = false) {
     self.moduleHolder = moduleHolder
+    self.viewDefinition = viewDefinition
+    self.isDefaultModuleView = isDefaultModuleView
   }
 
   /**
@@ -56,10 +67,32 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func name() -> String {
+    guard let moduleHolder, let viewDefinition else {
+      fatalError("Failed to create ModuleHolder or a viewDefinition")
+    }
+    return self.isDefaultModuleView ? moduleHolder.name : "\(moduleHolder.name)_\(viewDefinition.name)"
+  }
+
+  /**
+   Returns the original name of the wrapped module.
+   */
+  @objc
+  public func moduleName() -> String {
     guard let moduleHolder else {
       fatalError("Failed to create ModuleHolder")
     }
     return moduleHolder.name
+  }
+
+  /**
+   Returns the original name of the wrapped module.
+   */
+  @objc
+  public func viewName() -> String {
+    guard let moduleHolder, let viewDefinition else {
+      fatalError("Failed to create ModuleHolder or a viewDefinition")
+    }
+    return self.isDefaultModuleView ? DEFAULT_MODULE_VIEW : viewDefinition.name
   }
 
   /**
@@ -88,8 +121,8 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     guard let appContext = moduleHolder?.appContext else {
       fatalError(Exceptions.AppContextLost().reason)
     }
-    guard let view = moduleHolder?.definition.view?.createView(appContext: appContext) else {
-      fatalError("Cannot create a view from module '\(String(describing: self.name))'")
+    guard let view = viewDefinition?.createView(appContext: appContext) else {
+      fatalError("Cannot create a view '\(String(describing: viewDefinition?.name))' from module '\(String(describing: self.name))'")
     }
     return view
   }

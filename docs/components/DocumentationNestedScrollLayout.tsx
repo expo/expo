@@ -55,7 +55,7 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
     return (
       <div className="mx-auto flex h-dvh w-full flex-col overflow-hidden">
         <div className="max-lg-gutters:sticky">{header}</div>
-        <div className="mx-auto flex h-[calc(100vh-60px)] w-full items-center justify-between">
+        <div className="mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between">
           <div
             className={mergeClasses(
               'flex h-full max-w-[280px] shrink-0 flex-col overflow-hidden border-r border-r-default',
@@ -72,7 +72,7 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
           </div>
           <div
             className={mergeClasses(
-              'flex h-[calc(100vh-60px)] w-full overflow-hidden',
+              'relative flex h-[calc(100dvh-60px)] w-full overflow-hidden',
               'max-lg-gutters:overflow-auto',
               isMobileMenuVisible && 'hidden'
             )}>

@@ -102,7 +102,7 @@ export type SecureStoreOptions = {
  * Returns whether the SecureStore API is enabled on the current device. This does not check the app
  * permissions.
  *
- * @return Promise which fulfils witch `boolean`, indicating whether the SecureStore API is available
+ * @return Promise which fulfils with a `boolean`, indicating whether the SecureStore API is available
  * on the current device. Currently, this resolves `true` on Android and iOS only.
  */
 export async function isAvailableAsync(): Promise<boolean> {

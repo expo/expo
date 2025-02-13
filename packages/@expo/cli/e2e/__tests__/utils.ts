@@ -12,7 +12,7 @@ import { toPosixPath } from '../../src/utils/filePath';
 import { executeBunAsync } from '../utils/expo';
 import { createVerboseLogger } from '../utils/log';
 import { createPackageTarball } from '../utils/package';
-import { TEMP_DIR, getTemporaryPath } from '../utils/path';
+import { getTemporaryPath, TEMP_DIR } from '../utils/path';
 import { executeAsync } from '../utils/process';
 
 export { getTemporaryPath } from '../utils/path';
@@ -21,18 +21,23 @@ export const bin = require.resolve('../../build/bin/cli');
 
 export const projectRoot = getTemporaryPath();
 
-/** Get the directory relative to the default project root */
+/** Get the directory relative to the default project root. */
 export function getRoot(...args: string[]) {
   return path.join(projectRoot, ...args);
 }
 
 /**
  * @param parentDir Directory to create the project folder in, i.e. os temp directory
- * @param props.dirName Name of the project folder, used to prevent recreating the project locally
- * @param props.reuseExisting Should reuse the existing project if possible, good for testing locally
- * @param props.fixtureName Name of the fixture folder to use, this must map to the directories in the `expo/e2e/fixtures/` folder
- * @param props.config Optional extra values to add inside the app.json `expo` object
- * @param props.pkg Optional extra values to add to the fixture package.json file before installing
+ * @param verbose
+ * @param dirName Name of the project folder, used to prevent recreating the project locally
+ * @param reuseExisting Should reuse the existing project if possible, good for testing locally
+ * @param fixtureName Name of the fixture folder to use, this must map to the directories in the `expo/e2e/fixtures/` folder
+ * @param config Optional extra values to add inside the app.json `expo` object
+ * @param pkg Optional extra values to add to the fixture package.json file before installing
+ * @param linkExpoPackages Note, this is linked by installing the workspace folder as dependency directly.
+ * This may cause other side effects, like resolving monorepo dependencies instead of the test project.
+ * @param linkExpoPackagesDev Note, this is linked by installing the workspace folder as dependency directly.
+ * This may cause other side effects, like resolving monorepo dependencies instead of the test project.
  * @returns The project root that can be tested inside of
  */
 export async function createFromFixtureAsync(
@@ -53,15 +58,7 @@ export async function createFromFixtureAsync(
     fixtureName: string;
     config?: Partial<ExpoConfig>;
     pkg?: Partial<PackageJSONConfig>;
-    /**
-     * Note, this is linked by installing the workspace folder as dependency directly.
-     * This may cause other side-effects, like resolving monorepo dependencies instead of the test project.
-     */
     linkExpoPackages?: string[];
-    /**
-     * Note, this is linked by installing the workspace folder as dependency directly.
-     * This may cause other side-effects, like resolving monorepo dependencies instead of the test project.
-     */
     linkExpoPackagesDev?: string[];
   }
 ): Promise<string> {
@@ -104,7 +101,7 @@ export async function createFromFixtureAsync(
     log('Created fixture project:', projectRoot);
 
     // Copy all files recursively into the temporary directory
-    await copySync(fixturePath, projectRoot);
+    copySync(fixturePath, projectRoot);
 
     // Add additional modifications to the package.json
     if (pkg || linkExpoPackages || linkExpoPackagesDev) {
@@ -163,8 +160,6 @@ export async function createFromFixtureAsync(
     await executeBunAsync(projectRoot, ['install']);
   } catch (error) {
     log.error(error);
-    // clean up if something failed.
-    // await fs.remove(projectRoot).catch(() => null);
     throw error;
   } finally {
     log.exit();
@@ -202,11 +197,14 @@ export async function setupTestProjectWithOptionsAsync(
 
   // Many of the factors in this test are based on the expected SDK version that we're testing against.
   const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  expect(exp.sdkVersion).toBe(sdkVersion);
+  assert(
+    exp.sdkVersion === sdkVersion,
+    `Expected exp.sdkVersion to be ${sdkVersion}, but it is set to ${exp.sdkVersion} for ${projectRoot} project.`
+  );
   return projectRoot;
 }
 
-/** Returns a list of loaded modules relative to the repo root. Useful for preventing lazy loading from breaking unexpectedly.   */
+/** Returns a list of loaded modules relative to the repo root. Useful for preventing lazy loading from breaking unexpectedly. */
 export async function getLoadedModulesAsync(statement: string): Promise<string[]> {
   const repoRoot = path.join(__dirname, '../../../../');
   const results = await executeAsync(__dirname, [
@@ -230,8 +228,7 @@ export async function getPageHtml(output: string, route: string) {
 }
 
 export function getRouterE2ERoot(): string {
-  const root = path.join(__dirname, '../../../../../apps/router-e2e');
-  return root;
+  return path.join(__dirname, '../../../../../apps/router-e2e');
 }
 
 export function getHtmlHelpers(outputDir: string) {
@@ -265,7 +262,7 @@ export function getHtmlHelpers(outputDir: string) {
 export function expectChunkPathMatching(name: string) {
   return expect.stringMatching(
     new RegExp(
-      `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
+      `_expo\\/static\\/js\\/web\\/${name.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
     )
   );
 }

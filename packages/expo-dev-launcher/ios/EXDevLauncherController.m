@@ -775,7 +775,7 @@
   manager.currentManifestURL = nil;
 }
 
--(NSDictionary *)getUpdatesConfig
+-(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants
 {
   NSMutableDictionary *updatesConfig = [NSMutableDictionary new];
 
@@ -784,19 +784,19 @@
     runtimeVersion = _updatesInterface.runtimeVersion ?: @"";
   }
 
-  // url structure for EASUpdates: `http://u.expo.dev/{appId}`
-  // this url field is added to app.json.updates when running `eas update:configure`
+  // the project url field is added to app.json.updates when running `eas update:configure`
   // the `u.expo.dev` determines that it is the modern manifest protocol
   NSString *projectUrl = @"";
   if (_updatesInterface) {
-    projectUrl = [_updatesInterface.updateURL absoluteString] ?: @"";
+    projectUrl = [constants valueForKeyPath:@"manifest.updates.url"];
   }
 
   NSURL *url = [NSURL URLWithString:projectUrl];
-  NSString *appId = [[url pathComponents] lastObject];
 
   BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
+
+  NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: @"";
   BOOL hasAppId = appId.length > 0;
 
   BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;

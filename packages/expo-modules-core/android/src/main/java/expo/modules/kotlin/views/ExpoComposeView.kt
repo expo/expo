@@ -1,8 +1,7 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-
 package expo.modules.kotlin.views
 
 import android.content.Context
+import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import expo.modules.kotlin.AppContext
@@ -12,7 +11,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 /**
  * A base class that should be used by compose views.
  */
-abstract class ExpoComposeView<T : Any>(
+abstract class ExpoComposeView<T : ComposeProps>(
   context: Context,
   appContext: AppContext
 ) : ExpoView(context, appContext) {
@@ -35,6 +34,13 @@ abstract class ExpoComposeView<T : Any>(
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       addView(it)
+      it.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View) {
+          it.disposeComposition()
+        }
+
+        override fun onViewDetachedFromWindow(v: View) = Unit
+      })
     }
   }
 

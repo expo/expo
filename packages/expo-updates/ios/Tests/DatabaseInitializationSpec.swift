@@ -303,7 +303,10 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
 
     describe("database persistence") {
       it("persists") {
-        let db = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(inDirectory: testDatabaseDir)
+        let db = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(
+          inDirectory: testDatabaseDir,
+          logger: UpdatesLogger()
+        )
 
         // insert some test data
         let insertSql = """
@@ -314,7 +317,10 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
 
         // mimic the app closing and reopening
         sqlite3_close(db)
-        let newDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(inDirectory: testDatabaseDir)
+        let newDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(
+          inDirectory: testDatabaseDir,
+          logger: UpdatesLogger()
+        )
 
         // ensure the data is still there
         let selectSql = "SELECT * FROM `assets` WHERE `url` IS NULL AND `key` = 'bundle-1614137401950' AND `headers` IS NULL AND `type` = 'js' AND `metadata` IS NULL AND `download_time` = 1614137406588 AND `relative_path` = 'bundle-1614137401950' AND `hash` = '6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952' AND `hash_type` = 0 AND `marked_for_deletion` = 0"
@@ -333,7 +339,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
           filename: "expo-v4.db",
           inDirectory: testDatabaseDir,
           shouldMigrate: false,
-          migrations: []
+          migrations: [],
+          logger: UpdatesLogger()
         )
 
         // insert test data
@@ -361,7 +368,10 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
         sqlite3_close(db)
 
         // initialize without specifying migrations in order to run them all
-        let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(inDirectory: testDatabaseDir)
+        let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(
+          inDirectory: testDatabaseDir,
+          logger: UpdatesLogger()
+        )
 
         // verify data integrity
         let updatesSql1 = "SELECT * FROM `updates` WHERE `id` = X'8C263F9DE3FF48888496E3244C788661'"
@@ -400,7 +410,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
           filename: "expo-v4.db",
           inDirectory: testDatabaseDir,
           shouldMigrate: false,
-          migrations: []
+          migrations: [],
+          logger: UpdatesLogger()
         )
 
         // insert test data
@@ -427,7 +438,7 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
 
         sqlite3_close(db)
 
-        let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(inDirectory: testDatabaseDir, migrations: [UpdatesDatabaseMigration4To5()])
+        let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(inDirectory: testDatabaseDir, migrations: [UpdatesDatabaseMigration4To5()], logger: UpdatesLogger())
 
         // verify data integrity
         let updatesSql1 = "SELECT * FROM `updates` WHERE `id` = X'8C263F9DE3FF48888496E3244C788661'"
@@ -485,7 +496,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
           filename: "expo-v5.db",
           inDirectory: testDatabaseDir,
           shouldMigrate: false,
-          migrations: []
+          migrations: [],
+          logger: UpdatesLogger()
         )
 
         // insert test data
@@ -515,7 +527,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
         // initialize a new database object the normal way and run migrations
         let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(
           inDirectory: testDatabaseDir,
-          migrations: [UpdatesDatabaseMigration5To6()]
+          migrations: [UpdatesDatabaseMigration5To6()],
+          logger: UpdatesLogger()
         )
 
         // verify data integrity
@@ -595,7 +608,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
           filename: "expo-v6.db",
           inDirectory: testDatabaseDir,
           shouldMigrate: false,
-          migrations: []
+          migrations: [],
+          logger: UpdatesLogger()
         )
 
         // insert test data
@@ -625,7 +639,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
         // initialize a new database object the normal way and run migrations
         let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(
           inDirectory: testDatabaseDir,
-          migrations: [UpdatesDatabaseMigration6To7()]
+          migrations: [UpdatesDatabaseMigration6To7()],
+          logger: UpdatesLogger()
         )
 
         // verify data integrity
@@ -702,7 +717,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
           filename: "expo-v7.db",
           inDirectory: testDatabaseDir,
           shouldMigrate: false,
-          migrations: []
+          migrations: [],
+          logger: UpdatesLogger()
         )
 
         // insert test data
@@ -721,7 +737,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
         // initialize a new database object the normal way and run migrations
         let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(
           inDirectory: testDatabaseDir,
-          migrations: [UpdatesDatabaseMigration7To8()]
+          migrations: [UpdatesDatabaseMigration7To8()],
+          logger: UpdatesLogger()
         )
 
         let assetsSql1 = "SELECT * FROM `assets` WHERE `id` = 2 AND `url` = 'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e' AND `key` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `headers` IS NULL AND `type` = 'image/png' AND `metadata` IS NULL AND `download_time` = 1614137309295 AND `relative_path` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `hash` = 'c4fdfc2ec388025067a0f755bda7731a0a868a2be79c84509f4de4e40d23161b' AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL"
@@ -738,7 +755,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
           filename: "expo-v8.db",
           inDirectory: testDatabaseDir,
           shouldMigrate: false,
-          migrations: []
+          migrations: [],
+          logger: UpdatesLogger()
         )
 
         // insert test data
@@ -757,7 +775,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
         // initialize a new database object the normal way and run migrations
         let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(
           inDirectory: testDatabaseDir,
-          migrations: [UpdatesDatabaseMigration8To9()]
+          migrations: [UpdatesDatabaseMigration8To9()],
+          logger: UpdatesLogger()
         )
 
         let assetsSql1 = "SELECT * FROM `assets` WHERE `id` = 2 AND `url` = 'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e' AND `key` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `headers` IS NULL AND `type` = 'image/png' AND `metadata` IS NULL AND `download_time` = 1614137309295 AND `relative_path` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `hash` = 'c4fdfc2ec388025067a0f755bda7731a0a868a2be79c84509f4de4e40d23161b' AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL AND `expected_hash` IS NULL"
@@ -774,7 +793,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
           filename: "expo-v9.db",
           inDirectory: testDatabaseDir,
           shouldMigrate: false,
-          migrations: []
+          migrations: [],
+          logger: UpdatesLogger()
         )
 
         // insert test data
@@ -804,7 +824,8 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
         // initialize a new database object the normal way and run migrations
         let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(
           inDirectory: testDatabaseDir,
-          migrations: [UpdatesDatabaseMigration9To10()]
+          migrations: [UpdatesDatabaseMigration9To10()],
+          logger: UpdatesLogger()
         )
 
         // verify data integrity

@@ -1,8 +1,9 @@
 package expo.modules.updates.db
 
-import android.net.Uri
-import expo.modules.jsonutils.getNullable
+import expo.modules.manifests.core.toMap
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.db.dao.JSONDataDao
+import expo.modules.updates.manifest.ManifestMetadata
 import org.json.JSONObject
 
 /**
@@ -27,8 +28,6 @@ import org.json.JSONObject
  *   UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
  */
 object BuildData {
-  private var staticBuildDataKey = "staticBuildData"
-
   fun ensureBuildDataIsConsistent(
     updatesConfiguration: UpdatesConfiguration,
     database: UpdatesDatabase
@@ -39,6 +38,7 @@ object BuildData {
       setBuildDataInDatabase(database, updatesConfiguration)
     } else if (!isBuildDataConsistent(updatesConfiguration, buildJSON)) {
       clearAllUpdatesFromDatabase(database)
+      clearManifestMetadataFromDatabase(database)
       setBuildDataInDatabase(database, updatesConfiguration)
     }
   }
@@ -48,28 +48,17 @@ object BuildData {
     database.updateDao().deleteUpdates(allUpdates)
   }
 
+  fun clearManifestMetadataFromDatabase(database: UpdatesDatabase) {
+    ManifestMetadata.clearMetadataForBuildDataClearOperation(database)
+  }
+
   fun isBuildDataConsistent(
     updatesConfiguration: UpdatesConfiguration,
     databaseBuildData: JSONObject
   ): Boolean {
-    val configBuildData = getBuildDataFromConfig(updatesConfiguration)
-
-    val updateUrlKey = UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY
-    val requestHeadersKey = UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
-
-    // check equality of the two JSONObjects. The build data object is string valued with the
-    // exception of "requestHeaders" which is a string valued object.
-    return mutableListOf<Boolean>().apply {
-      add(databaseBuildData.get(updateUrlKey).let { Uri.parse(it.toString()) } == configBuildData.get(updateUrlKey))
-
-      // loop through keys from both requestHeaders objects.
-      for (key in configBuildData.getJSONObject(requestHeadersKey).keys()) {
-        add(databaseBuildData.getJSONObject(requestHeadersKey).getNullable<String>(key) == configBuildData.getJSONObject(requestHeadersKey).getNullable(key))
-      }
-      for (key in databaseBuildData.getJSONObject(requestHeadersKey).keys()) {
-        add(databaseBuildData.getJSONObject(requestHeadersKey).getNullable<String>(key) == configBuildData.getJSONObject(requestHeadersKey).getNullable(key))
-      }
-    }.all { it }
+    val configBuildData = defaultBuildData + getBuildDataFromConfig(updatesConfiguration).toMap()
+    val dbBuildData = defaultBuildData + databaseBuildData.toMap()
+    return configBuildData == dbBuildData
   }
 
   fun setBuildDataInDatabase(
@@ -78,14 +67,14 @@ object BuildData {
   ) {
     val buildDataJSON = getBuildDataFromConfig(updatesConfiguration)
     database.jsonDataDao()?.setJSONStringForKey(
-      staticBuildDataKey,
+      JSONDataDao.JSONDataKey.STATIC_BUILD_DATA,
       buildDataJSON.toString(),
       updatesConfiguration.scopeKey
     )
   }
 
   fun getBuildDataFromDatabase(database: UpdatesDatabase, scopeKey: String): JSONObject? {
-    val buildJSONString = database.jsonDataDao()?.loadJSONStringForKey(staticBuildDataKey, scopeKey)
+    val buildJSONString = database.jsonDataDao()?.loadJSONStringForKey(JSONDataDao.JSONDataKey.STATIC_BUILD_DATA, scopeKey)
     return if (buildJSONString == null) null else JSONObject(buildJSONString)
   }
 
@@ -94,9 +83,17 @@ object BuildData {
       for ((key, value) in updatesConfiguration.requestHeaders) put(key, value)
     }
     val buildData = JSONObject().apply {
-      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, updatesConfiguration.updateUrl)
+      put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, updatesConfiguration.updateUrl.toString())
       put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, requestHeadersJSON)
+      put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, updatesConfiguration.hasEmbeddedUpdate)
     }
     return buildData
   }
+
+  /**
+   * Fallback data specifically for migration while database data doesn't have these keys
+   */
+  private val defaultBuildData = mapOf(
+    UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY to true
+  )
 }

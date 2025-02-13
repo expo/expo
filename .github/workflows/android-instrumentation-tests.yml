@@ -14,6 +14,7 @@ on:
       - packages/expo-manifests/android/**
       - packages/expo-notifications/android/**
       - packages/expo-updates/android/**
+      - packages/expo-modules-core/**
       - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock
       - '!packages/@expo/cli/**'
@@ -28,6 +29,7 @@ on:
       - packages/expo-manifests/android/**
       - packages/expo-notifications/android/**
       - packages/expo-updates/android/**
+      - packages/expo-modules-core/**
       - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock
       - '!packages/@expo/cli/**'

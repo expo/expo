@@ -774,7 +774,7 @@ export declare function deleteAttendeeAsync(id: string): Promise<void>;
  * @return A promise which fulfils with an array of [`Reminder`](#reminder) objects matching the search criteria.
  * @platform ios
  */
-export declare function getRemindersAsync(calendarIds: (string | null)[], status: ReminderStatus | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
+export declare function getRemindersAsync(calendarIds: (string | null)[], status: ReminderStatus | null, startDate: Date | null, endDate: Date | null): Promise<Reminder[]>;
 /**
  * Returns a specific reminder selected by ID.
  * @param id ID of the reminder to return.

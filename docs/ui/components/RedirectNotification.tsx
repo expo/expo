@@ -11,8 +11,11 @@ export default function RedirectNotification({ showForQuery = 'redirected', chil
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    const referrer = document.referrer;
+    const isFromSdk = referrer?.endsWith('/sdk') || referrer?.endsWith('/sdk/');
+
     if (router?.query) {
-      setVisible(router.query.hasOwnProperty(showForQuery));
+      setVisible(!isFromSdk && router.query.hasOwnProperty(showForQuery));
     }
   }, [router?.query]);
 

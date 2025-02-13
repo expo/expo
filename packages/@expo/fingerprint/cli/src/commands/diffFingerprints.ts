@@ -37,12 +37,12 @@ Diff two fingerprints
   const fingerprintFile1 = getFileArgumentAtIndex(args, 0);
   const fingerprintFile2 = getFileArgumentAtIndex(args, 1);
 
-  const [fingeprint1ToDiff, fingerprint2ToDiff] = await Promise.all([
+  const [fingerprint1ToDiff, fingerprint2ToDiff] = await Promise.all([
     readFingerprintFileAsync(fingerprintFile1),
     readFingerprintFileAsync(fingerprintFile2),
   ]);
   try {
-    const diff = diffFingerprints(fingeprint1ToDiff, fingerprint2ToDiff);
+    const diff = diffFingerprints(fingerprint1ToDiff, fingerprint2ToDiff);
     console.log(JSON.stringify(diff, null, 2));
   } catch (e: any) {
     throw new CommandError(e.message);

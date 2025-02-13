@@ -14,6 +14,7 @@ import {
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
+import { PictureRef } from './PictureRef';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
 const EventThrottleMs = 500;
@@ -90,7 +91,7 @@ export default class CameraView extends Component<CameraViewProps> {
       throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
     }
 
-    return await CameraManager.isAvailableAsync();
+    return CameraManager.isAvailableAsync();
   }
 
   // @needsAudit
@@ -104,7 +105,7 @@ export default class CameraView extends Component<CameraViewProps> {
       throw new UnavailabilityError('Camera', 'getAvailableVideoCodecsAsync');
     }
 
-    return await CameraManager.getAvailableVideoCodecsAsync();
+    return CameraManager.getAvailableVideoCodecsAsync();
   }
 
   /**
@@ -181,6 +182,8 @@ export default class CameraView extends Component<CameraViewProps> {
    *
    * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
    */
+  async takePictureAsync(options: CameraPictureOptions & { pictureRef: true }): Promise<PictureRef>;
+  async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
   async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);
 

@@ -2,6 +2,9 @@ package expo.modules.camera
 
 import android.Manifest
 import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -16,11 +19,13 @@ import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
 import expo.modules.camera.tasks.ResolveTakenPicture
+import expo.modules.camera.tasks.writeStreamToFile
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -29,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 val cameraEvents = arrayOf(
@@ -139,8 +145,52 @@ class CameraViewModule : Module() {
     OnDestroy {
       try {
         moduleScope.cancel(ModuleDestroyedException())
-      } catch (e: IllegalStateException) {
+      } catch (_: IllegalStateException) {
         Log.e(TAG, "The scope does not have a job in it")
+      }
+    }
+
+    Class("Picture", PictureRef::class) {
+      Property("width") { picture: PictureRef ->
+        picture.ref.width
+      }
+
+      Property("height") { picture: PictureRef ->
+        picture.ref.height
+      }
+
+      AsyncFunction("savePictureAsync") { picture: PictureRef, options: SavePictureOptions?, promise: Promise ->
+        val image = picture.ref
+        val response = Bundle()
+
+        cacheDirectory.let {
+          response.apply {
+            putInt("width", image.width)
+            putInt("height", image.height)
+          }
+
+          val quality = options?.quality ?: 1
+          // Cache compressed image in imageStream
+          ByteArrayOutputStream().use { imageStream ->
+            image.compress(Bitmap.CompressFormat.JPEG, quality.toInt() * 100, imageStream)
+            // Write compressed image to file in cache directory
+            try {
+              val filePath = writeStreamToFile(it, imageStream)
+              image.recycle()
+              val imageFile = File(filePath)
+              val fileUri = Uri.fromFile(imageFile).toString()
+              response.putString("uri", fileUri)
+
+              // Write base64-encoded image to the response if requested
+              if (options?.base64 == true) {
+                response.putString("base64", Base64.encodeToString(imageStream.toByteArray(), Base64.NO_WRAP))
+              }
+              promise.resolve(response)
+            } catch (e: CodedException) {
+              promise.reject(e)
+            }
+          }
+        }
       }
     }
 
@@ -264,11 +314,11 @@ class CameraViewModule : Module() {
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
         if (!EmulatorUtilities.isRunningOnEmulator()) {
-          view.takePicture(options, promise, cacheDirectory)
+          view.takePicture(options, promise, cacheDirectory, runtimeContext)
         } else {
           val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
           moduleScope.launch {
-            ResolveTakenPicture(image, promise, options, false, cacheDirectory) { response ->
+            ResolveTakenPicture(image, promise, options, false, runtimeContext, cacheDirectory) { response ->
               view.onPictureSaved(response)
             }.resolve()
           }
@@ -301,12 +351,6 @@ class CameraViewModule : Module() {
 
       AsyncFunction("pausePreview") { view: ExpoCameraView ->
         view.pausePreview()
-      }
-
-      OnViewDestroys { view ->
-        view.orientationEventListener.disable()
-        view.cancelCoroutineScope()
-        view.releaseCamera()
       }
     }
   }

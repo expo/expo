@@ -1,3 +1,3 @@
-declare const _default: any;
-export default _default;
+declare const m: any;
+export default m;
 //# sourceMappingURL=ExpoFontLoader.d.ts.map

@@ -139,7 +139,6 @@ export async function createFileHashResultsAsync(
       });
       if (
         options.enableReactImportsPatcher &&
-        options.platforms.includes('ios') &&
         (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))
       ) {
         const transform = new ReactImportsPatchTransform();

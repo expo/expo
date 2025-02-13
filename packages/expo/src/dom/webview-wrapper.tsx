@@ -15,6 +15,7 @@ import {
 } from './injection';
 import ExpoDomWebView from './webview/ExpoDOMWebView';
 import RNWebView from './webview/RNWebView';
+import { useDebugZeroHeight } from './webview/useDebugZeroHeight';
 
 interface Props {
   children?: any;
@@ -63,6 +64,8 @@ const RawWebView = React.forwardRef<object, Props>(
     const source = { uri: `${getBaseURL()}/${filePath}` };
     const [containerStyle, setContainerStyle] =
       React.useState<WebViewProps['containerStyle']>(null);
+
+    const { debugZeroHeightStyle, debugOnLayout } = useDebugZeroHeight(dom);
 
     const emit = React.useCallback(
       (detail: BridgeMessage<any>) => {
@@ -121,8 +124,9 @@ const RawWebView = React.forwardRef<object, Props>(
           subscription.remove();
         });
       },
-      containerStyle,
       ...dom,
+      containerStyle: [containerStyle, debugZeroHeightStyle, dom?.containerStyle],
+      onLayout: __DEV__ ? debugOnLayout : dom.onLayout,
       injectedJavaScriptBeforeContentLoaded: [
         // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
         `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,

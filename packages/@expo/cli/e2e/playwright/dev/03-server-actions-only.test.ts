@@ -13,6 +13,8 @@ const testName = '03-server-actions-only';
 const inputDir = 'dist-' + testName;
 
 test.describe(inputDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
@@ -21,7 +23,7 @@ test.describe(inputDir, () => {
       E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: testName,
       E2E_ROUTER_ASYNC: 'development',
-      EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
+      E2E_SERVER_FUNCTIONS: '1',
       E2E_CANARY_ENABLED: '1',
       EXPO_USE_METRO_REQUIRE: '1',
       TEST_SECRET_VALUE: 'test-secret',
@@ -86,6 +88,38 @@ test.describe(inputDir, () => {
     expect(rscPayload).toMatch(
       '2:I["node_modules/react-native-web/dist/exports/Text/index.js",["/node_modules/react-native-web/dist/exports/Text/index.js.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F03-server-actions-only%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"]'
     );
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('renders nested server action with HMR', async ({ page }) => {
+    // Listen for console logs and errors
+    const pageErrors = pageCollectErrors(page);
+
+    // Navigate to the app
+    console.time('Open page');
+    await page.goto(expoStart.url.href);
+    console.timeEnd('Open page');
+
+    // Wait for the app to load
+    await page.waitForSelector('[data-testid="call-jsx-server-action-two"]');
+
+    // Press button
+    await page.click('[data-testid="call-jsx-server-action-two"]');
+
+    await page.waitForSelector('[data-testid="action-results-two-0"]');
+    const firstContents = await page.textContent('[data-testid="action-results-two-0"]');
+    expect(firstContents).toMatch(/\w+/);
+
+    // Give time
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Press button
+    await page.click('[data-testid="call-jsx-server-action-two"]');
+
+    await page.waitForSelector('[data-testid="action-results-two-1"]');
+    const secondContents = await page.textContent('[data-testid="action-results-two-1"]');
+    expect(secondContents).toMatch(/\w+/);
+    expect(secondContents).not.toBe(firstContents);
 
     expect(pageErrors.all).toEqual([]);
   });

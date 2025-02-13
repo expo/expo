@@ -1,6 +1,6 @@
 {
   "platforms": ["apple", "android", "web"],
-  "ios": {
+  "apple": {
     "modules": ["NetworkModule"]
   },
   "android": {

@@ -17,18 +17,10 @@ if (useLegacyAutolinking) {
   apply from: "../scripts/autolinking.gradle"
 }
 
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
-
 if (useLegacyAutolinking) {
   ensureDependeciesWereEvaluated(project)
 }
 
-group = 'host.exp.exponent'
-version = '52.0.11'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -38,6 +30,9 @@ buildscript {
 }
 
 def reactNativeVersion = project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
+
+group = 'host.exp.exponent'
+version = '52.0.11'
 
 android {
   namespace "expo.core"

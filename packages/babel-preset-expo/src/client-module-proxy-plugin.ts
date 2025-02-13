@@ -2,7 +2,7 @@
  * Copyright © 2024 650 Industries.
  */
 import { ConfigAPI, template, types } from '@babel/core';
-import url from 'url';
+import url from 'node:url';
 
 import { getIsReactServer } from './common';
 

@@ -42,6 +42,9 @@ internal class PrintPDFRenderTask(private val context: Context, private val opti
     val settings = webView.settings
     settings.defaultTextEncodingName = "UTF-8"
     webView.webViewClient = webViewClient
+    options.textZoom?.let { textZoom ->
+      webView.settings.textZoom = textZoom
+    }
     webView.loadDataWithBaseURL(null, html, "text/html; charset=utf-8", "UTF-8", null)
   }
 

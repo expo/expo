@@ -8,12 +8,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
+import expo.modules.camera.CameraExceptions.WriteImageException
 import expo.modules.camera.PictureOptions
+import expo.modules.camera.PictureRef
 import expo.modules.camera.utils.CameraViewHelper.addExifData
 import expo.modules.camera.utils.CameraViewHelper.getExifData
 import expo.modules.camera.utils.CameraViewHelper.setExifData
 import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.RuntimeContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
@@ -58,6 +61,7 @@ class ResolveTakenPicture(
   private var promise: Promise,
   private var options: PictureOptions,
   private var mirror: Boolean,
+  private val runtimeContext: RuntimeContext,
   private val directory: File,
   private var pictureSavedDelegate: PictureSavedDelegate
 ) {
@@ -66,7 +70,9 @@ class ResolveTakenPicture(
 
   suspend fun resolve() = withContext(Dispatchers.IO) {
     val bundle = processImage()
-    onComplete(bundle)
+    if (!options.pictureRef) {
+      onComplete(bundle)
+    }
   }
 
   private fun processImage(): Bundle? {
@@ -132,11 +138,16 @@ class ResolveTakenPicture(
           putInt(HEIGHT_KEY, bitmap.height)
         }
 
+        if (options.pictureRef) {
+          promise.resolve(PictureRef(bitmap, runtimeContext))
+          return response
+        }
+
         // Cache compressed image in imageStream
         ByteArrayOutputStream().use { imageStream ->
           bitmap.compress(Bitmap.CompressFormat.JPEG, quality, imageStream)
           // Write compressed image to file in cache directory
-          val filePath = writeStreamToFile(imageStream)
+          val filePath = writeStreamToFile(directory, imageStream)
           bitmap.recycle()
           // Save Exif data to the image if requested
           if (options.exif) {
@@ -159,6 +170,7 @@ class ResolveTakenPicture(
         is Resources.NotFoundException -> promise.reject(ERROR_TAG, DIRECTORY_NOT_FOUND_MSG, e)
         is IOException -> promise.reject(ERROR_TAG, UNKNOWN_IO_EXCEPTION_MSG, e)
         is IllegalArgumentException -> promise.reject(ERROR_TAG, PARAMETER_EXCEPTION_MSG, e)
+        is WriteImageException -> promise.reject(e)
         else -> promise.reject(ERROR_TAG, UNKNOWN_EXCEPTION_MSG, e)
       }
       e.printStackTrace()
@@ -174,7 +186,7 @@ class ResolveTakenPicture(
         imageStream.write(imageData)
 
         // write compressed image to file in cache directory
-        val filePath = writeStreamToFile(imageStream)
+        val filePath = writeStreamToFile(directory, imageStream)
         val imageFile = filePath?.let { File(it) }
 
         // handle image uri
@@ -224,21 +236,6 @@ class ResolveTakenPicture(
     }
   }
 
-  // Write stream to file in cache directory
-  @Throws(Exception::class)
-  private fun writeStreamToFile(inputStream: ByteArrayOutputStream): String? {
-    try {
-      val outputPath = FileSystemUtils.generateOutputPath(directory, DIRECTORY_NAME, EXTENSION)
-      FileOutputStream(outputPath).use { outputStream ->
-        inputStream.writeTo(outputStream)
-      }
-      return outputPath
-    } catch (e: IOException) {
-      e.printStackTrace()
-    }
-    return null
-  }
-
   private fun decodeBitmap(imageData: ByteArray, orientation: Int, options: PictureOptions, bitmapOptions: BitmapFactory.Options): Bitmap {
     // Rotate the bitmap to the proper orientation if needed
     return if (!options.exif) {
@@ -270,4 +267,18 @@ class ResolveTakenPicture(
     ExifInterface.ORIENTATION_TRANSVERSE -> 270
     else -> 0
   }
+}
+
+@Throws(Exception::class)
+fun writeStreamToFile(directory: File, inputStream: ByteArrayOutputStream): String? {
+  try {
+    val outputPath = FileSystemUtils.generateOutputPath(directory, DIRECTORY_NAME, EXTENSION)
+    FileOutputStream(outputPath).use { outputStream ->
+      inputStream.writeTo(outputStream)
+    }
+    return outputPath
+  } catch (e: IOException) {
+    throw WriteImageException(e.message)
+  }
+  return null
 }

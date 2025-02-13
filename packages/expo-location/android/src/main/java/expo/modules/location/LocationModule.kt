@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.IntentSender.SendIntentException
 import android.content.pm.PackageManager
 import android.hardware.GeomagneticField
 import android.hardware.Sensor
@@ -490,7 +489,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
           val resolvable = e as ResolvableApiException
           mUIManager.registerActivityEventListener(this@LocationModule)
           resolvable.startResolutionForResult(appContext.throwingActivity, CHECK_SETTINGS_REQUEST_CODE)
-        } catch (e: SendIntentException) {
+        } catch (e: Throwable) {
           // Ignore the error.
           executePendingRequests(Activity.RESULT_CANCELED)
         }

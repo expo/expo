@@ -138,6 +138,8 @@ rules:
     mentions: ['behenate', 'lukmccall']
   - patterns: ['packages/expo-mail-composer/**']
     mentions: ['brentvatne', 'alanjhughes']
+  - patterns: ['packages/expo-maps/**']
+    mentions: ['lukmccall', 'alanjhughes']
   - patterns: ['packages/expo-manifests/**']
     mentions: ['wschurman']
   - patterns: ['packages/expo-media-library/**']

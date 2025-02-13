@@ -17,7 +17,9 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
 
   const { middleware, websocketEndpoints } = createDevMiddleware({
     projectRoot: metroBundler.projectRoot,
-    serverBaseUrl: metroBundler.getUrlCreator().constructUrl({ scheme: 'http', hostType: 'lan' }),
+    serverBaseUrl: metroBundler
+      .getUrlCreator()
+      .constructUrl({ scheme: 'http', hostType: 'localhost' }),
     logger: createLogger(chalk.bold('Debug:')),
     unstable_customInspectorMessageHandler: createHandlersFactory(),
     unstable_experiments: {

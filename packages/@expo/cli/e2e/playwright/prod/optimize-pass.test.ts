@@ -15,6 +15,9 @@ const projectRoot = getRouterE2ERoot();
 const inputDir = 'dist-optimize-pass';
 
 test.describe(inputDir, () => {
+  // Configure this describe block to run serially on a single worker so we don't bundle multiple times to the same on-disk location.
+  test.describe.configure({ mode: 'serial' });
+
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {

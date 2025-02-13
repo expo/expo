@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoDocumentPicker.web.d.ts","sourceRoot":"","sources":["../src/ExpoDocumentPicker.web.ts"],"names":[],"mappings":"AAEA,OAAO,EAAuB,qBAAqB,EAAE,oBAAoB,EAAE,MAAM,SAAS,CAAC;;0CAMtF,qBAAqB,GAAG,QAAQ,oBAAoB,CAAC;;AAJ1D,wBAiDE"}
+{"version":3,"file":"ExpoDocumentPicker.web.d.ts","sourceRoot":"","sources":["../src/ExpoDocumentPicker.web.ts"],"names":[],"mappings":"AAEA,OAAO,EAAuB,qBAAqB,EAAE,oBAAoB,EAAE,MAAM,SAAS,CAAC;;kDAOtF,qBAAqB,GAAG,QAAQ,oBAAoB,CAAC;;AAL1D,wBAkDE"}

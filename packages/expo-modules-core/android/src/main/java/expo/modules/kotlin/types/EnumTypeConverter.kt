@@ -1,6 +1,7 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.EnumNoSuchValueException
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
 import expo.modules.kotlin.jni.ExpectedType
@@ -36,7 +37,7 @@ class EnumTypeConverter(
 
   override fun isTrivial() = false
 
-  override fun convertFromDynamic(value: Dynamic): Enum<*> {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
       return convertEnumWithoutParameter(value.asString(), enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {
@@ -50,7 +51,7 @@ class EnumTypeConverter(
     throw IncompatibleArgTypeException(value.type.toKType(), enumClass.createType())
   }
 
-  override fun convertFromAny(value: Any): Enum<*> {
+  override fun convertFromAny(value: Any, context: AppContext?): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
       return convertEnumWithoutParameter(value as String, enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {

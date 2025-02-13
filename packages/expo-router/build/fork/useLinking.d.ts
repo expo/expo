@@ -32,5 +32,6 @@ export declare function useLinking(ref: React.RefObject<NavigationContainerRef<P
         }> & any) | undefined;
     }) | undefined>;
 };
+export declare function getInitialURLWithTimeout(): string | null | Promise<string | null>;
 export {};
 //# sourceMappingURL=useLinking.d.ts.map

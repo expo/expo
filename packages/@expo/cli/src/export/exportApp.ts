@@ -64,7 +64,11 @@ export async function exportAppAsync(
     | 'skipSSG'
   >
 ): Promise<void> {
-  setNodeEnv(dev ? 'development' : 'production');
+  // Force the environment during export and do not allow overriding it.
+  const environment = dev ? 'development' : 'production';
+  process.env.NODE_ENV = environment;
+  setNodeEnv(environment);
+
   require('@expo/env').load(projectRoot);
 
   const projectConfig = getConfig(projectRoot);
@@ -127,15 +131,22 @@ export async function exportAppAsync(
   const bundles: Partial<Record<Platform, BundleOutput>> = {};
   const domComponentAssetsMetadata: Partial<Record<Platform, PlatformMetadata['assets']>> = {};
 
-  const spaPlatforms = useServerRendering
-    ? platforms.filter((platform) => platform !== 'web')
-    : platforms;
+  const spaPlatforms =
+    // TODO: Support server and static rendering for server component exports.
+    useServerRendering && !devServer.isReactServerComponentsEnabled
+      ? platforms.filter((platform) => platform !== 'web')
+      : platforms;
 
   try {
     if (devServer.isReactServerComponentsEnabled) {
       // In RSC mode, we only need these to be in the client dir.
-      // TODO: Merge back with other copy after we add HMR.
-      await copyPublicFolderAsync(publicPath, path.join(outputPath, 'client'));
+      // TODO: Merge back with other copy after we add SSR.
+      try {
+        await copyPublicFolderAsync(publicPath, path.join(outputPath, 'client'));
+      } catch (error) {
+        Log.error('Failed to copy public directory to dist directory');
+        throw error;
+      }
     } else {
       // NOTE(kitten): The public folder is currently always copied, regardless of targetDomain
       // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
@@ -261,14 +272,13 @@ export async function exportAppAsync(
 
       if (devServer.isReactServerComponentsEnabled) {
         const isWeb = platforms.includes('web');
-        if (!(isWeb && useServerRendering)) {
-          await exportApiRoutesStandaloneAsync(devServer, {
-            files,
-            platform: 'web',
-            apiRoutesOnly: !isWeb,
-            templateHtml,
-          });
-        }
+
+        await exportApiRoutesStandaloneAsync(devServer, {
+          files,
+          platform: 'web',
+          apiRoutesOnly: !isWeb,
+          templateHtml,
+        });
       }
 
       // TODO: Use same asset system across platforms again.
@@ -332,7 +342,10 @@ export async function exportAppAsync(
             targetDomain: 'client',
           });
         }
-      } else {
+      } else if (
+        // TODO: Support static export with RSC.
+        !devServer.isReactServerComponentsEnabled
+      ) {
         await exportFromServerAsync(projectRoot, devServer, {
           mode,
           files,

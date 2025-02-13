@@ -198,7 +198,14 @@ export function logout() {
 }
 ```
 
-The `router` object is immutable and contains multiple methods to navigate. See [`Router`](/versions/latest/sdk/router/#router) for more information about the available methods.
+The `router` object is immutable and contains the following functions:
+
+- **navigate**: `(href: Href, options: LinkToOptions) => void`. Perform a `navigate` action.
+- **push**: `(href: Href, options: LinkToOptions) => void`. Perform a `push` action.
+- **replace**: `(href: Href, options: LinkToOptions) => void`. Perform a `replace` action.
+- **back**: `() => void`. Navigate back to previous route.
+- **canGoBack**: `() => boolean` Returns `true` if a valid history stack exists and the `back()` function can pop back.
+- **setParams**: `(params: Record<string, string>) => void` Update the query params for the currently selected route.
 
 ## Autocomplete
 

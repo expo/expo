@@ -40,13 +40,13 @@ abstract class GeneratePackagesListTask : Exec() {
   abstract val outputFile: RegularFileProperty
 
   override fun exec() {
-    val autolingOptions = AutolinkingOptions.fromJson(options.get())
+    val autolinkingOptions = AutolinkingOptions.fromJson(options.get())
     commandLine(
       AutolinkigCommandBuilder()
         .command("generate-package-list")
         .option("namespace", namespace.get())
         .option("target", outputFile.get().asFile.absolutePath)
-        .useAutolinkingOptions(autolingOptions)
+        .useAutolinkingOptions(autolinkingOptions)
         .build()
     )
     super.exec()

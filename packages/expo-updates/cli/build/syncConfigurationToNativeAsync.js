@@ -29,7 +29,7 @@ async function syncConfigurationToNativeAsync(options) {
 exports.syncConfigurationToNativeAsync = syncConfigurationToNativeAsync;
 async function syncConfigurationToNativeAndroidAsync(options) {
     const { exp } = (0, config_1.getConfig)(options.projectRoot, {
-        isPublicConfig: true,
+        isPublicConfig: false,
         skipSDKVersionRequirement: true,
     });
     // sync AndroidManifest.xml
@@ -50,7 +50,7 @@ async function syncConfigurationToNativeAndroidAsync(options) {
 }
 async function syncConfigurationToNativeIosAsync(options) {
     const { exp } = (0, config_1.getConfig)(options.projectRoot, {
-        isPublicConfig: true,
+        isPublicConfig: false,
         skipSDKVersionRequirement: true,
     });
     const expoPlist = await readExpoPlistAsync(options.projectRoot);

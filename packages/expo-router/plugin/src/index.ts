@@ -49,11 +49,6 @@ const withRouter: ConfigPlugin<
     extra: {
       ...config.extra,
       router: {
-        // RSC enables location origin by default because it's required for requests.
-        origin:
-          config.experiments?.reactServerComponentRoutes || config.experiments?.reactServerFunctions
-            ? undefined
-            : false,
         ...config.extra?.router,
         ...props,
       },

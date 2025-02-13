@@ -24,6 +24,10 @@ See [dependency caching](/build-reference/caching) for more information.
 
 If your build takes longer than 2 hours to run, it will be canceled. This limit is lower on the free plan, and the limit is subject to change in the future.
 
+## Maximum number of pending builds is 50 per platform per account
+
+If you have more than 50 builds pending for a platform, new builds will be rejected until the number of pending builds drops below the limit.
+
 ## Yarn workspaces is recommended for monorepos
 
 > **Note**: Official guidance for package managers other than Yarn is limited.

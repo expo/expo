@@ -4,6 +4,7 @@ on:
     types: [opened, synchronize, ready_for_review]
 jobs:
   codemention:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-latest
     permissions:
       contents: read

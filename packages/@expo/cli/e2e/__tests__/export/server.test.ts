@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -287,5 +288,13 @@ describe('server-output', () => {
     // Normal routes
     expect(files).toContain('server/index.html');
     expect(files).toContain('server/blog/[post].html');
+  });
+
+  // Ensure the `/server/_expo/routes.json` contains the right file paths and named regexes.
+  // This test is created to avoid and detect regressions on Windows
+  it('has expected routes manifest entries', async () => {
+    expect(
+      await JsonFile.readAsync(path.join(outputDir, 'server/_expo/routes.json'))
+    ).toMatchSnapshot();
   });
 });

@@ -23,7 +23,7 @@ internal struct MediaHandler {
   }
 
   internal func handleMultipleMedia(_ selection: [PHPickerResult]) async throws -> [AssetInfo] {
-    return try await concurrentMap(selection) { selectedItem in
+    return try await asyncMap(selection) { selectedItem in
       let itemProvider = selectedItem.itemProvider
 
       if itemProvider.canLoadObject(ofClass: PHLivePhoto.self) && options.mediaTypes.contains(.livePhotos) {

@@ -91,6 +91,13 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'Expo Router, RSC & DOM Components',
+    event: 'Rocket Ship #059',
+    description: 'Evan Bacon',
+    videoId: 'y8qaHct3TWE',
+    link: 'https://podcast.galaxies.dev/episodes/059-expo-router-rsc-dom-components-with-evan-bacon',
+  },
+  {
     title: 'Universal React Native Apps with DOM & RSC',
     event: 'React Universe On Air #45',
     description: 'Evan Bacon',
@@ -205,9 +212,26 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'How to add Apple home screen widgets to React apps',
+    thumbnail: 'widgets.jpg',
+    event: 'Expo Live Stream',
+    videoId: 'hgmAMrVRzRM',
+  },
+  {
+    title: 'Your 2025 React Native Tech Stack',
+    event: 'Expo Live Stream',
+    thumbnail: 'rn-techstack.jpg',
+    videoId: 'kqdrn-jEaXY',
+  },
+  {
     title: 'Radon IDE: the VS Code extension for React Native',
     event: 'Expo Live Stream',
     videoId: 'UeYmRKWhwFI',
+  },
+  {
+    title: 'Building 4 apps in 4 weeks with Expo',
+    event: 'Expo Live Stream',
+    videoId: 'YOfLHtK8B04',
   },
   {
     title: 'Launch Week 2024 AMA',
@@ -285,6 +309,204 @@ export const LIVE_STREAMS = [
     videoId: 'cKFSVUo3AnI',
   },
 ] as Talk[];
+
+export const YOUTUBE_VIDEOS = [
+  {
+    title: 'How to set up iOS Universal Links and Android App Links with Expo Router',
+    event: 'Expo Tutorials',
+    videoId: 'kNbEEYlFIPs',
+  },
+  {
+    title: 'App icon and splash screen',
+    event: 'Expo Tutorials',
+    videoId: '3Bsw8a1BJoQ',
+  },
+  {
+    title: 'How to manage Multiple App Environments with Expo',
+    event: 'EAS Tutorials',
+    videoId: 'uKGx3gRrhx0',
+  },
+  {
+    title: 'How to create a production build for Android',
+    event: 'EAS Tutorials',
+    videoId: 'nxlt8uwqhpE',
+  },
+  {
+    title: 'How to create a production build for iOS',
+    event: 'EAS Tutorials',
+    videoId: 'VZL_e0cEwo8',
+  },
+  {
+    title: 'How to configure multiple app variants',
+    event: 'EAS Tutorials',
+    videoId: 'UtJJCAfrjIg',
+  },
+  {
+    title: 'How to create and share internal distribution builds',
+    event: 'EAS Tutorials',
+    videoId: '1fQuGLHxWks',
+  },
+  {
+    title: 'How to use over the air updates to share previews with your team',
+    event: 'EAS Tutorials',
+    videoId: 'vPKh-tNm-yI',
+  },
+  {
+    title: 'How to configure a development build',
+    event: 'EAS Tutorials',
+    videoId: 'uQCE9zl3dXU',
+  },
+  {
+    title: 'How to trigger builds from a GitHub repository',
+    event: 'EAS Tutorials',
+    videoId: 'fBLFEFC0ip0',
+  },
+  {
+    title: 'How to create and run a cloud build for iOS Simulator',
+    event: 'EAS Tutorials',
+    videoId: 'SgL97PFZctg',
+  },
+  {
+    title: 'How to create and run a cloud build for iOS devices',
+    event: 'EAS Tutorials',
+    videoId: 'HbfWU7_o4cU',
+  },
+  {
+    title: 'How to create and run a cloud build for Android',
+    event: 'EAS Tutorials',
+    videoId: 'D612BUtvvl8',
+  },
+  {
+    title: 'How to automate App Version code',
+    event: 'EAS Tutorials',
+    videoId: 'C8x4N9UmzS8',
+  },
+  {
+    title: 'How to deploy an app with EAS Hosting from Expo',
+    event: 'EAS Tutorials',
+    videoId: 'NaKsfWciJLo',
+  },
+  {
+    title: 'Universal Full-Stack Expo Stripe Payment Integration',
+    event: 'Expo Tutorials',
+    videoId: 'J0tyxUV_omY',
+  },
+  {
+    title: 'How to implement a Rich Text Editor using DOM Components',
+    event: 'Expo Tutorials',
+    videoId: 'CxORa1tXMjw',
+  },
+  {
+    title: 'How to build local-first native apps with LiveStore and Expo',
+    event: 'Expo Tutorials',
+    videoId: 'zQIhJqYU1Qw',
+  },
+  {
+    title: 'EAS Workflows: React Native CI/CD for Android, iOS, & web apps',
+    event: 'Expo Tutorials',
+    videoId: '4VvI0ZVp0cw',
+  },
+  {
+    title: 'Expo SDK 52',
+    event: 'Expo Tutorials',
+    videoId: 'quZv3uKSEfY',
+  },
+  {
+    title: 'How to run end to end tests on EAS Build',
+    event: 'Expo Tutorials',
+    videoId: '-o-bfIRrg9U',
+  },
+  {
+    title: 'How to configure status bar, splash screen & app icon',
+    event: 'Universal Expo App',
+    videoId: 'OgGCYdElcZo',
+  },
+  {
+    title: 'How to handle platform differences',
+    event: 'Universal Expo App',
+    videoId: 'mEKQvF4irBM',
+  },
+  {
+    title: 'How to take and save screenshots',
+    event: 'Universal Expo App',
+    videoId: 'Jft3_Yfr-p4',
+  },
+  {
+    title: 'How to add gestures to an Expo App',
+    event: 'Universal Expo App',
+    videoId: '0q48LLvTGDU',
+  },
+  {
+    title: 'How to create a modal in React Native',
+    event: 'Universal Expo App',
+    videoId: 'HRAMzrBwVeo',
+  },
+  {
+    title: 'How to use an image picker',
+    event: 'Universal Expo App',
+    videoId: 'iEQZU58naS8',
+  },
+  {
+    title: 'How to build a screen in an Expo app',
+    event: 'Universal Expo App',
+    videoId: '3rcOP8xDwTQ',
+  },
+  {
+    title: 'How to add navigation to your app with Expo Router',
+    event: 'Universal Expo App',
+    videoId: '8336fcFV_T4',
+  },
+  {
+    title: 'How to create your first Expo app',
+    event: 'Universal Expo App',
+    videoId: 'm1-bc53EGh8',
+  },
+  {
+    title: 'Expo Go & Development Builds: Which should you use?',
+    event: 'Expo Tutorials',
+    videoId: 'FdjczjkwQKE',
+  },
+  {
+    title: 'How to create a native module with the Expo modules API',
+    event: 'Expo Tutorials',
+    videoId: 'CdaQSlyGik8',
+  },
+  {
+    title: 'How to wrap native libraries',
+    event: 'Expo Tutorials',
+    videoId: 'M8eNfH1o0eE',
+  },
+  {
+    title: 'Keyboard Handling tutorial for React Native apps',
+    event: 'Expo Tutorials',
+    videoId: 'Y51mDfAhd4E',
+  },
+  {
+    title: 'EAS Update + Github = Automatic OTA updates',
+    event: 'Expo Tutorials',
+    videoId: 's2iIfXK-o0I',
+  },
+  {
+    title: 'How to start your first Expo project in 2 minutes',
+    event: 'Expo Tutorials',
+    videoId: 'yOUAEfDuI44',
+  },
+  {
+    title: 'How to debug EAS Update',
+    event: 'Expo Tutorials',
+    videoId: 'm9PLTr3t3S4',
+  },
+  {
+    title: 'Network Debugging | Three ways to use the built in network inspector',
+    event: 'Expo Tutorials',
+    videoId: 'eTq_4NwCO-A',
+  },
+  {
+    title: 'How to use Logcat & macOS Console to debug',
+    event: 'Expo Tutorials',
+    videoId: 'LvCci4Bwmpc',
+  },
+];
 
 export type Talk = {
   title: string;

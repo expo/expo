@@ -1,5 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+// TODO: rework the new Swift Notification code for ExpoGo
+
+/*
 #import <UserNotifications/UserNotifications.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,3 +32,4 @@ typedef struct {
 @end
 
 NS_ASSUME_NONNULL_END
+ */

@@ -14,6 +14,7 @@ import {
   resolveTypeName,
   DEFAULT_BASE_NESTING_LEVEL,
   extractDefaultPropValue,
+  getAllTagData,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -160,6 +161,7 @@ const renderClass = (
                 property,
                 sdkVersion,
                 extractDefaultPropValue(property) ?? property?.defaultValue,
+                getAllTagData('platform', comment),
                 {
                   exposeInSidebar: true,
                   baseNestingLevel: linksNestingLevel,

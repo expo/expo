@@ -58,20 +58,6 @@ export interface DefaultConfigOptions {
   }) => Module[])[];
 }
 
-function getAssetPlugins(projectRoot: string): string[] {
-  const hashAssetFilesPath = resolveFrom.silent(projectRoot, 'expo-asset/tools/hashAssetFiles');
-
-  if (!hashAssetFilesPath) {
-    throw new Error(`The required package \`expo-asset\` cannot be found`);
-  }
-
-  return [
-    // Use relative path to ensure maximum cache hits.
-    // This is resolved here https://github.com/facebook/metro/blob/ec584b9cc2b8356356a4deacb7e1d5c83f243c3a/packages/metro/src/Assets.js#L271
-    'expo-asset/tools/hashAssetFiles',
-  ];
-}
-
 let hasWarnedAboutExotic = false;
 
 // Patch Metro's graph to support always parsing certain modules. This enables
@@ -370,7 +356,6 @@ export function getDefaultConfig(
         metroDefaultValues.transformer.asyncRequireModulePath
       ),
       assetRegistryPath: '@react-native/assets-registry/registry',
-      assetPlugins: getAssetPlugins(projectRoot),
       // hermesParser: true,
       getTransformOptions: async () => ({
         transform: {

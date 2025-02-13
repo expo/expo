@@ -47,8 +47,13 @@ export function getRedirectPath(redirectPath: string): string {
   }
 
   // Catch any redirects to sdk paths without versions and send to the latest version
-  if (redirectPath.startsWith('/sdk/')) {
-    redirectPath = `/versions/latest${redirectPath}`;
+  if (redirectPath.startsWith('/sdk')) {
+    const hasDestination = !/^\/sdk\/?$/.test(redirectPath);
+    if (hasDestination) {
+      redirectPath = `/versions/latest${redirectPath}`;
+    } else {
+      redirectPath = `/versions/latest`;
+    }
   }
 
   // If a page is missing for react-native paths we redirect to react-native docs
@@ -466,4 +471,14 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/config/app/name/': '/versions/latest/config/app/#name',
   '/bare/': '/bare/overview/',
   '/accounts/working-together/': '/accounts/account-types/',
+
+  // After consolidating the "Internal distribution" information
+  '/guides/sharing-preview-releases/': '/build/internal-distribution/',
+
+  // After moving from eas-workflows to eas/workflows
+  '/eas-workflows/get-started/': '/eas/workflows/get-started/',
+  '/eas-workflows/triggers/': '/eas/workflows/syntax/#on',
+  '/eas-workflows/jobs/': '/eas/workflows/syntax/#jobs',
+  '/eas-workflows/control-flow/': '/eas/workflows/syntax/#control-flow',
+  '/eas-workflows/variables/': '/eas/workflows/syntax/#jobsjob_idoutputs',
 };

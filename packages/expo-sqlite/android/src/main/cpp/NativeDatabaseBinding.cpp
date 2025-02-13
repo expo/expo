@@ -2,6 +2,8 @@
 
 #include "NativeDatabaseBinding.h"
 
+#include "Exceptions.h"
+
 namespace jni = facebook::jni;
 
 namespace expo {

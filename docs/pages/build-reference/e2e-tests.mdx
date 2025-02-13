@@ -75,18 +75,18 @@ This is what the UI of the app created from the default Expo template looks like
 
 Let's create two simple Maestro flows for the example app. Start by creating a directory called **maestro** in the root of your project directory. This directory will contain the flows that you will configure and should be at the same level as **eas.json**.
 
-Inside, create a new file called **home.yaml**. This flow will launch the app and assert that the text "Welcome!" is visible on the home screen.
+Inside, create a new file called **home.yml**. This flow will launch the app and assert that the text "Welcome!" is visible on the home screen.
 
-```yaml maestro/home.yaml
+```yaml maestro/home.yml
 appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
 ---
 - launchApp
 - assertVisible: 'Welcome!'
 ```
 
-Next, create a new flow called **expand_test.yaml**. This flow will open the "Explore" screen in the example app, click on the "File-based routing" collapsible, and assert that the text "This app has two screens" is visible on the screen.
+Next, create a new flow called **expand_test.yml**. This flow will open the "Explore" screen in the example app, click on the "File-based routing" collapsible, and assert that the text "This app has two screens" is visible on the screen.
 
-```yaml maestro/expand_test.yaml
+```yaml maestro/expand_test.yml
 appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
 ---
 - launchApp
@@ -104,11 +104,9 @@ To run Maestro tests locally, install the Maestro CLI by following the instructi
 
 [Install your app on a local Android Emulator or iOS Simulator](/more/expo-cli/#compiling). Open a terminal, navigate to the Maestro directory, and run the following commands to start the tests with the Maestro CLI:
 
-<Terminal
-  cmd={['$ maestro test maestro/expand_test.yaml', '', '$ maestro test maestro/home.yaml']}
-/>
+<Terminal cmd={['$ maestro test maestro/expand_test.yml', '', '$ maestro test maestro/home.yml']} />
 
-The video below shows a successful run of the **maestro/expand_test.yaml** flow:
+The video below shows a successful run of the **maestro/expand_test.yml** flow:
 
 <ContentSpotlight file="guides/local-e2e.mp4" />
 
@@ -131,8 +129,8 @@ build:
     - eas/maestro_test:
         inputs:
           flow_path: |
-            maestro/home.yaml
-            maestro/expand_test.yaml
+            maestro/home.yml
+            maestro/expand_test.yml
 ```
 
 Now modify the **eas.json** by adding a new [build profile](/build/eas-json/#build-profiles) called `build-and-maestro-test`. It will be used to run the custom build config from the **build-and-maestro-test.yml** file. This configuration will build the emulator/simulator version of your app and run the Maestro tests on it.

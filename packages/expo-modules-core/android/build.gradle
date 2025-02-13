@@ -1,37 +1,32 @@
+import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildscript {
+  ext.KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
+
+  if (KOTLIN_MAJOR_VERSION >= 2) {
+    repositories {
+      mavenCentral()
+    }
+
+    dependencies {
+      classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+    }
+  }
+}
+
 apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+
+if (KOTLIN_MAJOR_VERSION >= 2) {
+  apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+}
 
 group = 'host.exp.exponent'
 version = '2.0.6'
 
 // List of features that are required by linked modules
 def coreFeatures = project.findProperty("coreFeatures") ?: []
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-
-buildscript {
-  def KOTLIN_MAJOR_VERSION = kotlinVersion.split("\\.")[0].toInteger()
-  if(KOTLIN_MAJOR_VERSION < 2) {
-    logger.warn("You need to use at least Kotlin 2.0.0 to enable jetpack compose support.")
-    return
-  }
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
-  }
-}
-
-try {
-  apply plugin: 'org.jetbrains.kotlin.plugin.compose'
-} catch (ignored) {}
-
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -43,19 +38,7 @@ def isExpoModulesCoreTests = {
   return false
 }.call()
 
-def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":packages:react-native:ReactAndroid") != null
-def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-  ? findProject(":packages:react-native:ReactAndroid").getProjectDir().parent
-  : file(providers.exec {
-      workingDir(rootDir)
-      commandLine("node", "--print", "require.resolve('react-native/package.json')")
-    }.standardOutput.asText.get().trim()).parent
-
-def reactProperties = new Properties()
-file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-
-def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
-def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
+def expoModuleExtension = project.extensions.getByType(ExpoModuleExtension)
 
 def reactNativeArchitectures() {
   def value = project.getProperties().get("reactNativeArchitectures")
@@ -96,10 +79,10 @@ android {
 
     externalNativeBuild {
       cmake {
-        abiFilters (*reactNativeArchitectures())
+        abiFilters(*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
-          "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
-          "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
+          "-DREACT_NATIVE_DIR=${expoModuleExtension.reactNativeDir}",
+          "-DREACT_NATIVE_TARGET_VERSION=${expoModuleExtension.reactNativeVersion.minor}",
           "-DUSE_HERMES=${USE_HERMES}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
           "-DUNIT_TEST=${isExpoModulesCoreTests}"
@@ -116,6 +99,13 @@ android {
   buildFeatures {
     buildConfig true
     prefab true
+    compose true
+  }
+
+  if (KOTLIN_MAJOR_VERSION < 2) {
+    composeOptions {
+      kotlinCompilerExtensionVersion = "1.5.14"
+    }
   }
 
   packagingOptions {
@@ -166,7 +156,7 @@ android {
   sourceSets {
     main {
       java {
-        if (REACT_NATIVE_TARGET_VERSION >= 77) {
+        if (expoModuleExtension.reactNativeVersion.isAtLeast(0, 77, 0)) {
           srcDirs += 'src/rn77'
         } else {
           // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
@@ -192,8 +182,8 @@ android {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion()}"
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
   implementation 'androidx.annotation:annotation:1.7.1'
 
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"

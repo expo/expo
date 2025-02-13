@@ -20,7 +20,7 @@ test.describe(inputDir, () => {
       EXPO_USE_STATIC: 'single',
       E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: testName,
-      EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
+      E2E_SERVER_FUNCTIONS: '1',
       EXPO_USE_METRO_REQUIRE: '1',
       E2E_CANARY_ENABLED: '1',
 

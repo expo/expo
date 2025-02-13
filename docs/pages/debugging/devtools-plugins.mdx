@@ -34,7 +34,7 @@ export default App() {
 In some cases, you may need to interact with a plugin directly. All plugins communicate through exports from `expo/devtools`, and you can send and listen to messages through `useDevToolsPluginClient`. Be sure to pass the same plugin name to `useDevToolsPluginClient` as is used by the plugin's web user interface:
 
 ```jsx App.js
-import { useDevToolsPluginClient } from "expo/devtools";
+import { useDevToolsPluginClient } from 'expo/devtools';
 
 export default App() {
   const client = useDevToolsPluginClient('my-devtools-plugin');

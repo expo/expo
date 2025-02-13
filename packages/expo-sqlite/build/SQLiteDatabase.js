@@ -1,4 +1,5 @@
 import ExpoSQLite from './ExpoSQLite';
+import { flattenOpenOptions } from './NativeDatabase';
 import { SQLiteStatement, } from './SQLiteStatement';
 import { createDatabasePath } from './pathUtils';
 let memoWarnCRSQLiteDeprecation = false;
@@ -281,6 +282,16 @@ export class SQLiteDatabase {
         }
         return allRows;
     }
+    /**
+     * Synchronize the local database with the remote libSQL server.
+     * This method is only available from libSQL integration.
+     */
+    syncLibSQL() {
+        if (typeof this.nativeDatabase.syncLibSQL !== 'function') {
+            throw new Error('syncLibSQL is not supported in the current environment');
+        }
+        return this.nativeDatabase.syncLibSQL();
+    }
 }
 /**
  * The default directory for SQLite databases.
@@ -298,7 +309,7 @@ export async function openDatabaseAsync(databaseName, options, directory) {
     const databasePath = createDatabasePath(databaseName, directory);
     await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
     maybeWarnCRSQLiteDeprecation(options);
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, flattenOpenOptions(openOptions));
     await nativeDatabase.initAsync();
     return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
 }
@@ -316,7 +327,7 @@ export function openDatabaseSync(databaseName, options, directory) {
     const databasePath = createDatabasePath(databaseName, directory);
     ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
     maybeWarnCRSQLiteDeprecation(options);
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, flattenOpenOptions(openOptions));
     nativeDatabase.initSync();
     return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
 }
@@ -329,7 +340,7 @@ export function openDatabaseSync(databaseName, options, directory) {
 export async function deserializeDatabaseAsync(serializedData, options) {
     const openOptions = options ?? {};
     maybeWarnCRSQLiteDeprecation(options);
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', flattenOpenOptions(openOptions), serializedData);
     await nativeDatabase.initAsync();
     return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -344,7 +355,7 @@ export async function deserializeDatabaseAsync(serializedData, options) {
 export function deserializeDatabaseSync(serializedData, options) {
     const openOptions = options ?? {};
     maybeWarnCRSQLiteDeprecation(options);
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', flattenOpenOptions(openOptions), serializedData);
     nativeDatabase.initSync();
     return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -388,7 +399,7 @@ class Transaction extends SQLiteDatabase {
     static async createAsync(db) {
         const options = { ...db.options, useNewConnection: true };
         maybeWarnCRSQLiteDeprecation(options);
-        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databasePath, options);
+        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databasePath, flattenOpenOptions(options));
         await nativeDatabase.initAsync();
         return new Transaction(db.databasePath, options, nativeDatabase);
     }

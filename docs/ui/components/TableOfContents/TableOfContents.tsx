@@ -20,7 +20,7 @@ import { TableOfContentsLink } from '~/ui/components/TableOfContents';
 import { CALLOUT } from '~/ui/components/Text';
 
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
-const LOWER_SCROLL_LIMIT_FACTOR = 7 / 8;
+const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
 const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
 
 export type TableOfContentsProps = PropsWithChildren<{
@@ -146,10 +146,13 @@ export const TableOfContents = forwardRef<
   );
 
   return (
-    <nav className="w-[280px] px-6 pb-10 pt-14" data-sidebar>
+    <nav className="w-[280px] px-6 pb-10 pt-[52px]" data-sidebar>
       <CALLOUT
         weight="medium"
-        className="absolute z-10 -mt-14 mb-2 flex min-h-[32px] w-[248px] select-none items-center gap-2 bg-default pb-2 pt-4">
+        className={mergeClasses(
+          'absolute z-[100] -ml-6 -mt-[52px] flex min-h-[32px] w-[272px] select-none',
+          'items-center gap-2 bg-gradient-to-b from-default from-80% to-transparent py-3 pl-6'
+        )}>
         <LayoutAlt03Icon className="icon-sm" /> On this page
         <Button
           theme="quaternary"

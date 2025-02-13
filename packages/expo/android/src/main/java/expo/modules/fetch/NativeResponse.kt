@@ -98,6 +98,11 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   //region Callback implementations
 
   override fun onFailure(call: Call, e: IOException) {
+    // Canceled request should be handled by emitRequestCancelled
+    if (e.message === "Canceled") {
+      return
+    }
+
     if (isInvalidState(
         ResponseState.STARTED,
         ResponseState.RESPONSE_RECEIVED,

@@ -1,5 +1,7 @@
 package expo.modules.interfaces.barcodescanner;
 
+import android.os.Bundle;
+
 import java.util.List;
 
 public class BarCodeScannerResult {
@@ -39,12 +41,14 @@ public class BarCodeScannerResult {
   private String mValue;
   private String mRaw;
   private List<Integer> mCornerPoints;
+  private Bundle mExtra;
 
 
-  public BarCodeScannerResult(int type, String value, String raw, List<Integer> cornerPoints, int height, int width) {
+  public BarCodeScannerResult(int type, String value, String raw, Bundle extra, List<Integer> cornerPoints, int height, int width) {
     mType = type;
     mValue = value;
     mRaw = raw;
+    mExtra = extra;
     mCornerPoints = cornerPoints;
     mReferenceImageHeight = height;
     mReferenceImageWidth = width;
@@ -61,6 +65,8 @@ public class BarCodeScannerResult {
   public List<Integer> getCornerPoints() {
     return mCornerPoints;
   }
+
+  public Bundle getExtra() { return mExtra; }
 
   public void setCornerPoints(List<Integer> points) {
     mCornerPoints = points;

@@ -14,7 +14,10 @@ import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions
 import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
+import { toPosixPath } from '../../utils/filePath';
 import { profile } from '../../utils/profile';
+
+const debug = require('debug')('expo:start:server:getStaticRenderFunctions') as typeof console.log;
 
 /** The list of input keys will become optional, everything else will remain the same. */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -127,6 +130,15 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
 
 export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
   augmentLogs(projectRoot);
+
+  // NOTE(@kitten): `require-from-string` derives a base path from the filename we pass it,
+  // but doesn't validate that the filename exists. These debug messages should help identify
+  // these problems, if they occur in user projects without reproductions
+  if (!fs.existsSync(path.dirname(filename))) {
+    debug(`evalMetroNoHandling received filename in a directory that does not exist: ${filename}`);
+  } else if (!toPosixPath(path.dirname(filename)).startsWith(toPosixPath(projectRoot))) {
+    debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
+  }
 
   return profile(requireString, 'eval-metro-bundle')(src, filename);
 }

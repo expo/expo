@@ -7,6 +7,8 @@ public protocol AnyViewDefinition {
    */
   var props: [AnyViewProp] { get }
 
+  var name: String { get }
+
   /**
    Names of the events that the view can send to JavaScript.
    */

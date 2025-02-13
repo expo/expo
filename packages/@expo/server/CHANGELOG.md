@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Handle server 404 better. ([#34211](https://github.com/expo/expo/pull/34211) by [@EvanBacon](https://github.com/EvanBacon))
 - Throw server function errors in production. ([#33971](https://github.com/expo/expo/pull/33971) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
