@@ -351,7 +351,7 @@ class AudioModule : Module() {
         try {
           return@Function ref.getAudioRecorderStatus()
         } catch (e: Exception) {
-          e.printStackTrace()
+          throw e
         }
       }
 
