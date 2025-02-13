@@ -3,7 +3,7 @@ import { type ViewProps } from 'react-native';
 
 import { type DOMProps, type WebViewProps } from '../dom.types';
 
-type UseDebugZeroHeightType = (dom: DOMProps) => {
+type UseDebugZeroHeightType = (dom?: DOMProps) => {
   debugZeroHeightStyle: WebViewProps['containerStyle'] | undefined;
   debugOnLayout: ViewProps['onLayout'];
 };
@@ -20,8 +20,8 @@ export const useDebugZeroHeight: UseDebugZeroHeightType = __DEV__
 
       const debugOnLayout = useCallback<NonNullable<ViewProps['onLayout']>>(
         (event) => {
-          dom.onLayout?.(event);
-          if (dom.matchContents) {
+          dom?.onLayout?.(event);
+          if (dom?.matchContents) {
             return;
           }
           if (debugZeroHeightStyle !== undefined) {
@@ -51,12 +51,12 @@ You can remove this style by using the \`matchContents\` prop or explicitly add 
             setDebugZeroHeightStyle({});
           }
         },
-        [dom.matchContents, dom.onLayout, debugZeroHeightStyle, hasLoggedWarning]
+        [dom?.matchContents, dom?.onLayout, debugZeroHeightStyle, hasLoggedWarning]
       );
 
       return { debugZeroHeightStyle, debugOnLayout };
     }
   : (dom) => ({
       debugZeroHeightStyle: undefined,
-      debugOnLayout: dom.onLayout,
+      debugOnLayout: dom?.onLayout,
     });
