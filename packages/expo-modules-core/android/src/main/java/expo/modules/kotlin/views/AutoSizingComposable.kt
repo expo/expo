@@ -16,7 +16,7 @@ enum class Direction {
 fun AutoSizingComposable(shadowNodeProxy: ShadowNodeProxy, axis: EnumSet<Direction> = EnumSet.allOf(Direction::class.java), content: @Composable () -> Unit) {
   Layout(
     modifier = Modifier.fillMaxSize(),
-    content = content,
+    content = content
   ) { measurables, constraints ->
     val measurable = measurables.first()
     val minIntrinsicWidth = measurable.minIntrinsicWidth(constraints.minHeight)
