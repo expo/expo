@@ -6,6 +6,7 @@ typealias SaveToLibraryCallback = (Any?, Error?) -> Void
 class SaveToLibraryDelegate: NSObject {
   var callback: SaveToLibraryCallback?
 
+  #if os(iOS)
   func writeImage(_ image: UIImage, withCallback callback: @escaping SaveToLibraryCallback) {
     self.callback = callback
     UIImageWriteToSavedPhotosAlbum(
@@ -49,4 +50,5 @@ class SaveToLibraryDelegate: NSObject {
   func triggerCallback(_ asset: Any?, with error: Error?) {
     callback?(asset, error)
   }
+  #endif
 }
