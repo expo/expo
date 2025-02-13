@@ -4,6 +4,7 @@ import { LinkToOptions } from './routing';
 import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
+import { RedirectConfig } from '../getRoutesCore';
 import { Href, RequireContext } from '../types';
 type ResultState = any;
 /**
@@ -21,6 +22,8 @@ export declare class RouterStore {
     nextState?: ResultState;
     routeInfo?: UrlObject;
     splashScreenAnimationFrame?: number;
+    config: any;
+    redirects?: (readonly [RegExp, RedirectConfig])[];
     navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     navigationRefSubscription: () => void;
     rootStateSubscribers: Set<() => void>;
@@ -74,6 +77,7 @@ export declare class RouterStore {
             routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
         }> & any) | undefined;
     }) | undefined;
+    applyRedirects<T extends string | null | undefined>(url: T): T;
 }
 export declare const store: RouterStore;
 export declare function useExpoRouter(): RouterStore;

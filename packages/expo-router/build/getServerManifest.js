@@ -29,7 +29,7 @@ function getServerManifest(route) {
         // An HTML route can be different based on parent segments due to layout routes, therefore multiple
         // copies should be rendered. However, an API route is always the same regardless of parent segments.
         let key;
-        if (route.type === 'api') {
+        if (route.type.includes('api')) {
             key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
         }
         else {
@@ -41,22 +41,34 @@ function getServerManifest(route) {
     const flat = getFlatNodes(route)
         .sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(b, a))
         .reverse();
-    const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api' || route.type === 'api-redirect'), ([path]) => path);
-    const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route' || route.type === 'redirect'), ([path]) => path);
+    const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api' || route.type === 'api-rewrite'), ([path]) => path);
+    const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route' || route.type === 'rewrite'), ([path]) => path);
+    const redirects = uniqueBy(flat.filter(([, , route]) => route.type === 'redirect' || route.type === 'api-redirect'), ([path]) => path)
+        .map((redirect) => {
+        redirect[1] =
+            flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
+                '/';
+        return redirect;
+    })
+        .sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(a, b));
     const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
     const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));
     return {
         apiRoutes: getMatchableManifestForPaths(apiRoutes),
         htmlRoutes: getMatchableManifestForPaths(standardRoutes),
         notFoundRoutes: getMatchableManifestForPaths(notFoundRoutes),
+        redirects: getMatchableManifestForPaths(redirects),
     };
 }
 exports.getServerManifest = getServerManifest;
 function getMatchableManifestForPaths(paths) {
     return paths.map(([normalizedRoutePath, absoluteRoute, node]) => {
-        const matcher = getNamedRouteRegex(normalizedRoutePath, absoluteRoute, node.destinationContextKey ?? node.contextKey);
+        const matcher = getNamedRouteRegex(normalizedRoutePath, absoluteRoute, node.contextKey);
         if (node.generated) {
             matcher.generated = true;
+        }
+        if (node.permanent) {
+            matcher.permanent = true;
         }
         return matcher;
     });
