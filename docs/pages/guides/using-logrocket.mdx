@@ -5,6 +5,7 @@ hideTOC: true
 description: A guide on installing and configuring LogRocket for session replays and error monitoring.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 [LogRocket](https://logrocket.com) records user sessions and identifies bugs as your users use your app. You can filter sessions by update IDs and also connect to your LogRocket account on the Expo dashboard to get quick access to your app's session data.
@@ -43,13 +44,39 @@ import LogRocket from '@logrocket/react-native';
 const App = () => {
   useEffect(() => {
     LogRocket.init('<App ID>', {
-      updateId: Updates.updateId,
+      updateId: Updates.isEmbeddedLaunch ? null : Updates.updateId,
+      expoChannel: Updates.channel,
     });
   }, []);
 };
 ```
 
 In the code above, replace `<App ID>` with your [LogRocket App ID](https://app.logrocket.com/r/settings/setup).
+
+## Connecting LogRocket on the Expo dashboard
+
+Once you've included LogRocket in your app, you can now link your LogRocket account on Expo's dashboard.
+
+Go to your [account settings](https://expo.dev/accounts/%5Baccount%5D/settings) and click **Connect** to authenticate with LogRocket:
+
+<ContentSpotlight
+  alt="Connect LogRocket account to Expo account."
+  src="/static/images/monitoring/monitor-your-app/logrocket-connect-account.png"
+/>
+
+Then, go to your [project settings](https://expo.dev/accounts/%5Baccount%5D/projects/%5BprojectName%5D/settings) and click **Connect** to link your LogRocket project with your project on Expo:
+
+<ContentSpotlight
+  alt="Connect LogRocket project to Expo project."
+  src="/static/images/monitoring/monitor-your-app/logrocket-connect-project.png"
+/>
+
+Then, you'll start to see View on LogRocket buttons in the Expo dashboard in the Deployments and Updates dashboards, along with the last few sessions from your app.
+
+<ContentSpotlight
+  alt="View on LogRocket button and sessions in the deployment dashboard."
+  src="/static/images/monitoring/monitor-your-app/logrocket-view-on-logrocket.png"
+/>
 
 ## Learn more about LogRocket
 
