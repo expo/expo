@@ -1,8 +1,5 @@
 buildscript {
   ext {
-    safeExtGet = { prop, defaultVal ->
-      return rootProject.hasProperty(prop) ? project[prop] : defaultVal
-    }
     boolish = { value ->
       return value.toString().toBoolean()
     }
