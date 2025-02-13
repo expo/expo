@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
+import { ViewEvent } from '../../src';
 type AndroidVariant = 'picker' | 'input';
 type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
 type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
@@ -61,10 +62,12 @@ export type DatePickerProps = {
      */
     is24Hour?: boolean;
 };
-type NativeDatePickerProps = Omit<DatePickerProps, 'iosVariant' | 'androidVariant'> & {
+type NativeDatePickerProps = Omit<DatePickerProps, 'iosVariant' | 'androidVariant' | 'onDateSelected'> & {
     variant?: IOSVariant | AndroidVariant;
-};
+} & ViewEvent<'onDateSelected', {
+    date: Date;
+}>;
 export declare function transformDatePickerProps(props: DatePickerProps): NativeDatePickerProps;
-export declare function DateTimePicker({ onDateSelected, ...props }: DatePickerProps): React.JSX.Element;
+export declare function DateTimePicker(props: DatePickerProps): React.JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map
