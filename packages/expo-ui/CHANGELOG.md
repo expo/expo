@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add color support for `ContextMenu` components. ([#34787](https://github.com/expo/expo/pull/34787) by [@behenate](https://github.com/behenate))
+- Adds `DateTimePicker` component.
 
 ### 🐛 Bug fixes
 
