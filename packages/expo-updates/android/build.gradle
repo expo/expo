@@ -1,30 +1,41 @@
 buildscript {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
+  ext {
+    boolish = { value ->
+      return value.toString().toBoolean()
+    }
+    getKspVersion = {
+      if (rootProject.hasProperty("kspVersion")) {
+        return rootProject["kspVersion"]
+      }
+
+      // We can remove this path once we update the test environment
+      // to use the same version of Kotlin as the `expo/expo` repo.
+      def kotlinVersion = rootProject["kotlinVersion"]
+      if (kotlinVersion == "2.0.21") {
+        return "2.0.21-1.0.28"
+      } else if (kotlinVersion == "1.9.25") {
+        return "1.9.25-1.0.20"
+      }
+
+      return "1.9.24-1.0.20"
+    }
+  }
 
   repositories {
     mavenCentral()
   }
 
   dependencies {
-    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${kspVersion()}"
+    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${getKspVersion()}"
   }
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'com.google.devtools.ksp'
 
 group = 'host.exp.exponent'
 version = '0.26.9'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-applyKspJvmToolchain()
-useCoreDependencies()
-useDefaultAndroidSdkVersions()
-useExpoPublishing()
 
 // Utility method to derive boolean values from the environment or from Java properties,
 // and return them as strings to be used in BuildConfig fields
@@ -117,7 +128,7 @@ dependencies {
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'androidx.test:core:1.5.0'
   testImplementation "io.mockk:mockk:$mockk_version"
-  testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion()}"
+  testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
   testImplementation 'org.robolectric:robolectric:4.14.1'
 
   androidTestImplementation 'com.squareup.okio:okio:2.9.0'
@@ -126,7 +137,7 @@ dependencies {
   androidTestImplementation 'androidx.test:rules:1.5.0'
   androidTestImplementation "io.mockk:mockk-android:$mockk_version"
   androidTestImplementation "androidx.room:room-testing:$room_version"
-  androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion()}"
+  androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
 
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
 }
