@@ -142,6 +142,7 @@ it('strips web-only href attributes', () => {
   );
 });
 
+<<<<<<< HEAD
 it('can preserve the initialRoute', () => {
   renderRouter({
     index: function MyIndexRoute() {
@@ -204,10 +205,10 @@ it('can preserve the initialRoute with shared groups', () => {
   expect(screen.getByTestId('link')).toBeDefined();
 });
 
-it('can preload the href', () => {
+it('can prefetch the href', () => {
   renderRouter({
     index: () => {
-      return <Link preload href="/test" />;
+      return <Link prefetch href="/test" />;
     },
     test: () => null,
   });
