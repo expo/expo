@@ -195,9 +195,9 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      */
     withAnchor?: boolean;
     /**
-     * Preloads the route when the component is rendered on a focused screen.
+     * Prefetches the route when the component is rendered on a focused screen.
      */
-    preload?: boolean;
+    prefetch?: boolean;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];
