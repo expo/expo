@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
@@ -50,3 +51,17 @@ val Color?.compose: androidx.compose.ui.graphics.Color
 
 val Color?.composeOrNull: androidx.compose.ui.graphics.Color?
   get() = colorToComposeColorOrNull(this)
+
+/**
+ * Gets the ImageVector for a given icon name using reflection.
+ */
+fun getImageVector(icon: String?): ImageVector? {
+  if (icon.isNullOrEmpty()) return null
+  return try {
+    val (theme, name) = icon.split(".")
+    val clazz = Class.forName("androidx.compose.material.icons.$theme.${name}Kt")
+    clazz.declaredMethods[0].invoke(clazz::class, null) as ImageVector
+  } catch (e: Exception) {
+    return null
+  }
+}
