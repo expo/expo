@@ -41,8 +41,8 @@ function getServerManifest(route) {
     const flat = getFlatNodes(route)
         .sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(b, a))
         .reverse();
-    const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api'), ([path]) => path);
-    const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route'), ([path]) => path);
+    const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api' || route.type === 'api-redirect'), ([path]) => path);
+    const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route' || route.type === 'redirect'), ([path]) => path);
     const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
     const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));
     return {
@@ -54,7 +54,7 @@ function getServerManifest(route) {
 exports.getServerManifest = getServerManifest;
 function getMatchableManifestForPaths(paths) {
     return paths.map(([normalizedRoutePath, absoluteRoute, node]) => {
-        const matcher = getNamedRouteRegex(normalizedRoutePath, absoluteRoute, node.contextKey);
+        const matcher = getNamedRouteRegex(normalizedRoutePath, absoluteRoute, node.destinationContextKey ?? node.contextKey);
         if (node.generated) {
             matcher.generated = true;
         }
