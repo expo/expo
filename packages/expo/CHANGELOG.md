@@ -6,6 +6,8 @@
 
 ### 🛠 Breaking changes
 
+- [typescript] Updated default TSConfig to use `"jsx": "react-jsx"` instead of the deprecated `"jsx": "react-native"` option ([#34051](https://github.com/expo/expo/pull/34051)) @asleepace
+
 ### 🎉 New features
 
 - support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
