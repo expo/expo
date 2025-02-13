@@ -1,4 +1,4 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { IOSConfig, ModPlatform } from '@expo/config-plugins';
 import plist from '@expo/plist';
 import fs from 'fs';
 
@@ -12,9 +12,9 @@ const ENTITLEMENTS_THAT_REQUIRE_CODE_SIGNING = [
   'com.apple.developer.applesignin',
 ];
 
-function getEntitlements(projectRoot: string): Record<string, any> | null {
+function getEntitlements(projectRoot: string, platform: ModPlatform): Record<string, any> | null {
   try {
-    const entitlementsPath = IOSConfig.Entitlements.getEntitlementsPath(projectRoot);
+    const entitlementsPath = IOSConfig.Entitlements.getEntitlementsPath(projectRoot, platform);
     if (!entitlementsPath || !fs.existsSync(entitlementsPath)) {
       return null;
     }
@@ -29,8 +29,11 @@ function getEntitlements(projectRoot: string): Record<string, any> | null {
 }
 
 /** @returns true if the simulator build should be code signed for development. */
-export function simulatorBuildRequiresCodeSigning(projectRoot: string): boolean {
-  const entitlements = getEntitlements(projectRoot);
+export function simulatorBuildRequiresCodeSigning(
+  projectRoot: string,
+  platform: ModPlatform
+): boolean {
+  const entitlements = getEntitlements(projectRoot, platform);
   if (!entitlements) {
     return false;
   }

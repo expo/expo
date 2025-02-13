@@ -25,11 +25,11 @@ function _Target() {
  * @param param1
  * @returns
  */
-function getInfoPlistPathFromPbxproj(projectRootOrProject, {
+function getInfoPlistPathFromPbxproj(projectRootOrProject, platform, {
   targetName,
   buildConfiguration = 'Release'
 } = {}) {
-  const project = (0, _Xcodeproj().resolvePathOrProject)(projectRootOrProject);
+  const project = (0, _Xcodeproj().resolvePathOrProject)(projectRootOrProject, platform);
   if (!project) {
     return null;
   }

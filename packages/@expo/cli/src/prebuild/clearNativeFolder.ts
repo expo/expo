@@ -52,12 +52,12 @@ export async function hasRequiredAndroidFilesAsync(projectRoot: string): Promise
 }
 
 /** Returns `true` if a certain subset of required iOS project files are intact. */
-export async function hasRequiredIOSFilesAsync(projectRoot: string) {
+export async function hasRequiredIOSFilesAsync(projectRoot: string, platform: ModPlatform) {
   try {
     // If any of the following required files are missing, then the project is malformed.
     await Promise.all([
-      IOSConfig.Paths.getAllXcodeProjectPaths(projectRoot),
-      IOSConfig.Paths.getAllPBXProjectPaths(projectRoot),
+      IOSConfig.Paths.getAllXcodeProjectPaths(projectRoot, platform),
+      IOSConfig.Paths.getAllPBXProjectPaths(projectRoot, platform),
     ]);
     return true;
   } catch {
@@ -94,7 +94,7 @@ export async function getMalformedNativeProjectsAsync(
 ): Promise<ArbitraryPlatform[]> {
   const VERIFIERS: Record<ArbitraryPlatform, (root: string) => Promise<boolean>> = {
     android: hasRequiredAndroidFilesAsync,
-    ios: hasRequiredIOSFilesAsync,
+    ios: (root) => hasRequiredIOSFilesAsync(root, 'ios'),
   };
 
   const checkablePlatforms = platforms.filter((platform) => platform in VERIFIERS);

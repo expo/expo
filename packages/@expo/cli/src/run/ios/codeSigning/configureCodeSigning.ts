@@ -1,3 +1,4 @@
+import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
 import * as Security from './Security';
@@ -6,17 +7,18 @@ import { getCodeSigningInfoForPbxproj, setAutoCodeSigningInfoForPbxproj } from '
 import * as Log from '../../../log';
 
 export async function ensureDeviceIsCodeSignedForDeploymentAsync(
-  projectRoot: string
+  projectRoot: string,
+  platform: ModPlatform
 ): Promise<string | null> {
-  if (isCodeSigningConfigured(projectRoot)) {
+  if (isCodeSigningConfigured(projectRoot, platform)) {
     return null;
   }
-  return configureCodeSigningAsync(projectRoot);
+  return configureCodeSigningAsync(projectRoot, platform);
 }
 
-function isCodeSigningConfigured(projectRoot: string): boolean {
+function isCodeSigningConfigured(projectRoot: string, platform: ModPlatform): boolean {
   // Check if the app already has a development team defined.
-  const signingInfo = getCodeSigningInfoForPbxproj(projectRoot);
+  const signingInfo = getCodeSigningInfoForPbxproj(projectRoot, platform);
 
   const allTargetsHaveTeams = Object.values(signingInfo).reduce((prev, curr) => {
     return prev && !!curr.developmentTeams.length;
@@ -41,14 +43,14 @@ function isCodeSigningConfigured(projectRoot: string): boolean {
   return false;
 }
 
-async function configureCodeSigningAsync(projectRoot: string) {
+async function configureCodeSigningAsync(projectRoot: string, platform: ModPlatform) {
   const ids = await Security.findIdentitiesAsync();
 
   const id = await resolveCertificateSigningIdentityAsync(projectRoot, ids);
 
   Log.log(`\u203A Signing and building iOS app with: ${id.codeSigningInfo}`);
 
-  setAutoCodeSigningInfoForPbxproj(projectRoot, {
+  setAutoCodeSigningInfoForPbxproj(projectRoot, platform, {
     appleTeamId: id.appleTeamId!,
   });
   return id.appleTeamId!;
