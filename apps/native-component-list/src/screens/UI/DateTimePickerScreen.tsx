@@ -15,7 +15,7 @@ export default function DatePickerScreen() {
   const typeOptions = ['date', 'hourAndMinute', 'dateAndTime'];
   const [typeIndex, setTypeIndex] = React.useState(0);
 
-  function printPickerType() {
+  function getPickerType() {
     const str = displayOptions[selectedIndex];
     return `${str.charAt(0).toUpperCase()}${str.slice(1)} picker`;
   }
@@ -29,7 +29,7 @@ export default function DatePickerScreen() {
         <Section title="Selected Time">
           <Text>{selectedDate.toTimeString()}</Text>
         </Section>
-        <Section title={printPickerType()}>
+        <Section title={getPickerType()}>
           <View style={{ gap: 20 }}>
             <View
               onLayout={(event) => {
