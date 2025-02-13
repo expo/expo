@@ -1304,6 +1304,156 @@ test('chooses more exhaustive pattern', () => {
   expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
+describe('path to ambiguous shared routes', () => {
+  test('chooses the group with higher lexical sort', () => {
+    const path = '/two';
+
+    const config = {
+      screens: {
+        '(one)': {
+          path: '(one)',
+          screens: {
+            one: 'one',
+            two: 'two',
+          },
+        },
+        '(two)': {
+          path: '(two)',
+          screens: {
+            one: 'one',
+            two: 'two',
+          },
+        },
+      },
+    };
+
+    const expected = {
+      routes: [
+        {
+          name: '(one)',
+          state: {
+            routes: [
+              {
+                name: 'two',
+                path: '/two',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(getStateFromPath<object>(path, config)).toEqual(expected);
+    expect(getStateFromPath<object>(getPathFromState<object>(expected, config), config)).toEqual(
+      expected
+    );
+  });
+
+  test('chooses the group with more initialRouteName alignment', () => {
+    const path = '/two';
+
+    const config = {
+      screens: {
+        '(one)': {
+          initialRouteName: 'one',
+          path: '(one)',
+          screens: {
+            one: 'one',
+            two: 'two',
+          },
+        },
+        '(two)': {
+          initialRouteName: 'two',
+          path: '(two)',
+          screens: {
+            one: 'one',
+            two: 'two',
+          },
+        },
+      },
+    };
+
+    const expected = {
+      routes: [
+        {
+          name: '(two)',
+          state: {
+            routes: [
+              {
+                name: 'two',
+                path: '/two',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(getStateFromPath<object>(path, config)).toEqual(expected);
+    expect(getStateFromPath<object>(getPathFromState<object>(expected, config), config)).toEqual(
+      expected
+    );
+  });
+
+  test('chooses route with more initialRouteName alignment when non-expanded routes exist', () => {
+    const path = '/two/three';
+
+    const config = {
+      screens: {
+        '(one)': {
+          initialRouteName: 'one',
+          path: '(one)',
+          screens: {
+            one: 'one',
+            'two/three': 'two/three',
+          },
+        },
+        '(two)': {
+          initialRouteName: 'two',
+          path: '(two)',
+          screens: {
+            one: 'one',
+            two: {
+              path: 'two',
+              screens: {
+                three: 'three',
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const expected = {
+      routes: [
+        {
+          name: '(two)',
+          state: {
+            routes: [
+              {
+                name: 'two',
+                state: {
+                  routes: [
+                    {
+                      name: 'three',
+                      path: '/two/three',
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(getStateFromPath<object>(path, config)).toEqual(expected);
+    expect(getStateFromPath<object>(getPathFromState<object>(expected, config), config)).toEqual(
+      expected
+    );
+  });
+});
+
 test('handles same paths beginnings', () => {
   const path = '/foos';
 
