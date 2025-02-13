@@ -90,7 +90,7 @@ export interface IntentLauncherParams {
      */
     type?: string;
     /**
-     * Category provides more details about the action the intent performs. See [Intent.addCategory](https://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String)).
+     * Category provides more details about the action the intent performs. See [`Intent.addCategory`](https://developer.android.com/reference/android/content/Intent#addCategory(java.lang.String)).
      */
     category?: string;
     /**
@@ -105,7 +105,7 @@ export interface IntentLauncherParams {
      */
     data?: string;
     /**
-     * Bitmask of flags to be used. See [Intent.setFlags](<https://developer.android.com/reference/android/content/Intent.html#setFlags(int)>) for more details.
+     * Bitmask of flags to be used. See [`Intent.setFlags`](https://developer.android.com/reference/android/content/Intent#setFlags(int)) for more details.
      */
     flags?: number;
     /**
@@ -138,7 +138,7 @@ export declare enum ResultCode {
      */
     Success = -1,
     /**
-     * Means that the activity was canceled, e.g. by tapping on the back button.
+     * Means that the activity was canceled, for example, by tapping on the back button.
      */
     Canceled = 0,
     /**
@@ -149,16 +149,16 @@ export declare enum ResultCode {
 /**
  * Starts the specified activity. The method will return a promise which resolves when the user
  * returns to the app.
- * @param activityAction The action to be performed, e.g. `IntentLauncher.ActivityAction.WIRELESS_SETTINGS`.
+ * @param activityAction The action to be performed, for example, `IntentLauncher.ActivityAction.WIRELESS_SETTINGS`.
  * There are a few pre-defined constants you can use for this parameter.
- * You can find them at [expo-intent-launcher/src/IntentLauncher.ts](https://github.com/expo/expo/blob/main/packages/expo-intent-launcher/src/IntentLauncher.ts).
+ * You can find them at [`expo-intent-launcher/src/IntentLauncher.ts`](https://github.com/expo/expo/blob/main/packages/expo-intent-launcher/src/IntentLauncher.ts).
  * @param params An object of intent parameters.
  * @return A promise which fulfils with `IntentLauncherResult` object.
  */
 export declare function startActivityAsync(activityAction: ActivityAction | string, params?: IntentLauncherParams): Promise<IntentLauncherResult>;
 /**
  * Opens an application by its package name.
- * @param packageName e.g., `com.google.android.gm` for Gmail.
+ * @param packageName For example: `com.google.android.gm` for Gmail.
  */
 export declare function openApplication(packageName: string): any;
 /**
@@ -166,7 +166,7 @@ export declare function openApplication(packageName: string): any;
  * The returned string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image` `<Image>`
  * component's `source` prop.
  *
- * @param packageName The package name of the target application, e.g. `com.google.android.gm` for Gmail.
+ * @param packageName The package name of the target application. For example, `com.google.android.gm` for Gmail.
  * @return A promise that resolves to the base64-encoded PNG icon of the specified application, or an empty string if the icon could not be retrieved.
  */
 export declare function getApplicationIconAsync(packageName: string): Promise<string>;
