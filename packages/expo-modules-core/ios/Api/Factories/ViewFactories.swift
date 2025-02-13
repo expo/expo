@@ -19,6 +19,13 @@ public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View<Props>
   return ExpoSwiftUI.ViewDefinition(ViewType.self)
 }
 
+public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View<Props>>(
+  _ viewType: ViewType.Type,
+  @ExpoSwiftUI.ViewDefinitionBuilder<ViewType> _ elements: @escaping () -> [AnyViewDefinitionElement]
+) -> ExpoSwiftUI.ViewDefinition<Props, ViewType> {
+  return ExpoSwiftUI.ViewDefinition(ViewType.self, elements: elements())
+}
+
 // MARK: Props
 
 /**

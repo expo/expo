@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Support async functions by SwiftUI views ([#34853](https://github.com/expo/expo/pull/34853) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

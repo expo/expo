@@ -6,10 +6,11 @@ import Combine
 /**
  A protocol for SwiftUI views that need to access props.
  */
-public protocol ExpoSwiftUIView<Props>: SwiftUI.View {
+public protocol ExpoSwiftUIView<Props>: SwiftUI.View, AnyArgument {
   associatedtype Props: ExpoSwiftUI.ViewProps
 
   var props: Props { get }
+  static func getDynamicType() -> AnyDynamicType
 
   init()
 }
@@ -23,6 +24,10 @@ public extension ExpoSwiftUIView {
       ForEach(props.children ?? []) { $0 }
     }
   }
+
+  static func getDynamicType() -> AnyDynamicType {
+    return DynamicSwiftUIViewType(innerType: Self.self)
+  }
 }
 
 extension ExpoSwiftUI {
@@ -34,6 +39,10 @@ extension ExpoSwiftUI {
   public final class ViewDefinition<Props: ViewProps, ViewType: View<Props>>: ExpoModulesCore.ViewDefinition<HostingView<Props, ViewType>> {
     init(_ viewType: ViewType.Type) {
       super.init(HostingView<Props, ViewType>.self, elements: [])
+    }
+
+    init(_ viewType: ViewType.Type, elements: [AnyViewDefinitionElement]) {
+      super.init(HostingView<Props, ViewType>.self, elements: elements)
     }
 
     public override func createView(appContext: AppContext) -> UIView? {
