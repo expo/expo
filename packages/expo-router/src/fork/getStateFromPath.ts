@@ -86,15 +86,15 @@ export function getStateFromPath<ParamList extends object>(
   // END FORK
 
   // START FORK
-  let remaining = expoPath.nonstandardPathname
-    // let remaining = path
-    // END FORK
-    .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
-    .replace(/^\//, '') // Remove extra leading slash
-    .replace(/\?.*$/, ''); // Remove query params which we will handle later
+  let remaining = expo.cleanPath(expoPath.nonstandardPathname);
+  // let remaining = path
+  //   .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
+  //   .replace(/^\//, '') // Remove extra leading slash
+  //   .replace(/\?.*$/, ''); // Remove query params which we will handle later
 
-  // Make sure there is a trailing slash
-  remaining = remaining.endsWith('/') ? remaining : `${remaining}/`;
+  // // Make sure there is a trailing slash
+  // remaining = remaining.endsWith('/') ? remaining : `${remaining}/`;
+  // END FORK
 
   const prefix = options?.path?.replace(/^\//, ''); // Remove extra leading slash
 
@@ -547,20 +547,23 @@ const createConfigItem = (
   // Normalize pattern to remove any leading, trailing slashes, duplicate slashes etc.
   pattern = pattern.split('/').filter(Boolean).join('/');
 
-  const regex = pattern
-    ? new RegExp(
-        `^(${pattern
-          .split('/')
-          .map((it) => {
-            if (it.startsWith(':')) {
-              return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
-            }
+  // START FORK
+  const regex = pattern ? expo.routePatternToRegex(pattern) : undefined;
+  // const regex = pattern
+  //   ? new RegExp(
+  //       `^(${pattern
+  //         .split('/')
+  //         .map((it) => {
+  //           if (it.startsWith(':')) {
+  //             return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
+  //           }
 
-            return `${it === '*' ? '.*' : escape(it)}\\/`;
-          })
-          .join('')})`
-      )
-    : undefined;
+  //           return `${it === '*' ? '.*' : escape(it)}\\/`;
+  //         })
+  //         .join('')})`
+  //     )
+  //   : undefined;
+  // END FORK
 
   return {
     screen,

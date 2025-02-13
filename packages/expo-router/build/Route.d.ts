@@ -17,7 +17,7 @@ export type LoadedRoute = {
 };
 export type RouteNode = {
     /** The type of RouteNode */
-    type: 'route' | 'api' | 'layout' | 'redirect' | 'api-redirect';
+    type: 'route' | 'api' | 'layout' | 'redirect' | 'api-redirect' | 'rewrite' | 'api-rewrite';
     /** Load a route into memory. Returns the exports from a route. */
     loadRoute: () => Partial<LoadedRoute>;
     /** Loaded initial route name. */
@@ -32,6 +32,8 @@ export type RouteNode = {
     contextKey: string;
     /** Redirect Context Module ID, used for matching children. */
     destinationContextKey?: string;
+    /** Is the redirect permanent. */
+    permanent?: boolean;
     /** Added in-memory */
     generated?: boolean;
     /** Internal screens like the directory or the auto 404 should be marked as internal. */

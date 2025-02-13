@@ -25,7 +25,7 @@ jest.mock('expo-constants', () => {
 });
 
 it('deep link to a redirect', () => {
-  mockRedirects.mockReturnValueOnce([
+  mockRedirects.mockReturnValue([
     {
       source: '/foo',
       destination: '/bar',
@@ -43,24 +43,18 @@ it('deep link to a redirect', () => {
   );
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 0,
-    key: expect.any(String),
-    preloadedRoutes: [],
-    routeNames: ['index', 'bar', 'foo', '_sitemap', '+not-found'],
     routes: [
       {
-        key: expect.any(String),
         name: 'bar',
-        params: {},
+        path: 'bar',
       },
     ],
-    stale: false,
-    type: 'stack',
+    stale: true,
   });
 });
 
 it('deep link to a dynamic redirect', () => {
-  mockRedirects.mockReturnValueOnce([
+  mockRedirects.mockReturnValue([
     {
       source: '/foo/[slug]',
       destination: 'deeply/nested/route/[slug]',
@@ -77,27 +71,22 @@ it('deep link to a dynamic redirect', () => {
     }
   );
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 0,
-    key: expect.any(String),
-    preloadedRoutes: [],
-    routeNames: ['index', '_sitemap', 'deeply/nested/route/[slug]', 'foo/[slug]', '+not-found'],
+  expect(store.rootStateSnapshot()).toEqual({
     routes: [
       {
-        key: expect.any(String),
         name: 'deeply/nested/route/[slug]',
         params: {
           slug: 'bar',
         },
+        path: 'deeply/nested/route/bar',
       },
     ],
-    stale: false,
-    type: 'stack',
+    stale: true,
   });
 });
 
 it('keeps extra params as query params', () => {
-  mockRedirects.mockReturnValueOnce([
+  mockRedirects.mockReturnValue([
     {
       source: '/foo/[slug]',
       destination: '/bar',
@@ -115,27 +104,18 @@ it('keeps extra params as query params', () => {
   );
 
   expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 0,
-    key: expect.any(String),
-    preloadedRoutes: [],
-    routeNames: ['index', 'bar', '_sitemap', 'foo/[slug]', '+not-found'],
     routes: [
       {
-        key: expect.any(String),
         name: 'bar',
-        params: {
-          extra: 'param',
-          slug: 'hello',
-        },
+        path: 'bar',
       },
     ],
-    stale: false,
-    type: 'stack',
+    stale: true,
   });
 });
 
 it('can redirect from single to catch all', () => {
-  mockRedirects.mockReturnValueOnce([
+  mockRedirects.mockReturnValue([
     {
       source: '/foo/[slug]',
       destination: 'bar/[...slug]',
@@ -152,27 +132,22 @@ it('can redirect from single to catch all', () => {
     }
   );
 
-  expect(store.rootStateSnapshot()).toStrictEqual({
-    index: 0,
-    key: expect.any(String),
-    preloadedRoutes: [],
-    routeNames: ['index', '_sitemap', 'foo/[slug]', 'bar/[...slug]', '+not-found'],
+  expect(store.rootStateSnapshot()).toEqual({
     routes: [
       {
-        key: expect.any(String),
         name: 'bar/[...slug]',
         params: {
           slug: ['bar'],
         },
+        path: 'bar/bar',
       },
     ],
-    stale: false,
-    type: 'stack',
+    stale: true,
   });
 });
 
 it('can push to a redirect', () => {
-  mockRedirects.mockReturnValueOnce([
+  mockRedirects.mockReturnValue([
     {
       source: '/foo',
       destination: '/bar',
@@ -200,7 +175,7 @@ it('can push to a redirect', () => {
     index: 1,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['index', 'bar', 'foo', '_sitemap', '+not-found'],
+    routeNames: ['index', 'bar', '_sitemap', '+not-found'],
     routes: [
       {
         key: expect.any(String),
@@ -212,6 +187,7 @@ it('can push to a redirect', () => {
         key: expect.any(String),
         name: 'bar',
         params: {},
+        path: undefined,
       },
     ],
     stale: false,
@@ -220,7 +196,7 @@ it('can push to a redirect', () => {
 });
 
 it('does not render redirects in tabs', async () => {
-  mockRedirects.mockReturnValueOnce([
+  mockRedirects.mockReturnValue([
     {
       source: '/foo',
       destination: '/bar',

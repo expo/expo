@@ -27,11 +27,17 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
   namedRegex: TRegex;
   /** Indicates that the route was generated and does not map to any file in the project's routes directory. */
   generated?: boolean;
+  /** Indicates that this is a redirect that should use 301 instead of 307 */
+  permanent?: boolean;
 };
 
 export type ExpoRouterServerManifestV1<TRegex = string> = {
   /**
-   * Routes that are matched first and return static HTML files for a given path.
+   * List of routes that match first. Returns 301 and redirects to another path.
+   */
+  redirects: ExpoRouterServerManifestV1Route<TRegex>[];
+  /**
+   * Routes that return static HTML files for a given path.
    * These are only matched against requests with method `GET` and `HEAD`.
    */
   htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
@@ -84,7 +90,7 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
     // An HTML route can be different based on parent segments due to layout routes, therefore multiple
     // copies should be rendered. However, an API route is always the same regardless of parent segments.
     let key: string;
-    if (route.type === 'api') {
+    if (route.type.includes('api')) {
       key = getContextKey(route.contextKey).replace(/\/index$/, '') ?? '/';
     } else {
       key = getContextKey(absoluteRoute).replace(/\/index$/, '') ?? '/';
@@ -98,13 +104,26 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
     .reverse();
 
   const apiRoutes = uniqueBy(
-    flat.filter(([, , route]) => route.type === 'api' || route.type === 'api-redirect'),
+    flat.filter(([, , route]) => route.type === 'api' || route.type === 'api-rewrite'),
     ([path]) => path
   );
   const otherRoutes = uniqueBy(
-    flat.filter(([, , route]) => route.type === 'route' || route.type === 'redirect'),
+    flat.filter(([, , route]) => route.type === 'route' || route.type === 'rewrite'),
     ([path]) => path
   );
+  const redirects = uniqueBy(
+    flat.filter(([, , route]) => route.type === 'redirect' || route.type === 'api-redirect'),
+    ([path]) => path
+  )
+    .map((redirect) => {
+      redirect[1] =
+        flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
+        '/';
+
+      return redirect;
+    })
+    .sort(([, , a], [, , b]) => sortRoutes(a, b));
+
   const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
   const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));
 
@@ -112,6 +131,7 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
     apiRoutes: getMatchableManifestForPaths(apiRoutes),
     htmlRoutes: getMatchableManifestForPaths(standardRoutes),
     notFoundRoutes: getMatchableManifestForPaths(notFoundRoutes),
+    redirects: getMatchableManifestForPaths(redirects),
   };
 }
 
@@ -122,10 +142,14 @@ function getMatchableManifestForPaths(
     const matcher: ExpoRouterServerManifestV1Route = getNamedRouteRegex(
       normalizedRoutePath,
       absoluteRoute,
-      node.destinationContextKey ?? node.contextKey
+      node.contextKey
     );
     if (node.generated) {
       matcher.generated = true;
+    }
+
+    if (node.permanent) {
+      matcher.permanent = true;
     }
 
     return matcher;

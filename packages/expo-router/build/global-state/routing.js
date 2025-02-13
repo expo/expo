@@ -145,6 +145,7 @@ function linkTo(href, options = {}) {
     }
     const rootState = navigationRef.getRootState();
     href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, options);
+    href = this.applyRedirects(href);
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);

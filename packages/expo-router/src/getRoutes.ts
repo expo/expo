@@ -1,6 +1,5 @@
 import type { RouteNode } from './Route';
 import { getRoutes as getRoutesCore, type Options as OptionsCore } from './getRoutesCore';
-import { getRedirectModule } from './getRoutesRedirect';
 import type { RequireContext } from './types';
 
 export type Options = Omit<OptionsCore, 'getSystemRoute'>;
@@ -61,11 +60,11 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           dynamic: [{ name: '+not-found', deep: true, notFound: true }],
           children: [],
         };
-      } else if (type === 'redirect' && defaults) {
+      } else if ((type === 'redirect' || type === 'rewrite') && defaults) {
         return {
           ...defaults,
           loadRoute() {
-            return getRedirectModule(route);
+            return require('./getRoutesRedirects').getRedirectModule(route);
           },
         };
       }

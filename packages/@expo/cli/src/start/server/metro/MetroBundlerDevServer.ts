@@ -255,7 +255,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // getBuiltTimeServerManifest
     const { exp } = getConfig(this.projectRoot);
     const manifest = await fetchManifest(this.projectRoot, {
-      ...exp.extra?.router?.platformRoutes,
+      ...exp.extra?.router,
+      preserveRedirectAndRewrites: true,
       asJson: true,
       appDir,
     });
@@ -274,6 +275,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     serverManifest: ExpoRouterServerManifestV1;
     htmlManifest: ExpoRouterRuntimeManifest;
   }> {
+    const { exp } = getConfig(this.projectRoot);
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync, getManifest } = await this.ssrLoadModule<
       typeof import('expo-router/build/static/getServerManifest')
@@ -283,8 +285,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     return {
-      serverManifest: await getBuildTimeServerManifestAsync(),
-      htmlManifest: await getManifest(),
+      serverManifest: await getBuildTimeServerManifestAsync({ ...exp.extra?.router }),
+      htmlManifest: await getManifest({ ...exp.extra?.router }),
     };
   }
 
@@ -308,7 +310,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { exp } = getConfig(this.projectRoot);
 
     return {
-      serverManifest: await getBuildTimeServerManifestAsync(),
+      serverManifest: await getBuildTimeServerManifestAsync({
+        ...exp.extra?.router,
+      }),
       // Get routes from Expo Router.
       manifest: await getManifest({ preserveApiRoutes: false, ...exp.extra?.router }),
       // Get route generating function

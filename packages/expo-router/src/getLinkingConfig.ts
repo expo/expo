@@ -3,7 +3,10 @@ import { Platform } from 'expo-modules-core';
 
 import { RouteNode } from './Route';
 import { State } from './fork/getPathFromState';
-import { getReactNavigationConfig } from './getReactNavigationConfig';
+import { cleanPath, routePatternToRegex } from './fork/getStateFromPath-forks';
+import { getReactNavigationConfig, parseRouteSegments } from './getReactNavigationConfig';
+import { type RedirectConfig } from './getRoutesCore';
+import { convertRedirect } from './getRoutesRedirects';
 import { RouterStore } from './global-state/router-store';
 import {
   addEventListener,
@@ -35,13 +38,14 @@ export type LinkingConfigOptions = {
   metaOnly?: boolean;
   serverUrl?: string;
   getInitialURL?: typeof getInitialURL;
+  redirects?: RedirectConfig[];
 };
 
 export function getLinkingConfig(
   store: RouterStore,
   routes: RouteNode,
   context: RequireContext,
-  { metaOnly = true, serverUrl }: LinkingConfigOptions = {}
+  { metaOnly = true, serverUrl, redirects }: LinkingConfigOptions = {}
 ): ExpoLinkingOptions {
   // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
   let hasCachedInitialUrl = false;
@@ -72,11 +76,13 @@ export function getLinkingConfig(
           initialUrl = serverUrl ?? getInitialURL();
 
           if (typeof initialUrl === 'string') {
+            initialUrl = store.applyRedirects(initialUrl);
             if (typeof nativeLinking?.redirectSystemPath === 'function') {
               initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
             }
           } else if (initialUrl) {
             initialUrl = initialUrl.then((url) => {
+              url = store.applyRedirects(url);
               if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
               }
@@ -88,7 +94,7 @@ export function getLinkingConfig(
       }
       return initialUrl;
     },
-    subscribe: addEventListener(nativeLinking),
+    subscribe: addEventListener(nativeLinking, store),
     getStateFromPath: getStateFromPath.bind(store),
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (

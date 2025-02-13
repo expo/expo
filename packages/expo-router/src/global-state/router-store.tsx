@@ -28,9 +28,12 @@ import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { getPathDataFromState, getPathFromState } from '../fork/getPathFromState';
-// import { ResultState } from '../fork/getStateFromPath';
+import { cleanPath, routePatternToRegex } from '../fork/getStateFromPath-forks';
 import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
+import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
+import { RedirectConfig } from '../getRoutesCore';
+import { convertRedirect } from '../getRoutesRedirects';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { Href, RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
@@ -54,6 +57,10 @@ export class RouterStore {
   nextState?: ResultState;
   routeInfo?: UrlObject;
   splashScreenAnimationFrame?: number;
+
+  // The expo-router config plugin
+  config: any;
+  redirects?: (readonly [RegExp, RedirectConfig])[];
 
   navigationRef!: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   navigationRefSubscription!: () => void;
@@ -89,6 +96,15 @@ export class RouterStore {
     this.rootStateSubscribers.clear();
     this.storeSubscribers.clear();
 
+    this.config = Constants.expoConfig?.extra?.router;
+    // On the client, there is no difference between redirects and rewrites
+    this.redirects = [this.config?.redirects, this.config.rewrites]
+      .filter(Boolean)
+      .flat()
+      .map((route) => {
+        return [routePatternToRegex(parseRouteSegments(route.source)), route] as const;
+      });
+
     this.routeNode = getRoutes(context, {
       ...Constants.expoConfig?.extra?.router,
       ignoreEntryPoints: true,
@@ -108,8 +124,10 @@ export class RouterStore {
 
     if (this.routeNode) {
       // We have routes, so get the linking config and the root component
-      this.linking = getLinkingConfig(this, this.routeNode, context, linkingConfigOptions);
-
+      this.linking = getLinkingConfig(this, this.routeNode, context, {
+        ...Constants.expoConfig?.extra?.router,
+        ...linkingConfigOptions,
+      });
       this.rootComponent = getQualifiedRouteComponent(this.routeNode);
 
       // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
@@ -240,6 +258,21 @@ export class RouterStore {
     href = resolveHref(href);
     href = resolveHrefStringWithSegments(href, this.routeInfo, options);
     return this.linking?.getStateFromPath?.(href, this.linking.config);
+  }
+
+  applyRedirects<T extends string | null | undefined>(url: T): T {
+    if (typeof url !== 'string') {
+      return url;
+    }
+
+    const nextUrl = cleanPath(url);
+    const redirect = this.redirects?.find(([regex]) => regex.test(nextUrl));
+
+    if (!redirect) {
+      return url;
+    }
+
+    return this.applyRedirects<T>(convertRedirect(url, redirect[1]) as T);
   }
 }
 
