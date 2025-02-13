@@ -10,7 +10,7 @@ export declare function setMinBuildScriptExtVersion(buildGradle: string, { name,
     name: string;
     minVersion: number;
 }): string;
-export declare function getVersionName(config: Pick<ExpoConfig, 'version'>): string | null;
-export declare function setVersionName(config: Pick<ExpoConfig, 'version'>, buildGradle: string): string;
+export declare function getVersionName(config: Pick<ExpoConfig, 'version' | 'android'>): string | null;
+export declare function setVersionName(config: Pick<ExpoConfig, 'version' | 'android'>, buildGradle: string): string;
 export declare function getVersionCode(config: Pick<ExpoConfig, 'android'>): number;
 export declare function setVersionCode(config: Pick<ExpoConfig, 'android'>, buildGradle: string): string;
