@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Adds `DateTimePicker` component.
+- Adds `DateTimePicker` component. ([#34883](https://github.com/expo/expo/pull/34883) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
