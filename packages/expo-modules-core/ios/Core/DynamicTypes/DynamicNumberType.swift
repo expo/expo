@@ -29,6 +29,10 @@ internal struct DynamicNumberType<NumberType>: AnyDynamicType {
     if let number = value as? NumberType {
       return number
     }
+    if let number = value as? Double, NumberType.self as? Float32.Type != nil {
+      // double -> float
+      return Float32.init(number)
+    }
     if let number = value as? any BinaryInteger {
       if let IntegerType = NumberType.self as? any BinaryInteger.Type {
         // integer -> another integer
