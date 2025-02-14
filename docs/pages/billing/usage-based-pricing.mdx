@@ -49,19 +49,19 @@ In this scenario, the subscriber pays $31 for 60 builds instead of $130 because 
 
 ### EAS Update
 
-Usage-based pricing for EAS Update comprises two metrics: monthly updated users and global edge bandwidth.
+Usage-based pricing for EAS Update comprises two metrics: monthly active users and global edge bandwidth.
 
-Monthly updated users reflect the number of unique users who download an update in a billing period. At the same time, global edge bandwidth represents the total amount of bandwidth used for all update downloads. Moreover, each monthly updated user includes 40 MiB of global edge bandwidth, up to that plan's global edge bandwidth limit.
+The "updated users" reflect the number of unique users who download at least one update in a billing period, also known as "monthly active users" (MAU). Global edge bandwidth represents the total amount of bandwidth used beyond your subscription plan's base bandwidth allocation. If your monthly active users exceed your plan's base MAU allocation, 40 MiB of global edge bandwidth is included for each additional user.
 
-> **Note**: A monthly updated user counts only once per billing period, regardless of how many updates this user downloads.
+> **Note**: A monthly active user counts only once per billing period, regardless of how many updates this user downloads. In the context of EAS Update, a "user" is considered a unique installation of your app on a device.
 
-Each plan has a number of monthly updated users and global edge bandwidth included as part of the subscription. These differ for each plan and the most updated numbers. See our [pricing page](https://expo.dev/pricing), for more information.
+Each plan has a number of monthly active users and global edge bandwidth included as part of the subscription. These differ for each plan and the most updated numbers. See our [pricing page](https://expo.dev/pricing), for more information.
 
 #### Example: EAS Update usage
 
-> **Note**: The [On-demand plan](/billing/plans/#on-demand) includes the same amount of monthly updated users and global edge bandwidth as the Free plan.
+> **Note**: The [On-demand plan](/billing/plans/#on-demand) includes the same amount of monthly active users and global edge bandwidth as the Free plan.
 
-Consider a subscriber to the On-demand plan who deploys 20 updates of 5 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 1,000 monthly updated users and 100 GiB per month. As a result, the subscriber's bill for extra usage will be:
+Consider a subscriber to the On-demand plan who deploys 20 updates of 5 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 1,000 monthly active users and 100 GiB per month. As a result, the subscriber's bill for extra usage will be:
 
 | Description           | Price           | Quantity |     Total |
 | --------------------- | --------------- | -------- | --------: |
@@ -91,7 +91,7 @@ If the same subscriber sends the 21st update of 5 MiB to the same 10,000 users i
 | Bandwidth included with 9,000 extra updated users | 9,000 \* 40 MiB                     | 351.5625 GiB   |
 | **Total**                                         | **1,025.39 - 100 - 351.5625**       | **573.83 GiB** |
 
-This is because Expo only charges for [unique monthly updated users](/eas-update/faq/#how-are-monthly-updated-users-counted-for-a-billing-cycle). As a result, the subscriber's bill for extra usage will be:
+This is because Expo only charges for [unique monthly active users](/eas-update/faq/#how-are-monthly-updated-users-counted-for-a-billing-cycle). As a result, the subscriber's bill for extra usage will be:
 
 | Description           | Price           | Quantity   |      Total |
 | --------------------- | --------------- | ---------- | ---------: |
@@ -99,7 +99,7 @@ This is because Expo only charges for [unique monthly updated users](/eas-update
 | Global edge bandwidth | $0.10 per GiB   | 573.83 GiB |      $57.4 |
 | **Total (USD)**       |                 |            | **$102.4** |
 
-If the same subscriber is on a Production plan, they will pay $0 as the Production plan includes 20,000 monthly updated users and 1 TiB (1024 GiB). As such, there is no extra bandwidth usage.
+If the same subscriber is on a Production plan, they will pay $0 as the Production plan includes 50,000 monthly active users and 1 TiB (1024 GiB). As such, there is no extra bandwidth usage.
 
 ## Monitor usage
 
