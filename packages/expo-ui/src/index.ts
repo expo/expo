@@ -1,6 +1,12 @@
 export type { Switch, SwitchProps } from '../components/Switch';
 export type { Picker, PickerProps } from '../components/Picker';
+export type {
+  ContentUnavailableView,
+  ContentUnavailableProps,
+} from '../components/ContentUnavailable';
+export type { DisclosureGroup, DisclosureGroupProps } from '../components/DisclosureGroup';
 export type { Button, ButtonProps } from '../components/Button';
+export type { Gauge, GaugeProps } from '../components/Gauge';
 export type {
   ContextMenu,
   ContextMenuProps,
