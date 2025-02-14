@@ -29,14 +29,14 @@ extension ExpoSwiftUI {
     public var body: some SwiftUI.View {
       if #available(iOS 16.0, tvOS 16.0, *) {
         content.overlay(content: {
-          content.fixedSize(horizontal:  axis.contains(.horizontal), vertical: axis.contains(.vertical))
+          content.fixedSize(horizontal: axis.contains(.horizontal), vertical: axis.contains(.vertical))
             .hidden()
-            .onGeometryChange(for: CGSize.self, of: { proxy in proxy.size }) { size in
+            .onGeometryChange(for: CGSize.self, of: { proxy in proxy.size }, action: { size in
               var size = size
               size.width = axis.contains(.horizontal) ? size.width : ShadowNodeProxy.UNDEFINED_SIZE
               size.height = axis.contains(.vertical) ? size.height : ShadowNodeProxy.UNDEFINED_SIZE
               proxy.setViewSize?(size)
-            }})
+            })})
       } else {
         // TODO: throw a warning
         content.onAppear(perform: {
