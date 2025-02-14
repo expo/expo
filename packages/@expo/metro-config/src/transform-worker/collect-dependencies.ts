@@ -217,6 +217,19 @@ function collectDependencies<TAst extends t.File>(
           visited.add(path.node);
           return;
         }
+        if (
+          callee.type === 'MemberExpression' &&
+          callee.object.type === 'Identifier' &&
+          callee.object.name === 'require' &&
+          callee.property.type === 'Identifier' &&
+          callee.property.name === 'resolve' &&
+          !callee.computed &&
+          !path.scope.getBinding('require')
+        ) {
+          processResolveCall(path, state);
+          visited.add(path.node);
+          return;
+        }
 
         // Match `require.unstable_importMaybeSync`
         if (
@@ -414,11 +427,42 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
     path
   );
 
+  // if (state.collectOnly !== true) {
   path.replaceWith(
     makeResolveWeakTemplate({
       MODULE_ID: createModuleIDExpression(dependency, state),
     })
   );
+  // }
+}
+
+function processResolveCall(path: NodePath<CallExpression>, state: State): void {
+  const name = getModuleNameAndQualifiersFromCallArgs(path);
+
+  if (name == null) {
+    throw new InvalidRequireCallError(path);
+  }
+
+  const dependency = registerDependency(
+    state,
+    {
+      name: name.name,
+      query: name.query,
+      asyncType: 'async',
+      optional: isOptionalDependency(name.name, path, state),
+      exportNames: ['*'],
+    },
+    path
+  );
+
+  if (state.collectOnly !== true) {
+    path.replaceWith(
+      makeResolveTemplate({
+        DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+        MODULE_ID: createModuleIDExpression(dependency, state),
+      })
+    );
+  }
 }
 
 export function getExportNamesFromPath(path: NodePath<any>): string[] {
@@ -702,6 +746,10 @@ const makeAsyncPrefetchTemplateWithName = template.expression(`
 
 const makeAsyncImportMaybeSyncTemplate = template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+
+const makeResolveTemplate = template.expression(`
+  DEPENDENCY_MAP.paths[MODULE_ID]
 `);
 
 const makeAsyncImportMaybeSyncTemplateWithName = template.expression(`

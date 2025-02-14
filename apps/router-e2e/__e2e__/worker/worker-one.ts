@@ -1,7 +1,5 @@
-onmessage = function (event) {
-  const workerResult = event.data;
-
-  workerResult.onmessage = true;
-
-  postMessage(workerResult);
+self.onmessage = (event) => {
+  const { data } = event;
+  const result = data * 2; // Example: double the number
+  postMessage(result);
 };

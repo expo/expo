@@ -770,6 +770,19 @@ it('collects dependency with import qualifiers', () => {
   );
 });
 
+it('collects dependency with require.resolve', () => {
+  const ast = astFromCode(`
+    const a = require.resolve('foo');
+  `);
+  const { dependencies } = collectDependencies(ast, opts);
+  expect(dependencies).toEqual([{ name: 'foo', data: objectContaining({ asyncType: 'async' }) }]);
+  expect(codeFromAst(ast)).toEqual(
+    comparableCode(`
+      const a = _dependencyMap.paths[_dependencyMap[0]]; 
+    `)
+  );
+});
+
 it('collects unique dependency identifiers and transforms the AST', () => {
   const ast = astFromCode(`
     const a = require('b/lib/a');

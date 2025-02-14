@@ -388,7 +388,12 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ) {
-      console.log('ctx:', context);
+      // console.log('ctx:', context);
+
+      // if (context.dependency?.data?.query) {
+      //   context.
+      // }
+
       // This resolution is dev-only to prevent bundling the production React packages in development.
       if (!context.dev) return null;
 
