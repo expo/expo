@@ -39,8 +39,8 @@ open class ExpoAppDelegate: ExpoAppInstance {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    var result: Bool = super.application(application, didFinishLaunchingWithOptions: launchOptions)
-        
+    let result: Bool = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
     subscribers.forEach { subscriber in
       // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
       _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)

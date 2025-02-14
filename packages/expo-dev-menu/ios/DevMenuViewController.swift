@@ -77,7 +77,7 @@ class DevMenuViewController: UIViewController {
   }
 
   private func rebuildRootView() {
-    reactRootView = manager.appInstance.rootViewFactory().view(withModuleName: "main", initialProperties: initialProps())
+	reactRootView = manager.appInstance.reactNativeFactory?.rootViewFactory.view(withModuleName: "main", initialProperties: initialProps())
     reactRootView?.frame = view.bounds
     reactRootView?.backgroundColor = UIColor { (traitCollection: UITraitCollection) -> UIColor in
       if traitCollection.userInterfaceStyle == .dark {

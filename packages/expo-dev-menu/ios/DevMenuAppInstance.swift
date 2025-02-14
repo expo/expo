@@ -4,41 +4,40 @@ import React
 #if canImport(ReactAppDependencyProvider)
 import ReactAppDependencyProvider
 #endif
+import EXDevMenuInterface
+import ExpoModulesCore
 
 @objc
 class DevMenuAppInstance: DevMenuRCTAppDelegate {
   static private var CloseEventName = "closeDevMenu"
   static private var OpenEventName = "openDevMenu"
+  @objc public private(set) var reactNativeFactory: EXDevClientReactNativeFactory?
 
   private let manager: DevMenuManager
 
   init(manager: DevMenuManager) {
     self.manager = manager
-
     super.init()
-#if canImport(ReactAppDependencyProvider)
-	self.dependencyProvider = RCTAppDependencyProvider()
-#endif
-    super.initRootViewFactory()
+	self.reactNativeFactory = EXDevClientReactNativeFactory(delegate: self)
   }
 
   init(manager: DevMenuManager, bridge: RCTBridge) {
     self.manager = manager
-
     super.init()
-    super.initRootViewFactory()
-    self.rootViewFactory().bridge = bridge
+    // TODO vonovak simplify initializers
+    self.reactNativeFactory = EXDevClientReactNativeFactory(delegate: self)
+	self.reactNativeFactory?.rootViewFactory.bridge = bridge
   }
 
   /**
    Sends an event to JS triggering the animation that collapses the dev menu.
    */
   func sendCloseEvent() {
-    self.rootViewFactory().bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
+    self.reactNativeFactory?.rootViewFactory.bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
   }
 
   func sendOpenEvent() {
-    self.rootViewFactory().bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
+    self.reactNativeFactory?.rootViewFactory.bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
 
   // MARK: RCTAppDelegate
