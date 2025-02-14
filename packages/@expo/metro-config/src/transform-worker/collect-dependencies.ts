@@ -490,7 +490,6 @@ function processResolveWorkerCall(path: NodePath<CallExpression>, state: State):
     {
       name,
       asyncType: 'worker',
-      // asyncType: 'async',
       optional: isOptionalDependency(name, path, state),
       exportNames: ['*'],
     },
