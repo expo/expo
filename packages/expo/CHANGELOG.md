@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `expo/fetch` `cancelStreaming` issue on Android. ([#34892](https://github.com/expo/expo/pull/34892) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 52.0.35 — 2025-02-14
