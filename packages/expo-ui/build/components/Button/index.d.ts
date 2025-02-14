@@ -1,4 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
+import MaterialIcon from './types';
 import { ViewEvent } from '../../src';
 /**
  * The role of the button.
@@ -40,7 +41,10 @@ export type ButtonProps = {
      * @platform ios - SF Symbols
      * @platform android - Material Icons
      */
-    systemImage?: string;
+    systemImage?: {
+        ios?: string;
+        android?: MaterialIcon;
+    };
     /**
      * Indicated the role of the button.
      * @platform ios
@@ -73,9 +77,10 @@ export type ButtonProps = {
      */
     color?: string;
 };
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children'> & {
+export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage'> & {
     buttonRole?: ButtonRole;
     text: string;
+    systemImage?: string;
 } & ViewEvent<'onButtonPressed', void>;
 export declare function transformButtonProps(props: ButtonProps): NativeButtonProps;
 export declare function Button(props: ButtonProps): import("react").JSX.Element;
