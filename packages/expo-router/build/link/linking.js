@@ -81,7 +81,7 @@ function parseExpoGoUrlFromListener(url) {
     }
     return url;
 }
-function addEventListener(nativeLinking) {
+function addEventListener(nativeLinking, store) {
     return (listener) => {
         let callback;
         const legacySubscription = nativeLinking?.legacy_subscribe?.(listener);
@@ -89,6 +89,7 @@ function addEventListener(nativeLinking) {
             // This extra work is only done in the Expo Go app.
             callback = async ({ url }) => {
                 url = parseExpoGoUrlFromListener(url);
+                url = store.applyRedirects(url);
                 if (url && nativeLinking?.redirectSystemPath) {
                     url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
                 }
@@ -97,6 +98,7 @@ function addEventListener(nativeLinking) {
         }
         else {
             callback = async ({ url }) => {
+                url = store.applyRedirects(url);
                 if (url && nativeLinking?.redirectSystemPath) {
                     url = await nativeLinking.redirectSystemPath({ path: url, initial: false });
                 }

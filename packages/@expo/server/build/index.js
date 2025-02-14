@@ -33,6 +33,12 @@ function getProcessedManifest(path) {
                 namedRegex: new RegExp(value.namedRegex),
             };
         }),
+        redirects: routesManifest.redirects?.map((value) => {
+            return {
+                ...value,
+                namedRegex: new RegExp(value.namedRegex),
+            };
+        }),
     };
     return parsed;
 }
@@ -98,6 +104,38 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         }
         return params;
     }
+    function getRedirectLocation(request, route) {
+        const params = updateRequestWithConfig(request, route);
+        const urlSearchParams = new URL(request.url).searchParams;
+        console.log(route.page);
+        let location = route.page
+            .split('/')
+            .map((segment) => {
+            let match = matchDynamicName(segment);
+            if (match) {
+                const value = params[match];
+                delete params[match];
+                return value;
+            }
+            match = matchDeepDynamicRouteName(segment);
+            if (match) {
+                const value = params[match];
+                delete params[match];
+                return value;
+            }
+            return segment;
+        })
+            .join('/');
+        if (Object.keys(params).length > 0 || urlSearchParams.toString()) {
+            location +=
+                '?' +
+                    new URLSearchParams({
+                        ...params,
+                        ...Object.fromEntries(urlSearchParams.entries()),
+                    }).toString();
+        }
+        return location;
+    }
     return async function handler(request) {
         if (getInternalRoutesManifest) {
             const manifest = await getInternalRoutesManifest(distFolder);
@@ -120,6 +158,31 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         const url = new URL(request.url, 'http://expo.dev');
         const sanitizedPathname = url.pathname;
         debug('Request', sanitizedPathname);
+        if (routesManifest.redirects) {
+            for (const route of routesManifest.redirects) {
+                if (!route.namedRegex.test(sanitizedPathname)) {
+                    continue;
+                }
+                const Location = getRedirectLocation(request, route);
+                if (!Location) {
+                    debug('Redirect to 404 page');
+                    return new Response('Not found', {
+                        status: 404,
+                        headers: {
+                            'Content-Type': 'text/plain',
+                        },
+                    });
+                }
+                debug('Redirecting', Location);
+                // Get the params
+                return new Response(null, {
+                    status: route.permanent ? 301 : 307,
+                    headers: {
+                        Location,
+                    },
+                });
+            }
+        }
         if (request.method === 'GET' || request.method === 'HEAD') {
             // First test static routes
             for (const route of routesManifest.htmlRoutes) {
@@ -220,4 +283,16 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     };
 }
 exports.createRequestHandler = createRequestHandler;
+/** Match `[page]` -> `page` */
+// Ported from `expo-router/src/matchers.tsx`
+function matchDynamicName(name) {
+    // Don't match `...` or `[` or `]` inside the brackets
+    // eslint-disable-next-line no-useless-escape
+    return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
+}
+/** Match `[...page]` -> `page` */
+// Ported from `expo-router/src/matchers.tsx`
+function matchDeepDynamicRouteName(name) {
+    return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
+}
 //# sourceMappingURL=index.js.map

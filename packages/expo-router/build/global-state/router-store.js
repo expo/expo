@@ -37,9 +37,11 @@ const routing_1 = require("./routing");
 const sort_routes_1 = require("./sort-routes");
 const LocationProvider_1 = require("../LocationProvider");
 const getPathFromState_1 = require("../fork/getPathFromState");
-// import { ResultState } from '../fork/getStateFromPath';
+const getStateFromPath_forks_1 = require("../fork/getStateFromPath-forks");
 const getLinkingConfig_1 = require("../getLinkingConfig");
+const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
 const getRoutes_1 = require("../getRoutes");
+const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const href_1 = require("../link/href");
 const useScreens_1 = require("../useScreens");
 const SplashScreen = __importStar(require("../views/Splash"));
@@ -58,6 +60,9 @@ class RouterStore {
     nextState;
     routeInfo;
     splashScreenAnimationFrame;
+    // The expo-router config plugin
+    config;
+    redirects;
     navigationRef;
     navigationRefSubscription;
     rootStateSubscribers = new Set();
@@ -84,6 +89,14 @@ class RouterStore {
         this.navigationRefSubscription?.();
         this.rootStateSubscribers.clear();
         this.storeSubscribers.clear();
+        this.config = expo_constants_1.default.expoConfig?.extra?.router;
+        // On the client, there is no difference between redirects and rewrites
+        this.redirects = [this.config?.redirects, this.config.rewrites]
+            .filter(Boolean)
+            .flat()
+            .map((route) => {
+            return [(0, getStateFromPath_forks_1.routePatternToRegex)((0, getReactNavigationConfig_1.parseRouteSegments)(route.source)), route];
+        });
         this.routeNode = (0, getRoutes_1.getRoutes)(context, {
             ...expo_constants_1.default.expoConfig?.extra?.router,
             ignoreEntryPoints: true,
@@ -101,7 +114,10 @@ class RouterStore {
         };
         if (this.routeNode) {
             // We have routes, so get the linking config and the root component
-            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this, this.routeNode, context, linkingConfigOptions);
+            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this, this.routeNode, context, {
+                ...expo_constants_1.default.expoConfig?.extra?.router,
+                ...linkingConfigOptions,
+            });
             this.rootComponent = (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode);
             // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
             // This will cause static rendering to fail, which once performs a single pass.
@@ -214,6 +230,17 @@ class RouterStore {
         href = (0, href_1.resolveHref)(href);
         href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, options);
         return this.linking?.getStateFromPath?.(href, this.linking.config);
+    }
+    applyRedirects(url) {
+        if (typeof url !== 'string') {
+            return url;
+        }
+        const nextUrl = (0, getStateFromPath_forks_1.cleanPath)(url);
+        const redirect = this.redirects?.find(([regex]) => regex.test(nextUrl));
+        if (!redirect) {
+            return url;
+        }
+        return this.applyRedirects((0, getRoutesRedirects_1.convertRedirect)(url, redirect[1]));
     }
 }
 exports.RouterStore = RouterStore;
