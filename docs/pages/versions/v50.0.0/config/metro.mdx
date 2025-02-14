@@ -380,7 +380,7 @@ If you want to extend the Babel transformer, import the upstream transformer fro
 ```js metro.transformer.js
 const upstreamTransformer = require('@expo/metro-config/babel-transformer');
 
-module.exports.transform = async ({ src, filename, options }) => {
+module.exports.transformer = async ({ src, filename, options }) => {
   // Do something custom for SVG files...
   if (filename.endsWith('.svg')) {
     src = '...';
