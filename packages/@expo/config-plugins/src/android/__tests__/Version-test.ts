@@ -85,6 +85,22 @@ describe('versionName', () => {
       'versionName "1.2.3"'
     );
   });
+
+  it(`returns the android.version as version name if provided`, () => {
+    expect(getVersionName({ version: '1.0.0', android: { version: '1.2.3' } })).toBe('1.2.3');
+  });
+
+  it(`sets the version name in build.gradle if version name is given in android object`, () => {
+    expect(
+      setVersionName({ version: '1.0.0', android: { version: '1.2.3' } }, EXAMPLE_BUILD_GRADLE)
+    ).toMatch('versionName "1.2.3"');
+  });
+
+  it(`replaces provided version name in build.gradle if android.version name is not the default`, () => {
+    expect(
+      setVersionName({ version: '1.0.0', android: { version: '1.2.3' } }, EXAMPLE_BUILD_GRADLE_2)
+    ).toMatch('versionName "1.2.3"');
+  });
 });
 
 describe('versionCode', () => {
