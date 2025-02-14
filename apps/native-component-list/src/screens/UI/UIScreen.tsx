@@ -58,6 +58,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ColorPickerScreen'));
     },
   },
+  {
+    name: 'Gauge Component',
+    route: 'ui/gauge',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GaugeScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
