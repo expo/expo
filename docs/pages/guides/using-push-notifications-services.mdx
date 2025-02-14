@@ -5,7 +5,7 @@ description: Learn about different push notification services.
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
-Expo apps can work with any notification service or capabilities offered by the operating system thanks to [config plugins](/config-plugins/introduction/). The following services provide purpose-built Expo integrations for implementing push notifications in your app:
+Expo apps can work with any notification service or capabilities offered by the operating system. The following services provide purpose-built Expo integrations for implementing push notifications in your app:
 
 > The [`expo-notifications`](/versions/latest/sdk/notifications/) library is designed and tested to work with Expo's push notification service. Some advanced features may not be compatible with third-party providers, as they often have their own native and React Native SDKs optimized for their services.
 
@@ -21,10 +21,24 @@ Expo apps can work with any notification service or capabilities offered by the 
 
 #### Considerations and limitations:
 
-- Does not support advanced platform features like notification extensions
+- Notification extensions are not built-in, but you can set them up manually following Apple's guidelines.
 - Limited to 600 notifications per second per project, which works for most apps but may not suit high-volume scenarios
 
-For implementation details, see the [Expo push notifications overview](/push-notifications/overview) and [server-side SDK options](https://docs.expo.dev/push-notifications/sending-notifications/#send-push-notifications-using-a-servers).
+For implementation details, see the following guides:
+
+<BoxLink
+  title="Expo push notifications overview"
+  description="Learn more about Expo push notifications."
+  href="/push-notifications/overview"
+/>
+
+<BoxLink
+  title="Expo Notifications server-side SDK options"
+  description="Learn more about sending push notifications using a server."
+  href="/push-notifications/sending-notifications/#send-push-notifications-using-a-servers"
+/>
+
+---
 
 ### OneSignal
 
