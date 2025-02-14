@@ -82,10 +82,10 @@ export const TEMPLATES: {
     },
   },
   {
-    id: '.eslintrc.js',
+    id: 'eslint.config.js',
     dependencies: [],
-    destination: () => '.eslintrc.js',
-    file: (projectRoot) => importFromVendor(projectRoot, '.eslintrc.js'),
+    destination: () => 'eslint.config.js',
+    file: (projectRoot) => importFromVendor(projectRoot, 'eslint.config.js'),
     configureAsync: async (projectRoot) => {
       const { ESLintProjectPrerequisite } =
         require('../lint/ESlintPrerequisite') as typeof import('../lint/ESlintPrerequisite.js');
