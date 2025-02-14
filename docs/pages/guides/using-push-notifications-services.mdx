@@ -13,13 +13,13 @@ Expo apps can work with any notification service or capabilities offered by the 
 
 [Expo Notifications](/versions/latest/sdk/notifications/) provides a unified API for handling push notifications across Android and iOS. It integrates seamlessly with your Expo account and is free to use.
 
-#### Key capabilities:
+### Key capabilities:
 
 - Fully compatible with the [`expo-notifications`](/versions/latest/sdk/notifications/) library
 - Includes an Expo Dashboard to track notifications and user engagement
 - Supports testing notifications with the [Expo Notifications Tool](https://expo.dev/notifications)
 
-#### Considerations and limitations:
+### Considerations and limitations:
 
 - Notification extensions are not built-in, but you can set them up manually following Apple's guidelines.
 - Limited to 600 notifications per second per project, which works for most apps but may not suit high-volume scenarios
@@ -40,16 +40,16 @@ For implementation details, see the following guides:
 
 ---
 
-### OneSignal
+## OneSignal
 
 [OneSignal](https://onesignal.com/) is a customer engagement platform that provides push notifications, in-app messaging, SMS, and email services for web and mobile apps. It includes an [Expo SDK](https://github.com/OneSignal/onesignal-expo-plugin) for easy integration.
 
-#### Key capabilities:
+### Key capabilities:
 
 - Supports [Notification Service Extensions](https://documentation.onesignal.com/docs/service-extensions) for Android and iOS
 - Provides a custom dashboard for managing notifications and user engagement
 
-#### Considerations and limitations:
+### Considerations and limitations:
 
 - Not free. OneSignal offers free limits, but advanced features (e.g., segmentation, automation) require a paid plan. See the [OneSignal pricing page](https://onesignal.com/pricing).
 - Depends on OneSignal to maintain their Expo plugin and SDK.
@@ -60,16 +60,18 @@ For implementation details, see the following guides:
   href="https://documentation.onesignal.com/docs/react-native-expo-sdk-setup"
 />
 
-### Braze
+---
+
+## Braze
 
 [Braze](https://www.braze.com/) is a customer engagement platform that delivers personalized, cross-channel messaging through push notifications, in-app messaging, email, SMS, and web. It provides a [React Native SDK](https://github.com/braze-inc/braze-react-native-sdk) and an [Expo plugin](https://github.com/braze-inc/braze-expo-plugin/tree/main). Check out the [Expo example app](https://github.com/braze-inc/braze-expo-plugin/tree/main/example) for more details.
 
-#### Key capabilities:
+### Key capabilities:
 
 - Supports customizable push notifications with images, videos, and location
 - Includes a dashboard for managing campaigns and journey orchestration
 
-#### Considerations and limitations:
+### Considerations and limitations:
 
 - Requires contacting Sales for pricing information
 - Depends on Braze to maintain their Expo plugin and SDK
@@ -80,7 +82,9 @@ For implementation details, see the following guides:
   href="https://www.braze.com/docs/developer_guide/platforms/react_native/sdk_integration"
 />
 
-### Customer.io
+---
+
+## Customer.io
 
 [Customer.io](http://Customer.io) provides two main services:
 
@@ -89,12 +93,12 @@ For implementation details, see the following guides:
 
 It offers an [Expo plugin](https://github.com/customerio/customerio-expo-plugin) for seamless integration.
 
-#### Key capabilities:
+### Key capabilities:
 
 - Supports customizable push notifications with images, videos, and location
 - Includes a dashboard for managing campaigns and journey orchestration
 
-#### Considerations and limitations:
+### Considerations and limitations:
 
 - Not free. Customer.io does not offer a free tier. The "Essentials" plan starts at $100/month. See the [Customer.io pricing page](https://customer.io/pricing) for more details.
 - Depends on Customer.io to maintain their Expo plugin and SDK.
@@ -105,19 +109,23 @@ It offers an [Expo plugin](https://github.com/customerio/customerio-expo-plugin)
   href="https://docs.customer.io/sdk/expo/quick-start-guide/"
 />
 
-### Send notifications directly via FCM and APNs
+---
+
+## Send notifications directly via FCM and APNs
 
 In some cases, you may need to handle notifications natively for full customization. While this adds complexity, you can still use [`expo-notifications`](/versions/latest/sdk/notifications/) to retrieve the native push token and configure notifications separately for each platform.
 
 Although the client-side code remains cross-platform with [`expo-notifications`](/versions/latest/sdk/notifications/), you need to implement server-side logic to interact with the [FCM](https://firebase.google.com/docs/cloud-messaging) and [APNs](https://developer.apple.com/documentation/usernotifications) APIs individually.
 
-### React Native Firebase Messaging
+---
+
+## React Native Firebase Messaging
 
 [React Native Firebase](https://rnfirebase.io/) provides a messaging module that lets you use [Firebase Cloud Messaging (FCM)](https://firebase.google.com/docs/cloud-messaging) as a unified push notification service for both Android and iOS. While FCM is often associated with Android notifications, it also supports iOS by routing messages through Apple Push Notification service (APNs) behind the scenes.
 
 This approach differs from using FCM solely for Android notifications. Instead, Firebase's cross-platform SDK handles notifications for both platforms through a single service.
 
-#### Key benefits:
+### Key benefits:
 
 - Uses a single API to send notifications to both platforms
 - Simplifies server implementation with one integration point
@@ -126,7 +134,9 @@ This approach differs from using FCM solely for Android notifications. Instead, 
 
 > Even though FCM handles notifications for both platforms, iOS notifications still go through APNs. Firebase automatically manages this routing. Learn more in the [React Native Firebase messaging documentation](https://rnfirebase.io/messaging/usage).
 
-### Tips and important considerations
+---
+
+## Tips and important considerations
 
 - **Avoid mixing client-side implementations**: Different notification services may have conflicting client-side implementations. Use a consistent approach to prevent potential issues.
 - **Web notifications**: Expo notifications do not support web notifications. However, some third-party solutions may offer this capability. Consider your app's requirements when choosing a service.
