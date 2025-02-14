@@ -49,7 +49,6 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  console.log(config, options, data, filename);
   const reactServer = options.customTransformOptions?.environment === 'react-server';
   const posixFilename = toPosixPath(filename);
   if (

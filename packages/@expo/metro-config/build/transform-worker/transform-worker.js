@@ -58,7 +58,6 @@ function getStringArray(value) {
     throw new Error('Expected an array of strings for the `clientBoundaries` option.');
 }
 async function transform(config, projectRoot, filename, data, options) {
-    console.log(config, options, data, filename);
     const reactServer = options.customTransformOptions?.environment === 'react-server';
     const posixFilename = (0, filePath_1.toPosixPath)(filename);
     if (typeof options.customTransformOptions?.dom === 'string' &&
