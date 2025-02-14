@@ -202,44 +202,42 @@ open class AppLoader: NSObject {
       if let assets = updateManifest.assets(),
         !assets.isEmpty {
         self.assetsToLoad = assets
-        self.database.databaseQueue.async {
-          let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
-          let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
-            launchedUpdate: self.launchedUpdate,
-            embeddedUpdate: embeddedUpdate,
-            requestedUpdate: updateManifest
-          )
+        let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
+        let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
+          launchedUpdate: self.launchedUpdate,
+          embeddedUpdate: embeddedUpdate,
+          requestedUpdate: updateManifest
+        )
 
-          for asset in assets {
-            // before downloading, check to see if we already have this asset in the database
-            let matchingDbEntry = try? self.database.asset(withKey: asset.key)
+        for asset in assets {
+          // before downloading, check to see if we already have this asset in the database
+          let matchingDbEntry = try? self.database.asset(withKey: asset.key)
 
-            if let matchingDbEntry = matchingDbEntry,
-              !matchingDbEntry.filename.isEmpty {
-              // merge fields from existing database entry into our current asset object
-              // retaining the original object since it's used in self->_assetsToLoad
-              // (this is different from on Android, where we keep the database-sourced object instead)
-              do {
-                try self.database.mergeAsset(asset, withExistingEntry: matchingDbEntry)
-              } catch {
-                self.logger.warn(message: "Failed to merge asset with existing database entry: \(error.localizedDescription)")
-              }
-
-              // make sure the file actually exists on disk
-              FileDownloader.assetFilesQueue.async {
-                let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
-                if FileManager.default.fileExists(atPath: urlOnDisk.path) {
-                  // file already exists, we don't need to download it again
-                  DispatchQueue.global().async {
-                    self.handleAssetDownloadAlreadyExists(asset)
-                  }
-                } else {
-                  self.downloadAsset(asset, extraHeaders: extraHeaders)
-                }
-              }
-            } else {
-              self.downloadAsset(asset, extraHeaders: extraHeaders)
+          if let matchingDbEntry = matchingDbEntry,
+            !matchingDbEntry.filename.isEmpty {
+            // merge fields from existing database entry into our current asset object
+            // retaining the original object since it's used in self->_assetsToLoad
+            // (this is different from on Android, where we keep the database-sourced object instead)
+            do {
+              try self.database.mergeAsset(asset, withExistingEntry: matchingDbEntry)
+            } catch {
+              self.logger.warn(message: "Failed to merge asset with existing database entry: \(error.localizedDescription)")
             }
+
+            // make sure the file actually exists on disk
+            FileDownloader.assetFilesQueue.async {
+              let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
+              if FileManager.default.fileExists(atPath: urlOnDisk.path) {
+                // file already exists, we don't need to download it again
+                DispatchQueue.global().async {
+                  self.handleAssetDownloadAlreadyExists(asset)
+                }
+              } else {
+                self.downloadAsset(asset, extraHeaders: extraHeaders)
+              }
+            }
+          } else {
+            self.downloadAsset(asset, extraHeaders: extraHeaders)
           }
         }
       } else {
