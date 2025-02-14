@@ -13,5 +13,6 @@ public class ExpoUIModule: Module {
     View(SliderView.self)
     View(ExpoUI.ContextMenu.self)
     View(ColorPickerView.self)
+    View(GaugeView.self)
   }
 }
