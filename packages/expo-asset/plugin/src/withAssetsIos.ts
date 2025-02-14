@@ -3,6 +3,7 @@ import type { ExpoConfig } from 'expo/config';
 import {
   type ConfigPlugin,
   IOSConfig,
+  type ModPlatform,
   type XcodeProject,
   withXcodeProject,
 } from 'expo/config-plugins';
@@ -32,7 +33,7 @@ function addAssetsToTarget(config: ExpoConfig, assets: string[]) {
       (asset) => !IMAGE_TYPES.includes(path.extname(asset))
     );
 
-    await addImageAssets(images, config.modRequest.projectRoot);
+    await addImageAssets(images, config.modRequest.projectRoot, config.modRequest.platform);
     addResourceFiles(project, platformProjectRoot, assetsForResourcesDir);
 
     return config;
@@ -52,8 +53,8 @@ function addResourceFiles(project: XcodeProject, platformRoot: string, assets: s
   }
 }
 
-async function addImageAssets(assets: string[], root: string) {
-  const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(root);
+async function addImageAssets(assets: string[], root: string, platform: ModPlatform) {
+  const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(root, platform);
   for (const asset of assets) {
     const name = path.basename(asset, path.extname(asset));
     const image = path.basename(asset);

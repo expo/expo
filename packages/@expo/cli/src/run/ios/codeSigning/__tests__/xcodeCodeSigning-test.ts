@@ -13,6 +13,8 @@ const originalFs = jest.requireActual('fs');
 
 describe(mutateXcodeProjectWithAutoCodeSigningInfo, () => {
   const projectRoot = '/';
+  const platform = 'ios';
+
   afterEach(() => vol.reset());
 
   it(`mutates the xcode project with code signing info`, () => {
@@ -26,7 +28,7 @@ describe(mutateXcodeProjectWithAutoCodeSigningInfo, () => {
       projectRoot
     );
 
-    const project = IOSConfig.XcodeUtils.resolvePathOrProject(projectRoot);
+    const project = IOSConfig.XcodeUtils.resolvePathOrProject(projectRoot, platform);
 
     mutateXcodeProjectWithAutoCodeSigningInfo({
       project,
@@ -55,6 +57,7 @@ describe(mutateXcodeProjectWithAutoCodeSigningInfo, () => {
 
 describe(getCodeSigningInfoForPbxproj, () => {
   const projectRoot = '/testproject';
+  const platform = 'ios';
 
   afterEach(() => vol.reset());
 
@@ -69,7 +72,7 @@ describe(getCodeSigningInfoForPbxproj, () => {
       projectRoot
     );
 
-    expect(getCodeSigningInfoForPbxproj(projectRoot)).toStrictEqual({
+    expect(getCodeSigningInfoForPbxproj(projectRoot, platform)).toStrictEqual({
       '13B07F861A680F5B00A75B9A': {
         developmentTeams: [],
         provisioningProfiles: [],
@@ -87,7 +90,7 @@ describe(getCodeSigningInfoForPbxproj, () => {
       projectRoot
     );
 
-    expect(getCodeSigningInfoForPbxproj(projectRoot)).toStrictEqual({
+    expect(getCodeSigningInfoForPbxproj(projectRoot, platform)).toStrictEqual({
       '13B07F861A680F5B00A75B9A': {
         developmentTeams: ['QQ57RJ5UTD', 'QQ57RJ5UTD'],
         provisioningProfiles: [],

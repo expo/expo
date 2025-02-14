@@ -36,6 +36,8 @@ describe(getSchemesForAndroidAsync, () => {
 });
 
 describe(getSchemesForIosAsync, () => {
+  const platform = 'ios';
+
   beforeAll(() => {
     const fakePlist = `
       <?xml version="1.0" encoding="UTF-8"?>
@@ -63,7 +65,7 @@ describe(getSchemesForIosAsync, () => {
       .mocked(IOSConfig.Scheme.getSchemesFromPlist)
       .mockReturnValue(['com.expo.test', 'com.expo.longertest', 'com.expo.longesttest']);
 
-    await expect(getSchemesForIosAsync('fake-project')).resolves.toEqual([
+    await expect(getSchemesForIosAsync('fake-project', platform)).resolves.toEqual([
       'com.expo.longesttest',
       'com.expo.longertest',
       'com.expo.test',
@@ -76,6 +78,8 @@ describe(getSchemesForIosAsync, () => {
       .mocked(IOSConfig.Scheme.getSchemesFromPlist)
       .mockReturnValue(['com.expo.longesttest', 'exp+com.expo.test']);
 
-    await expect(getSchemesForIosAsync('fake-project')).resolves.toEqual(['exp+com.expo.test']);
+    await expect(getSchemesForIosAsync('fake-project', platform)).resolves.toEqual([
+      'exp+com.expo.test',
+    ]);
   });
 });
