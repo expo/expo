@@ -247,14 +247,15 @@ function processRequireContextCall(path, state) {
     transformer.transformSyncRequire(path, dep, state);
 }
 function processResolveWeakCall(path, state) {
-    const name = getModuleNameFromCallArgs(path);
+    const name = getModuleNameAndQualifiersFromCallArgs(path);
     if (name == null) {
         throw new InvalidRequireCallError(path);
     }
     const dependency = registerDependency(state, {
-        name,
+        name: name.name,
+        query: name.query,
         asyncType: 'weak',
-        optional: isOptionalDependency(name, path, state),
+        optional: isOptionalDependency(name.name, path, state),
         exportNames: ['*'],
     }, path);
     path.replaceWith(makeResolveWeakTemplate({
@@ -297,8 +298,10 @@ function getExportNamesFromPath(path) {
 exports.getExportNamesFromPath = getExportNamesFromPath;
 function collectImports(path, state) {
     if (path.node.source) {
+        const name = extractNameAndQueryFromModuleSpecifier(path.node.source.value);
         registerDependency(state, {
-            name: path.node.source.value,
+            name: name.name,
+            query: name.query,
             asyncType: null,
             optional: false,
             exportNames: getExportNamesFromPath(path),
@@ -324,7 +327,7 @@ function processImportCall(path, state, options) {
         debug(`Magic comment at line ${line || '<unknown>'}: Ignoring import: ${(0, generator_1.default)(path.node).code}`);
         return;
     }
-    const name = getModuleNameFromCallArgs(path);
+    const name = getModuleNameAndQualifiersFromCallArgs(path);
     if (name == null) {
         if (options.dynamicRequires === 'warn') {
             warnDynamicRequire(path);
@@ -333,9 +336,9 @@ function processImportCall(path, state, options) {
         throw new InvalidRequireCallError(path);
     }
     const dep = registerDependency(state, {
-        name,
+        ...name,
         asyncType: options.asyncType,
-        optional: isOptionalDependency(name, path, state),
+        optional: isOptionalDependency(name.name, path, state),
         exportNames: ['*'],
     }, path);
     const transformer = state.dependencyTransformer;
@@ -358,9 +361,9 @@ function warnDynamicRequire({ node }, message = '') {
     console.warn(`Dynamic import at line ${line || '<unknown>'}: ${(0, generator_1.default)(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim());
 }
 function processRequireCall(path, state) {
-    const name = getModuleNameFromCallArgs(path);
+    const nameAndQualifiers = getModuleNameAndQualifiersFromCallArgs(path);
     const transformer = state.dependencyTransformer;
-    if (name == null) {
+    if (nameAndQualifiers == null) {
         if (state.dynamicRequires === 'reject') {
             throw new InvalidRequireCallError(path);
         }
@@ -374,9 +377,10 @@ function processRequireCall(path, state) {
         return;
     }
     const dep = registerDependency(state, {
-        name,
+        name: nameAndQualifiers.name,
+        query: nameAndQualifiers.query,
         asyncType: null,
-        optional: isOptionalDependency(name, path, state),
+        optional: isOptionalDependency(nameAndQualifiers.name, path, state),
         exportNames: ['*'],
     }, path);
     transformer.transformSyncRequire(path, dep, state);
@@ -419,6 +423,25 @@ function isOptionalDependency(name, path, state) {
         p = p.parentPath;
     }
     return false;
+}
+function getModuleNameAndQualifiersFromCallArgs(path) {
+    const name = getModuleNameFromCallArgs(path);
+    return extractNameAndQueryFromModuleSpecifier(name);
+}
+function extractNameAndQueryFromModuleSpecifier(name) {
+    if (name != null) {
+        const matched = name.match(/([^?]+)(\?.*)?/);
+        if (matched) {
+            return {
+                name: matched[1],
+                query: matched[2],
+            };
+        }
+        return {
+            name,
+        };
+    }
+    return null;
 }
 function getModuleNameFromCallArgs(path) {
     const args = path.get('arguments');
@@ -517,9 +540,12 @@ function createModuleNameLiteral(dependency) {
 }
 function getKeyForDependency(qualifier) {
     let key = qualifier.name;
-    const { asyncType } = qualifier;
+    const { asyncType, query } = qualifier;
     if (asyncType) {
         key += ['', asyncType].join('\0');
+    }
+    if (query) {
+        key += ['', query].join('\0');
     }
     const { contextParams } = qualifier;
     if (contextParams) {
@@ -544,6 +570,7 @@ class DependencyRegistry {
                 name: qualifier.name,
                 asyncType: qualifier.asyncType,
                 exportNames: qualifier.exportNames,
+                query: qualifier.query,
                 locs: [],
                 index: this._dependencies.size,
                 key: crypto.createHash('sha1').update(key).digest('base64'),

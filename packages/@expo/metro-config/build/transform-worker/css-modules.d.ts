@@ -31,6 +31,7 @@ export declare function transformCssModuleWeb(props: {
                 mode: "sync" | "eager" | "lazy" | "lazy-once";
             }> | undefined;
             exportNames: string[];
+            query?: string | undefined;
             css?: {
                 url: string;
                 supports: string | null;
@@ -72,6 +73,7 @@ export declare function collectCssImports(filename: string, originalCode: string
                 mode: "sync" | "eager" | "lazy" | "lazy-once";
             }> | undefined;
             exportNames: string[];
+            query?: string | undefined;
             css?: {
                 url: string;
                 supports: string | null;

@@ -24,6 +24,24 @@ function expectImports(graph, name: string) {
   return expect([...graph.dependencies.get(name).dependencies.values()]);
 }
 
+it(`supports worker import specifier`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+import { gravity } from "./b?worker";
+console.log('keep', gravity);
+            `,
+    'b.js': `
+export const gravity = 7;
+`,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/b.js' }),
+  ]);
+  expect(artifacts[0].source).not.toMatch('Math');
+  expect(artifacts[0].source).toMatch('fgravity');
+});
+
 it(`doesn't unlink if a single import chain is removed`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
     'index.js': `
