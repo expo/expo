@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.1.2 — 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
 ## 0.1.1 — 2025-01-31
 
 ### 💡 Others
@@ -24,6 +28,4 @@
 
 ## 0.0.0 — 2025-01-21
 
-> > > > > > > 1362a71283d ([background-task][gradle] - start use new expo modules gradle plugin (#34431))### 🎉 New features
-
-- Added expo-background-task package ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))
+> > > > > > > 1362a71283d ([background-task][gradle] - start use new expo modules gradle plugin (#34431))### 🎉 New features- Added expo-background-task package ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))

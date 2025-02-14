@@ -55,7 +55,7 @@
     "@types/micromatch": "^4.0.2",
     "@types/npm-package-arg": "^6.1.0",
     "@types/split": "^1.0.0",
-    "expo-module-scripts": "^4.0.3"
+    "expo-module-scripts": "^4.0.4"
   },
   "publishConfig": {
     "access": "public"

@@ -52,7 +52,7 @@
     "@types/debug": "^4.1.5",
     "@types/find-up": "^4.0.0",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^4.0.3"
+    "expo-module-scripts": "^4.0.4"
   },
   "publishConfig": {
     "access": "public"

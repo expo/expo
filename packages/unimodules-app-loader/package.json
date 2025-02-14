@@ -19,6 +19,6 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/unimodules-app-loader",
   "devDependencies": {
-    "expo-module-scripts": "^4.0.3"
+    "expo-module-scripts": "^4.0.4"
   }
 }

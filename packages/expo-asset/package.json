@@ -38,13 +38,13 @@
   },
   "dependencies": {
     "@expo/image-utils": "^0.6.4",
-    "expo-constants": "~17.0.5",
+    "expo-constants": "~17.0.6",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3"
   },
   "devDependencies": {
     "@testing-library/react-native": "^12.5.2",
-    "expo-module-scripts": "^4.0.3"
+    "expo-module-scripts": "^4.0.4"
   },
   "peerDependencies": {
     "expo": "*",

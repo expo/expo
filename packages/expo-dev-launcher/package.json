@@ -32,7 +32,7 @@
   "dependencies": {
     "ajv": "8.11.0",
     "expo-dev-menu": "6.0.19",
-    "expo-manifests": "~0.15.5",
+    "expo-manifests": "~0.15.6",
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
@@ -47,7 +47,7 @@
     "babel-preset-expo": "~12.0.7",
     "date-fns": "^2.28.0",
     "expo-dev-client-components": "2.0.3",
-    "expo-module-scripts": "^4.0.3",
+    "expo-module-scripts": "^4.0.4",
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
     "react": "18.3.1",

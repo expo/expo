@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "The core of Expo Modules architecture",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -42,6 +42,6 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^12.5.2",
-    "expo-module-scripts": "^4.0.3"
+    "expo-module-scripts": "^4.0.4"
   }
 }

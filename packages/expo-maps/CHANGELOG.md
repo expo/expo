@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Implement setCameraPosition ([#34886](https://github.com/expo/expo/pull/34886) by [@jakex7](https://github.com/jakex7))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.7.3 — 2025-02-14
+
+### 🎉 New features
+
+- [iOS] Implement setCameraPosition ([#34886](https://github.com/expo/expo/pull/34886) by [@jakex7](https://github.com/jakex7))
 
 ## 0.7.2 — 2025-02-10
 

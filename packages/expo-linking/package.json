@@ -38,11 +38,11 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/linking",
   "dependencies": {
-    "expo-constants": "~17.0.5",
+    "expo-constants": "~17.0.6",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.0.3"
+    "expo-module-scripts": "^4.0.4"
   },
   "peerDependencies": {
     "react": "*",

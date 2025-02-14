@@ -35,11 +35,11 @@
     "expo-dev-launcher": "5.0.29",
     "expo-dev-menu": "6.0.19",
     "expo-dev-menu-interface": "1.9.3",
-    "expo-manifests": "~0.15.5",
+    "expo-manifests": "~0.15.6",
     "expo-updates-interface": "~1.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.0.3",
+    "expo-module-scripts": "^4.0.4",
     "expo-test-runner": "0.1.1"
   },
   "peerDependencies": {

@@ -35,7 +35,7 @@
     "expo-eas-client": "~0.13.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.0.3"
+    "expo-module-scripts": "^4.0.4"
   },
   "peerDependencies": {
     "expo": "*"

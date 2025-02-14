@@ -32,7 +32,7 @@
     "@types/node": "^18.19.34",
     "@types/node-fetch": "^2.5.12",
     "eslint-config-universe": "^14.0.0",
-    "expo-module-scripts": "^4.0.3",
+    "expo-module-scripts": "^4.0.4",
     "typescript": "^5.1.3"
   },
   "dependencies": {

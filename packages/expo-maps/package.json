@@ -1,6 +1,6 @@
 {
   "name": "expo-maps",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Provides a Map component that uses Google Maps on Android and Apple Maps on iOS.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -29,7 +29,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~18.3.12",
-    "expo-module-scripts": "^4.0.2"
+    "expo-module-scripts": "^4.0.4"
   },
   "peerDependencies": {
     "expo": "*",

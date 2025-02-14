@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@types/require-from-string": "^1.2.1",
-    "expo-module-scripts": "^4.0.3"
+    "expo-module-scripts": "^4.0.4"
   },
   "publishConfig": {
     "access": "public"

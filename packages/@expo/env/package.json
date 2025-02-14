@@ -36,7 +36,7 @@
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@types/getenv": "^1.0.0",
-    "expo-module-scripts": "^4.0.3"
+    "expo-module-scripts": "^4.0.4"
   },
   "publishConfig": {
     "access": "public"
