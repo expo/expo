@@ -32,7 +32,6 @@ export default function DatePickerScreen() {
         <Section title={getPickerType()}>
           <View style={{ gap: 20 }}>
             <DateTimePicker
-              title=""
               onDateSelected={(date) => {
                 setSelectedDate(date);
               }}

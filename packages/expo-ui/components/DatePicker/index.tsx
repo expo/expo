@@ -20,7 +20,7 @@ export type DatePickerProps = {
    */
   initialDate?: string | null;
   /**
-   * A title displayed on the picker  on iOS.
+   * A title displayed on the picker on iOS.
    * @platform iOS
    */
   title?: string;
