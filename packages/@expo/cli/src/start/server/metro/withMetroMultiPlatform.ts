@@ -388,12 +388,6 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ) {
-      // console.log('ctx:', context);
-
-      // if (context.dependency?.data?.query) {
-      //   context.
-      // }
-
       // This resolution is dev-only to prevent bundling the production React packages in development.
       if (!context.dev) return null;
 
@@ -656,7 +650,7 @@ export function withExtendedResolver(
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
           if (normal.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
-            console.log('Shimming out InitializeCore for React Native in native SSR bundle');
+            debug('Shimming out InitializeCore for React Native in native SSR bundle');
             return {
               type: 'empty',
             };

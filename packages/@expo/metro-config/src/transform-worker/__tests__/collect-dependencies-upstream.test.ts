@@ -745,31 +745,6 @@ describe(`require.context`, () => {
   });
 });
 
-it('collects dependency with import qualifiers', () => {
-  const ast = astFromCode(`
-    const a = require('foo?worker');
-    const b = require('foo');
-    import "foo?inline"
-    const c = import("foo?inline")
-  `);
-  const { dependencies } = collectDependencies(ast, opts);
-  expect(dependencies).toEqual([
-    { name: 'foo', data: objectContaining({ query: '?worker' }) },
-    { name: 'foo', data: objectContaining({ asyncType: null }) },
-    { name: 'foo', data: objectContaining({ query: '?inline', asyncType: null }) },
-    { name: 'foo', data: objectContaining({ query: '?inline', asyncType: 'async' }) },
-    { name: 'asyncRequire', data: objectContaining({}) },
-  ]);
-  expect(codeFromAst(ast)).toEqual(
-    comparableCode(`
-      const a = require(_dependencyMap[0], "foo"); 
-      const b = require(_dependencyMap[1], "foo"); 
-      import "foo?inline";
-      const c = require(_dependencyMap[4], "asyncRequire")(_dependencyMap[3], _dependencyMap.paths, "foo");
-    `)
-  );
-});
-
 it('collects dependency with require.resolve', () => {
   const ast = astFromCode(`
     const a = require.resolve('foo');

@@ -64,7 +64,6 @@ type MutableDependencyData = {
   locs: readonly t.SourceLocation[];
   contextParams?: RequireContextParams;
   exportNames: string[];
-  query?: string;
   css?: {
     url: string;
     supports: string | null;
@@ -137,7 +136,6 @@ type ImportQualifier = Readonly<{
   name: string;
   asyncType: AsyncDependencyType | null;
   optional: boolean;
-  query?: string;
   contextParams?: RequireContextParams;
   exportNames: string[];
 }>;
@@ -454,7 +452,7 @@ function processRequireContextCall(path: NodePath<CallExpression>, state: State)
 }
 
 function processResolveWeakCall(path: NodePath<CallExpression>, state: State): void {
-  const name = getModuleNameAndQualifiersFromCallArgs(path);
+  const name = getModuleNameFromCallArgs(path);
 
   if (name == null) {
     throw new InvalidRequireCallError(path);
@@ -463,10 +461,9 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
   const dependency = registerDependency(
     state,
     {
-      name: name.name,
-      query: name.query,
+      name,
       asyncType: 'weak',
-      optional: isOptionalDependency(name.name, path, state),
+      optional: isOptionalDependency(name, path, state),
       exportNames: ['*'],
     },
     path
@@ -482,7 +479,7 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
 }
 
 function processResolveWorkerCall(path: NodePath<CallExpression>, state: State): void {
-  const name = getModuleNameAndQualifiersFromCallArgs(path);
+  const name = getModuleNameFromCallArgs(path);
 
   if (name == null) {
     throw new InvalidRequireCallError(path);
@@ -491,11 +488,10 @@ function processResolveWorkerCall(path: NodePath<CallExpression>, state: State):
   const dependency = registerDependency(
     state,
     {
-      name: name.name,
-      query: name.query,
+      name,
       asyncType: 'worker',
       // asyncType: 'async',
-      optional: isOptionalDependency(name.name, path, state),
+      optional: isOptionalDependency(name, path, state),
       exportNames: ['*'],
     },
     path
@@ -545,13 +541,10 @@ export function getExportNamesFromPath(path: NodePath<any>): string[] {
 
 function collectImports(path: NodePath<any>, state: State): void {
   if (path.node.source) {
-    const name = extractNameAndQueryFromModuleSpecifier(path.node.source.value)!;
-
     registerDependency(
       state,
       {
-        name: name.name,
-        query: name.query,
+        name: path.node.source.value,
         asyncType: null,
         optional: false,
         exportNames: getExportNamesFromPath(path),
@@ -592,7 +585,7 @@ function processImportCall(
     return;
   }
 
-  const name = getModuleNameAndQualifiersFromCallArgs(path);
+  const name = getModuleNameFromCallArgs(path);
 
   if (name == null) {
     if (options.dynamicRequires === 'warn') {
@@ -606,9 +599,9 @@ function processImportCall(
   const dep = registerDependency(
     state,
     {
-      ...name,
+      name,
       asyncType: options.asyncType,
-      optional: isOptionalDependency(name.name, path, state),
+      optional: isOptionalDependency(name, path, state),
       exportNames: ['*'],
     },
     path
@@ -639,11 +632,11 @@ function warnDynamicRequire({ node }: NodePath<CallExpression>, message = '') {
 }
 
 function processRequireCall(path: NodePath<CallExpression>, state: State): void {
-  const nameAndQualifiers = getModuleNameAndQualifiersFromCallArgs(path);
+  const name = getModuleNameFromCallArgs(path);
 
   const transformer = state.dependencyTransformer;
 
-  if (nameAndQualifiers == null) {
+  if (name == null) {
     if (state.dynamicRequires === 'reject') {
       throw new InvalidRequireCallError(path);
     } else if (state.dynamicRequires === 'warn') {
@@ -658,10 +651,9 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
   const dep = registerDependency(
     state,
     {
-      name: nameAndQualifiers.name,
-      query: nameAndQualifiers.query,
+      name,
       asyncType: null,
-      optional: isOptionalDependency(nameAndQualifiers.name, path, state),
+      optional: isOptionalDependency(name, path, state),
       exportNames: ['*'],
     },
     path
@@ -724,31 +716,6 @@ function isOptionalDependency(name: string, path: NodePath<any>, state: State): 
   }
 
   return false;
-}
-
-function getModuleNameAndQualifiersFromCallArgs(
-  path: NodePath<CallExpression>
-): { name: string; query?: string } | null {
-  const name = getModuleNameFromCallArgs(path);
-  return extractNameAndQueryFromModuleSpecifier(name);
-}
-
-function extractNameAndQueryFromModuleSpecifier(
-  name: string | null
-): { name: string; query?: string } | null {
-  if (name != null) {
-    const matched = name.match(/([^?]+)(\?.*)?/);
-    if (matched) {
-      return {
-        name: matched[1],
-        query: matched[2],
-      };
-    }
-    return {
-      name,
-    };
-  }
-  return null;
 }
 
 function getModuleNameFromCallArgs(path: NodePath<CallExpression>): string | null {
@@ -886,12 +853,9 @@ function createModuleNameLiteral(dependency: InternalDependency) {
 function getKeyForDependency(qualifier: ImportQualifier): string {
   let key = qualifier.name;
 
-  const { asyncType, query } = qualifier;
+  const { asyncType } = qualifier;
   if (asyncType) {
     key += ['', asyncType].join('\0');
-  }
-  if (query) {
-    key += ['', query].join('\0');
   }
 
   const { contextParams } = qualifier;
@@ -921,7 +885,6 @@ class DependencyRegistry {
         name: qualifier.name,
         asyncType: qualifier.asyncType,
         exportNames: qualifier.exportNames,
-        query: qualifier.query,
         locs: [],
         index: this._dependencies.size,
         key: crypto.createHash('sha1').update(key).digest('base64'),

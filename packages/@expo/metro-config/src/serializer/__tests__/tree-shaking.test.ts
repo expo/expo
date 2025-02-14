@@ -24,53 +24,6 @@ function expectImports(graph, name: string) {
   return expect([...graph.dependencies.get(name).dependencies.values()]);
 }
 
-it(`supports require.resolve`, async () => {
-  const [[, , graph], artifacts] = await serializeShakingAsync(
-    {
-      'index.js': `
-const v = require.resolve("./b");
-console.log('keep', v);
-            `,
-      'b.js': `
-export const gravity = 7;
-`,
-    },
-    {
-      // treeshake: false,
-      // optimize: false,
-    }
-  );
-
-  expect(artifacts[0].source).not.toMatch('Math');
-  expect(artifacts[0].source).not.toMatch('gravity');
-  expect(artifacts[0].source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-      const v = _dependencyMap.paths[_dependencyMap[0]];
-      console.log('keep', v);
-    },"/app/index.js",{"0":"/app/b.js","paths":{"/app/b.js":"/_expo/static/js/web/b-e1854c1d7ca4f8e0f84357bfbf390d21.js"}});
-    TEST_RUN_MODULE("/app/index.js");"
-  `);
-  expect(artifacts[1].source).toMatch('gravity');
-});
-
-it(`supports worker import specifier`, async () => {
-  const [[, , graph], artifacts] = await serializeShakingAsync({
-    'index.js': `
-import { gravity } from "./b?worker";
-console.log('keep', gravity);
-            `,
-    'b.js': `
-export const gravity = 7;
-`,
-  });
-
-  expectImports(graph, '/app/index.js').toEqual([
-    expect.objectContaining({ absolutePath: '/app/b.js' }),
-  ]);
-  expect(artifacts[0].source).not.toMatch('Math');
-  expect(artifacts[0].source).toMatch('fgravity');
-});
-
 it(`doesn't unlink if a single import chain is removed`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
     'index.js': `

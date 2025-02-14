@@ -1,13 +1,12 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
+import hmrJSBundle from '@expo/metro-config/build/serializer/fork/hmrJSBundle';
 import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
 import { ReadOnlyGraph } from 'metro';
 import Bundler from 'metro/src/Bundler';
-import hmrJSBundle from '@expo/metro-config/build/serializer/fork/hmrJSBundle';
-// import hmrJSBundle from 'metro/src/DeltaBundler/Serializers/hmrJSBundle';
 import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
 import MetroHmrServer from 'metro/src/HmrServer';
 import RevisionNotFoundError from 'metro/src/IncrementalBundler/RevisionNotFoundError';

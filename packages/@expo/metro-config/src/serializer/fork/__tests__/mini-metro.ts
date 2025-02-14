@@ -172,7 +172,6 @@ export async function microBundle({
         }
 
         try {
-          // console.log(dep);
           const resolved = resolve(id, dep.data.name);
           await recurseWith([resolved], module, (fp) => {
             // @ts-expect-error
