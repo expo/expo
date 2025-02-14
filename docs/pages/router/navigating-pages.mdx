@@ -200,7 +200,7 @@ export function logout() {
 
 The `router` object is immutable and contains the following functions:
 
-- **navigate**: `(href: Href, options: LinkToOptions) => void`. Perform a `navigate` action.
+- **navigate**: Alias for `router.push`. 
 - **push**: `(href: Href, options: LinkToOptions) => void`. Perform a `push` action.
 - **replace**: `(href: Href, options: LinkToOptions) => void`. Perform a `replace` action.
 - **back**: `() => void`. Navigate back to previous route.
