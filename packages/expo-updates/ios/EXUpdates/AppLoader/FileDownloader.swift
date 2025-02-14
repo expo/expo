@@ -221,6 +221,30 @@ public final class FileDownloader {
     return extraHeaders
   }
 
+   /**
+   * Get extra headers to pass into `downloadAsset:`
+   */
+  static func extraHeadersForRemoteAssetRequest(
+    launchedUpdate: Update?,
+    embeddedUpdate: Update?,
+    requestedUpdate: Update?
+  ) -> [String: Any] {
+    var extraHeaders: [String: Any] = [:]
+    if let launchedUpdate {
+      extraHeaders["Expo-Current-Update-ID"] = launchedUpdate.updateId.uuidString.lowercased()
+    }
+
+    if let embeddedUpdate {
+      extraHeaders["Expo-Embedded-Update-ID"] = embeddedUpdate.updateId.uuidString.lowercased()
+    }
+
+    if let requestedUpdate {
+      extraHeaders["Expo-Requested-Update-ID"] = requestedUpdate.updateId.uuidString.lowercased()
+    }
+
+    return extraHeaders
+  }
+
   private static func setHTTPHeaderFields(_ headers: [String: Any?]?, onRequest request: inout URLRequest) {
     guard let headers = headers else {
       return

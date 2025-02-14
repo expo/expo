@@ -449,6 +449,7 @@ class FileDownloader(
   fun downloadAsset(
     asset: AssetEntity,
     destinationDirectory: File?,
+    extraHeaders: JSONObject,
     callback: AssetDownloadCallback
   ) {
     if (asset.url == null) {
@@ -466,7 +467,7 @@ class FileDownloader(
     } else {
       try {
         downloadAssetAndVerifyHashAndWriteToPath(
-          createRequestForAsset(asset, configuration, context),
+          createRequestForAsset(asset, extraHeaders, configuration, context),
           asset.expectedHash,
           path,
           object : FileDownloadCallback {
@@ -594,12 +595,14 @@ class FileDownloader(
 
     internal fun createRequestForAsset(
       assetEntity: AssetEntity,
+      extraHeaders: JSONObject,
       configuration: UpdatesConfiguration,
       context: Context
     ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())
         .addHeadersFromJSONObject(assetEntity.extraRequestHeaders)
+        .addHeadersFromJSONObject(extraHeaders)
         .header("Expo-Platform", "android")
         .header("Expo-Protocol-Version", "1")
         .header("Expo-API-Version", "1")
@@ -696,6 +699,26 @@ class FileDownloader(
             OuterList.valueOf(it.map { elem -> StringItem.valueOf(elem.toString()) }).serialize()
           )
         }
+      }
+
+      return extraHeaders
+    }
+
+    fun getExtraHeadersForRemoteAssetRequest(
+      launchedUpdate: UpdateEntity?,
+      embeddedUpdate: UpdateEntity?,
+      requestedUpdate: UpdateEntity?
+    ): JSONObject {
+      val extraHeaders = JSONObject()
+
+      launchedUpdate?.let {
+        extraHeaders.put("Expo-Current-Update-ID", it.id.toString().lowercase())
+      }
+      embeddedUpdate?.let {
+        extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
+      }
+      requestedUpdate?.let {
+        extraHeaders.put("Expo-Requested-Update-ID", it.id.toString().lowercase())
       }
 
       return extraHeaders

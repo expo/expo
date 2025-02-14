@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add update id headers to asset requests ([#34453](https://github.com/expo/expo/pull/34453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.27.1 — 2025-02-21
 
 ### 🎉 New features
