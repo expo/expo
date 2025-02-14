@@ -76,7 +76,7 @@ class DatabaseLauncherTest {
     every { spyLauncher.getLaunchableUpdate(any()) } returns db.updateDao().loadUpdateWithId(testUpdate.id)
 
     val mockedFile = File(context.cacheDir, "test")
-    every { spyLauncher.ensureAssetExists(any(), any(), any()) } returns mockedFile
+    every { spyLauncher.ensureAssetExists(any(), any(), any(), any()) } returns mockedFile
 
     val mockedCallback = mockk<LauncherCallback>(relaxed = true)
 
