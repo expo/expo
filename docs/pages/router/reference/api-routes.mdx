@@ -13,20 +13,15 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-Expo Router enables you to write server code for all platforms, right in your **app** directory.
+Expo Router enables you to write secure server code for all platforms, right in your **app** directory.
 
-```json app.json
-{
-  "web": {
-    "bundler": "metro",
-    /* @info Output a dynamic server. */
-    "output": "server"
-    /* @end */
-  }
+```ts app/hello+api.ts
+export function GET(request: Request) {
+  return Response.json({ hello: 'world' });
 }
 ```
 
-Server features require a custom Node.js server. Most hosting providers support Node.js, including [Netlify](#netlify), [Cloudflare](https://www.cloudflare.com/), and [Vercel](https://vercel.com).
+Server features require a custom server, which can be deployed to EAS or most [other hosting providers](#deployment).
 
 ## What are API Routes
 
@@ -40,6 +35,22 @@ API Routes are defined by creating files in the **app** directory with the `+api
 
 <Step label="1">
 
+Ensure your project is using server output:
+
+```json app.json
+{
+  "web": {
+    /* @info Output a dynamic server. */
+    "output": "server"
+    /* @end */
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+
 An API route is created in the **app** directory. For example, add the following route handler. It is executed when the route `/hello` is matched.
 
 ```ts app/hello+api.ts
@@ -52,7 +63,7 @@ You can export any of the following functions `GET`, `POST`, `PUT`, `PATCH`, `DE
 
 </Step>
 
-<Step label="2">
+<Step label="3">
 
 Start the development server with Expo CLI:
 
@@ -60,7 +71,7 @@ Start the development server with Expo CLI:
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 
 You can make a network request to the route to access the data. Run the following command to test the route:
 
@@ -82,7 +93,7 @@ export default function App() {
 }
 ```
 
-This won't work by default on native as `/hello` does not provide an origin URL. You can configure the origin URL in the app config file. It can be a mock URL in development. For example:
+Relative fetch requests automatically fetch relative to the dev server origin in development, and can be configured in production using the `origin` field in the **app.json**:
 
 ```json app.json
 {
@@ -99,9 +110,11 @@ This won't work by default on native as `/hello` does not provide an origin URL.
 }
 ```
 
+This URL can be automatically configured during EAS Builds by setting the `EXPO_UNSTABLE_DEPLOY_SERVER=1` environment variable. This will trigger a versioned server deployment which sets the origin to a preview deploy URL automatically.
+
 </Step>
 
-<Step label="4">
+<Step label="5">
 
 Deploy the website and server to a [hosting provider](#deployment) to access the routes in production on both native and web.
 
