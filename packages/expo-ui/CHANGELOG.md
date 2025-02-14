@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add CircularProgress and LinearProgress component. ([#34907](https://github.com/expo/expo/pull/34907) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

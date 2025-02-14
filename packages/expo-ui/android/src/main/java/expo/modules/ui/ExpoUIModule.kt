@@ -34,5 +34,7 @@ class ExpoUIModule : Module() {
         "onExpandedChanged"
       )
     }
+
+    View(ProgressView::class)
   }
 }
