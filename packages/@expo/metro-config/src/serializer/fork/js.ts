@@ -93,8 +93,13 @@ export function getModuleParams(
           // most parameters from the main bundle's URL.
 
           const { searchParams } = new URL(jscSafeUrl.toNormalUrl(options.sourceUrl));
-          searchParams.set('modulesOnly', 'true');
-          searchParams.set('runModule', 'false');
+          if (dependency.data.data.asyncType === 'worker') {
+            searchParams.set('modulesOnly', 'false');
+            searchParams.set('runModule', 'true');
+          } else {
+            searchParams.set('modulesOnly', 'true');
+            searchParams.set('runModule', 'false');
+          }
 
           const bundlePath = path.relative(options.serverRoot, dependency.absolutePath);
           paths[id] =

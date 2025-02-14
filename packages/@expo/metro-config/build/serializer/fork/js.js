@@ -56,8 +56,14 @@ function getModuleParams(module, options) {
                     // Construct a server-relative URL for the split bundle, propagating
                     // most parameters from the main bundle's URL.
                     const { searchParams } = new URL(jsc_safe_url_1.default.toNormalUrl(options.sourceUrl));
-                    searchParams.set('modulesOnly', 'true');
-                    searchParams.set('runModule', 'false');
+                    if (dependency.data.data.asyncType === 'worker') {
+                        searchParams.set('modulesOnly', 'false');
+                        searchParams.set('runModule', 'true');
+                    }
+                    else {
+                        searchParams.set('modulesOnly', 'true');
+                        searchParams.set('runModule', 'false');
+                    }
                     const bundlePath = path_1.default.relative(options.serverRoot, dependency.absolutePath);
                     paths[id] =
                         '/' +

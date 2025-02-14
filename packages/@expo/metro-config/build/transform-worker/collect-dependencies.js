@@ -283,7 +283,8 @@ function processResolveCall(path, state) {
     const dependency = registerDependency(state, {
         name: name.name,
         query: name.query,
-        asyncType: 'async',
+        asyncType: 'worker',
+        // asyncType: 'async',
         optional: isOptionalDependency(name.name, path, state),
         exportNames: ['*'],
     }, path);

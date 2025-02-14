@@ -29,7 +29,7 @@ function nullthrows<T extends object>(x: T | null, message?: string): NonNullabl
   return x;
 }
 
-export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch';
+export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch' | 'worker';
 
 type AllowOptionalDependenciesWithOptions = {
   exclude: string[];
@@ -448,7 +448,8 @@ function processResolveCall(path: NodePath<CallExpression>, state: State): void 
     {
       name: name.name,
       query: name.query,
-      asyncType: 'async',
+      asyncType: 'worker',
+      // asyncType: 'async',
       optional: isOptionalDependency(name.name, path, state),
       exportNames: ['*'],
     },
