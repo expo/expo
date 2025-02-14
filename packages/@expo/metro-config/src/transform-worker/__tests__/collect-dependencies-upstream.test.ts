@@ -775,7 +775,7 @@ it('collects dependency with require.resolve', () => {
     const a = require.resolve('foo');
   `);
   const { dependencies } = collectDependencies(ast, opts);
-  expect(dependencies).toEqual([{ name: 'foo', data: objectContaining({ asyncType: 'async' }) }]);
+  expect(dependencies).toEqual([{ name: 'foo', data: objectContaining({ asyncType: 'worker' }) }]);
   expect(codeFromAst(ast)).toEqual(
     comparableCode(`
       const a = _dependencyMap.paths[_dependencyMap[0]]; 

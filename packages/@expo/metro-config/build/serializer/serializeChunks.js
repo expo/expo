@@ -45,7 +45,7 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
         {
             test: pathToRegex(entryFile),
         },
-    ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
+    ].map((chunkSettings) => gatherChunks(preModules, chunks, chunkSettings, preModules, graph, options, false));
     // Get the common modules and extract them into a separate chunk.
     const entryChunk = [...chunks.values()].find((chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile));
     if (entryChunk) {
@@ -136,18 +136,20 @@ class Chunk {
     options;
     isAsync;
     isVendor;
+    isEntry;
     deps = new Set();
     preModules = new Set();
     // Chunks that are required to be loaded synchronously before this chunk.
     // These are included in the HTML as <script> tags.
     requiredChunks = new Set();
-    constructor(name, entries, graph, options, isAsync = false, isVendor = false) {
+    constructor(name, entries, graph, options, isAsync = false, isVendor = false, isEntry = false) {
         this.name = name;
         this.entries = entries;
         this.graph = graph;
         this.options = options;
         this.isAsync = isAsync;
         this.isVendor = isVendor;
+        this.isEntry = isEntry;
         this.deps = new Set(entries);
     }
     getPlatform() {
@@ -187,7 +189,7 @@ class Chunk {
         const jsSplitBundle = (0, baseJSBundle_1.baseJSBundleWithDependencies)(entryFile, preModules, dependencies, {
             ...this.options,
             runBeforeMainModule: serializerConfig?.getModulesRunBeforeMainModule?.(path_1.default.relative(this.options.projectRoot, entryFile)) ?? [],
-            runModule: this.options.runModule && !this.isVendor && !this.isAsync,
+            runModule: this.options.runModule && !this.isVendor && (this.isEntry || !this.isAsync),
             modulesOnly: this.options.modulesOnly || preModules.length === 0,
             platform: this.getPlatform(),
             baseUrl: (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options),
@@ -467,7 +469,7 @@ function chunkIdForModules(modules) {
         .sort()
         .join('=>');
 }
-function gatherChunks(chunks, settings, preModules, graph, options, isAsync = false) {
+function gatherChunks(runtimePremodules, chunks, settings, preModules, graph, options, isAsync = false, isEntry = false) {
     let entryModules = getEntryModulesForChunkSettings(graph, settings);
     const existingChunks = [...chunks.values()];
     entryModules = entryModules.filter((module) => {
@@ -477,7 +479,7 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
     if (!entryModules.length) {
         return chunks;
     }
-    const entryChunk = new Chunk(chunkIdForModules(entryModules), entryModules, graph, options, isAsync);
+    const entryChunk = new Chunk(chunkIdForModules(entryModules), entryModules, graph, options, isAsync, false, isEntry);
     // Add all the pre-modules to the first chunk.
     if (preModules.length) {
         // On native, use the preModules in insert code in the entry chunk.
@@ -491,7 +493,8 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
             if (dependency.data.data.asyncType &&
                 // Support disabling multiple chunks.
                 entryChunk.options.serializerOptions?.splitChunks !== false) {
-                gatherChunks(chunks, { test: pathToRegex(dependency.absolutePath) }, [], graph, options, true);
+                const isEntry = dependency.data.data.asyncType === 'worker';
+                gatherChunks(runtimePremodules, chunks, { test: pathToRegex(dependency.absolutePath) }, isEntry ? runtimePremodules : [], graph, options, true, isEntry);
             }
             else {
                 const module = graph.dependencies.get(dependency.absolutePath);

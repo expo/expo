@@ -86,7 +86,9 @@ export async function graphToSerialAssetsAsync(
     {
       test: pathToRegex(entryFile),
     },
-  ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
+  ].map((chunkSettings) =>
+    gatherChunks(preModules, chunks, chunkSettings, preModules, graph, options, false)
+  );
 
   // Get the common modules and extract them into a separate chunk.
   const entryChunk = [...chunks.values()].find(
@@ -202,7 +204,8 @@ export class Chunk {
     public graph: ReadOnlyGraph<MixedOutput>,
     public options: ExpoSerializerOptions,
     public isAsync: boolean = false,
-    public isVendor: boolean = false
+    public isVendor: boolean = false,
+    public isEntry: boolean = false
   ) {
     this.deps = new Set(entries);
   }
@@ -262,7 +265,7 @@ export class Chunk {
         serializerConfig?.getModulesRunBeforeMainModule?.(
           path.relative(this.options.projectRoot, entryFile)
         ) ?? [],
-      runModule: this.options.runModule && !this.isVendor && !this.isAsync,
+      runModule: this.options.runModule && !this.isVendor && (this.isEntry || !this.isAsync),
       modulesOnly: this.options.modulesOnly || preModules.length === 0,
       platform: this.getPlatform(),
       baseUrl: getBaseUrlOption(this.graph, this.options),
@@ -626,12 +629,14 @@ function chunkIdForModules(modules: Module[]) {
 }
 
 function gatherChunks(
+  runtimePremodules: readonly Module[],
   chunks: Set<Chunk>,
   settings: ChunkSettings,
   preModules: readonly Module[],
   graph: ReadOnlyGraph,
   options: SerializerOptions<MixedOutput>,
-  isAsync: boolean = false
+  isAsync: boolean = false,
+  isEntry: boolean = false
 ): Set<Chunk> {
   let entryModules = getEntryModulesForChunkSettings(graph, settings);
 
@@ -651,7 +656,9 @@ function gatherChunks(
     entryModules,
     graph,
     options,
-    isAsync
+    isAsync,
+    false,
+    isEntry
   );
 
   // Add all the pre-modules to the first chunk.
@@ -671,13 +678,16 @@ function gatherChunks(
         // Support disabling multiple chunks.
         entryChunk.options.serializerOptions?.splitChunks !== false
       ) {
+        const isEntry = dependency.data.data.asyncType === 'worker';
         gatherChunks(
+          runtimePremodules,
           chunks,
           { test: pathToRegex(dependency.absolutePath) },
-          [],
+          isEntry ? runtimePremodules : [],
           graph,
           options,
-          true
+          true,
+          isEntry
         );
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);
