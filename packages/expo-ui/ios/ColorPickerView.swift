@@ -14,7 +14,9 @@ struct ColorPickerView: ExpoSwiftUI.View {
   @EnvironmentObject var props: ColorPickerProps
   @State private var previousHex: String = ""
   @State private var selection: Color = .clear
+
   var body: some View {
+#if !os(tvOS)
     ColorPicker(props.label ?? "", selection: $selection, supportsOpacity: props.supportsOpacity)
       .onAppear {
         selection = props.selection
@@ -28,6 +30,9 @@ struct ColorPickerView: ExpoSwiftUI.View {
           props.onValueChanged(payload)
         }
       }
+#else
+    EmptyView()
+#endif
   }
   private func colorToHex(_ color: Color) -> String {
     let newColor = UIColor(color)

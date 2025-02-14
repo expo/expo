@@ -23,6 +23,7 @@
 ### 🐛 Bug fixes
 
 - Fix tvOS compilation. ([#34730](https://github.com/expo/expo/pull/34730) by [@douglowder](https://github.com/douglowder))
+- Exclude `ColorPicker` on tvOS.
 
 ### 💡 Others
 
