@@ -1,6 +1,6 @@
-import { ContentUnavailableView } from '@expo/ui/components/ContentUnavailable';
+
 import { Gauge } from '@expo/ui/components/Gauge';
-import { Section } from '@expo/ui/components/Section';
+
 import * as React from 'react';
 
 export default function GaugeScreen() {
