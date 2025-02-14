@@ -4,7 +4,12 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 export type SectionProps = {
   style?: StyleProp<ViewStyle>;
   title: string;
-  children: any;
+  /**
+   *  Option to display the title in lower case letters
+   * @default true
+   */
+  displayTitleUppercase?: boolean;
+  children: React.ReactNode;
 };
 
 function OutlinedCard(props: { children: React.ReactNode }) {
@@ -23,12 +28,12 @@ function OutlinedCard(props: { children: React.ReactNode }) {
   );
 }
 
-export function Section({ title, children }: { title: string; children: React.ReactNode }) {
+export function Section(props: SectionProps) {
   return (
     <OutlinedCard>
-      <Text style={{ fontSize: 30, fontWeight: 'bold', paddingHorizontal: 20 }}>{title}</Text>
+      <Text style={{ fontSize: 30, fontWeight: 'bold', paddingHorizontal: 20 }}>{props.title}</Text>
 
-      {React.Children.map(children, (c, idx) => (
+      {React.Children.map(props.children, (c, idx) => (
         <>
           <View
             key={idx}
@@ -39,7 +44,7 @@ export function Section({ title, children }: { title: string; children: React.Re
             }}>
             {c}
           </View>
-          {idx !== React.Children.count(children) - 1 && (
+          {idx !== React.Children.count(props.children) - 1 && (
             <View
               key={'separator' + idx}
               style={{
