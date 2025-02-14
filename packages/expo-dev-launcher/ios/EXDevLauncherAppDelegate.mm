@@ -1,8 +1,7 @@
 #import <EXDevLauncher/EXDevLauncherAppDelegate.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher/EXDevLauncherRCTBridge.h>
-
-#import <EXDevMenu/DevClientNoOpLoadingView.h>
+#import "EXDevLauncherReactNativeFactory.h"
 
 #import <React/RCTBundleURLProvider.h>
 #if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)
@@ -12,7 +11,6 @@
 #import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 #endif
 
-#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
 @implementation EXDevLauncherAppDelegate
 
@@ -20,7 +18,7 @@
 {
   if (self = [super init]) {
     self.bundleURLGetter = bundleURLGetter;
-    self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self];
+    self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self];
   }
   return self;
 }
@@ -33,13 +31,5 @@
   return self.bundleURLGetter();
 }
 
-- (Class)getModuleClassFromName:(const char *)name
-{
-  // Overrides DevLoadingView as no-op when loading dev-launcher bundle
-  if (strcmp(name, "DevLoadingView") == 0) {
-    return [DevClientNoOpLoadingView class];
-  }
-  return [super getModuleClassFromName:name];
-}
 
 @end

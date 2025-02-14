@@ -40,4 +40,9 @@
 	return [super getModuleClassFromName:name];
 }
 
+// sourceURLForBridge is here just to silence a warning
+- (nonnull NSURL *)sourceURLForBridge:(nonnull RCTBridge *)bridge {
+	return [super sourceURLForBridge:bridge];
+}
+
 @end
