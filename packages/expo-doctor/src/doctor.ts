@@ -33,13 +33,18 @@ function startSpinner(text: string): { stop(): void } {
   };
 }
 
-export async function printCheckResultSummaryOnComplete(job: DoctorCheckRunnerJob) {
+export async function printCheckResultSummaryOnComplete(
+  job: DoctorCheckRunnerJob,
+  showVerboseTestResults: boolean
+) {
   // These will log in order of completion, so they may change from run to run,
   // but outputting these just in time will make the EAS Build log timestamps for each line representative of the execution time.
-  Log.log(
-    `${job.result?.isSuccessful ? chalk.green('✔') : chalk.red('✖')} ${job.check.description}` +
-      (env.EXPO_DEBUG ? ` (${formatMilliseconds(job.duration)})` : '')
-  );
+  if (showVerboseTestResults) {
+    Log.log(
+      `${job.result?.isSuccessful ? chalk.green('✔') : chalk.red('✖')} ${job.check.description}` +
+        (env.EXPO_DEBUG ? ` (${formatMilliseconds(job.duration)})` : '')
+    );
+  }
   // print unexpected errors inline with check completion
   if (job.error) {
     Log.error(`Unexpected error while running '${job.check.description}' check:`);
@@ -67,6 +72,8 @@ export async function printFailedCheckIssueAndAdvice(job: DoctorCheckRunnerJob) 
   if (!result || result.isSuccessful) {
     return;
   }
+
+  Log.warn(chalk.red(`✖ [${job.check.description}]`));
 
   if (result.issues.length) {
     for (const issue of result.issues) {
@@ -112,7 +119,12 @@ export async function runChecksAsync(
   );
 }
 
-export async function actionAsync(projectRoot: string) {
+/**
+ * Run the expo-doctor checks on the project.
+ * @param projectRoot The root of the project to check.
+ * @param showVerboseTestResults if true, show passes and failures; otherwise show number of tests passed and failure details only
+ */
+export async function actionAsync(projectRoot: string, showVerboseTestResults: boolean) {
   try {
     const projectConfig = getConfig(projectRoot);
 
@@ -130,20 +142,28 @@ export async function actionAsync(projectRoot: string) {
 
     const checkParams = { projectRoot, ...projectConfig };
 
-    const jobs = await runChecksAsync(
-      checksInScope,
-      checkParams,
-      printCheckResultSummaryOnComplete
+    const jobs = await runChecksAsync(checksInScope, checkParams, (job: DoctorCheckRunnerJob) =>
+      printCheckResultSummaryOnComplete(job, showVerboseTestResults)
     );
 
     spinner.stop();
 
     const failedJobs = jobs.filter((job) => !job.result.isSuccessful);
 
+    if (showVerboseTestResults) {
+      Log.log();
+    }
+
     if (failedJobs.length) {
       if (failedJobs.some((job) => job.result.issues?.length)) {
-        Log.log();
-        Log.log(chalk.underline('Detailed check results:'));
+        Log.log(
+          chalk.red(
+            `${checksInScope.length - failedJobs.length}/${checksInScope.length} checks passed. ${failedJobs.length} checks failed. Possible issues detected:`
+          )
+        );
+        if (!showVerboseTestResults) {
+          Log.log('Use the --verbose flag to see more details about passed checks.');
+        }
         Log.log();
         // actual issues will output in order of the sequence of tests, due to rules of Promise.all()
         failedJobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
@@ -159,11 +179,14 @@ export async function actionAsync(projectRoot: string) {
         }
       }
       Log.exit(
-        chalk.red('One or more checks failed, indicating possible issues with the project.')
+        `${failedJobs.length} ${failedJobs.length === 1 ? 'check' : 'checks'} failed, indicating possible issues with the project.`
       );
     } else {
-      Log.log();
-      Log.log(chalk.green(`Didn't find any issues with the project!`));
+      Log.log(
+        chalk.green(
+          `${checksInScope.length}/${checksInScope.length} checks passed. No issues detected!`
+        )
+      );
     }
   } catch (e: any) {
     Log.exception(e);

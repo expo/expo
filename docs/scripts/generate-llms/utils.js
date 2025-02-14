@@ -271,7 +271,7 @@ function processTalks(talks, type = 'video') {
 }
 
 export async function exportTalksData() {
-  const { TALKS, PODCASTS, LIVE_STREAMS } = await import('./talks.js');
+  const { TALKS, PODCASTS, LIVE_STREAMS, YOUTUBE_VIDEOS } = await import('./talks.js');
   return {
     title: 'Additional Resources',
     description: 'Collection of talks, podcasts, and live streams from the Expo team',
@@ -291,6 +291,12 @@ export async function exportTalksData() {
       {
         title: 'Live Streams',
         items: processTalks(LIVE_STREAMS),
+        groups: [],
+        sections: [],
+      },
+      {
+        title: 'YouTube Tutorials',
+        items: processTalks(YOUTUBE_VIDEOS),
         groups: [],
         sections: [],
       },

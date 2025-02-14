@@ -6,8 +6,18 @@ description: Learn how to use EAS Workflows to automate your React Native CI/CD 
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Builds, submissions, updates, and more are all a part of delivering your app to users. EAS Workflows consist of a sequence of jobs, which help you and your team get things done. With workflows, you can build your project, run end-to-end tests, submit that build to the app stores, and then run custom scripts after the submission is complete. Since each job can have prerequisites and conditionals, you can automate your and your team's CI/CD for your React Native project.
+
+<VideoBoxLink
+  videoId="OJ2u9tQCpr4"
+  title="Watch: Get Started with EAS Workflows"
+  description="Learn how to automate some of the most common processes that every app development team must tackle: creating development builds, publishing preview updates, and deploying to production."
+/>
+
+<br />
+<br />
 
 <Collapsible summary="How do workflows compare to other CI services?">
 
@@ -41,18 +51,19 @@ Finally, link the project you have locally with EAS:
   <Terminal cmd={['$ npx eas-cli@latest init']} />
 </Collapsible>
 
-Then, create a directory named **.eas/workflows** at the root of your project with a YAML file inside of it. For example: **.eas/workflows/hello-world.yml**.
-
 ## Configure your project
 
-To enable workflows to run on events from GitHub, you'll need to install Expo's GitHub app and connect it to your project:
+EAS Workflows require a GitHub repository that's linked to your EAS project to run. You can link a GitHub repo to your EAS project with the following steps:
 
-- Navigate to your project's [GitHub settings](https://expo.dev/accounts/%5Baccount%5D/projects/%5BprojectName%5D/github)
-- Follow the UI to install the GitHub app. Then, search for the GitHub repository that matches the Expo project and connect it.
+- Navigate to your project's [GitHub settings](https://expo.dev/accounts/%5Baccount%5D/projects/%5BprojectName%5D/github).
+- Follow the UI to install the GitHub app.
+- Select the GitHub repository that matches the Expo project and connect it.
 
 ## Write a workflow
 
-Each workflow consists of three top-level elements:
+First, create a directory named **.eas/workflows** at the root of your project with a YAML file inside of it. For example: **.eas/workflows/hello-world.yml**.
+
+Now we're ready to write the contents of **hello-world.yml**. Each workflow consists of three top-level elements:
 
 - `name`: defines the name of the workflow. For example: "Hello World"
 - `on`: defines when this workflow should be triggered. For example, when pushing a new commit to a GitHub branch.
