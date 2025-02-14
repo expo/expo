@@ -16,7 +16,7 @@
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
-#import <EXDevLauncher/EXDevLauncherAppDelegate.h>
+#import <EXDevLauncher/EXDevLauncherReactNativeFactoryDelegate.h>
 
 #import <EXDevMenu/DevClientNoOpLoadingView.h>
 
@@ -58,7 +58,7 @@
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
-@property (nonatomic, strong) EXDevLauncherAppDelegate *appDelegate;
+@property (nonatomic, strong) EXDevLauncherReactNativeFactoryDelegate *appDelegate;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 
 @end
@@ -87,7 +87,7 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     __weak __typeof(self) weakSelf = self;
-    self.appDelegate = [[EXDevLauncherAppDelegate alloc] initWithBundleURLGetter:^NSURL * {
+    self.appDelegate = [[EXDevLauncherReactNativeFactoryDelegate alloc] initWithBundleURLGetter:^NSURL * {
       __typeof(self) strongSelf = weakSelf;
       if (strongSelf != nil) {
         return [strongSelf getSourceURL];
