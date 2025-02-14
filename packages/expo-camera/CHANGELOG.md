@@ -21,7 +21,7 @@
 - [iOS] Fix performance regression. ([#34750](https://github.com/expo/expo/pull/34750) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Attempt to fix `setLinearZoom` incompatability with some devices. ([#34757](https://github.com/expo/expo/pull/34757) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix flash. ([#34893](https://github.com/expo/expo/pull/34893) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Attempts to address crash that occurs more frequently on iPads.
+- [iOS] Attempts to address crash that occurs more frequently on iPads. ([#34915](https://github.com/expo/expo/pull/34915) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
