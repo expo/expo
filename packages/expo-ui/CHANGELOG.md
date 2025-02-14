@@ -22,6 +22,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix flex/width/height props for autosized components. ([#34922](https://github.com/expo/expo/pull/34922) by [@aleqsio](https://github.com/aleqsio))
 - Fix tvOS compilation. ([#34730](https://github.com/expo/expo/pull/34730) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
