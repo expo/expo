@@ -164,6 +164,49 @@ function collectDependencies<TAst extends t.File>(
   traverse(
     ast,
     {
+      // Match new Worker() patterns
+      NewExpression(path, state: State): void {
+        if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'Worker') {
+          const [firstArg] = path.node.arguments;
+
+          // Match: new Worker(new URL("../path/to/module", import.meta.url))
+          if (
+            firstArg &&
+            firstArg.type === 'NewExpression' &&
+            firstArg.callee.type === 'Identifier' &&
+            firstArg.callee.name === 'URL' &&
+            firstArg.arguments.length > 0 &&
+            firstArg.arguments[0].type === 'StringLiteral'
+          ) {
+            const moduleSpecifier = firstArg.arguments[0].value;
+
+            const dependency = registerDependency(
+              state,
+              {
+                name: moduleSpecifier,
+                asyncType: 'worker',
+                optional: false,
+                exportNames: ['*'],
+              },
+              path
+            );
+
+            // If the pass is only collecting dependencies then we should avoid mutating the AST,
+            // this enables calling collectDependencies multiple times on the same AST.
+            if (state.collectOnly !== true) {
+              // Transform the module specifier ("../path/to/module") to a reference to the `paths` object in the serializer to get the final URL.
+              const urlConstructor = path.get('arguments')[0];
+              urlConstructor.get('arguments')![0]!.replaceWith(
+                makeResolveTemplate({
+                  DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+                  MODULE_ID: createModuleIDExpression(dependency, state),
+                })
+              );
+            }
+          }
+        }
+      },
+
       CallExpression(path, state: State): void {
         if (visited.has(path.node)) {
           return;
@@ -217,16 +260,18 @@ function collectDependencies<TAst extends t.File>(
           visited.add(path.node);
           return;
         }
+
+        // Match:
         if (
           callee.type === 'MemberExpression' &&
           callee.object.type === 'Identifier' &&
           callee.object.name === 'require' &&
           callee.property.type === 'Identifier' &&
-          callee.property.name === 'resolve' &&
+          callee.property.name === 'resolveWorker' &&
           !callee.computed &&
           !path.scope.getBinding('require')
         ) {
-          processResolveCall(path, state);
+          processResolveWorkerCall(path, state);
           visited.add(path.node);
           return;
         }
@@ -436,7 +481,7 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
   // }
 }
 
-function processResolveCall(path: NodePath<CallExpression>, state: State): void {
+function processResolveWorkerCall(path: NodePath<CallExpression>, state: State): void {
   const name = getModuleNameAndQualifiersFromCallArgs(path);
 
   if (name == null) {

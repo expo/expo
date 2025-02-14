@@ -782,6 +782,20 @@ it('collects dependency with require.resolve', () => {
     `)
   );
 });
+it('collects dependency with worker definition', () => {
+  const ast = astFromCode(`
+    const a = new Worker(new URL("../path/to/module", window.location.href));
+  `);
+  const { dependencies } = collectDependencies(ast, opts);
+  expect(dependencies).toEqual([
+    { name: '../path/to/module', data: objectContaining({ asyncType: 'worker' }) },
+  ]);
+  expect(codeFromAst(ast)).toEqual(
+    comparableCode(`
+      const a = new Worker(new URL(_dependencyMap.paths[_dependencyMap[0]], window.location.href));
+    `)
+  );
+});
 
 it('collects unique dependency identifiers and transforms the AST', () => {
   const ast = astFromCode(`

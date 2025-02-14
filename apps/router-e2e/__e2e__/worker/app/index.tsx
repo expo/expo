@@ -1,42 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-// import Worker from '../worker-one.ts?worker';
-
-// import('../foo');
-
-const worker = new Worker(new URL(require.resolve('../worker-one'), window.location.href));
+const entry = require.resolveWorker('../worker-one');
+const url = new URL(entry, window.location.href);
+console.log('url:', url, entry);
+const worker = new Worker(url);
 console.log('res:', worker);
-// // const worker = new Worker(new URL('../worker.js', import.meta.url))
+///
+worker.onmessage = (event) => {
+  console.log(`Worker responded: ${event.data}`);
+};
 
-// // Match `new URL('../worker.js', import.meta.url)` as dependency on file.
-// // Convert to `require.resolve('../worker.js')`
-// // resolve func should make the URL in development.
-// // resolve func should pull
+worker.postMessage(5); // Send a number to the worker
 
-// // const worker = new Worker();
-
-// let result;
-
-// // const worker = new Worker();
-
-// worker.onmessage = (event) => {
-//   console.log(`Worker responded: ${event.data}`);
-// };
-
-// worker.postMessage(5); // Send a number to the worker
-
-// worker.onmessage = function (event) {
-//   if (!result) {
-//     result = document.createElement('div');
-//     result.setAttribute('id', 'result');
-
-//     document.body.append(result);
-//   }
-
-//   result.innerText = JSON.stringify(event.data);
-// };
-
+//////
 export default function Page() {
   const [data, setData] = useState([]);
 

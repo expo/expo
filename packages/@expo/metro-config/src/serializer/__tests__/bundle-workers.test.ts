@@ -16,9 +16,6 @@ jest.mock('../findUpPackageJsonPath', () => ({
   findUpPackageJsonPath: jest.fn(() => null),
 }));
 
-function expectSideEffects(graph, name: string) {
-  return expect(graph.dependencies.get(name).sideEffects);
-}
 function expectImports(graph, name: string) {
   if (!graph.dependencies.has(name)) throw new Error(`Module not found: ${name}`);
   return expect([...graph.dependencies.get(name).dependencies.values()]);
@@ -29,7 +26,7 @@ it(`supports worker bundle`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync(
     {
       'index.js': `
-          const promise = require.resolve('./math');
+          const promise = new Worker(new URL('./math', window.location.href));
           console.log('keep', promise);
         `,
       'math.js': `
@@ -76,7 +73,7 @@ it(`supports worker bundle with nested async chunk`, async () => {
           console.log('keep', promise);
         `,
       'b.js': `
-          const promise = require.resolve('./c');
+          const promise = new Worker(new URL('./c', window.location.href));
         `,
       'c.js': `
           export const multiply = (a, b) => a * b;
@@ -127,7 +124,7 @@ it(`supports worker bundle with shared deps`, async () => {
     {
       'index.js': `
       import foo from './c';
-        const promise = require.resolve('./b');
+        const promise = new Worker(new URL('./b', window.location.href));
 
         console.log('keep', promise, foo);
         `,
@@ -164,6 +161,9 @@ it(`supports worker bundle with shared deps`, async () => {
       absolutePath: '/app/c.js',
     }),
   ]);
+
+  expect(artifacts.length).toBe(2);
+
   expect(artifacts[0].source).toMatch('runtime');
   expect(artifacts[0].source).toMatch('TEST_RUN_MODULE');
   expect(artifacts[0].source).toMatch('function add(a, b) {}');
