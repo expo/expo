@@ -94,6 +94,7 @@ export function getModuleParams(
 
           const { searchParams } = new URL(jscSafeUrl.toNormalUrl(options.sourceUrl));
           if (dependency.data.data.asyncType === 'worker') {
+            // Include all modules and run the module when of type worker.
             searchParams.set('modulesOnly', 'false');
             searchParams.set('runModule', 'true');
           } else {
