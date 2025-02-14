@@ -126,7 +126,6 @@ export function Button(props: ButtonProps) {
   return (
     <ButtonNativeView
       {...transformButtonProps(props)}
-      key={`${!!(props?.style as any)?.width}-${!!(props?.style as any)?.height}`}
       style={StyleSheet.compose(
         Platform.OS === 'android' ? { minWidth: 80, minHeight: 40 } : {},
         props.style
