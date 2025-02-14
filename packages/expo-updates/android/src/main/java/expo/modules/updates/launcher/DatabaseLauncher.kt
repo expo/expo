@@ -15,8 +15,10 @@ import expo.modules.updates.loader.LoaderFiles
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
+import expo.modules.updates.manifest.EmbeddedUpdate
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import org.json.JSONObject
 import java.io.File
 
 /**
@@ -92,7 +94,10 @@ class DatabaseLauncher(
       this.callback!!.onFailure(Exception("Launch asset relative path should not be null. Debug info: ${launchedUpdate!!.debugInfo()}"))
     }
 
-    val launchAssetFile = ensureAssetExists(launchAsset, database, launchedUpdate)
+    val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate?.updateEntity, launchedUpdate)
+
+    val launchAssetFile = ensureAssetExists(launchAsset, database, embeddedUpdate, extraHeaders)
     if (launchAssetFile != null) {
       this.launchAssetFile = launchAssetFile.toString()
     }
@@ -107,7 +112,7 @@ class DatabaseLauncher(
         }
         val filename = asset.relativePath
         if (filename != null) {
-          val assetFile = ensureAssetExists(asset, database, launchedUpdate)
+          val assetFile = ensureAssetExists(asset, database, embeddedUpdate, extraHeaders)
           if (assetFile != null) {
             this[asset] = Uri.fromFile(assetFile).toString()
           }
@@ -170,10 +175,9 @@ class DatabaseLauncher(
     }
   }
 
-  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, requestedUpdate: UpdateEntity?): File? {
+  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, embeddedUpdate: EmbeddedUpdate?, extraHeaders: JSONObject): File? {
     val assetFile = File(updatesDirectory, asset.relativePath ?: "")
     var assetFileExists = assetFile.exists()
-    val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
     if (!assetFileExists) {
       // something has gone wrong, we're missing this asset
       // first we check to see if a copy is embedded in the binary
@@ -205,7 +209,6 @@ class DatabaseLauncher(
       // we still don't have the asset locally, so try downloading it remotely
       assetsToDownload++
 
-      val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate?.updateEntity, requestedUpdate)
       fileDownloader.downloadAsset(
         asset,
         updatesDirectory,
