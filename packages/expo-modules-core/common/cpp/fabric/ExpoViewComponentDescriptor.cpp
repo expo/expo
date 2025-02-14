@@ -30,7 +30,7 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
   if (!isnan(width) or !isnan(height)) {
     auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(snode->getProps());
 
-    // The node has width and/or height set – shadowNodeProxy.setSize() was called.
+    // The node has width and/or height set as style props, so we should not override it
     auto widthProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Width);
     auto heightProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Height);
 
