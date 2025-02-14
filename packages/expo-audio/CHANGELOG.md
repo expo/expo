@@ -16,6 +16,7 @@
 - Override the `replace` method on the `AudioPlayer` so the source can be parsed correctly. ([#33708](https://github.com/expo/expo/pull/33708) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Remove unused `setAudioMode()` parameters. ([#34031](https://github.com/expo/expo/pull/34031) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Improvements in recording handling. ([#34841](https://github.com/expo/expo/pull/34841) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix `AudioMode` defaults.
 
 ### 💡 Others
 
