@@ -18,6 +18,9 @@ import expo.modules.video.records.SubtitleTrackChangedEventPayload
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoEventPayload
 import expo.modules.video.records.VideoSource
+import expo.modules.video.records.VideoSourceLoadedEventPayload
+import expo.modules.video.records.VideoTrack
+import expo.modules.video.records.VideoTrackChangedEventPayload
 import expo.modules.video.records.VolumeChangedEventPayload
 
 @OptIn(UnstableApi::class)
@@ -71,12 +74,32 @@ sealed class PlayerEvent {
     override val jsEventPayload = SubtitleTrackChangedEventPayload(subtitleTrack, oldSubtitleTrack)
   }
 
+  data class VideoTrackChanged(val videoTrack: VideoTrack?, val oldVideoTrack: VideoTrack?) : PlayerEvent() {
+    override val name = "videoTrackChange"
+    override val jsEventPayload = VideoTrackChangedEventPayload(videoTrack, oldVideoTrack)
+  }
+
   data class AvailableSubtitleTracksChanged(
     val availableSubtitleTracks: List<SubtitleTrack>,
     val oldAvailableSubtitleTracks: List<SubtitleTrack>
   ) : PlayerEvent() {
     override val name = "availableSubtitleTracksChange"
     override val jsEventPayload = AvailableSubtitleTracksChangedEventPayload(availableSubtitleTracks, oldAvailableSubtitleTracks)
+  }
+
+  data class VideoSourceLoaded(
+    val videoSource: VideoSource?,
+    val duration: Double,
+    val availableVideoTracks: List<VideoTrack>,
+    val availableSubtitleTracks: List<SubtitleTrack>
+  ) : PlayerEvent() {
+    override val name = "sourceLoad"
+    override val jsEventPayload = VideoSourceLoadedEventPayload(
+      videoSource,
+      duration,
+      availableVideoTracks,
+      availableSubtitleTracks
+    )
   }
 
   data class TimeUpdated(val timeUpdate: TimeUpdate) : PlayerEvent() {
@@ -106,7 +129,8 @@ sealed class PlayerEvent {
       is PlayedToEnd -> listeners.forEach { it.onPlayedToEnd(player) }
       is MutedChanged -> listeners.forEach { it.onMutedChanged(player, muted, oldMuted) }
       is AudioMixingModeChanged -> listeners.forEach { it.onAudioMixingModeChanged(player, audioMixingMode, oldAudioMixingMode) }
-      // JS-only events
+      is VideoTrackChanged -> listeners.forEach { it.onVideoTrackChanged(player, videoTrack, oldVideoTrack) }
+      // JS-only events - VideoSourceLoaded, SubtitleTrackChanged - In the native events the TracksChanged can be used instead
       else -> Unit
     }
   }

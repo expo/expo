@@ -25,6 +25,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode)
   func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?)
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?)
+  func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?)
 }
 
 // Default implementations for the delegate
@@ -41,6 +42,7 @@ extension VideoPlayerObserverDelegate {
   func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode) {}
   func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?) {}
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {}
+  func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {}
 }
 
 // Wrapper used to store WeakReferences to the observer delegate
@@ -74,6 +76,15 @@ class VideoPlayerObserver {
   private var currentItem: VideoPlayerItem?
   private var loadedCurrentItem = false
   private var periodicTimeObserver: Any?
+  private var currentVideoTrack: VideoTrack? {
+    didSet {
+      if let player, oldValue != currentVideoTrack {
+        delegates.forEach { delegate in
+          delegate.value?.onVideoTrackChanged(player: player, oldVideoTrack: oldValue, newVideoTrack: currentVideoTrack)
+        }
+      }
+    }
+  }
 
   private var isPlaying: Bool = false {
     didSet {
@@ -105,6 +116,7 @@ class VideoPlayerObserver {
   private var playerCurrentItemObserver: NSKeyValueObservation?
   private var playerIsMutedObserver: NSKeyValueObservation?
   private var playerAudioMixingModeObserver: NSKeyValueObservation?
+  private var tracksObserver: NSKeyValueObservation?
 
   // Current player item observers
   private var playbackBufferEmptyObserver: NSKeyValueObservation?
@@ -182,6 +194,32 @@ class VideoPlayerObserver {
       self?.onItemStatusChanged(item, change)
     }
 
+    tracksObserver = playerItem.observe(\.tracks) { [weak self] item, _ in
+      // For HLS sources AVPlayer doesn't provide the tracks when they change
+      // But it does call this event when they are loaded and when the current track changes.
+      // We have to extract the necessary information ourselves.
+      Task { [weak self] in
+        // For HLS sources
+        if let videoPlayerItem = playerItem as? VideoPlayerItem, videoPlayerItem.isHls {
+          guard let itemUri = videoPlayerItem.videoSource.uri else {
+            return
+          }
+          let lastLog = playerItem.accessLog()?.events.last(where: { $0.uri != nil })
+          self?.currentVideoTrack = lastLog?.matchToVideoTrack(videoTracks: await videoPlayerItem.videoTracks, itemUrl: itemUri)
+          return
+        }
+
+        // For "regular sources
+        // The track which is currently playing will be first
+        let currentTrack = try? await item.asset.loadTracks(withMediaType: .video).first
+
+        if let currentTrack {
+          let oldVideoTrack = self?.currentVideoTrack
+          self?.currentVideoTrack = await VideoTrack.from(assetTrack: currentTrack)
+        }
+      }
+    }
+
     playerItemObserver = NotificationCenter.default.addObserver(
       forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
       object: playerItem,
@@ -208,6 +246,7 @@ class VideoPlayerObserver {
     playbackLikelyToKeepUpObserver?.invalidate()
     playbackBufferEmptyObserver?.invalidate()
     playerItemStatusObserver?.invalidate()
+    tracksObserver?.invalidate()
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
   }
 
@@ -246,6 +285,7 @@ class VideoPlayerObserver {
     let newPlayerItem = change.newValue?.flatMap({ $0 })
 
     invalidateCurrentPlayerItemObservers()
+    currentVideoTrack = nil
 
     if let videoPlayerItem = newPlayerItem as? VideoPlayerItem {
       initializeCurrentPlayerItemObservers(player: player, playerItem: videoPlayerItem)
@@ -285,6 +325,7 @@ class VideoPlayerObserver {
       delegate.value?.onSubtitleSelectionChanged(player: player, playerItem: playerItem, subtitleTrack: nil)
     }
   }
+
   private func onItemStatusChanged(_ playerItem: AVPlayerItem, _ change: NSKeyValueObservedChange<AVPlayerItem.Status>) {
     if player?.status != .failed {
       error = nil
@@ -381,5 +422,28 @@ class VideoPlayerObserver {
         delegate.value?.onIsMutedChanged(player: player, oldIsMuted: change.oldValue, newIsMuted: newIsMuted)
       }
     }
+  }
+}
+
+private extension AVPlayerItemAccessLogEvent {
+  // Matches the LogEvent to an existing VideoTrack based on the uri, or returns null if doesn't exist
+  func matchToVideoTrack(videoTracks: [VideoTrack], itemUrl: URL) -> VideoTrack? {
+    // The logUri should contain the track id from `VideoTrack`, it's used for playing selected track
+    guard let logUri = self.uri else {
+      return nil
+    }
+
+    // We need to find a base uri to which the track id is added for streaming a specific source
+    var components = URLComponents(url: itemUrl, resolvingAgainstBaseURL: false)
+    components?.query = nil
+
+    guard let baseUriString = components?.url?.deletingLastPathComponent().absoluteString else {
+      return nil
+    }
+
+    // Removing the base uri from the log uri allows us to get the id, which can be matched to an existing VideoTrack
+    let id = logUri.replacingOccurrences(of: baseUriString, with: "")
+
+    return videoTracks.first { $0.id == id }
   }
 }
