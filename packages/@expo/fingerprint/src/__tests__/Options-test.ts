@@ -85,6 +85,33 @@ module.exports = config;
       expect(hashAlgorithm).toBe('md5');
     });
   });
+
+  it('should not overwrite config options from null explicit options', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const configContents = `\
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  concurrentIoLimit: 10,
+  debug: true,
+  hashAlgorithm: 'sha256',
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
+
+      const { concurrentIoLimit, debug, hashAlgorithm } = await normalizeOptionsAsync('/app', {
+        concurrentIoLimit: null,
+        debug: undefined,
+        hashAlgorithm: 'md5',
+      });
+      expect(concurrentIoLimit).toBe(10);
+      expect(debug).toBe(true);
+      expect(hashAlgorithm).toBe('md5');
+    });
+  });
 });
 
 describe(`normalizeOptionsAsync - enableReactImportsPatcher`, () => {
