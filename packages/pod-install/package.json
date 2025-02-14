@@ -34,7 +34,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "devDependencies": {
-    "@expo/package-manager": "^1.7.1",
+    "@expo/package-manager": "^1.7.2",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "^4.0.4",

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.11.10 — 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
 ## 0.11.9 — 2025-02-10
 
 ### 💡 Others

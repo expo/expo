@@ -37,11 +37,11 @@
     "expo-module-scripts": "^4.0.4"
   },
   "dependencies": {
-    "@expo/config": "~10.0.9",
+    "@expo/config": "~10.0.10",
     "@expo/config-plugins": "~9.0.15",
     "@expo/config-types": "^52.0.4",
-    "@expo/image-utils": "^0.6.4",
-    "@expo/json-file": "^9.0.1",
+    "@expo/image-utils": "^0.6.5",
+    "@expo/json-file": "^9.0.2",
     "@react-native/normalize-colors": "0.76.7",
     "debug": "^4.3.1",
     "fs-extra": "^9.0.0",

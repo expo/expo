@@ -46,9 +46,9 @@
     "memfs": "^3.2.0"
   },
   "dependencies": {
-    "@expo/config": "~10.0.9",
+    "@expo/config": "~10.0.10",
     "@expo/config-plugins": "~9.0.15",
-    "@expo/env": "~0.4.1",
+    "@expo/env": "~0.4.2",
     "@expo/spawn-async": "^1.7.2",
     "arg": "5.0.2",
     "chalk": "^4.0.0",

@@ -37,7 +37,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/image-utils": "^0.6.4",
+    "@expo/image-utils": "^0.6.5",
     "expo-constants": "~17.0.6",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3"
