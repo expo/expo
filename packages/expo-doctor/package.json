@@ -33,6 +33,7 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
+    "@expo/metro-config": "0.19.10",
     "@expo/config": "~10.0.4",
     "@expo/json-file": "~9.0.0",
     "@expo/schemer": "1.5.3",
