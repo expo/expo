@@ -5,7 +5,7 @@ export type SectionProps = {
      *  Option to display the title in lower case letters
      * @default true
      */
-    displayTitleUppercase: boolean;
+    displayTitleUppercase?: boolean;
     style?: StyleProp<ViewStyle>;
     children: React.ReactNode;
 };

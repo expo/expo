@@ -7,7 +7,7 @@ export type SectionProps = {
      *  Option to display the title in lower case letters
      * @default true
      */
-    displayTitleUppercase: boolean;
+    displayTitleUppercase?: boolean;
     children: React.ReactNode;
 };
 export declare function Section(props: SectionProps): React.JSX.Element;
