@@ -1,6 +1,8 @@
 export type { Switch, SwitchProps } from '../components/Switch';
 export type { Picker, PickerProps } from '../components/Picker';
 export type { Button, ButtonProps } from '../components/Button';
+export type { ContentUnavailableView, ContentUnavailableProps } from '../components/ContentUnavailable';
+
 export type {
   ContextMenu,
   ContextMenuProps,
