@@ -1,5 +1,4 @@
 import fs from 'fs-extra';
-import os from 'os';
 import path from 'path';
 
 import { generateXcodeProjectAsync } from './XcodeGen';
@@ -11,7 +10,7 @@ import { spawnAsync } from '../Utils';
 /**
  * Path to the shared derived data directory.
  */
-const SHARED_DERIVED_DATA_DIR = path.join(os.tmpdir(), 'Expo/DerivedData');
+export const SHARED_DERIVED_DATA_DIR = path.join(require('temp-dir'), 'Expo/DerivedData');
 
 /**
  * Path to the products in derived data directory. We pick `.framework` files from there.
@@ -172,7 +171,7 @@ export default class XcodeProject {
 /**
  * Returns a path to the prebuilt framework for given flavor.
  */
-function flavorToFrameworkPath(target: string, flavor: Flavor): string {
+export function flavorToFrameworkPath(target: string, flavor: Flavor): string {
   return path.join(PRODUCTS_DIR, `${flavor.configuration}-${flavor.sdk}`, `${target}.framework`);
 }
 
@@ -180,7 +179,7 @@ function flavorToFrameworkPath(target: string, flavor: Flavor): string {
  * Spreads given args under specific flag.
  * Example: `spreadArgs('-arch', ['arm64', 'x86_64'])` returns `['-arch', 'arm64', '-arch', 'x86_64']`
  */
-function spreadArgs(argName: string, args: string[]): string[] {
+export function spreadArgs(argName: string, args: string[]): string[] {
   return ([] as string[]).concat(...args.map((arg) => [argName, arg]));
 }
 

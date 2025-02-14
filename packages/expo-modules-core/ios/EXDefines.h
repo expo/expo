@@ -1,5 +1,7 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/Platform.h>
+
 #if defined(__cplusplus)
 #define EX_EXTERN extern "C" __attribute__((visibility("default")))
 #define EX_EXTERN_C_BEGIN extern "C" {
