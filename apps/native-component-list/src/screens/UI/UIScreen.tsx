@@ -58,6 +58,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ColorPickerScreen'));
     },
   },
+  {
+    name: 'ContentUnavailableView component',
+    route: 'ui/content-unavailable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ContentUnavailableScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
