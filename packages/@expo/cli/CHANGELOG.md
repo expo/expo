@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Updated `react-native-screens` from `4.4.0` to `4.6.0` ([#34939](https://github.com/expo/expo/pull/34939) by [@tai2](https://github.com/tai2))
+
 ### 🛠 Breaking changes
 
 - Force NODE_ENV during npx expo export and do not allow overwriting outside of `--dev` flag. ([#34533](https://github.com/expo/expo/pull/34533) by [@EvanBacon](https://github.com/EvanBacon))
