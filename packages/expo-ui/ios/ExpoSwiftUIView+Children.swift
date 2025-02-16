@@ -30,11 +30,13 @@ extension ExpoSwiftUIView {
   ///     }
   ///   }
   ///   ```
-  func UnwrappedChildren<T: View>(
+  func UnwrappedChildren<T: View>( // swiftlint:disable:this identifier_name
     @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
     -> T
   ) -> some View {
-    guard let children = props.children else { return AnyView(EmptyView()) }
+    guard let children = props.children else {
+      return AnyView(EmptyView())
+    }
     let childrenArray = Array(children)
     return AnyView(
       ForEach(0..<childrenArray.count, id: \.self) { index in
