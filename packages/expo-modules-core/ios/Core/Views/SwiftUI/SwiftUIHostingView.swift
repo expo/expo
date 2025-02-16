@@ -29,7 +29,7 @@ extension ExpoSwiftUI {
     /**
      Additiional utilities for controlling shadow node behavior.
      */
-    let shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
+    private let shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
 
     /**
      View controller that embeds the content view into the UIKit view hierarchy.
