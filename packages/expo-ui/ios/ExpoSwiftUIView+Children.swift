@@ -5,7 +5,7 @@ import SwiftUI
 
 extension ExpoSwiftUIView {
   /// A view that contains the children of a ExpoSwiftUIView, with all `HostingViews` stripped out.
-  /// Optionally applies a transformation to
+  /// Optionally applies a transformation to the children for more granular control.
   ///
   /// - Parameters:
   ///   - transform: A closure that takes an AnyView and a boolean indicating whether the view
