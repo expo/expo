@@ -41,7 +41,7 @@
     "zx": "^8.2.0"
   },
   "devDependencies": {
-    "@tsconfig/node20": "^20.1.2",
+    "@tsconfig/node22": "^22.0.0",
     "@vercel/ncc": "^0.38.0",
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
