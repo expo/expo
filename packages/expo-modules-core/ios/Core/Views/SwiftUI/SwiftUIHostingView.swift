@@ -5,13 +5,14 @@ import SwiftUI
 /**
  A type-erased protocol that hosting views must conform to.
  */
-internal protocol AnyExpoSwiftUIHostingView {
+public protocol AnyExpoSwiftUIHostingView {
   func updateProps(_ rawProps: [String: Any])
   func getContentView() -> any ExpoSwiftUI.View
+  func getShadowNodeProxy() -> ExpoSwiftUI.ShadowNodeProxy
 }
 
 extension ExpoSwiftUI {
-  typealias AnyHostingView = AnyExpoSwiftUIHostingView
+   public typealias AnyHostingView = AnyExpoSwiftUIHostingView
 
   /**
    A hosting view that renders a SwiftUI view inside the UIKit view hierarchy.
@@ -27,7 +28,7 @@ extension ExpoSwiftUI {
     /**
      Additiional utilities for controlling shadow node behavior.
      */
-    private let shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
+    let shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
 
     /**
      View controller that embeds the content view into the UIKit view hierarchy.
@@ -86,6 +87,13 @@ extension ExpoSwiftUI {
      */
     public func getContentView() -> any ExpoSwiftUI.View {
       return contentView
+    }
+    
+    /**
+     Returns this view's shadowProxyNode
+     */
+    public func getShadowNodeProxy() -> ExpoSwiftUI.ShadowNodeProxy {
+      return shadowNodeProxy
     }
 
     /**

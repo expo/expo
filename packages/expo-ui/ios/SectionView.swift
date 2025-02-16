@@ -5,7 +5,6 @@ import ExpoModulesCore
 
 class SectionProps: ExpoSwiftUI.ViewProps {
   @Field var title: String?
-  @Field var heightOffset: CGFloat = 0
 }
 
 struct SectionView: ExpoSwiftUI.View {
@@ -14,7 +13,12 @@ struct SectionView: ExpoSwiftUI.View {
   var body: some View {
     let form = Form {
       Section(header: Text(props.title ?? "")) {
-        Children().padding(EdgeInsets(top: 0, leading: 0, bottom: props.heightOffset, trailing: 0))
+        UnwrappedChildren { view, isHostingView in
+          view
+            .if(!isHostingView) { v in
+              v.offset(x: 40)
+            }
+        }
       }
     }
 
@@ -25,3 +29,4 @@ struct SectionView: ExpoSwiftUI.View {
     }
   }
 }
+
