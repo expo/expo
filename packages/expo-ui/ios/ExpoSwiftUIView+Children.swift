@@ -31,34 +31,23 @@ extension ExpoSwiftUIView {
   ///   }
   ///   ```
   func UnwrappedChildren<T: View>(
-    @ViewBuilder transform: @escaping (_ view: AnyView, _ isHostingView: Bool)
-      -> T
+    @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
+    -> T
   ) -> some View {
     guard let children = props.children else { return AnyView(EmptyView()) }
     let childrenArray = Array(children)
-
     return AnyView(
       ForEach(0..<childrenArray.count, id: \.self) { index in
         let child = childrenArray[index]
         if let hostingView = child.view as? (any ExpoSwiftUI.AnyHostingView) {
           let content = hostingView.getContentView()
           let shadowNodeProxy = hostingView.getShadowNodeProxy()
-          if let propsObject = Mirror(reflecting: hostingView).children.first(
-            where: {
-              $0.label == "props"
-            })?.value
-          {
-            let _ = type(of: child.view).getDynamicType()
-            if let observableProps = propsObject as? any ObservableObject {
-              transform(AnyView(content
-                .environmentObject(observableProps)
+          let propsObject = hostingView.getProps() as any ObservableObject
+          transform(
+            AnyView(
+              content
+                .environmentObject(propsObject)
                 .environmentObject(shadowNodeProxy)), true)
-            } else {
-              transform(AnyView(content), true)
-            }
-          } else {
-            transform(AnyView(content), true)
-          }
         } else {
           transform(AnyView(child), false)
         }

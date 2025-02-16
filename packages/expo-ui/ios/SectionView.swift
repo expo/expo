@@ -13,10 +13,10 @@ struct SectionView: ExpoSwiftUI.View {
   var body: some View {
     let form = Form {
       Section(header: Text(props.title ?? "")) {
-        UnwrappedChildren { view, isHostingView in
-          view
-            .if(!isHostingView) { v in
-              v.offset(x: 40)
+        UnwrappedChildren { child, isHostingView in
+          child
+            .if(!isHostingView) {
+              $0.offset(x: 40)
             }
         }
       }

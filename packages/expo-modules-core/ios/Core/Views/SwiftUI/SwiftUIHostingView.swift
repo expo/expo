@@ -9,6 +9,7 @@ public protocol AnyExpoSwiftUIHostingView {
   func updateProps(_ rawProps: [String: Any])
   func getContentView() -> any ExpoSwiftUI.View
   func getShadowNodeProxy() -> ExpoSwiftUI.ShadowNodeProxy
+  func getProps() -> ExpoSwiftUI.ViewProps
 }
 
 extension ExpoSwiftUI {
@@ -90,11 +91,19 @@ extension ExpoSwiftUI {
     }
     
     /**
-     Returns this view's shadowProxyNode
+     Returns the view's shadowProxyNode
      */
     public func getShadowNodeProxy() -> ExpoSwiftUI.ShadowNodeProxy {
       return shadowNodeProxy
     }
+    
+    /**
+     Returns the view's props
+     */
+    public func getProps() -> ExpoSwiftUI.ViewProps {
+      return props
+    }
+
 
     /**
      Returns a bool value whether the view supports prop with the given name.
