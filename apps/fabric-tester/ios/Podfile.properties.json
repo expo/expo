@@ -1,4 +1,4 @@
 {
   "expo.jsEngine": "hermes",
-  "newArchEnabled": "true"
+  "newArchEnabled": "false"
 }
