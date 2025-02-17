@@ -3,7 +3,6 @@ package expo.modules.ui
 import android.content.Context
 import android.graphics.Color
 import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
@@ -24,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
@@ -89,75 +89,79 @@ class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<Pic
 
       @Composable
       fun SegmentedComposable() {
-          DynamicTheme {
-              SingleChoiceSegmentedButtonRow {
-                  options.forEachIndexed { index, label ->
-                      SegmentedButton(
-                          shape = SegmentedButtonDefaults.itemShape(
-                              index = index,
-                              count = options.size
-                          ),
-                          onClick = {
-                              onOptionSelected(mapOf("index" to index, "label" to label))
-                          },
-                          selected = index == selectedIndex,
-                          label = { Text(label) },
-                          colors = SegmentedButtonDefaults.colors(
-                              activeBorderColor = colors.activeBorderColor.compose,
-                              activeContentColor = colors.activeContentColor.compose,
-                              inactiveBorderColor = colors.inactiveBorderColor.compose,
-                              inactiveContentColor = colors.inactiveContentColor.compose,
-                              disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
-                              disabledActiveContentColor = colors.disabledActiveContentColor.compose,
-                              disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
-                              disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
-                              activeContainerColor = colors.activeContainerColor.compose,
-                              inactiveContainerColor = colors.inactiveContainerColor.compose,
-                              disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
-                              disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
-                          )
-                      )
-                  }
+        DynamicTheme {
+          AutoSizingComposable(shadowNodeProxy) {
+            SingleChoiceSegmentedButtonRow {
+              options.forEachIndexed { index, label ->
+                SegmentedButton(
+                  shape = SegmentedButtonDefaults.itemShape(
+                    index = index,
+                    count = options.size
+                  ),
+                  onClick = {
+                    onOptionSelected(mapOf("index" to index, "label" to label))
+                  },
+                  selected = index == selectedIndex,
+                  label = { Text(label) },
+                  colors = SegmentedButtonDefaults.colors(
+                    activeBorderColor = colors.activeBorderColor.compose,
+                    activeContentColor = colors.activeContentColor.compose,
+                    inactiveBorderColor = colors.inactiveBorderColor.compose,
+                    inactiveContentColor = colors.inactiveContentColor.compose,
+                    disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
+                    disabledActiveContentColor = colors.disabledActiveContentColor.compose,
+                    disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
+                    disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
+                    activeContainerColor = colors.activeContainerColor.compose,
+                    inactiveContainerColor = colors.inactiveContainerColor.compose,
+                    disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
+                    disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
+                  )
+                )
               }
+            }
           }
+        }
       }
 
-        @Composable
-        fun RadioComposable() {
-            DynamicTheme {
-                Column(Modifier.selectableGroup()) {
-                    options.forEachIndexed { index, label ->
-                        Row(
-                            Modifier.fillMaxWidth()
-                                .height(28.dp)
-                                .selectable(
-                                    selected = index == selectedIndex,
-                                    onClick = {
-                                        onOptionSelected(mapOf("index" to index, "label" to label))
-                                    },
-                                    role = Role.RadioButton
-                                ),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                        RadioButton(
-                            selected = index == selectedIndex,
-                            onClick = null
-                        )
-                        Text(
-                            text = label,
-                            modifier = Modifier.padding(start = 12.dp)
-                        )
-                    }
+      @Composable
+      fun RadioComposable() {
+        DynamicTheme {
+          AutoSizingComposable(shadowNodeProxy) {
+            Column(Modifier.selectableGroup()) {
+              options.forEachIndexed { index, label ->
+                Row(
+                  Modifier.fillMaxWidth()
+                    .height(28.dp)
+                    .selectable(
+                      selected = index == selectedIndex,
+                      onClick = {
+                        onOptionSelected(mapOf("index" to index, "label" to label))
+                      },
+                      role = Role.RadioButton
+                    ),
+                  verticalAlignment = Alignment.CenterVertically
+                ) {
+                  RadioButton(
+                    selected = index == selectedIndex,
+                    onClick = null
+                  )
+                  Text(
+                    text = label,
+                    modifier = Modifier.padding(start = 12.dp)
+                  )
                 }
+              }
             }
+          }
         }
-            }
+      }
 
-        if (variant == "segmented") {
-            SegmentedComposable()
-        } else if (variant == "radio") {
-            RadioComposable()
-        }
+      if (variant == "segmented") {
+        SegmentedComposable()
+      } else if (variant == "radio") {
+        RadioComposable()
+      }
     }
   }
 }

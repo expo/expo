@@ -20,6 +20,13 @@ export type DocumentPickerOptions = {
      *
      */
     multiple?: boolean;
+    /**
+     * If `true`, asset url is base64 from the file
+     * If `false`, asset url is the file url parameter
+     * @platform web
+     * @default true
+     */
+    base64?: boolean;
 };
 export type DocumentPickerAsset = {
     /**

@@ -20,7 +20,7 @@ struct MenuItems: View {
         }
       }
       if let `switch` = element.switch {
-        `switch`.onCheckedChanged.onEventSent = { map in
+        `switch`.onValueChange.onEventSent = { map in
           props?.onContextMenuSwitchCheckedChanged(addId(id, toMap: map))
         }
       }

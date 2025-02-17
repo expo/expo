@@ -65,10 +65,12 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     }
 
     AsyncFunction("presentPermissionsPickerAsync") {
+      #if os(iOS)
       guard let vc = appContext?.utilities?.currentViewController() else {
         return
       }
       PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: vc)
+      #endif
     }.runOnQueue(.main)
 
     AsyncFunction("createAssetAsync") { (uri: URL, promise: Promise) in
@@ -110,6 +112,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     }
 
     AsyncFunction("saveToLibraryAsync") { (localUrl: URL, promise: Promise) in
+      #if os(iOS)
       if Bundle.main.infoDictionary?["NSPhotoLibraryAddUsageDescription"] == nil {
         throw MissingPListKeyException("NSPhotoLibraryAddUsageDescription")
       }
@@ -155,6 +158,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         promise.reject(SaveVideoException())
         return
       }
+      #endif
 
       promise.reject(UnsupportedAssetException())
     }

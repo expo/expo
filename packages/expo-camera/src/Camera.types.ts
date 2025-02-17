@@ -9,6 +9,7 @@ import {
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
+import { AndroidBarcode } from './AndroidBarcode.types';
 import { PictureRef } from './PictureRef';
 
 export type CameraType = 'front' | 'back';
@@ -304,6 +305,12 @@ export type BarcodeScanningResult = {
    * For some types, they will represent the area used by the scanner.
    */
   bounds: BarcodeBounds;
+
+  /**
+   * Extra information returned by the specific type of barcode.
+   * @platform android
+   */
+  extra?: AndroidBarcode;
 };
 
 export type ScanningResult = Omit<BarcodeScanningResult, 'bounds' | 'cornerPoints'>;

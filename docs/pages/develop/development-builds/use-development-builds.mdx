@@ -11,7 +11,7 @@ Usually, creating a new native build from scratch takes long enough that you'll 
 
 ## Add error handling
 
-Certain types of errors can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on, you need to import `expo-dev-client` at the top of the **App.&lbrace;js|tsx&rbrace;** or [**app/\_layout.tsx**](/router/advanced/root-layout/).
+Import `expo-dev-client` at the top of the **App.&lbrace;js|tsx&rbrace;** or [**app/\_layout.tsx**](/router/advanced/root-layout/) to add additional context for certain errors beyond what is provided by default in React Native. In particular, `expo-dev-client` will help detect situations related to a mismatch between your JavaScript and native code, such as when a native module is missing and you should make a new development build.
 
 ```js App.js
 import 'expo-dev-client';

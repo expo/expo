@@ -68,8 +68,8 @@ import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.camera.utils.mapX
 import expo.modules.camera.utils.mapY
 import expo.modules.core.errors.ModuleDestroyedException
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
+import expo.modules.camera.utils.BarCodeScannerResult
+import expo.modules.camera.utils.BarCodeScannerResult.BoundingBox
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
@@ -82,9 +82,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.io.File
+import java.lang.Float.max
+import java.lang.Float.min
 import kotlin.math.roundToInt
 import kotlin.properties.Delegates
-import kotlin.text.toFloat
 
 const val ANIMATION_FAST_MILLIS = 50L
 const val ANIMATION_SLOW_MILLIS = 100L
@@ -143,6 +144,12 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
+  var flashMode = FlashMode.OFF
+    set(value) {
+      field = value
+      setCameraFlashMode(value)
+    }
+
   var cameraMode: CameraMode = CameraMode.PICTURE
     set(value) {
       field = value
@@ -152,7 +159,7 @@ class ExpoCameraView(
   var zoom: Float = 0f
     set(value) {
       field = value
-      camera?.cameraControl?.setLinearZoom(value.coerceIn(0f, 1f))
+      setCameraZoom(value)
     }
 
   var autoFocus: FocusMode = FocusMode.OFF
@@ -311,9 +318,7 @@ class ExpoCameraView(
   }
 
   fun setCameraFlashMode(mode: FlashMode) {
-    if (imageCaptureUseCase?.flashMode != mode.mapToLens()) {
-      imageCaptureUseCase?.flashMode = mode.mapToLens()
-    }
+    imageCaptureUseCase?.flashMode = mode.mapToLens()
   }
 
   private fun setTorchEnabled(enabled: Boolean) {
@@ -443,6 +448,7 @@ class ExpoCameraView(
 
         imageCaptureUseCase = ImageCapture.Builder()
           .setResolutionSelector(resolutionSelector)
+          .setFlashMode(flashMode.mapToLens())
           .build()
 
         val videoCapture = createVideoCapture()
@@ -469,7 +475,7 @@ class ExpoCameraView(
             observeCameraState(it.cameraInfo)
           }
           // Set the previous zoom level after recreating the camera
-          camera?.cameraControl?.setLinearZoom(zoom.coerceIn(0f, 1f))
+          setCameraZoom(zoom)
           this.cameraProvider = cameraProvider
         } catch (_: Exception) {
           onMountError(
@@ -582,6 +588,12 @@ class ExpoCameraView(
     }
   }
 
+  private fun setCameraZoom(value: Float) {
+    val maxZoomRatio = camera?.cameraInfo?.zoomState?.value?.maxZoomRatio ?: 1f
+    val targetZoomRatio = max(1f, min(maxZoomRatio, value.coerceIn(0f, 1f) * maxZoomRatio))
+    camera?.cameraControl?.setZoomRatio(targetZoomRatio)
+  }
+
   private fun observeCameraState(cameraInfo: CameraInfo) {
     cameraInfo.cameraState.observe(currentActivity) {
       when (it.type) {
@@ -640,24 +652,24 @@ class ExpoCameraView(
     val landscape = getDeviceOrientation() % 2 != 0
 
     if (facingFront && portrait) {
-      cornerPoints.mapY { barcode.referenceImageHeight - cornerPoints[it] }
+      cornerPoints.mapY { barcode.height - cornerPoints[it] }
     }
     if (facingFront && landscape) {
-      cornerPoints.mapX { barcode.referenceImageWidth - cornerPoints[it] }
+      cornerPoints.mapX { barcode.width - cornerPoints[it] }
     }
 
     cornerPoints.mapX {
-      (cornerPoints[it] * previewWidth / barcode.referenceImageWidth.toFloat())
+      (cornerPoints[it] * previewWidth / barcode.width.toFloat())
         .roundToInt()
     }
     cornerPoints.mapY {
-      (cornerPoints[it] * previewHeight / barcode.referenceImageHeight.toFloat())
+      (cornerPoints[it] * previewHeight / barcode.height.toFloat())
         .roundToInt()
     }
 
     barcode.cornerPoints = cornerPoints
-    barcode.referenceImageHeight = height
-    barcode.referenceImageWidth = width
+    barcode.height = height
+    barcode.width = width
   }
 
   private fun getCornerPointsAndBoundingBox(
@@ -705,11 +717,12 @@ class ExpoCameraView(
       onBarcodeScanned(
         BarcodeScannedEvent(
           target = id,
-          data = barcode.value,
-          raw = barcode.raw,
+          data = barcode.value.toString(),
+          raw = barcode.raw.toString(),
           type = BarcodeType.mapFormatToString(barcode.type),
           cornerPoints = cornerPoints,
-          bounds = boundingBox
+          bounds = boundingBox,
+          extra = barcode.extra
         )
       )
     }

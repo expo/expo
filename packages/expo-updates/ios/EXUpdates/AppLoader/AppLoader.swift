@@ -97,7 +97,7 @@ open class AppLoader: NSObject {
     preconditionFailure("Must override in concrete class")
   }
 
-  open func downloadAsset(_ asset: UpdateAsset) {
+  open func downloadAsset(_ asset: UpdateAsset, extraHeaders: [String: Any]) {
     preconditionFailure("Must override in concrete class")
   }
 
@@ -202,6 +202,13 @@ open class AppLoader: NSObject {
       if let assets = updateManifest.assets(),
         !assets.isEmpty {
         self.assetsToLoad = assets
+        let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
+        let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
+          launchedUpdate: self.launchedUpdate,
+          embeddedUpdate: embeddedUpdate,
+          requestedUpdate: updateManifest
+        )
+
         for asset in assets {
           // before downloading, check to see if we already have this asset in the database
           let matchingDbEntry = try? self.database.asset(withKey: asset.key)
@@ -226,11 +233,11 @@ open class AppLoader: NSObject {
                   self.handleAssetDownloadAlreadyExists(asset)
                 }
               } else {
-                self.downloadAsset(asset)
+                self.downloadAsset(asset, extraHeaders: extraHeaders)
               }
             }
           } else {
-            self.downloadAsset(asset)
+            self.downloadAsset(asset, extraHeaders: extraHeaders)
           }
         }
       } else {

@@ -18,7 +18,7 @@ export async function runLegacyCLIAsync(args: string[]) {
   const fingerprintFile1ToDiff = args[1];
   const fingerprintFile2ToDiff = args[2];
 
-  const [fingeprint1ToDiff, fingerprint2ToDiff] = await Promise.all([
+  const [fingerprint1ToDiff, fingerprint2ToDiff] = await Promise.all([
     fingerprintFile1ToDiff ? readFingerprintFileAsync(fingerprintFile1ToDiff) : null,
     fingerprintFile2ToDiff ? readFingerprintFileAsync(fingerprintFile2ToDiff) : null,
   ]);
@@ -30,11 +30,11 @@ export async function runLegacyCLIAsync(args: string[]) {
       : undefined,
   };
   try {
-    if (fingeprint1ToDiff && fingerprint2ToDiff) {
-      const diff = diffFingerprints(fingeprint1ToDiff, fingerprint2ToDiff);
+    if (fingerprint1ToDiff && fingerprint2ToDiff) {
+      const diff = diffFingerprints(fingerprint1ToDiff, fingerprint2ToDiff);
       console.log(JSON.stringify(diff, null, 2));
-    } else if (fingeprint1ToDiff) {
-      const diff = await diffFingerprintChangesAsync(fingeprint1ToDiff, projectRoot, options);
+    } else if (fingerprint1ToDiff) {
+      const diff = await diffFingerprintChangesAsync(fingerprint1ToDiff, projectRoot, options);
       console.log(JSON.stringify(diff, null, 2));
     } else {
       const fingerprint = await createFingerprintAsync(projectRoot, options);

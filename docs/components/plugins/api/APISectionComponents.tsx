@@ -15,6 +15,7 @@ import {
   resolveTypeName,
   getComponentName,
   getPossibleComponentPropsNames,
+  getAllTagData,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -57,6 +58,7 @@ const renderComponent = (
   const resolvedTypeParameters = getComponentTypeParameters({ type, extendedTypes, signatures });
   const resolvedName = getComponentName(name, children);
   const extractedComment = getComponentComment(comment, signatures);
+
   return (
     <div
       key={`component-definition-${resolvedName}`}
@@ -77,12 +79,13 @@ const renderComponent = (
           </CODE>
         </CALLOUT>
       )}
-      <APICommentTextBlock comment={extractedComment} />
+      <APICommentTextBlock comment={extractedComment} includePlatforms={false} />
       {componentsProps?.length ? (
         <APISectionProps
           sdkVersion={sdkVersion}
           data={componentsProps}
           header={`${resolvedName}Props`}
+          parentPlatforms={getAllTagData('platform', extractedComment)}
         />
       ) : null}
     </div>

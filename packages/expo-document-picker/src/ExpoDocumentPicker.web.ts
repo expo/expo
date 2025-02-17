@@ -6,6 +6,7 @@ export default {
   async getDocumentAsync({
     type = '*/*',
     multiple = false,
+    base64 = true,
   }: DocumentPickerOptions): Promise<DocumentPickerResult> {
     // SSR guard
     if (!Platform.isDOMAvailable) {
@@ -28,7 +29,7 @@ export default {
         if (input.files) {
           const results: Promise<DocumentPickerAsset>[] = [];
           for (let i = 0; i < input.files.length; i++) {
-            results.push(readFileAsync(input.files[i]));
+            results.push(readFileAsync(input.files[i], base64));
           }
           try {
             const assets = await Promise.all(results);
@@ -53,10 +54,20 @@ export default {
   },
 };
 
-function readFileAsync(targetFile: File): Promise<DocumentPickerAsset> {
+function readFileAsync(targetFile: File, base64: boolean = true): Promise<DocumentPickerAsset> {
   return new Promise((resolve, reject) => {
     const mimeType = targetFile.type;
-
+    if (!base64) {
+      resolve({
+        uri: targetFile.webkitRelativePath,
+        mimeType,
+        name: targetFile.name,
+        lastModified: targetFile.lastModified,
+        size: targetFile.size,
+        file: targetFile,
+      });
+      return;
+    }
     const reader = new FileReader();
     reader.onerror = () => {
       reject(new Error(`Failed to read the selected media because the operation failed.`));
