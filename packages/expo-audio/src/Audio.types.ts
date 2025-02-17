@@ -248,6 +248,11 @@ export type RecordingOptionsAndroid = {
 };
 
 export type AudioMode = {
+  /**
+   * Determines if audio playback is allowed when the device is in silent mode.
+   *
+   * @platform ios
+   */
   playsInSilentMode: boolean;
   /**
    * Determines how the audio session interacts with other sessions.
@@ -255,8 +260,22 @@ export type AudioMode = {
    * @platform ios
    */
   interruptionMode: InterruptionMode;
+  /**
+   * Whether the audio session allows recording.
+   *
+   * @default false
+   * @platform ios
+   */
   allowsRecording: boolean;
+  /**
+   * Whether the audio session stays active when the app moves to the background.
+   * @default false
+   */
   shouldPlayInBackground: boolean;
+  /**
+   * Whether the audio should route through the earpiece.
+   * @platform android
+   */
   shouldRouteThroughEarpiece: boolean;
 };
 
