@@ -2,7 +2,6 @@ package expo.modules.image
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
 import expo.modules.image.records.ImageLoadOptions
 import expo.modules.image.records.SourceMap
@@ -10,7 +9,6 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.apply
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -29,14 +27,14 @@ open class ImageLoadTask(
           addHeader(key, value)
         }
       }.build()
-    } ?: Headers.DEFAULT
+    }
 
     try {
       val bitmap = withContext(Dispatchers.IO) {
         Glide
           .with(context)
           .asDrawable()
-          .load(GlideUrl(source.uri, headers))
+          .load(headers?.let { GlideUrl(source.uri, headers) } ?: source.uri)
           .centerInside()
           .submit(options.maxWidth, options.maxHeight)
           .get()
