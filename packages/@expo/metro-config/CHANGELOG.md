@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add support for `require.resolveWeak` with tree shaking.
 - Remove need for `expo-asset/tools/hashAssetFiles` and add legacy support for projects that still have it. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `/* webpackIgnore: true */` magic comment in code splitting. ([#33366](https://github.com/expo/expo/pull/33366) by [@EvanBacon](https://github.com/EvanBacon))
 
