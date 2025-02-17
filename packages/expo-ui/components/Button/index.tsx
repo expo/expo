@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { Platform, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-import MaterialIcon from './types';
+import { MaterialIcon } from './types';
 import { ViewEvent } from '../../src';
 
 /**

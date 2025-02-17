@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import MaterialIcon from './types';
+import { MaterialIcon } from './types';
 import { ViewEvent } from '../../src';
 /**
  * The role of the button.
