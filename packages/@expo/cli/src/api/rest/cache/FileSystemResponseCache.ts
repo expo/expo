@@ -1,21 +1,26 @@
-import cacache from 'cacache';
-import { Readable } from 'stream';
+import { mkdir, readFile, writeFile, rm } from 'node:fs/promises';
+import path from 'node:path';
+import { Readable } from 'node:stream';
+import { ReadableStream } from 'node:stream/web';
+import { createHash } from 'node:crypto';
+import { createWriteStream as createNodeWriteStream } from 'node:fs';
+import { finished } from 'node:stream/promises';
 
 import type { ResponseCache, ResponseCacheEntry } from './ResponseCache';
 
 type FileSystemResponseCacheInfo = ResponseCacheEntry['info'] & {
-  /** Stream integrity used to validate the local body response */
-  bodyIntegrity?: string;
+  /** The path to the cached body file */
+  bodyPath?: string;
   /** If there is no response body */
   empty?: boolean;
-  /** The expiration time, in seconds, when the response should be invalidated */
+  /** The expiration time, in milliseconds, when the response should be invalidated */
   expiration?: number;
 };
 
 export class FileSystemResponseCache implements ResponseCache {
   /** The absolute path to the directory used to store responses */
   private cacheDirectory: string;
-  /** Optional auto-expiration for all stored response */
+  /** Optional auto-expiration for all stored responses */
   private timeToLive?: number;
 
   constructor(options: { cacheDirectory: string; ttl?: number }) {
@@ -23,42 +28,54 @@ export class FileSystemResponseCache implements ResponseCache {
     this.timeToLive = options.ttl;
   }
 
+  private async ensureDirectory() {
+    await mkdir(this.cacheDirectory, { recursive: true });
+  }
+
+  private getFilePaths(cacheKey: string) {
+    // Create a hash of the cache key to use as filename
+    const hash = createHash('sha256').update(cacheKey).digest('hex');
+    return {
+      info: path.join(this.cacheDirectory, `${hash}-info.json`),
+      body: path.join(this.cacheDirectory, `${hash}-body.bin`),
+    };
+  }
+
   /** Retrieve the cache response, if any */
   async get(cacheKey: string): Promise<ResponseCacheEntry | undefined> {
-    const responseInfoKey = getResponseInfoKey(cacheKey);
-    const responseInfoMeta = await cacache.get.info(this.cacheDirectory, responseInfoKey);
+    try {
+      const paths = this.getFilePaths(cacheKey);
 
-    // Abort if the response info is not found
-    if (!responseInfoMeta) {
+      // Read and parse the info file
+      const infoBuffer = await readFile(paths.info);
+      const responseInfo: FileSystemResponseCacheInfo = JSON.parse(infoBuffer.toString());
+
+      // Check if the response has expired
+      if (responseInfo.expiration && responseInfo.expiration < Date.now()) {
+        await this.remove(cacheKey);
+        return undefined;
+      }
+
+      // Remove cache-specific data from the response info
+      const { empty, expiration, bodyPath, ...cleanInfo } = responseInfo;
+
+      // Create response body stream
+      let responseBody: ReadableStream;
+      if (empty) {
+        responseBody = Readable.toWeb(Readable.from(Buffer.alloc(0)));
+      } else {
+        const bodyBuffer = await readFile(paths.body);
+        responseBody = Readable.toWeb(Readable.from(bodyBuffer));
+      }
+
+      return {
+        body: responseBody,
+        info: cleanInfo,
+      };
+    } catch (error) {
+      // If file doesn't exist or other errors, return undefined
       return undefined;
     }
-
-    const responseInfoBuffer = await cacache.get.byDigest(
-      this.cacheDirectory,
-      responseInfoMeta.integrity
-    );
-    const responseInfo: FileSystemResponseCacheInfo = JSON.parse(responseInfoBuffer.toString());
-
-    // Remove cache-specific data from the response info
-    const { empty, expiration, bodyIntegrity } = responseInfo;
-    delete responseInfo.empty;
-    delete responseInfo.expiration;
-    delete responseInfo.bodyIntegrity;
-
-    // Invalidate the response if it has expired, or there is no known body integrity
-    if (!bodyIntegrity || (expiration && expiration < Date.now())) {
-      return undefined;
-    }
-
-    // Create a read-stream for the response body
-    const responseBody = empty
-      ? Readable.from(Buffer.alloc(0))
-      : Readable.from(cacache.get.stream.byDigest(this.cacheDirectory, bodyIntegrity));
-
-    return {
-      body: Readable.toWeb(responseBody),
-      info: responseInfo,
-    };
   }
 
   /** Store the response for caching */
@@ -66,8 +83,8 @@ export class FileSystemResponseCache implements ResponseCache {
     cacheKey: string,
     response: ResponseCacheEntry
   ): Promise<ResponseCacheEntry | undefined> {
-    const responseBodyKey = getResponseBodyKey(cacheKey);
-    const responseInfoKey = getResponseInfoKey(cacheKey);
+    await this.ensureDirectory();
+    const paths = this.getFilePaths(cacheKey);
 
     // Create a copy of the response info, to add cache-specific data
     const responseInfo: FileSystemResponseCacheInfo = { ...response.info };
@@ -78,43 +95,51 @@ export class FileSystemResponseCache implements ResponseCache {
     }
 
     try {
-      // Store the response body as stream, and calculate the stream integrity
-      responseInfo.bodyIntegrity = await new Promise((fulfill, reject) => {
-        Readable.fromWeb(response.body)
-          .pipe(cacache.put.stream(this.cacheDirectory, responseBodyKey))
-          .on('integrity', (integrity) => fulfill(integrity))
-          .once('error', reject);
-      });
-    } catch (error: any) {
-      if (error.code !== 'ENODATA') {
-        throw error;
+      // Clone the response body stream since we need to read it twice
+      const [forSize, forWrite] = response.body.tee();
+
+      // Check if the body is empty by reading the first stream
+      const reader = forSize.getReader();
+      const { value } = await reader.read();
+      reader.releaseLock();
+
+      if (!value || value.length === 0) {
+        responseInfo.empty = true;
+      } else {
+        // Create write stream and pipe response body to file
+        const writeStream = createNodeWriteStream(paths.body);
+        const nodeStream = Readable.fromWeb(forWrite);
+        nodeStream.pipe(writeStream);
+
+        // Wait for the stream to finish
+        await finished(writeStream);
+
+        responseInfo.bodyPath = paths.body;
       }
 
-      // Mark the response as empty
-      responseInfo.empty = true;
-      responseInfo.bodyIntegrity = undefined;
+      // Write info to file
+      await writeFile(paths.info, JSON.stringify(responseInfo));
+
+      return await this.get(cacheKey);
+    } catch (error) {
+      // Clean up any partially written files
+      await this.remove(cacheKey);
+      throw error;
     }
-
-    // Store the response info
-    const responseInfoBuffer = Buffer.from(JSON.stringify(responseInfo));
-    await cacache.put(this.cacheDirectory, responseInfoKey, responseInfoBuffer);
-
-    return await this.get(cacheKey);
   }
 
   /** Remove the response from caching */
   async remove(cacheKey: string): Promise<void> {
+    const paths = this.getFilePaths(cacheKey);
     await Promise.all([
-      cacache.rm.entry(this.cacheDirectory, getResponseBodyKey(cacheKey)),
-      cacache.rm.entry(this.cacheDirectory, getResponseBodyKey(cacheKey)),
+      rm(paths.info, {
+        recursive: true,
+        force: true,
+      }).catch(() => {}),
+      rm(paths.body, {
+        recursive: true,
+        force: true,
+      }).catch(() => {}),
     ]);
   }
-}
-
-function getResponseBodyKey(cacheKey: string) {
-  return `${cacheKey}UndiciBody`;
-}
-
-function getResponseInfoKey(cacheKey: string) {
-  return `${cacheKey}UndiciInfo`;
 }
