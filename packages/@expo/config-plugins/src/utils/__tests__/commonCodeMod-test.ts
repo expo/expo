@@ -51,14 +51,18 @@ describe(replaceContentsWithOffset, () => {
 describe(searchFromOffset, () => {
   it('should return matched index + offset', () => {
     expect(searchFromOffset('aabbaabb', /aabb/, 0)).toBe(0);
+    expect(searchFromOffset('aabbaabb', 'aabb', 0)).toBe(0);
     expect(searchFromOffset('aabbaabb', /aabb/, 2)).toBe(4);
+    expect(searchFromOffset('aabbaabb', 'aabb', 2)).toBe(4);
   });
 
   it('should return -1 if not found', () => {
     expect(searchFromOffset('aabbaabb', /cc/, 2)).toBe(-1);
+    expect(searchFromOffset('aabbaabb', 'cc', 2)).toBe(-1);
   });
 
   it('should return -1 if offset out of bound', () => {
     expect(searchFromOffset('aabbaabb', /cc/, 100)).toBe(-1);
+    expect(searchFromOffset('aabbaabb', 'cc', 100)).toBe(-1);
   });
 });
