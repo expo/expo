@@ -84,6 +84,7 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
         requiredPackages: [
           { version: '^9.0.0', pkg: 'eslint', file: 'eslint/package.json', dev: true },
           {
+            version: '8.1.0-canary-20250210-d85d829',
             pkg: 'eslint-config-expo',
             file: 'eslint-config-expo/package.json',
             dev: true,
