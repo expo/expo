@@ -26,9 +26,6 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
  * Android-only styles:
  * - `outlined` - A button with an outline.
  * - `elevated` - A filled button with a shadow.
- *
- * @platform android
- * @platform ios
  */
 export type ButtonVariant = 'default' | 'bordered' | 'plain' | 'borderedProminent' | 'borderless' | 'accessoryBar' | 'accessoryBarAction' | 'card' | 'link' | 'outlined' | 'elevated';
 export type ButtonProps = {
@@ -38,8 +35,7 @@ export type ButtonProps = {
     onPress?: () => void;
     /**
      * A string describing the system image to display in the button.
-     * @platform ios - SF Symbols
-     * @platform android - Material Icons
+     * Uses SF Symbols on iOS and Material Icons on Android.
      */
     systemImage?: {
         ios?: string;
