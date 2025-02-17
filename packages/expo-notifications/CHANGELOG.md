@@ -10,7 +10,8 @@
 
 ### 🐛 Bug fixes
 
-- fix ios textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
+- [iOS] Fix `didNotificationResponseReceived` being duplicating fired for pending notification responses. ([#34849](https://github.com/expo/expo/pull/34849) by [@xc2](https://github.com/xc2))
+- [iOS] Fix textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
