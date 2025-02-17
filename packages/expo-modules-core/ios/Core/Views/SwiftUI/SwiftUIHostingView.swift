@@ -8,7 +8,6 @@ import SwiftUI
 public protocol AnyExpoSwiftUIHostingView {
   func updateProps(_ rawProps: [String: Any])
   func getContentView() -> any ExpoSwiftUI.View
-  func getShadowNodeProxy() -> ExpoSwiftUI.ShadowNodeProxy
   func getProps() -> ExpoSwiftUI.ViewProps
 }
 
@@ -88,13 +87,6 @@ extension ExpoSwiftUI {
      */
     public func getContentView() -> any ExpoSwiftUI.View {
       return contentView
-    }
-
-    /**
-     Returns the view's shadowProxyNode
-     */
-    public func getShadowNodeProxy() -> ExpoSwiftUI.ShadowNodeProxy {
-      return shadowNodeProxy
     }
 
     /**

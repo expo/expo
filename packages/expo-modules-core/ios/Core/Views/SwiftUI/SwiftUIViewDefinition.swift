@@ -25,6 +25,40 @@ public extension ExpoSwiftUIView {
     }
   }
 
+  /**
+   Returns React's children as SwiftUI views, with any nested HostingViews stripped out.
+   */
+  func UnwrappedChildren<T: View>( // swiftlint:disable:this identifier_name
+    @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
+    -> T
+  ) -> some View {
+    guard let children = props.children else {
+      return AnyView(EmptyView())
+    }
+    let childrenArray = Array(children)
+    let mockShadowNodeProxy = {
+      let proxy = ExpoSwiftUI.ShadowNodeProxy()
+      proxy.setViewSize = nil
+      return proxy
+    }()
+    return AnyView(
+      ForEach(0..<childrenArray.count, id: \.self) { index in
+        let child = childrenArray[index]
+        if let hostingView = child.view as? (any ExpoSwiftUI.AnyHostingView) {
+          let content = hostingView.getContentView()
+          let propsObject = hostingView.getProps() as any ObservableObject
+          transform(
+            AnyView(
+              content
+                .environmentObject(propsObject)
+                .environmentObject(mockShadowNodeProxy)), true)
+        } else {
+          transform(AnyView(child), false)
+        }
+      }
+    )
+  }
+
   static func getDynamicType() -> AnyDynamicType {
     return DynamicSwiftUIViewType(innerType: Self.self)
   }
