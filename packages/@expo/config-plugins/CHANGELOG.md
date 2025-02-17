@@ -96,6 +96,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Added `updates.disableAntiBrickingMeasures` support. ([#34428](https://github.com/expo/expo/pull/34428) by [@kudo](https://github.com/kudo))
+- Update `searchFromOffset` types to accept string as search pattern  ([#34972](https://github.com/expo/expo/pull/34972) by [@WookieFPV](https://github.com/WookieFPV))
 
 ## 9.0.14 - 2025-01-10
 
