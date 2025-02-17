@@ -15,16 +15,25 @@ type SubmenuElement =
 
 type ContentChildren = SubmenuElement | SubmenuElement[];
 
+/**
+ * @hidden
+ */
 export type ContextMenuContentProps = {
   children: ContentChildren;
 };
 
+/**
+ * @hidden
+ */
 export type EventHandlers = {
   [key: string]: {
     [key: string]: (event: NativeSyntheticEvent<any>) => void;
   };
 };
 
+/**
+ * @hidden
+ */
 export type ContextMenuElementBase = { contextMenuElementID: string };
 
 /**
