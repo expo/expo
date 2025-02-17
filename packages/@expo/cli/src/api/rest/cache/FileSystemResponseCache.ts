@@ -1,12 +1,11 @@
-import { mkdir, readFile, writeFile, rm } from 'node:fs/promises';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
-import { Readable } from 'node:stream';
+import stream, { Readable } from 'node:stream';
 import { ReadableStream } from 'node:stream/web';
-import { createHash } from 'node:crypto';
-import { createWriteStream as createNodeWriteStream } from 'node:fs';
-import { finished } from 'node:stream/promises';
 
 import type { ResponseCache, ResponseCacheEntry } from './ResponseCache';
+import { fileExistsAsync } from '../../../utils/dir';
 
 type FileSystemResponseCacheInfo = ResponseCacheEntry['info'] & {
   /** The path to the cached body file */
@@ -28,13 +27,9 @@ export class FileSystemResponseCache implements ResponseCache {
     this.timeToLive = options.ttl;
   }
 
-  private async ensureDirectory() {
-    await mkdir(this.cacheDirectory, { recursive: true });
-  }
-
   private getFilePaths(cacheKey: string) {
     // Create a hash of the cache key to use as filename
-    const hash = createHash('sha256').update(cacheKey).digest('hex');
+    const hash = crypto.createHash('sha256').update(cacheKey).digest('hex');
     return {
       info: path.join(this.cacheDirectory, `${hash}-info.json`),
       body: path.join(this.cacheDirectory, `${hash}-body.bin`),
@@ -43,13 +38,17 @@ export class FileSystemResponseCache implements ResponseCache {
 
   /** Retrieve the cache response, if any */
   async get(cacheKey: string): Promise<ResponseCacheEntry | undefined> {
+    const paths = this.getFilePaths(cacheKey);
+
+    if (!(await fileExistsAsync(paths.info))) {
+      return undefined;
+    }
+
+    // Read and parse the info file
+    const infoBuffer = await fs.promises.readFile(paths.info);
+    const responseInfo: FileSystemResponseCacheInfo = JSON.parse(infoBuffer.toString());
+
     try {
-      const paths = this.getFilePaths(cacheKey);
-
-      // Read and parse the info file
-      const infoBuffer = await readFile(paths.info);
-      const responseInfo: FileSystemResponseCacheInfo = JSON.parse(infoBuffer.toString());
-
       // Check if the response has expired
       if (responseInfo.expiration && responseInfo.expiration < Date.now()) {
         await this.remove(cacheKey);
@@ -64,7 +63,7 @@ export class FileSystemResponseCache implements ResponseCache {
       if (empty) {
         responseBody = Readable.toWeb(Readable.from(Buffer.alloc(0)));
       } else {
-        const bodyBuffer = await readFile(paths.body);
+        const bodyBuffer = await fs.promises.readFile(paths.body);
         responseBody = Readable.toWeb(Readable.from(bodyBuffer));
       }
 
@@ -72,7 +71,7 @@ export class FileSystemResponseCache implements ResponseCache {
         body: responseBody,
         info: cleanInfo,
       };
-    } catch (error) {
+    } catch {
       // If file doesn't exist or other errors, return undefined
       return undefined;
     }
@@ -83,7 +82,7 @@ export class FileSystemResponseCache implements ResponseCache {
     cacheKey: string,
     response: ResponseCacheEntry
   ): Promise<ResponseCacheEntry | undefined> {
-    await this.ensureDirectory();
+    await fs.promises.mkdir(this.cacheDirectory, { recursive: true });
     const paths = this.getFilePaths(cacheKey);
 
     // Create a copy of the response info, to add cache-specific data
@@ -107,18 +106,18 @@ export class FileSystemResponseCache implements ResponseCache {
         responseInfo.empty = true;
       } else {
         // Create write stream and pipe response body to file
-        const writeStream = createNodeWriteStream(paths.body);
+        const writeStream = fs.createWriteStream(paths.body);
         const nodeStream = Readable.fromWeb(forWrite);
         nodeStream.pipe(writeStream);
 
         // Wait for the stream to finish
-        await finished(writeStream);
+        await stream.promises.finished(writeStream);
 
         responseInfo.bodyPath = paths.body;
       }
 
       // Write info to file
-      await writeFile(paths.info, JSON.stringify(responseInfo));
+      await fs.promises.writeFile(paths.info, JSON.stringify(responseInfo));
 
       return await this.get(cacheKey);
     } catch (error) {
@@ -131,15 +130,12 @@ export class FileSystemResponseCache implements ResponseCache {
   /** Remove the response from caching */
   async remove(cacheKey: string): Promise<void> {
     const paths = this.getFilePaths(cacheKey);
-    await Promise.all([
-      rm(paths.info, {
-        recursive: true,
-        force: true,
-      }).catch(() => {}),
-      rm(paths.body, {
-        recursive: true,
-        force: true,
-      }).catch(() => {}),
-    ]);
+    await removeAllAsync(paths.info, paths.body);
   }
+}
+
+function removeAllAsync(...paths: string[]) {
+  return Promise.all(
+    paths.map((path) => fs.promises.rm(path, { recursive: true, force: true }).catch(() => {}))
+  );
 }
