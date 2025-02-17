@@ -16,7 +16,9 @@ open class ExpoAppInstance: RCTAppDelegate {
   }
 
   @objc
-  public let reactDelegate = ExpoReactDelegate(handlers: ExpoAppDelegateSubscriberRepository.getAllReactDelegateHandlers())
+  public let reactDelegate = ExpoReactDelegate(
+    handlers: ExpoAppDelegateSubscriberRepository.getAllReactDelegateHandlers()
+  )
 
   @objc
   open override func createRootViewController() -> UIViewController {

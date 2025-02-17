@@ -9,7 +9,6 @@ private var reactDelegateHandlers = [ExpoReactDelegateHandler]()
  */
 @objc(EXExpoAppDelegateSubscriberRepository)
 public class ExpoAppDelegateSubscriberRepository: NSObject {
-
   @objc
   public static func getAllSubscribers() -> [ExpoAppDelegateSubscriberProtocol] {
     return subscribers

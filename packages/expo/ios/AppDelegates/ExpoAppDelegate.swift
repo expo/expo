@@ -58,10 +58,12 @@ open class ExpoAppDelegate: ExpoAppInstance {
       super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
-    ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { subscriber in
-      // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
-      _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
-    }
+    ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach { subscriber in
+        // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
+        _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
+      }
     return true
   }
 
@@ -71,25 +73,35 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   @objc
   open override func applicationDidBecomeActive(_ application: UIApplication) {
-    ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { $0.applicationDidBecomeActive?(application) }
+    ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach { $0.applicationDidBecomeActive?(application) }
   }
 
   @objc
   open override func applicationWillResignActive(_ application: UIApplication) {
-    ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { $0.applicationWillResignActive?(application) }
+    ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach { $0.applicationWillResignActive?(application) }
   }
 
   @objc
   open override func applicationDidEnterBackground(_ application: UIApplication) {
-    ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { $0.applicationDidEnterBackground?(application) }
+    ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach { $0.applicationDidEnterBackground?(application) }
   }
 
   open override func applicationWillEnterForeground(_ application: UIApplication) {
-    ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { $0.applicationWillEnterForeground?(application) }
+    ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach { $0.applicationWillEnterForeground?(application) }
   }
 
   open override func applicationWillTerminate(_ application: UIApplication) {
-    ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { $0.applicationWillTerminate?(application) }
+    ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach { $0.applicationWillTerminate?(application) }
   }
 
   // TODO: - Responding to Environment Changes
@@ -130,11 +142,15 @@ open class ExpoAppDelegate: ExpoAppInstance {
   // MARK: - Handling Remote Notification Registration
 
   open override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { $0.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
+    ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach { $0.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
   }
 
   open override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-    ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
+    ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
   }
 
   open override func application(
@@ -183,9 +199,11 @@ open class ExpoAppDelegate: ExpoAppInstance {
   // MARK: - Continuing User Activity and Handling Quick Actions
 
   open override func application(_ application: UIApplication, willContinueUserActivityWithType userActivityType: String) -> Bool {
-    return ExpoAppDelegateSubscriberRepository.getAllSubscribers().reduce(false) { result, subscriber in
-      return subscriber.application?(application, willContinueUserActivityWithType: userActivityType) ?? false || result
-    }
+    return ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .reduce(false) { result, subscriber in
+        return subscriber.application?(application, willContinueUserActivityWithType: userActivityType) ?? false || result
+      }
   }
 
   open override func application(
@@ -219,13 +237,17 @@ open class ExpoAppDelegate: ExpoAppInstance {
   }
 
   open override func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
-    return ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { $0.application?(application, didUpdate: userActivity) }
+    return ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach { $0.application?(application, didUpdate: userActivity) }
   }
 
   open override func application(_ application: UIApplication, didFailToContinueUserActivityWithType userActivityType: String, error: Error) {
-    return ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach {
-      $0.application?(application, didFailToContinueUserActivityWithType: userActivityType, error: error)
-    }
+    return ExpoAppDelegateSubscriberRepository
+      .getAllSubscribers()
+      .forEach {
+        $0.application?(application, didFailToContinueUserActivityWithType: userActivityType, error: error)
+      }
   }
 
 #if !os(tvOS)
