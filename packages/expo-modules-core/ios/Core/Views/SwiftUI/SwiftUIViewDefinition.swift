@@ -30,7 +30,7 @@ public extension ExpoSwiftUIView {
    */
   func UnwrappedChildren<T: View>( // swiftlint:disable:this identifier_name
     @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
-    -> T
+    -> T = { child, _ in  child }
   ) -> some View {
     guard let children = props.children else {
       return AnyView(EmptyView())
