@@ -36,11 +36,6 @@ public extension ExpoSwiftUIView {
       return AnyView(EmptyView())
     }
     let childrenArray = Array(children)
-    let mockShadowNodeProxy = {
-      let proxy = ExpoSwiftUI.ShadowNodeProxy()
-      proxy.setViewSize = nil
-      return proxy
-    }()
     return AnyView(
       ForEach(0..<childrenArray.count, id: \.self) { index in
         let child = childrenArray[index]
@@ -51,7 +46,7 @@ public extension ExpoSwiftUIView {
             AnyView(
               content
                 .environmentObject(propsObject)
-                .environmentObject(mockShadowNodeProxy)), true)
+                .environmentObject(ExpoSwiftUI.ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY)), true)
         } else {
           transform(AnyView(child), false)
         }

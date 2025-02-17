@@ -29,7 +29,7 @@ extension ExpoSwiftUI {
     public var body: some SwiftUI.View {
       if #available(iOS 16.0, tvOS 16.0, *) {
         content
-          .if(proxy.setViewSize != nil, { view in
+          .if(proxy !== ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY, { view in
             view
               .fixedSize(horizontal: axis.contains(.horizontal), vertical: axis.contains(.vertical))
               .onGeometryChange(for: CGSize.self) { proxy in
