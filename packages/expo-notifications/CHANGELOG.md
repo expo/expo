@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - fix ios textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
+- [ios] Fixed incorrect `EXNotifications-Swift.h` import.
 
 ### 💡 Others
 
