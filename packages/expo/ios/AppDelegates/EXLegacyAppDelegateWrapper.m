@@ -1,11 +1,12 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <Foundation/FoundationErrors.h>
+#import <Expo/EXLegacyAppDelegateWrapper.h>
 
 #import <ExpoModulesCore/EXSingletonModule.h>
 #import <ExpoModulesCore/Platform.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
-#import <ExpoModulesCore/EXLegacyAppDelegateWrapper.h>
+
+#import <Foundation/FoundationErrors.h>
 
 #if !TARGET_OS_OSX
 static NSMutableArray<id<UIApplicationDelegate>> *subcontractors;
