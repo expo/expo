@@ -54,6 +54,7 @@
     "deep-object-diff": "^1.1.9",
     "expo": "~52.0.0",
     "expo-2d-context": "^0.0.4",
+    "@react-native-masked-view/masked-view": "0.3.2",
     "expo-apple-authentication": "~7.1.0",
     "expo-application": "^6.0.0",
     "expo-asset": "~11.0.0",
