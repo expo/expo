@@ -41,10 +41,7 @@ class VideoTrack(
 ) : Record, Serializable {
   companion object {
     fun fromFormat(format: Format?, isSupported: Boolean): VideoTrack? {
-      if (format == null) {
-        return null
-      }
-      val id = format.id ?: return null
+      val id = format?.id ?: return null
       val size = VideoSize(format)
       val mimeType = format.sampleMimeType
       val bitrate = format.bitrate.takeIf { it != Format.NO_VALUE }
