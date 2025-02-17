@@ -3,8 +3,8 @@ import ExpoModulesCore
 struct AudioMode: Record {
   @Field var playsInSilentMode: Bool = false
   @Field var interruptionMode: InterruptionMode = .mixWithOthers
-  @Field var allowsRecording: Bool = true
-  @Field var shouldPlayInBackground: Bool = true
+  @Field var allowsRecording: Bool = false
+  @Field var shouldPlayInBackground: Bool = false
 }
 
 enum InterruptionMode: String, Enumerable {

@@ -12,7 +12,7 @@ class AudioSource(
 ) : Record
 
 class AudioMode(
-  @Field val shouldPlayInBackground: Boolean = true,
+  @Field val shouldPlayInBackground: Boolean = false,
   @Field val shouldRouteThroughEarpiece: Boolean?
 ) : Record
 

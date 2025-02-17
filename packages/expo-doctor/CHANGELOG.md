@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 1.12.7 — 2025-02-14
+
+### 💡 Others
+
+- Fix false positives on Metro config check ([#34934](https://github.com/expo/expo/pull/34934) by [@keith-kurak](https://github.com/keith-kurak))
+
 ## 1.12.6 — 2025-02-13
 
 ### 🐛 Bug fixes
