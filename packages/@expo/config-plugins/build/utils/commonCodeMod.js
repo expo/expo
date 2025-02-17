@@ -51,7 +51,7 @@ function replaceContentsWithOffset(contents, replacement, startOffset, endOffset
  * String.prototype.search() with offset support
  *
  * @param source source string to search
- * @param regexp RegExp pattern to search
+ * @param regexp RegExp pattern or string to search
  * @param offset start offset of `source` to search `regexp` pattern
  * @returns The index of the first match between the regular expression and the given string, or -1 if no match was found.
  */
