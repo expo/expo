@@ -119,6 +119,14 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     return getBufferedPosition()
   }
 
+  private(set) var availableVideoTracks: [VideoTrack] = []
+  private(set) var currentVideoTrack: VideoTrack? {
+    didSet {
+      let payload = VideoTrackChangedEventPayload(videoTrack: currentVideoTrack, oldVideoTrack: oldValue)
+      safeEmit(event: "videoTrackChange", payload: payload)
+    }
+  }
+
   override init(_ pointer: AVPlayer) {
     super.init(pointer)
     observer = VideoPlayerObserver(owner: self)
@@ -273,6 +281,20 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       oldAvailableSubtitleTracks: oldTracks
     )
     safeEmit(event: "availableSubtitleTracksChange", payload: payload)
+
+    Task {
+      let videoPlayerItem: VideoPlayerItem? = playerItem as? VideoPlayerItem
+      // Those properties will be already loaded 99.9% of time, so the event delay should be almost 0
+      availableVideoTracks = await videoPlayerItem?.videoTracks ?? []
+
+      let videoSourceLoadedPayload = VideoSourceLoadedEventPayload(
+        videoSource: videoPlayerItem?.videoSource,
+        duration: playerItem?.duration.seconds,
+        availableVideoTracks: availableVideoTracks,
+        availableSubtitleTracks: subtitles.availableSubtitleTracks
+      )
+      safeEmit(event: "sourceLoad", payload: videoSourceLoadedPayload)
+    }
   }
 
   func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?) {
@@ -280,6 +302,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     subtitles.onNewSubtitleTrackSelected(subtitleTrack: subtitleTrack)
     let payload = SubtitleTrackChangedEventPayload(subtitleTrack: subtitles.currentSubtitleTrack, oldSubtitleTrack: oldTrack)
     safeEmit(event: "subtitleTrackChange", payload: payload)
+  }
+
+  func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {
+    currentVideoTrack = newVideoTrack
   }
 
   func safeEmit(event: String, payload: Record? = nil) {
