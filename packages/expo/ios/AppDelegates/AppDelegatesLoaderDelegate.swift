@@ -3,7 +3,7 @@
 import ExpoModulesCore
 
 @objc
-public class AppDelegatesLoaderDelegate : NSObject {
+public class AppDelegatesLoaderDelegate: NSObject {
   /**
    Gets and registers AppDelegate subscribers.
    */

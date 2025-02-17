@@ -14,19 +14,19 @@ public class ExpoAppDelegateSubscriberRepository: NSObject {
   public static func getAllSubscribers() -> [ExpoAppDelegateSubscriberProtocol] {
     return subscribers
   }
-  
+
   @objc
   public static func getAllReactDelegateHandlers() -> [ExpoReactDelegateHandler] {
     return reactDelegateHandlers
   }
-  
+
   @objc
   public static func registerSubscribersFrom(modulesProvider: ModulesProvider) {
     modulesProvider.getAppDelegateSubscribers().forEach { subscriberType in
       registerSubscriber(subscriberType.init())
     }
   }
-  
+
   @objc
   public static func registerSubscriber(_ subscriber: ExpoAppDelegateSubscriberProtocol) {
     if subscribers.contains(where: { $0 === subscriber }) {
@@ -34,16 +34,16 @@ public class ExpoAppDelegateSubscriberRepository: NSObject {
     }
     subscribers.append(subscriber)
   }
-  
+
   @objc
   public static func getSubscriber(_ name: String) -> ExpoAppDelegateSubscriberProtocol? {
     return subscribers.first { String(describing: $0) == name }
   }
-  
+
   public static func getSubscriberOfType<Subscriber>(_ type: Subscriber.Type) -> Subscriber? {
     return subscribers.first { $0 is Subscriber } as? Subscriber
   }
-  
+
   @objc
   public static func registerReactDelegateHandlersFrom(modulesProvider: ModulesProvider) {
     modulesProvider.getReactDelegateHandlers()
