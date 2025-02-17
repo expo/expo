@@ -149,6 +149,7 @@ public class LocalizationModule: Module {
           return [
             "languageTag": languageTag,
             "languageCode": languageLocale.language.languageCode?.identifier,
+            "languageScriptCode": languageLocale.language.script?.identifier,
             "languageRegionCode": languageLocale.region?.identifier,
             "regionCode": userSettingsLocale.region?.identifier,
             "textDirection": languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
@@ -165,6 +166,7 @@ public class LocalizationModule: Module {
         return [
           "languageTag": languageTag,
           "languageCode": languageLocale.languageCode,
+          "languageScriptCode": languageLocale.scriptCode,
           "languageRegionCode": languageLocale.regionCode,
           "regionCode": userSettingsLocale.regionCode,
           "textDirection": Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
