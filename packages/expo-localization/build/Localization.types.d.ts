@@ -78,7 +78,7 @@ export type Locale = {
      */
     languageCode: string | null;
     /**
-     * An [ISO 15924](https://en.wikipedia.org/wiki/ISO_15924) 4-letter script code. On Android, it may be an empty string if none is defined on Web can be `null`.
+     * An [ISO 15924](https://en.wikipedia.org/wiki/ISO_15924) 4-letter script code. On Android and Web, it may be `null` if none is defined.
      * @example
      * `'Latn'`, `'Hans'`, `'Hebr'`.
      */
