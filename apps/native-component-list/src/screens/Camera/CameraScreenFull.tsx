@@ -15,7 +15,7 @@ import {
   FocusMode,
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Svg from 'react-native-svg';
@@ -101,10 +101,9 @@ function Gestures({ children }: { children: React.ReactNode }) {
     </GestureDetector>
   );
 }
-export default class CameraScreen extends React.Component<object, State> {
-  camera? = React.createRef<CameraView>();
-
-  readonly state: State = {
+export default function CameraScreen() {
+  const camera = useRef<CameraView>(null);
+  const [state, setState] = useState<State>({
     flash: 'off',
     zoom: 0,
     facing: 'back',
@@ -125,80 +124,90 @@ export default class CameraScreen extends React.Component<object, State> {
     pictureSizeId: 0,
     mode: 'picture',
     recording: false,
-  };
+  });
 
-  componentDidMount() {
+  useEffect(() => {
     if (Platform.OS !== 'web') {
-      this.ensureDirectoryExistsAsync();
+      ensureDirectoryExistsAsync();
     }
     Camera.requestCameraPermissionsAsync().then(({ status }) => {
-      this.setState({ permission: status, permissionsGranted: status === 'granted' });
+      setState((state) => ({
+        ...state,
+        permission: status,
+        permissionsGranted: status === 'granted',
+      }));
     });
 
     Camera.requestMicrophonePermissionsAsync().then(({ status }) => {
-      this.setState({ micPermission: status, micPermissionsGranted: status === 'granted' });
+      setState((state) => ({
+        ...state,
+        micPermission: status,
+        micPermissionsGranted: status === 'granted',
+      }));
     });
-  }
+  }, []);
 
-  async ensureDirectoryExistsAsync() {
+  const ensureDirectoryExistsAsync = async () => {
     try {
       await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos');
     } catch {
       // Directory exists
     }
-  }
+  };
 
-  toggleView = () =>
-    this.setState((state) => ({ showGallery: !state.showGallery, newPhotos: false }));
+  const toggleView = () =>
+    setState((state) => ({ ...state, showGallery: !state.showGallery, newPhotos: false }));
 
-  toggleMoreOptions = () => this.setState((state) => ({ showMoreOptions: !state.showMoreOptions }));
+  const toggleMoreOptions = () =>
+    setState((state) => ({ ...state, showMoreOptions: !state.showMoreOptions }));
 
-  toggleFacing = () =>
-    this.setState((state) => ({
-      facing: state.facing === 'back' ? 'front' : 'back',
-    }));
+  const toggleFacing = () =>
+    setState((state) => ({ ...state, facing: state.facing === 'back' ? 'front' : 'back' }));
 
-  toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
+  const toggleFlash = () => setState((state) => ({ ...state, flash: flashModeOrder[state.flash] }));
 
-  togglePreviewPaused = () => this.setState((state) => ({ previewPaused: !state.previewPaused }));
+  const togglePreviewPaused = () =>
+    setState((state) => ({ ...state, previewPaused: !state.previewPaused }));
 
-  toggleTorch = () => this.setState((state) => ({ torchEnabled: !state.torchEnabled }));
+  const toggleTorch = () => setState((state) => ({ ...state, torchEnabled: !state.torchEnabled }));
 
-  toggleMute = () => this.setState((state) => ({ mute: !state.mute }));
+  const toggleMute = () => setState((state) => ({ ...state, mute: !state.mute }));
 
-  toggleMirror = () => this.setState((state) => ({ mirror: !state.mirror }));
+  const toggleMirror = () => setState((state) => ({ ...state, mirror: !state.mirror }));
 
-  zoomOut = () => this.setState((state) => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
+  const toggleBarcodeScanning = () =>
+    setState((state) => ({ ...state, barcodeScanning: !state.barcodeScanning }));
 
-  zoomIn = () => this.setState((state) => ({ zoom: state.zoom + 0.1 > 1 ? 1 : state.zoom + 0.1 }));
-
-  toggleBarcodeScanning = () =>
-    this.setState((state) => ({ barcodeScanning: !state.barcodeScanning }));
-
-  toggleFocus = () =>
-    this.setState((state) => ({
+  const toggleFocus = () =>
+    setState((state) => ({
+      ...state,
       autoFocus: state.autoFocus === 'on' ? 'off' : 'on',
     }));
 
-  collectPictureSizes = async () => {
-    if (this.state.pictureSizes.length > 0) {
+  const collectPictureSizes = async () => {
+    if (state.pictureSizes.length > 0) {
       return;
     }
-    const pictureSizes = (await this.camera?.current?.getAvailablePictureSizesAsync()) || [];
+    const pictureSizes = (await camera?.current?.getAvailablePictureSizesAsync()) || [];
     let pictureSizeId = 0;
     if (Platform.OS === 'ios') {
       pictureSizeId = pictureSizes.indexOf('Photo');
     } else {
       pictureSizeId = pictureSizes.length - 1;
     }
-    this.setState({ pictureSizes, pictureSizeId, pictureSize: pictureSizes[pictureSizeId] });
+    setState((state) => ({
+      ...state,
+      pictureSizes,
+      pictureSizeId,
+      pictureSize: pictureSizes[pictureSizeId],
+    }));
   };
 
-  previousPictureSize = () => this.changePictureSize(1);
-  nextPictureSize = () => this.changePictureSize(-1);
+  const previousPictureSize = () => changePictureSize(1);
+  const nextPictureSize = () => changePictureSize(-1);
 
-  changePictureSize = (direction: number) => {
-    this.setState((state) => {
+  const changePictureSize = (direction: number) => {
+    setState((state) => {
       let newId = state.pictureSizeId + direction;
       const length = state.pictureSizes.length;
       if (newId >= length) {
@@ -207,33 +216,34 @@ export default class CameraScreen extends React.Component<object, State> {
         newId = length - 1;
       }
       return {
+        ...state,
         pictureSize: state.pictureSizes[newId],
         pictureSizeId: newId,
       };
     });
   };
 
-  takePicture = async () => {
-    await this.camera?.current?.takePictureAsync({
-      onPictureSaved: this.onPictureSaved,
-      shutterSound: !this.state.mute,
+  const takePicture = async () => {
+    await camera?.current?.takePictureAsync({
+      onPictureSaved,
+      shutterSound: !state.mute,
     });
   };
 
-  recordVideo = async () => {
-    this.setState((state) => ({ recording: !state.recording }));
-    if (this.state.recording) {
-      this.camera?.current?.stopRecording();
+  const recordVideo = async () => {
+    setState((state) => ({ ...state, recording: !state.recording }));
+    if (state.recording) {
+      camera?.current?.stopRecording();
       return Promise.resolve();
     } else {
-      return this.camera?.current?.recordAsync();
+      return camera?.current?.recordAsync();
     }
   };
 
-  takeVideo = async () => {
+  const takeVideo = async () => {
     try {
-      const result = await this.recordVideo();
-      this.setState((state) => ({ recording: !state.recording }));
+      const result = await recordVideo();
+      setState((state) => ({ ...state, recording: !state.recording }));
       if (result?.uri) {
         await FileSystem.moveAsync({
           from: result.uri,
@@ -242,26 +252,26 @@ export default class CameraScreen extends React.Component<object, State> {
       }
     } catch (error) {
       console.log(error);
-      this.setState(() => ({ recording: false }));
+      setState((state) => ({ ...state, recording: false }));
     }
   };
 
-  updatePreviewState = () => {
-    if (this.state.previewPaused) {
-      this.camera?.current?.resumePreview();
+  const updatePreviewState = () => {
+    if (state.previewPaused) {
+      camera?.current?.resumePreview();
     } else {
-      this.camera?.current?.pausePreview();
+      camera?.current?.pausePreview();
     }
-    this.togglePreviewPaused();
+    togglePreviewPaused();
   };
 
-  changeMode = () => {
-    this.setState((state) => ({ mode: state.mode === 'picture' ? 'video' : 'picture' }));
+  const changeMode = () => {
+    setState((state) => ({ ...state, mode: state.mode === 'picture' ? 'video' : 'picture' }));
   };
 
-  handleMountError = ({ message }: { message: string }) => console.error(message);
+  const handleMountError = ({ message }: { message: string }) => console.error(message);
 
-  onPictureSaved = async (photo: CameraCapturedPicture) => {
+  const onPictureSaved = async (photo: CameraCapturedPicture) => {
     if (Platform.OS === 'web') {
       photos.push(photo);
     } else {
@@ -270,27 +280,28 @@ export default class CameraScreen extends React.Component<object, State> {
         to: `${FileSystem.documentDirectory}photos/${Date.now()}.jpg`,
       });
     }
-    this.setState({ newPhotos: true });
+    setState((state) => ({ ...state, newPhotos: true }));
   };
 
-  onBarcodeScanned = (code: BarcodeScanningResult) => {
+  const onBarcodeScanned = (code: BarcodeScanningResult) => {
     console.log('Found: ', code);
-    this.setState(() => ({
+    setState((state) => ({
+      ...state,
       barcodeData: code.data,
       cornerPoints: code.cornerPoints,
     }));
   };
 
-  renderGallery() {
-    return <GalleryScreen onPress={this.toggleView} />;
-  }
+  const renderGallery = () => {
+    return <GalleryScreen onPress={toggleView} />;
+  };
 
-  renderNoPermissions = () => (
+  const renderNoPermissions = () => (
     <View style={styles.noPermissions}>
-      {this.state.permission && (
+      {state.permission && (
         <View>
           <Text style={{ color: '#4630ec', fontWeight: 'bold', textAlign: 'center', fontSize: 24 }}>
-            Permission {this.state.permission.toLowerCase()}!
+            Permission {state.permission.toLowerCase()}!
           </Text>
           <Text style={{ color: '#595959', textAlign: 'center', fontSize: 20 }}>
             You'll need to enable the camera permission to continue.
@@ -300,86 +311,78 @@ export default class CameraScreen extends React.Component<object, State> {
     </View>
   );
 
-  renderTopBar = () => (
+  const renderTopBar = () => (
     <View style={styles.topBar}>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFacing}>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleFacing}>
         <Ionicons name="camera-reverse" size={32} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
-        <Ionicons name={flashIcons[this.state.flash] as any} size={28} color="white" />
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleFlash}>
+        <Ionicons name={flashIcons[state.flash] as any} size={28} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMute}>
-        <Ionicons
-          name={volumeIcons[this.state.mute ? 'off' : 'on'] as any}
-          size={28}
-          color="white"
-        />
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleMute}>
+        <Ionicons name={volumeIcons[state.mute ? 'off' : 'on'] as any} size={28} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleTorch}>
-        <Ionicons
-          name="flashlight"
-          size={28}
-          color={this.state.torchEnabled ? 'white' : '#858585'}
-        />
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleTorch}>
+        <Ionicons name="flashlight" size={28} color={state.torchEnabled ? 'white' : '#858585'} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFocus}>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleFocus}>
         <Text
           style={[
             styles.autoFocusLabel,
-            { color: this.state.autoFocus === 'on' ? 'white' : '#6b6b6b' },
+            { color: state.autoFocus === 'on' ? 'white' : '#6b6b6b' },
           ]}>
           AF
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMirror}>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleMirror}>
         <MaterialCommunityIcons
           name="mirror"
           size={24}
-          color={this.state.mirror ? 'white' : '#858585'}
+          color={state.mirror ? 'white' : '#858585'}
         />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.updatePreviewState}>
-        {this.state.previewPaused ? (
+      <TouchableOpacity style={styles.toggleButton} onPress={updatePreviewState}>
+        {state.previewPaused ? (
           <AntDesign name="playcircleo" size={24} color="white" />
         ) : (
           <AntDesign name="pausecircleo" size={24} color="white" />
         )}
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMoreOptions}>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleMoreOptions}>
         <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />
       </TouchableOpacity>
     </View>
   );
 
-  renderBottomBar = () => (
+  const renderBottomBar = () => (
     <View style={{ alignItems: 'center' }}>
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.bottomButton} onPress={this.changeMode}>
+        <TouchableOpacity style={styles.bottomButton} onPress={changeMode}>
           <MaterialCommunityIcons
-            name={this.state.mode === 'picture' ? 'image' : 'video'}
+            name={state.mode === 'picture' ? 'image' : 'video'}
             size={32}
             color="white"
           />
         </TouchableOpacity>
         <View style={{ flex: 0.4 }}>
           <TouchableOpacity
-            onPress={this.state.mode === 'picture' ? this.takePicture : this.takeVideo}
+            onPress={state.mode === 'picture' ? takePicture : takeVideo}
             style={{ alignSelf: 'center' }}>
-            {this.state.recording ? (
+            {state.recording ? (
               <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
             ) : (
               <Ionicons
                 name="radio-button-on"
                 size={64}
-                color={this.state.mode === 'picture' ? 'white' : 'red'}
+                color={state.mode === 'picture' ? 'white' : 'red'}
               />
             )}
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.bottomButton} onPress={this.toggleView}>
+        <TouchableOpacity style={styles.bottomButton} onPress={toggleView}>
           <View>
             <MaterialCommunityIcons name="apps" size={32} color="white" />
-            {this.state.newPhotos && <View style={styles.newPhotosDot} />}
+            {state.newPhotos && <View style={styles.newPhotosDot} />}
           </View>
         </TouchableOpacity>
       </View>
@@ -388,34 +391,34 @@ export default class CameraScreen extends React.Component<object, State> {
         maximumValue={1.0}
         step={0.1}
         style={{ width: SCREEN_WIDTH - 20, height: 30 }}
-        onValueChange={(v) => this.setState({ zoom: parseFloat(v.toFixed(1)) })}
+        onValueChange={(v) => setState((s) => ({ ...s, zoom: parseFloat(v.toFixed(1)) }))}
       />
     </View>
   );
 
-  renderMoreOptions = () => (
+  const renderMoreOptions = () => (
     <View style={styles.options}>
       <View style={styles.detectors}>
-        <TouchableOpacity onPress={this.toggleBarcodeScanning}>
+        <TouchableOpacity onPress={toggleBarcodeScanning}>
           <MaterialCommunityIcons
             name="barcode-scan"
             size={32}
-            color={this.state.barcodeScanning ? 'white' : '#858585'}
+            color={state.barcodeScanning ? 'white' : '#858585'}
           />
-          <Text style={{ color: this.state.barcodeScanning ? 'white' : '#858585' }}>Code</Text>
+          <Text style={{ color: state.barcodeScanning ? 'white' : '#858585' }}>Code</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.pictureSizeContainer}>
         <Text style={styles.pictureQualityLabel}>Picture quality</Text>
         <View style={styles.pictureSizeChooser}>
-          <TouchableOpacity onPress={this.previousPictureSize} style={{ padding: 6 }}>
+          <TouchableOpacity onPress={previousPictureSize} style={{ padding: 6 }}>
             <Ionicons name="arrow-back" size={14} color="white" />
           </TouchableOpacity>
           <View style={styles.pictureSizeLabel}>
-            <Text style={{ color: 'white' }}>{this.state.pictureSize}</Text>
+            <Text style={{ color: 'white' }}>{state.pictureSize}</Text>
           </View>
-          <TouchableOpacity onPress={this.nextPictureSize} style={{ padding: 6 }}>
+          <TouchableOpacity onPress={nextPictureSize} style={{ padding: 6 }}>
             <Ionicons name="arrow-forward" size={14} color="white" />
           </TouchableOpacity>
         </View>
@@ -423,20 +426,18 @@ export default class CameraScreen extends React.Component<object, State> {
     </View>
   );
 
-  renderBarcode = () => {
-    const origin: BarcodePoint | undefined = this.state.cornerPoints
-      ? this.state.cornerPoints[0]
-      : undefined;
+  const renderBarcode = () => {
+    const origin: BarcodePoint | undefined = state.cornerPoints ? state.cornerPoints[0] : undefined;
     return (
       <Svg.Svg style={styles.barcode} pointerEvents="none">
         {origin && (
           <Svg.Text fill="#CF4048" stroke="#CF4048" fontSize="14" x={origin.x} y={origin.y - 8}>
-            {this.state.barcodeData}
+            {state.barcodeData}
           </Svg.Text>
         )}
 
         <Svg.Polygon
-          points={this.state.cornerPoints?.map((coord) => `${coord.x},${coord.y}`).join(' ')}
+          points={state.cornerPoints?.map((coord) => `${coord.x},${coord.y}`).join(' ')}
           stroke="red"
           strokeWidth={5}
         />
@@ -444,47 +445,45 @@ export default class CameraScreen extends React.Component<object, State> {
     );
   };
 
-  renderCamera = () => (
+  const renderCamera = () => (
     <View style={{ flex: 1 }}>
       <Gestures>
-        <CameraView
-          ref={this.camera}
-          style={styles.camera}
-          onCameraReady={this.collectPictureSizes}
-          responsiveOrientationWhenOrientationLocked
-          enableTorch={this.state.torchEnabled}
-          autofocus={this.state.autoFocus}
-          facing={this.state.facing}
-          animateShutter
-          mirror={this.state.mirror}
-          pictureSize={this.state.pictureSize}
-          flash={this.state.flash}
-          active
-          mode={this.state.mode}
-          mute={this.state.mute}
-          zoom={this.state.zoom}
-          videoQuality="1080p"
-          onMountError={this.handleMountError}
-          barcodeScannerSettings={{
-            barcodeTypes: ['qr', 'pdf417'],
-          }}
-          onBarcodeScanned={this.state.barcodeScanning ? this.onBarcodeScanned : undefined}>
-          {this.renderTopBar()}
-          {this.renderBottomBar()}
-        </CameraView>
+        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+          <CameraView
+            ref={camera}
+            style={StyleSheet.absoluteFill}
+            onCameraReady={collectPictureSizes}
+            responsiveOrientationWhenOrientationLocked
+            enableTorch={state.torchEnabled}
+            autofocus={state.autoFocus}
+            facing={state.facing}
+            animateShutter
+            mirror={state.mirror}
+            pictureSize={state.pictureSize}
+            flash={state.flash}
+            active
+            mode={state.mode}
+            mute={state.mute}
+            zoom={state.zoom}
+            videoQuality="1080p"
+            onMountError={handleMountError}
+            barcodeScannerSettings={{
+              barcodeTypes: ['qr', 'pdf417'],
+            }}
+            onBarcodeScanned={state.barcodeScanning ? onBarcodeScanned : undefined}
+          />
+          {renderTopBar()}
+          {renderBottomBar()}
+        </View>
       </Gestures>
-      {this.state.barcodeScanning && this.renderBarcode()}
-      {this.state.showMoreOptions && this.renderMoreOptions()}
+      {state.barcodeScanning && renderBarcode()}
+      {state.showMoreOptions && renderMoreOptions()}
     </View>
   );
 
-  render() {
-    const cameraScreenContent = this.state.permissionsGranted
-      ? this.renderCamera()
-      : this.renderNoPermissions();
-    const content = this.state.showGallery ? this.renderGallery() : cameraScreenContent;
-    return <View style={styles.container}>{content}</View>;
-  }
+  const cameraScreenContent = state.permissionsGranted ? renderCamera() : renderNoPermissions();
+  const content = state.showGallery ? renderGallery() : cameraScreenContent;
+  return <View style={styles.container}>{content}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -492,16 +491,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
-  camera: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
   topBar: {
-    flex: 0.2,
     backgroundColor: 'transparent',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingTop: 8,
   },
   bottomBar: {
     paddingBottom: 12,
