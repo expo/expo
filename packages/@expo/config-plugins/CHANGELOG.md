@@ -18,6 +18,7 @@
 - Removed creating the bridging header from the defaults plugin and added it to the template instead. ([#33539](https://github.com/expo/expo/pull/33539) by [@tsapeta](https://github.com/tsapeta))
 - Throw more descriptive error when string resource tag value is empty. ([#34212](https://github.com/expo/expo/pull/34212) by [@wschurman](https://github.com/wschurman))
 - Added `updates.disableAntiBrickingMeasures` support. ([#34428](https://github.com/expo/expo/pull/34428) by [@kudo](https://github.com/kudo))
+- Update `searchFromOffset` types to accept string as search pattern  ([#34972](https://github.com/expo/expo/pull/34972) by [@WookieFPV](https://github.com/WookieFPV))
 
 ## 9.0.12 - 2024-12-05
 
