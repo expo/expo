@@ -2,6 +2,7 @@ package expo.modules.ui
 
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -62,6 +63,7 @@ fun getImageVector(icon: String?): ImageVector? {
     val clazz = Class.forName("androidx.compose.material.icons.$theme.${name}Kt")
     clazz.declaredMethods[0].invoke(clazz::class, null) as ImageVector
   } catch (e: Exception) {
+    Log.w("ExpoUI", "The icon $icon couldn't be found.")
     return null
   }
 }
