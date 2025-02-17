@@ -46,9 +46,10 @@ export class FileSystemResponseCache implements ResponseCache {
 
     // Read and parse the info file
     const infoBuffer = await fs.promises.readFile(paths.info);
-    const responseInfo: FileSystemResponseCacheInfo = JSON.parse(infoBuffer.toString());
 
     try {
+      const responseInfo: FileSystemResponseCacheInfo = JSON.parse(infoBuffer.toString());
+
       // Check if the response has expired
       if (responseInfo.expiration && responseInfo.expiration < Date.now()) {
         await this.remove(cacheKey);
