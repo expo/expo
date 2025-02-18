@@ -57,6 +57,7 @@ function getModuleParams(module, options) {
                     // most parameters from the main bundle's URL.
                     const { searchParams } = new URL(jsc_safe_url_1.default.toNormalUrl(options.sourceUrl));
                     if (dependency.data.data.asyncType === 'worker') {
+                        // Include all modules and run the module when of type worker.
                         searchParams.set('modulesOnly', 'false');
                         searchParams.set('runModule', 'true');
                     }

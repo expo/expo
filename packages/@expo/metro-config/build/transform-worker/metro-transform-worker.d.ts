@@ -45,7 +45,6 @@ export declare function collectDependenciesForShaking(ast: babylon.ParseResult<t
                 mode: "sync" | "eager" | "lazy" | "lazy-once";
             }> | undefined;
             exportNames: string[];
-            query?: string | undefined;
             css?: {
                 url: string;
                 supports: string | null;

@@ -27,7 +27,6 @@ type MutableDependencyData = {
     locs: readonly t.SourceLocation[];
     contextParams?: RequireContextParams;
     exportNames: string[];
-    query?: string;
     css?: {
         url: string;
         supports: string | null;
@@ -83,7 +82,6 @@ type ImportQualifier = Readonly<{
     name: string;
     asyncType: AsyncDependencyType | null;
     optional: boolean;
-    query?: string;
     contextParams?: RequireContextParams;
     exportNames: string[];
 }>;
