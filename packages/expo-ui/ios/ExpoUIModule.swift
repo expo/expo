@@ -3,7 +3,7 @@
 import ExpoModulesCore
 
 public class ExpoUIModule: Module {
-    public func definition() -> ModuleDefinition {
+  public func definition() -> ModuleDefinition {
         Name("ExpoUI")
 
         View(Button.self)
