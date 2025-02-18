@@ -14,7 +14,9 @@ struct ColorPickerView: ExpoSwiftUI.View {
   @EnvironmentObject var props: ColorPickerProps
   @State private var previousHex: String = ""
   @State private var selection: Color = .clear
+
   var body: some View {
+#if !os(tvOS)
     ColorPicker(props.label ?? "", selection: $selection, supportsOpacity: props.supportsOpacity)
       .onAppear {
         selection = props.selection
@@ -28,14 +30,25 @@ struct ColorPickerView: ExpoSwiftUI.View {
           props.onValueChanged(payload)
         }
       }
+#else
+    EmptyView()
+#endif
   }
+
   private func colorToHex(_ color: Color) -> String {
     let newColor = UIColor(color)
-    var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
-    newColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-    let components = [red, green, blue, alpha].map { Int($0 * 255) }
-    let hexComponents = props.supportsOpacity ? components + [Int(alpha * 255)] : components
+    guard let components = newColor.cgColor.components else {
+      return ""
+    }
+
+    let rgba = [
+      components[0],
+      components.count > 1 ? components[1] : components[0],
+      components.count > 2 ? components[2] : components[0],
+      newColor.cgColor.alpha
+    ].map { Int(max(0, min(255, $0 * 255))) }
+
     let format = props.supportsOpacity ? "#%02X%02X%02X%02X" : "#%02X%02X%02X"
-    return String(format: format, arguments: hexComponents)
+    return String(format: format, rgba[0], rgba[1], rgba[2], props.supportsOpacity ? rgba[3] : 255)
   }
 }

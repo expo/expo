@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Add PlatformColor to types ([#34890](https://github.com/expo/expo/pull/34890) by [@jakex7](https://github.com/jakex7))
 
 ## 0.2.0 — 2024-10-22
 

@@ -242,6 +242,14 @@ public final class VideoModule: Module {
         player.audioMixingMode = audioMixingMode
       }
 
+      Property("availableVideoTracks") { player -> [VideoTrack] in
+        return player.availableVideoTracks
+      }
+
+      Property("videoTrack") { player -> VideoTrack? in
+        return player.currentVideoTrack
+      }
+
       Property("availableSubtitleTracks") { player -> [SubtitleTrack] in
         return player.subtitles.availableSubtitleTracks
       }

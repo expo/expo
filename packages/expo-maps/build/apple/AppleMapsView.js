@@ -13,7 +13,13 @@ function useNativeEvent(userHandler) {
 /**
  * @platform ios
  */
-export function AppleMapsView({ onMapClick, onMarkerClick, onCameraMove, annotations, ...props }) {
+export const AppleMapsView = React.forwardRef(({ onMapClick, onMarkerClick, onCameraMove, annotations, ...props }, ref) => {
+    const nativeRef = React.useRef(null);
+    React.useImperativeHandle(ref, () => ({
+        setCameraPosition(config) {
+            nativeRef.current?.setCameraPosition(config);
+        },
+    }));
     const onNativeMapClick = useNativeEvent(onMapClick);
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
@@ -25,6 +31,6 @@ export function AppleMapsView({ onMapClick, onMarkerClick, onCameraMove, annotat
     if (!NativeView) {
         return null;
     }
-    return (<NativeView {...props} annotations={parsedAnnotations} onMapClick={onNativeMapClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove}/>);
-}
+    return (<NativeView {...props} ref={nativeRef} annotations={parsedAnnotations} onMapClick={onNativeMapClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove}/>);
+});
 //# sourceMappingURL=AppleMapsView.js.map

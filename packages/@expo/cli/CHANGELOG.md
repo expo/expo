@@ -23,6 +23,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix async bundling. ([#34986](https://github.com/expo/expo/pull/34986) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix application identifier suggestion. ([#34843](https://github.com/expo/expo/pull/34843) by [@EvanBacon](https://github.com/EvanBacon))
 - Disable networking in webcontainers to improve compatibility. ([#34474](https://github.com/expo/expo/pull/34474) by [@EvanBacon](https://github.com/EvanBacon))
 - fix: add SSR HMR for nested server actions ([#34216](https://github.com/expo/expo/pull/34216) by [@EvanBacon](https://github.com/EvanBacon))
@@ -41,9 +42,11 @@
 - Bind debugging infrastructure to `localhost` instead of LAN ip. ([#34368](https://github.com/expo/expo/pull/34368) by [@byCedric](https://github.com/byCedric))
 - Add fallback resolution strategy for dependencies and optional peer dependencies of `expo` and `expo-router` to prevent broken resolution for isolated dependencies and hoisting issues. ([#34286](https://github.com/expo/expo/pull/34286) by [@kitten](https://github.com/kitten))
 - Preserve proxy leases on webcontainers ([#34831](https://github.com/expo/expo/pull/34831) by [@kitten](https://github.com))
+- Fixed mixed content error when serving DOM Component using tunnel. ([#34916](https://github.com/expo/expo/pull/34916) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
+- Replace cacache in fetch cache with lighter implementation. ([#34983](https://github.com/expo/expo/pull/34983) by [@EvanBacon](https://github.com/EvanBacon))
 - fix tests for bun 1.2 (bun lockfile change) ([#34383](https://github.com/expo/expo/pull/34383) by [@vonovak](https://github.com/vonovak))
 - Improve error when location polyfill is disabled. ([#34180](https://github.com/expo/expo/pull/34180) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve native publish linking with server from CI. ([#34070](https://github.com/expo/expo/pull/34070) by [@EvanBacon](https://github.com/EvanBacon))

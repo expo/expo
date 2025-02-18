@@ -8,6 +8,18 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.12.7 — 2025-02-14
+
+### 💡 Others
+
+- Fix false positives on Metro config check ([#34934](https://github.com/expo/expo/pull/34934) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.12.6 — 2025-02-13
+
+### 🐛 Bug fixes
+
 - Handle gitignore checks when git is unavailable. e.g. EAS Build. ([#32130](https://github.com/expo/expo/pull/32833) by [@betomoedano](https://github.com/betomoedano))
 
 ### 💡 Others
@@ -15,6 +27,7 @@
 - Change metro.config check to look for custom transformer key instead of asset plugin. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
 - Removed cmd.exe warning. ([#33357](https://github.com/expo/expo/pull/33357) by [@keith-kurak](https://github.com/keith-kurak))
 - Exclude `@expo-google-fonts/*` packages from the New Architecture compatibility check. ([#34127](https://github.com/expo/expo/pull/34127) by [@Simek](https://github.com/Simek))
+- Only show errors by default, add --verbose flag to see all passed checks. ([#34729](https://github.com/expo/expo/pull/34729) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 1.12.4 — 2024-11-14
 

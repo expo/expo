@@ -3,8 +3,6 @@ title: API Routes
 description: Learn how to create server endpoints with Expo Router.
 ---
 
-> **warning** API Routes is an experimental feature. Available from Expo Router v3.
-
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -13,12 +11,33 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-Expo Router enables you to write server code for all platforms, right in your **app** directory.
+Expo Router enables you to write secure server code for all platforms, right in your **app** directory.
+
+```ts app/hello+api.ts
+export function GET(request: Request) {
+  return Response.json({ hello: 'world' });
+}
+```
+
+Server features require a custom server, which can be deployed to EAS or most [other hosting providers](#deployment).
+
+## What are API Routes
+
+API Routes are functions that are executed on a server when a route is matched. They can be used to handle sensitive data, such as API keys securely, or implement custom server logic, such as exchanging auth codes for access tokens. API Routes should be executed in a [WinterCG](https://wintercg.org/)-compliant environment.
+
+In Expo, API Routes are defined by creating files in the **app** directory with the `+api.ts` extension. For example, the following API route is executed when the route `/hello` is matched.
+
+<FileTree files={['app/index.tsx', ['app/hello+api.ts', 'API Route']]} />
+
+## Create an API route
+
+<Step label="1">
+
+Ensure your project is using server output, this will configure the export and production builds to generate a server bundle as well as the client bundle.
 
 ```json app.json
 {
   "web": {
-    "bundler": "metro",
     /* @info Output a dynamic server. */
     "output": "server"
     /* @end */
@@ -26,19 +45,9 @@ Expo Router enables you to write server code for all platforms, right in your **
 }
 ```
 
-Server features require a custom Node.js server. Most hosting providers support Node.js, including [Netlify](#netlify), [Cloudflare](https://www.cloudflare.com/), and [Vercel](https://vercel.com).
+</Step>
 
-## What are API Routes
-
-API Routes are functions that are executed when a route is matched. They can be used to handle sensitive data, such as API keys securely, or implement custom server logic. API Routes should be executed in a [WinterCG](https://wintercg.org/)-compliant environment.
-
-API Routes are defined by creating files in the **app** directory with the `+api.ts` extension. For example, the following route handler is executed when the route `/hello` is matched.
-
-<FileTree files={['app/index.tsx', ['app/hello+api.ts', 'API Route']]} />
-
-## Create an API route
-
-<Step label="1">
+<Step label="2">
 
 An API route is created in the **app** directory. For example, add the following route handler. It is executed when the route `/hello` is matched.
 
@@ -52,7 +61,7 @@ You can export any of the following functions `GET`, `POST`, `PUT`, `PATCH`, `DE
 
 </Step>
 
-<Step label="2">
+<Step label="3">
 
 Start the development server with Expo CLI:
 
@@ -60,7 +69,7 @@ Start the development server with Expo CLI:
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 
 You can make a network request to the route to access the data. Run the following command to test the route:
 
@@ -82,7 +91,7 @@ export default function App() {
 }
 ```
 
-This won't work by default on native as `/hello` does not provide an origin URL. You can configure the origin URL in the app config file. It can be a mock URL in development. For example:
+Relative fetch requests automatically fetch relative to the dev server origin in development, and can be configured in production using the `origin` field in the **app.json**:
 
 ```json app.json
 {
@@ -99,9 +108,11 @@ This won't work by default on native as `/hello` does not provide an origin URL.
 }
 ```
 
+This URL can be automatically configured during EAS Builds by setting the `EXPO_UNSTABLE_DEPLOY_SERVER=1` environment variable. This will trigger a versioned server deployment which sets the origin to a preview deploy URL automatically.
+
 </Step>
 
-<Step label="4">
+<Step label="5">
 
 Deploy the website and server to a [hosting provider](#deployment) to access the routes in production on both native and web.
 
@@ -249,33 +260,6 @@ EXPO_UNSTABLE_DEPLOY_SERVER=1
 
 <Step label="4">
 
-Create an `EXPO_TOKEN` for the project and add it to the `.env` file. See: [Access Tokens](https://expo.dev/accounts/[account]/settings/access-tokens).
-
-```sh .env
-EXPO_UNSTABLE_DEPLOY_SERVER=1
-# @info <a target="_blank" href="https://expo.dev/accounts/[account]/settings/access-tokens" style="text-decoration:underline;">Setup the token</a> #
-EXPO_TOKEN=xxxxxxx
-# @end #
-```
-
-</Step>
-
-<Step label="5">
-
-Set the `owner` field in the **app.json** to the owner of the project (this is usually your EAS username).
-
-```json app.json
-{
-  "expo": {
-    "owner": "bacon"
-  }
-}
-```
-
-</Step>
-
-<Step label="6">
-
 You're now ready to use automatic server deployment! Run the build command to start the process.
 
 <Terminal cmd={['$ eas build']} />
@@ -299,7 +283,7 @@ Notes about automatic server deployment for native apps:
 - Server failures may occur during the `Bundle JavaScript` phase of EAS Build if something was not setup correctly.
 - You can manually deploy the server and set the `origin` URL before building the app if you'd like.
 - Automatic deployment can be force skipped with the environment variable `EXPO_NO_DEPLOY=1`.
-- Automatic deployment does not support `app.config.js` files yet.
+- Automatic deployment does not support [dynamic app config](/workflow/configuration/#dynamic-configuration) (**app.config.js** and **app.config.ts**) files yet.
 - Logs from the deployment will be written to `.expo/logs/deploy.log`.
 - Deployment will not run in `EXPO_OFFLINE` mode.
 

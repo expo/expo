@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+- Add color support for `ContextMenu` components. ([#34787](https://github.com/expo/expo/pull/34787) by [@behenate](https://github.com/behenate))
+- Adds `DateTimePicker` component. ([#34883](https://github.com/expo/expo/pull/34883) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
 
 ## 0.0.2 — 2025-02-11
 
 ### 🎉 New features
 
+- Add `UnwrappedChildren` for nested SwiftUI views. ([#34954](https://github.com/expo/expo/pull/34954) by [@andrew-levy](https://github.com/andrew-levy))
 - Add `color` and `elementColors` props. ([#34666](https://github.com/expo/expo/pull/34666) by [@aleqsio](https://github.com/aleqsio))
 - Add Button component.([#34340](https://github.com/expo/expo/pull/34340) by [@behenate](https://github.com/behenate))
 - Apple TV support and source restructure. ([#34532](https://github.com/expo/expo/pull/34532) by [@douglowder](https://github.com/douglowder))
@@ -23,6 +29,7 @@
 ### 🐛 Bug fixes
 
 - Fix tvOS compilation. ([#34730](https://github.com/expo/expo/pull/34730) by [@douglowder](https://github.com/douglowder))
+- Exclude `ColorPicker` on tvOS. ([#34929](https://github.com/expo/expo/pull/34929) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
