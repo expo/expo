@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added ASTC compressed texture support for the `compressedTexImage2D` and `compressedTexSubImage2D` WebGL methods.
+- Added ETC compressed texture support for the `compressedTexImage2D` and `compressedTexSubImage2D` WebGL methods.
 
 ### 🐛 Bug fixes
 
