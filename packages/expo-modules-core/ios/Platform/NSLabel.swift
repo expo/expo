@@ -1,4 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
+#if os(macOS)
+
 import AppKit
 
 // A compatibility class for UILabel on macOS
@@ -36,3 +38,5 @@ public class NSLabel: NSTextField {
     set { _ = newValue }
   }
 }
+
+#endif // os(macOS)
