@@ -1,10 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
-#import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
+#import <Expo/EXAppDelegateWrapper.h>
+
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
-#import <ExpoModulesCore/Swift.h>
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
+#import <Expo/Swift.h>
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 #import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module

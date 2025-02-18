@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
-#import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
+#import <ExpoModulesCore/Swift.h>
 
 @interface EXReactDelegateWrapper()
 
