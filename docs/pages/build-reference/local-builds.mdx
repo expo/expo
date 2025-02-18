@@ -46,7 +46,7 @@ Some of the options available for cloud builds are not available locally. Limita
 - You can only build for a specific platform (option `all` is disabled).
 - Customizing versions of software is not supported, fields `node`, `yarn`, `fastlane`, `cocoapods`, `ndk`, `image` in **eas.json** are ignored.
 - Caching is not supported.
-- EAS Secrets are not supported (set them in your environment locally instead).
+- EAS environment variables with ["Secret" visability](https://docs.expo.dev/eas/environment-variables/#visibility) are not supported (set them in your local environment instead).
 - You are responsible for making sure that the environment has all the necessary tools installed:
   - Node.js/Yarn/npm
   - fastlane (iOS only)
