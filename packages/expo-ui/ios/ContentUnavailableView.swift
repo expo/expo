@@ -18,18 +18,18 @@ struct ExpoContentUnavailableView: ExpoSwiftUI.View {
         } else {
             VStack(spacing: 10) {
               Image(systemName: props.systemImage ?? "questionmark.square")
-                    .font(.system(size: 50))
-                    .foregroundColor(.gray)
+                .font(.system(size: 50))
+                .foregroundColor(.gray)
 
               Text(props.title ?? "")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .multilineTextAlignment(.center)
+                .font(.title2)
+                .fontWeight(.semibold)
+                .multilineTextAlignment(.center)
 
               Text(props.description ?? "")
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
             }
             .padding()
         }
