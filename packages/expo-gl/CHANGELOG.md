@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added ETC compressed texture support for the `compressedTexImage2D` and `compressedTexSubImage2D` WebGL methods.
+- Added ETC compressed texture support for the `compressedTexImage2D` and `compressedTexSubImage2D` WebGL methods. ([#35022](https://github.com/expo/expo/pull/35022) by [@hmallen99](https://github.com/hmallen99))
 
 ### 🐛 Bug fixes
 
