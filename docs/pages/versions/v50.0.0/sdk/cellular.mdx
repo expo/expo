@@ -24,7 +24,13 @@ import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-cellular` repository](https://github.com/expo/expo/tree/main/packages/expo-cellular#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native a **android** project manually, then you need to add `android.permission.READ_PHONE_STATE` permission to your project's **AndroidManifest.xml**. This permission is used for `TelephonyManager`.
+
+```xml android/app/src/main/AndroidManifest.xml
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+```
+
+This library does not require the more risky `READ_PRIVILEGED_PHONE_STATE` permission.
 
 </ConfigReactNative>
 
