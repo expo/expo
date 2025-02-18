@@ -346,6 +346,7 @@ export const general = [
         makePage('guides/using-logrocket.mdx'),
         makePage('guides/using-sentry.mdx'),
         makePage('guides/using-bugsnag.mdx'),
+        makePage('guides/using-vexo.mdx'),
         makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
         makePage('guides/in-app-purchases.mdx'),

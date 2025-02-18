@@ -19,6 +19,7 @@ extension ExpoSwiftUI {
     let content: Content
     let proxy: ShadowNodeProxy
     let axis: AxisSet
+    @State private var lastMeasuredSize: CGSize = .zero
 
     public init(shadowNodeProxy: ShadowNodeProxy, axis: AxisSet = .both, @ViewBuilder _ content: () -> Content) {
       self.proxy = shadowNodeProxy
@@ -31,14 +32,20 @@ extension ExpoSwiftUI {
         content
           .if(proxy !== ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY, { view in
             view
-              .fixedSize(horizontal: axis.contains(.horizontal), vertical: axis.contains(.vertical))
+              .frame(
+                idealWidth: axis.contains(.horizontal) ? lastMeasuredSize.width : nil,
+                idealHeight: axis.contains(.vertical) ? lastMeasuredSize.height : nil
+              )
               .onGeometryChange(for: CGSize.self) { proxy in
                 proxy.size
               } action: {
                 let width = axis.contains(.horizontal) ? $0.width : ShadowNodeProxy.UNDEFINED_SIZE
                 let height = axis.contains(.vertical) ? $0.height : ShadowNodeProxy.UNDEFINED_SIZE
                 let size = CGSize(width: width, height: height)
-                proxy.setViewSize?(size)
+                if lastMeasuredSize != size {
+                  lastMeasuredSize = size
+                  proxy.setViewSize?(size)
+                }
               }
           })
       } else {
