@@ -31,6 +31,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Bump react-navigation versions. ([#33758](https://github.com/expo/expo/pull/33758) by [@marklawlor](https://github.com/marklawlor))
+- Removed unused `@react-navigation/core` devDependencies. ([#33829](https://github.com/expo/expo/pull/33829) by [@kudo](https://github.com/kudo))
 
 ## 5.0.19 - 2024-12-10
 
