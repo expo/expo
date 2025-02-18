@@ -469,13 +469,13 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
     path
   );
 
-  // if (state.collectOnly !== true) {
-  path.replaceWith(
-    makeResolveWeakTemplate({
-      MODULE_ID: createModuleIDExpression(dependency, state),
-    })
-  );
-  // }
+  if (state.collectOnly !== true) {
+    path.replaceWith(
+      makeResolveWeakTemplate({
+        MODULE_ID: createModuleIDExpression(dependency, state),
+      })
+    );
+  }
 }
 
 function processResolveWorkerCall(path: NodePath<CallExpression>, state: State): void {

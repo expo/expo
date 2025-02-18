@@ -5,7 +5,10 @@ import android.media.MediaMetadataRetriever
 import android.view.SurfaceView
 import androidx.media3.common.C
 import android.webkit.URLUtil
+import androidx.annotation.OptIn
+import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -14,8 +17,10 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DecoderReuseEvaluation
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
@@ -33,6 +38,7 @@ import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
+import expo.modules.video.records.VideoTrack
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
@@ -63,7 +69,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   var uncommittedSource: VideoSource? = source
-  private var lastLoadedSource by IgnoreSameSet<VideoSource?>(null) { new, old ->
+  private var commitedSource by IgnoreSameSet<VideoSource?>(null) { new, old ->
     sendEvent(PlayerEvent.SourceChanged(new, old))
   }
 
@@ -152,6 +158,19 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       sendEvent(PlayerEvent.AudioMixingModeChanged(value, old))
     }
 
+  var isLoadingNewSource = false
+    private set
+
+  var currentVideoTrack: VideoTrack? = null
+    private set(value) {
+      val old = field
+      field = value
+      sendEvent(PlayerEvent.VideoTrackChanged(value, old))
+    }
+
+  var availableVideoTracks: List<VideoTrack> = emptyList()
+    private set
+
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
@@ -160,10 +179,25 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     override fun onTracksChanged(tracks: Tracks) {
       val oldSubtitleTracks = ArrayList(subtitles.availableSubtitleTracks)
       val oldCurrentTrack = subtitles.currentSubtitleTrack
+
+      // Emit the tracks change event to update the subtitles
       sendEvent(PlayerEvent.TracksChanged(tracks))
 
       val newSubtitleTracks = subtitles.availableSubtitleTracks
       val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
+      availableVideoTracks = tracks.toVideoTracks()
+
+      if (isLoadingNewSource) {
+        sendEvent(
+          PlayerEvent.VideoSourceLoaded(
+            commitedSource,
+            this@VideoPlayer.player.duration / 1000.0,
+            availableVideoTracks,
+            newSubtitleTracks
+          )
+        )
+        isLoadingNewSource = false
+      }
 
       if (!oldSubtitleTracks.toArray().contentEquals(newSubtitleTracks.toArray())) {
         sendEvent(PlayerEvent.AvailableSubtitleTracksChanged(newSubtitleTracks, oldSubtitleTracks))
@@ -229,9 +263,17 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
   }
 
+  private val analyticsListener = object : AnalyticsListener {
+    override fun onVideoInputFormatChanged(eventTime: AnalyticsListener.EventTime, format: Format, decoderReuseEvaluation: DecoderReuseEvaluation?) {
+      currentVideoTrack = availableVideoTracks.firstOrNull { it.format?.id == format.id }
+      super.onVideoInputFormatChanged(eventTime, format, decoderReuseEvaluation)
+    }
+  }
+
   init {
     ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
     player.addListener(playerListener)
+    player.addAnalyticsListener(analyticsListener)
     VideoManager.registerVideoPlayer(this)
 
     // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
@@ -250,7 +292,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       player.release()
     }
     uncommittedSource = null
-    lastLoadedSource = null
+    commitedSource = null
   }
 
   override fun deallocate() {
@@ -265,16 +307,22 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   fun prepare() {
+    availableVideoTracks = listOf()
+    currentVideoTrack = null
+
     val newSource = uncommittedSource
     val mediaSource = newSource?.toMediaSource(context)
+
     mediaSource?.let {
       player.setMediaSource(it)
       player.prepare()
-      lastLoadedSource = newSource
+      commitedSource = newSource
       uncommittedSource = null
+      isLoadingNewSource = true
     } ?: run {
       player.clearMediaItems()
       player.prepare()
+      isLoadingNewSource = false
     }
   }
 
@@ -347,7 +395,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   fun toMetadataRetriever(): MediaMetadataRetriever {
-    val source = uncommittedSource ?: lastLoadedSource
+    val source = uncommittedSource ?: commitedSource
     val uri = source?.uri ?: throw IllegalStateException("Video source is not set")
     val stringUri = uri.toString()
 
@@ -365,4 +413,23 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
     return mediaMetadataRetriever
   }
+}
+
+// Extension functions
+
+@OptIn(UnstableApi::class)
+private fun Tracks.toVideoTracks(): List<VideoTrack> {
+  val videoTracks = mutableListOf<VideoTrack?>()
+  for (group in this.groups) {
+    for (i in 0 until group.length) {
+      val format = group.getTrackFormat(i)
+      val isSupported = group.isTrackSupported(i)
+
+      if (!MimeTypes.isVideo(format.sampleMimeType)) {
+        continue
+      }
+      videoTracks.add(VideoTrack.fromFormat(format, isSupported))
+    }
+  }
+  return videoTracks.filterNotNull()
 }

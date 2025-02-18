@@ -67,37 +67,6 @@ function collectDependencies(ast, options) {
         collectOnly: options.collectOnly,
     };
     (0, traverse_1.default)(ast, {
-        // Match new Worker() patterns
-        NewExpression(path, state) {
-            if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'Worker') {
-                const [firstArg] = path.node.arguments;
-                // Match: new Worker(new URL("../path/to/module", import.meta.url))
-                if (firstArg &&
-                    firstArg.type === 'NewExpression' &&
-                    firstArg.callee.type === 'Identifier' &&
-                    firstArg.callee.name === 'URL' &&
-                    firstArg.arguments.length > 0 &&
-                    firstArg.arguments[0].type === 'StringLiteral') {
-                    const moduleSpecifier = firstArg.arguments[0].value;
-                    const dependency = registerDependency(state, {
-                        name: moduleSpecifier,
-                        asyncType: 'worker',
-                        optional: false,
-                        exportNames: ['*'],
-                    }, path);
-                    // If the pass is only collecting dependencies then we should avoid mutating the AST,
-                    // this enables calling collectDependencies multiple times on the same AST.
-                    if (state.collectOnly !== true) {
-                        // Transform the module specifier ("../path/to/module") to a reference to the `paths` object in the serializer to get the final URL.
-                        const urlConstructor = path.get('arguments')[0];
-                        urlConstructor.get('arguments')[0].replaceWith(makeResolveTemplate({
-                            DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
-                            MODULE_ID: createModuleIDExpression(dependency, state),
-                        }));
-                    }
-                }
-            }
-        },
         CallExpression(path, state) {
             if (visited.has(path.node)) {
                 return;
@@ -138,18 +107,6 @@ function collectDependencies(ast, options) {
                 !callee.computed &&
                 !path.scope.getBinding('require')) {
                 processResolveWeakCall(path, state);
-                visited.add(path.node);
-                return;
-            }
-            // Match:
-            if (callee.type === 'MemberExpression' &&
-                callee.object.type === 'Identifier' &&
-                callee.object.name === 'require' &&
-                callee.property.type === 'Identifier' &&
-                callee.property.name === 'resolveWorker' &&
-                !callee.computed &&
-                !path.scope.getBinding('require')) {
-                processResolveWorkerCall(path, state);
                 visited.add(path.node);
                 return;
             }
@@ -290,39 +247,18 @@ function processRequireContextCall(path, state) {
     transformer.transformSyncRequire(path, dep, state);
 }
 function processResolveWeakCall(path, state) {
-    const name = getModuleNameAndQualifiersFromCallArgs(path);
+    const name = getModuleNameFromCallArgs(path);
     if (name == null) {
         throw new InvalidRequireCallError(path);
     }
     const dependency = registerDependency(state, {
-        name: name.name,
-        query: name.query,
+        name,
         asyncType: 'weak',
-        optional: isOptionalDependency(name.name, path, state),
-        exportNames: ['*'],
-    }, path);
-    // if (state.collectOnly !== true) {
-    path.replaceWith(makeResolveWeakTemplate({
-        MODULE_ID: createModuleIDExpression(dependency, state),
-    }));
-    // }
-}
-function processResolveWorkerCall(path, state) {
-    const name = getModuleNameAndQualifiersFromCallArgs(path);
-    if (name == null) {
-        throw new InvalidRequireCallError(path);
-    }
-    const dependency = registerDependency(state, {
-        name: name.name,
-        query: name.query,
-        asyncType: 'worker',
-        // asyncType: 'async',
-        optional: isOptionalDependency(name.name, path, state),
+        optional: isOptionalDependency(name, path, state),
         exportNames: ['*'],
     }, path);
     if (state.collectOnly !== true) {
-        path.replaceWith(makeResolveTemplate({
-            DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+        path.replaceWith(makeResolveWeakTemplate({
             MODULE_ID: createModuleIDExpression(dependency, state),
         }));
     }
@@ -363,10 +299,8 @@ function getExportNamesFromPath(path) {
 exports.getExportNamesFromPath = getExportNamesFromPath;
 function collectImports(path, state) {
     if (path.node.source) {
-        const name = extractNameAndQueryFromModuleSpecifier(path.node.source.value);
         registerDependency(state, {
-            name: name.name,
-            query: name.query,
+            name: path.node.source.value,
             asyncType: null,
             optional: false,
             exportNames: getExportNamesFromPath(path),
@@ -392,7 +326,7 @@ function processImportCall(path, state, options) {
         debug(`Magic comment at line ${line || '<unknown>'}: Ignoring import: ${(0, generator_1.default)(path.node).code}`);
         return;
     }
-    const name = getModuleNameAndQualifiersFromCallArgs(path);
+    const name = getModuleNameFromCallArgs(path);
     if (name == null) {
         if (options.dynamicRequires === 'warn') {
             warnDynamicRequire(path);
@@ -401,9 +335,9 @@ function processImportCall(path, state, options) {
         throw new InvalidRequireCallError(path);
     }
     const dep = registerDependency(state, {
-        ...name,
+        name,
         asyncType: options.asyncType,
-        optional: isOptionalDependency(name.name, path, state),
+        optional: isOptionalDependency(name, path, state),
         exportNames: ['*'],
     }, path);
     const transformer = state.dependencyTransformer;
@@ -426,9 +360,9 @@ function warnDynamicRequire({ node }, message = '') {
     console.warn(`Dynamic import at line ${line || '<unknown>'}: ${(0, generator_1.default)(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim());
 }
 function processRequireCall(path, state) {
-    const nameAndQualifiers = getModuleNameAndQualifiersFromCallArgs(path);
+    const name = getModuleNameFromCallArgs(path);
     const transformer = state.dependencyTransformer;
-    if (nameAndQualifiers == null) {
+    if (name == null) {
         if (state.dynamicRequires === 'reject') {
             throw new InvalidRequireCallError(path);
         }
@@ -442,10 +376,9 @@ function processRequireCall(path, state) {
         return;
     }
     const dep = registerDependency(state, {
-        name: nameAndQualifiers.name,
-        query: nameAndQualifiers.query,
+        name,
         asyncType: null,
-        optional: isOptionalDependency(nameAndQualifiers.name, path, state),
+        optional: isOptionalDependency(name, path, state),
         exportNames: ['*'],
     }, path);
     transformer.transformSyncRequire(path, dep, state);
@@ -489,25 +422,6 @@ function isOptionalDependency(name, path, state) {
     }
     return false;
 }
-function getModuleNameAndQualifiersFromCallArgs(path) {
-    const name = getModuleNameFromCallArgs(path);
-    return extractNameAndQueryFromModuleSpecifier(name);
-}
-function extractNameAndQueryFromModuleSpecifier(name) {
-    if (name != null) {
-        const matched = name.match(/([^?]+)(\?.*)?/);
-        if (matched) {
-            return {
-                name: matched[1],
-                query: matched[2],
-            };
-        }
-        return {
-            name,
-        };
-    }
-    return null;
-}
 function getModuleNameFromCallArgs(path) {
     const args = path.get('arguments');
     if (!Array.isArray(args) || args.length !== 1) {
@@ -540,9 +454,6 @@ const makeAsyncPrefetchTemplateWithName = template_1.default.expression(`
 `);
 const makeAsyncImportMaybeSyncTemplate = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
-`);
-const makeResolveTemplate = template_1.default.expression(`
-  DEPENDENCY_MAP.paths[MODULE_ID]
 `);
 const makeAsyncImportMaybeSyncTemplateWithName = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
@@ -608,12 +519,9 @@ function createModuleNameLiteral(dependency) {
 }
 function getKeyForDependency(qualifier) {
     let key = qualifier.name;
-    const { asyncType, query } = qualifier;
+    const { asyncType } = qualifier;
     if (asyncType) {
         key += ['', asyncType].join('\0');
-    }
-    if (query) {
-        key += ['', query].join('\0');
     }
     const { contextParams } = qualifier;
     if (contextParams) {
@@ -638,7 +546,6 @@ class DependencyRegistry {
                 name: qualifier.name,
                 asyncType: qualifier.asyncType,
                 exportNames: qualifier.exportNames,
-                query: qualifier.query,
                 locs: [],
                 index: this._dependencies.size,
                 key: crypto.createHash('sha1').update(key).digest('base64'),
