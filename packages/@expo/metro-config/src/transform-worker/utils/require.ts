@@ -11,6 +11,10 @@ export async function tryRequireThenImport<TModule>(moduleId: string): Promise<T
     }
 
     if (requireError?.code === 'ERR_REQUIRE_ESM' && importESM) {
+      if (process.platform === 'win32') {
+        moduleId = moduleId.replace(/\\/g, '/');
+      }
+
       return (await importESM(moduleId)).default;
     }
 
