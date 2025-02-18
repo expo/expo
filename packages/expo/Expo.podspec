@@ -63,6 +63,7 @@ Pod::Spec.new do |s|
 
   header_search_paths = [
     '"$(PODS_ROOT)/Headers/Private/React-Core"', # as React-RCTAppDelegate.podspec to access JSCExecutorFactory.h
+    '"$(PODS_ROOT)/DoubleConversion"',
   ]
   if ENV['USE_FRAMEWORKS']
     header_search_paths.concat([
@@ -74,6 +75,11 @@ Pod::Spec.new do |s|
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererconsistency/React_rendererconsistency.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/folly.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/fmt/fmt.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers"',
       # [end] transitive dependencies of React-RCTAppDelegate that are not defined modules
     ])
   end
@@ -88,6 +94,7 @@ Pod::Spec.new do |s|
   }
 
   s.dependency 'React-RCTAppDelegate'
+  s.dependency 'React-RCTFabric'
   if reactNativeTargetVersion >= 77
     s.dependency 'ReactAppDependencyProvider'
   end
