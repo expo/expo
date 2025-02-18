@@ -5,9 +5,10 @@ import ExpoModulesCore
 
 private let EVENT_LOCATION_CHANGED = "Expo.locationChanged"
 private let EVENT_HEADING_CHANGED = "Expo.headingChanged"
+private let EVENT_LOCATION_ERROR = "Expo.locationError"
 
 public final class LocationModule: Module {
-  private lazy var locationStreamers = [Int: BaseLocationProvider]()
+  private lazy var locationStreamers = [Int: BaseStreamer]()
 
   private var taskManager: EXTaskManagerInterface {
     get throws {
@@ -21,7 +22,7 @@ public final class LocationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLocation")
 
-    Events(EVENT_LOCATION_CHANGED, EVENT_HEADING_CHANGED)
+    Events(EVENT_LOCATION_CHANGED, EVENT_HEADING_CHANGED, EVENT_LOCATION_ERROR)
 
     OnCreate {
       let permissionsManager = self.appContext?.permissions
@@ -60,14 +61,20 @@ public final class LocationModule: Module {
 
       // Start streaming in another task, so the returned promise is not waiting for the stream to end.
       Task {
-        for try await locations in streamer.streamLocations() {
-          guard let location = locations.last else {
-            continue
+        do {
+          for try await locations in try streamer.streamLocations() {
+            guard let location = locations.last else {
+              continue
+            }
+            sendEvent(EVENT_LOCATION_CHANGED, [
+              "watchId": watchId,
+              "location": exportLocation(location)
+            ])
           }
-          sendEvent(EVENT_LOCATION_CHANGED, [
-            "watchId": watchId,
-            "location": exportLocation(location)
-          ])
+        } catch let exception as Exception {
+          sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": exception.reason])
+        } catch {
+          sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": error.localizedDescription])
         }
       }
     }
@@ -91,20 +98,29 @@ public final class LocationModule: Module {
 
       // Start streaming in another task, so the returned promise is not waiting for the stream to end.
       Task {
-        for try await heading in streamer.streamDeviceHeading() {
-          sendEvent(EVENT_HEADING_CHANGED, [
-            "watchId": watchId,
-            "heading": [
-              "trueHeading": heading.trueHeading,
-              "magHeading": heading.magneticHeading,
-              "accuracy": normalizeAccuracy(heading.headingAccuracy)
-            ]
-          ])
+        do {
+          for try await heading in try streamer.streamDeviceHeading() {
+            sendEvent(EVENT_HEADING_CHANGED, [
+              "watchId": watchId,
+              "heading": [
+                "trueHeading": heading.trueHeading,
+                "magHeading": heading.magneticHeading,
+                "accuracy": normalizeAccuracy(heading.headingAccuracy)
+              ]
+            ])
+          }
+        } catch let exception as Exception {
+          sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": exception.reason])
+        } catch {
+          sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": error.localizedDescription])
         }
       }
     }
 
     AsyncFunction("removeWatchAsync") { (watchId: Int) in
+      if let streamer = locationStreamers[watchId] {
+        streamer.stopStreaming()
+      }
       locationStreamers[watchId] = nil
     }
 

@@ -26,6 +26,17 @@ class Subscriber {
         return id;
     }
     /**
+     * Registers given callback under and existing id. This can be used to
+     * create a subscriber for the error event on the same id as the location
+     * event is subscribed to.
+     */
+    registerCallbackForId(watchId, callback) {
+        this.maybeInitializeSubscription();
+        const id = watchId;
+        this.callbacks[id] = callback;
+        return id;
+    }
+    /**
      * Unregisters a callback with given id and revokes the subscription if possible.
      */
     unregisterCallback(id) {
@@ -53,6 +64,7 @@ class Subscriber {
 }
 export const LocationSubscriber = new Subscriber('Expo.locationChanged', 'location');
 export const HeadingSubscriber = new Subscriber('Expo.headingChanged', 'heading');
+export const LocationErrorSubscriber = new Subscriber('Expo.locationError', 'reason');
 /**
  * @private Necessary for some unit tests.
  */
