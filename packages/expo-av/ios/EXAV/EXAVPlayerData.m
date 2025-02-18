@@ -167,22 +167,21 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
       NSString *errorMessage = @"Load encountered an error: [AVAsset isPlayable:] returned false. The asset does not contains a playable content or is not supported by the device.";
       [self _finishLoadWithError:errorMessage];
       return;
+    } 
+    // We prepare three items for AVQueuePlayer, so when the first finishes playing,
+    // second can start playing and the third can start preparing to play.
+    AVPlayerItem *firstplayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+    AVPlayerItem *secondPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+    AVPlayerItem *thirdPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+    self.items = @[firstplayerItem, secondPlayerItem, thirdPlayerItem];
+    self.player = [AVQueuePlayer queuePlayerWithItems:@[firstplayerItem, secondPlayerItem, thirdPlayerItem]];
+    if (self.player) {
+      [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
+      [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
+      [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
     } else {
-      // We prepare three items for AVQueuePlayer, so when the first finishes playing,
-      // second can start playing and the third can start preparing to play.
-      AVPlayerItem *firstplayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-      AVPlayerItem *secondPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-      AVPlayerItem *thirdPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-      self.items = @[firstplayerItem, secondPlayerItem, thirdPlayerItem];
-      self.player = [AVQueuePlayer queuePlayerWithItems:@[firstplayerItem, secondPlayerItem, thirdPlayerItem]];
-      if (self.player) {
-        [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-        [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-        [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
-      } else {
-        NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
-        [self _finishLoadWithError:errorMessage];
-      }
+      NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
+      [self _finishLoadWithError:errorMessage];
     }
   }];
 }
