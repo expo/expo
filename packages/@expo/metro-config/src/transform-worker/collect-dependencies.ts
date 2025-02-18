@@ -411,11 +411,13 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
     path
   );
 
-  path.replaceWith(
-    makeResolveWeakTemplate({
-      MODULE_ID: createModuleIDExpression(dependency, state),
-    })
-  );
+  if (state.collectOnly !== true) {
+    path.replaceWith(
+      makeResolveWeakTemplate({
+        MODULE_ID: createModuleIDExpression(dependency, state),
+      })
+    );
+  }
 }
 
 export function getExportNamesFromPath(path: NodePath<any>): string[] {
