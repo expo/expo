@@ -20,10 +20,6 @@
 																					 bridgelessEnabled:self.bridgelessEnabled];
 
 	__weak __typeof(self) weakSelf = self;
-	configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
-	{
-		return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
-	};
 
 	configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> bridge, NSDictionary *launchOptions)
 	{

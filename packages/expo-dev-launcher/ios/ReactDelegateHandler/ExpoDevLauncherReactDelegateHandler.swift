@@ -52,19 +52,20 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
     // todo: remove: Util so that can extract the target from EXAppDelegateWrapper
     class DummySelectorHandler: NSObject { @objc func dummyMethod() {} }
-    
+
     guard let expoAppInstance = (UIApplication.shared.delegate as? ExpoAppDelegate) ??
       // todo: Remove when EXAppDelegateWrapper is removed
             (UIApplication.shared.delegate as? EXAppDelegateWrapper)?.forwardingTarget(for: #selector(DummySelectorHandler().dummyMethod)) as? ExpoAppDelegate else {
         fatalError("The `UIApplication.shared.delegate` is neither an `ExpoAppInstance` nor an `EXAppDelegateWrapper`.")
     }
     self.expoAppDelegate = expoAppInstance
-    
+
     // Reset rctAppDelegate so we can relaunch the app
     if (expoAppInstance.reactNativeFactory?.delegate?.newArchEnabled() ?? false) {
       expoAppInstance.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
-      expoAppInstance.reactNativeFactory?.setValue(nil, forKey: "bridge")
+	  expoAppInstance.reactNativeFactory?.bridge = nil
+	  expoAppInstance.reactNativeFactory?.rootViewFactory.bridge = nil
     }
 
     let rootView = expoAppInstance.recreateRootView(
