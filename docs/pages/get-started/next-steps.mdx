@@ -1,29 +1,51 @@
----
-title: Next steps
-description: Develop, review, and submit your project.
-hideTOC: true
----
+const express = require('express');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const app = express();
 
-import { Terminal } from '~/ui/components/Snippet';
+// MongoDB connection
+mongoose.connect('mongodb://localhost/pinterestClone', { useNewUrlParser: true, useUnifiedTopology: true });
 
-Here are next steps to continue building your app:
+// Define Schema for Images
+const imageSchema = new mongoose.Schema({
+  url: String,
+  description: String,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  tags: [String],
+  likes: { type: Number, default: 0 },
+});
 
-### Reset your project
+const Image = mongoose.model('Image', imageSchema);
 
-You can remove the boilerplate code and start fresh with a new project. Run the following command to reset your project:
+// Set up Multer for image upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + file.originalname);
+  },
+});
 
-<Terminal cmd={['$ npm run reset-project']} />
+const upload = multer({ storage: storage });
 
-This command will move the existing files in **app** to **app-example**, then create a new **app** directory with a new **index.tsx** file.
+// Routes
+app.post('/upload', upload.single('image'), async (req, res) => {
+  try {
+    const image = new Image({
+      url: req.file.path,
+      description: req.body.description,
+      user: req.body.userId,
+      tags: req.body.tags.split(','),
+    });
+    await image.save();
+    res.status(200).json(image);
+  } catch (err) {
+    res.status(500).send('Error uploading image');
+  }
+});
 
-### Develop, review, and deploy
+app.listen(3000, () => {
+  console.log('Server started on http://localhost:3000');
+});
 
-Learn how to develop by reading the docs in the Develop section. You'll learn how to create [UI elements](/develop/user-interface/splash-screen-and-app-icon/), add [unit tests](/develop/unit-testing/), include [native modules](/config-plugins/introduction/), and more.
-
-Once you've developed your app, you can share it with your teammates for [review](/review/overview).
-
-Finally, you can [build](/deploy/build-project/) and [submit](/deploy/submit-to-app-stores/) your project to the app stores.
-
-### Step-by-step guide
-
-For a guided, step-by-step walkthrough of building an app with Expo from start to finish, check out the [tutorial](/tutorial/introduction/).
