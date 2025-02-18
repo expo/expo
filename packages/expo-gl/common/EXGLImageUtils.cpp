@@ -136,6 +136,7 @@ std::shared_ptr<uint8_t> loadImage(
   return std::shared_ptr<uint8_t>(nullptr);
 }
 
+// reference: https://registry.khronos.org/OpenGL-Refpages/es3.0/html/glCompressedTexImage2D.xhtml
 GLsizei calculateImageSize(GLsizei width, GLsizei height, GLint internalFormat) {
     switch (internalFormat) {
         case GL_COMPRESSED_R11_EAC:
