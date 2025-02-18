@@ -32,9 +32,13 @@ For example:
   ]}
 />
 
+## Configuration Reference
+
+Below is a reference for the syntax of the workflow configuration file.
+
 ## `name`
 
-The name of the workflow. This is displayed on the Expo dashboard on the workflows list page and is the title of the workflow's detail page.
+The human-friendly name of the workflow. This is displayed on the Expo dashboard on the workflows list page and is the title of the workflow's detail page.
 
 ```yaml
 # @info #
@@ -50,21 +54,23 @@ The `on` key defines which GitHub events trigger the workflow. Any workflow can 
 on:
   # Trigger on pushes to main branch
   push:
-    branches: ['main']
+    branches:
+      - main
   # And on pull requests starting with 'version-'
   pull_request:
-    branches: ['version-*']
+    branches:
+      - version-*
 ```
 
 ### `on.push`
 
 Runs your workflow when you push a commit to matching branches and/or tags.
 
-With the `branches` array, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only push to the `main` branch will trigger the workflow. Supports globs.
+With the `branches` list, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only pushes to the `main` branch will trigger the workflow. Supports globs.
 
-With the `tags` array, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed will trigger the workflow. Supports globs.
+With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed will trigger the workflow. Supports globs.
 
-When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger on push events to all branches and will not trigger on tag pushes. If only one of the two arrays is provided the other defaults to `[]`.
+When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger on push events to all branches and will not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
 
 ```yaml
 on:
@@ -72,22 +78,22 @@ on:
   push:
     # @end #
     branches:
-      - 'main'
-      - 'feature/**'
+      - main
+      - feature/**
       # other branch names and globs
     tags:
-      - 'v1'
-      - 'v2*'
+      - v1
+      - v2*
       # other tag names and globs
 ```
 
 ### `on.pull_request`
 
-Runs your workflow when a pull request event occurs on the matching branches.
+Runs your workflow when you create or update a pull request that targets one of the matching branches.
 
-With the `branches` array, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to the `main` branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches.
+With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches.
 
-With the `types` array, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
+With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
 
 - `opened`
 - `reopened`
@@ -100,11 +106,11 @@ on:
   pull_request:
     # @end #
     branches:
-      - 'main'
-      - 'feature/**'
+      - main
+      - feature/**
       # other branch names and globs
     types:
-      - 'opened'
+      - opened
       # other event types
 ```
 
@@ -112,9 +118,9 @@ on:
 
 Runs your workflow when a pull request is labeled with a matching label.
 
-With the `labels` array, you can specify which labels, when assigned to your pull request, will trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label will trigger the workflow. Defaults to `[]` when not provided, which means no labels will trigger the workflow.
+With the `labels` list, you can specify which labels, when assigned to your pull request, will trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label will trigger the workflow. Defaults to `[]` when not provided, which means no labels will trigger the workflow.
 
-You can also provide the list of matching labels directly to `on.pull_request_labeled` for simpler syntax.
+You can also provide a list of matching labels directly to `on.pull_request_labeled` for simpler syntax.
 
 ```yaml
 on:
@@ -122,8 +128,8 @@ on:
   pull_request_labeled:
     # @end #
     labels:
-      - 'Test'
-      - 'Preview'
+      - Test
+      - Preview
       # other labels
 ```
 
@@ -134,8 +140,8 @@ on:
   # @info #
   pull_request_labeled:
     # @end #
-    - 'Test'
-    - 'Preview'
+    - Test
+    - Preview
     # other labels
 ```
 
@@ -167,7 +173,7 @@ jobs:
 
 ### `jobs.<job_id>.name`
 
-The name of the job displayed on the workflow's detail page.
+The human-friendly name of the job displayed on the workflow's detail page.
 
 ```yaml
 jobs:
@@ -179,7 +185,7 @@ jobs:
 
 ### `jobs.<job_id>.environment`
 
-The [EAS environment variable](/eas/environment-variables/) environment to set for the job. There are three possible values:
+Sets the [EAS environment variable](/eas/environment-variables/) environment for the job. There are three possible values:
 
 - `production` (default)
 - `preview`
@@ -214,11 +220,11 @@ jobs:
 
 ## Control flow
 
-You can control when jobs run and what jobs must complete successfully before a job runs using the `needs` and `after` keywords. In addition, you can use the `if` keyword to control whether a job should run based on a condition.
+You can control when a job runs with the `needs` and `after` keywords. In addition, you can use the `if` keyword to control whether a job should run based on a condition.
 
 ### `jobs.<job_id>.needs`
 
-A list of job IDs that must complete successfully before this job will run.
+A list of job IDs whose jobs must complete successfully before this job will run.
 
 ```yaml
 jobs:
@@ -256,7 +262,7 @@ jobs:
 
 ### `jobs.<job_id>.if`
 
-The `if` conditional determines if a job should run.
+The `if` conditional determines if a job should run. When an `if` condition is met, the job will run. When the condition is not met, the job will be skipped. A skipped job won't have completed successfully and any downstream jobs will not run that have this job in their `needs` list.
 
 ```yaml
 jobs:
@@ -366,7 +372,7 @@ jobs:
     # @end #
     params:
       message: string # optional
-      platform: string # optional - android, ios, or all
+      platform: string # optional - android | ios | all, defaults to all
       branch: string # optional
       channel: string # optional - cannot be used with branch
 ```
@@ -406,7 +412,10 @@ Specifies the worker that will execute the job. Available only on custom jobs.
 jobs:
   my_job:
     # @info #
-    runs_on: linux-medium | linux-large | linux-medium-nested-virtualization | linux-large-nested-virtualization | macos-medium | macos-large
+    runs_on: linux-medium | linux-large |
+      linux-medium-nested-virtualization |
+      linux-large-nested-virtualization |
+      macos-medium | macos-large # optional, defaults to linux-medium
     # @end #
 ```
 
@@ -425,7 +434,7 @@ Note: For iOS builds and iOS simulator jobs, you must use a `macos-*` worker. Fo
 
 A list of outputs for the job. Job outputs are available to all downstream jobs that depend on this job. Set outputs in a step using the `set-output` function.
 
-In the example below, the `set-output` function sets the `test` output to `hello world` in `job_1`'s `step_1` step. Later in `job_2`, it's accessed in `step_2` using `needs.job_1.outputs.output_1`.
+In the example below, the `set-output` function sets the output named `test` to the value `hello world` in `job_1`'s `step_1` step. Later in `job_2`, it's accessed in `step_2` using `needs.job_1.outputs.output_1`.
 
 ```yaml
 jobs:
@@ -480,7 +489,7 @@ jobs:
 
 ### `jobs.<job_id>.steps.<step>.name`
 
-The name of the step, which is displayed in the job's logs.
+The human-friendly name of the step, which is displayed in the job's logs. When not provided, the step name is the command to run.
 
 ```yaml
 jobs:
@@ -494,7 +503,7 @@ jobs:
 
 ### `jobs.<job_id>.steps.<step>.run`
 
-The command to run in the step.
+The shell command to run in the step.
 
 ```yaml
 jobs:
@@ -561,7 +570,7 @@ jobs:
 
 #### `eas/install_node_modules`
 
-Installs node modules using the package manager (bun, npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
+Installs node_modules using the package manager (bun, npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
 
 ```yaml example.yml
 jobs:
@@ -643,11 +652,11 @@ jobs:
           slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
 ```
 
-| Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                 |
-| `payload`        | `string` | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                |
-| `slack_hook_url` | `string` | The URL of the previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${{ eas.env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
+| Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                      |
+| `payload`        | `string` | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                     |
+| `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${{ eas.env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
 
 <BoxLink
   title="eas/send_slack_message source code"
@@ -658,7 +667,7 @@ jobs:
 
 #### `eas/use_npm_token`
 
-Configures node package managers (bun, npm, pnpm, or Yarn) for use with private packages, published either to npm or a private registry.
+Configures Node package managers (bun, npm, pnpm, or Yarn) for use with private packages, published either to npm or a private registry.
 
 Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
 
