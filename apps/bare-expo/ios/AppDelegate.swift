@@ -1,8 +1,8 @@
 import React
 import Expo
 
-@UIApplicationMain
-public class AppDelegate: EXAppDelegateWrapper {
+@main
+public class AppDelegate: ExpoAppDelegate {
   public override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
