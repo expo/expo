@@ -192,7 +192,7 @@ export async function test(
         gl.compressedTexImage2D(
           gl.TEXTURE_2D,
           0,
-          gl.COMPRESSED_R11_EAC,
+          37488,
           32,
           32,
           0,
@@ -297,7 +297,7 @@ export async function test(
           32,
           2,
           2,
-          gl.COMPRESSED_R11_EAC,
+          37488,
           new Uint8Array([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 128, 128, 0, 255])
         );
 
