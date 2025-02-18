@@ -3,6 +3,7 @@ import { PermissionResponse, createPermissionHook, Platform } from 'expo-modules
 
 import ExpoLocation from './ExpoLocation';
 import {
+  LocationErrorCallback,
   LocationAccuracy,
   LocationCallback,
   LocationGeocodedAddress,
@@ -18,7 +19,11 @@ import {
   LocationSubscription,
   LocationTaskOptions,
 } from './Location.types';
-import { LocationSubscriber, HeadingSubscriber } from './LocationSubscribers';
+import {
+  LocationSubscriber,
+  HeadingSubscriber,
+  LocationErrorSubscriber,
+} from './LocationSubscribers';
 
 // Flag for warning about background services not being available in Expo Go
 let warnAboutExpoGoDisplayed = false;
@@ -93,18 +98,24 @@ export async function getLastKnownPositionAsync(
  * @param options
  * @param callback This function is called on each location update. It receives an object of type
  * [`LocationObject`](#locationobject) as the first argument.
+ * @param errorHandler This function is called when an error occurs. It receives a string with the
+ * error message as the first argument.
  * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
  */
 export async function watchPositionAsync(
   options: LocationOptions,
-  callback: LocationCallback
+  callback: LocationCallback,
+  errorHandler?: LocationErrorCallback
 ): Promise<LocationSubscription> {
   const watchId = LocationSubscriber.registerCallback(callback);
+  errorHandler && LocationErrorSubscriber.registerCallbackForId(watchId, errorHandler);
+
   await ExpoLocation.watchPositionImplAsync(watchId, options);
 
   return {
     remove() {
       LocationSubscriber.unregisterCallback(watchId);
+      errorHandler && LocationErrorSubscriber.unregisterCallback(watchId);
     },
   };
 }
@@ -116,17 +127,28 @@ export async function watchPositionAsync(
  * @return A promise which fulfills with an object of type [`LocationHeadingObject`](#locationheadingobject).
  */
 export async function getHeadingAsync(): Promise<LocationHeadingObject> {
-  return new Promise(async (resolve) => {
+  return new Promise(async (resolve, reject) => {
     let tries = 0;
+    let subscriber: LocationSubscription | undefined = undefined;
 
-    const subscription = await watchHeadingAsync((heading) => {
-      if (heading.accuracy > 1 || tries > 5) {
-        subscription.remove();
-        resolve(heading);
-      } else {
-        tries += 1;
-      }
-    });
+    try {
+      subscriber = await watchHeadingAsync(
+        (heading) => {
+          if (heading.accuracy > 1 || tries > 5) {
+            subscriber?.remove();
+            resolve(heading);
+          } else {
+            tries += 1;
+          }
+        },
+        (reason) => {
+          subscriber?.remove();
+          reject(reason);
+        }
+      );
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 
@@ -136,20 +158,26 @@ export async function getHeadingAsync(): Promise<LocationHeadingObject> {
  *
  * @param callback This function is called on each compass update. It receives an object of type
  * [LocationHeadingObject](#locationheadingobject) as the first argument.
+ * @param errorHandler This function is called when an error occurs. It receives a string with the
+ * error message as the first argument.
  * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
  *
  * @platform android
  * @platform ios
  */
 export async function watchHeadingAsync(
-  callback: LocationHeadingCallback
+  callback: LocationHeadingCallback,
+  errorHandler?: LocationErrorCallback
 ): Promise<LocationSubscription> {
   const watchId = HeadingSubscriber.registerCallback(callback);
+  errorHandler && LocationErrorSubscriber.registerCallbackForId(watchId, errorHandler);
+
   await ExpoLocation.watchDeviceHeading(watchId);
 
   return {
     remove() {
       HeadingSubscriber.unregisterCallback(watchId);
+      errorHandler && LocationErrorSubscriber.unregisterCallback(watchId);
     },
   };
 }

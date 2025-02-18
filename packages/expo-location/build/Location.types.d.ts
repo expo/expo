@@ -289,6 +289,10 @@ export type LocationObjectCoords = {
  */
 export type LocationCallback = (location: LocationObject) => any;
 /**
+ * Error callback for location methods.
+ */
+export type LocationErrorCallback = (reason: string) => void;
+/**
  * Represents the object containing details about location provider.
  */
 export type LocationProviderStatus = {
