@@ -30,21 +30,24 @@ extension ExpoSwiftUI {
     public var body: some SwiftUI.View {
       if #available(iOS 16.0, tvOS 16.0, *) {
         content
-          .frame(
-            idealWidth: axis.contains(.horizontal) ? lastMeasuredSize.width : nil,
-            idealHeight: axis.contains(.vertical) ? lastMeasuredSize.height : nil
-          )
-          .onGeometryChange(for: CGSize.self) { proxy in
-            proxy.size
-          } action: {
-            let width = axis.contains(.horizontal) ? $0.width : ShadowNodeProxy.UNDEFINED_SIZE
-            let height = axis.contains(.vertical) ? $0.height : ShadowNodeProxy.UNDEFINED_SIZE
-            let size = CGSize(width: width, height: height)
-            if lastMeasuredSize != size {
-              lastMeasuredSize = size
-              proxy.setViewSize?(size)
-            }
-          }
+          .if(proxy !== ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY, { view in
+            view
+              .frame(
+                idealWidth: axis.contains(.horizontal) ? lastMeasuredSize.width : nil,
+                idealHeight: axis.contains(.vertical) ? lastMeasuredSize.height : nil
+              )
+              .onGeometryChange(for: CGSize.self) { proxy in
+                proxy.size
+              } action: {
+                let width = axis.contains(.horizontal) ? $0.width : ShadowNodeProxy.UNDEFINED_SIZE
+                let height = axis.contains(.vertical) ? $0.height : ShadowNodeProxy.UNDEFINED_SIZE
+                let size = CGSize(width: width, height: height)
+                if lastMeasuredSize != size {
+                  lastMeasuredSize = size
+                  proxy.setViewSize?(size)
+                }
+              }
+          })
       } else {
         // TODO: throw a warning
         content.onAppear(perform: {
