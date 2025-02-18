@@ -344,7 +344,6 @@ PODS:
     - React-RCTFabric
     - React-rendererdebug
     - React-utils
-    - ReactAppDependencyProvider
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -369,7 +368,6 @@ PODS:
     - React-RCTFabric
     - React-rendererdebug
     - React-utils
-    - ReactAppDependencyProvider
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -2266,10 +2264,10 @@ SPEC CHECKSUMS:
   expo-dev-menu: da5b84d5cb9a7e6b8bea402c2b39dc1da5e00c10
   expo-dev-menu-interface: 4baf2f8b3b79ce37cf4b900e4b3ba6df3384f0a1
   ExpoClipboard: 166ca8c13ca1041f5ba619a211f59427ab5da8a7
-  ExpoFileSystem: dc2679a2b5d4c465ca881129074da95faee943d5
+  ExpoFileSystem: ddb2bbc2d88d1a15490a37c280d8e69aa53cb931
   ExpoImage: 89f672e47b391a749b56fecb3e2a8d6d68b9b379
-  ExpoMediaLibrary: 2d20778aafaa2e6f60640167f0618cfacee6f81c
-  ExpoModulesCore: 0752390621dd30477420a8a3e8711d2852fc430c
+  ExpoMediaLibrary: 778e8fd37b0172f8a7984c0ab1b3a1f91a837eef
+  ExpoModulesCore: 11dda0a8dea834f584c4ab0070cbfdca733e8fdf
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXUpdates: d058f908357f7a924c64c33c1bfdfa619e2a3a17
