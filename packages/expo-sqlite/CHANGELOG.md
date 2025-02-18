@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [sqlite] [ios] Replaced cached statement manager with sqlite3 solution [#34992](https://github.com/expo/expo/pull/34992) by [@Bowlerr](https://github.com/Bowlerr))
 - [sqlite] [android] Replaced cached statement manager with sqlite3 solution [#34992](https://github.com/expo/expo/pull/34992) by [@Bowlerr](https://github.com/Bowlerr))
 
 - Fixed exceptions when converting empty blob data on iOS. ([#33564](https://github.com/expo/expo/pull/33564) by [@kudo](https://github.com/kudo))
