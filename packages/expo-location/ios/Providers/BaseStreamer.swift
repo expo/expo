@@ -3,11 +3,7 @@
 import CoreLocation
 import ExpoModulesCore
 
-protocol Streamer {
-  func stopStreaming()
-}
-
-internal class BaseStreamer: BaseLocationProvider, Streamer {
+internal class BaseStreamer: BaseLocationProvider {
   func stopStreaming() {
     // Default empty implementation
   }
