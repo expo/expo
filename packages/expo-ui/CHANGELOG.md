@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+
 ## 0.0.2 — 2025-02-11
 
 ### 🎉 New features
