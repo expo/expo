@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-private var subscribers = [ExpoAppDelegateSubscriberProtocol]()
-private var reactDelegateHandlers = [ExpoReactDelegateHandler]()
+private var _subscribers = [ExpoAppDelegateSubscriberProtocol]()
+private var _reactDelegateHandlers = [ExpoReactDelegateHandler]()
 
 /**
  Class responsible for managing access to app delegate subscribers and react delegates.
@@ -10,13 +10,13 @@ private var reactDelegateHandlers = [ExpoReactDelegateHandler]()
 @objc(EXExpoAppDelegateSubscriberRepository)
 public class ExpoAppDelegateSubscriberRepository: NSObject {
   @objc
-  public static func getAllSubscribers() -> [ExpoAppDelegateSubscriberProtocol] {
-    return subscribers
+  public static var subscribers: [ExpoAppDelegateSubscriberProtocol] {
+    return _subscribers
   }
 
   @objc
-  public static func getAllReactDelegateHandlers() -> [ExpoReactDelegateHandler] {
-    return reactDelegateHandlers
+  public static var reactDelegateHandlers: [ExpoReactDelegateHandler] {
+    return _reactDelegateHandlers
   }
 
   @objc
@@ -28,19 +28,19 @@ public class ExpoAppDelegateSubscriberRepository: NSObject {
 
   @objc
   public static func registerSubscriber(_ subscriber: ExpoAppDelegateSubscriberProtocol) {
-    if subscribers.contains(where: { $0 === subscriber }) {
+    if _subscribers.contains(where: { $0 === subscriber }) {
       fatalError("Given app delegate subscriber `\(String(describing: subscriber))` is already registered.")
     }
-    subscribers.append(subscriber)
+    _subscribers.append(subscriber)
   }
 
   @objc
   public static func getSubscriber(_ name: String) -> ExpoAppDelegateSubscriberProtocol? {
-    return subscribers.first { String(describing: $0) == name }
+    return _subscribers.first { String(describing: $0) == name }
   }
 
   public static func getSubscriberOfType<Subscriber>(_ type: Subscriber.Type) -> Subscriber? {
-    return subscribers.first { $0 is Subscriber } as? Subscriber
+    return _subscribers.first { $0 is Subscriber } as? Subscriber
   }
 
   @objc
@@ -50,7 +50,7 @@ public class ExpoAppDelegateSubscriberRepository: NSObject {
         return ModulePriorities.get(tuple1.packageName) > ModulePriorities.get(tuple2.packageName)
       }
       .forEach { handlerTuple in
-        reactDelegateHandlers.append(handlerTuple.handler.init())
+        _reactDelegateHandlers.append(handlerTuple.handler.init())
       }
   }
 }

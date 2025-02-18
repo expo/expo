@@ -31,7 +31,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
     _ application: UIApplication,
     willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    let parsedSubscribers = ExpoAppDelegateSubscriberRepository.getAllSubscribers().filter {
+    let parsedSubscribers = ExpoAppDelegateSubscriberRepository.subscribers.filter {
       $0.responds(to: #selector(application(_:willFinishLaunchingWithOptions:)))
     }
 
@@ -59,7 +59,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
     }
 
     ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach { subscriber in
         // Subscriber result is ignored as it doesn't matter if any subscriber handled the incoming URL – we always return `true` anyway.
         _ = subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions)
@@ -74,33 +74,33 @@ open class ExpoAppDelegate: ExpoAppInstance {
   @objc
   open override func applicationDidBecomeActive(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach { $0.applicationDidBecomeActive?(application) }
   }
 
   @objc
   open override func applicationWillResignActive(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach { $0.applicationWillResignActive?(application) }
   }
 
   @objc
   open override func applicationDidEnterBackground(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach { $0.applicationDidEnterBackground?(application) }
   }
 
   open override func applicationWillEnterForeground(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach { $0.applicationWillEnterForeground?(application) }
   }
 
   open override func applicationWillTerminate(_ application: UIApplication) {
     ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach { $0.applicationWillTerminate?(application) }
   }
 
@@ -116,7 +116,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
     completionHandler: @escaping () -> Void
   ) {
     let selector = #selector(application(_:handleEventsForBackgroundURLSession:completionHandler:))
-    let subs = ExpoAppDelegateSubscriberRepository.getAllSubscribers().filter { $0.responds(to: selector) }
+    let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.handleBackgroundEvents")
 
@@ -143,13 +143,13 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   open override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach { $0.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
   }
 
   open override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
   }
 
@@ -159,7 +159,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
   ) {
     let selector = #selector(application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
-    let subs = ExpoAppDelegateSubscriberRepository.getAllSubscribers().filter { $0.responds(to: selector) }
+    let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.remoteNotification", qos: .userInteractive)
     var failedCount = 0
@@ -200,7 +200,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   open override func application(_ application: UIApplication, willContinueUserActivityWithType userActivityType: String) -> Bool {
     return ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .reduce(false) { result, subscriber in
         return subscriber.application?(application, willContinueUserActivityWithType: userActivityType) ?? false || result
       }
@@ -212,7 +212,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
   ) -> Bool {
     let selector = #selector(application(_:continue:restorationHandler:))
-    let subs = ExpoAppDelegateSubscriberRepository.getAllSubscribers().filter { $0.responds(to: selector) }
+    let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.continueUserActivity", qos: .userInteractive)
     var allRestorableObjects = [UIUserActivityRestoring]()
@@ -238,13 +238,13 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   open override func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
     return ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach { $0.application?(application, didUpdate: userActivity) }
   }
 
   open override func application(_ application: UIApplication, didFailToContinueUserActivityWithType userActivityType: String, error: Error) {
     return ExpoAppDelegateSubscriberRepository
-      .getAllSubscribers()
+      .subscribers
       .forEach {
         $0.application?(application, didFailToContinueUserActivityWithType: userActivityType, error: error)
       }
@@ -257,7 +257,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
     completionHandler: @escaping (Bool) -> Void
   ) {
     let selector = #selector(application(_:performActionFor:completionHandler:))
-    let subs = ExpoAppDelegateSubscriberRepository.getAllSubscribers().filter { $0.responds(to: selector) }
+    let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     var result: Bool = false
     let dispatchQueue = DispatchQueue(label: "expo.application.performAction", qos: .userInteractive)
@@ -290,7 +290,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
     performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
   ) {
     let selector = #selector(application(_:performFetchWithCompletionHandler:))
-    let subs = ExpoAppDelegateSubscriberRepository.getAllSubscribers().filter { $0.responds(to: selector) }
+    let subs = ExpoAppDelegateSubscriberRepository.subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.performFetch", qos: .userInteractive)
     var failedCount = 0
@@ -334,7 +334,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
   // MARK: - Opening a URL-Specified Resource
 
   open override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-    return ExpoAppDelegateSubscriberRepository.getAllSubscribers().reduce(false) { result, subscriber in
+    return ExpoAppDelegateSubscriberRepository.subscribers.reduce(false) { result, subscriber in
       return subscriber.application?(app, open: url, options: options) ?? false || result
     }
   }
@@ -357,7 +357,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
     let universalOrientationMask = allowedOrientations(for: .unspecified)
     let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask
 
-    let parsedSubscribers = ExpoAppDelegateSubscriberRepository.getAllSubscribers().filter {
+    let parsedSubscribers = ExpoAppDelegateSubscriberRepository.subscribers.filter {
       $0.responds(to: #selector(application(_:supportedInterfaceOrientationsFor:)))
     }
 
@@ -378,7 +378,7 @@ open class ExpoAppDelegate: ExpoAppInstance {
 
   @objc
   open override func customize(_ rootView: RCTRootView) {
-    ExpoAppDelegateSubscriberRepository.getAllSubscribers().forEach { $0.customizeRootView?(rootView) }
+    ExpoAppDelegateSubscriberRepository.subscribers.forEach { $0.customizeRootView?(rootView) }
   }
 }
 

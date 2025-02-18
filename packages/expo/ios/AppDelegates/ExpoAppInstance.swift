@@ -17,7 +17,7 @@ open class ExpoAppInstance: RCTAppDelegate {
 
   @objc
   public let reactDelegate = ExpoReactDelegate(
-    handlers: ExpoAppDelegateSubscriberRepository.getAllReactDelegateHandlers()
+    handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers
   )
 
   @objc

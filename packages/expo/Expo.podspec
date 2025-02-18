@@ -62,13 +62,29 @@ Pod::Spec.new do |s|
   end
 
   header_search_paths = [
-    '"$(PODS_ROOT)/Headers/Private/Yoga"',
+    '"$(PODS_ROOT)/Headers/Private/React-Core"', # as React-RCTAppDelegate.podspec to access JSCExecutorFactory.h
   ]
+  if ENV['USE_FRAMEWORKS']
+    header_search_paths.concat([
+      # [begin] transitive dependencies of React-RCTAppDelegate that are not defined modules
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeApple/React_RuntimeApple.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeCore/React_RuntimeCore.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspector/jsinspector_modern.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererconsistency/React_rendererconsistency.framework/Headers"',
+      # [end] transitive dependencies of React-RCTAppDelegate that are not defined modules
+    ])
+  end
   s.pod_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
   s.user_target_xcconfig = {
-    'HEADER_SEARCH_PATHS' => header_search_paths
+    'HEADER_SEARCH_PATHS' => [
+      '"${PODS_CONFIGURATION_BUILD_DIR}/Expo/Swift Compatibility Header"',
+      '"$(PODS_ROOT)/Headers/Private/Yoga"',
+    ]
   }
 
   s.dependency 'React-RCTAppDelegate'
