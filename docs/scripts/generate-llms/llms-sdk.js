@@ -8,19 +8,16 @@ const TITLE = 'Expo SDK Documentation';
 const DESCRIPTION = 'Documentation for Expo SDK libraries, configuration, and API reference.';
 const BASE_URL = 'https://docs.expo.dev';
 
+const processedContent = new Set();
+
 function cleanContent(content) {
   const processContent = content
-
     .replace(/^#\s+.+\n\n[^\n]+\n\n/m, '')
     .replace(/^(?:\*\s*){3}$/gm, '')
     .replace(/^(.+)\n-+\n/gm, '## $1\n')
     .replace(/\[]\(#[^)]+\)/g, '')
     .replace(/`-`\s+(`(?:npm|npx)\s+[^`]+`)/g, '$1')
     .replace(/\n{3,}/g, '\n\n')
-    .replace(/^#\s+app\s*$/gm, '# app.json/app.config.js reference')
-    .replace(/^#\s+babel\s*$/gm, '# babel.config.js')
-    .replace(/^#\s+metro\s*$/gm, '# metro.config.js')
-    .replace(/^#\s+package-json\s*$/gm, '# package.json')
     .replace(/(?:^(?: {4}|\t).*$\n?)+/gm, match => {
       const code = match.replace(/^(?: {4}|\t)/gm, '');
       return '```\n' + code.trim() + '\n```\n';
@@ -51,6 +48,14 @@ async function processContent(content, url) {
   const cleanedContent = cleanContent(content);
   formattedContent += cleanedContent;
 
+  const normalizedContent = formattedContent.trim().toLowerCase();
+
+  if (processedContent.has(normalizedContent)) {
+    console.log(`Skipping duplicate content for: ${url}`);
+    return null;
+  }
+
+  processedContent.add(normalizedContent);
   return formattedContent;
 }
 
@@ -64,14 +69,28 @@ async function generateFullMarkdown() {
       format: 'markdown',
     });
 
+    const uniquePages = new Map();
+
     const sortedPages = Array.from(fetchedContent.entries())
       .filter(([url]) => url !== '/' && url.startsWith('/versions/latest/'))
       .sort(([urlA], [urlB]) => urlA.localeCompare(urlB));
 
     for (const [url, pageData] of sortedPages) {
+      const normalizedUrl = url.replace(/\/+$/, '').split('?')[0];
+
+      // Skip if we've already processed this URL
+      if (uniquePages.has(normalizedUrl)) {
+        console.log(`Skipping duplicate URL: ${url}`);
+        continue;
+      }
+
       const processedContent = await processContent(pageData.content, url);
-      fullContent += processedContent + '\n\n---\n\n';
+      if (processedContent) {
+        uniquePages.set(normalizedUrl, processedContent);
+        fullContent += processedContent + '\n\n---\n\n';
+      }
     }
+
     return fullContent;
   } catch (error) {
     console.error('Error fetching or processing content:', error);
