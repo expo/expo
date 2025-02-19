@@ -5,14 +5,15 @@ import ExpoModulesCore
 public class ExpoUIModule: Module {
 	public func definition() -> ModuleDefinition {
 		Name("ExpoUI")
-
-		View(Button.self)
-		View(PickerView.self)
-		View(SwitchView.self)
-		View(SectionView.self)
-		View(SliderView.self)
-		View(ExpoUI.ContextMenu.self)
-		View(ColorPickerView.self)
-		View(DisclosureGroupView.self)
-	}
+    
+    View(Button.self)
+    View(PickerView.self)
+    View(SwitchView.self)
+    View(SectionView.self)
+    View(SliderView.self)
+    View(ExpoUI.ContextMenu.self)
+    View(ColorPickerView.self)
+    View(DateTimePickerView.self)
+    View(DisclosureGroupView.self)
+  }
 }

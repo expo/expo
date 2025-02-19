@@ -40,10 +40,7 @@
   <string name="devmenu_hide_element_inspector">Hide Element Inspector</string>
   <string name="devmenu_show_element_inspector">Show Element Inspector</string>
   <string name="devmenu_element_inspector_unavailable">Element Inspector Unavailable</string>
-  <string name="devmenu_stop_remote_debugging">Stop Remote Debugging</string>
-  <string name="devmenu_start_remote_debugging">Debug Remote JS</string>
   <string name="devmenu_open_js_debugger">Open JS Debugger</string>
-  <string name="devmenu_remote_debugger_unavailable">Remote Debugger Unavailable</string>
   <string name="devmenu_disable_fast_refresh">Disable Fast Refresh</string>
   <string name="devmenu_enable_fast_refresh">Enable Fast Refresh</string>
   <string name="devmenu_fast_refresh_unavailable">Fast Refresh Unavailable</string>
