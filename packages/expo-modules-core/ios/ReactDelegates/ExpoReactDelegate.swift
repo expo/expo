@@ -22,8 +22,9 @@ public class ExpoReactDelegate: NSObject {
       .compactMap { $0.createReactRootView(reactDelegate: self, moduleName: moduleName, initialProperties: initialProperties, launchOptions: launchOptions) }
       .first(where: { _ in true })
       ?? {
-        guard let appDelegate = UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate else {
-          fatalError("The `UIApplication.shared.delegate` must conform to `ExpoReactNativeFactoryDelegate`")
+        guard let appDelegate = (UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate) ??
+            ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? ExpoReactNativeFactoryDelegate) else {
+          fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
         }
 
         return appDelegate.recreateRootView(

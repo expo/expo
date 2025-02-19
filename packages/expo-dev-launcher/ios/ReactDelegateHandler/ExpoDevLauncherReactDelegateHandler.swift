@@ -50,20 +50,21 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    guard let expoAppInstance = UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate else {
-      fatalError("The `UIApplication.shared.delegate` must conform to `ExpoReactNativeFactoryDelegate`")
+    guard let appDelegate = (UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate) ??
+        ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? ExpoReactNativeFactoryDelegate) else {
+      fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
-    self.expoAppDelegate = expoAppInstance
+    self.expoAppDelegate = appDelegate
 
     // Reset rctAppDelegate so we can relaunch the app
-    if (expoAppInstance.reactNativeFactory?.delegate?.newArchEnabled() ?? false) {
-      expoAppInstance.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
+    if (appDelegate.reactNativeFactory?.delegate?.newArchEnabled() ?? false) {
+      appDelegate.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
-      expoAppInstance.reactNativeFactory?.bridge = nil
-      expoAppInstance.reactNativeFactory?.rootViewFactory.bridge = nil
+      appDelegate.reactNativeFactory?.bridge = nil
+      appDelegate.reactNativeFactory?.rootViewFactory.bridge = nil
     }
 
-    let rootView = expoAppInstance.recreateRootView(
+    let rootView = appDelegate.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,

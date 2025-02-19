@@ -62,9 +62,10 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     guard let reactDelegate = self.reactDelegate else {
       fatalError("`reactDelegate` should not be nil")
     }
-    
-    guard let appDelegate = UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate else {
-      fatalError("The `UIApplication.shared.delegate` must conform to `ExpoRootViewRecreating`")
+
+    guard let appDelegate = (UIApplication.shared.delegate as? ExpoReactNativeFactoryDelegate) ??
+        ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? ExpoReactNativeFactoryDelegate) else {
+      fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
 
     let rootView = appDelegate.recreateRootView(

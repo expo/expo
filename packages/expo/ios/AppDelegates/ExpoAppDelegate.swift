@@ -8,7 +8,7 @@ import ExpoModulesCore
 
  Keep functions and markers in sync with https://developer.apple.com/documentation/uikit/uiapplicationdelegate
  */
-@objc(EXExpoAppDelegate)
+@objc(EXExpoAppDelegate) // note you cannot subclass Swift from Objective-C, use EXAppDelegateWrapper with Obj-C
 open class ExpoAppDelegate: ExpoReactNativeFactoryDelegate, UIApplicationDelegate, UISceneDelegate {
   /// The window object, used to render the UIViewControllers
   public var window: UIWindow?
