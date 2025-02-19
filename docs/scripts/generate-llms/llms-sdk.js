@@ -51,7 +51,6 @@ async function processContent(content, url) {
   const normalizedContent = formattedContent.trim().toLowerCase();
 
   if (processedContent.has(normalizedContent)) {
-    console.log(`Skipping duplicate content for: ${url}`);
     return null;
   }
 
@@ -64,7 +63,7 @@ async function generateFullMarkdown() {
 
   try {
     const fetchedContent = await fetchSite(BASE_URL, {
-      match: ['/versions/latest/', '/versions/latest/**'],
+      match: ['/versions/latest/**', '/more/**', '/technical-specs/**'],
       concurrency: 5,
       format: 'markdown',
     });
@@ -72,14 +71,20 @@ async function generateFullMarkdown() {
     const uniquePages = new Map();
 
     const sortedPages = Array.from(fetchedContent.entries())
-      .filter(([url]) => url !== '/' && url.startsWith('/versions/latest/'))
+      .filter(
+        ([url]) =>
+          url !== '/' &&
+          (url.startsWith('/versions/latest/') ||
+            url.startsWith('/more/') ||
+            url.startsWith('/technical-specs/'))
+      )
+
       .sort(([urlA], [urlB]) => urlA.localeCompare(urlB));
 
     for (const [url, pageData] of sortedPages) {
       const normalizedUrl = url.replace(/\/+$/, '').split('?')[0];
 
       if (uniquePages.has(normalizedUrl)) {
-        console.log(`Skipping duplicate URL: ${url}`);
         continue;
       }
 
