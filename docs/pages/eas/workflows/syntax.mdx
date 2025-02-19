@@ -148,6 +148,20 @@ on:
     # other labels
 ```
 
+### `on.schedule.cron`
+
+Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/db2/11.5?topic=task-unix-cron-format) syntax. You can use [crontab guru](https://crontab.guru/) and their [examples](https://crontab.guru/examples.html) to generate cron strings.
+
+- Scheduled workflows will only run on the default branch of the repository. In many cases, this means crons inside workflow files on the `main` branch will be scheduled, while crons inside workflow files in feature branches will not be scheduled.
+- Scheduled workflows may be delayed during periods of high load. High load times include the start of every hour. In rare circumstances, jobs may be skipped or run multiple times. Make sure that your workflows are idempotent and do not have harmful side effects.
+- A workflow can have multiple `cron` schedules.
+
+```yaml
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs at midnight every day
+```
+
 ## `jobs`
 
 A workflow run is made up of one or more jobs.
