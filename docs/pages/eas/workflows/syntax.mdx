@@ -302,7 +302,18 @@ This job outputs the following properties:
 ```json
 {
   "build_id": string,
+  "app_build_version": string | null,
+  "app_identifier": string | null,
+  "app_version": string | null,
+  "channel": string | null,
+  "distribution": "internal" | "store" | null,
+  "fingerprint_hash": string | null,
+  "git_commit_hash": string | null,
   "platform": "ios" | "android" | null,
+  "profile": string | null,
+  "runtime_version": string | null,
+  "sdk_version": string | null,
+  "simulator": "true" | "false" | null
 }
 ```
 
