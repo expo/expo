@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevClientReactNativeFactory.h"
-#import <EXDevMenu/DevClientReactNativeFactoryDelegate.h>
 #import <EXDevMenu/DevClientRootViewFactory.h>
 
 @implementation EXDevClientReactNativeFactory

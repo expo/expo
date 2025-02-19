@@ -1,6 +1,4 @@
 #import <EXDevLauncher/EXDevLauncherReactNativeFactoryDelegate.h>
-#import <EXDevLauncher/EXDevLauncherController.h>
-#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import "EXDevLauncherReactNativeFactory.h"
 
 

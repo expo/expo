@@ -69,7 +69,10 @@ export function ImageExample() {
   return (
     <View style={styles.exampleContainer}>
       <Image style={styles.image} source={{ uri }} />
-      <Text>Image from RN core to test TurboModuleDelegate on iOS</Text>
+      <Text>
+        Image from RN core to test TurboModuleDelegate on iOS. If you see the first image but not
+        the second, that's a bug.
+      </Text>
       <RNImage style={styles.image} source={{ uri }} />
     </View>
   );

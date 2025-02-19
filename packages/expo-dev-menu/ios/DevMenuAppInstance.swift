@@ -1,7 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import EXDevMenuInterface
-import ExpoModulesCore
 import React
 
 @objc
@@ -18,7 +16,7 @@ class DevMenuAppInstance: DevMenuReactNativeFactoryDelegate {
   }
 
   convenience init(manager: DevMenuManager, bridge: RCTBridge) {
-		self.init(manager: manager)
+    self.init(manager: manager)
     self.reactNativeFactory?.rootViewFactory.bridge = bridge
   }
 
