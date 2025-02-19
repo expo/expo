@@ -200,7 +200,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   public override func safeAreaInsetsDidChange() {
     super.safeAreaInsetsDidChange()
-    // This is the only way that I (@behenate) to force re-calculation of the safe-area insets for native controls
+    // This is the only way that I (@behenate) found to force re-calculation of the safe-area insets for native controls
     playerViewController.view.removeFromSuperview()
     addSubview(playerViewController.view)
   }
