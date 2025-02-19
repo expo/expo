@@ -78,7 +78,6 @@ async function generateFullMarkdown() {
     for (const [url, pageData] of sortedPages) {
       const normalizedUrl = url.replace(/\/+$/, '').split('?')[0];
 
-      // Skip if we've already processed this URL
       if (uniquePages.has(normalizedUrl)) {
         console.log(`Skipping duplicate URL: ${url}`);
         continue;
