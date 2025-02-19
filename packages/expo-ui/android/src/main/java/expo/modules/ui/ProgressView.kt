@@ -9,6 +9,8 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.ComposeProps

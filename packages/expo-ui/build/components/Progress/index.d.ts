@@ -1,4 +1,12 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+export type ProgressElementColors = {
+    /**
+     * Track color.
+     *
+     * @platform android
+     */
+    trackColor?: ColorValue;
+};
 export type ProgressProps = {
     /**
      * Custom styles for the progress component.
@@ -11,13 +19,12 @@ export type ProgressProps = {
     /**
      * Progress color.
      */
-    color?: string;
+    color?: ColorValue;
     /**
-     * Track color.
-     *
+     * Colors for switch's core elements.
      * @platform android
      */
-    trackColor?: string;
+    elementColors?: ProgressElementColors;
 };
 export declare function CircularProgress(props: ProgressProps): import("react").JSX.Element;
 export declare function LinearProgress(props: ProgressProps): import("react").JSX.Element;
