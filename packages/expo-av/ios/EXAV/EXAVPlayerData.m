@@ -158,9 +158,16 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   // unless we preload, the asset will not necessarily load the duration by the time we try to play it.
   // http://stackoverflow.com/questions/20581567/avplayer-and-avfoundationerrordomain-code-11819
   EX_WEAKIFY(self);
-  [avAsset loadValuesAsynchronouslyForKeys:@[ @"duration" ] completionHandler:^{
+  [avAsset loadValuesAsynchronouslyForKeys:@[ @"isPlayable", @"duration" ] completionHandler:^{
     EX_ENSURE_STRONGIFY(self);
+    NSError *error = nil;
+    AVKeyValueStatus status = [avAsset statusOfValueForKey:@"isPlayable" error:&error];
 
+    if (status == AVKeyValueStatusLoaded && !avAsset.isPlayable) {
+      NSString *errorMessage = @"Load encountered an error: [AVAsset isPlayable:] returned false. The asset does not contains a playable content or is not supported by the device.";
+      [self _finishLoadWithError:errorMessage];
+      return;
+    } 
     // We prepare three items for AVQueuePlayer, so when the first finishes playing,
     // second can start playing and the third can start preparing to play.
     AVPlayerItem *firstplayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
