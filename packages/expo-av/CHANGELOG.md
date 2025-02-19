@@ -31,6 +31,7 @@
 
 ### 🐛 Bug fixes
 
+- [expo-av] Fixed black screen bug that appears when playing videos with AV1 codec ([#35053](https://github.com/expo/expo/pull/35053) by [@HezekielT](https://github.com/HezekielT))
 - [iOS] `loadAsync()` promise never settled when given an invalid file uri ([#30020](https://github.com/expo/expo/pull/30020) by [@vonovak](https://github.com/vonovak))
 - Fixed putting app to background stops non-mixable audio playback in other apps on iOS ([#20380](https://github.com/expo/expo/pull/20380) by [@de1acr0ix](https://github.com/de1acr0ix))
 - Fix unhandled promise rejection when start recording fails [#29826](https://github.com/expo/expo/pull/29826) by [@anirudhsama](https://github.com/anirudhsama)
