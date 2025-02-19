@@ -9,6 +9,7 @@
 - [Android][iOS] Added an option to `generateThumbnailsAsync` to set the maximum size of generated thumbnails. ([#33599](https://github.com/expo/expo/pull/33599) by [@tsapeta](https://github.com/tsapeta)), ([#33712](https://github.com/expo/expo/pull/33712) by [@behenate](https://github.com/behenate))
 - [Android][iOS] Add support for listing available video tracks and currently played video track. ([#33458](https://github.com/expo/expo/pull/33458) by [@behenate](https://github.com/behenate))
 - [Android][iOS] Add `sourceLoad` event. ([#33458](https://github.com/expo/expo/pull/33458) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add caching functionality. ([#31781](https://github.com/expo/expo/pull/31781) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
