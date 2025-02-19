@@ -146,6 +146,7 @@ class VideoPlayerObserver {
     delegates.removeAll()
     invalidatePlayerObservers()
     invalidateCurrentPlayerItemObservers()
+    stopTimeUpdates()
   }
 
   private func initializePlayerObservers() {
@@ -248,6 +249,7 @@ class VideoPlayerObserver {
     playerItemStatusObserver?.invalidate()
     tracksObserver?.invalidate()
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
+    NotificationCenter.default.removeObserver(currentSubtitlesObserver as Any)
   }
 
   func startOrUpdateTimeUpdates(forInterval interval: Double) {
